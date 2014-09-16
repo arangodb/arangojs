@@ -1,0 +1,32 @@
+{
+  "name": "arango",
+  "version": "2.0.0-dev",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha --growl -R spec",
+    "lint": "jshint index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/arangodb/arangodbjs.git"
+  },
+  "author": "Alan Plum <me@pluma.io>",
+  "license": "APACHE-2.0",
+  "bugs": {
+    "url": "https://github.com/arangodb/arangodbjs/issues"
+  },
+  "homepage": "https://github.com/arangodb/arangodbjs",
+  "devDependencies": {
+    "browserify": "^5.11.2",
+    "expect.js": "^0.3.1",
+    "jshint": "^2.5.5",
+    "mocha": "^1.21.4",
+    "rewire": "^2.1.0"
+  },
+  "dependencies": {
+    "extend": "^1.3.0",
+    "promise-es6": "^0.1.0",
+    "request": "^2.42.0"
+  }
+}
