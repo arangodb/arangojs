@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha --growl -R spec",
-    "lint": "jshint index.js"
+    "lint": "jshint index.js lib"
   },
   "repository": {
     "type": "git",
