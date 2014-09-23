@@ -6,7 +6,7 @@ module.exports = require('./lib/database');
 
 },{"./lib/database":5}],2:[function(require,module,exports){
 'use strict';
-var extend = require('extend'), ArangoError = require('./error'), promisify = require('./util/promisify');
+var noop = require('./util/noop'), extend = require('extend'), ArangoError = require('./error');
 module.exports = Collection;
 function update(self, data) {
     for (var key in data) {
@@ -20,31 +20,31 @@ function Collection(connection, body) {
 }
 extend(Collection.prototype, {
     _get: function (path, update, callback) {
+        if (!callback)
+            callback = noop;
         var self = this;
-        return promisify(callback, function (resolve, reject) {
-            self._connection.get('collection/' + self.name + '/' + path, function (err, body) {
-                if (err)
-                    reject(err);
-                else {
-                    if (update)
-                        update(self, body);
-                    resolve(body);
-                }
-            });
+        self._connection.get('collection/' + self.name + '/' + path, function (err, body) {
+            if (err)
+                callback(err);
+            else {
+                if (update)
+                    update(self, body);
+                callback(null, body);
+            }
         });
     },
     _put: function (path, data, update, callback) {
+        if (!callback)
+            callback = noop;
         var self = this;
-        return promisify(callback, function (resolve, reject) {
-            self._connection.put('collection/' + self.name + '/' + path, data, function (err, body) {
-                if (err)
-                    reject(err);
-                else {
-                    if (update)
-                        update(self, body);
-                    resolve(body);
-                }
-            });
+        self._connection.put('collection/' + self.name + '/' + path, data, function (err, body) {
+            if (err)
+                callback(err);
+            else {
+                if (update)
+                    update(self, body);
+                callback(null, body);
+            }
         });
     },
     properties: function (callback) {
@@ -82,22 +82,22 @@ extend(Collection.prototype, {
         return this._put('truncate', undefined, true, callback);
     },
     'delete': function (callback) {
+        if (!callback)
+            callback = noop;
         var self = this;
-        return promisify(callback, function (resolve, reject) {
-            self._connection['delete']('collection/' + self.name, function (err, body) {
-                if (err)
-                    reject(err);
-                else if (body.error)
-                    reject(new ArangoError(body));
-                else
-                    resolve(body);
-            });
+        self._connection['delete']('collection/' + self.name, function (err, body) {
+            if (err)
+                callback(err);
+            else if (body.error)
+                callback(new ArangoError(body));
+            else
+                callback(null, body);
         });
     }
 });
-},{"./error":6,"./util/promisify":7,"extend":14}],3:[function(require,module,exports){
+},{"./error":6,"./util/noop":8,"extend":14}],3:[function(require,module,exports){
 'use strict';
-var extend = require('extend'), request = require('request');
+var noop = require('./util/noop'), extend = require('extend'), request = require('request');
 module.exports = Connection;
 function Connection(config) {
     if (typeof config === 'string') {
@@ -111,6 +111,8 @@ Connection.defaults = {
 };
 extend(Connection.prototype, {
     request: function (opts, callback) {
+        if (!callback)
+            callback = noop;
         var body = opts.body, headers = { 'content-type': 'text/plain' };
         if (body && typeof body === 'object') {
             body = JSON.stringify(body);
@@ -217,13 +219,14 @@ extend(Connection.prototype, {
         }, callback);
     }
 });
-},{"extend":14,"request":9}],4:[function(require,module,exports){
+},{"./util/noop":8,"extend":14,"request":15}],4:[function(require,module,exports){
 /*jshint browserify: true */
 "use strict";
 
-var extend = require('extend'),
+var noop = require('./util/noop'),
+  extend = require('extend'),
   ArangoError = require('./error'),
-  promisify = require('./util/promisify');
+  all = require('./util/all');
 
 module.exports = ArrayCursor;
 
@@ -237,6 +240,7 @@ function ArrayCursor(connection, body) {
 
 extend(ArrayCursor.prototype, {
   _drain: function (callback) {
+    if (!callback) callback = noop;
     var self = this;
     self._more(function (err) {
       if (err) callback(err);
@@ -245,6 +249,7 @@ extend(ArrayCursor.prototype, {
     });
   },
   _more: function (callback) {
+    if (!callback) callback = noop;
     var self = this;
     if (!self._hasMore) callback(null, self);
     else {
@@ -260,178 +265,172 @@ extend(ArrayCursor.prototype, {
     }
   },
   all: function (callback) {
+    if (!callback) callback = noop;
     var self = this;
-    return promisify(callback, function (resolve, reject) {
-      self._drain(function (err) {
-        if (err) reject(err);
-        else resolve(self._result);
-      });
+    self._drain(function (err) {
+      if (err) callback(err);
+      else callback(null, self._result);
     });
   },
   next: function (callback) {
+    if (!callback) callback = noop;
     var self = this;
-    return promisify(callback, function (resolve, reject) {
-      function next() {
-        var value = self._result[self._current];
-        self._current += 1;
-        resolve(value);
-      }
-      if (self._current < self._result.length) next();
+    function next() {
+      var value = self._result[self._current];
+      self._current += 1;
+      callback(null, value);
+    }
+    if (self._current < self._result.length) next();
+    else {
+      if (!self._hasMore) callback(null);
       else {
-        if (!self._hasMore) resolve();
-        else {
-          self._more(function (err) {
-            if (err) reject(err);
-            else next();
-          });
-        }
+        self._more(function (err) {
+          if (err) callback(err);
+          else next();
+        });
       }
-    });
+    }
   },
   hasNext: function () {
     return (this._hasMore || this._current < this._result.length);
   },
   each: function (fn, callback) {
+    if (!callback) callback = noop;
     var self = this;
-    return promisify(callback, function (resolve, reject) {
-      self._drain(function (err) {
-        if (err) reject(err);
-        else {
-          try {
-            var i, result;
-            for (i = 0; i < self._result.length; i++) {
-              result = fn(self._result[i], i, self);
-              if (result === false) break;
-            }
-            resolve(self);
+    self._drain(function (err) {
+      if (err) callback(err);
+      else {
+        try {
+          var i, result;
+          for (i = 0; i < self._result.length; i++) {
+            result = fn(self._result[i], i, self);
+            if (result === false) break;
           }
-          catch (e) {reject(e);}
+          callback(null, self);
         }
-      });
+        catch (e) {callback(e);}
+      }
     });
   },
   every: function (fn, callback) {
+    if (!callback) callback = noop;
     var self = this;
-    return promisify(callback, function (resolve, reject) {
-      function step(x) {
-        try {
-          var i, result = true;
-          for (i = x; i < self._result.length; i++) {
-            result = fn(self._result[i], i, self);
-            if (!result) break;
-          }
-          if (!self._hasMore || !result) resolve(result);
-          else {
-            self._more(function (err) {
-              if (err) reject(err);
-              else step(i);
-            });
-          }
+    function step(x) {
+      try {
+        var i, result = true;
+        for (i = x; i < self._result.length; i++) {
+          result = fn(self._result[i], i, self);
+          if (!result) break;
         }
-        catch(e) {reject(e);}
+        if (!self._hasMore || !result) callback(null, result);
+        else {
+          self._more(function (err) {
+            if (err) callback(err);
+            else step(i);
+          });
+        }
       }
-      step(0);
-    });
+      catch(e) {callback(e);}
+    }
+    step(0);
   },
   some: function (fn, callback) {
+    if (!callback) callback = noop;
     var self = this;
-    return promisify(callback, function (resolve, reject) {
-      function step(x) {
-        try {
-          var i, result = false;
-          for (i = x; i < self._result.length; i++) {
-            result = fn(self._result[i], i, self);
-            if (result) break;
-          }
-          if (!self._hasMore || result) resolve(result);
-          else {
-            self._more(function (err) {
-              if (err) reject(err);
-              else step(i);
-            });
-          }
+    function step(x) {
+      try {
+        var i, result = false;
+        for (i = x; i < self._result.length; i++) {
+          result = fn(self._result[i], i, self);
+          if (result) break;
         }
-        catch(e) {reject(e);}
+        if (!self._hasMore || result) callback(null, result);
+        else {
+          self._more(function (err) {
+            if (err) callback(err);
+            else step(i);
+          });
+        }
       }
-      step(0);
-    });
+      catch(e) {callback(e);}
+    }
+    step(0);
   },
   map: function (fn, callback) {
+    if (!callback) callback = noop;
     var self = this,
       result = [];
-    return promisify(callback, function (resolve, reject) {
-      function step(x) {
-        try {
-          var i;
-          for (i = x; i < self._result.length; i++) {
-            result.push(fn(self._result[i], i, self));
-          }
-          if (!self._hasMore) resolve(result);
-          else {
-            self._more(function (err) {
-              if (err) reject(err);
-              else step(i);
-            });
-          }
+
+    function step(x) {
+      try {
+        var i;
+        for (i = x; i < self._result.length; i++) {
+          result.push(fn(self._result[i], i, self));
         }
-        catch(e) {reject(e);}
+        if (!self._hasMore) callback(null, result);
+        else {
+          self._more(function (err) {
+            if (err) callback(err);
+            else step(i);
+          });
+        }
       }
-      step(0);
-    });
+      catch(e) {callback(e);}
+    }
+    step(0);
   },
   reduce: function (fn, accu, callback) {
     if (typeof accu === 'function') {
       callback = accu;
       accu = undefined;
     }
+    if (!callback) callback = noop;
     var self = this;
-    return promisify(callback, function (resolve, reject) {
-      function step(x) {
-        try {
-          var i;
-          for (i = x; i < self._result.length; i++) {
-            accu = fn(accu, self._result[i], i, self);
-          }
-          if (!self._hasMore) resolve(accu);
-          else {
-            self._more(function (err) {
-              if (err) reject(err);
-              else step(i);
-            });
-          }
+    function step(x) {
+      try {
+        var i;
+        for (i = x; i < self._result.length; i++) {
+          accu = fn(accu, self._result[i], i, self);
         }
-        catch(e) {reject(e);}
+        if (!self._hasMore) callback(null, accu);
+        else {
+          self._more(function (err) {
+            if (err) callback(err);
+            else step(i);
+          });
+        }
       }
-      if (accu !== undefined) step(0);
-      else if (self._result.length > 1) {
-        accu = self._result[0];
-        step(1);
-      }
-      else {
-        self._more(function (err) {
-          if (err) reject(err);
-          else {
-            accu = self._result[0];
-            step(1);
-          }
-        });
-      }
-    });
+      catch(e) {callback(e);}
+    }
+    if (accu !== undefined) step(0);
+    else if (self._result.length > 1) {
+      accu = self._result[0];
+      step(1);
+    }
+    else {
+      self._more(function (err) {
+        if (err) callback(err);
+        else {
+          accu = self._result[0];
+          step(1);
+        }
+      });
+    }
   }
 });
 
-},{"./error":6,"./util/promisify":7,"extend":14}],5:[function(require,module,exports){
+},{"./error":6,"./util/all":7,"./util/noop":8,"extend":14}],5:[function(require,module,exports){
 /* jshint browserify: true, -W079 */
 "use strict";
 
-var Promise = require('promise-es6').Promise,
+var noop = require('./util/noop'),
   extend = require('extend'),
   map = require('array-map'),
   Connection = require('./connection'),
   ArangoError = require('./error'),
   ArrayCursor = require('./cursor'),
   Collection = require('./collection'),
-  promisify = require('./util/promisify');
+  all = require('./util/all');
 
 module.exports = Database;
 
@@ -447,29 +446,26 @@ extend(Database.prototype, {
     this._connection.config.databaseName = databaseName;
   },
   createCollection: function (properties, callback) {
+    if (!callback) callback = noop;
     var self = this;
-    return promisify(callback, function (resolve, reject) {
-      self._connection.post('collection', properties, function (err, body) {
-        if (err) reject(err);
-        else if (body.error) reject(new ArangoError(body));
-        else resolve(new Collection(self._connection, body));
-      });
+    self._connection.post('collection', properties, function (err, body) {
+      if (err) callback(err);
+      else if (body.error) callback(new ArangoError(body));
+      else callback(null, new Collection(self._connection, body));
     });
   },
   collection: function (collectionName, callback) {
+    if (!callback) callback = noop;
     var self = this;
-    return promisify(callback, function (resolve, reject) {
-      self._connection.get('collection/' + collectionName, function (err, body) {
-        if (err) reject(err);
-        else if (body.error) {
-          if (body.errorNum === 1203) {
-            self.createCollection({name: collectionName})
-            .then(resolve, reject);
-          }
-          else reject(new ArangoError(body));
+    self._connection.get('collection/' + collectionName, function (err, body) {
+      if (err) callback(err);
+      else if (body.error) {
+        if (body.errorNum === 1203) {
+          self.createCollection({name: collectionName}, callback);
         }
-        else resolve(new Collection(self._connection, body));
-      });
+        else callback(new ArangoError(body));
+      }
+      else callback(null, new Collection(self._connection, body));
     });
   },
   collections: function (excludeSystem, callback) {
@@ -477,45 +473,35 @@ extend(Database.prototype, {
       callback = excludeSystem;
       excludeSystem = undefined;
     }
+    if (!callback) callback = noop;
     var self = this;
-    return promisify(callback, function (resolve, reject) {
-      self._connection.get('collection', {
-        excludeSystem: excludeSystem
-      }, function (err, body) {
-        if (err) reject(err);
-        else if (body.error) reject(new ArangoError(body));
-        else resolve(map(body.collections, function (data) {
-          return new Collection(self._connection, data);
-        }));
-      });
+    self._connection.get('collection', {
+      excludeSystem: excludeSystem
+    }, function (err, body) {
+      if (err) callback(err);
+      else if (body.error) callback(new ArangoError(body));
+      else callback(null, map(body.collections, function (data) {
+        return new Collection(self._connection, data);
+      }));
     });
   },
   truncate: function (callback) {
+    if (!callback) callback = noop;
     var self = this;
-    return promisify(callback, function (resolve, reject) {
-      self._connection.get('collection', function (err, body) {
-        if (err) reject(err);
-        else if (body.error) reject(new ArangoError(body));
-        else {
-          Promise.all(map(
-            body.collections,
-            function (data) {
-              return new Promise(function (resolve, reject) {
-                self._connection.put('collection/' + data.name + '/truncate', function (err, body) {
-                  if (err) reject(err);
-                  else if (body.error) reject(new ArangoError(body));
-                  else resolve(body);
-                });
-              });
-            }
-          )).then(resolve, reject);
-        }
-      });
-      self.collections().then(function (collections) {
-        Promise.all(map(collections, function (collection) {
-          return collection.truncate();
-        })).then(resolve, reject);
-      }, reject);
+    self._connection.get('collection', function (err, body) {
+      if (err) callback(err);
+      else if (body.error) callback(new ArangoError(body));
+      else {
+        all(map(body.collections, function (data) {
+          return function (callback) {
+            self._connection.put('collection/' + data.name + '/truncate', function (err, body) {
+              if (err) callback(err);
+              else if (body.error) callback(new ArangoError(body));
+              else callback(null, body);
+            });
+          };
+        }), callback);
+      }
     });
   },
   query: function (query, bindVars, callback) {
@@ -523,24 +509,23 @@ extend(Database.prototype, {
       callback = bindVars;
       bindVars = undefined;
     }
+    if (!callback) callback = noop;
     if (query && typeof query.toAQL === 'function') {
       query = query.toAQL();
     }
     var self = this;
-    return promisify(callback, function (resolve, reject) {
-      self._connection.post('cursor', {
-        query: query,
-        bindVars: bindVars
-      }, function (err, body) {
-        if (err) reject(err);
-        else if (body.error) reject(new ArangoError(body));
-        else resolve(new ArrayCursor(self._connection, body));
-      });
+    self._connection.post('cursor', {
+      query: query,
+      bindVars: bindVars
+    }, function (err, body) {
+      if (err) callback(err);
+      else if (body.error) callback(new ArangoError(body));
+      else callback(null, new ArrayCursor(self._connection, body));
     });
   }
 });
 
-},{"./collection":2,"./connection":3,"./cursor":4,"./error":6,"./util/promisify":7,"array-map":8,"extend":14,"promise-es6":15}],6:[function(require,module,exports){
+},{"./collection":2,"./connection":3,"./cursor":4,"./error":6,"./util/all":7,"./util/noop":8,"array-map":9,"extend":14}],6:[function(require,module,exports){
 /*jshint browserify: true */
 "use strict";
 
@@ -565,29 +550,39 @@ function ArangoError(obj) {
 util.inherits(ArangoError, Error);
 
 },{"util":13}],7:[function(require,module,exports){
-/*jshint browserify: true, -W079 */
+/*jshint browserify: true */
 "use strict";
 
-var Promise = require('promise-es6').Promise;
+module.exports = all;
 
-module.exports = promisify;
+function all(arr, callback) {
+  var result = [],
+    pending = arr.length,
+    called = false;
 
-function promisify(callback, deferred) {
-  var promise = new Promise(deferred);
-  if (callback) {
-    return promise.then(
-      function (result) {
-        return callback(null, result);
-      },
-      function (reason) {
-        return callback(reason);
+  function step(i) {
+    return function (err, res) {
+      pending -= 1;
+      if (!err) result[i] = res;
+      if (!called) {
+        if (err) callback(err);
+        else if (pending === 0) callback(null, result);
+        else return;
+        called = true;
       }
-    );
+    };
   }
-  return promise;
-}
 
-},{"promise-es6":15}],8:[function(require,module,exports){
+  for (var i = 0; i < arr.length; i++) {
+    arr[i](step(i));
+  }
+}
+},{}],8:[function(require,module,exports){
+/*jshint browserify: true */
+"use strict";
+
+module.exports = function () {};
+},{}],9:[function(require,module,exports){
 module.exports = function (xs, f) {
     if (xs.map) return xs.map(f);
     var res = [];
@@ -599,482 +594,6 @@ module.exports = function (xs, f) {
 };
 
 var hasOwn = Object.prototype.hasOwnProperty;
-
-},{}],9:[function(require,module,exports){
-// Browser Request
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
-var XHR = XMLHttpRequest
-if (!XHR) throw new Error('missing XMLHttpRequest')
-request.log = {
-  'trace': noop, 'debug': noop, 'info': noop, 'warn': noop, 'error': noop
-}
-
-var DEFAULT_TIMEOUT = 3 * 60 * 1000 // 3 minutes
-
-//
-// request
-//
-
-function request(options, callback) {
-  // The entry-point to the API: prep the options object and pass the real work to run_xhr.
-  if(typeof callback !== 'function')
-    throw new Error('Bad callback given: ' + callback)
-
-  if(!options)
-    throw new Error('No options given')
-
-  var options_onResponse = options.onResponse; // Save this for later.
-
-  if(typeof options === 'string')
-    options = {'uri':options};
-  else
-    options = JSON.parse(JSON.stringify(options)); // Use a duplicate for mutating.
-
-  options.onResponse = options_onResponse // And put it back.
-
-  if (options.verbose) request.log = getLogger();
-
-  if(options.url) {
-    options.uri = options.url;
-    delete options.url;
-  }
-
-  if(!options.uri && options.uri !== "")
-    throw new Error("options.uri is a required argument");
-
-  if(typeof options.uri != "string")
-    throw new Error("options.uri must be a string");
-
-  var unsupported_options = ['proxy', '_redirectsFollowed', 'maxRedirects', 'followRedirect']
-  for (var i = 0; i < unsupported_options.length; i++)
-    if(options[ unsupported_options[i] ])
-      throw new Error("options." + unsupported_options[i] + " is not supported")
-
-  options.callback = callback
-  options.method = options.method || 'GET';
-  options.headers = options.headers || {};
-  options.body    = options.body || null
-  options.timeout = options.timeout || request.DEFAULT_TIMEOUT
-
-  if(options.headers.host)
-    throw new Error("Options.headers.host is not supported");
-
-  if(options.json) {
-    options.headers.accept = options.headers.accept || 'application/json'
-    if(options.method !== 'GET')
-      options.headers['content-type'] = 'application/json'
-
-    if(typeof options.json !== 'boolean')
-      options.body = JSON.stringify(options.json)
-    else if(typeof options.body !== 'string')
-      options.body = JSON.stringify(options.body)
-  }
-  
-  //BEGIN QS Hack
-  var serialize = function(obj) {
-    var str = [];
-    for(var p in obj)
-      if (obj.hasOwnProperty(p)) {
-        str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
-      }
-    return str.join("&");
-  }
-  
-  if(options.qs){
-    var qs = (typeof options.qs == 'string')? options.qs : serialize(options.qs);
-    if(options.uri.indexOf('?') !== -1){ //no get params
-        options.uri = options.uri+'&'+qs;
-    }else{ //existing get params
-        options.uri = options.uri+'?'+qs;
-    }
-  }
-  //END QS Hack
-  
-  //BEGIN FORM Hack
-  var multipart = function(obj) {
-    //todo: support file type (useful?)
-    var result = {};
-    result.boundry = '-------------------------------'+Math.floor(Math.random()*1000000000);
-    var lines = [];
-    for(var p in obj){
-        if (obj.hasOwnProperty(p)) {
-            lines.push(
-                '--'+result.boundry+"\n"+
-                'Content-Disposition: form-data; name="'+p+'"'+"\n"+
-                "\n"+
-                obj[p]+"\n"
-            );
-        }
-    }
-    lines.push( '--'+result.boundry+'--' );
-    result.body = lines.join('');
-    result.length = result.body.length;
-    result.type = 'multipart/form-data; boundary='+result.boundry;
-    return result;
-  }
-  
-  if(options.form){
-    if(typeof options.form == 'string') throw('form name unsupported');
-    if(options.method === 'POST'){
-        var encoding = (options.encoding || 'application/x-www-form-urlencoded').toLowerCase();
-        options.headers['content-type'] = encoding;
-        switch(encoding){
-            case 'application/x-www-form-urlencoded':
-                options.body = serialize(options.form).replace(/%20/g, "+");
-                break;
-            case 'multipart/form-data':
-                var multi = multipart(options.form);
-                //options.headers['content-length'] = multi.length;
-                options.body = multi.body;
-                options.headers['content-type'] = multi.type;
-                break;
-            default : throw new Error('unsupported encoding:'+encoding);
-        }
-    }
-  }
-  //END FORM Hack
-
-  // If onResponse is boolean true, call back immediately when the response is known,
-  // not when the full request is complete.
-  options.onResponse = options.onResponse || noop
-  if(options.onResponse === true) {
-    options.onResponse = callback
-    options.callback = noop
-  }
-
-  // XXX Browsers do not like this.
-  //if(options.body)
-  //  options.headers['content-length'] = options.body.length;
-
-  // HTTP basic authentication
-  if(!options.headers.authorization && options.auth)
-    options.headers.authorization = 'Basic ' + b64_enc(options.auth.username + ':' + options.auth.password);
-
-  return run_xhr(options)
-}
-
-var req_seq = 0
-function run_xhr(options) {
-  var xhr = new XHR
-    , timed_out = false
-    , is_cors = is_crossDomain(options.uri)
-    , supports_cors = ('withCredentials' in xhr)
-
-  req_seq += 1
-  xhr.seq_id = req_seq
-  xhr.id = req_seq + ': ' + options.method + ' ' + options.uri
-  xhr._id = xhr.id // I know I will type "_id" from habit all the time.
-
-  if(is_cors && !supports_cors) {
-    var cors_err = new Error('Browser does not support cross-origin request: ' + options.uri)
-    cors_err.cors = 'unsupported'
-    return options.callback(cors_err, xhr)
-  }
-
-  xhr.timeoutTimer = setTimeout(too_late, options.timeout)
-  function too_late() {
-    timed_out = true
-    var er = new Error('ETIMEDOUT')
-    er.code = 'ETIMEDOUT'
-    er.duration = options.timeout
-
-    request.log.error('Timeout', { 'id':xhr._id, 'milliseconds':options.timeout })
-    return options.callback(er, xhr)
-  }
-
-  // Some states can be skipped over, so remember what is still incomplete.
-  var did = {'response':false, 'loading':false, 'end':false}
-
-  xhr.onreadystatechange = on_state_change
-  xhr.open(options.method, options.uri, true) // asynchronous
-  if(is_cors)
-    xhr.withCredentials = !! options.withCredentials
-  xhr.send(options.body)
-  return xhr
-
-  function on_state_change(event) {
-    if(timed_out)
-      return request.log.debug('Ignoring timed out state change', {'state':xhr.readyState, 'id':xhr.id})
-
-    request.log.debug('State change', {'state':xhr.readyState, 'id':xhr.id, 'timed_out':timed_out})
-
-    if(xhr.readyState === XHR.OPENED) {
-      request.log.debug('Request started', {'id':xhr.id})
-      for (var key in options.headers)
-        xhr.setRequestHeader(key, options.headers[key])
-    }
-
-    else if(xhr.readyState === XHR.HEADERS_RECEIVED)
-      on_response()
-
-    else if(xhr.readyState === XHR.LOADING) {
-      on_response()
-      on_loading()
-    }
-
-    else if(xhr.readyState === XHR.DONE) {
-      on_response()
-      on_loading()
-      on_end()
-    }
-  }
-
-  function on_response() {
-    if(did.response)
-      return
-
-    did.response = true
-    request.log.debug('Got response', {'id':xhr.id, 'status':xhr.status})
-    clearTimeout(xhr.timeoutTimer)
-    xhr.statusCode = xhr.status // Node request compatibility
-
-    // Detect failed CORS requests.
-    if(is_cors && xhr.statusCode == 0) {
-      var cors_err = new Error('CORS request rejected: ' + options.uri)
-      cors_err.cors = 'rejected'
-
-      // Do not process this request further.
-      did.loading = true
-      did.end = true
-
-      return options.callback(cors_err, xhr)
-    }
-
-    options.onResponse(null, xhr)
-  }
-
-  function on_loading() {
-    if(did.loading)
-      return
-
-    did.loading = true
-    request.log.debug('Response body loading', {'id':xhr.id})
-    // TODO: Maybe simulate "data" events by watching xhr.responseText
-  }
-
-  function on_end() {
-    if(did.end)
-      return
-
-    did.end = true
-    request.log.debug('Request done', {'id':xhr.id})
-
-    xhr.body = xhr.responseText
-    if(options.json) {
-      try        { xhr.body = JSON.parse(xhr.responseText) }
-      catch (er) { return options.callback(er, xhr)        }
-    }
-
-    options.callback(null, xhr, xhr.body)
-  }
-
-} // request
-
-request.withCredentials = false;
-request.DEFAULT_TIMEOUT = DEFAULT_TIMEOUT;
-
-//
-// defaults
-//
-
-request.defaults = function(options, requester) {
-  var def = function (method) {
-    var d = function (params, callback) {
-      if(typeof params === 'string')
-        params = {'uri': params};
-      else {
-        params = JSON.parse(JSON.stringify(params));
-      }
-      for (var i in options) {
-        if (params[i] === undefined) params[i] = options[i]
-      }
-      return method(params, callback)
-    }
-    return d
-  }
-  var de = def(request)
-  de.get = def(request.get)
-  de.post = def(request.post)
-  de.put = def(request.put)
-  de.head = def(request.head)
-  return de
-}
-
-//
-// HTTP method shortcuts
-//
-
-var shortcuts = [ 'get', 'put', 'post', 'head' ];
-shortcuts.forEach(function(shortcut) {
-  var method = shortcut.toUpperCase();
-  var func   = shortcut.toLowerCase();
-
-  request[func] = function(opts) {
-    if(typeof opts === 'string')
-      opts = {'method':method, 'uri':opts};
-    else {
-      opts = JSON.parse(JSON.stringify(opts));
-      opts.method = method;
-    }
-
-    var args = [opts].concat(Array.prototype.slice.apply(arguments, [1]));
-    return request.apply(this, args);
-  }
-})
-
-//
-// CouchDB shortcut
-//
-
-request.couch = function(options, callback) {
-  if(typeof options === 'string')
-    options = {'uri':options}
-
-  // Just use the request API to do JSON.
-  options.json = true
-  if(options.body)
-    options.json = options.body
-  delete options.body
-
-  callback = callback || noop
-
-  var xhr = request(options, couch_handler)
-  return xhr
-
-  function couch_handler(er, resp, body) {
-    if(er)
-      return callback(er, resp, body)
-
-    if((resp.statusCode < 200 || resp.statusCode > 299) && body.error) {
-      // The body is a Couch JSON object indicating the error.
-      er = new Error('CouchDB error: ' + (body.error.reason || body.error.error))
-      for (var key in body)
-        er[key] = body[key]
-      return callback(er, resp, body);
-    }
-
-    return callback(er, resp, body);
-  }
-}
-
-//
-// Utility
-//
-
-function noop() {}
-
-function getLogger() {
-  var logger = {}
-    , levels = ['trace', 'debug', 'info', 'warn', 'error']
-    , level, i
-
-  for(i = 0; i < levels.length; i++) {
-    level = levels[i]
-
-    logger[level] = noop
-    if(typeof console !== 'undefined' && console && console[level])
-      logger[level] = formatted(console, level)
-  }
-
-  return logger
-}
-
-function formatted(obj, method) {
-  return formatted_logger
-
-  function formatted_logger(str, context) {
-    if(typeof context === 'object')
-      str += ' ' + JSON.stringify(context)
-
-    return obj[method].call(obj, str)
-  }
-}
-
-// Return whether a URL is a cross-domain request.
-function is_crossDomain(url) {
-  var rurl = /^([\w\+\.\-]+:)(?:\/\/([^\/?#:]*)(?::(\d+))?)?/
-
-  // jQuery #8138, IE may throw an exception when accessing
-  // a field from window.location if document.domain has been set
-  var ajaxLocation
-  try { ajaxLocation = location.href }
-  catch (e) {
-    // Use the href attribute of an A element since IE will modify it given document.location
-    ajaxLocation = document.createElement( "a" );
-    ajaxLocation.href = "";
-    ajaxLocation = ajaxLocation.href;
-  }
-
-  var ajaxLocParts = rurl.exec(ajaxLocation.toLowerCase()) || []
-    , parts = rurl.exec(url.toLowerCase() )
-
-  var result = !!(
-    parts &&
-    (  parts[1] != ajaxLocParts[1]
-    || parts[2] != ajaxLocParts[2]
-    || (parts[3] || (parts[1] === "http:" ? 80 : 443)) != (ajaxLocParts[3] || (ajaxLocParts[1] === "http:" ? 80 : 443))
-    )
-  )
-
-  //console.debug('is_crossDomain('+url+') -> ' + result)
-  return result
-}
-
-// MIT License from http://phpjs.org/functions/base64_encode:358
-function b64_enc (data) {
-    // Encodes string using MIME base64 algorithm
-    var b64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
-    var o1, o2, o3, h1, h2, h3, h4, bits, i = 0, ac = 0, enc="", tmp_arr = [];
-
-    if (!data) {
-        return data;
-    }
-
-    // assume utf8 data
-    // data = this.utf8_encode(data+'');
-
-    do { // pack three octets into four hexets
-        o1 = data.charCodeAt(i++);
-        o2 = data.charCodeAt(i++);
-        o3 = data.charCodeAt(i++);
-
-        bits = o1<<16 | o2<<8 | o3;
-
-        h1 = bits>>18 & 0x3f;
-        h2 = bits>>12 & 0x3f;
-        h3 = bits>>6 & 0x3f;
-        h4 = bits & 0x3f;
-
-        // use hexets to index into b64, and append result to encoded string
-        tmp_arr[ac++] = b64.charAt(h1) + b64.charAt(h2) + b64.charAt(h3) + b64.charAt(h4);
-    } while (i < data.length);
-
-    enc = tmp_arr.join('');
-
-    switch (data.length % 3) {
-        case 1:
-            enc = enc.slice(0, -2) + '==';
-        break;
-        case 2:
-            enc = enc.slice(0, -1) + '=';
-        break;
-    }
-
-    return enc;
-}
-module.exports = request;
 
 },{}],10:[function(require,module,exports){
 if (typeof Object.create === 'function') {
@@ -1846,503 +1365,327 @@ module.exports = function extend() {
 
 
 },{}],15:[function(require,module,exports){
+var window = require("global/window")
+var once = require("once")
+var parseHeaders = require('parse-headers')
 
-var utils = require('./utils');
-
-// Get a reference to the global scope. We do this instead of using {global}
-// in case someone decides to bundle this up and use it in the browser
-var _global = (function() { return this; }).call();
-
-// 
-// Install the Promise constructor into the global scope, if and only if a
-// native promise constructor does not exist.
-// 
-exports.install = function() {
-	if (! _global.Promise) {
-		_global.Promise = Promise;
-	}
-};
-
-// 
-// Remove global.Promise, but only if it is our version
-// 
-exports.uninstall = function() {
-	if (_global.Promise && _global.Promise === Promise) {
-		_global.Promise = void(0);
-		delete _global.Promise;
-	}
-};
-
-// 
-// State constants
-// 
-var PENDING      = void(0);
-var UNFULFILLED  = 0;
-var FULFILLED    = 1;
-var FAILED       = 2;
-
-// 
-// The Promise constructor
-// 
-// @param {callback} the callback that defines the process to occur
-// 
-var Promise = exports.Promise = function(callback) {
-	// Check that a function argument was given
-	if (typeof callback !== 'function') {
-		throw new TypeError('Promise constructor takes a function argument');
-	}
-
-	// Check that a new instance was created, and not just a function call was made
-	if (! (this instanceof Promise)) {
-		throw new TypeError('Failed to construct \'Promise\': Please use the \'new\' operator, this object constructor cannot be called as a function.');
-	}
-
-	var self = this;
-
-	// The queue of functions waiting for the promise to resolve/reject
-	utils.defineProperty(this, 'funcs', {
-		enumerable: false,
-		configurable: false,
-		writable: false,
-		value: [ ]
-	});
-
-	// The queue of functions waiting for the promise to resolve/reject
-	utils.defineProperty(this, 'value', {
-		enumerable: false,
-		configurable: true,
-		writable: false,
-		value: void(0)
-	});
-
-	// Call the function, passing in the resolve and reject functions
-	try {
-		callback(resolve, reject);
-	} catch (err) {
-		reject(err);
-	}
-
-	// The {resolve} callback given to the handler function
-	function resolve(value) {
-		resolvePromise(self, value);
-	}
-
-	// The {reject} callback given to the handler function
-	function reject(value) {
-		rejectPromise(self, value);
-	}
-};
-
-// --------------------------------------------------------
-
-// 
-// Assigns handler function(s) for the resolve/reject events
-// 
-// @param {onResolve} optional; a function called when the promise resolves
-// @param {onReject} optional; a function called when the promise rejects
-// @return Promise
-// 
-Promise.prototype.then = function(onResolve, onReject) {
-	var self = this;
-
-	// Create the new promise that will be returned
-	var promise = new Promise(function( ) { });
-
-	// If the promise is already completed, call the callback immediately
-	if (this.state) {
-		setImmediate(function() {
-			invokeFunction(self, promise, (self.state === FULFILLED ? onResolve : onReject));
-		});
-	}
-
-	// Otherwise, add the functions to the list
-	else {
-		this.funcs.push(promise, onResolve, onReject);
-	}
-
-	return promise;
-};
-
-// 
-// Assigns a handler function for the reject event
-// 
-// @param {onReject} a function called when the promise rejects
-// @return Promise
-// 
-Promise.prototype.catch = function(onReject) {
-	return this.then(null, onReject);
-};
-
-// --------------------------------------------------------
-
-// 
-// Returns an immediately resolving promise which resolves with {value}. If {value} is
-// a thenable, the new promise will instead follow the given thenable.
-// 
-// @param {value} the value to resolve with
-// @return Promise
-// 
-Promise.resolve = function(value) {
-	try {
-		var then = utils.thenable(value);
-	} catch (err) {
-		return new Promise(autoResolve);
-	}
-
-	var callback = then
-		? function(resolve, reject) {
-			then.call(value, resolve, reject);
-		}
-		: autoResolve;
-
-	function autoResolve(resolve) {
-		resolve(value);
-	}
-
-	return new Promise(callback);
-};
-
-// 
-// Returns an immediately rejected promise
-// 
-// @param {reason} the reason for the rejection
-// @return Promise
-// 
-Promise.reject = function(reason) {
-	return new Promise(function(resolve, reject) {
-		reject(reason);
-	});
-};
-
-// 
-// Returns a new promise which resolves/rejects based on an array of given promises
-// 
-// @param {promises} the promises to handle
-// @return Promise
-// 
-Promise.all = function(promises) {
-	return new Promise(function(resolve, reject) {
-		if (! Array.isArray(promises)) {
-			resolve([ ]);
-			return;
-		}
-
-		var values = [ ];
-		var finished = false;
-		var remaining = promises.length;
-		
-		promises.forEach(function(promise, index) {
-			var then = utils.thenable(promise);
-
-			if (! then) {
-				onResolve(promise);
-				return;
-			}
-
-			then.call(promise,
-				function onResolve(value) {
-					remaining--;
-					values[index] = value;
-					checkIfFinished();
-				},
-				function onReject(reason) {
-					finished = true;
-					reject(reason);
-				}
-			);
-		});
-
-		function checkIfFinished() {
-			if (! finished && ! remaining) {
-				finished = true;
-				resolve(values);
-			}
-		}
-	});
-};
-
-// 
-// Returns a new promise which resolve/rejects as soon as the first given promise resolves
-// or rejects
-// 
-// @param {promises} an array of promises
-// @return Promise
-// 
-Promise.race = function(promises) {
-	var promise = new Promise(function() { });
-
-	promises.forEach(function(childPromise) {
-		childPromise.then(
-			function(value) {
-				resolvePromise(promise, value);
-			},
-			function(value) {
-				rejectPromise(promise, value);
-			}
-		);
-	});
-
-	return promise;
-};
-
-// --------------------------------------------------------
-
-// 
-// Determines how to properly resolve the promise
-// 
-// @param {promise} the promise
-// @param {value} the value to give the promise
-// @return void
-// 
-function resolvePromise(promise, value) {
-	if (! handleThenable(promise, value)) {
-		fulfillPromise(promise, value);
-	}
+var messages = {
+    "0": "Internal XMLHttpRequest Error",
+    "4": "4xx Client Error",
+    "5": "5xx Server Error"
 }
 
-// 
-// When a promise resolves with another thenable, this function handles delegating control
-// and passing around values
-// 
-// @param {child} the child promise that values will be passed to
-// @param {value} the thenable value from the previous promise
-// @return boolean
-// 
-function handleThenable(promise, value) {
-	var done, then;
+var XHR = window.XMLHttpRequest || noop
+var XDR = "withCredentials" in (new XHR()) ? XHR : window.XDomainRequest
 
-	// Attempt to get the `then` method from the thenable (if it is a thenable)
-	try {
-		if (! (then = utils.thenable(value))) {
-			return false;
-		}
-	} catch (err) {
-		rejectPromise(promise, err);
-		return true;
-	}
-	
-	// Ensure that the promise did not attempt to fulfill with itself
-	if (promise === value) {
-		rejectPromise(promise, new TypeError('Circular resolution of promises'));
-		return true;
-	}
+module.exports = createXHR
 
-	try {
-		// Wait for the thenable to fulfill/reject before moving on
-		then.call(value,
-			function(subValue) {
-				if (! done) {
-					done = true;
+function createXHR(options, callback) {
+    if (typeof options === "string") {
+        options = { uri: options }
+    }
 
-					// Once again look for circular promise resolution
-					if (value === subValue) {
-						rejectPromise(promise, new TypeError('Circular resolution of promises'));
-						return;
-					}
+    options = options || {}
+    callback = once(callback)
 
-					resolvePromise(promise, subValue);
-				}
-			},
-			function(subValue) {
-				if (! done) {
-					done = true;
+    var xhr = options.xhr || null
 
-					rejectPromise(promise, subValue);
-				}
-			}
-		);
-	} catch (err) {
-		if (! done) {
-			done = true;
+    if (!xhr) {
+        if (options.cors || options.useXDR) {
+            xhr = new XDR()
+        }else{
+            xhr = new XHR()
+        }
+    }
 
-			rejectPromise(promise, err);
-		}
-	}
+    var uri = xhr.url = options.uri || options.url
+    var method = xhr.method = options.method || "GET"
+    var body = options.body || options.data
+    var headers = xhr.headers = options.headers || {}
+    var sync = !!options.sync
+    var isJson = false
+    var key
+    var load = options.response ? loadResponse : loadXhr
 
-	return true;
+    if ("json" in options) {
+        isJson = true
+        headers["Accept"] = "application/json"
+        if (method !== "GET" && method !== "HEAD") {
+            headers["Content-Type"] = "application/json"
+            body = JSON.stringify(options.json)
+        }
+    }
+
+    xhr.onreadystatechange = readystatechange
+    xhr.onload = load
+    xhr.onerror = error
+    // IE9 must have onprogress be set to a unique function.
+    xhr.onprogress = function () {
+        // IE must die
+    }
+    // hate IE
+    xhr.ontimeout = noop
+    xhr.open(method, uri, !sync)
+                                    //backward compatibility
+    if (options.withCredentials || (options.cors && options.withCredentials !== false)) {
+        xhr.withCredentials = true
+    }
+
+    // Cannot set timeout with sync request
+    if (!sync) {
+        xhr.timeout = "timeout" in options ? options.timeout : 5000
+    }
+
+    if (xhr.setRequestHeader) {
+        for(key in headers){
+            if(headers.hasOwnProperty(key)){
+                xhr.setRequestHeader(key, headers[key])
+            }
+        }
+    } else if (options.headers) {
+        throw new Error("Headers cannot be set on an XDomainRequest object")
+    }
+
+    if ("responseType" in options) {
+        xhr.responseType = options.responseType
+    }
+    
+    if ("beforeSend" in options && 
+        typeof options.beforeSend === "function"
+    ) {
+        options.beforeSend(xhr)
+    }
+
+    xhr.send(body)
+
+    return xhr
+
+    function readystatechange() {
+        if (xhr.readyState === 4) {
+            load()
+        }
+    }
+
+    function getBody() {
+        // Chrome with requestType=blob throws errors arround when even testing access to responseText
+        var body = null
+
+        if (xhr.response) {
+            body = xhr.response
+        } else if (xhr.responseType === 'text' || !xhr.responseType) {
+            body = xhr.responseText || xhr.responseXML
+        }
+
+        if (isJson) {
+            try {
+                body = JSON.parse(body)
+            } catch (e) {}
+        }
+
+        return body
+    }
+
+    function getStatusCode() {
+        return xhr.status === 1223 ? 204 : xhr.status
+    }
+
+    // if we're getting a none-ok statusCode, build & return an error
+    function errorFromStatusCode(status) {
+        var error = null
+        if (status === 0 || (status >= 400 && status < 600)) {
+            var message = (typeof body === "string" ? body : false) ||
+                messages[String(status).charAt(0)]
+            error = new Error(message)
+            error.statusCode = status
+        }
+
+        return error
+    }
+
+    // will load the data & process the response in a special response object
+    function loadResponse() {
+        var status = getStatusCode()
+        var error = errorFromStatusCode(status)
+        var response = {
+            body: getBody(),
+            statusCode: status,
+            statusText: xhr.statusText,
+            raw: xhr
+        }
+        if(xhr.getAllResponseHeaders){ //remember xhr can in fact be XDR for CORS in IE
+            response.headers = parseHeaders(xhr.getAllResponseHeaders())
+        } else {
+            response.headers = {}
+        }
+
+        callback(error, response, response.body)
+    }
+
+    // will load the data and add some response properties to the source xhr
+    // and then respond with that
+    function loadXhr() {
+        var status = getStatusCode()
+        var error = errorFromStatusCode(status)
+
+        xhr.status = xhr.statusCode = status
+        xhr.body = getBody()
+        xhr.headers = parseHeaders(xhr.getAllResponseHeaders())
+
+        callback(error, xhr, xhr.body)
+    }
+
+    function error(evt) {
+        callback(evt, xhr)
+    }
 }
 
-// 
-// Fulfill the given promise
-// 
-// @param {promise} the promise to resolve
-// @param {value} the value of the promise
-// @return void
-// 
-function fulfillPromise(promise, value) {
-	if (promise.state !== PENDING) {return;}
 
-	setValue(promise, value);
-	setState(promise, UNFULFILLED);
+function noop() {}
 
-	setImmediate(function() {
-		setState(promise, FULFILLED);
-		invokeFunctions(promise);
-	});
+},{"global/window":16,"once":17,"parse-headers":21}],16:[function(require,module,exports){
+(function (global){
+if (typeof window !== "undefined") {
+    module.exports = window;
+} else if (typeof global !== "undefined") {
+    module.exports = global;
+} else {
+    module.exports = {};
 }
 
-// 
-// Reject the given promise
-// 
-// @param {promise} the promise to reject
-// @param {value} the value of the promise
-// @return void
-// 
-function rejectPromise(promise, value) {
-	if (promise.state !== PENDING) {return;}
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{}],17:[function(require,module,exports){
+module.exports = once
 
-	setValue(promise, value);
-	setState(promise, UNFULFILLED);
+once.proto = once(function () {
+  Object.defineProperty(Function.prototype, 'once', {
+    value: function () {
+      return once(this)
+    },
+    configurable: true
+  })
+})
 
-	setImmediate(function() {
-		setState(promise, FAILED);
-		invokeFunctions(promise);
-	});
+function once (fn) {
+  var called = false
+  return function () {
+    if (called) return
+    called = true
+    return fn.apply(this, arguments)
+  }
 }
 
-// 
-// Set the state of a promise
-// 
-// @param {promise} the promise to modify
-// @param {state} the new state
-// @return void
-// 
-function setState(promise, state) {
-	utils.defineProperty(promise, 'state', {
-		enumerable: false,
-		// According to the spec: If the state is UNFULFILLED (0), the state can be changed;
-		// If the state is FULFILLED (1) or FAILED (2), the state cannot be changed, and therefore we
-		// lock the property
-		configurable: (! state),
-		writable: false,
-		value: state
-	});
+},{}],18:[function(require,module,exports){
+var isFunction = require('is-function')
+
+module.exports = forEach
+
+var toString = Object.prototype.toString
+var hasOwnProperty = Object.prototype.hasOwnProperty
+
+function forEach(list, iterator, context) {
+    if (!isFunction(iterator)) {
+        throw new TypeError('iterator must be a function')
+    }
+
+    if (arguments.length < 3) {
+        context = this
+    }
+    
+    if (toString.call(list) === '[object Array]')
+        forEachArray(list, iterator, context)
+    else if (typeof list === 'string')
+        forEachString(list, iterator, context)
+    else
+        forEachObject(list, iterator, context)
 }
 
-// 
-// Set the value of a promise
-// 
-// @param {promise} the promise to modify
-// @param {value} the value to store
-// @return void
-// 
-function setValue(promise, value) {
-	utils.defineProperty(promise, 'value', {
-		enumerable: false,
-		configurable: false,
-		writable: false,
-		value: value
-	});
+function forEachArray(array, iterator, context) {
+    for (var i = 0, len = array.length; i < len; i++) {
+        if (hasOwnProperty.call(array, i)) {
+            iterator.call(context, array[i], i, array)
+        }
+    }
 }
 
-// 
-// Invoke all existing functions queued up on the promise
-// 
-// @param {promise} the promise to run functions for
-// @return void
-// 
-function invokeFunctions(promise) {
-	var funcs = promise.funcs;
-
-	for (var i = 0, c = funcs.length; i < c; i += 3) {
-		invokeFunction(promise, funcs[i], funcs[i + promise.state]);
-	}
-
-	// Empty out this list of functions as no one function will be called
-	// more than once, and we don't want to hold them in memory longer than needed
-	promise.funcs.length = 0;
+function forEachString(string, iterator, context) {
+    for (var i = 0, len = string.length; i < len; i++) {
+        // no such thing as a sparse string.
+        iterator.call(context, string.charAt(i), i, string)
+    }
 }
 
-// 
-// Invoke one specific function for the promise
-// 
-// @param {promise} the promise the function belongs too (that .then was called on)
-// @param {child} the promise return from the .then call; the next in line
-// @param {func} the function to call
-// @return void
-// 
-function invokeFunction(promise, child, func) {
-	var value = promise.value;
-	var state = promise.state;
-
-	// If we have a function to run, run it
-	if (typeof func === 'function') {
-		try {
-			value = func(value);
-		} catch (err) {
-			rejectPromise(child, err);
-			return;
-		}
-		
-		resolvePromise(child, value);
-	}
-
-	else if (state === FULFILLED) {
-		resolvePromise(child, value);
-	}
-
-	else if (state === FAILED) {
-		rejectPromise(child, value);
-	}
+function forEachObject(object, iterator, context) {
+    for (var k in object) {
+        if (hasOwnProperty.call(object, k)) {
+            iterator.call(context, object[k], k, object)
+        }
+    }
 }
 
-},{"./utils":16}],16:[function(require,module,exports){
+},{"is-function":19}],19:[function(require,module,exports){
+module.exports = isFunction
 
-var _global = (function() { return this; }).call();
+var toString = Object.prototype.toString
 
-// 
-// If the given value is a valid thenable, return the then method; otherwise, return false
-// 
-exports.thenable = function(value) {
-	if (value && (typeof value === 'object' || typeof value === 'function')) {
-		try {
-			var then = value.then;
-		} catch (err) {
-			throw err;
-		}
-
-		if (typeof then === 'function') {
-			return then;
-		}
-	}
-
-	return false;
-}
-
-// 
-// Shim Object.defineProperty if needed; This will never run in Node.js land, but
-// is here for when we browserify
-// 
-exports.defineProperty = function(obj, prop, opts) {
-	if (Object.defineProperty) {
-		try {
-			return Object.defineProperty(obj, prop, opts);
-		} catch (err) { }
-	}
-	
-	if (opts.value) {
-		obj[prop] = opts.value;
-	}
+function isFunction (fn) {
+  var string = toString.call(fn)
+  return string === '[object Function]' ||
+    (typeof fn === 'function' && string !== '[object RegExp]') ||
+    (typeof window !== 'undefined' &&
+     // IE8 and below
+     (fn === window.setTimeout ||
+      fn === window.alert ||
+      fn === window.confirm ||
+      fn === window.prompt))
 };
 
-// 
-// setImmediate shim
-// 
-if (! _global.setImmediate) {
-	_global.setImmediate = function(func) {
-		setTimeout(func, 0);
-	};
+},{}],20:[function(require,module,exports){
+
+exports = module.exports = trim;
+
+function trim(str){
+  return str.replace(/^\s*|\s*$/g, '');
 }
 
-exports.log = function(obj) {
-	console.log(
-		require('util').inspect(obj, {
-			colors: true,
-			showHidden: true,
-			depth: 2
-		})
-	)
+exports.left = function(str){
+  return str.replace(/^\s*/, '');
 };
 
-},{"util":13}]},{},[1])(1)
+exports.right = function(str){
+  return str.replace(/\s*$/, '');
+};
+
+},{}],21:[function(require,module,exports){
+var trim = require('trim')
+  , forEach = require('for-each')
+  , isArray = function(arg) {
+      return Object.prototype.toString.call(arg) === '[object Array]';
+    }
+
+module.exports = function (headers) {
+  if (!headers)
+    return {}
+
+  var result = {}
+
+  forEach(
+      trim(headers).split('\n')
+    , function (row) {
+        var index = row.indexOf(':')
+          , key = trim(row.slice(0, index)).toLowerCase()
+          , value = trim(row.slice(index + 1))
+
+        if (typeof(result[key]) === 'undefined') {
+          result[key] = value
+        } else if (isArray(result[key])) {
+          result[key].push(value)
+        } else {
+          result[key] = [ result[key], value ]
+        }
+      }
+  )
+
+  return result
+}
+},{"for-each":18,"trim":20}]},{},[1])(1)
 });

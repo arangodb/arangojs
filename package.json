@@ -20,17 +20,17 @@
   },
   "homepage": "https://github.com/arangodb/arangodbjs",
   "devDependencies": {
-    "browser-request": "^0.3.2",
     "browserify": "^5.11.2",
     "dekeywordify": "^0.2.0",
     "expect.js": "^0.3.1",
     "jshint": "^2.5.5",
     "mocha": "^1.21.4",
     "rewire": "^2.1.0",
-    "uglify-js": "^2.4.15"
+    "uglify-js": "^2.4.15",
+    "xhr": "^1.16.1"
   },
   "browser": {
-    "request": "browser-request"
+    "request": "xhr"
   },
   "dependencies": {
     "array-map": "0.0.0",
