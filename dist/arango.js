@@ -11,6 +11,8 @@ module.exports = Collection;
 function Collection(connection, body) {
     this._connection = connection;
     extend(this, body);
+    delete this.code;
+    delete this.error;
 }
 extend(Collection.prototype, {
     _get: function (path, update, callback) {
@@ -21,8 +23,11 @@ extend(Collection.prototype, {
             if (err)
                 callback(err);
             else {
-                if (update)
+                if (update) {
                     extend(self, body);
+                    delete self.code;
+                    delete self.error;
+                }
                 callback(null, body);
             }
         });
@@ -175,7 +180,7 @@ extend(Collection.prototype, {
         }
         if (!callback)
             callback = noop;
-        opts = extend({}, opts, { collection: this.name });
+        opts = extend({ type: 'id' }, opts, { collection: this.name });
         this._connection.get('document', opts, function (err, body) {
             if (err)
                 callback(err);
@@ -186,7 +191,7 @@ extend(Collection.prototype, {
 });
 },{"./error":6,"./util/noop":8,"extend":14}],3:[function(require,module,exports){
 'use strict';
-var noop = require('./util/noop'), extend = require('extend'), request = require('request'), ArangoError = require('./error');
+var noop = require('./util/noop'), extend = require('extend'), request = require('request'), ArangoError = require('./error'), jsonMime = /\/(json|javascript)(\W|$)/;
 module.exports = Connection;
 function Connection(config) {
     if (typeof config === 'string') {
@@ -220,14 +225,18 @@ extend(Connection.prototype, {
             qs: opts.qs,
             body: body,
             encoding: 'utf-8'
-        }, function (err, response, body) {
+        }, function (err, response, rawBody) {
             if (err)
                 callback(err);
-            else if (body.error)
-                callback(new ArangoError(body));
+            else if (!response.headers['content-type'].match(jsonMime))
+                callback(null, rawBody);
             else {
                 try {
-                    callback(null, body ? JSON.parse(body) : null);
+                    var body = JSON.parse(rawBody);
+                    if (!body.error)
+                        callback(null, body);
+                    else
+                        callback(new ArangoError(body.error));
                 } catch (e) {
                     callback(e);
                 }
