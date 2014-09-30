@@ -8,15 +8,9 @@ module.exports = require('./lib/database');
 'use strict';
 var noop = require('./util/noop'), extend = require('extend'), ArangoError = require('./error');
 module.exports = Collection;
-function update(self, data) {
-    for (var key in data) {
-        if (data.hasOwnProperty(key))
-            self[key] = data[key];
-    }
-}
 function Collection(connection, body) {
     this._connection = connection;
-    update(this, body);
+    extend(this, body);
 }
 extend(Collection.prototype, {
     _get: function (path, update, callback) {
@@ -28,7 +22,7 @@ extend(Collection.prototype, {
                 callback(err);
             else {
                 if (update)
-                    update(self, body);
+                    extend(self, body);
                 callback(null, body);
             }
         });
@@ -42,7 +36,7 @@ extend(Collection.prototype, {
                 callback(err);
             else {
                 if (update)
-                    update(self, body);
+                    extend(self, body);
                 callback(null, body);
             }
         });
@@ -88,8 +82,6 @@ extend(Collection.prototype, {
         self._connection['delete']('collection/' + self.name, function (err, body) {
             if (err)
                 callback(err);
-            else if (body.error)
-                callback(new ArangoError(body));
             else
                 callback(null);
         });
@@ -103,8 +95,6 @@ extend(Collection.prototype, {
         this._connection.get('document/' + documentHandle, function (err, body) {
             if (err)
                 callback(err);
-            else if (body.error)
-                callback(new ArangoError(body));
             else
                 callback(null, body);
         });
@@ -120,8 +110,6 @@ extend(Collection.prototype, {
         this._connection.post('document', data, opts, function (err, body) {
             if (err)
                 callback(err);
-            else if (body.error)
-                callback(new ArangoError(body));
             else
                 callback(null, body);
         });
@@ -140,8 +128,6 @@ extend(Collection.prototype, {
         this._connection.put('document/' + documentHandle, data, opts, function (err, body) {
             if (err)
                 callback(err);
-            else if (body.error)
-                callback(new ArangoError(body));
             else
                 callback(null, body);
         });
@@ -160,8 +146,6 @@ extend(Collection.prototype, {
         this._connection.patch('document/' + documentHandle, data, opts, function (err, body) {
             if (err)
                 callback(err);
-            else if (body.error)
-                callback(new ArangoError(body));
             else
                 callback(null, body);
         });
@@ -180,29 +164,29 @@ extend(Collection.prototype, {
         this._connection['delete']('document/' + documentHandle, opts, function (err, body) {
             if (err)
                 callback(err);
-            else if (body.error)
-                callback(new ArangoError(body));
             else
                 callback(null);
         });
     },
     all: function (opts, callback) {
+        if (typeof opts === 'function') {
+            callback = opts;
+            opts = undefined;
+        }
         if (!callback)
             callback = noop;
         opts = extend({}, opts, { collection: this.name });
-        this._connection.get('document', function (err, body) {
+        this._connection.get('document', opts, function (err, body) {
             if (err)
                 callback(err);
-            else if (body.error)
-                callback(new ArangoError(body));
             else
-                callback(null, body);
+                callback(null, body.documents);
         });
     }
 });
 },{"./error":6,"./util/noop":8,"extend":14}],3:[function(require,module,exports){
 'use strict';
-var noop = require('./util/noop'), extend = require('extend'), request = require('request');
+var noop = require('./util/noop'), extend = require('extend'), request = require('request'), ArangoError = require('./error');
 module.exports = Connection;
 function Connection(config) {
     if (typeof config === 'string') {
@@ -239,6 +223,8 @@ extend(Connection.prototype, {
         }, function (err, response, body) {
             if (err)
                 callback(err);
+            else if (body.error)
+                callback(new ArangoError(body));
             else {
                 try {
                     callback(null, body ? JSON.parse(body) : null);
@@ -329,7 +315,7 @@ extend(Connection.prototype, {
         }, callback);
     }
 });
-},{"./util/noop":8,"extend":14,"request":15}],4:[function(require,module,exports){
+},{"./error":6,"./util/noop":8,"extend":14,"request":15}],4:[function(require,module,exports){
 /*jshint browserify: true */
 "use strict";
 
@@ -341,6 +327,7 @@ var noop = require('./util/noop'),
 module.exports = ArrayCursor;
 
 function ArrayCursor(connection, body) {
+  this.extra = body.extra;
   this._connection = connection;
   this._result = body.result;
   this._hasMore = Boolean(body.hasMore);
@@ -365,7 +352,6 @@ extend(ArrayCursor.prototype, {
     else {
       self._connection.put('cursor/' + this._id, function (err, body) {
         if (err) callback(err);
-        else if (body.error) callback(new ArangoError(body));
         else {
           self._result.push.apply(self._result, body.result);
           self._hasMore = body.hasMore;
@@ -538,7 +524,7 @@ function Database(config) {
         return new Database(config);
     }
     this._connection = new Connection(config);
-    this.name = this._connection.databaseName;
+    this.name = this._connection.config.databaseName;
 }
 extend(Database.prototype, {
     createCollection: function (properties, callback) {
@@ -548,8 +534,6 @@ extend(Database.prototype, {
         self._connection.post('collection', properties, function (err, body) {
             if (err)
                 callback(err);
-            else if (body.error)
-                callback(new ArangoError(body));
             else
                 callback(null, new Collection(self._connection, body));
         });
@@ -563,11 +547,9 @@ extend(Database.prototype, {
             callback = noop;
         var self = this;
         self._connection.get('collection/' + collectionName, function (err, body) {
-            if (err)
-                callback(err);
-            else if (body.error) {
-                if (!autoCreate || body.errorNum !== 1203)
-                    callback(new ArangoError(body));
+            if (err) {
+                if (!autoCreate || err.name !== 'ArangoError' || err.errorNum !== 1203)
+                    callback(err);
                 else
                     self.createCollection({ name: collectionName }, callback);
             } else
@@ -585,8 +567,6 @@ extend(Database.prototype, {
         self._connection.get('collection', { excludeSystem: excludeSystem }, function (err, body) {
             if (err)
                 callback(err);
-            else if (body.error)
-                callback(new ArangoError(body));
             else
                 callback(null, map(body.collections, function (data) {
                     return new Collection(self._connection, data);
@@ -600,8 +580,6 @@ extend(Database.prototype, {
         self._connection['delete']('collection/' + collectionName, function (err, body) {
             if (err)
                 callback(err);
-            else if (body.error)
-                callback(new ArangoError(body));
             else
                 callback(null);
         });
@@ -613,8 +591,6 @@ extend(Database.prototype, {
         self._connection.post('database', { name: databaseName }, function (err, body) {
             if (err)
                 callback(err);
-            else if (body.error)
-                callback(new ArangoError(body));
             else {
                 callback(null, new Database(extend({}, self._connection.config, { databaseName: databaseName })));
             }
@@ -629,11 +605,9 @@ extend(Database.prototype, {
             callback = noop;
         var self = this;
         self._connection.get('../' + databaseName + '/database/current', function (err, body) {
-            if (err)
-                callback(err);
-            else if (body.error) {
-                if (!autoCreate || body.errorNum !== 1228)
-                    callback(new ArangoError(body));
+            if (err) {
+                if (!autoCreate || err.name !== 'ArangoError' || err.errorNum !== 1228)
+                    callback(err);
                 else
                     self.createDatabase(databaseName, callback);
             } else {
@@ -648,8 +622,6 @@ extend(Database.prototype, {
         self._connection.get('database', function (err, body) {
             if (err)
                 callback(err);
-            else if (body.error)
-                callback(new ArangoError(body));
             else
                 callback(null, map(body.result, function (databaseName) {
                     return new Database(extend({}, self._connection.config, { databaseName: databaseName }));
@@ -663,8 +635,6 @@ extend(Database.prototype, {
         self._connection['delete']('database/' + databaseName, function (err, body) {
             if (err)
                 callback(err);
-            else if (body.error)
-                callback(new ArangoError(body));
             else
                 callback(null);
         });
@@ -676,16 +646,12 @@ extend(Database.prototype, {
         self._connection.get('collection', function (err, body) {
             if (err)
                 callback(err);
-            else if (body.error)
-                callback(new ArangoError(body));
             else {
                 all(map(body.collections, function (data) {
                     return function (cb) {
                         self._connection.put('collection/' + data.name + '/truncate', function (err, body) {
                             if (err)
                                 cb(err);
-                            else if (body.error)
-                                cb(new ArangoError(body));
                             else
                                 cb(null, body);
                         });
@@ -711,8 +677,6 @@ extend(Database.prototype, {
         }, function (err, body) {
             if (err)
                 callback(err);
-            else if (body.error)
-                callback(new ArangoError(body));
             else
                 callback(null, new ArrayCursor(self._connection, body));
         });
@@ -731,7 +695,7 @@ function ArangoError(obj) {
   this.errorNum = obj.errorNum;
   this.code = obj.code;
   var err = new Error(this.message);
-  err.name = 'ArangoError';
+  err.name = this.name;
   if (err.fileName) this.fileName = err.fileName;
   if (err.lineNumber) this.lineNumber = err.lineNumber;
   if (err.columnNumber) this.columnNumber = err.columnNumber;
@@ -741,6 +705,7 @@ function ArangoError(obj) {
 }
 
 util.inherits(ArangoError, Error);
+ArangoError.prototype.name = 'ArangoError';
 
 },{"util":13}],7:[function(require,module,exports){
 /*jshint browserify: true */
