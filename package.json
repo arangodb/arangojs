@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha --growl -R spec",
+    "watch": "dirwatch -d 500 -c 'npm run lint && npm run bundle && npm run minify' ./lib",
     "bundle": "browserify -t dekeywordify -s arango ./index.js > dist/arango.js",
     "minify": "uglifyjs dist/arango.js > dist/arango.min.js",
     "lint": "jshint index.js lib"
@@ -22,6 +23,7 @@
   "devDependencies": {
     "browserify": "^5.11.2",
     "dekeywordify": "^0.2.0",
+    "dirwatch": "^1.1.0",
     "expect.js": "^0.3.1",
     "jshint": "^2.5.5",
     "mocha": "^1.21.4",
