@@ -133,47 +133,101 @@ Equivalent to *Array.prototype.reduce*.
 
 ## Collection API
 
-### Manipulating the collection
+### Getting information about the collection
+
+See [the HTTP API documentation](https://docs.arangodb.com/HttpCollection/Getting.html) for details.
 
 #### collection.properties(callback)
 
+Retrieves the collection's properties.
+
 #### collection.count(callback)
+
+Retrieves the number of documents in a collection.
 
 #### collection.figures(callback)
 
+Retrieves statistics for a collection.
+
 #### collection.revision(callback)
 
-#### collection.checksum(callback)
+Retrieves the collection revision ID.
 
-#### collection.load(callback)
+#### collection.checksum([opts,] callback)
+
+Retrieves the collection checksum.
+
+### Manipulating the collection
+
+#### collection.load([count,] callback)
+
+Tells the server to load the collection into memory.
+
+If *count* is set to `false`, the return value will not include the number of documents in the collection (which may speed up the process).
 
 #### collection.unload(callback)
 
+Tells the server to remove the collection from memory.
+
 #### collection.setProperties(properties, callback)
+
+Replaces the properties of the collection.
 
 #### collection.rename(name, callback)
 
+Renames the collection. The *Collection* instance will automatically update its name according to the server response.
+
 #### collection.rotate(callback)
+
+Rotates the journal of the collection.
 
 #### collection.truncate(callback)
 
+Deletes **all documents** in the collection in the database.
+
 #### collection.drop(callback)
+
+Deletes the collection from the database.
 
 ### Manipulating documents
 
 #### collection.replace(documentHandle, data, [opts,] callback)
 
+Replaces the content of the document with the given *documentHandle* with the given *data*.
+
+The *documentHandle* can be either the *_id* or the *_key* of a document in the collection.
+
 #### collection.update(documentHandle, data, [opts,] callback)
+
+Updates (merges) the content of the document with the given *documentHandle* with the given *data*.
+
+The *documentHandle* can be either the *_id* or the *_key* of a document in the collection.
 
 #### collection.remove(documentHandle, [opts,] callback)
 
-#### collection.all([opts,] callback)
+Removes the document with the given *documentHandle* from the collection.
+
+The *documentHandle* can be either the *_id* or the *_key* of a document in the collection.
+
+#### collection.all([type,] callback)
+
+Retrieves a list of all documents in the collection.
+
+If *type* is set to `"key"`, the result will be the `_key` of each document.
+
+If *type* is set to `"path"`, the result will be the document URI paths.
+
+If *type* is set to `"id"` or not set, the result will be the `_id` of each document.
 
 ### DocumentCollection API
 
 Document collections extend the *Collection* API with the following methods.
 
 #### documentCollection.document(documentHandle, callback)
+
+Retrieves the document with the given `documentHandle` from the collection.
+
+The *documentHandle* can be either the *_id* or the *_key* of a document in the collection.
 
 #### documentCollection.save(data, [opts,] callback)
 
@@ -182,6 +236,10 @@ Document collections extend the *Collection* API with the following methods.
 Edge collections extend the *Collection* API with the following methods.
 
 #### edgeCollection.edge(documentHandle, callback)
+
+Retrieves the edge with the given `documentHandle` from the collection.
+
+The *documentHandle* can be either the *_id* or the *_key* of an edge in the collection.
 
 #### edgeCollection.save(data, fromId, toId, [opts,] callback)
 
@@ -219,6 +277,10 @@ Graph vertex collections extend the *Collection* API with the following methods.
 
 #### vertexCollection.vertex(documentHandle, callback)
 
+Retrieves the vertex with the given `documentHandle` from the collection.
+
+The *documentHandle* can be either the *_id* or the *_key* of a vertex in the collection.
+
 #### vertexCollection.save(data, [opts,] callback)
 
 ### EdgeCollection API
@@ -226,5 +288,9 @@ Graph vertex collections extend the *Collection* API with the following methods.
 Graph edge collections extend the *Collection* API with the following methods.
 
 #### edgeCollection.edge(documentHandle, callback)
+
+Retrieves the edge with the given `documentHandle` from the collection.
+
+The *documentHandle* can be either the *_id* or the *_key* of an edge in the collection.
 
 #### edgeCollection.save(data, fromId, toId, [opts,] callback)
