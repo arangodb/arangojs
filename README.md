@@ -195,19 +195,19 @@ Deletes the collection from the database.
 
 Replaces the content of the document with the given *documentHandle* with the given *data*.
 
-The *documentHandle* can be either the *_id* or the *_key* of a document in the collection.
+The *documentHandle* can be either the `_id` or the `_key` of a document in the collection.
 
 #### collection.update(documentHandle, data, [opts,] callback)
 
 Updates (merges) the content of the document with the given *documentHandle* with the given *data*.
 
-The *documentHandle* can be either the *_id* or the *_key* of a document in the collection.
+The *documentHandle* can be either the `_id` or the `_key` of a document in the collection.
 
 #### collection.remove(documentHandle, [opts,] callback)
 
 Removes the document with the given *documentHandle* from the collection.
 
-The *documentHandle* can be either the *_id* or the *_key* of a document in the collection.
+The *documentHandle* can be either the `_id` or the `_key` of a document in the collection.
 
 #### collection.all([type,] callback)
 
@@ -227,7 +227,7 @@ Document collections extend the *Collection* API with the following methods.
 
 Retrieves the document with the given `documentHandle` from the collection.
 
-The *documentHandle* can be either the *_id* or the *_key* of a document in the collection.
+The *documentHandle* can be either the `_id` or the `_key` of a document in the collection.
 
 #### documentCollection.save(data, [opts,] callback)
 
@@ -239,7 +239,7 @@ Edge collections extend the *Collection* API with the following methods.
 
 Retrieves the edge with the given `documentHandle` from the collection.
 
-The *documentHandle* can be either the *_id* or the *_key* of an edge in the collection.
+The *documentHandle* can be either the `_id` or the `_key` of an edge in the collection.
 
 #### edgeCollection.save(data, fromId, toId, [opts,] callback)
 
@@ -279,7 +279,7 @@ Graph vertex collections extend the *Collection* API with the following methods.
 
 Retrieves the vertex with the given `documentHandle` from the collection.
 
-The *documentHandle* can be either the *_id* or the *_key* of a vertex in the collection.
+The *documentHandle* can be either the `_id` or the `_key` of a vertex in the collection.
 
 #### vertexCollection.save(data, [opts,] callback)
 
@@ -291,6 +291,6 @@ Graph edge collections extend the *Collection* API with the following methods.
 
 Retrieves the edge with the given `documentHandle` from the collection.
 
-The *documentHandle* can be either the *_id* or the *_key* of an edge in the collection.
+The *documentHandle* can be either the `_id` or the `_key` of an edge in the collection.
 
 #### edgeCollection.save(data, fromId, toId, [opts,] callback)
