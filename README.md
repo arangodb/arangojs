@@ -225,7 +225,7 @@ Document collections extend the *Collection* API with the following methods.
 
 #### documentCollection.document(documentHandle, callback)
 
-Retrieves the document with the given `documentHandle` from the collection.
+Retrieves the document with the given *documentHandle* from the collection.
 
 The *documentHandle* can be either the `_id` or the `_key` of a document in the collection.
 
@@ -237,7 +237,7 @@ Edge collections extend the *Collection* API with the following methods.
 
 #### edgeCollection.edge(documentHandle, callback)
 
-Retrieves the edge with the given `documentHandle` from the collection.
+Retrieves the edge with the given *documentHandle* from the collection.
 
 The *documentHandle* can be either the `_id` or the `_key` of an edge in the collection.
 
@@ -277,7 +277,7 @@ Graph vertex collections extend the *Collection* API with the following methods.
 
 #### vertexCollection.vertex(documentHandle, callback)
 
-Retrieves the vertex with the given `documentHandle` from the collection.
+Retrieves the vertex with the given *documentHandle* from the collection.
 
 The *documentHandle* can be either the `_id` or the `_key` of a vertex in the collection.
 
@@ -289,7 +289,7 @@ Graph edge collections extend the *Collection* API with the following methods.
 
 #### edgeCollection.edge(documentHandle, callback)
 
-Retrieves the edge with the given `documentHandle` from the collection.
+Retrieves the edge with the given *documentHandle* from the collection.
 
 The *documentHandle* can be either the `_id` or the `_key` of an edge in the collection.
 
