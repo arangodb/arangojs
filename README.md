@@ -139,6 +139,8 @@ Equivalent to *Array.prototype.reduce*.
 
 #### collection.count(callback)
 
+#### collection.figures(callback)
+
 #### collection.revision(callback)
 
 #### collection.checksum(callback)
