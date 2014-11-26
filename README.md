@@ -1,40 +1,56 @@
 # API
 
-## Database
+All asynchronous functions take node-style callback functions with the following arguments:
 
-### new Database(config)
+* *err*: an *Error* object if an error occurred, or *null* if no error occurred.
+* *result*: the function's result (if no error occurred).
 
-### database.query(query, [bindVars,] callback)
+If the server-side ArangoDB API returned an error, *err* will be an instance of *ArangoError*.
 
-#### cursor.all(callback)
+## Database API
 
-#### cursor.next(callback)
+### new Database([config])
 
-#### cursor.hasNext():Boolean
+Creates a new *database*.
 
-#### cursor.each(fn, callback)
+*Parameter*
+* *config* (optional): an object with the following properties:
+ * *url* (optional): base URL of the ArangoDB server. Default: `http://localhost:8529`.
+ * *databaseName* (optional): name of the active database. Default: `_system`.
+ * *arangoVersion* (optional): value of the `x-arango-version` header. Default: `20200`.
+ * *headers* (optional): an object with headers to send with every request.
 
-#### cursor.every(fn, callback)
+If *config* is a string, it will be interpreted as *config.url*.
 
-#### cursor.some(fn, callback)
-
-#### cursor.map(fn, callback)
-
-#### cursor.reduce(fn, [accu,] callback)
-
-### Manipulating Collections
+### Manipulating collections
 
 #### database.createCollection(properties, callback)
 
+Creates a collection from the given *properties*, then passes a new *Collection* to the callback.
+
 #### database.collection(collectionName, [autoCreate,] callback)
 
-#### database.collections(excludeSystem, callback)
+Fetches the collection with the given *collectionName* from the database, then passes a new *Collection* to the callback.
+
+If *autoCreate* is set to `true`, a collection with the given name will be created if it doesn't already exist.
+
+#### database.collections([excludeSystem,] callback)
+
+Fetches all collections from the database and passes an array of new *Collection* instances to the callback.
+
+If *excludeSystem* is set to `true`, system collections will not be included in the result.
 
 #### database.dropCollection(collectionName, callback)
 
-#### database.truncate(callback)
+Removes the collection with the given *collectionName* from the database.
 
-### Manipulating Graphs
+#### database.truncate([excludeSystem,] callback)
+
+Deletes **all documents** in **all collections** in the active database.
+
+If *excludeSystem* is set to `true`, system collections will not be truncated.
+
+### Manipulating graphs
 
 #### database.createGraph(properties, callback)
 
@@ -44,7 +60,7 @@
 
 #### database.dropGraph(graphName, [dropCollections,] callback)
 
-### Manipulating Databases
+### Manipulating databases
 
 #### database.createDatabase(databaseName, callback)
 
@@ -54,7 +70,68 @@
 
 #### database.dropDatabase(databaseName, callback)
 
-## Collections
+### Queries
+
+#### database.query(query, [bindVars,] callback)
+
+Performs a database query using the given *query* and *bindVars*.
+
+*Parameter*
+
+* *query*: an AQL query string or a [query builder](https://npmjs.org/package/aqb) instance.
+* *bindVars* (optional): an object with the variables to bind the query to.
+
+The callback will receive a *Cursor* instance.
+
+## Cursor API
+
+### cursor.all(callback)
+
+Depletes the cursor and passes an array containing all values returned by the query.
+
+### cursor.next(callback)
+
+Advances the cursor and passes the next value returned by the query. If the cursor has already been depleted, passes `undefined` instead.
+
+### cursor.hasNext():Boolean
+
+Returns `true` if the cursor has more values or `false` if the cursor has been depleted.
+
+### cursor.each(fn, callback)
+
+Depletes the cursor by applying the function *fn* to each value returned by the query, then invokes the callback with no result value.
+
+Equivalent to *Array.prototype.forEach*.
+
+### cursor.every(fn, callback)
+
+Advances the cursor by applying the function *fn* to each value returned by the query until the cursor is depleted or *fn* returns a value that evaluates to `false`.
+
+Passes the return value of the last call to *fn* to the callback.
+
+Equivalent to *Array.prototype.every*.
+
+### cursor.some(fn, callback)
+
+Advances the cursor by applying the function *fn* to each value returned by the query until the cursor is depleted or *fn* returns a value that evaluates to `true`.
+
+Passes the return value of the last call to *fn* to the callback.
+
+Equivalent to *Array.prototype.some*.
+
+### cursor.map(fn, callback)
+
+Depletes the cursor by applying the function *fn* to each value returned by the query, then invokes the callback with an array of the return values.
+
+Equivalent to *Array.prototype.map*.
+
+### cursor.reduce(fn, [accu,] callback)
+
+Depletes the cursor by reducing the values returned by the query with the given function *fn*. If *accu* is not provided, the first value returned by the query will be used instead (the function will not be invoked for that value).
+
+Equivalent to *Array.prototype.reduce*.
+
+## Collection API
 
 ### Manipulating the collection
 
@@ -90,13 +167,17 @@
 
 #### collection.all([opts,] callback)
 
-### Manipulating regular documents
+### DocumentCollection API
+
+Document collections extend the *Collection* API with the following methods.
 
 #### documentCollection.document(documentHandle, callback)
 
 #### documentCollection.save(data, [opts,] callback)
 
-### Manipulating edge documents
+### EdgeCollection API
+
+Edge collections extend the *Collection* API with the following methods.
 
 #### edgeCollection.edge(documentHandle, callback)
 
@@ -108,7 +189,7 @@
 
 #### edgeCollection.outEdges(vertex, [opts,] callback)
 
-## Graphs
+## Graph API
 
 ### graph.drop([dropCollections,] callback)
 
@@ -130,13 +211,17 @@
 
 #### graph.removeEdgeDefinition(definitionName, [dropCollection,] callback)
 
-### Vertex Collections
+### VertexCollection API
+
+Graph vertex collections extend the *Collection* API with the following methods.
 
 #### vertexCollection.vertex(documentHandle, callback)
 
 #### vertexCollection.save(data, [opts,] callback)
 
-### Edge Collections
+### EdgeCollection API
+
+Graph edge collections extend the *Collection* API with the following methods.
 
 #### edgeCollection.edge(documentHandle, callback)
 
