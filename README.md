@@ -215,17 +215,43 @@ Deletes the collection from the database.
 
 Replaces the content of the document with the given *documentHandle* with the given *data*.
 
+If *opts* is set, it must be an object with any of the following properties:
+
+* *waitForSync*: Wait until document has been synced to disk. Default: `false`.
+* *rev*: Only replace the document if it matches this revision. Optional.
+* *policy*: Determines the behaviour when the revision is not matched:
+ * if *policy* is set to `"last"`, the document will be replaced regardless of the revision.
+ * if *policy* is set to `"error"` or not set, the replacement will fail with an error.
+
 The *documentHandle* can be either the `_id` or the `_key` of a document in the collection.
 
 #### collection.update(documentHandle, data, [opts,] callback)
 
 Updates (merges) the content of the document with the given *documentHandle* with the given *data*.
 
+If *opts* is set, it must be an object with any of the following properties:
+
+* *waitForSync*: Wait until document has been synced to disk. Default: `false`
+* *keepNull*: If set to `false`, properties with a value of `null` indicate that a property should be deleted. Default: `true`.
+* *mergeObjects*: If set to `false`, object properties that already exist in the old document will be overwritten rather than merged. This does not affect arrays. Default: `true`.
+* *rev*: Only update the document if it matches this revision. Optional.
+* *policy*: Determines the behaviour when the revision is not matched:
+ * if *policy* is set to `"last"`, the document will be replaced regardless of the revision.
+ * if *policy* is set to `"error"` or not set, the replacement will fail with an error.
+
 The *documentHandle* can be either the `_id` or the `_key` of a document in the collection.
 
 #### collection.remove(documentHandle, [opts,] callback)
 
 Deletes the document with the given *documentHandle* from the collection.
+
+If *opts* is set, it must be an object with any of the following properties:
+
+* *waitForSync*: Wait until document has been synced to disk. Default: `false`
+* *rev*: Only update the document if it matches this revision. Optional.
+* *policy*: Determines the behaviour when the revision is not matched:
+ * if *policy* is set to `"last"`, the document will be replaced regardless of the revision.
+ * if *policy* is set to `"error"` or not set, the replacement will fail with an error.
 
 The *documentHandle* can be either the `_id` or the `_key` of a document in the collection.
 
@@ -249,7 +275,9 @@ Retrieves the document with the given *documentHandle* from the collection.
 
 The *documentHandle* can be either the `_id` or the `_key` of a document in the collection.
 
-#### documentCollection.save(data, [opts,] callback)
+#### documentCollection.save(data, callback)
+
+Creates a new document with the given *data*.
 
 ### EdgeCollection API
 
@@ -261,13 +289,21 @@ Retrieves the edge with the given *documentHandle* from the collection.
 
 The *documentHandle* can be either the `_id` or the `_key` of an edge in the collection.
 
-#### edgeCollection.save(data, fromId, toId, [opts,] callback)
+#### edgeCollection.save(data, fromId, toId, callback)
 
-#### edgeCollection.edges(documentHandle, [opts,] callback)
+Creates a new edge between the documents *fromId* and *toId* with the given *data*.
 
-#### edgeCollection.inEdges(documentHandle, [opts,] callback)
+#### edgeCollection.edges(documentHandle, callback)
 
-#### edgeCollection.outEdges(documentHandle, [opts,] callback)
+Retrieves a list of all edges of the document with the given *documentHandle*.
+
+#### edgeCollection.inEdges(documentHandle, callback)
+
+Retrieves a list of all incoming edges of the document with the given *documentHandle*.
+
+#### edgeCollection.outEdges(documentHandle, callback)
+
+Retrieves a list of all outgoing edges of the document with the given *documentHandle*.
 
 ## Graph API
 
@@ -323,7 +359,9 @@ Retrieves the vertex with the given *documentHandle* from the collection.
 
 The *documentHandle* can be either the `_id` or the `_key` of a vertex in the collection.
 
-#### vertexCollection.save(data, [opts,] callback)
+#### vertexCollection.save(data, callback)
+
+Creates a new vertex with the given *data*.
 
 ### EdgeCollection API
 
@@ -335,4 +373,6 @@ Retrieves the edge with the given *documentHandle* from the collection.
 
 The *documentHandle* can be either the `_id` or the `_key` of an edge in the collection.
 
-#### edgeCollection.save(data, fromId, toId, [opts,] callback)
+#### edgeCollection.save(data, fromId, toId, callback)
+
+Creates a new edge between the vertices *fromId* and *toId* with the given *data*.
