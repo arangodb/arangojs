@@ -26,11 +26,11 @@ If *config* is a string, it will be interpreted as *config.url*.
 
 #### database.createCollection(properties, callback)
 
-Creates a collection from the given *properties*, then passes a new *Collection* to the callback.
+Creates a collection from the given *properties*, then passes a new *Collection* instance to the callback.
 
 #### database.collection(collectionName, [autoCreate,] callback)
 
-Fetches the collection with the given *collectionName* from the database, then passes a new *Collection* to the callback.
+Fetches the collection with the given *collectionName* from the database, then passes a new *Collection* instance to the callback.
 
 If *autoCreate* is set to `true`, a collection with the given name will be created if it doesn't already exist.
 
@@ -42,7 +42,7 @@ If *excludeSystem* is set to `true`, system collections will not be included in 
 
 #### database.dropCollection(collectionName, callback)
 
-Removes the collection with the given *collectionName* from the database.
+Deletes the collection with the given *collectionName* from the database.
 
 #### database.truncate([excludeSystem,] callback)
 
@@ -54,34 +54,54 @@ If *excludeSystem* is set to `true`, system collections will not be truncated.
 
 #### database.createGraph(properties, callback)
 
+Creates a graph with the given *properties*, then passes a new *Graph* instance to the callback.
+
 #### database.graph(graphName, [autoCreate,], callback)
+
+Fetches the graph with the given *graphName* from the database, then passes a new *Graph* instance to the callback.
+
+If *autoCreate* is set to `true`, a graph with the given name will be created if it doesn't already exist.
 
 #### database.graphs(callback)
 
+Fetches all graphs from the database and passes an array of new *Graph* instances to the callback.
+
 #### database.dropGraph(graphName, [dropCollections,] callback)
+
+Deletes the graph with the given *graphName* from the database.
+
+If *dropCollections* is set to `true`, the collections associated with the graphs will also be deleted.
 
 ### Manipulating databases
 
 #### database.createDatabase(databaseName, callback)
 
+Creates a new database with the given *databaseName*, then passes a new *Database* instance to the callback.
+
 #### database.database(databaseName, [autoCreate,] callback)
+
+Fetches the database with the given *databaseName* from the server, then passes a new *Database* instance to the callback.
+
+If *autoCreate* is set to `true`, a database with the given name will be created if it doesn't already exist.
 
 #### database.databases(callback)
 
+Fetches all databases from the server and passes an array of new *Database* instances to the callback.
+
 #### database.dropDatabase(databaseName, callback)
+
+Deletes the database with the given *databaseName* from the server.
 
 ### Queries
 
 #### database.query(query, [bindVars,] callback)
 
-Performs a database query using the given *query* and *bindVars*.
+Performs a database query using the given *query* and *bindVars*, then passes a new *Cursor* instance for the result list to the callback.
 
 *Parameter*
 
 * *query*: an AQL query string or a [query builder](https://npmjs.org/package/aqb) instance.
 * *bindVars* (optional): an object with the variables to bind the query to.
-
-The callback will receive a *Cursor* instance.
 
 ## Cursor API
 
@@ -205,7 +225,7 @@ The *documentHandle* can be either the `_id` or the `_key` of a document in the 
 
 #### collection.remove(documentHandle, [opts,] callback)
 
-Removes the document with the given *documentHandle* from the collection.
+Deletes the document with the given *documentHandle* from the collection.
 
 The *documentHandle* can be either the `_id` or the `_key` of a document in the collection.
 
@@ -243,33 +263,55 @@ The *documentHandle* can be either the `_id` or the `_key` of an edge in the col
 
 #### edgeCollection.save(data, fromId, toId, [opts,] callback)
 
-#### edgeCollection.edges(vertex, [opts,] callback)
+#### edgeCollection.edges(documentHandle, [opts,] callback)
 
-#### edgeCollection.inEdges(vertex, [opts,] callback)
+#### edgeCollection.inEdges(documentHandle, [opts,] callback)
 
-#### edgeCollection.outEdges(vertex, [opts,] callback)
+#### edgeCollection.outEdges(documentHandle, [opts,] callback)
 
 ## Graph API
 
 ### graph.drop([dropCollections,] callback)
 
+Deletes the graph from the database.
+
+If *dropCollections* is set to `true`, the collections associated with the graph will also be deleted.
+
 ### Manipulating vertices
 
 #### graph.vertexCollection(collectionName, callback)
 
+Fetches the vertex collection with the given *collectionName* from the database, then passes a new *VertexCollection* instance to the callback.
+
 #### graph.addVertexCollection(collectionName, callback)
 
+Adds the collection with the given *collectionName* to the graph's vertex collections.
+
 #### graph.removeVertexCollection(collectionName, [dropCollection,] callback)
+
+Removes the vertex collection with the given *collectionName* from the graph.
+
+If *dropCollection* is set to `true`, the collection will also be deleted from the database.
 
 ### Manipulating edges
 
 #### graph.edgeCollection(collectionName, callback)
 
+Fetches the edge collection with the given *collectionName* from the database, then passes a new *EdgeCollection* instance to the callback.
+
 #### graph.addEdgeDefinition(definition, callback)
+
+Adds the given edge definition *definition* to the graph.
 
 #### graph.replaceEdgeDefinition(definitionName, definition, callback)
 
+Replaces the edge definition named *definitionName* with the given *definition*.
+
 #### graph.removeEdgeDefinition(definitionName, [dropCollection,] callback)
+
+Removes the edge definition with the given *definitionName* form the graph.
+
+If *dropCollection* is set to `true`, the edge collection associated with the definition will also be deleted from the database.
 
 ### VertexCollection API
 
