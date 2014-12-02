@@ -6,16 +6,33 @@ module.exports = require('./lib/database');
 
 },{"./lib/database":5}],2:[function(require,module,exports){
 'use strict';
-var noop = require('./util/noop'), extend = require('extend'), ArangoError = require('./error');
-module.exports = Collection;
-function Collection(connection, body) {
+var noop = require('./util/noop'), inherits = require('util').inherits, extend = require('extend'), ArangoError = require('./error');
+module.exports = extend(function (connection, body) {
+    var Ctor = body.type === 3 ? EdgeCollection : DocumentCollection;
+    return new Ctor(connection, body);
+}, {
+    _BaseCollection: BaseCollection,
+    DocumentCollection: DocumentCollection,
+    EdgeCollection: EdgeCollection
+});
+function BaseCollection(connection, body) {
     this._connection = connection;
     extend(this, body);
     delete this.code;
     delete this.error;
 }
-extend(Collection.prototype, {
-    _get: function (path, update, callback) {
+extend(BaseCollection.prototype, {
+    _documentPath: function (documentHandle) {
+        if (documentHandle.indexOf('/') === -1) {
+            documentHandle = this.name + '/' + documentHandle;
+        }
+        return (this.type === 3 ? 'edge/' : 'document/') + documentHandle;
+    },
+    _get: function (path, update, opts, callback) {
+        if (typeof opts === 'function') {
+            callback = opts;
+            opts = undefined;
+        }
         if (!callback)
             callback = noop;
         var self = this;
@@ -52,11 +69,14 @@ extend(Collection.prototype, {
     count: function (callback) {
         return this._get('count', true, callback);
     },
+    figures: function (callback) {
+        return this._get('figures', true, callback);
+    },
     revision: function (callback) {
         return this._get('revision', true, callback);
     },
-    checksum: function (callback) {
-        return this._get('checksum', true, callback);
+    checksum: function (opts, callback) {
+        return this._get('checksum', true, opts, callback);
     },
     load: function (count, callback) {
         if (typeof count === 'function') {
@@ -91,34 +111,6 @@ extend(Collection.prototype, {
                 callback(null);
         });
     },
-    document: function (documentHandle, callback) {
-        if (!callback)
-            callback = noop;
-        if (documentHandle.indexOf('/') === -1) {
-            documentHandle = this.name + '/' + documentHandle;
-        }
-        this._connection.get('document/' + documentHandle, function (err, body) {
-            if (err)
-                callback(err);
-            else
-                callback(null, body);
-        });
-    },
-    save: function (data, opts, callback) {
-        if (typeof opts === 'function') {
-            callback = opts;
-            opts = undefined;
-        }
-        if (!callback)
-            callback = noop;
-        opts = extend({}, opts, { collection: this.name });
-        this._connection.post('document', data, opts, function (err, body) {
-            if (err)
-                callback(err);
-            else
-                callback(null, body);
-        });
-    },
     replace: function (documentHandle, data, opts, callback) {
         if (typeof opts === 'function') {
             callback = opts;
@@ -127,10 +119,7 @@ extend(Collection.prototype, {
         if (!callback)
             callback = noop;
         opts = extend({}, opts, { collection: this.name });
-        if (documentHandle.indexOf('/') === -1) {
-            documentHandle = this.name + '/' + documentHandle;
-        }
-        this._connection.put('document/' + documentHandle, data, opts, function (err, body) {
+        this._connection.put(this._documentPath(documentHandle), data, opts, function (err, body) {
             if (err)
                 callback(err);
             else
@@ -145,10 +134,7 @@ extend(Collection.prototype, {
         if (!callback)
             callback = noop;
         opts = extend({}, opts, { collection: this.name });
-        if (documentHandle.indexOf('/') === -1) {
-            documentHandle = this.name + '/' + documentHandle;
-        }
-        this._connection.patch('document/' + documentHandle, data, opts, function (err, body) {
+        this._connection.patch(this._documentPath(documentHandle), data, opts, function (err, body) {
             if (err)
                 callback(err);
             else
@@ -163,25 +149,24 @@ extend(Collection.prototype, {
         if (!callback)
             callback = noop;
         opts = extend({}, opts, { collection: this.name });
-        if (documentHandle.indexOf('/') === -1) {
-            documentHandle = this.name + '/' + documentHandle;
-        }
-        this._connection['delete']('document/' + documentHandle, opts, function (err, body) {
+        this._connection['delete'](this._documentPath(documentHandle), opts, function (err, body) {
             if (err)
                 callback(err);
             else
                 callback(null);
         });
     },
-    all: function (opts, callback) {
-        if (typeof opts === 'function') {
-            callback = opts;
-            opts = undefined;
+    all: function (type, callback) {
+        if (typeof type === 'function') {
+            callback = type;
+            type = undefined;
         }
         if (!callback)
             callback = noop;
-        opts = extend({ type: 'id' }, opts, { collection: this.name });
-        this._connection.get('document', opts, function (err, body) {
+        this._connection.get('document', {
+            type: type || 'id',
+            collection: this.name
+        }, function (err, body) {
             if (err)
                 callback(err);
             else
@@ -189,7 +174,91 @@ extend(Collection.prototype, {
         });
     }
 });
-},{"./error":6,"./util/noop":8,"extend":14}],3:[function(require,module,exports){
+function DocumentCollection(connection, body) {
+    BaseCollection.call(this, connection, body);
+}
+inherits(DocumentCollection, BaseCollection);
+extend(DocumentCollection.prototype, {
+    document: function (documentHandle, callback) {
+        if (!callback)
+            callback = noop;
+        if (documentHandle.indexOf('/') === -1) {
+            documentHandle = this.name + '/' + documentHandle;
+        }
+        this._connection.get('document/' + documentHandle, function (err, body) {
+            if (err)
+                callback(err);
+            else
+                callback(null, body);
+        });
+    },
+    save: function (data, callback) {
+        if (!callback)
+            callback = noop;
+        this._connection.post('document/', data, { collection: this.name }, function (err, body) {
+            if (err)
+                callback(err);
+            else
+                callback(null, body);
+        });
+    }
+});
+function EdgeCollection(connection, body) {
+    BaseCollection.call(this, connection, body);
+}
+inherits(EdgeCollection, BaseCollection);
+extend(EdgeCollection.prototype, {
+    edge: function (documentHandle, callback) {
+        if (!callback)
+            callback = noop;
+        if (documentHandle.indexOf('/') === -1) {
+            documentHandle = this.name + '/' + documentHandle;
+        }
+        this._connection.get('edge/' + documentHandle, function (err, body) {
+            if (err)
+                callback(err);
+            else
+                callback(null, body);
+        });
+    },
+    save: function (data, fromId, toId, callback) {
+        if (!callback)
+            callback = noop;
+        this._connection.post('edge/', data, {
+            collection: this.name,
+            from: fromId,
+            to: toId
+        }, function (err, body) {
+            if (err)
+                callback(err);
+            else
+                callback(null, body);
+        });
+    },
+    _edges: function (vertex, direction, callback) {
+        if (!callback)
+            callback = noop;
+        this._connection.get('edges/' + this.name, {
+            vertex: vertex,
+            direction: direction
+        }, function (err, body) {
+            if (err)
+                callback(err);
+            else
+                callback(null, body.edges);
+        });
+    },
+    edges: function (vertex, callback) {
+        return this._edges(vertex, undefined, callback);
+    },
+    inEdges: function (vertex, callback) {
+        return this._edges(vertex, 'in', callback);
+    },
+    outEdges: function (vertex, callback) {
+        return this._edges(vertex, 'out', callback);
+    }
+});
+},{"./error":6,"./util/noop":9,"extend":15,"util":14}],3:[function(require,module,exports){
 'use strict';
 var noop = require('./util/noop'), extend = require('extend'), request = require('request'), ArangoError = require('./error'), jsonMime = /\/(json|javascript)(\W|$)/;
 module.exports = Connection;
@@ -198,6 +267,8 @@ function Connection(config) {
         config = { url: config };
     }
     this.config = extend({}, Connection.defaults, config);
+    if (!this.config.headers)
+        this.config.headers = {};
     if (!this.config.headers['x-arango-version']) {
         this.config.headers['x-arango-version'] = this.config.arangoVersion;
     }
@@ -205,8 +276,7 @@ function Connection(config) {
 Connection.defaults = {
     url: 'http://localhost:8529',
     databaseName: '_system',
-    arangoVersion: 20200,
-    headers: {}
+    arangoVersion: 20200
 };
 extend(Connection.prototype, {
     request: function (opts, callback) {
@@ -324,7 +394,7 @@ extend(Connection.prototype, {
         }, callback);
     }
 });
-},{"./error":6,"./util/noop":8,"extend":14,"request":15}],4:[function(require,module,exports){
+},{"./error":6,"./util/noop":9,"extend":15,"request":16}],4:[function(require,module,exports){
 /*jshint browserify: true */
 "use strict";
 
@@ -411,7 +481,7 @@ extend(ArrayCursor.prototype, {
             result = fn(self._result[i], i, self);
             if (result === false) break;
           }
-          callback(null, self);
+          callback(null);
         }
         catch (e) {callback(e);}
       }
@@ -524,9 +594,9 @@ extend(ArrayCursor.prototype, {
   }
 });
 
-},{"./error":6,"./util/all":7,"./util/noop":8,"extend":14}],5:[function(require,module,exports){
+},{"./error":6,"./util/all":8,"./util/noop":9,"extend":15}],5:[function(require,module,exports){
 'use strict';
-var noop = require('./util/noop'), extend = require('extend'), map = require('array-map'), Connection = require('./connection'), ArangoError = require('./error'), ArrayCursor = require('./cursor'), Collection = require('./collection'), all = require('./util/all');
+var noop = require('./util/noop'), extend = require('extend'), map = require('array-map'), Connection = require('./connection'), ArangoError = require('./error'), ArrayCursor = require('./cursor'), createCollection = require('./collection'), Graph = require('./graph'), all = require('./util/all');
 module.exports = Database;
 function Database(config) {
     if (!(this instanceof Database)) {
@@ -544,7 +614,7 @@ extend(Database.prototype, {
             if (err)
                 callback(err);
             else
-                callback(null, new Collection(self._connection, body));
+                callback(null, createCollection(self._connection, body));
         });
     },
     collection: function (collectionName, autoCreate, callback) {
@@ -562,7 +632,7 @@ extend(Database.prototype, {
                 else
                     self.createCollection({ name: collectionName }, callback);
             } else
-                callback(null, new Collection(self._connection, body));
+                callback(null, createCollection(self._connection, body));
         });
     },
     collections: function (excludeSystem, callback) {
@@ -578,7 +648,7 @@ extend(Database.prototype, {
                 callback(err);
             else
                 callback(null, map(body.collections, function (data) {
-                    return new Collection(self._connection, data);
+                    return createCollection(self._connection, data);
                 }));
         });
     },
@@ -592,6 +662,57 @@ extend(Database.prototype, {
             else
                 callback(null);
         });
+    },
+    createGraph: function (properties, callback) {
+        if (!callback)
+            callback = noop;
+        var self = this;
+        self._connection.post('gharial', properties, function (err, body) {
+            if (err)
+                callback(err);
+            else
+                callback(null, new Graph(self._connection, body.graph));
+        });
+    },
+    graph: function (graphName, autoCreate, callback) {
+        if (typeof autoCreate === 'function') {
+            callback = autoCreate;
+            autoCreate = undefined;
+        }
+        if (!callback)
+            callback = noop;
+        var self = this;
+        self._connection.get('gharial/' + graphName, function (err, body) {
+            if (err) {
+                if (!autoCreate || err.name !== 'ArangoError' || err.errorNum !== 1203)
+                    callback(err);
+                else
+                    self.createGraph({ name: graphName }, callback);
+            } else
+                callback(null, new Graph(self._connection, body.graph));
+        });
+    },
+    graphs: function (callback) {
+        if (!callback)
+            callback = noop;
+        var self = this;
+        self._connection.get('gharial', function (err, body) {
+            if (err)
+                callback(err);
+            else
+                callback(null, map(body.graphs, function (graph) {
+                    return new Graph(self._connection, graph);
+                }));
+        });
+    },
+    dropGraph: function (graphName, dropCollections, callback) {
+        if (typeof dropCollections === 'function') {
+            callback = dropCollections;
+            dropCollections = undefined;
+        }
+        if (!callback)
+            callback = noop;
+        this._connection['delete']('graph/' + graphName, { dropCollections: dropCollections }, callback);
     },
     createDatabase: function (databaseName, callback) {
         if (!callback)
@@ -648,11 +769,15 @@ extend(Database.prototype, {
                 callback(null);
         });
     },
-    truncate: function (callback) {
+    truncate: function (excludeSystem, callback) {
+        if (typeof excludeSystem === 'function') {
+            callback = excludeSystem;
+            excludeSystem = undefined;
+        }
         if (!callback)
             callback = noop;
         var self = this;
-        self._connection.get('collection', function (err, body) {
+        self._connection.get('collection', { excludeSystem: excludeSystem }, function (err, body) {
             if (err)
                 callback(err);
             else {
@@ -691,7 +816,7 @@ extend(Database.prototype, {
         });
     }
 });
-},{"./collection":2,"./connection":3,"./cursor":4,"./error":6,"./util/all":7,"./util/noop":8,"array-map":9,"extend":14}],6:[function(require,module,exports){
+},{"./collection":2,"./connection":3,"./cursor":4,"./error":6,"./graph":7,"./util/all":8,"./util/noop":9,"array-map":10,"extend":15}],6:[function(require,module,exports){
 /*jshint browserify: true */
 "use strict";
 
@@ -716,13 +841,163 @@ function ArangoError(obj) {
 util.inherits(ArangoError, Error);
 ArangoError.prototype.name = 'ArangoError';
 
-},{"util":13}],7:[function(require,module,exports){
+},{"util":14}],7:[function(require,module,exports){
+'use strict';
+var noop = require('./util/noop'), extend = require('extend'), inherits = require('util').inherits, BaseCollection = require('./collection')._BaseCollection, ArangoError = require('./error');
+module.exports = Graph;
+function Graph(connection, body) {
+    this._connection = connection;
+    extend(this, body);
+}
+Graph._GraphBaseCollection = GraphBaseCollection;
+Graph.VertexCollection = VertexCollection;
+Graph.EdgeCollection = EdgeCollection;
+extend(Graph.prototype, {
+    _post: function (path, data, callback) {
+        if (!callback)
+            callback = noop;
+        this._connection.post('gharial/' + this.name + '/' + path, data, callback);
+    },
+    _delete: function (path, data, callback) {
+        if (!callback)
+            callback = noop;
+        this._connection['delete']('gharial/' + this.name + '/' + path, data, callback);
+    },
+    drop: function (dropCollections, callback) {
+        if (typeof dropCollections === 'function') {
+            callback = dropCollections;
+            dropCollections = undefined;
+        }
+        if (!callback)
+            callback = noop;
+        this._connection['delete']('gharial/' + this.name, { dropCollections: dropCollections }, callback);
+    },
+    vertexCollection: function (collectionName, callback) {
+        if (!callback)
+            callback = noop;
+        var self = this;
+        self._connection.get('collection/' + collectionName, function (err, body) {
+            if (err)
+                callback(err);
+            else
+                callback(null, new VertexCollection(self._connection, body, self));
+        });
+    },
+    addVertexCollection: function (collectionName, callback) {
+        this._post('vertex', { collection: collectionName }, callback);
+    },
+    removeVertexCollection: function (collectionName, dropCollection, callback) {
+        if (typeof dropCollection === 'function') {
+            callback = dropCollection;
+            dropCollection = undefined;
+        }
+        this._delete('vertex/' + collectionName, { dropCollection: dropCollection }, callback);
+    },
+    edgeCollection: function (collectionName, callback) {
+        if (!callback)
+            callback = noop;
+        var self = this;
+        self._connection.get('collection/' + collectionName, function (err, body) {
+            if (err)
+                callback(err);
+            else
+                callback(null, new EdgeCollection(self._connection, body, self));
+        });
+    },
+    addEdgeDefinition: function (definition, callback) {
+        this._post('edge', definition, callback);
+    },
+    replaceEdgeDefinition: function (definitionName, definition, callback) {
+        if (!callback)
+            callback = noop;
+        this._connection.put('gharial/' + this.name + '/edge/' + definitionName, definition, callback);
+    },
+    removeEdgeDefinition: function (definitionName, dropCollection, callback) {
+        if (typeof dropCollection === 'function') {
+            callback = dropCollection;
+            dropCollection = undefined;
+        }
+        this._delete('edge/' + definitionName, { dropCollection: dropCollection }, callback);
+    }
+});
+function GraphBaseCollection(connection, body, graph) {
+    this.graph = graph;
+    BaseCollection.call(this, connection, body);
+}
+inherits(GraphBaseCollection, BaseCollection);
+extend(GraphBaseCollection.prototype, {
+    _documentPath: function (documentHandle) {
+        var tokens = documentHandle.split('/');
+        return this._relativePath(tokens[tokens.length - 1]);
+    }
+});
+function VertexCollection(connection, body, graph) {
+    GraphBaseCollection.call(this, connection, body, graph);
+}
+inherits(VertexCollection, GraphBaseCollection);
+extend(VertexCollection.prototype, {
+    _relativePath: function (path) {
+        return 'gharial/' + this.graph.name + '/vertex/' + this.name + '/' + (path || '');
+    },
+    vertex: function (documentHandle, callback) {
+        if (!callback)
+            callback = noop;
+        this._connection.get(this._documentPath(documentHandle), function (err, body) {
+            if (err)
+                callback(err);
+            else
+                callback(null, body);
+        });
+    },
+    save: function (data, callback) {
+        if (!callback)
+            callback = noop;
+        this._connection.post(this._relativePath(''), data, { collection: this.name }, function (err, body) {
+            if (err)
+                callback(err);
+            else
+                callback(null, body);
+        });
+    }
+});
+function EdgeCollection(connection, body, graph) {
+    GraphBaseCollection.call(this, connection, body, graph);
+}
+inherits(EdgeCollection, GraphBaseCollection);
+extend(EdgeCollection.prototype, {
+    _relativePath: function (path) {
+        return 'gharial/' + this.graph.name + '/edge/' + this.name + '/' + (path || '');
+    },
+    edge: function (documentHandle, callback) {
+        if (!callback)
+            callback = noop;
+        this._connection.get(this._documentPath(documentHandle), function (err, body) {
+            if (err)
+                callback(err);
+            else
+                callback(null, body);
+        });
+    },
+    save: function (data, fromId, toId, callback) {
+        if (!callback)
+            callback = noop;
+        this._connection.post(this._relativePath(''), data, {
+            collection: this.name,
+            from: fromId,
+            to: toId
+        }, function (err, body) {
+            if (err)
+                callback(err);
+            else
+                callback(null, body);
+        });
+    }
+});
+},{"./collection":2,"./error":6,"./util/noop":9,"extend":15,"util":14}],8:[function(require,module,exports){
 /*jshint browserify: true */
 "use strict";
 
-module.exports = all;
-
-function all(arr, callback) {
+module.exports = function all(arr, callback) {
   var result = [],
     pending = arr.length,
     called = false;
@@ -743,13 +1018,13 @@ function all(arr, callback) {
   for (var i = 0; i < arr.length; i++) {
     arr[i](step(i));
   }
-}
-},{}],8:[function(require,module,exports){
+};
+},{}],9:[function(require,module,exports){
 /*jshint browserify: true */
 "use strict";
 
 module.exports = function () {};
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 module.exports = function (xs, f) {
     if (xs.map) return xs.map(f);
     var res = [];
@@ -762,7 +1037,7 @@ module.exports = function (xs, f) {
 
 var hasOwn = Object.prototype.hasOwnProperty;
 
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 if (typeof Object.create === 'function') {
   // implementation from standard node.js 'util' module
   module.exports = function inherits(ctor, superCtor) {
@@ -787,7 +1062,7 @@ if (typeof Object.create === 'function') {
   }
 }
 
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
@@ -795,6 +1070,8 @@ var process = module.exports = {};
 process.nextTick = (function () {
     var canSetImmediate = typeof window !== 'undefined'
     && window.setImmediate;
+    var canMutationObserver = typeof window !== 'undefined'
+    && window.MutationObserver;
     var canPost = typeof window !== 'undefined'
     && window.postMessage && window.addEventListener
     ;
@@ -803,8 +1080,29 @@ process.nextTick = (function () {
         return function (f) { return window.setImmediate(f) };
     }
 
+    var queue = [];
+
+    if (canMutationObserver) {
+        var hiddenDiv = document.createElement("div");
+        var observer = new MutationObserver(function () {
+            var queueList = queue.slice();
+            queue.length = 0;
+            queueList.forEach(function (fn) {
+                fn();
+            });
+        });
+
+        observer.observe(hiddenDiv, { attributes: true });
+
+        return function nextTick(fn) {
+            if (!queue.length) {
+                hiddenDiv.setAttribute('yes', 'no');
+            }
+            queue.push(fn);
+        };
+    }
+
     if (canPost) {
-        var queue = [];
         window.addEventListener('message', function (ev) {
             var source = ev.source;
             if ((source === window || source === null) && ev.data === 'process-tick') {
@@ -844,7 +1142,7 @@ process.emit = noop;
 
 process.binding = function (name) {
     throw new Error('process.binding is not supported');
-}
+};
 
 // TODO(shtylman)
 process.cwd = function () { return '/' };
@@ -852,14 +1150,14 @@ process.chdir = function (dir) {
     throw new Error('process.chdir is not supported');
 };
 
-},{}],12:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 module.exports = function isBuffer(arg) {
   return arg && typeof arg === 'object'
     && typeof arg.copy === 'function'
     && typeof arg.fill === 'function'
     && typeof arg.readUInt8 === 'function';
 }
-},{}],13:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 (function (process,global){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -1449,14 +1747,14 @@ function hasOwnProperty(obj, prop) {
 }
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./support/isBuffer":12,"_process":11,"inherits":10}],14:[function(require,module,exports){
+},{"./support/isBuffer":13,"_process":12,"inherits":11}],15:[function(require,module,exports){
 var hasOwn = Object.prototype.hasOwnProperty;
 var toString = Object.prototype.toString;
 var undefined;
 
 var isPlainObject = function isPlainObject(obj) {
-	"use strict";
-	if (!obj || toString.call(obj) !== '[object Object]' || obj.nodeType || obj.setInterval) {
+	'use strict';
+	if (!obj || toString.call(obj) !== '[object Object]') {
 		return false;
 	}
 
@@ -1476,7 +1774,7 @@ var isPlainObject = function isPlainObject(obj) {
 };
 
 module.exports = function extend() {
-	"use strict";
+	'use strict';
 	var options, name, src, copy, copyIsArray, clone,
 		target = arguments[0],
 		i = 1,
@@ -1484,18 +1782,19 @@ module.exports = function extend() {
 		deep = false;
 
 	// Handle a deep copy situation
-	if (typeof target === "boolean") {
+	if (typeof target === 'boolean') {
 		deep = target;
 		target = arguments[1] || {};
 		// skip the boolean and the target
 		i = 2;
-	} else if (typeof target !== "object" && typeof target !== "function" || target == undefined) {
-			target = {};
+	} else if ((typeof target !== 'object' && typeof target !== 'function') || target == null) {
+		target = {};
 	}
 
 	for (; i < length; ++i) {
+		options = arguments[i];
 		// Only deal with non-null/undefined values
-		if ((options = arguments[i]) != null) {
+		if (options != null) {
 			// Extend the base object
 			for (name in options) {
 				src = target[name];
@@ -1531,7 +1830,7 @@ module.exports = function extend() {
 };
 
 
-},{}],15:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 var window = require("global/window")
 var once = require("once")
 var parseHeaders = require('parse-headers')
@@ -1709,18 +2008,20 @@ function createXHR(options, callback) {
 
 function noop() {}
 
-},{"global/window":16,"once":17,"parse-headers":21}],16:[function(require,module,exports){
+},{"global/window":17,"once":18,"parse-headers":22}],17:[function(require,module,exports){
 (function (global){
 if (typeof window !== "undefined") {
     module.exports = window;
 } else if (typeof global !== "undefined") {
     module.exports = global;
+} else if (typeof self !== "undefined"){
+    module.exports = self;
 } else {
     module.exports = {};
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],17:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 module.exports = once
 
 once.proto = once(function () {
@@ -1741,7 +2042,7 @@ function once (fn) {
   }
 }
 
-},{}],18:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 var isFunction = require('is-function')
 
 module.exports = forEach
@@ -1789,7 +2090,7 @@ function forEachObject(object, iterator, context) {
     }
 }
 
-},{"is-function":19}],19:[function(require,module,exports){
+},{"is-function":20}],20:[function(require,module,exports){
 module.exports = isFunction
 
 var toString = Object.prototype.toString
@@ -1806,7 +2107,7 @@ function isFunction (fn) {
       fn === window.prompt))
 };
 
-},{}],20:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 
 exports = module.exports = trim;
 
@@ -1822,7 +2123,7 @@ exports.right = function(str){
   return str.replace(/\s*$/, '');
 };
 
-},{}],21:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 var trim = require('trim')
   , forEach = require('for-each')
   , isArray = function(arg) {
@@ -1854,5 +2155,5 @@ module.exports = function (headers) {
 
   return result
 }
-},{"for-each":18,"trim":20}]},{},[1])(1)
+},{"for-each":19,"trim":21}]},{},[1])(1)
 });
