@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "mocha --growl -R spec",
+    "test": "npm run lint && mocha --growl -R spec",
     "watch": "dirwatch -d 500 -c 'npm run lint && npm run dist' ./lib",
     "dist": "npm run bundle && npm run minify",
     "bundle": "browserify -t dekeywordify -s arango ./index.js > dist/arango.js",
