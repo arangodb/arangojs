@@ -1,3 +1,5 @@
+[![Build status](https://img.shields.io/travis/arangodb/arangodbjs.svg)](https://travis-ci.org/arangodb/arangodbjs)
+
 # API
 
 All asynchronous functions take node-style callback functions with the following arguments:
