@@ -1,0 +1,8 @@
+language: node_js
+node_js:
+  - 0.10
+env:
+  - ARANGODB_VERSION=2.3
+  - ARANGODB_VERSION=2.4
+before_script:
+  - curl https://www.arangodb.com/repositories/travisCI/setup_arangodb_${ARANGODB_VERSION}.sh | bash
