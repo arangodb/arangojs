@@ -11,8 +11,9 @@
     "LICENSE"
   ],
   "scripts": {
-    "test": "npm run lint && mocha --growl -R spec",
-    "watch": "dirwatch -d 500 -c 'npm run lint && npm run dist' ./lib",
+    "test": "npm run lint && npm run test-only",
+    "test-only": "mocha --growl -R spec",
+    "watch": "dirwatch -d 500 -c 'npm run lint; npm run test-only && npm run dist' ./lib ./test",
     "dist": "npm run bundle && npm run minify",
     "bundle": "browserify -t dekeywordify -s arango ./index.js > dist/arango.js",
     "minify": "uglifyjs dist/arango.js > dist/arango.min.js",
