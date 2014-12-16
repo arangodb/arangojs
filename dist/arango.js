@@ -287,8 +287,15 @@ extend(Connection.prototype, {
             body = JSON.stringify(body);
             headers['content-type'] = 'application/json';
         }
+        var url = this.config.url + '/_db/' + this.config.databaseName + '/_api/' + opts.path;
+        while (true) {
+            var oldUrl = url;
+            url = url.replace(/\/[^\/]+\/..\//, '/');
+            if (oldUrl === url)
+                break;
+        }
         request({
-            url: this.config.url + '/_db/' + this.config.databaseName + '/_api/' + opts.path,
+            url: url,
             auth: opts.auth || this.config.auth,
             headers: extend(headers, this.config.headers, opts.headers),
             method: (opts.method || 'get').toUpperCase(),
@@ -306,7 +313,7 @@ extend(Connection.prototype, {
                     if (!body.error)
                         callback(null, body);
                     else
-                        callback(new ArangoError(body.error));
+                        callback(new ArangoError(body));
                 } catch (e) {
                     callback(e);
                 }
@@ -734,7 +741,7 @@ extend(Database.prototype, {
         if (!callback)
             callback = noop;
         var self = this;
-        self._connection.get('../' + databaseName + '/database/current', function (err, body) {
+        self._connection.get('../../' + databaseName + '/_api/database/current', function (err, body) {
             if (err) {
                 if (!autoCreate || err.name !== 'ArangoError' || err.errorNum !== 1228)
                     callback(err);
