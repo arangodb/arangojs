@@ -9,7 +9,7 @@
     "dist": "npm run bundle && npm run minify",
     "bundle": "browserify -t dekeywordify -s arango ./index.js > dist/arango.js",
     "minify": "uglifyjs dist/arango.js > dist/arango.min.js",
-    "lint": "jshint index.js lib"
+    "lint": "jshint index.js lib test"
   },
   "repository": {
     "type": "git",
