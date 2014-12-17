@@ -102,8 +102,8 @@ describe('database', function () {
             expect(dbNames.sort()).to.eql(['_system', testDbName]);
             done();
           });
-        })
-      })
+        });
+      });
     });
   });
   describe('dropDatabase', function () {
