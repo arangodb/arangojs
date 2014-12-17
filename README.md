@@ -30,6 +30,8 @@ If *config* is a string, it will be interpreted as *config.url*.
 
 Creates a collection from the given *properties*, then passes a new *Collection* instance to the callback.
 
+If *properties* is a string, it will be interpreted as *properties.name*.
+
 #### database.collection(collectionName, [autoCreate,] callback)
 
 Fetches the collection with the given *collectionName* from the database, then passes a new *Collection* instance to the callback.
