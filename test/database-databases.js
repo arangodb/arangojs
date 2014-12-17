@@ -5,7 +5,6 @@ var expect = require('expect.js');
 var Database = require('../');
 var ArangoError = require('../lib/error');
 var db = new Database();
-
 var testDbName = 'test__database_0';
 
 describe('database', function () {
