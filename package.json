@@ -14,6 +14,7 @@
     "test": "npm run lint && npm run test-only",
     "test-only": "mocha --growl -R spec",
     "cover": "npm run lint && istanbul cover --report lcov _mocha -- -R spec",
+    "coveralls": "npm run cover && cat ./coverage/lcov.info | coveralls ; rm -rf ./coverage",
     "watch": "dirwatch -d 500 -c 'npm run test-only && npm run lint && npm run dist' ./lib ./test",
     "dist": "npm run bundle && npm run minify",
     "bundle": "browserify -t dekeywordify -s arango ./index.js > dist/arango.js",
@@ -46,6 +47,7 @@
   },
   "dependencies": {
     "array-map": "0.0.0",
+    "coveralls": "^2.11.2",
     "extend": "^2.0.0",
     "istanbul": "^0.3.5",
     "promise-es6": "^0.1.0",
