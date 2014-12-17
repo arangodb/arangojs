@@ -616,6 +616,9 @@ extend(Database.prototype, {
     createCollection: function (properties, callback) {
         if (!callback)
             callback = noop;
+        if (typeof properties === 'string') {
+            properties = { name: properties };
+        }
         var self = this;
         self._connection.post('collection', properties, function (err, body) {
             if (err)
