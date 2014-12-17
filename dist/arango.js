@@ -418,7 +418,7 @@ function ArrayCursor(connection, body) {
   this._result = body.result;
   this._hasMore = Boolean(body.hasMore);
   this._id = body.id;
-  this._current = 0;
+  this._index = 0;
 }
 
 extend(ArrayCursor.prototype, {
@@ -450,6 +450,7 @@ extend(ArrayCursor.prototype, {
     if (!callback) callback = noop;
     var self = this;
     self._drain(function (err) {
+      self._index = self._result.length;
       if (err) callback(err);
       else callback(null, self._result);
     });
@@ -458,11 +459,11 @@ extend(ArrayCursor.prototype, {
     if (!callback) callback = noop;
     var self = this;
     function next() {
-      var value = self._result[self._current];
-      self._current += 1;
+      var value = self._result[self._index];
+      self._index += 1;
       callback(null, value);
     }
-    if (self._current < self._result.length) next();
+    if (self._index < self._result.length) next();
     else {
       if (!self._hasMore) callback(null);
       else {
@@ -474,7 +475,7 @@ extend(ArrayCursor.prototype, {
     }
   },
   hasNext: function () {
-    return (this._hasMore || this._current < this._result.length);
+    return (this._hasMore || this._index < this._result.length);
   },
   each: function (fn, callback) {
     if (!callback) callback = noop;
@@ -483,9 +484,9 @@ extend(ArrayCursor.prototype, {
       if (err) callback(err);
       else {
         try {
-          var i, result;
-          for (i = 0; i < self._result.length; i++) {
-            result = fn(self._result[i], i, self);
+          var result;
+          for (self._index = 0; self._index < self._result.length; self._index++) {
+            result = fn(self._result[self._index], self._index, self);
             if (result === false) break;
           }
           callback(null);
@@ -499,16 +500,16 @@ extend(ArrayCursor.prototype, {
     var self = this;
     function step(x) {
       try {
-        var i, result = true;
-        for (i = x; i < self._result.length; i++) {
-          result = fn(self._result[i], i, self);
+        var result = true;
+        for (self._index = x; self._index < self._result.length; self._index++) {
+          result = fn(self._result[self._index], self._index, self);
           if (!result) break;
         }
         if (!self._hasMore || !result) callback(null, result);
         else {
           self._more(function (err) {
             if (err) callback(err);
-            else step(i);
+            else step(self._index);
           });
         }
       }
@@ -521,16 +522,16 @@ extend(ArrayCursor.prototype, {
     var self = this;
     function step(x) {
       try {
-        var i, result = false;
-        for (i = x; i < self._result.length; i++) {
-          result = fn(self._result[i], i, self);
+        var result = false;
+        for (self._index = x; self._index < self._result.length; self._index++) {
+          result = fn(self._result[self._index], self._index, self);
           if (result) break;
         }
         if (!self._hasMore || result) callback(null, result);
         else {
           self._more(function (err) {
             if (err) callback(err);
-            else step(i);
+            else step(self._index);
           });
         }
       }
@@ -545,15 +546,14 @@ extend(ArrayCursor.prototype, {
 
     function step(x) {
       try {
-        var i;
-        for (i = x; i < self._result.length; i++) {
-          result.push(fn(self._result[i], i, self));
+        for (self._index = x; self._index < self._result.length; self._index++) {
+          result.push(fn(self._result[self._index], self._index, self));
         }
         if (!self._hasMore) callback(null, result);
         else {
           self._more(function (err) {
             if (err) callback(err);
-            else step(i);
+            else step(self._index);
           });
         }
       }
@@ -570,15 +570,14 @@ extend(ArrayCursor.prototype, {
     var self = this;
     function step(x) {
       try {
-        var i;
-        for (i = x; i < self._result.length; i++) {
-          accu = fn(accu, self._result[i], i, self);
+        for (self._index = x; self._index < self._result.length; self._index++) {
+          accu = fn(accu, self._result[self._index], self._index, self);
         }
         if (!self._hasMore) callback(null, accu);
         else {
           self._more(function (err) {
             if (err) callback(err);
-            else step(i);
+            else step(self._index);
           });
         }
       }
@@ -598,6 +597,9 @@ extend(ArrayCursor.prototype, {
         }
       });
     }
+  },
+  rewind: function () {
+    this._index = 0;
   }
 });
 

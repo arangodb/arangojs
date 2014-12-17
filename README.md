@@ -109,27 +109,29 @@ Performs a database query using the given *query* and *bindVars*, then passes a 
 
 ## Cursor API
 
+*Cursor* instances provide an abstraction over the HTTP API's limitations. Unless a method explicitly exhausts the cursor, the driver will only fetch as many batches from the server as necessary. Unlike the server-side cursors, *Cursor* instances can also be rewinded.
+
 ### cursor.all(callback)
 
-Depletes the cursor and passes an array containing all values returned by the query.
+Rewinds and exhausts the cursor and passes an array containing all values returned by the query.
 
 ### cursor.next(callback)
 
-Advances the cursor and passes the next value returned by the query. If the cursor has already been depleted, passes `undefined` instead.
+Advances the cursor and passes the next value returned by the query. If the cursor has already been exhausted, passes `undefined` instead.
 
 ### cursor.hasNext():Boolean
 
-Returns `true` if the cursor has more values or `false` if the cursor has been depleted.
+Returns `true` if the cursor has more values or `false` if the cursor has been exhausted.
 
 ### cursor.each(fn, callback)
 
-Depletes the cursor by applying the function *fn* to each value returned by the query, then invokes the callback with no result value.
+Rewinds and exhausts the cursor by applying the function *fn* to each value returned by the query, then invokes the callback with no result value.
 
 Equivalent to *Array.prototype.forEach*.
 
 ### cursor.every(fn, callback)
 
-Advances the cursor by applying the function *fn* to each value returned by the query until the cursor is depleted or *fn* returns a value that evaluates to `false`.
+Rewinds and advances the cursor by applying the function *fn* to each value returned by the query until the cursor is exhausted or *fn* returns a value that evaluates to `false`.
 
 Passes the return value of the last call to *fn* to the callback.
 
@@ -137,7 +139,7 @@ Equivalent to *Array.prototype.every*.
 
 ### cursor.some(fn, callback)
 
-Advances the cursor by applying the function *fn* to each value returned by the query until the cursor is depleted or *fn* returns a value that evaluates to `true`.
+Rewinds and advances the cursor by applying the function *fn* to each value returned by the query until the cursor is exhausted or *fn* returns a value that evaluates to `true`.
 
 Passes the return value of the last call to *fn* to the callback.
 
@@ -145,15 +147,19 @@ Equivalent to *Array.prototype.some*.
 
 ### cursor.map(fn, callback)
 
-Depletes the cursor by applying the function *fn* to each value returned by the query, then invokes the callback with an array of the return values.
+Rewinds and exhausts the cursor by applying the function *fn* to each value returned by the query, then invokes the callback with an array of the return values.
 
 Equivalent to *Array.prototype.map*.
 
 ### cursor.reduce(fn, [accu,] callback)
 
-Depletes the cursor by reducing the values returned by the query with the given function *fn*. If *accu* is not provided, the first value returned by the query will be used instead (the function will not be invoked for that value).
+Rewinds and exhausts the cursor by reducing the values returned by the query with the given function *fn*. If *accu* is not provided, the first value returned by the query will be used instead (the function will not be invoked for that value).
 
 Equivalent to *Array.prototype.reduce*.
+
+### cursor.rewind()
+
+Rewinds the cursor.
 
 ## Collection API
 
