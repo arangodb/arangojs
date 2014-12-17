@@ -33,14 +33,14 @@
   },
   "homepage": "https://github.com/arangodb/arangodbjs",
   "devDependencies": {
-    "browserify": "^6.1.0",
+    "browserify": "^7.0.2",
     "dekeywordify": "^0.2.0",
     "dirwatch": "^1.1.0",
     "expect.js": "^0.3",
     "jshint": "^2.5.6",
-    "mocha": "^1.21",
+    "mocha": "^2.0.1",
     "uglify-js": "^2.4.15",
-    "xhr": "^1.17.0"
+    "xhr": "^2.0.0"
   },
   "browser": {
     "request": "xhr"
