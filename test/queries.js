@@ -17,14 +17,14 @@ describe('database', function () {
         done();
       });
     });
-    it('returns an error if the query is invalid', function (done) {
+    it('returns an ArangoError if the query is invalid', function (done) {
       db.query('GARBAGE', function (err, res) {
         expect(err).to.be.an(ArangoError);
         expect(res).not.to.be.ok();
         done();
       });
     });
-    it('returns an error if the query failed', function (done) {
+    it('returns an ArangoError if the query failed', function (done) {
       db.query('FOR x IN does_not_exist RETURN x', function (err, res) {
         expect(err).to.be.an(ArangoError);
         expect(res).not.to.be.ok();
