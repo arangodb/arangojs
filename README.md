@@ -1,4 +1,4 @@
-[![Build status](https://img.shields.io/travis/arangodb/arangodbjs.svg)](https://travis-ci.org/arangodb/arangodbjs) [![Coverage Status](https://img.shields.io/coveralls/arangodb/arangodbjs.svg)](https://coveralls.io/r/arangodb/arangodbjs?branch=master)
+[![Build status](https://img.shields.io/travis/arangodb/arangodbjs.svg)](https://travis-ci.org/arangodb/arangodbjs) [![Coverage Status](https://img.shields.io/coveralls/arangodb/arangodbjs.svg)](https://coveralls.io/r/arangodb/arangodbjs?branch=master) [![Codacy rating](https://img.shields.io/codacy/f6dc1252667243b98e8457a8a645825c.svg)](https://www.codacy.com/public/me_4/arangodbjs)
 
 # API
 
