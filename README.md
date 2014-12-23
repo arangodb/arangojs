@@ -1,5 +1,28 @@
 [![Build status](https://img.shields.io/travis/arangodb/arangodbjs.svg)](https://travis-ci.org/arangodb/arangodbjs) [![Coverage Status](https://img.shields.io/coveralls/arangodb/arangodbjs.svg)](https://coveralls.io/r/arangodb/arangodbjs?branch=master) [![Codacy rating](https://img.shields.io/codacy/f6dc1252667243b98e8457a8a645825c.svg)](https://www.codacy.com/public/me_4/arangodbjs)
 
+# Install
+
+## With NPM
+
+```sh
+npm install arangojs
+```
+
+## Browser
+
+This CommonJS module is compatible with browserify. If you don't want to use browserify, you can simply use the AMD-compatible [browserify bundle](https://raw.githubusercontent.com/arangodb/arangojs/master/dist/arango.min.js) (~42 kB minified, ~10 kB gzipped) which includes all required dependencies ([extend](https://npmjs.org/package/extend) and [xhr](https://npmjs.org/package/xhr)).
+
+If you want to use this module in non-ES5 browsers like Microsoft Internet Explorer 8 and earlier, you need to include [es5-shim](https://www.npmjs.com/package/es5-shim) or a similar ES5 polyfill.
+
+## From source
+
+```sh
+git clone https://github.com/arangodb/arangojs.git
+cd arangojs
+npm install
+npm run dist
+```
+
 # API
 
 All asynchronous functions take node-style callback functions with the following arguments:
