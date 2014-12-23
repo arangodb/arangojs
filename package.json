@@ -48,7 +48,6 @@
     "request": "xhr"
   },
   "dependencies": {
-    "array-map": "0.0.0",
     "extend": "^2.0.0",
     "request": "^2.42.0"
   }

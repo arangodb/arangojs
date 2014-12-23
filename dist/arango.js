@@ -258,7 +258,7 @@ extend(EdgeCollection.prototype, {
         return this._edges(vertex, 'out', callback);
     }
 });
-},{"./util/noop":9,"extend":15,"util":14}],3:[function(require,module,exports){
+},{"./util/noop":9,"extend":14,"util":13}],3:[function(require,module,exports){
 'use strict';
 var noop = require('./util/noop'), extend = require('extend'), request = require('request'), ArangoError = require('./error'), jsonMime = /\/(json|javascript)(\W|$)/;
 module.exports = Connection;
@@ -401,7 +401,7 @@ extend(Connection.prototype, {
         }, callback);
     }
 });
-},{"./error":6,"./util/noop":9,"extend":15,"request":16}],4:[function(require,module,exports){
+},{"./error":6,"./util/noop":9,"extend":14,"request":15}],4:[function(require,module,exports){
 /*jshint browserify: true */
 "use strict";
 
@@ -613,9 +613,9 @@ extend(ArrayCursor.prototype, {
   }
 });
 
-},{"./util/noop":9,"extend":15}],5:[function(require,module,exports){
+},{"./util/noop":9,"extend":14}],5:[function(require,module,exports){
 'use strict';
-var noop = require('./util/noop'), extend = require('extend'), map = require('array-map'), Connection = require('./connection'), ArrayCursor = require('./cursor'), createCollection = require('./collection'), Graph = require('./graph'), all = require('./util/all');
+var noop = require('./util/noop'), extend = require('extend'), Connection = require('./connection'), ArrayCursor = require('./cursor'), createCollection = require('./collection'), Graph = require('./graph'), all = require('./util/all');
 module.exports = Database;
 function Database(config) {
     if (!(this instanceof Database)) {
@@ -669,7 +669,7 @@ extend(Database.prototype, {
             if (err)
                 callback(err);
             else
-                callback(null, map(body.collections, function (data) {
+                callback(null, body.collections.map(function (data) {
                     return createCollection(self._connection, data);
                 }));
         });
@@ -722,7 +722,7 @@ extend(Database.prototype, {
             if (err)
                 callback(err);
             else
-                callback(null, map(body.graphs, function (graph) {
+                callback(null, body.graphs.map(function (graph) {
                     return new Graph(self._connection, graph);
                 }));
         });
@@ -775,7 +775,7 @@ extend(Database.prototype, {
             if (err)
                 callback(err);
             else
-                callback(null, map(body.result, function (databaseName) {
+                callback(null, body.result.map(function (databaseName) {
                     return new Database(extend({}, self._connection.config, { databaseName: databaseName }));
                 }));
         });
@@ -803,7 +803,7 @@ extend(Database.prototype, {
             if (err)
                 callback(err);
             else {
-                all(map(body.collections, function (data) {
+                all(body.collections.map(function (data) {
                     return function (cb) {
                         self._connection.put('collection/' + data.name + '/truncate', function (err, body) {
                             if (err)
@@ -838,7 +838,7 @@ extend(Database.prototype, {
         });
     }
 });
-},{"./collection":2,"./connection":3,"./cursor":4,"./graph":7,"./util/all":8,"./util/noop":9,"array-map":10,"extend":15}],6:[function(require,module,exports){
+},{"./collection":2,"./connection":3,"./cursor":4,"./graph":7,"./util/all":8,"./util/noop":9,"extend":14}],6:[function(require,module,exports){
 /*jshint browserify: true */
 "use strict";
 
@@ -863,7 +863,7 @@ function ArangoError(obj) {
 util.inherits(ArangoError, Error);
 ArangoError.prototype.name = 'ArangoError';
 
-},{"util":14}],7:[function(require,module,exports){
+},{"util":13}],7:[function(require,module,exports){
 'use strict';
 var noop = require('./util/noop'), extend = require('extend'), inherits = require('util').inherits, BaseCollection = require('./collection')._BaseCollection;
 module.exports = Graph;
@@ -1015,7 +1015,7 @@ extend(EdgeCollection.prototype, {
         });
     }
 });
-},{"./collection":2,"./util/noop":9,"extend":15,"util":14}],8:[function(require,module,exports){
+},{"./collection":2,"./util/noop":9,"extend":14,"util":13}],8:[function(require,module,exports){
 /*jshint browserify: true */
 "use strict";
 
@@ -1049,19 +1049,6 @@ module.exports = function all(arr, callback) {
 
 module.exports = function () {};
 },{}],10:[function(require,module,exports){
-module.exports = function (xs, f) {
-    if (xs.map) return xs.map(f);
-    var res = [];
-    for (var i = 0; i < xs.length; i++) {
-        var x = xs[i];
-        if (hasOwn.call(xs, i)) res.push(f(x, i, xs));
-    }
-    return res;
-};
-
-var hasOwn = Object.prototype.hasOwnProperty;
-
-},{}],11:[function(require,module,exports){
 if (typeof Object.create === 'function') {
   // implementation from standard node.js 'util' module
   module.exports = function inherits(ctor, superCtor) {
@@ -1086,7 +1073,7 @@ if (typeof Object.create === 'function') {
   }
 }
 
-},{}],12:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
@@ -1174,14 +1161,14 @@ process.chdir = function (dir) {
     throw new Error('process.chdir is not supported');
 };
 
-},{}],13:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 module.exports = function isBuffer(arg) {
   return arg && typeof arg === 'object'
     && typeof arg.copy === 'function'
     && typeof arg.fill === 'function'
     && typeof arg.readUInt8 === 'function';
 }
-},{}],14:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 (function (process,global){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -1771,7 +1758,7 @@ function hasOwnProperty(obj, prop) {
 }
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./support/isBuffer":13,"_process":12,"inherits":11}],15:[function(require,module,exports){
+},{"./support/isBuffer":12,"_process":11,"inherits":10}],14:[function(require,module,exports){
 var hasOwn = Object.prototype.hasOwnProperty;
 var toString = Object.prototype.toString;
 var undefined;
@@ -1854,7 +1841,7 @@ module.exports = function extend() {
 };
 
 
-},{}],16:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 "use strict";
 var window = require("global/window")
 var once = require("once")
@@ -2023,7 +2010,7 @@ function createXHR(options, callback) {
 
 function noop() {}
 
-},{"global/window":17,"once":18,"parse-headers":22}],17:[function(require,module,exports){
+},{"global/window":16,"once":17,"parse-headers":21}],16:[function(require,module,exports){
 (function (global){
 if (typeof window !== "undefined") {
     module.exports = window;
@@ -2036,7 +2023,7 @@ if (typeof window !== "undefined") {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],18:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 module.exports = once
 
 once.proto = once(function () {
@@ -2057,7 +2044,7 @@ function once (fn) {
   }
 }
 
-},{}],19:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 var isFunction = require('is-function')
 
 module.exports = forEach
@@ -2105,7 +2092,7 @@ function forEachObject(object, iterator, context) {
     }
 }
 
-},{"is-function":20}],20:[function(require,module,exports){
+},{"is-function":19}],19:[function(require,module,exports){
 module.exports = isFunction
 
 var toString = Object.prototype.toString
@@ -2122,7 +2109,7 @@ function isFunction (fn) {
       fn === window.prompt))
 };
 
-},{}],21:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 
 exports = module.exports = trim;
 
@@ -2138,7 +2125,7 @@ exports.right = function(str){
   return str.replace(/\s*$/, '');
 };
 
-},{}],22:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 var trim = require('trim')
   , forEach = require('for-each')
   , isArray = function(arg) {
@@ -2170,5 +2157,5 @@ module.exports = function (headers) {
 
   return result
 }
-},{"for-each":19,"trim":21}]},{},[1])(1)
+},{"for-each":18,"trim":20}]},{},[1])(1)
 });
