@@ -1,0 +1,16 @@
+{
+  "name": "arangojs",
+  "homepage": "https://github.com/arangodb/arangojs",
+  "description": "The official ArangoDB JavaScript driver.",
+  "license": "APACHE-2.0",
+  "ignore": [
+    "**",
+    "!/dist/**",
+    "!/bower.json",
+    "!/README*",
+    "!/LICENSE*"
+  ],
+  "main": [
+    "./dist/arango.all.js"
+  ]
+}
