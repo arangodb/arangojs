@@ -1,4 +1,4 @@
-[![Build status](https://img.shields.io/travis/arangodb/arangodbjs.svg)](https://travis-ci.org/arangodb/arangodbjs) [![Coverage Status](https://img.shields.io/coveralls/arangodb/arangodbjs.svg)](https://coveralls.io/r/arangodb/arangodbjs?branch=master) [![Codacy rating](https://img.shields.io/codacy/2a54ef7523e3446e9196f92e72ce1274.svg)](https://www.codacy.com/public/me_4/arangodbjs)
+[![Build status](https://img.shields.io/travis/arangodb/arangojs.svg)](https://travis-ci.org/arangodb/arangojs) [![Coverage Status](https://img.shields.io/coveralls/arangodb/arangojs.svg)](https://coveralls.io/r/arangodb/arangojs?branch=master) [![Codacy rating](https://img.shields.io/codacy/2a54ef7523e3446e9196f92e72ce1274.svg)](https://www.codacy.com/public/me_4/arangojs)
 
 # Install
 
