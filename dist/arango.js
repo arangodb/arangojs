@@ -6,7 +6,7 @@ module.exports = require('./lib/database');
 
 },{"./lib/database":5}],2:[function(require,module,exports){
 'use strict';
-var noop = require('./util/noop'), inherits = require('util').inherits, extend = require('extend'), ArangoError = require('./error');
+var noop = require('./util/noop'), inherits = require('util').inherits, extend = require('extend');
 module.exports = extend(function (connection, body) {
     var Ctor = body.type === 3 ? EdgeCollection : DocumentCollection;
     return new Ctor(connection, body);
@@ -258,7 +258,7 @@ extend(EdgeCollection.prototype, {
         return this._edges(vertex, 'out', callback);
     }
 });
-},{"./error":6,"./util/noop":9,"extend":15,"util":14}],3:[function(require,module,exports){
+},{"./util/noop":9,"extend":15,"util":14}],3:[function(require,module,exports){
 'use strict';
 var noop = require('./util/noop'), extend = require('extend'), request = require('request'), ArangoError = require('./error'), jsonMime = /\/(json|javascript)(\W|$)/;
 module.exports = Connection;
@@ -406,9 +406,7 @@ extend(Connection.prototype, {
 "use strict";
 
 var noop = require('./util/noop'),
-  extend = require('extend'),
-  ArangoError = require('./error'),
-  all = require('./util/all');
+  extend = require('extend');
 
 module.exports = ArrayCursor;
 
@@ -498,68 +496,74 @@ extend(ArrayCursor.prototype, {
   every: function (fn, callback) {
     if (!callback) callback = noop;
     var self = this;
-    function step(x) {
+    function loop() {
       try {
         var result = true;
-        for (self._index = x; self._index < self._result.length; self._index++) {
+        while (self._index < self._result.length) {
           result = fn(self._result[self._index], self._index, self);
+          self._index++;
           if (!result) break;
         }
         if (!self._hasMore || !result) callback(null, result);
         else {
           self._more(function (err) {
             if (err) callback(err);
-            else step(self._index);
+            else loop();
           });
         }
       }
       catch(e) {callback(e);}
     }
-    step(0);
+    self._index = 0;
+    loop();
   },
   some: function (fn, callback) {
     if (!callback) callback = noop;
     var self = this;
-    function step(x) {
+    function loop() {
       try {
         var result = false;
-        for (self._index = x; self._index < self._result.length; self._index++) {
+        while (self._index < self._result.length) {
           result = fn(self._result[self._index], self._index, self);
+          self._index++;
           if (result) break;
         }
         if (!self._hasMore || result) callback(null, result);
         else {
           self._more(function (err) {
             if (err) callback(err);
-            else step(self._index);
+            else loop();
           });
         }
       }
       catch(e) {callback(e);}
     }
-    step(0);
+    self._index = 0;
+    loop();
   },
   map: function (fn, callback) {
     if (!callback) callback = noop;
     var self = this,
       result = [];
 
-    function step(x) {
+    function loop(x) {
       try {
-        for (self._index = x; self._index < self._result.length; self._index++) {
+        while (self._index < self._result.length) {
           result.push(fn(self._result[self._index], self._index, self));
+          self._index++;
         }
         if (!self._hasMore) callback(null, result);
         else {
           self._more(function (err) {
             if (err) callback(err);
-            else step(self._index);
+            else loop();
           });
         }
       }
       catch(e) {callback(e);}
     }
-    step(0);
+    self._index = 0;
+    loop();
   },
   reduce: function (fn, accu, callback) {
     if (typeof accu === 'function') {
@@ -568,32 +572,38 @@ extend(ArrayCursor.prototype, {
     }
     if (!callback) callback = noop;
     var self = this;
-    function step(x) {
+    function loop() {
       try {
-        for (self._index = x; self._index < self._result.length; self._index++) {
+        while (self._index < self._result.length) {
           accu = fn(accu, self._result[self._index], self._index, self);
+          self._index++;
         }
         if (!self._hasMore) callback(null, accu);
         else {
           self._more(function (err) {
             if (err) callback(err);
-            else step(self._index);
+            else loop();
           });
         }
       }
       catch(e) {callback(e);}
     }
-    if (accu !== undefined) step(0);
+    if (accu !== undefined) {
+      self._index = 0;
+      loop();
+    }
     else if (self._result.length > 1) {
       accu = self._result[0];
-      step(1);
+      self._index = 1;
+      loop();
     }
     else {
       self._more(function (err) {
         if (err) callback(err);
         else {
           accu = self._result[0];
-          step(1);
+          self._index = 1;
+          loop();
         }
       });
     }
@@ -603,9 +613,9 @@ extend(ArrayCursor.prototype, {
   }
 });
 
-},{"./error":6,"./util/all":8,"./util/noop":9,"extend":15}],5:[function(require,module,exports){
+},{"./util/noop":9,"extend":15}],5:[function(require,module,exports){
 'use strict';
-var noop = require('./util/noop'), extend = require('extend'), map = require('array-map'), Connection = require('./connection'), ArangoError = require('./error'), ArrayCursor = require('./cursor'), createCollection = require('./collection'), Graph = require('./graph'), all = require('./util/all');
+var noop = require('./util/noop'), extend = require('extend'), map = require('array-map'), Connection = require('./connection'), ArrayCursor = require('./cursor'), createCollection = require('./collection'), Graph = require('./graph'), all = require('./util/all');
 module.exports = Database;
 function Database(config) {
     if (!(this instanceof Database)) {
@@ -828,7 +838,7 @@ extend(Database.prototype, {
         });
     }
 });
-},{"./collection":2,"./connection":3,"./cursor":4,"./error":6,"./graph":7,"./util/all":8,"./util/noop":9,"array-map":10,"extend":15}],6:[function(require,module,exports){
+},{"./collection":2,"./connection":3,"./cursor":4,"./graph":7,"./util/all":8,"./util/noop":9,"array-map":10,"extend":15}],6:[function(require,module,exports){
 /*jshint browserify: true */
 "use strict";
 
@@ -855,7 +865,7 @@ ArangoError.prototype.name = 'ArangoError';
 
 },{"util":14}],7:[function(require,module,exports){
 'use strict';
-var noop = require('./util/noop'), extend = require('extend'), inherits = require('util').inherits, BaseCollection = require('./collection')._BaseCollection, ArangoError = require('./error');
+var noop = require('./util/noop'), extend = require('extend'), inherits = require('util').inherits, BaseCollection = require('./collection')._BaseCollection;
 module.exports = Graph;
 function Graph(connection, body) {
     this._connection = connection;
@@ -1005,7 +1015,7 @@ extend(EdgeCollection.prototype, {
         });
     }
 });
-},{"./collection":2,"./error":6,"./util/noop":9,"extend":15,"util":14}],8:[function(require,module,exports){
+},{"./collection":2,"./util/noop":9,"extend":15,"util":14}],8:[function(require,module,exports){
 /*jshint browserify: true */
 "use strict";
 
@@ -1013,6 +1023,8 @@ module.exports = function all(arr, callback) {
   var result = [],
     pending = arr.length,
     called = false;
+
+  if (arr.length === 0) return callback(null, result);
 
   function step(i) {
     return function (err, res) {
