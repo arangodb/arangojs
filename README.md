@@ -12,9 +12,15 @@ The official ArangoDB low-level JavaScript client for node.js and browsers.
 npm install arangojs
 ```
 
+## With Bower
+
+```sh
+bower install arangojs
+```
+
 ## Browser
 
-This CommonJS module is compatible with browserify.
+This CommonJS module is compatible with [browserify](http://browserify.org).
 
 If you don't want to use browserify, you can simply use the AMD-compatible [browserify bundle](https://raw.githubusercontent.com/arangodb/arangojs/master/dist/arango.all.min.js) (~42 kB minified, ~10 kB gzipped) which includes all required dependencies ([extend](https://npmjs.org/package/extend) and [xhr](https://npmjs.org/package/xhr)).
 
