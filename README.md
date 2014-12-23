@@ -14,7 +14,11 @@ npm install arangojs
 
 ## Browser
 
-This CommonJS module is compatible with browserify. If you don't want to use browserify, you can simply use the AMD-compatible [browserify bundle](https://raw.githubusercontent.com/arangodb/arangojs/master/dist/arango.min.js) (~42 kB minified, ~10 kB gzipped) which includes all required dependencies ([extend](https://npmjs.org/package/extend) and [xhr](https://npmjs.org/package/xhr)).
+This CommonJS module is compatible with browserify.
+
+If you don't want to use browserify, you can simply use the AMD-compatible [browserify bundle](https://raw.githubusercontent.com/arangodb/arangojs/master/dist/arango.all.min.js) (~42 kB minified, ~10 kB gzipped) which includes all required dependencies ([extend](https://npmjs.org/package/extend) and [xhr](https://npmjs.org/package/xhr)).
+
+There is also a [browserify bundle without the dependencies](https://raw.githubusercontent.com/arangodb/arangojs/master/dist/arango.min.js) (~34 kB minified, ~8 kB gzipped). In this case you need to provide modules named `request` (xhr) and `extend` yourself.
 
 If you want to use this module in non-ES5 browsers like Microsoft Internet Explorer 8 and earlier, you need to include [es5-shim](https://www.npmjs.com/package/es5-shim) or a similar ES5 polyfill.
 
