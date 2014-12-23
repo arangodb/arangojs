@@ -386,3 +386,7 @@ The *documentHandle* can be either the `_id` or the `_key` of an edge in the col
 #### edgeCollection.save(data, fromId, toId, callback)
 
 Creates a new edge between the vertices *fromId* and *toId* with the given *data*.
+
+# License
+
+The Apache License, Version 2.0. For more information, see the accompanying LICENSE file.
