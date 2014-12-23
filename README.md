@@ -1,3 +1,7 @@
+# ArangoDB JavaScript driver
+
+The official ArangoDB low-level JavaScript client for node.js and browsers.
+
 [![Build status](https://img.shields.io/travis/arangodb/arangojs.svg)](https://travis-ci.org/arangodb/arangojs) [![Coverage Status](https://img.shields.io/coveralls/arangodb/arangojs.svg)](https://coveralls.io/r/arangodb/arangojs?branch=master) [![Codacy rating](https://img.shields.io/codacy/5fd86b5508cb4c559fd65e4c8059d800.svg)](https://www.codacy.com/public/me_4/arangojs)
 
 # Install
@@ -25,12 +29,12 @@ npm run dist
 
 # API
 
-All asynchronous functions take node-style callback functions with the following arguments:
+All asynchronous functions take node-style callback functions (or "errbacks") with the following arguments:
 
 * *err*: an *Error* object if an error occurred, or *null* if no error occurred.
-* *result*: the function's result (if no error occurred).
+* *result*: the function's result (if applicable).
 
-If the server-side ArangoDB API returned an error, *err* will be an instance of *ArangoError*.
+For expected API errors, *err* will be an instance of *ArangoError*.
 
 ## Database API
 

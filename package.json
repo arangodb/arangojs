@@ -1,8 +1,19 @@
 {
   "name": "arangojs",
   "version": "3.0.0-dev",
-  "description": "",
+  "description": "The official ArangoDB JavaScript driver.",
   "main": "index.js",
+  "keywords": [
+    "arango",
+    "arangodb",
+    "aql",
+    "nosql",
+    "client",
+    "driver",
+    "api",
+    "http",
+    "rest"
+  ],
   "files": [
     "lib/",
     "index.js",
