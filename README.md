@@ -148,6 +148,19 @@ Performs a database query using the given *query* and *bindVars*, then passes a 
 * *query*: an AQL query string or a [query builder](https://npmjs.org/package/aqb) instance.
 * *bindVars* (optional): an object with the variables to bind the query to.
 
+### Arbitrary HTTP endpoints
+
+#### database.endpoint([path[, headers]])
+
+Returns a new *Endpoint* instance for the given path (relative to the database) that can be used to perform arbitrary HTTP requests.
+
+*Parameter*
+
+* *path* (optional): relative URL of the endpoint.
+* *headers* (optional): default headers that should be send with each request to the endpoint.
+
+If *path* is missing, the endpoint will refer to the base URL of the database.
+
 ## Cursor API
 
 *Cursor* instances provide an abstraction over the HTTP API's limitations. Unless a method explicitly exhausts the cursor, the driver will only fetch as many batches from the server as necessary. Unlike the server-side cursors, *Cursor* instances can also be rewinded.
@@ -201,6 +214,117 @@ Equivalent to *Array.prototype.reduce*.
 ### cursor.rewind()
 
 Rewinds the cursor.
+
+## Endpoint API
+
+*Endpoint* instances provide access for arbitrary HTTP requests. This allows easy access to Foxx apps and other HTTP APIs not covered by the driver itself.
+
+### endpoint.get([path,] [qs,] callback)
+
+Performs a GET request to the given URL and passes the server response to the given callback.
+
+*Parameter*
+
+* *path* (optional): the endpoint-relative URL for the request.
+* *qs* (optional): the query string for the request.
+
+If *path* is missing, the request will be made to the base URL of the endpoint.
+
+If *qs* is an object, it will be translated to a query string.
+
+### endpoint.post([path,] [body, [qs,]] callback)
+
+Performs a POST request to the given URL and passes the server response to the given callback.
+
+*Parameter*
+
+* *path* (optional): the endpoint-relative URL for the request.
+* *body* (optional): the request body for the request.
+* *qs* (optional): the query string for the request.
+
+If *path* is missing, the request will be made to the base URL of the endpoint.
+
+If *body* is an object, it will be converted to JSON.
+
+If *qs* is an object, it will be translated to a query string.
+
+### endpoint.put([path,] [body, [qs,]] callback)
+
+Performs a PUT request to the given URL and passes the server response to the given callback.
+
+*Parameter*
+
+* *path* (optional): the endpoint-relative URL for the request.
+* *body* (optional): the request body for the request.
+* *qs* (optional): the query string for the request.
+
+If *path* is missing, the request will be made to the base URL of the endpoint.
+
+If *body* is an object, it will be converted to JSON.
+
+If *qs* is an object, it will be translated to a query string.
+
+### endpoint.patch([path,] [body, [qs,]] callback)
+
+Performs a PATCH request to the given URL and passes the server response to the given callback.
+
+*Parameter*
+
+* *path* (optional): the endpoint-relative URL for the request.
+* *body* (optional): the request body for the request.
+* *qs* (optional): the query string for the request.
+
+If *path* is missing, the request will be made to the base URL of the endpoint.
+
+If *body* is an object, it will be converted to JSON.
+
+If *qs* is an object, it will be translated to a query string.
+
+### endpoint.delete([path,] [qs,] callback)
+
+Performs a DELETE request to the given URL and passes the server response to the given callback.
+
+*Parameter*
+
+* *path* (optional): the endpoint-relative URL for the request.
+* *qs* (optional): the query string for the request.
+
+If *path* is missing, the request will be made to the base URL of the endpoint.
+
+If *qs* is an object, it will be translated to a query string.
+
+### endpoint.head([path,] [qs,] callback)
+
+Performs a HEAD request to the given URL and passes the server response to the given callback.
+
+*Parameter*
+
+* *path* (optional): the endpoint-relative URL for the request.
+* *qs* (optional): the query string for the request.
+
+If *path* is missing, the request will be made to the base URL of the endpoint.
+
+If *qs* is an object, it will be translated to a query string.
+
+### endpoint.request(opts, callback)
+
+Performs an arbitrary request to the given URL and passes the server response to the given callback.
+
+*Parameter*
+
+* *opts*: an object with the following properties:
+ * *path*: the endpoint-relative URL for the request.
+ * *absolutePath* (optional): whether the *path* is relative to the connection's base URL instead of the database. Default: `false`.
+ * *body* (optional): the request body.
+ * *qs* (optional): the query string.
+ * *headers* (optional): an object with additional HTTP headers to send with the request.
+ * *method* (optional): HTTP method to use. Default: `"GET"`.
+
+If *opts.path* is missing, the request will be made to the base URL of the endpoint.
+
+If *opts.body* is an object, it will be converted to JSON.
+
+If *opts.qs* is an object, it will be translated to a query string.
 
 ## Collection API
 
