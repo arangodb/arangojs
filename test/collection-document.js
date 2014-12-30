@@ -1,8 +1,6 @@
 /*jshint node: true */
 /*globals describe, it */
 'use strict';
-var expect = require('expect.js');
-var Database = require('../');
 
 describe('documentCollection', function () {
   describe('document', function () {
