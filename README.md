@@ -137,6 +137,25 @@ Fetches all databases from the server and passes an array of new *Database* inst
 
 Deletes the database with the given *databaseName* from the server.
 
+### Transactions
+
+#### database.transaction(collections, action, [params,] [lockTimeout,] callback)
+
+Performs a server-side transaction and passes the *action*'s return value to the callback.
+
+*Parameter*
+
+* *collections*: an object with the following properties:
+ * *read*: an array of names (or a single name) of collections that will be read from during the transaction.
+ * *write*: an array of names (or a single name) of collections that will be written to or read from during the transaction.
+* *action*: a string evaluating to a JavaScript function to be executed on the server.
+* *params* (optional): parameters that will be passed to the function.
+* *lockTimeout* (optional): determines how long the database will wait while attemping to gain locks on collections used by the transaction before timing out.
+
+If *collections* is an array or string, it will be used as *collections.write*.
+
+Please note that while *action* should be a string evaluating to a well-formed JavaScript function, it's not possible to pass in a JavaScript function directly because the function needs to be evaluated on the server and will be transmitted in plain text.
+
 ### Queries
 
 #### database.query(query, [bindVars,] callback)
