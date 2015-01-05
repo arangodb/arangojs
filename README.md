@@ -405,13 +405,43 @@ Deletes the collection from the database.
 
 ### Manipulating documents
 
+#### collection.import(data, [opts,] callback)
+
+Bulk imports the given *data* into the collection.
+
+The *data* can be an array of documents:
+
+```js
+[
+  {key1: value1, key2: value2}, // document 1
+  {key1: value1, key2: value2}, // document 2
+  ...
+]
+```
+
+Or it can be an array of value arrays following an array of keys.
+
+```js
+[
+  ['key1', 'key2'], // key names
+  [value1, value2], // document 1
+  [value1, value2], // document 2
+  ...
+]
+```
+
+If *opts* is set, it must be an object with any of the following properties:
+
+* *waitForSync*: Wait until the documents have been synced to disk. Default: *false*.
+* *details*: Whether the response should contain additional details about documents that could not be imported. Default: *false*.
+
 #### collection.replace(documentHandle, data, [opts,] callback)
 
 Replaces the content of the document with the given *documentHandle* with the given *data*.
 
 If *opts* is set, it must be an object with any of the following properties:
 
-* *waitForSync*: Wait until document has been synced to disk. Default: `false`.
+* *waitForSync*: Wait until the document has been synced to disk. Default: `false`.
 * *rev*: Only replace the document if it matches this revision. Optional.
 * *policy*: Determines the behaviour when the revision is not matched:
  * if *policy* is set to `"last"`, the document will be replaced regardless of the revision.
