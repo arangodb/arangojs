@@ -529,6 +529,14 @@ Retrieves a list of all incoming edges of the document with the given *documentH
 
 Retrieves a list of all outgoing edges of the document with the given *documentHandle*.
 
+#### edgeCollection.traversal(startVertex, [opts,] callback)
+
+Performs a traversal starting from the given *startVertex* and following edges contained in this edge collection.
+
+See [the HTTP API documentation](https://docs.arangodb.com/HttpTraversal/README.html) for details on the additional arguments.
+
+Please note that while *opts.filter*, *opts.visitor*, *opts.init*, *opts.expander* and *opts.sort* should be strings evaluating to well-formed JavaScript functions, it's not possible to pass in JavaScript functions directly because the functions need to be evaluated on the server and will be transmitted in plain text.
+
 ## Graph API
 
 ### graph.drop([dropCollections,] callback)
@@ -572,6 +580,14 @@ Replaces the edge definition named *definitionName* with the given *definition*.
 Removes the edge definition with the given *definitionName* form the graph.
 
 If *dropCollection* is set to `true`, the edge collection associated with the definition will also be deleted from the database.
+
+#### graph.traversal(startVertex, [opts,] callback)
+
+Performs a traversal starting from the given *startVertex* and following edges contained in any of the edge collections of this graph.
+
+See [the HTTP API documentation](https://docs.arangodb.com/HttpTraversal/README.html) for details on the additional arguments.
+
+Please note that while *opts.filter*, *opts.visitor*, *opts.init*, *opts.expander* and *opts.sort* should be strings evaluating to well-formed JavaScript functions, it's not possible to pass in JavaScript functions directly because the functions need to be evaluated on the server and will be transmitted in plain text.
 
 ### VertexCollection API
 
