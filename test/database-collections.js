@@ -71,8 +71,8 @@ describe('database', function () {
           });
         });
       });
-      it('returns an ArangoError if the db does not exist', function (done) {
-        db.collection('this_db_does_not_exist', false, function (err, collection) {
+      it('returns an ArangoError if the collection does not exist', function (done) {
+        db.collection('this_does_not_exist', false, function (err, collection) {
           expect(err).to.be.an(ArangoError);
           expect(collection).not.to.be.ok();
           done();
