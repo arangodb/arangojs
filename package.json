@@ -39,14 +39,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/arangodb/arangodbjs.git"
+    "url": "https://github.com/arangodb/arangojs.git"
   },
   "author": "Alan Plum <me@pluma.io>",
   "license": "APACHE-2.0",
   "bugs": {
-    "url": "https://github.com/arangodb/arangodbjs/issues"
+    "url": "https://github.com/arangodb/arangojs/issues"
   },
-  "homepage": "https://github.com/arangodb/arangodbjs",
+  "homepage": "https://github.com/arangodb/arangojs",
   "devDependencies": {
     "async": "^0.9.0",
     "browserify": "^7.0.2",
