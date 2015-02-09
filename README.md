@@ -432,8 +432,9 @@ Or it can be an array of value arrays following an array of keys.
 
 If *opts* is set, it must be an object with any of the following properties:
 
-* *waitForSync*: Wait until the documents have been synced to disk. Default: *false*.
+* *waitForSync*: Wait until the documents have been synced to disk. Default: `false`.
 * *details*: Whether the response should contain additional details about documents that could not be imported. Default: *false*.
+* *type*: Indicates which format the data uses. Can be `"collection"`, `"array"` or `"auto"`. Default: `"auto"`.
 
 #### collection.replace(documentHandle, data, [opts,] callback)
 
