@@ -181,7 +181,7 @@ extend(BaseCollection.prototype, {
         }
         if (!callback)
             callback = noop;
-        this._api.post('import', data, extend({}, opts, { collection: this.name }), function (err, body) {
+        this._api.post('import', data, extend({ type: 'auto' }, opts, { collection: this.name }), function (err, body) {
             if (err)
                 callback(err);
             else
@@ -672,7 +672,7 @@ extend(Database.prototype, {
         var self = this;
         self._api.get('gharial/' + graphName, function (err, body) {
             if (err) {
-                if (!autoCreate || err.name !== 'ArangoError' || err.errorNum !== 1203)
+                if (!autoCreate || err.name !== 'ArangoError' || err.errorNum !== 1924)
                     callback(err);
                 else
                     self.createGraph({ name: graphName }, callback);
@@ -1031,8 +1031,8 @@ module.exports = Graph;
 function Graph(connection, body) {
     this._connection = connection;
     this._api = this._connection.endpoint('_api');
-    this._gharial = this._api.endpoint('gharial/' + this.name);
     extend(this, body);
+    this._gharial = this._api.endpoint('gharial/' + this.name);
 }
 Graph.VertexCollection = VertexCollection;
 Graph.EdgeCollection = EdgeCollection;
