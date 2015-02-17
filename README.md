@@ -538,6 +538,8 @@ If *opts.qs* is an object, it will be translated to a query string.
 
 These functions implement the [HTTP API for manipulating collections](https://docs.arangodb.com/HttpCollection/README.html).
 
+The *Collection API* is implemented by all *Collection* instances, regardless of their specific type. I.e. it represents a shared subset between instances of *DocumentCollection*, *EdgeCollection*, *Graph.VertexCollection* and *Graph.EdgeCollection*.
+
 ### Getting information about the collection
 
 See [the HTTP API documentation](https://docs.arangodb.com/HttpCollection/Getting.html) for details.
@@ -697,7 +699,7 @@ If *type* is set to `"id"` or not set, the result will be the `_id` of each docu
 
 ### DocumentCollection API
 
-Document collections extend the *Collection* API with the following methods.
+The *DocumentCollection API* extends the *Collection API* (see above) with the following methods.
 
 #### documentCollection.document(documentHandle, callback)
 
@@ -711,7 +713,7 @@ Creates a new document with the given *data*.
 
 ### EdgeCollection API
 
-Edge collections extend the *Collection* API with the following methods.
+The *EdgeCollection API* extends the *Collection API* (see above) with the following methods.
 
 #### edgeCollection.edge(documentHandle, callback)
 
@@ -757,7 +759,7 @@ If *dropCollections* is set to `true`, the collections associated with the graph
 
 #### graph.vertexCollection(collectionName, callback)
 
-Fetches the vertex collection with the given *collectionName* from the database, then passes a new *VertexCollection* instance to the callback.
+Fetches the vertex collection with the given *collectionName* from the database, then passes a new *Graph.VertexCollection* instance to the callback.
 
 #### graph.addVertexCollection(collectionName, callback)
 
@@ -773,7 +775,7 @@ If *dropCollection* is set to `true`, the collection will also be deleted from t
 
 #### graph.edgeCollection(collectionName, callback)
 
-Fetches the edge collection with the given *collectionName* from the database, then passes a new *EdgeCollection* instance to the callback.
+Fetches the edge collection with the given *collectionName* from the database, then passes a new *Graph.EdgeCollection* instance to the callback.
 
 #### graph.addEdgeDefinition(definition, callback)
 
@@ -797,9 +799,9 @@ See [the HTTP API documentation](https://docs.arangodb.com/HttpTraversal/README.
 
 Please note that while *opts.filter*, *opts.visitor*, *opts.init*, *opts.expander* and *opts.sort* should be strings evaluating to well-formed JavaScript functions, it's not possible to pass in JavaScript functions directly because the functions need to be evaluated on the server and will be transmitted in plain text.
 
-### VertexCollection API
+### Graph.VertexCollection API
 
-Graph vertex collections extend the *Collection* API with the following methods.
+The *Graph.VertexCollection API* extends the *Collection API* (see above) with the following methods.
 
 #### vertexCollection.vertex(documentHandle, callback)
 
@@ -811,9 +813,9 @@ The *documentHandle* can be either the `_id` or the `_key` of a vertex in the co
 
 Creates a new vertex with the given *data*.
 
-### EdgeCollection API
+### Graph.EdgeCollection API
 
-Graph edge collections extend the *Collection* API with the following methods.
+The *Graph.EdgeCollection API* extends the *Collection API* (see above) with the following methods.
 
 #### edgeCollection.edge(documentHandle, callback)
 
