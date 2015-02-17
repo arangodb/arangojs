@@ -77,11 +77,37 @@ For more information on the *properties* object, see [the HTTP API documentation
 
 If *properties* is a string, it will be interpreted as *properties.name*.
 
+*Examples*
+
+```js
+var db = require('arangojs')();
+db.createCollection({
+    name: 'friends',
+    type: 3 // i.e. an edge collection
+}, function (err, collection) {
+    if (err) return console.error(err);
+    // collection is an EdgeCollection instance
+    // see the Collection API and EdgeCollection API below for details
+});
+```
+
 #### database.collection(collectionName, [autoCreate,] callback)
 
 Fetches the collection with the given *collectionName* from the database, then passes a new *Collection* instance to the callback.
 
 If *autoCreate* is set to `true`, a collection with the given name will be created if it doesn't already exist.
+
+```js
+var db = require('arangojs')();
+db.collection('potatos', function (err, collection) {
+    if (err) {
+        // Collection did not exist
+        console.error(err);
+        return;
+    }
+    // collection exists
+});
+```
 
 #### database.collections([excludeSystem,] callback)
 
@@ -89,15 +115,52 @@ Fetches all collections from the database and passes an array of new *Collection
 
 If *excludeSystem* is set to `true`, system collections will not be included in the result.
 
+*Examples*
+
+```js
+var db = require('arangojs')();
+db.collections(function (err, collections) {
+    if (err) return console.error(err);
+    // collections is an array of Collection instances
+    // including system collections
+});
+```
+
 #### database.dropCollection(collectionName, callback)
 
 Deletes the collection with the given *collectionName* from the database.
+
+*Examples*
+
+```js
+var db = require('arangojs')();
+db.dropCollection('friends', function (err) {
+    if (err) return console.error(err);
+    // collection "friends" no longer exists
+});
+```
 
 #### database.truncate([excludeSystem,] callback)
 
 Deletes **all documents** in **all collections** in the active database.
 
 If *excludeSystem* is set to `true`, system collections will not be truncated.
+
+```js
+var db = require('arangojs')();
+db.truncate(true, function (err) {
+    if (err) return console.error(err);
+    // all non-system collections in this database are now empty
+});
+
+// -- or --
+
+db.truncate(function (err) {
+    if (err) return console.error(err);
+    // all collections (including system collections) in this db are now empty
+    // "I've made a huge mistake..."
+});
+```
 
 ### Manipulating graphs
 
@@ -109,21 +172,76 @@ Creates a graph with the given *properties*, then passes a new *Graph* instance 
 
 For more information on the *properties* object, see [the HTTP API documentation for creating graphs](https://docs.arangodb.com/HttpGharial/Management.html).
 
+*Examples*
+
+```js
+var db = require('arangojs')();
+// this assumes collections `myEdges`, `startVertices` and `endVertices` exist
+db.createGraph({
+    name: 'myGraph',
+    edgeDefinitions: [
+        {
+            collection: 'myEdges',
+            from: [
+                'startVertices'
+            ],
+            to: [
+                'endVertices'
+            ]
+        }
+    ]
+}, function (err, graph) {
+    if (err) return console.error(err);
+    // graph is a Graph instance
+    // for more information see the Graph API below
+});
+```
+
 #### database.graph(graphName, [autoCreate,], callback)
 
 Fetches the graph with the given *graphName* from the database, then passes a new *Graph* instance to the callback.
 
 If *autoCreate* is set to `true`, a graph with the given name will be created if it doesn't already exist.
 
+*Examples*
+
+```js
+var db = require('arangojs')();
+db.graph('myGraph', function (err, graph) {
+    if (err) return console.error(err);
+    // graph exists
+});
+```
+
 #### database.graphs(callback)
 
 Fetches all graphs from the database and passes an array of new *Graph* instances to the callback.
+
+*Examples*
+
+```js
+var db = require('arangojs')();
+db.graphs(function (err, graphs) {
+    if (err) return console.error(err);
+    // graphs is an array of Graph instances
+});
+```
 
 #### database.dropGraph(graphName, [dropCollections,] callback)
 
 Deletes the graph with the given *graphName* from the database.
 
 If *dropCollections* is set to `true`, the collections associated with the graphs will also be deleted.
+
+*Examples*
+
+```js
+var db = require('arangojs')();
+db.dropGraph('myGraph', function (err) {
+    if (err) return console.error(err);
+    // graph "myGraph" no longer exists
+});
+```
 
 ### Manipulating databases
 
@@ -206,10 +324,7 @@ var vat_fn_code = String(function (price) {
     return price * 0.19;
 });
 db.createFunction(vat_fn_name, vat_fn_code, function (err) {
-    if (err) {
-        console.error(err);
-        return;
-    }
+    if (err) return console.error(err);
     // Use the new function in an AQL query with the query builder:
     db.query(
         qb.for('product').in('products')
