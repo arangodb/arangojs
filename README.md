@@ -1432,13 +1432,82 @@ db.createEdgeCollection('my-edges', function (err, collection) {
 
 Retrieves a list of all edges of the document with the given *documentHandle*.
 
+*Examples*
+
+```js
+var db = require('arangojs')();
+// assumes a collection "vertices" already exists
+db.createEdgeCollection('my-edges', function (err, collection) {
+    if (err) return console.error(err);
+    collection.import([
+        ['_key', '_from', '_to'],
+        ['x', 'vertices/a', 'vertices/b'],
+        ['y', 'vertices/a', 'vertices/c'],
+        ['z', 'vertices/d', 'vertices/a']
+    ], function (err) {
+        if (err) return console.error(err);
+        collection.edges('vertices/a', function (err, edges) {
+            if (err) return console.error(err);
+            edges.length === 3;
+            edges.map(function (edge) {return edge._key;}); // ['x', 'y', 'z']
+        });
+    });
+});
+```
+
 #### edgeCollection.inEdges(documentHandle, callback)
 
 Retrieves a list of all incoming edges of the document with the given *documentHandle*.
 
+*Examples*
+
+```js
+var db = require('arangojs')();
+// assumes a collection "vertices" already exists
+db.createEdgeCollection('my-edges', function (err, collection) {
+    if (err) return console.error(err);
+    collection.import([
+        ['_key', '_from', '_to'],
+        ['x', 'vertices/a', 'vertices/b'],
+        ['y', 'vertices/a', 'vertices/c'],
+        ['z', 'vertices/d', 'vertices/a']
+    ], function (err) {
+        if (err) return console.error(err);
+        collection.inEdges('vertices/a', function (err, edges) {
+            if (err) return console.error(err);
+            edges.length === 1;
+            edges[0]._key === 'z';
+        });
+    });
+});
+```
+
 #### edgeCollection.outEdges(documentHandle, callback)
 
 Retrieves a list of all outgoing edges of the document with the given *documentHandle*.
+
+*Examples*
+
+```js
+var db = require('arangojs')();
+// assumes a collection "vertices" already exists
+db.createEdgeCollection('my-edges', function (err, collection) {
+    if (err) return console.error(err);
+    collection.import([
+        ['_key', '_from', '_to'],
+        ['x', 'vertices/a', 'vertices/b'],
+        ['y', 'vertices/a', 'vertices/c'],
+        ['z', 'vertices/d', 'vertices/a']
+    ], function (err) {
+        if (err) return console.error(err);
+        collection.outEdges('vertices/a', function (err, edges) {
+            if (err) return console.error(err);
+            edges.length === 2;
+            edges.map(function (edge) {return edge._key;}); // ['x', 'y']
+        });
+    });
+});
+```
 
 #### edgeCollection.traversal(startVertex, [opts,] callback)
 
@@ -1447,6 +1516,35 @@ Performs a traversal starting from the given *startVertex* and following edges c
 See [the HTTP API documentation](https://docs.arangodb.com/HttpTraversal/README.html) for details on the additional arguments.
 
 Please note that while *opts.filter*, *opts.visitor*, *opts.init*, *opts.expander* and *opts.sort* should be strings evaluating to well-formed JavaScript functions, it's not possible to pass in JavaScript functions directly because the functions need to be evaluated on the server and will be transmitted in plain text.
+
+*Examples*
+
+```js
+var db = require('arangojs')();
+// assumes a collection "vertices" already exists
+db.createEdgeCollection('my-edges', function (err, collection) {
+    if (err) return console.error(err);
+    collection.import([
+        ['_key', '_from', '_to'],
+        ['x', 'vertices/a', 'vertices/b'],
+        ['y', 'vertices/b', 'vertices/c'],
+        ['z', 'vertices/c', 'vertices/d']
+    ], function (err) {
+        if (err) return console.error(err);
+        collection.traversal('vertices/a', {
+            visitor: String(function (config, result, vertex, path) {
+                result.vertices.push(vertex._key);
+            }),
+            init: String(function (config, result) {
+                result.vertices = [];
+            })
+        }, function (err, result) {
+            if (err) return console.error(err);
+            result.vertices; // ['a', 'b', 'c']
+        });
+    });
+});
+```
 
 ## Graph API
 
