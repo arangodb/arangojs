@@ -109,17 +109,19 @@ db.collection('potatos', function (err, collection) {
 });
 ```
 
-#### database.collections([excludeSystem,] callback)
+#### database.collections(excludeSystem, callback)
 
 Fetches all collections from the database and passes an array of new *Collection* instances to the callback.
 
-If *excludeSystem* is set to `true`, system collections will not be included in the result.
+*Parameter*
+
+* *excludeSystem*: if set to `false`, system collections will be included in the result; if set to `true`, system collections will not be included.
 
 *Examples*
 
 ```js
 var db = require('arangojs')();
-db.collections(function (err, collections) {
+db.collections(false, function (err, collections) {
     if (err) return console.error(err);
     // collections is an array of Collection instances
     // including system collections
@@ -140,11 +142,15 @@ db.dropCollection('friends', function (err) {
 });
 ```
 
-#### database.truncate([excludeSystem,] callback)
+#### database.truncate(excludeSystem, callback)
 
 Deletes **all documents** in **all collections** in the active database.
 
-If *excludeSystem* is set to `true`, system collections will not be truncated.
+*Parameter*
+
+* *excludeSystem*: if set to `false`, system collections will be truncated as well; if set to `true`, system collections will not be truncated.
+
+*Examples*
 
 ```js
 var db = require('arangojs')();
@@ -155,7 +161,7 @@ db.truncate(true, function (err) {
 
 // -- or --
 
-db.truncate(function (err) {
+db.truncate(false, function (err) {
     if (err) return console.error(err);
     // all collections (including system collections) in this db are now empty
     // "I've made a huge mistake..."
