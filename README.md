@@ -67,6 +67,8 @@ If *config* is a string, it will be interpreted as *config.url*.
 
 ### Manipulating collections
 
+These functions implement the [HTTP API for manipulating collections](https://docs.arangodb.com/HttpCollection/README.html).
+
 #### database.createCollection(properties, callback)
 
 Creates a collection from the given *properties*, then passes a new *Collection* instance to the callback.
@@ -99,6 +101,8 @@ If *excludeSystem* is set to `true`, system collections will not be truncated.
 
 ### Manipulating graphs
 
+These functions implement the [HTTP API for manipulating general graphs](https://docs.arangodb.com/HttpGharial/README.html).
+
 #### database.createGraph(properties, callback)
 
 Creates a graph with the given *properties*, then passes a new *Graph* instance to the callback.
@@ -123,6 +127,8 @@ If *dropCollections* is set to `true`, the collections associated with the graph
 
 ### Manipulating databases
 
+These functions implement the [HTTP API for manipulating databases](https://docs.arangodb.com/HttpDatabase/README.html).
+
 #### database.createDatabase(databaseName, callback)
 
 Creates a new database with the given *databaseName*, then passes a new *Database* instance to the callback.
@@ -142,6 +148,8 @@ Fetches all databases from the server and passes an array of new *Database* inst
 Deletes the database with the given *databaseName* from the server.
 
 ### Transactions
+
+This function implements the [HTTP API for transactions](https://docs.arangodb.com/HttpTransaction/README.html).
 
 #### database.transaction(collections, action, [params,] [lockTimeout,] callback)
 
@@ -164,6 +172,8 @@ For more information on transactions, see [the HTTP API documentation for transa
 
 ### Queries
 
+This function implements the [HTTP API for AQL queries](https://docs.arangodb.com/HttpAqlQuery/README.html).
+
 #### database.query(query, [bindVars,] callback)
 
 Performs a database query using the given *query* and *bindVars*, then passes a new *Cursor* instance for the result list to the callback.
@@ -174,6 +184,8 @@ Performs a database query using the given *query* and *bindVars*, then passes a 
 * *bindVars* (optional): an object with the variables to bind the query to.
 
 ### Managing AQL user functions
+
+These functions implement the [HTTP API for managing AQL user functions](https://docs.arangodb.com/HttpAqlUserFunctions/README.html).
 
 #### database.createFunction(name, code, callback)
 
@@ -409,6 +421,8 @@ If *opts.qs* is an object, it will be translated to a query string.
 
 ## Collection API
 
+These functions implement the [HTTP API for manipulating collections](https://docs.arangodb.com/HttpCollection/README.html).
+
 ### Getting information about the collection
 
 See [the HTTP API documentation](https://docs.arangodb.com/HttpCollection/Getting.html) for details.
@@ -465,7 +479,9 @@ Deletes **all documents** in the collection in the database.
 
 Deletes the collection from the database.
 
-### Manipulating documents
+### Bulk importing documents
+
+This function implements the [HTTP API for bulk imports](https://docs.arangodb.com/HttpBulkImports/README.html).
 
 #### collection.import(data, [opts,] callback)
 
@@ -499,6 +515,10 @@ If *opts* is set, it must be an object with any of the following properties:
 * *type*: Indicates which format the data uses. Can be `"collection"`, `"array"` or `"auto"`. Default: `"auto"`.
 
 For more information on the *opts* object, see [the HTTP API documentation for bulk imports](https://docs.arangodb.com/HttpBulkImports/ImportingSelfContained.html).
+
+### Manipulating documents
+
+These functions implement the [HTTP API for manipulating documents](https://docs.arangodb.com/HttpDocument/README.html).
 
 #### collection.replace(documentHandle, data, [opts,] callback)
 
@@ -609,6 +629,8 @@ See [the HTTP API documentation](https://docs.arangodb.com/HttpTraversal/README.
 Please note that while *opts.filter*, *opts.visitor*, *opts.init*, *opts.expander* and *opts.sort* should be strings evaluating to well-formed JavaScript functions, it's not possible to pass in JavaScript functions directly because the functions need to be evaluated on the server and will be transmitted in plain text.
 
 ## Graph API
+
+These functions implement the [HTTP API for manipulating graphs](https://docs.arangodb.com/HttpGharial/README.html).
 
 ### graph.drop([dropCollections,] callback)
 
