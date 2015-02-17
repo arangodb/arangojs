@@ -100,47 +100,45 @@ describe('database', function () {
     });
   });
   describe('collections', function () {
-    describe('with excludeSystem:true', function () {
-      it('returns all the non-system collections', function (done) {
-        db.collections(true, function (err, collections) {
-          expect(err).not.to.be.ok();
-          expect(collections).to.be.an(Array);
-          expect(collections).to.be.empty();
-          db.createCollection(testCollectionName, function (err2) {
-            expect(err2).not.to.be.ok();
-            db.collections(true, function (err3, collections2) {
-              expect(err3).not.to.be.ok();
-              var collectionNames = collections2.map(function (collection) {
-                return collection.name;
-              });
-              expect(collectionNames).to.eql([testCollectionName]);
-              done();
+    it('returns all the non-system collections', function (done) {
+      db.collections(function (err, collections) {
+        expect(err).not.to.be.ok();
+        expect(collections).to.be.an(Array);
+        expect(collections).to.be.empty();
+        db.createCollection(testCollectionName, function (err2) {
+          expect(err2).not.to.be.ok();
+          db.collections(function (err3, collections2) {
+            expect(err3).not.to.be.ok();
+            var collectionNames = collections2.map(function (collection) {
+              return collection.name;
             });
+            expect(collectionNames).to.eql([testCollectionName]);
+            done();
           });
         });
       });
     });
-    describe('with excludeSystem:false', function () {
-      it('returns all the collections', function (done) {
-        db.collections(function (err, collections) {
-          expect(err).not.to.be.ok();
-          expect(collections).to.be.an(Array);
-          expect(collections).not.to.be.empty();
-          collections.forEach(function (collection) {
-            expect(collection).to.be.a(Collection);
-            expect(collection.name.charAt(0)).to.be('_');
-          });
-          db.createCollection(testCollectionName, function (err2) {
-            expect(err2).not.to.be.ok();
-            db.collections(function (err3, collections2) {
-              expect(err3).not.to.be.ok();
-              expect(collections2.length).to.equal(collections.length + 1);
-              var collectionNames = collections2.map(function (collection) {
-                return collection.name;
-              });
-              expect(collectionNames).to.contain(testCollectionName);
-              done();
+  });
+  describe('allCollections', function () {
+    it('returns all the collections', function (done) {
+      db.allCollections(function (err, collections) {
+        expect(err).not.to.be.ok();
+        expect(collections).to.be.an(Array);
+        expect(collections).not.to.be.empty();
+        collections.forEach(function (collection) {
+          expect(collection).to.be.a(Collection);
+          expect(collection.name.charAt(0)).to.be('_');
+        });
+        db.createCollection(testCollectionName, function (err2) {
+          expect(err2).not.to.be.ok();
+          db.allCollections(function (err3, collections2) {
+            expect(err3).not.to.be.ok();
+            expect(collections2.length).to.equal(collections.length + 1);
+            var collectionNames = collections2.map(function (collection) {
+              return collection.name;
             });
+            expect(collectionNames).to.contain(testCollectionName);
+            done();
           });
         });
       });
@@ -167,67 +165,65 @@ describe('database', function () {
       });
     });
   });
-  describe('truncate', function () {
-    describe('with excludeSystem:false', function () {
-      it('also truncates system collections', function (done) {
-        db.collection('_users', function (err, collection) {
-          expect(err).not.to.be.ok();
-          expect(collection.isSystem).to.be(true);
-          collection.save({_key: 'chicken'}, function (err2) {
-            expect(err2).not.to.be.ok();
-            db.truncate(function (err3) {
-              expect(err3).not.to.be.ok();
-              collection.all(function (err4, res) {
-                expect(err4).not.to.be.ok();
-                expect(res).to.be.an(Array);
-                expect(res).to.be.empty();
-                done();
-              });
+  describe('truncateAll', function () {
+    it('also truncates system collections', function (done) {
+      db.collection('_users', function (err, collection) {
+        expect(err).not.to.be.ok();
+        expect(collection.isSystem).to.be(true);
+        collection.save({_key: 'chicken'}, function (err2) {
+          expect(err2).not.to.be.ok();
+          db.truncateAll(function (err3) {
+            expect(err3).not.to.be.ok();
+            collection.all(function (err4, res) {
+              expect(err4).not.to.be.ok();
+              expect(res).to.be.an(Array);
+              expect(res).to.be.empty();
+              done();
             });
           });
         });
       });
     });
-    describe('with excludeSystem:true', function () {
-      beforeEach(function (done) {
-        db.collection('_users', function (err, collection) {
-          collection.remove('chicken', function () {
-            done();
-          });
+  });
+  describe('truncate', function () {
+    beforeEach(function (done) {
+      db.collection('_users', function (err, collection) {
+        collection.remove('chicken', function () {
+          done();
         });
       });
-      it('does not truncate system collections', function (done) {
-        db.collection('_users', function (err, collection) {
-          expect(err).not.to.be.ok();
-          expect(collection.isSystem).to.be(true);
-          collection.save({_key: 'chicken'}, function (err2, doc) {
-            expect(err2).not.to.be.ok();
-            db.truncate(true, function (err3) {
-              expect(err3).not.to.be.ok();
-              collection.document('chicken', function (err4, doc2) {
-                expect(err4).not.to.be.ok();
-                expect(doc2).to.have.property('_rev');
-                expect(doc2._rev).to.eql(doc._rev);
-                done();
-              });
+    });
+    it('does not truncate system collections', function (done) {
+      db.collection('_users', function (err, collection) {
+        expect(err).not.to.be.ok();
+        expect(collection.isSystem).to.be(true);
+        collection.save({_key: 'chicken'}, function (err2, doc) {
+          expect(err2).not.to.be.ok();
+          db.truncate(function (err3) {
+            expect(err3).not.to.be.ok();
+            collection.document('chicken', function (err4, doc2) {
+              expect(err4).not.to.be.ok();
+              expect(doc2).to.have.property('_rev');
+              expect(doc2._rev).to.eql(doc._rev);
+              done();
             });
           });
         });
       });
-      it('truncates non-system collections', function (done) {
-        db.createCollection(testCollectionName, function (err, collection) {
-          expect(err).not.to.be.ok();
-          expect(collection.isSystem).to.be(false);
-          collection.save({_key: 'chicken'}, function (err2) {
-            expect(err2).not.to.be.ok();
-            db.truncate(function (err3) {
-              expect(err3).not.to.be.ok();
-              collection.all(function (err4, res) {
-                expect(err4).not.to.be.ok();
-                expect(res).to.be.an(Array);
-                expect(res).to.be.empty();
-                done();
-              });
+    });
+    it('truncates non-system collections', function (done) {
+      db.createCollection(testCollectionName, function (err, collection) {
+        expect(err).not.to.be.ok();
+        expect(collection.isSystem).to.be(false);
+        collection.save({_key: 'chicken'}, function (err2) {
+          expect(err2).not.to.be.ok();
+          db.truncate(function (err3) {
+            expect(err3).not.to.be.ok();
+            collection.all(function (err4, res) {
+              expect(err4).not.to.be.ok();
+              expect(res).to.be.an(Array);
+              expect(res).to.be.empty();
+              done();
             });
           });
         });

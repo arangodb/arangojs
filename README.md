@@ -109,19 +109,30 @@ db.collection('potatos', function (err, collection) {
 });
 ```
 
-#### database.collections(excludeSystem, callback)
+#### database.collections(callback)
 
-Fetches all collections from the database and passes an array of new *Collection* instances to the callback.
-
-*Parameter*
-
-* *excludeSystem*: if set to `false`, system collections will be included in the result; if set to `true`, system collections will not be included.
+Fetches all non-system collections from the database and passes an array of new *Collection* instances to the callback.
 
 *Examples*
 
 ```js
 var db = require('arangojs')();
-db.collections(false, function (err, collections) {
+db.collections(function (err, collections) {
+    if (err) return console.error(err);
+    // collections is an array of Collection instances
+    // not including system collections
+});
+```
+
+#### database.allCollections(callback)
+
+Fetches all collections (including system collections) from the database and passes an array of new *Collection* instances to the callback.
+
+*Examples*
+
+```js
+var db = require('arangojs')();
+db.allCollections(function (err, collections) {
     if (err) return console.error(err);
     // collections is an array of Collection instances
     // including system collections
@@ -142,26 +153,29 @@ db.dropCollection('friends', function (err) {
 });
 ```
 
-#### database.truncate(excludeSystem, callback)
+#### database.truncate(callback)
 
-Deletes **all documents** in **all collections** in the active database.
-
-*Parameter*
-
-* *excludeSystem*: if set to `false`, system collections will be truncated as well; if set to `true`, system collections will not be truncated.
+Deletes **all documents** in **all non-system collections** in the active database.
 
 *Examples*
 
 ```js
 var db = require('arangojs')();
-db.truncate(true, function (err) {
+db.truncate(function (err) {
     if (err) return console.error(err);
     // all non-system collections in this database are now empty
 });
+```
 
-// -- or --
+#### database.truncateAll(callback)
 
-db.truncate(false, function (err) {
+Deletes **all documents** in **all collections (including system collections)** in the active database.
+
+*Examples*
+
+```js
+var db = require('arangojs')();
+db.truncateAll(function (err) {
     if (err) return console.error(err);
     // all collections (including system collections) in this db are now empty
     // "I've made a huge mistake..."
