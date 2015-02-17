@@ -331,7 +331,7 @@ These functions implement the [HTTP API for managing AQL user functions](https:/
 
 Creates an AQL user function with the given *name* and *code* if it does not already exist or replaces it if a function with the same name already existed.
 
-*Paramter*
+*Parameter*
 
 * *name*: a valid AQL function name, e.g.: `"myfuncs::accounting::calculate_vat"`.
 * *code*: a string evaluating to a JavaScript function (not a JavaScript function object).
@@ -367,7 +367,7 @@ db.createFunction(vat_fn_name, vat_fn_code, function (err) {
 
 Deletes the AQL user function with the given name from the database.
 
-*Paramter*
+*Parameter*
 
 * *name*: the name of the user function to drop.
 * *group* (optional): if set to `true`, all functions with a name starting with *name* will be deleted; otherwise only the function with the exact name will be deleted. Default: `false`.
