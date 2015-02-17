@@ -1051,7 +1051,7 @@ Performs an arbitrary request to the given URL and passes the server response to
 
 * *opts*: an object with the following properties:
  * *path*: the endpoint-relative URL for the request.
- * *absolutePath* (optional): whether the *path* is relative to the connection's base URL instead of the database. Default: `false`.
+ * *absolutePath* (optional): whether the *path* is relative to the connection's base URL instead of the endpoint. Default: `false`.
  * *body* (optional): the request body.
  * *qs* (optional): the query string.
  * *headers* (optional): an object with additional HTTP headers to send with the request.
