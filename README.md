@@ -321,7 +321,7 @@ Performs a database query using the given *query* and *bindVars*, then passes a 
 * *query*: an AQL query string or a [query builder](https://npmjs.org/package/aqb) instance.
 * *bindVars* (optional): an object with the variables to bind the query to.
 
-For more information on *Cursor* instances see the *Cursor API* below.
+For more information on *Cursor* instances see the [*Cursor API* below](#cursor-api).
 
 ### Managing AQL user functions
 
@@ -389,7 +389,7 @@ Returns a new *Endpoint* instance for the given path (relative to the database) 
 
 If *path* is missing, the endpoint will refer to the base URL of the database.
 
-For more information on *Endpoint* instances see the *Endpoint API* below.
+For more information on *Endpoint* instances see the [*Endpoint API* below](#endpoint-api).
 
 ## Cursor API
 
@@ -560,7 +560,7 @@ If *opts.qs* is an object, it will be translated to a query string.
 
 These functions implement the [HTTP API for manipulating collections](https://docs.arangodb.com/HttpCollection/README.html).
 
-The *Collection API* is implemented by all *Collection* instances, regardless of their specific type. I.e. it represents a shared subset between instances of *DocumentCollection*, *EdgeCollection*, *Graph.VertexCollection* and *Graph.EdgeCollection*.
+The *Collection API* is implemented by all *Collection* instances, regardless of their specific type. I.e. it represents a shared subset between instances of [*DocumentCollection*](#documentcollection-api), [*EdgeCollection*](#edgecollection-api), [*Graph.VertexCollection*](#graphvertexcollection-api) and [*Graph.EdgeCollection*](#graphedgecollection-api).
 
 ### Getting information about the collection
 
@@ -721,7 +721,7 @@ If *type* is set to `"id"` or not set, the result will be the `_id` of each docu
 
 ### DocumentCollection API
 
-The *DocumentCollection API* extends the *Collection API* (see above) with the following methods.
+The *DocumentCollection API* extends the [*Collection API* (see above)](#collection-api) with the following methods.
 
 #### documentCollection.document(documentHandle, callback)
 
@@ -735,7 +735,7 @@ Creates a new document with the given *data*.
 
 ### EdgeCollection API
 
-The *EdgeCollection API* extends the *Collection API* (see above) with the following methods.
+The *EdgeCollection API* extends the [*Collection API* (see above)](#collection-api) with the following methods.
 
 #### edgeCollection.edge(documentHandle, callback)
 
@@ -823,7 +823,7 @@ Please note that while *opts.filter*, *opts.visitor*, *opts.init*, *opts.expande
 
 ### Graph.VertexCollection API
 
-The *Graph.VertexCollection API* extends the *Collection API* (see above) with the following methods.
+The *Graph.VertexCollection API* extends the [*Collection API* (see above)](#collection-api) with the following methods.
 
 #### vertexCollection.vertex(documentHandle, callback)
 
