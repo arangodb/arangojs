@@ -301,6 +301,8 @@ Performs a database query using the given *query* and *bindVars*, then passes a 
 * *query*: an AQL query string or a [query builder](https://npmjs.org/package/aqb) instance.
 * *bindVars* (optional): an object with the variables to bind the query to.
 
+For more information on *Cursor* instances see the *Cursor API* below.
+
 ### Managing AQL user functions
 
 These functions implement the [HTTP API for managing AQL user functions](https://docs.arangodb.com/HttpAqlUserFunctions/README.html).
