@@ -513,23 +513,82 @@ myFoxxApp.post('users', {
 
 *Cursor* instances provide an abstraction over the HTTP API's limitations. Unless a method explicitly exhausts the cursor, the driver will only fetch as many batches from the server as necessary. Unlike the server-side cursors, *Cursor* instances can also be rewinded.
 
+```js
+var db = require('arangojs')();
+db.query(someQuery, function (err, cursor) {
+    if (err) return console.error(err);
+    // cursor represents the query results
+});
+```
+
 ### cursor.all(callback)
 
 Rewinds and exhausts the cursor and passes an array containing all values returned by the query.
+
+*Examples*
+
+```js
+// query result: [1, 2, 3, 4, 5]
+cursor.all(function (err, vals) {
+    if (err) return console.error(err);
+    // vals is an array containing the entire query result
+    vals.length === 5;
+    vals; // [1, 2, 3, 4, 5]
+    cursor.hasNext() === false;
+});
+```
 
 ### cursor.next(callback)
 
 Advances the cursor and passes the next value returned by the query. If the cursor has already been exhausted, passes `undefined` instead.
 
+*Examples*
+
+```js
+// query result: [1, 2, 3, 4, 5]
+cursor.next(function (err, val) {
+    if (err) return console.error(err);
+    val === 1;
+    cursor.next(function (err, val2) {
+        if (err) return console.error(err);
+        val2 === 2;
+    });
+});
+```
+
 ### cursor.hasNext():Boolean
 
-Returns `true` if the cursor has more values or `false` if the cursor has been exhausted.
+Returns `true` if the cursor has more values or `false` if the cursor has been exhausted. Synchronous.
+
+*Examples*
+
+```js
+cursor.all(function (err) { // exhausts the cursor
+    if (err) return console.error(err);
+    cursor.hasNext() === false;
+});
+```
 
 ### cursor.each(fn, callback)
 
 Rewinds and exhausts the cursor by applying the function *fn* to each value returned by the query, then invokes the callback with no result value.
 
 Equivalent to *Array.prototype.forEach*.
+
+```js
+var counter = 0;
+function count() {
+    counter += 1;
+    return counter;
+}
+// query result: [1, 2, 3, 4, 5]
+cursor.each(count, function (err, result) {
+    if (err) return console.error(err);
+    counter === result;
+    result === 5;
+    cursor.hasNext() === false;
+});
+```
 
 ### cursor.every(fn, callback)
 
@@ -539,6 +598,22 @@ Passes the return value of the last call to *fn* to the callback.
 
 Equivalent to *Array.prototype.every*.
 
+```js
+function even(value) {
+    return value % 2 === 0;
+}
+// query result: [0, 2, 4, 5, 6]
+cursor.every(even, function (err, result) {
+    if (err) return console.error(err);
+    result === false; // 5 is not even
+    cursor.hasNext() === true;
+    cursor.next(function (err, value) {
+        if (err) return console.error(err);
+        value === 6; // next value after 5
+    });
+});
+```
+
 ### cursor.some(fn, callback)
 
 Rewinds and advances the cursor by applying the function *fn* to each value returned by the query until the cursor is exhausted or *fn* returns a value that evaluates to `true`.
@@ -547,11 +622,44 @@ Passes the return value of the last call to *fn* to the callback.
 
 Equivalent to *Array.prototype.some*.
 
+*Examples*
+
+```js
+function even(value) {
+    return value % 2 === 0;
+}
+// query result: [1, 3, 4, 5]
+cursor.some(even, function (err, result) {
+    if (err) return console.error(err);
+    result === true; // 4 is even
+    cursor.hasNext() === true;
+    cursor.next(function (err, value) {
+        if (err) return console.error(err);
+        value === 5; // next value after 4
+    });
+});
+```
+
 ### cursor.map(fn, callback)
 
 Rewinds and exhausts the cursor by applying the function *fn* to each value returned by the query, then invokes the callback with an array of the return values.
 
 Equivalent to *Array.prototype.map*.
+
+*Examples*
+
+```js
+function square(value) {
+    return value * value;
+}
+// query result: [1, 2, 3, 4, 5]
+cursor.map(square, function (err, result) {
+    if (err) return console.error(err);
+    result.length === 5;
+    result; // [1, 4, 9, 16, 25]
+    cursor.hasNext() === false;
+});
+```
 
 ### cursor.reduce(fn, [accu,] callback)
 
@@ -559,13 +667,68 @@ Rewinds and exhausts the cursor by reducing the values returned by the query wit
 
 Equivalent to *Array.prototype.reduce*.
 
+*Examples*
+
+```js
+function add(a, b) {
+    return a + b;
+}
+// query result: [1, 2, 3, 4, 5]
+
+var baseline = 1000;
+cursor.reduce(add, baseline, function (err, result) {
+    if (err) return console.error(err);
+    result === (baseline + 1 + 2 + 3 + 4 + 5);
+    cursor.hasNext() === false;
+});
+
+// -- or --
+
+cursor.reduce(add, function (err, result) {
+    if (err) return console.error(err);
+    result === (1 + 2 + 3 + 4 + 5);
+    cursor.hasNext() === false;
+});
+
+```
+
 ### cursor.rewind()
 
-Rewinds the cursor.
+Rewinds the cursor. Synchronous.
+
+*Examples*
+
+```js
+// query result: [1, 2, 3, 4, 5]
+cursor.all(function (err, result) {
+    if (err) return console.error(err);
+    result; // [1, 2, 3, 4, 5]
+    cursor.hasNext() === false;
+    cursor.rewind();
+    cursor.hasNext() === true;
+    cursor.next(function (err, value) {
+        if (err) return console.error(err);
+        value === 1;
+    });
+});
+```
 
 ## Endpoint API
 
 *Endpoint* instances provide access for arbitrary HTTP requests. This allows easy access to Foxx apps and other HTTP APIs not covered by the driver itself.
+
+### endpoint.endpoint([path, [headers]])
+
+Creates a new *Endpoint* instance representing the *path* relative to the current endpoint. Optionally *headers* can be an object with headers which will be extended with the current endpoint's headers and the connection's headers.
+
+*Examples*
+
+```js
+var db = require('arangojs')();
+var endpoint = db.endpoint('my-foxx-app');
+var users = endpoint.endpoint('users');
+// equivalent to db.endpoint('my-foxx-app/users')
+```
 
 ### endpoint.get([path,] [qs,] callback)
 
@@ -579,6 +742,34 @@ Performs a GET request to the given URL and passes the server response to the gi
 If *path* is missing, the request will be made to the base URL of the endpoint.
 
 If *qs* is an object, it will be translated to a query string.
+
+*Examples*
+
+```js
+var db = require('arangojs')();
+var endpoint = db.endpoint('my-foxx-app');
+endpoint.get(function (err, result) {
+    if (err) return console.error(err);
+    // result is the response body of calling
+    // GET _db/_system/my-foxx-app
+});
+
+// -- or -- 
+
+endpoint.get('users', function (err, result) {
+    if (err) return console.error(err);
+    // result is the response body of calling
+    // GET _db/_system/my-foxx-app/users
+});
+
+// -- or --
+
+endpoint.get('users', {group: 'admin'}, function (err, result) {
+    if (err) return console.error(err);
+    // result is the response body of calling
+    // GET _db/_system/my-foxx-app/users?group=admin
+});
+```
 
 ### endpoint.post([path,] [body, [qs,]] callback)
 
@@ -596,6 +787,50 @@ If *body* is an object, it will be converted to JSON.
 
 If *qs* is an object, it will be translated to a query string.
 
+*Examples*
+
+```js
+var db = require('arangojs')();
+var endpoint = db.endpoint('my-foxx-app');
+endpoint.post(function (err, result) {
+    if (err) return console.error(err);
+    // result is the response body of calling
+    // POST _db/_system/my-foxx-app
+});
+
+// -- or -- 
+
+endpoint.post('users', function (err, result) {
+    if (err) return console.error(err);
+    // result is the response body of calling
+    // POST _db/_system/my-foxx-app/users
+});
+
+// -- or --
+
+endpoint.post('users', {
+    username: 'admin',
+    password: 'hunter2'
+}, function (err, result) {
+    if (err) return console.error(err);
+    // result is the response body of calling
+    // POST _db/_system/my-foxx-app/users
+    // with JSON request body {"username": "admin", "password": "hunter2"}
+});
+
+// -- or --
+
+endpoint.post('users', {
+    username: 'admin',
+    password: 'hunter2'
+}, {admin: true}, function (err, result) {
+    if (err) return console.error(err);
+    // result is the response body of calling
+    // POST _db/_system/my-foxx-app/users?admin=true
+    // with JSON request body {"username": "admin", "password": "hunter2"}
+});
+```
+
 ### endpoint.put([path,] [body, [qs,]] callback)
 
 Performs a PUT request to the given URL and passes the server response to the given callback.
@@ -611,6 +846,50 @@ If *path* is missing, the request will be made to the base URL of the endpoint.
 If *body* is an object, it will be converted to JSON.
 
 If *qs* is an object, it will be translated to a query string.
+
+*Examples*
+
+```js
+var db = require('arangojs')();
+var endpoint = db.endpoint('my-foxx-app');
+endpoint.put(function (err, result) {
+    if (err) return console.error(err);
+    // result is the response body of calling
+    // PUT _db/_system/my-foxx-app
+});
+
+// -- or -- 
+
+endpoint.put('users/admin', function (err, result) {
+    if (err) return console.error(err);
+    // result is the response body of calling
+    // PUT _db/_system/my-foxx-app/users
+});
+
+// -- or --
+
+endpoint.put('users/admin', {
+    username: 'admin',
+    password: 'hunter2'
+}, function (err, result) {
+    if (err) return console.error(err);
+    // result is the response body of calling
+    // PUT _db/_system/my-foxx-app/users/admin
+    // with JSON request body {"username": "admin", "password": "hunter2"}
+});
+
+// -- or --
+
+endpoint.put('users/admin', {
+    username: 'admin',
+    password: 'hunter2'
+}, {admin: true}, function (err, result) {
+    if (err) return console.error(err);
+    // result is the response body of calling
+    // PUT _db/_system/my-foxx-app/users/admin?admin=true
+    // with JSON request body {"username": "admin", "password": "hunter2"}
+});
+```
 
 ### endpoint.patch([path,] [body, [qs,]] callback)
 
@@ -628,6 +907,46 @@ If *body* is an object, it will be converted to JSON.
 
 If *qs* is an object, it will be translated to a query string.
 
+```js
+var db = require('arangojs')();
+var endpoint = db.endpoint('my-foxx-app');
+endpoint.patch(function (err, result) {
+    if (err) return console.error(err);
+    // result is the response body of calling
+    // PATCH _db/_system/my-foxx-app
+});
+
+// -- or -- 
+
+endpoint.patch('users/admin', function (err, result) {
+    if (err) return console.error(err);
+    // result is the response body of calling
+    // PATCH _db/_system/my-foxx-app/users
+});
+
+// -- or --
+
+endpoint.patch('users/admin', {
+    password: 'hunter2'
+}, function (err, result) {
+    if (err) return console.error(err);
+    // result is the response body of calling
+    // PATCH _db/_system/my-foxx-app/users/admin
+    // with JSON request body {"password": "hunter2"}
+});
+
+// -- or --
+
+endpoint.patch('users/admin', {
+    password: 'hunter2'
+}, {admin: true}, function (err, result) {
+    if (err) return console.error(err);
+    // result is the response body of calling
+    // PATCH _db/_system/my-foxx-app/users/admin?admin=true
+    // with JSON request body {"password": "hunter2"}
+});
+```
+
 ### endpoint.delete([path,] [qs,] callback)
 
 Performs a DELETE request to the given URL and passes the server response to the given callback.
@@ -641,6 +960,34 @@ If *path* is missing, the request will be made to the base URL of the endpoint.
 
 If *qs* is an object, it will be translated to a query string.
 
+*Examples*
+
+```js
+var db = require('arangojs')();
+var endpoint = db.endpoint('my-foxx-app');
+endpoint.delete(function (err, result) {
+    if (err) return console.error(err);
+    // result is the response body of calling
+    // DELETE _db/_system/my-foxx-app
+});
+
+// -- or -- 
+
+endpoint.delete('users/admin', function (err, result) {
+    if (err) return console.error(err);
+    // result is the response body of calling
+    // DELETE _db/_system/my-foxx-app/users/admin
+});
+
+// -- or --
+
+endpoint.delete('users/admin', {permanent: true}, function (err, result) {
+    if (err) return console.error(err);
+    // result is the response body of calling
+    // DELETE _db/_system/my-foxx-app/users/admin?permanent=true
+});
+```
+
 ### endpoint.head([path,] [qs,] callback)
 
 Performs a HEAD request to the given URL and passes the server response to the given callback.
@@ -653,6 +1000,19 @@ Performs a HEAD request to the given URL and passes the server response to the g
 If *path* is missing, the request will be made to the base URL of the endpoint.
 
 If *qs* is an object, it will be translated to a query string.
+
+*Examples*
+
+```js
+var db = require('arangojs')();
+var endpoint = db.endpoint('my-foxx-app');
+endpoint.head(function (err, result, response) {
+    if (err) return console.error(err);
+    // result is empty (no response body)
+    // response is the response object for
+    // HEAD _db/_system/my-foxx-app
+});
+```
 
 ### endpoint.request(opts, callback)
 
@@ -673,6 +1033,22 @@ If *opts.path* is missing, the request will be made to the base URL of the endpo
 If *opts.body* is an object, it will be converted to JSON.
 
 If *opts.qs* is an object, it will be translated to a query string.
+
+```js
+var db = require('arangojs')();
+var endpoint = db.endpoint('my-foxx-app');
+endpoint.request({
+    path: 'hello-world',
+    method: 'POST',
+    body: {hello: 'world'},
+    qs: {admin: true}
+}, function (err, result) {
+    if (err) return console.error(err);
+    // result is the response body of calling
+    // POST _db/_system/my-foxx-app/hello-world?admin=true
+    // with JSON request body '{"hello": "world"}'
+});
+```
 
 ## Collection API
 
