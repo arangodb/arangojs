@@ -271,19 +271,57 @@ These functions implement the [HTTP API for manipulating databases](https://docs
 
 Creates a new database with the given *databaseName*, then passes a new *Database* instance to the callback.
 
+*Examples*
+
+```js
+var db = require('arangojs')();
+db.createDatabase('mydb', function (err, database) {
+    if (err) return console.error(err);
+    // database is a Database instance
+});
+```
+
 #### database.database(databaseName, [autoCreate,] callback)
 
 Fetches the database with the given *databaseName* from the server, then passes a new *Database* instance to the callback.
 
 If *autoCreate* is set to `true`, a database with the given name will be created if it doesn't already exist.
 
+*Examples*
+
+```js
+var db = require('arangojs')();
+db.database('mydb', function (err, database) {
+    if (err) return console.error(err);
+    // mydb exists
+});
+```
+
 #### database.databases(callback)
 
 Fetches all databases from the server and passes an array of new *Database* instances to the callback.
 
+*Examples*
+
+```js
+var db = require('arangojs')();
+db.databases(function (err, databases) {
+    if (err) return console.error(err);
+    // databases is an array of Database instances
+});
+```
+
 #### database.dropDatabase(databaseName, callback)
 
 Deletes the database with the given *databaseName* from the server.
+
+```js
+var db = require('arangojs')();
+db.dropDatabase('mydb', function (err) {
+    if (err) return console.error(err);
+    // database "mydb" no longer exists
+})
+```
 
 ### Transactions
 
@@ -308,6 +346,22 @@ Please note that while *action* should be a string evaluating to a well-formed J
 
 For more information on transactions, see [the HTTP API documentation for transactions](https://docs.arangodb.com/HttpTransaction/README.html).
 
+*Examples*
+
+```js
+var db = require('arangojs')();
+var collections = {read: '_users'};
+var action = String(function () {
+    // This code will be executed inside ArangoDB!
+    var db = require('org/arangodb').db;
+    return db._query('FOR user IN _users RETURN u.user').toArray();
+});
+db.transaction(collections, action, function (err, result) {
+    if (err) return console.error(err);
+    // result contains the return value of the action
+});
+```
+
 ### Queries
 
 This function implements the [HTTP API for AQL queries](https://docs.arangodb.com/HttpAqlQuery/README.html).
@@ -322,6 +376,34 @@ Performs a database query using the given *query* and *bindVars*, then passes a 
 * *bindVars* (optional): an object with the variables to bind the query to.
 
 For more information on *Cursor* instances see the [*Cursor API* below](#cursor-api).
+
+*Examples*
+
+```js
+var qb = require('aqb');
+var db = require('arangojs')();
+db.query(
+    qb.for('u').in('_users')
+    .filter(qb.eq('u.authData.active', '@active'))
+    .return('u.user'),
+    {active: true},
+    function (err, result) {
+        if (err) return console.error(err);
+        // result contains the result of the query
+    }
+);
+
+// -- or --
+
+db.query(
+    'FOR u IN _users FILTER u.authData.active == @active RETURN u.user',
+    {active: true},
+    function (err, result) {
+    if (err) return console.error(err);
+        // result contains the result of the query
+    }
+);
+```
 
 ### Managing AQL user functions
 
