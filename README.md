@@ -1541,7 +1541,7 @@ Performs a traversal starting from the given *startVertex* and following edges c
 
 See [the HTTP API documentation](https://docs.arangodb.com/HttpTraversal/README.html) for details on the additional arguments.
 
-Please note that while *opts.filter*, *opts.visitor*, *opts.init*, *opts.expander* and *opts.sort* should be strings evaluating to well-formed JavaScript functions, it's not possible to pass in JavaScript functions directly because the functions need to be evaluated on the server and will be transmitted in plain text.
+Please note that while *opts.filter*, *opts.visitor*, *opts.init*, *opts.expander* and *opts.sort* should be strings evaluating to well-formed JavaScript code, it's not possible to pass in JavaScript functions directly because the code needs to be evaluated on the server and will be transmitted in plain text.
 
 *Examples*
 
@@ -1558,15 +1558,12 @@ db.createEdgeCollection('my-edges', function (err, collection) {
     ], function (err) {
         if (err) return console.error(err);
         collection.traversal('vertices/a', {
-            visitor: String(function (config, result, vertex, path) {
-                result.vertices.push(vertex._key);
-            }),
-            init: String(function (config, result) {
-                result.vertices = [];
-            })
+            direction: 'outbound',
+            visitor: 'result.vertices.push(vertex._key);',
+            init: 'result.vertices = [];'
         }, function (err, result) {
             if (err) return console.error(err);
-            result.vertices; // ['a', 'b', 'c']
+            result.vertices; // ['a', 'b', 'c', 'd']
         });
     });
 });
