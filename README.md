@@ -71,6 +71,8 @@ If *config* is a string, it will be interpreted as *config.url*.
 
 Creates a collection from the given *properties*, then passes a new *Collection* instance to the callback.
 
+For more information on the *properties* object, see [the HTTP API documentation for creating collections](https://docs.arangodb.com/HttpCollection/Creating.html).
+
 If *properties* is a string, it will be interpreted as *properties.name*.
 
 #### database.collection(collectionName, [autoCreate,] callback)
@@ -100,6 +102,8 @@ If *excludeSystem* is set to `true`, system collections will not be truncated.
 #### database.createGraph(properties, callback)
 
 Creates a graph with the given *properties*, then passes a new *Graph* instance to the callback.
+
+For more information on the *properties* object, see [the HTTP API documentation for creating graphs](https://docs.arangodb.com/HttpGharial/Management.html).
 
 #### database.graph(graphName, [autoCreate,], callback)
 
@@ -155,6 +159,8 @@ Performs a server-side transaction and passes the *action*'s return value to the
 If *collections* is an array or string, it will be used as *collections.write*.
 
 Please note that while *action* should be a string evaluating to a well-formed JavaScript function, it's not possible to pass in a JavaScript function directly because the function needs to be evaluated on the server and will be transmitted in plain text.
+
+For more information on transactions, see [the HTTP API documentation for transactions](https://docs.arangodb.com/HttpTransaction/README.html).
 
 ### Queries
 
@@ -233,6 +239,8 @@ Returns a new *Endpoint* instance for the given path (relative to the database) 
 * *headers* (optional): default headers that should be send with each request to the endpoint.
 
 If *path* is missing, the endpoint will refer to the base URL of the database.
+
+For more information on *Endpoint* instances see the *Endpoint API* below.
 
 ## Cursor API
 
@@ -490,6 +498,8 @@ If *opts* is set, it must be an object with any of the following properties:
 * *details*: Whether the response should contain additional details about documents that could not be imported. Default: *false*.
 * *type*: Indicates which format the data uses. Can be `"collection"`, `"array"` or `"auto"`. Default: `"auto"`.
 
+For more information on the *opts* object, see [the HTTP API documentation for bulk imports](https://docs.arangodb.com/HttpBulkImports/ImportingSelfContained.html).
+
 #### collection.replace(documentHandle, data, [opts,] callback)
 
 Replaces the content of the document with the given *documentHandle* with the given *data*.
@@ -503,6 +513,8 @@ If *opts* is set, it must be an object with any of the following properties:
  * if *policy* is set to `"error"` or not set, the replacement will fail with an error.
 
 The *documentHandle* can be either the `_id` or the `_key` of a document in the collection.
+
+For more information on the *opts* object, see [the HTTP API documentation for working with documents](https://docs.arangodb.com/HttpDocument/WorkingWithDocuments.html).
 
 #### collection.update(documentHandle, data, [opts,] callback)
 
@@ -520,6 +532,8 @@ If *opts* is set, it must be an object with any of the following properties:
 
 The *documentHandle* can be either the `_id` or the `_key` of a document in the collection.
 
+For more information on the *opts* object, see [the HTTP API documentation for working with documents](https://docs.arangodb.com/HttpDocument/WorkingWithDocuments.html).
+
 #### collection.remove(documentHandle, [opts,] callback)
 
 Deletes the document with the given *documentHandle* from the collection.
@@ -533,6 +547,8 @@ If *opts* is set, it must be an object with any of the following properties:
  * if *policy* is set to `"error"` or not set, the replacement will fail with an error.
 
 The *documentHandle* can be either the `_id` or the `_key` of a document in the collection.
+
+For more information on the *opts* object, see [the HTTP API documentation for working with documents](https://docs.arangodb.com/HttpDocument/WorkingWithDocuments.html).
 
 #### collection.all([type,] callback)
 
