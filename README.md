@@ -1083,7 +1083,7 @@ endpoint.request({
 
 These functions implement the [HTTP API for manipulating collections](https://docs.arangodb.com/HttpCollection/README.html).
 
-The *Collection API* is implemented by all *Collection* instances, regardless of their specific type. I.e. it represents a shared subset between instances of [*DocumentCollection*](#documentcollection-api), [*EdgeCollection*](#edgecollection-api), [*Graph.VertexCollection*](#graphvertexcollection-api) and [*Graph.EdgeCollection*](#graphedgecollection-api).
+The *Collection API* is implemented by all *Collection* instances, regardless of their specific type. I.e. it represents a shared subset between instances of [*DocumentCollection*](#documentcollection-api), [*EdgeCollection*](#edgecollection-api), [*GraphVertexCollection*](#graphvertexcollection-api) and [*GraphEdgeCollection*](#graphedgecollection-api).
 
 ### Getting information about the collection
 
@@ -1137,9 +1137,37 @@ Rotates the journal of the collection.
 
 Deletes **all documents** in the collection in the database.
 
+*Examples*
+
+```js
+var db = require('arangojs')();
+db.collection('some-collection', function (err, collection) {
+    if (err) return console.error(err);
+    collection.truncate(function (err) {
+        if (err) return console.error(err);
+        // the collection "some-collection" is now empty
+    });
+});
+```
+
 #### collection.drop(callback)
 
 Deletes the collection from the database.
+
+Equivalent to *database.dropCollection(collection.name, callback)*.
+
+*Examples*
+
+```js
+var db = require('arangojs')();
+db.collection('some-collection', function (err, collection) {
+    if (err) return console.error(err);
+    collection.drop(function (err) {
+        if (err) return console.error(err);
+        // the collection "some-collection" no longer exists
+    });
+});
+```
 
 ### Bulk importing documents
 
@@ -1177,6 +1205,31 @@ If *opts* is set, it must be an object with any of the following properties:
 * *type*: Indicates which format the data uses. Can be `"collection"`, `"array"` or `"auto"`. Default: `"auto"`.
 
 For more information on the *opts* object, see [the HTTP API documentation for bulk imports](https://docs.arangodb.com/HttpBulkImports/ImportingSelfContained.html).
+
+*Examples*
+
+```js
+var db = require('arangojs')();
+db.collection('users', function (err, collection) {
+    if (err) return console.error(err);
+    collection.import(
+        [
+            ['username', 'password', 'favourite_color'],
+            ['admin', 'hunter2', 'orange'],
+            ['jcd', 'bionicman', 'black'],
+            ['jreyes', 'amigo', 'white'],
+            ['ghermann', 'zeitgeist', 'blue']
+        ],
+        {
+            waitForSync: true
+        },
+        function (err, result) {
+            if (err) return console.error(err);
+            result.created === 4;
+        }
+    );
+});
+```
 
 ### Manipulating documents
 
@@ -1232,6 +1285,24 @@ The *documentHandle* can be either the `_id` or the `_key` of a document in the 
 
 For more information on the *opts* object, see [the HTTP API documentation for working with documents](https://docs.arangodb.com/HttpDocument/WorkingWithDocuments.html).
 
+*Examples*
+
+```js
+var db = require('arangojs')();
+db.collection('some-collection', function (err, collection) {
+    if (err) return console.error(err);
+    collection.remove('some-doc', function (err) {
+        if (err) return console.error(err);
+        // document 'some-collection/some-doc' no longer exists
+    });
+    // -- or --
+    collection.remove('some-collection/some-doc', function (err) {
+        if (err) return console.error(err);
+        // document 'some-collection/some-doc' no longer exists
+    });
+});
+```
+
 #### collection.all([type,] callback)
 
 Retrieves a list of all documents in the collection.
@@ -1252,9 +1323,50 @@ Retrieves the document with the given *documentHandle* from the collection.
 
 The *documentHandle* can be either the `_id` or the `_key` of a document in the collection.
 
+*Examples*
+
+```js
+var db = require('arangojs')();
+// assumes a document collection "my-docs" already exists
+db.collection('my-docs', function (err, collection) {
+    if (err) return console.error(err);
+    collection.document('some-key', function (err, doc) {
+        if (err) return console.error(err);
+        // the document exists
+        doc._key === 'some-key';
+        doc._id === 'my-docs/some-key';
+    });
+    // -- or --
+    collection.document('my-docs/some-key', function (err, doc) {
+        if (err) return console.error(err);
+        // the document exists
+        doc._key === 'some-key';
+        doc._id === 'my-docs/some-key';
+    });
+});
+```
+
 #### documentCollection.save(data, callback)
 
 Creates a new document with the given *data*.
+
+*Examples*
+
+```js
+var db = require('arangojs')();
+db.createCollection('my-docs', function (err, collection) {
+    if (err) return console.error(err);
+    collection.save(
+        {some: 'data'},
+        function (err, doc) {
+            if (err) return console.error(err);
+            doc._key; // the document's key
+            doc._id === ('my-docs/' + doc._key);
+            doc.some === 'data';
+        }
+    );
+});
+```
 
 ### EdgeCollection API
 
@@ -1266,9 +1378,55 @@ Retrieves the edge with the given *documentHandle* from the collection.
 
 The *documentHandle* can be either the `_id` or the `_key` of an edge in the collection.
 
+*Examples*
+
+```js
+var db = require('arangojs')();
+// assumes an edge collection "my-edges" already exists
+db.collection('my-edges', function (err, collection) {
+    if (err) return console.error(err);
+    collection.edge('some-key', function (err, edge) {
+        if (err) return console.error(err);
+        // the edge exists
+        edge._key === 'some-key';
+        edge._id === 'my-edges/some-key';
+    });
+    // -- or --
+    collection.edge('my-edges/some-key', function (err, edge) {
+        if (err) return console.error(err);
+        // the edge exists
+        edge._key === 'some-key';
+        edge._id === 'my-edges/some-key';
+    });
+});
+```
+
 #### edgeCollection.save(data, fromId, toId, callback)
 
 Creates a new edge between the documents *fromId* and *toId* with the given *data*.
+
+*Examples*
+
+```js
+var db = require('arangojs')();
+// assumes a collection "vertices" already exists
+db.createEdgeCollection('my-edges', function (err, collection) {
+    if (err) return console.error(err);
+    collection.save(
+        {some: 'data'},
+        'vertices/start-vertex',
+        'vertices/end-vertex',
+        function (err, edge) {
+            if (err) return console.error(err);
+            edge._key; // the edge's key
+            edge._id === ('my-edges/' + edge._key);
+            edge.some === 'data';
+            edge._from === 'vertices/start-vertex';
+            edge._to === 'vertices/end-vertex';
+        }
+    );
+});
+```
 
 #### edgeCollection.edges(documentHandle, callback)
 
@@ -1304,7 +1462,7 @@ If *dropCollections* is set to `true`, the collections associated with the graph
 
 #### graph.vertexCollection(collectionName, callback)
 
-Fetches the vertex collection with the given *collectionName* from the database, then passes a new *Graph.VertexCollection* instance to the callback.
+Fetches the vertex collection with the given *collectionName* from the database, then passes a new [*GraphVertexCollection* instance](#graphvertexcollection-api) to the callback.
 
 #### graph.addVertexCollection(collectionName, callback)
 
@@ -1320,7 +1478,7 @@ If *dropCollection* is set to `true`, the collection will also be deleted from t
 
 #### graph.edgeCollection(collectionName, callback)
 
-Fetches the edge collection with the given *collectionName* from the database, then passes a new *Graph.EdgeCollection* instance to the callback.
+Fetches the edge collection with the given *collectionName* from the database, then passes a new [*GraphEdgeCollection* instance](#graphedgecollection-api) to the callback.
 
 #### graph.addEdgeDefinition(definition, callback)
 
@@ -1344,31 +1502,31 @@ See [the HTTP API documentation](https://docs.arangodb.com/HttpTraversal/README.
 
 Please note that while *opts.filter*, *opts.visitor*, *opts.init*, *opts.expander* and *opts.sort* should be strings evaluating to well-formed JavaScript functions, it's not possible to pass in JavaScript functions directly because the functions need to be evaluated on the server and will be transmitted in plain text.
 
-### Graph.VertexCollection API
+### GraphVertexCollection API
 
-The *Graph.VertexCollection API* extends the [*Collection API* (see above)](#collection-api) with the following methods.
+The *GraphVertexCollection API* extends the [*Collection API* (see above)](#collection-api) with the following methods.
 
-#### vertexCollection.vertex(documentHandle, callback)
+#### graphVertexCollection.vertex(documentHandle, callback)
 
 Retrieves the vertex with the given *documentHandle* from the collection.
 
 The *documentHandle* can be either the `_id` or the `_key` of a vertex in the collection.
 
-#### vertexCollection.save(data, callback)
+#### graphVertexCollection.save(data, callback)
 
 Creates a new vertex with the given *data*.
 
-### Graph.EdgeCollection API
+### GraphEdgeCollection API
 
-The *Graph.EdgeCollection API* extends the *Collection API* (see above) with the following methods.
+The *GraphEdgeCollection API* extends the *Collection API* (see above) with the following methods.
 
-#### edgeCollection.edge(documentHandle, callback)
+#### graphEdgeCollection.edge(documentHandle, callback)
 
 Retrieves the edge with the given *documentHandle* from the collection.
 
 The *documentHandle* can be either the `_id` or the `_key` of an edge in the collection.
 
-#### edgeCollection.save(data, fromId, toId, callback)
+#### graphEdgeCollection.save(data, fromId, toId, callback)
 
 Creates a new edge between the vertices *fromId* and *toId* with the given *data*.
 
