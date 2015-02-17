@@ -167,6 +167,60 @@ Performs a database query using the given *query* and *bindVars*, then passes a 
 * *query*: an AQL query string or a [query builder](https://npmjs.org/package/aqb) instance.
 * *bindVars* (optional): an object with the variables to bind the query to.
 
+### Managing AQL user functions
+
+#### database.createFunction(name, code, callback)
+
+Creates an AQL user function with the given *name* and *code* if it does not already exist or replaces it if a function with the same name already existed.
+
+*Paramter*
+
+* *name*: a valid AQL function name, e.g.: `"myfuncs::accounting::calculate_vat"`.
+* *code*: a string evaluating to a JavaScript function (not a JavaScript function object).
+
+*Examples*
+
+```js
+var qb = require('aqb');
+var db = require('arangojs')();
+var vat_fn_name = 'myfuncs::acounting::calculate_vat';
+var vat_fn_code = String(function (price) {
+    return price * 0.19;
+});
+db.createFunction(vat_fn_name, vat_fn_code, function (err) {
+    if (err) {
+        console.error(err);
+        return;
+    }
+    // Use the new function in an AQL query with the query builder:
+    db.query(
+        qb.for('product').in('products')
+        .return(qb.MERGE(
+            {
+                vat: qb.fn(vat_fn_name)('product.price')
+            },
+            'product'
+        )),
+        function (err, result) {
+            // ...
+        }
+    );
+});
+```
+
+#### database.dropFunction(name[, group], callback)
+
+Deletes the AQL user function with the given name from the database.
+
+*Paramter*
+
+* *name*: the name of the user function to drop.
+* *group* (optional): if set to `true`, all functions with a name starting with *name* will be deleted; otherwise only the function with the exact name will be deleted. Default: `false`.
+
+#### database.functions(callback)
+
+Fetches a list of all AQL user functions registered with the database.
+
 ### Arbitrary HTTP endpoints
 
 #### database.endpoint([path[, headers]])
