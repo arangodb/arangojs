@@ -387,9 +387,9 @@ db.query(
     .filter(qb.eq('u.authData.active', '@active'))
     .return('u.user'),
     {active: true},
-    function (err, result) {
+    function (err, cursor) {
         if (err) return console.error(err);
-        // result contains the result of the query
+        // cursor is a cursor for the query result
     }
 );
 
@@ -398,9 +398,9 @@ db.query(
 db.query(
     'FOR u IN _users FILTER u.authData.active == @active RETURN u.user',
     {active: true},
-    function (err, result) {
+    function (err, cursor) {
     if (err) return console.error(err);
-        // result contains the result of the query
+        // cursor is a cursor for the query result
     }
 );
 ```
@@ -445,6 +445,20 @@ db.createFunction(vat_fn_name, vat_fn_code, function (err) {
 });
 ```
 
+#### database.functions(callback)
+
+Fetches a list of all AQL user functions registered with the database.
+
+*Examples*
+
+```js
+var db = require('arangojs')();
+db.functions(function (err, functions) {
+    if (err) return console.error(err);
+    // functions is a list of function definitions
+})
+```
+
 #### database.dropFunction(name[, group], callback)
 
 Deletes the AQL user function with the given name from the database.
@@ -454,9 +468,15 @@ Deletes the AQL user function with the given name from the database.
 * *name*: the name of the user function to drop.
 * *group* (optional): if set to `true`, all functions with a name starting with *name* will be deleted; otherwise only the function with the exact name will be deleted. Default: `false`.
 
-#### database.functions(callback)
+*Examples*
 
-Fetches a list of all AQL user functions registered with the database.
+```js
+var db = require('arangojs')();
+db.dropFunction('myfuncs::acounting::calculate_vat', function (err) {
+    if (err) return console.error(err);
+    // the function no longer exists
+});
+```
 
 ### Arbitrary HTTP endpoints
 
@@ -472,6 +492,22 @@ Returns a new *Endpoint* instance for the given path (relative to the database) 
 If *path* is missing, the endpoint will refer to the base URL of the database.
 
 For more information on *Endpoint* instances see the [*Endpoint API* below](#endpoint-api).
+
+*Examples*
+
+```js
+var db = require('arangojs')();
+var myFoxxApp = db.endpoint('my-foxx-app');
+myFoxxApp.post('users', {
+    username: 'admin',
+    password: 'hunter2'
+}, function (err, result) {
+    if (err) return console.error(err);
+    // result is the result of
+    // POST /_db/_system/my-foxx-app/users
+    // with JSON request body '{"username": "admin", "password": "hunter2"}'
+});
+```
 
 ## Cursor API
 
