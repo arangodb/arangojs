@@ -81,12 +81,41 @@ If *properties* is a string, it will be interpreted as *properties.name*.
 
 ```js
 var db = require('arangojs')();
+db.createCollection('my-data', function (err, collection) {
+    if (err) return console.error(err);
+    // collection is a DocumentCollection instance
+    // see the Collection API and DocumentCollection API below for details
+});
+
+// -- or --
+
 db.createCollection({
-    name: 'friends',
-    type: 3 // i.e. an edge collection
+    name: 'my-data',
+    type: 2 // i.e. document collection (the default)
 }, function (err, collection) {
     if (err) return console.error(err);
-    // collection is an EdgeCollection instance
+    // collection is a DocumentCollection instance
+    // see the Collection API and DocumentCollection API below for details
+});
+```
+
+#### database.createEdgeCollection(properties, callback)
+
+Creates an edge collection from the given *properties*, then passes a new *EdgeCollection* instance to the callback.
+
+For more information on the *properties* object, see [the HTTP API documentation for creating collections](https://docs.arangodb.com/HttpCollection/Creating.html).
+
+If *properties* is a string, it will be interpreted as *properties.name*.
+
+The collection type will be set to `3` (i.e. edge collection) regardless of the value of *properties.type*.
+
+*Examples*
+
+```js
+var db = require('arangojs')();
+db.createEdgeCollection('friends', function (err, edgeCollection) {
+    if (err) return console.error(err);
+    // edgeCollection is an EdgeCollection instance
     // see the Collection API and EdgeCollection API below for details
 });
 ```

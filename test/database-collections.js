@@ -4,6 +4,7 @@
 var expect = require('expect.js');
 var ArangoError = require('../lib/error');
 var Collection = require('../lib/collection')._BaseCollection;
+var EdgeCollection = require('../lib/collection').EdgeCollection;
 var Database = require('../');
 var db = new Database();
 var testCollectionName = 'test__collection_1';
@@ -52,6 +53,36 @@ describe('database', function () {
       db.createCollection(testCollectionName, function (err) {
         expect(err).not.to.be.ok();
         db.createCollection(testCollectionName, function (err2, collection) {
+          expect(err2).to.be.an(ArangoError);
+          expect(collection).not.to.be.ok();
+          done();
+        });
+      });
+    });
+  });
+  describe('createEdgeCollection', function () {
+    it('returns a new edge collection object with the given name', function (done) {
+      db.createEdgeCollection(testCollectionName, function (err, collection) {
+        expect(err).not.to.be.ok();
+        expect(collection).to.be.an(EdgeCollection);
+        expect(collection.name).to.equal(testCollectionName);
+        done();
+      });
+    });
+    it('creates a new collection with the given name', function (done) {
+      db.createEdgeCollection(testCollectionName, function (err) {
+        expect(err).not.to.be.ok();
+        db.collection(testCollectionName, false, function (err2, collection) {
+          expect(err2).not.to.be.ok();
+          expect(collection.name).to.equal(testCollectionName);
+          done();
+        });
+      });
+    });
+    it('returns an ArangoError if the db already exists', function (done) {
+      db.createEdgeCollection(testCollectionName, function (err) {
+        expect(err).not.to.be.ok();
+        db.createEdgeCollection(testCollectionName, function (err2, collection) {
           expect(err2).to.be.an(ArangoError);
           expect(collection).not.to.be.ok();
           done();
