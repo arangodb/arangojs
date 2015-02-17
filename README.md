@@ -1202,7 +1202,9 @@ If *opts* is set, it must be an object with any of the following properties:
 
 * *waitForSync*: Wait until the documents have been synced to disk. Default: `false`.
 * *details*: Whether the response should contain additional details about documents that could not be imported. Default: *false*.
-* *type*: Indicates which format the data uses. Can be `"collection"`, `"array"` or `"auto"`. Default: `"auto"`.
+* *type*: Indicates which format the data uses. Can be `"documents"`, `"array"` or `"auto"`. Default: `"auto"`.
+
+If *data* is a JavaScript array, it will be transmitted as a line-delimited JSON stream. If *opts.type* is set to `"array"`, it will be transmitted as regular JSON instead. If *data* is a string, it will be transmitted as it is without any processing.
 
 For more information on the *opts* object, see [the HTTP API documentation for bulk imports](https://docs.arangodb.com/HttpBulkImports/ImportingSelfContained.html).
 
@@ -1213,16 +1215,40 @@ var db = require('arangojs')();
 db.collection('users', function (err, collection) {
     if (err) return console.error(err);
     collection.import(
-        [
+        [// document stream
+            {username: 'admin', password: 'hunter2', 'favorite-color': 'orange'},
+            {username: 'jcd', password: 'bionicman', 'favorite-color': 'black'},
+            {username: 'jreyes', password: 'amigo', 'favorite-color': 'white'},
+            {username: 'ghermann', password: 'zeitgeist', 'favorite-color': 'blue'}
+        ],
+        function (err, result) {
+            if (err) return console.error(err);
+            result.created === 4;
+        }
+    );
+    // -- or --
+    collection.import(
+        [// array stream with header
             ['username', 'password', 'favourite_color'],
             ['admin', 'hunter2', 'orange'],
             ['jcd', 'bionicman', 'black'],
             ['jreyes', 'amigo', 'white'],
             ['ghermann', 'zeitgeist', 'blue']
         ],
-        {
-            waitForSync: true
-        },
+        function (err, result) {
+            if (err) return console.error(err);
+            result.created === 4;
+        }
+    );
+    // -- or --
+    collection.import(
+        (// raw line-delimited JSON array stream with header
+            '["username", "password", "favourite_color"]\r\n' +
+            '["admin", "hunter2", "orange"]\r\n' +
+            '["jcd", "bionicman", "black"]\r\n' +
+            '["jreyes", "amigo", "white"]\r\n' +
+            '["ghermann", "zeitgeist", "blue"]\r\n'
+        ),
         function (err, result) {
             if (err) return console.error(err);
             result.created === 4;
