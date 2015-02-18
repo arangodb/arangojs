@@ -395,6 +395,8 @@ db.transaction(collections, action, function (err, result) {
 
 This function implements the [HTTP API for AQL queries](https://docs.arangodb.com/HttpAqlQuery/README.html).
 
+For collection-specific queries see [fulltext queries](#fulltext-queries) and [geo-spatial queries](#geo-queries).
+
 #### database.query(query, [bindVars,] callback)
 
 Performs a database query using the given *query* and *bindVars*, then passes a new *Cursor* instance for the result list to the callback.
