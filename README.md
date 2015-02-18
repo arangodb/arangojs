@@ -225,17 +225,17 @@ For more information on the *properties* object, see [the HTTP API documentation
 
 ```js
 var db = require('arangojs')();
-// this assumes collections `myEdges`, `startVertices` and `endVertices` exist
+// this assumes collections `edges`, `start-vertices` and `end-vertices` exist
 db.createGraph({
-    name: 'myGraph',
+    name: 'some-graph',
     edgeDefinitions: [
         {
-            collection: 'myEdges',
+            collection: 'edges',
             from: [
-                'startVertices'
+                'start-vertices'
             ],
             to: [
-                'endVertices'
+                'end-vertices'
             ]
         }
     ]
@@ -256,7 +256,7 @@ If *autoCreate* is set to `true`, a graph with the given name will be created if
 
 ```js
 var db = require('arangojs')();
-db.graph('myGraph', function (err, graph) {
+db.graph('some-graph', function (err, graph) {
     if (err) return console.error(err);
     // graph exists
 });
@@ -286,9 +286,9 @@ If *dropCollections* is set to `true`, the collections associated with the graph
 
 ```js
 var db = require('arangojs')();
-db.dropGraph('myGraph', function (err) {
+db.dropGraph('some-graph', function (err) {
     if (err) return console.error(err);
-    // graph "myGraph" no longer exists
+    // graph "some-graph" no longer exists
 });
 ```
 
@@ -1586,21 +1586,21 @@ The *documentHandle* can be either the `_id` or the `_key` of an edge in the col
 
 ```js
 var db = require('arangojs')();
-// assumes an edge collection "my-edges" already exists
-db.collection('my-edges', function (err, collection) {
+// assumes an edge collection "edges" already exists
+db.collection('edges', function (err, collection) {
     if (err) return console.error(err);
     collection.edge('some-key', function (err, edge) {
         if (err) return console.error(err);
         // the edge exists
         edge._key === 'some-key';
-        edge._id === 'my-edges/some-key';
+        edge._id === 'edges/some-key';
     });
     // -- or --
-    collection.edge('my-edges/some-key', function (err, edge) {
+    collection.edge('edges/some-key', function (err, edge) {
         if (err) return console.error(err);
         // the edge exists
         edge._key === 'some-key';
-        edge._id === 'my-edges/some-key';
+        edge._id === 'edges/some-key';
     });
 });
 ```
@@ -1614,7 +1614,7 @@ Creates a new edge between the documents *fromId* and *toId* with the given *dat
 ```js
 var db = require('arangojs')();
 // assumes a collection "vertices" already exists
-db.createEdgeCollection('my-edges', function (err, collection) {
+db.createEdgeCollection('edges', function (err, collection) {
     if (err) return console.error(err);
     collection.save(
         {some: 'data'},
@@ -1623,7 +1623,7 @@ db.createEdgeCollection('my-edges', function (err, collection) {
         function (err, edge) {
             if (err) return console.error(err);
             edge._key; // the edge's key
-            edge._id === ('my-edges/' + edge._key);
+            edge._id === ('edges/' + edge._key);
             edge.some === 'data';
             edge._from === 'vertices/start-vertex';
             edge._to === 'vertices/end-vertex';
@@ -1643,7 +1643,7 @@ The *documentHandle* can be either the `_id` or the `_key` of a document in any 
 ```js
 var db = require('arangojs')();
 // assumes a collection "vertices" already exists
-db.createEdgeCollection('my-edges', function (err, collection) {
+db.createEdgeCollection('edges', function (err, collection) {
     if (err) return console.error(err);
     collection.import([
         ['_key', '_from', '_to'],
@@ -1672,7 +1672,7 @@ The *documentHandle* can be either the `_id` or the `_key` of a document in any 
 ```js
 var db = require('arangojs')();
 // assumes a collection "vertices" already exists
-db.createEdgeCollection('my-edges', function (err, collection) {
+db.createEdgeCollection('edges', function (err, collection) {
     if (err) return console.error(err);
     collection.import([
         ['_key', '_from', '_to'],
@@ -1701,7 +1701,7 @@ The *documentHandle* can be either the `_id` or the `_key` of a document in any 
 ```js
 var db = require('arangojs')();
 // assumes a collection "vertices" already exists
-db.createEdgeCollection('my-edges', function (err, collection) {
+db.createEdgeCollection('edges', function (err, collection) {
     if (err) return console.error(err);
     collection.import([
         ['_key', '_from', '_to'],
@@ -1732,7 +1732,7 @@ Please note that while *opts.filter*, *opts.visitor*, *opts.init*, *opts.expande
 ```js
 var db = require('arangojs')();
 // assumes a collection "vertices" already exists
-db.createEdgeCollection('my-edges', function (err, collection) {
+db.createEdgeCollection('edges', function (err, collection) {
     if (err) return console.error(err);
     collection.import([
         ['_key', '_from', '_to'],
@@ -1763,15 +1763,69 @@ Deletes the graph from the database.
 
 If *dropCollections* is set to `true`, the collections associated with the graph will also be deleted.
 
+Equivalent to *database.dropGraph(graph.name, callback)*.
+
+*Examples*
+
+```js
+var db = require('arangojs')();
+db.graph('some-graph', function (err, graph) {
+    if (err) return console.error(err);
+    graph.drop(function (err) {
+        if (err) return console.error(err);
+        // the graph "some-graph" no longer exists
+    });
+});
+```
+
 ### Manipulating vertices
 
 #### graph.vertexCollection(collectionName, callback)
 
 Fetches the vertex collection with the given *collectionName* from the database, then passes a new [*GraphVertexCollection* instance](#graphvertexcollection-api) to the callback.
 
+*Examples*
+
+```js
+var db = require('arangojs')();
+// assuming the collections "edges" and "vertices" exist
+db.createGraph({
+    name: 'some-graph',
+    edgeDefinitions: [{
+        collection: 'edges',
+        from: ['vertices'],
+        to: ['vertices']
+    }]
+}, function (err, graph) {
+    if (err) return console.error(err);
+    graph.vertexCollection('vertices', function (err, collection) {
+        if (err) return console.error(err);
+        collection.name === 'vertices';
+        // collection is a GraphVertexCollection
+    });
+});
+```
+
 #### graph.addVertexCollection(collectionName, callback)
 
 Adds the collection with the given *collectionName* to the graph's vertex collections.
+
+*Examples*
+
+```js
+var db = require('arangojs')();
+// assuming the collection "vertices" exist
+db.createGraph({
+    name: 'some-graph',
+    edgeDefinitions: []
+}, function (err, graph) {
+    if (err) return console.error(err);
+    graph.addVertexCollection('vertices', function (err) {
+        if (err) return console.error(err);
+        // the collection "vertices" has been added to the graph
+    });
+});
+```
 
 #### graph.removeVertexCollection(collectionName, [dropCollection,] callback)
 
@@ -1779,25 +1833,151 @@ Removes the vertex collection with the given *collectionName* from the graph.
 
 If *dropCollection* is set to `true`, the collection will also be deleted from the database.
 
+*Examples*
+
+```js
+var db = require('arangojs')();
+// assuming the collections "edges" and "vertices" exist
+db.createGraph({
+    name: 'some-graph',
+    orphanCollections: ['vertices']
+}, function (err, graph) {
+    if (err) return console.error(err);
+    graph.removeVertexCollection('vertices', function (err) {
+        if (err) return console.error(err);
+        // collection "vertices" has been removed from the graph
+    });
+    // -- or --
+    graph.removeVertexCollection('vertices', true, function (err) {
+        if (err) return console.error(err);
+        // collection "vertices" has been removed from the graph
+        // the collection has also been dropped from the database
+        // this may have been a bad idea
+    });
+});
+```
+
 ### Manipulating edges
 
 #### graph.edgeCollection(collectionName, callback)
 
 Fetches the edge collection with the given *collectionName* from the database, then passes a new [*GraphEdgeCollection* instance](#graphedgecollection-api) to the callback.
 
+*Examples*
+
+```js
+var db = require('arangojs')();
+// assuming the collections "edges" and "vertices" exist
+db.createGraph({
+    name: 'some-graph',
+    edgeDefinitions: [{
+        collection: 'edges',
+        from: ['vertices'],
+        to: ['vertices']
+    }]
+}, function (err, graph) {
+    if (err) return console.error(err);
+    graph.edgeCollection('edges', function (err, collection) {
+        if (err) return console.error(err);
+        collection.name === 'edges';
+        // collection is a GraphEdgeCollection
+    });
+});
+```
+
 #### graph.addEdgeDefinition(definition, callback)
 
 Adds the given edge definition *definition* to the graph.
 
-#### graph.replaceEdgeDefinition(definitionName, definition, callback)
+For more information on edge definitions see [the HTTP API for managing graphs](https://docs.arangodb.com/HttpGharial/Management.html).
 
-Replaces the edge definition named *definitionName* with the given *definition*.
+*Examples*
+
+```js
+var db = require('arangojs')();
+// assuming the collections "edges" and "vertices" exist
+db.createGraph({
+    name: 'some-graph',
+    edgeDefinitions: []
+}, function (err, graph) {
+    if (err) return console.error(err);
+    graph.addEdgeDefinition({
+        collection: 'edges',
+        from: ['vertices'],
+        to: ['vertices']
+    }, function (err) {
+        if (err) return console.error(err);
+        // the edge definition has been added to the graph
+    });
+});
+```
+
+#### graph.replaceEdgeDefinition(collectionName, definition, callback)
+
+Replaces the edge definition for the edge collection named *collectionName* with the given *definition*.
+
+For more information on edge definitions see [the HTTP API for managing graphs](https://docs.arangodb.com/HttpGharial/Management.html).
+
+*Examples*
+
+```js
+var db = require('arangojs')();
+// assuming the collections "edges", "vertices" and "more-vertices" exist
+db.createGraph({
+    name: 'some-graph',
+    edgeDefinitions: [{
+        collection: 'edges',
+        from: ['vertices'],
+        to: ['vertices']
+    }]
+}, function (err, graph) {
+    if (err) return console.error(err);
+    graph.replaceEdgeDefinition('edges', {
+        collection: 'edges',
+        from: ['vertices'],
+        to: ['more-vertices']
+    }, function (err) {
+        if (err) return console.error(err);
+        // the edge definition has been modified
+    });
+});
+```
 
 #### graph.removeEdgeDefinition(definitionName, [dropCollection,] callback)
 
 Removes the edge definition with the given *definitionName* form the graph.
 
 If *dropCollection* is set to `true`, the edge collection associated with the definition will also be deleted from the database.
+
+For more information on edge definitions see [the HTTP API for managing graphs](https://docs.arangodb.com/HttpGharial/Management.html).
+
+*Examples*
+
+```js
+var db = require('arangojs')();
+// assuming the collections "edges" and "vertices" exist
+db.createGraph({
+    name: 'some-graph',
+    edgeDefinitions: [{
+        collection: 'edges',
+        from: ['vertices'],
+        to: ['vertices']
+    }]
+}, function (err, graph) {
+    if (err) return console.error(err);
+    graph.removeEdgeDefinition('edges', function (err) {
+        if (err) return console.error(err);
+        // the edge definition has been removed
+    });
+    // -- or --
+    graph.removeEdgeDefinition('edges', true, function (err) {
+        if (err) return console.error(err);
+        // the edge definition has been removed
+        // and the edge collection "edges" has been dropped
+        // this may have been a bad idea
+    });
+});
+```
 
 #### graph.traversal(startVertex, [opts,] callback)
 
@@ -1806,6 +1986,42 @@ Performs a traversal starting from the given *startVertex* and following edges c
 See [the HTTP API documentation](https://docs.arangodb.com/HttpTraversal/README.html) for details on the additional arguments.
 
 Please note that while *opts.filter*, *opts.visitor*, *opts.init*, *opts.expander* and *opts.sort* should be strings evaluating to well-formed JavaScript functions, it's not possible to pass in JavaScript functions directly because the functions need to be evaluated on the server and will be transmitted in plain text.
+
+*Examples*
+
+```js
+var db = require('arangojs')();
+// assumes the collections "edges" and "vertices" already exist
+db.createGraph({
+    name: 'some-graph',
+    edgeDefinitions: [{
+        collection: 'edges',
+        from: ['vertices'],
+        to: ['vertices']
+    }]
+}, function (err, graph) {
+    if (err) return console.error(err);
+    graph.edgeCollection('edges', function (err, collection) {
+        if (err) return console.error(err);
+        collection.import([
+            ['_key', '_from', '_to'],
+            ['x', 'vertices/a', 'vertices/b'],
+            ['y', 'vertices/b', 'vertices/c'],
+            ['z', 'vertices/c', 'vertices/d']
+        ], function (err) {
+            if (err) return console.error(err);
+            graph.traversal('vertices/a', {
+                direction: 'outbound',
+                visitor: 'result.vertices.push(vertex._key);',
+                init: 'result.vertices = [];'
+            }, function (err, result) {
+                if (err) return console.error(err);
+                result.vertices; // ['a', 'b', 'c', 'd']
+            });
+        });
+    });
+});
+```
 
 ### GraphVertexCollection API
 
@@ -1817,9 +2033,70 @@ Retrieves the vertex with the given *documentHandle* from the collection.
 
 The *documentHandle* can be either the `_id` or the `_key` of a vertex in the collection, or a vertex (i.e. an object with an `_id` or `_key` property).
 
+*Examples*
+
+```js
+// assumes the collections "edges" and "vertices" already exist
+db.createGraph({
+    name: 'some-graph',
+    edgeDefinitions: [{
+        collection: 'edges',
+        from: ['vertices'],
+        to: ['vertices']
+    }]
+}, function (err, graph) {
+    if (err) return console.error(err);
+    graph.vertexCollection('vertices', function (err, collection) {
+        if (err) return console.error(err);
+        collection.vertex('some-key', function (err, doc) {
+            if (err) return console.error(err);
+            // the vertex exists
+            doc._key === 'some-key';
+            doc._id === 'vertices/some-key';
+        });
+        // -- or --
+        collection.vertex('vertices/some-key', function (err, doc) {
+            if (err) return console.error(err);
+            // the vertex exists
+            doc._key === 'some-key';
+            doc._id === 'vertices/some-key';
+        });
+    });
+});
+```
+
 #### graphVertexCollection.save(data, callback)
 
 Creates a new vertex with the given *data*.
+
+*Examples*
+
+```js
+var db = require('arangojs')();
+// assumes the collections "edges" and "vertices" already exist
+db.createGraph({
+    name: 'some-graph',
+    edgeDefinitions: [{
+        collection: 'edges',
+        from: ['vertices'],
+        to: ['vertices']
+    }]
+}, function (err, graph) {
+    if (err) return console.error(err);
+    graph.vertexCollection('vertices', function (err, collection) {
+        if (err) return console.error(err);
+        collection.save(
+            {some: 'data'},
+            function (err, doc) {
+                if (err) return console.error(err);
+                doc._key; // the document's key
+                doc._id === ('vertices/' + doc._key);
+                doc.some === 'data';
+            }
+        );
+    });
+});
+```
 
 ### GraphEdgeCollection API
 
@@ -1831,9 +2108,72 @@ Retrieves the edge with the given *documentHandle* from the collection.
 
 The *documentHandle* can be either the `_id` or the `_key` of an edge in the collection, or an edge (i.e. an object with an `_id` or `_key` property).
 
+```js
+// assumes the collections "edges" and "vertices" already exist
+db.createGraph({
+    name: 'some-graph',
+    edgeDefinitions: [{
+        collection: 'edges',
+        from: ['vertices'],
+        to: ['vertices']
+    }]
+}, function (err, graph) {
+    if (err) return console.error(err);
+    graph.edgeCollection('edges', function (err, collection) {
+        if (err) return console.error(err);
+        collection.edge('some-key', function (err, edge) {
+            if (err) return console.error(err);
+            // the edge exists
+            edge._key === 'some-key';
+            edge._id === 'edges/some-key';
+        });
+        // -- or --
+        collection.edge('edges/some-key', function (err, edge) {
+            if (err) return console.error(err);
+            // the edge exists
+            edge._key === 'some-key';
+            edge._id === 'edges/some-key';
+        });
+    });
+});
+```
+
 #### graphEdgeCollection.save(data, fromId, toId, callback)
 
 Creates a new edge between the vertices *fromId* and *toId* with the given *data*.
+
+*Examples*
+
+```js
+var db = require('arangojs')();
+// assumes the collections "edges" and "vertices" already exist
+db.createGraph({
+    name: 'some-graph',
+    edgeDefinitions: [{
+        collection: 'edges',
+        from: ['vertices'],
+        to: ['vertices']
+    }]
+}, function (err, graph) {
+    if (err) return console.error(err);
+    graph.edgeCollection('edges', function (err, collection) {
+        if (err) return console.error(err);
+        collection.save(
+            {some: 'data'},
+            'vertices/start-vertex',
+            'vertices/end-vertex',
+            function (err, edge) {
+                if (err) return console.error(err);
+                edge._key; // the edge's key
+                edge._id === ('edges/' + edge._key);
+                edge.some === 'data';
+                edge._from === 'vertices/start-vertex';
+                edge._to === 'vertices/end-vertex';
+            }
+        );
+    });
+});
+```
 
 # License
 
