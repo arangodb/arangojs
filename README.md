@@ -1056,7 +1056,7 @@ Performs an arbitrary request to the given URL and passes the server response to
  * *absolutePath* (optional): whether the *path* is relative to the connection's base URL instead of the endpoint. Default: `false`.
  * *body* (optional): the request body.
  * *qs* (optional): the query string.
- * *headers* (optional): an object with additional HTTP headers to send with the request.
+ * *headers* (optional): an object containing additional HTTP headers to send with the request.
  * *method* (optional): HTTP method to use. Default: `"GET"`.
 
 If *opts.path* is missing, the request will be made to the base URL of the endpoint.
@@ -1605,7 +1605,7 @@ Performs a fulltext query searching for *query* in the given *fieldName* of all 
 
 * *fieldName*: the name of the field to search.
 * *query*: a fulltext query string.
-* *opts* (optional): an object additional options for the query.
+* *opts* (optional): an object containing additional options for the query.
 
 For more information on the properties of the *opts* object see [the HTTP API for fulltext queries](https://docs.arangodb.com/HttpIndexes/Fulltext.html).
 
@@ -1641,7 +1641,7 @@ Performs a geo-spatial query for documents near the given location.
 
 * *latitude*: latitude of the target location.
 * *longitude*: longitude of the target location.
-* *opts* (optional): an object additional options for the query.
+* *opts* (optional): an object containing additional options for the query.
 
 For more information on the properties of the *opts* object see [the HTTP API for geo-spatial queries](https://docs.arangodb.com/HttpIndexes/Geo.html).
 
@@ -1677,7 +1677,7 @@ Performs a geo-spatial query for documents within the given *radius* of the give
 * *latitude*: latitude of the target location.
 * *longitude*: longitude of the target location.
 * *radius*: the search radius (in meters).
-* *opts* (optional): an object additional options for the query.
+* *opts* (optional): an object containing additional options for the query.
 
 For more information on the properties of the *opts* object see [the HTTP API for geo-spatial queries](https://docs.arangodb.com/HttpIndexes/Geo.html).
 
