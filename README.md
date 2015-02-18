@@ -509,26 +509,26 @@ db.dropFunction('myfuncs::acounting::calculate_vat', function (err) {
 });
 ```
 
-### Arbitrary HTTP endpoints
+### Arbitrary HTTP routes
 
-#### database.endpoint([path[, headers]])
+#### database.route([path[, headers]])
 
-Returns a new *Endpoint* instance for the given path (relative to the database) that can be used to perform arbitrary HTTP requests.
+Returns a new *Route* instance for the given path (relative to the database) that can be used to perform arbitrary HTTP requests.
 
 *Parameter*
 
-* *path* (optional): relative URL of the endpoint.
-* *headers* (optional): default headers that should be send with each request to the endpoint.
+* *path* (optional): relative URL of the route.
+* *headers* (optional): default headers that should be send with each request to the route.
 
-If *path* is missing, the endpoint will refer to the base URL of the database.
+If *path* is missing, the route will refer to the base URL of the database.
 
-For more information on *Endpoint* instances see the [*Endpoint API* below](#endpoint-api).
+For more information on *Route* instances see the [*Route API* below](#route-api).
 
 *Examples*
 
 ```js
 var db = require('arangojs')();
-var myFoxxApp = db.endpoint('my-foxx-app');
+var myFoxxApp = db.route('my-foxx-app');
 myFoxxApp.post('users', {
     username: 'admin',
     password: 'hunter2'
@@ -744,33 +744,33 @@ cursor.all(function (err, result) {
 });
 ```
 
-## Endpoint API
+## Route API
 
-*Endpoint* instances provide access for arbitrary HTTP requests. This allows easy access to Foxx apps and other HTTP APIs not covered by the driver itself.
+*Route* instances provide access for arbitrary HTTP requests. This allows easy access to Foxx apps and other HTTP APIs not covered by the driver itself.
 
-### endpoint.endpoint([path, [headers]])
+### route.route([path, [headers]])
 
-Creates a new *Endpoint* instance representing the *path* relative to the current endpoint. Optionally *headers* can be an object with headers which will be extended with the current endpoint's headers and the connection's headers.
+Creates a new *Route* instance representing the *path* relative to the current route. Optionally *headers* can be an object with headers which will be extended with the current route's headers and the connection's headers.
 
 *Examples*
 
 ```js
 var db = require('arangojs')();
-var endpoint = db.endpoint('my-foxx-app');
-var users = endpoint.endpoint('users');
-// equivalent to db.endpoint('my-foxx-app/users')
+var route = db.route('my-foxx-app');
+var users = route.route('users');
+// equivalent to db.route('my-foxx-app/users')
 ```
 
-### endpoint.get([path,] [qs,] callback)
+### route.get([path,] [qs,] callback)
 
 Performs a GET request to the given URL and passes the server response to the given callback.
 
 *Parameter*
 
-* *path* (optional): the endpoint-relative URL for the request.
+* *path* (optional): the route-relative URL for the request.
 * *qs* (optional): the query string for the request.
 
-If *path* is missing, the request will be made to the base URL of the endpoint.
+If *path* is missing, the request will be made to the base URL of the route.
 
 If *qs* is an object, it will be translated to a query string.
 
@@ -778,8 +778,8 @@ If *qs* is an object, it will be translated to a query string.
 
 ```js
 var db = require('arangojs')();
-var endpoint = db.endpoint('my-foxx-app');
-endpoint.get(function (err, result) {
+var route = db.route('my-foxx-app');
+route.get(function (err, result) {
     if (err) return console.error(err);
     // result is the response body of calling
     // GET _db/_system/my-foxx-app
@@ -787,7 +787,7 @@ endpoint.get(function (err, result) {
 
 // -- or -- 
 
-endpoint.get('users', function (err, result) {
+route.get('users', function (err, result) {
     if (err) return console.error(err);
     // result is the response body of calling
     // GET _db/_system/my-foxx-app/users
@@ -795,24 +795,24 @@ endpoint.get('users', function (err, result) {
 
 // -- or --
 
-endpoint.get('users', {group: 'admin'}, function (err, result) {
+route.get('users', {group: 'admin'}, function (err, result) {
     if (err) return console.error(err);
     // result is the response body of calling
     // GET _db/_system/my-foxx-app/users?group=admin
 });
 ```
 
-### endpoint.post([path,] [body, [qs,]] callback)
+### route.post([path,] [body, [qs,]] callback)
 
 Performs a POST request to the given URL and passes the server response to the given callback.
 
 *Parameter*
 
-* *path* (optional): the endpoint-relative URL for the request.
+* *path* (optional): the route-relative URL for the request.
 * *body* (optional): the request body for the request.
 * *qs* (optional): the query string for the request.
 
-If *path* is missing, the request will be made to the base URL of the endpoint.
+If *path* is missing, the request will be made to the base URL of the route.
 
 If *body* is an object, it will be converted to JSON.
 
@@ -822,8 +822,8 @@ If *qs* is an object, it will be translated to a query string.
 
 ```js
 var db = require('arangojs')();
-var endpoint = db.endpoint('my-foxx-app');
-endpoint.post(function (err, result) {
+var route = db.route('my-foxx-app');
+route.post(function (err, result) {
     if (err) return console.error(err);
     // result is the response body of calling
     // POST _db/_system/my-foxx-app
@@ -831,7 +831,7 @@ endpoint.post(function (err, result) {
 
 // -- or -- 
 
-endpoint.post('users', function (err, result) {
+route.post('users', function (err, result) {
     if (err) return console.error(err);
     // result is the response body of calling
     // POST _db/_system/my-foxx-app/users
@@ -839,7 +839,7 @@ endpoint.post('users', function (err, result) {
 
 // -- or --
 
-endpoint.post('users', {
+route.post('users', {
     username: 'admin',
     password: 'hunter2'
 }, function (err, result) {
@@ -851,7 +851,7 @@ endpoint.post('users', {
 
 // -- or --
 
-endpoint.post('users', {
+route.post('users', {
     username: 'admin',
     password: 'hunter2'
 }, {admin: true}, function (err, result) {
@@ -862,17 +862,17 @@ endpoint.post('users', {
 });
 ```
 
-### endpoint.put([path,] [body, [qs,]] callback)
+### route.put([path,] [body, [qs,]] callback)
 
 Performs a PUT request to the given URL and passes the server response to the given callback.
 
 *Parameter*
 
-* *path* (optional): the endpoint-relative URL for the request.
+* *path* (optional): the route-relative URL for the request.
 * *body* (optional): the request body for the request.
 * *qs* (optional): the query string for the request.
 
-If *path* is missing, the request will be made to the base URL of the endpoint.
+If *path* is missing, the request will be made to the base URL of the route.
 
 If *body* is an object, it will be converted to JSON.
 
@@ -882,8 +882,8 @@ If *qs* is an object, it will be translated to a query string.
 
 ```js
 var db = require('arangojs')();
-var endpoint = db.endpoint('my-foxx-app');
-endpoint.put(function (err, result) {
+var route = db.route('my-foxx-app');
+route.put(function (err, result) {
     if (err) return console.error(err);
     // result is the response body of calling
     // PUT _db/_system/my-foxx-app
@@ -891,7 +891,7 @@ endpoint.put(function (err, result) {
 
 // -- or -- 
 
-endpoint.put('users/admin', function (err, result) {
+route.put('users/admin', function (err, result) {
     if (err) return console.error(err);
     // result is the response body of calling
     // PUT _db/_system/my-foxx-app/users
@@ -899,7 +899,7 @@ endpoint.put('users/admin', function (err, result) {
 
 // -- or --
 
-endpoint.put('users/admin', {
+route.put('users/admin', {
     username: 'admin',
     password: 'hunter2'
 }, function (err, result) {
@@ -911,7 +911,7 @@ endpoint.put('users/admin', {
 
 // -- or --
 
-endpoint.put('users/admin', {
+route.put('users/admin', {
     username: 'admin',
     password: 'hunter2'
 }, {admin: true}, function (err, result) {
@@ -922,17 +922,17 @@ endpoint.put('users/admin', {
 });
 ```
 
-### endpoint.patch([path,] [body, [qs,]] callback)
+### route.patch([path,] [body, [qs,]] callback)
 
 Performs a PATCH request to the given URL and passes the server response to the given callback.
 
 *Parameter*
 
-* *path* (optional): the endpoint-relative URL for the request.
+* *path* (optional): the route-relative URL for the request.
 * *body* (optional): the request body for the request.
 * *qs* (optional): the query string for the request.
 
-If *path* is missing, the request will be made to the base URL of the endpoint.
+If *path* is missing, the request will be made to the base URL of the route.
 
 If *body* is an object, it will be converted to JSON.
 
@@ -940,8 +940,8 @@ If *qs* is an object, it will be translated to a query string.
 
 ```js
 var db = require('arangojs')();
-var endpoint = db.endpoint('my-foxx-app');
-endpoint.patch(function (err, result) {
+var route = db.route('my-foxx-app');
+route.patch(function (err, result) {
     if (err) return console.error(err);
     // result is the response body of calling
     // PATCH _db/_system/my-foxx-app
@@ -949,7 +949,7 @@ endpoint.patch(function (err, result) {
 
 // -- or -- 
 
-endpoint.patch('users/admin', function (err, result) {
+route.patch('users/admin', function (err, result) {
     if (err) return console.error(err);
     // result is the response body of calling
     // PATCH _db/_system/my-foxx-app/users
@@ -957,7 +957,7 @@ endpoint.patch('users/admin', function (err, result) {
 
 // -- or --
 
-endpoint.patch('users/admin', {
+route.patch('users/admin', {
     password: 'hunter2'
 }, function (err, result) {
     if (err) return console.error(err);
@@ -968,7 +968,7 @@ endpoint.patch('users/admin', {
 
 // -- or --
 
-endpoint.patch('users/admin', {
+route.patch('users/admin', {
     password: 'hunter2'
 }, {admin: true}, function (err, result) {
     if (err) return console.error(err);
@@ -978,16 +978,16 @@ endpoint.patch('users/admin', {
 });
 ```
 
-### endpoint.delete([path,] [qs,] callback)
+### route.delete([path,] [qs,] callback)
 
 Performs a DELETE request to the given URL and passes the server response to the given callback.
 
 *Parameter*
 
-* *path* (optional): the endpoint-relative URL for the request.
+* *path* (optional): the route-relative URL for the request.
 * *qs* (optional): the query string for the request.
 
-If *path* is missing, the request will be made to the base URL of the endpoint.
+If *path* is missing, the request will be made to the base URL of the route.
 
 If *qs* is an object, it will be translated to a query string.
 
@@ -995,8 +995,8 @@ If *qs* is an object, it will be translated to a query string.
 
 ```js
 var db = require('arangojs')();
-var endpoint = db.endpoint('my-foxx-app');
-endpoint.delete(function (err, result) {
+var route = db.route('my-foxx-app');
+route.delete(function (err, result) {
     if (err) return console.error(err);
     // result is the response body of calling
     // DELETE _db/_system/my-foxx-app
@@ -1004,7 +1004,7 @@ endpoint.delete(function (err, result) {
 
 // -- or -- 
 
-endpoint.delete('users/admin', function (err, result) {
+route.delete('users/admin', function (err, result) {
     if (err) return console.error(err);
     // result is the response body of calling
     // DELETE _db/_system/my-foxx-app/users/admin
@@ -1012,23 +1012,23 @@ endpoint.delete('users/admin', function (err, result) {
 
 // -- or --
 
-endpoint.delete('users/admin', {permanent: true}, function (err, result) {
+route.delete('users/admin', {permanent: true}, function (err, result) {
     if (err) return console.error(err);
     // result is the response body of calling
     // DELETE _db/_system/my-foxx-app/users/admin?permanent=true
 });
 ```
 
-### endpoint.head([path,] [qs,] callback)
+### route.head([path,] [qs,] callback)
 
 Performs a HEAD request to the given URL and passes the server response to the given callback.
 
 *Parameter*
 
-* *path* (optional): the endpoint-relative URL for the request.
+* *path* (optional): the route-relative URL for the request.
 * *qs* (optional): the query string for the request.
 
-If *path* is missing, the request will be made to the base URL of the endpoint.
+If *path* is missing, the request will be made to the base URL of the route.
 
 If *qs* is an object, it will be translated to a query string.
 
@@ -1036,8 +1036,8 @@ If *qs* is an object, it will be translated to a query string.
 
 ```js
 var db = require('arangojs')();
-var endpoint = db.endpoint('my-foxx-app');
-endpoint.head(function (err, result, response) {
+var route = db.route('my-foxx-app');
+route.head(function (err, result, response) {
     if (err) return console.error(err);
     // result is empty (no response body)
     // response is the response object for
@@ -1045,21 +1045,21 @@ endpoint.head(function (err, result, response) {
 });
 ```
 
-### endpoint.request(opts, callback)
+### route.request(opts, callback)
 
 Performs an arbitrary request to the given URL and passes the server response to the given callback.
 
 *Parameter*
 
 * *opts*: an object with the following properties:
- * *path*: the endpoint-relative URL for the request.
- * *absolutePath* (optional): whether the *path* is relative to the connection's base URL instead of the endpoint. Default: `false`.
+ * *path*: the route-relative URL for the request.
+ * *absolutePath* (optional): whether the *path* is relative to the connection's base URL instead of the route. Default: `false`.
  * *body* (optional): the request body.
  * *qs* (optional): the query string.
  * *headers* (optional): an object containing additional HTTP headers to send with the request.
  * *method* (optional): HTTP method to use. Default: `"GET"`.
 
-If *opts.path* is missing, the request will be made to the base URL of the endpoint.
+If *opts.path* is missing, the request will be made to the base URL of the route.
 
 If *opts.body* is an object, it will be converted to JSON.
 
@@ -1067,8 +1067,8 @@ If *opts.qs* is an object, it will be translated to a query string.
 
 ```js
 var db = require('arangojs')();
-var endpoint = db.endpoint('my-foxx-app');
-endpoint.request({
+var route = db.route('my-foxx-app');
+route.request({
     path: 'hello-world',
     method: 'POST',
     body: {hello: 'world'},
