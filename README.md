@@ -1589,6 +1589,42 @@ db.createCollection('some-collection', function (err, collection) {
 });
 ```
 
+### Fulltext queries
+
+This function implements the [HTTP API for fulltext queries](https://docs.arangodb.com/HttpIndexes/Fulltext.html).
+
+Note that a collection must have fulltext indexes in order to perform fulltext queries on it.
+
+#### collection.fulltext(fieldName, query, [opts,] callback)
+
+Performs a fulltext query searching for *query* in the given *fieldName* of all documents in this collection.
+
+*Parameter*
+
+* *fieldName*: the name of the field to search.
+* *query*: a fulltext query string.
+* *opts* (optional): an object additional options for the query.
+
+For more information on the properties of the *opts* object see [the HTTP API for fulltext queries](https://docs.arangodb.com/HttpIndexes/Fulltext.html).
+
+For more information on *Cursor* instances see the [*Cursor API* below](#cursor-api).
+
+*Examples*
+
+```js
+var db = require('arangojs')();
+db.collection('some-collection', function (err, collection) {
+    if (err) return console.error(err);
+    collection.createFulltextIndex('description', function (err) {
+        if (err) return console.error(err);
+        collection.fulltext('description', 'hello', function (err, cursor) {
+            if (err) return console.error(err);
+            // cursor is a Cursor instance for the query results
+        });
+    });
+});
+```
+
 ### Bulk importing documents
 
 This function implements the [HTTP API for bulk imports](https://docs.arangodb.com/HttpBulkImports/README.html).
