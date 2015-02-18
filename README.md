@@ -1309,6 +1309,286 @@ db.collection('some-collection', function (err, collection) {
 });
 ```
 
+### Manipulating indexes
+
+These functions implement the [HTTP API for manipulating indexes](https://docs.arangodb.com/HttpIndexes/README.html).
+
+#### collection.createIndex(details, callback)
+
+Creates an arbitrary index on the collection.
+
+For information on the possible properties of the *details* object, see [the HTTP API for manipulating indexes](https://docs.arangodb.com/HttpIndexes/WorkingWith.html).
+
+*Examples*
+
+```js
+var db = require('arangojs')();
+var collection = db.createCollection('some-collection', function (err, collection) {
+    if (err) return console.error(err);
+    collection.createIndex({
+        type: 'cap',
+        size: 20
+    }, function (err, index) {
+        if (err) return console.error(err);
+        index.id; // the index's handle
+        // the index has been created
+    });
+});
+```
+
+#### collection.createCapConstraint(size, callback)
+
+Creates a cap constraint index on the collection.
+
+*Parameter*
+
+* *size*: an object with any of the following properties:
+ * *size*: the maximum number of documents in the collection.
+ * *byteSize*: the maximum size of active document data in the collection (in bytes).
+
+If *size* is a number, it will be interpreted as *size.size*.
+
+ For more information on the properties of the *size* object see [the HTTP API for creating cap constraints](https://docs.arangodb.com/HttpIndexes/Cap.html).
+
+*Examples*
+
+```js
+var db = require('arangojs')();
+db.createCollection('some-collection', function (err, collection) {
+    if (err) return console.error(err);
+    collection.createCapCollection(20, function (err, index) {
+        if (err) return console.error(err);
+        index.id; // the index's handle
+        index.size === 20;
+        // the index has been created
+    });
+    // -- or --
+    collection.createCapCollection({size: 20}, function (err, index) {
+        if (err) return console.error(err);
+        index.id; // the index's handle
+        index.size === 20;
+        // the index has been created
+    });
+});
+```
+
+#### collection.createHashIndex(fields[, unique], callback)
+
+Creates a hash index on the collection.
+
+*Parameter*
+
+* *fields*: an array of document fields on which to create the index.
+* *unique* (optional): whether to constrain the fields to unique values. Default: `false`.
+
+If *fields* is a string, it will be wrapped in an array automatically.
+
+For more information on hash indexes, see [the HTTP API for hash indexes](https://docs.arangodb.com/HttpIndexes/Hash.html).
+
+*Examples*
+
+```js
+var db = require('arangojs')();
+db.createCollection('some-collection', function (err, collection) {
+    if (err) return console.error(err);
+    collection.createHashIndex('favorite-color', function (err, index) {
+        if (err) return console.error(err);
+        index.id; // the index's handle
+        index.fields; // ['favorite-color']
+        // the index has been created
+    });
+    // -- or --
+    collection.createHashIndex(['favorite-color'], function (err, index) {
+        if (err) return console.error(err);
+        index.id; // the index's handle
+        index.fields; // ['favorite-color']
+        // the index has been created
+    });
+});
+```
+
+#### collection.createSkipList(fields[, unique], callback)
+
+Creates a skiplist index on the collection.
+
+*Parameter*
+
+* *fields*: an array of document fields on which to create the index.
+* *unique* (optional): whether to constrain the fields to unique values. Default: `false`.
+
+If *fields* is a string, it will be wrapped in an array automatically.
+
+For more information on skiplist indexes, see [the HTTP API for skiplist indexes](https://docs.arangodb.com/HttpIndexes/Skiplist.html).
+
+*Examples*
+
+```js
+var db = require('arangojs')();
+db.createCollection('some-collection', function (err, collection) {
+    if (err) return console.error(err);
+    collection.createSkipList('favorite-color', function (err, index) {
+        if (err) return console.error(err);
+        index.id; // the index's handle
+        index.fields; // ['favorite-color']
+        // the index has been created
+    });
+    // -- or --
+    collection.createSkipList(['favorite-color'], function (err, index) {
+        if (err) return console.error(err);
+        index.id; // the index's handle
+        index.fields; // ['favorite-color']
+        // the index has been created
+    });
+});
+```
+
+#### collection.createGeoIndex(fields[, opts], callback)
+
+Creates a geo-spatial index on the collection.
+
+*Parameter*
+
+* *fields*: an array of document fields on which to create the index. Currently, fulltext indexes must cover exactly one field.
+* *opts* (optional): an object containing additional properties of the index.
+
+If *fields* is a string, it will be wrapped in an array automatically.
+
+For more information on the properties of the *opts* object see [the HTTP API for manipulating geo indexes](https://docs.arangodb.com/HttpIndexes/Geo.html).
+
+*Examples*
+
+```js
+var db = require('arangojs')();
+db.createCollection('some-collection', function (err, collection) {
+    if (err) return console.error(err);
+    collection.createGeoIndex(['longitude', 'latitude'], function (err, index) {
+        if (err) return console.error(err);
+        index.id; // the index's handle
+        index.fields; // ['longitude', 'latitude']
+        // the index has been created
+    });
+    // -- or --
+    collection.createGeoIndex('location', {geoJson: true}, function (err, index) {
+        if (err) return console.error(err);
+        index.id; // the index's handle
+        index.fields; // ['location']
+        // the index has been created
+    });
+});
+```
+
+#### collection.createFulltextIndex(fields[, minLength], callback)
+
+Creates a fulltext index on the collection.
+
+*Parameter*
+
+* *fields*: an array of document fields on which to create the index. Currently, fulltext indexes must cover exactly one field.
+* *minLength* (optional): minimum character length of words to index. Uses a server-specific default value if not specified.
+
+If *fields* is a string, it will be wrapped in an array automatically.
+
+For more information on fulltext indexes, see [the HTTP API for fulltext indexes](https://docs.arangodb.com/HttpIndexes/Fulltext.html).
+
+*Examples*
+
+```js
+var db = require('arangojs')();
+db.createCollection('some-collection', function (err, collection) {
+    if (err) return console.error(err);
+    collection.createFulltextIndex('description', function (err, index) {
+        if (err) return console.error(err);
+        index.id; // the index's handle
+        index.fields; // ['description']
+        // the index has been created
+    });
+    // -- or --
+    collection.createFulltextIndex(['description'], function (err, index) {
+        if (err) return console.error(err);
+        index.id; // the index's handle
+        index.fields; // ['description']
+        // the index has been created
+    });
+});
+```
+
+#### collection.index(indexHandle, callback)
+
+Fetches information about the index with the given *indexHandle* and passes it to the given callback.
+
+The value of *indexHandle* can either be a fully-qualified *index.id* or the collection-specific key of the index.
+
+*Examples*
+
+```js
+var db = require('arangojs')();
+db.createCollection('some-collection', function (err, collection) {
+    if (err) return console.error(err);
+    collection.createFulltextIndex('description', function (err, index) {
+        if (err) return console.error(err);
+        collection.index(index.id, function (err, result) {
+            if (err) return console.error(err);
+            result.id === index.id;
+            // result contains the properties of the index
+        });
+        // -- or --
+        collection.index(index.id.split('/')[1], function (err, result) {
+            if (err) return console.error(err);
+            result.id === index.id;
+            // result contains the properties of the index
+        });
+    });
+});
+```
+
+#### collection.indexes(callback)
+
+Fetches a list of all indexes on this collection.
+
+*Examples*
+
+```js
+var db = require('arangojs')();
+db.createCollection('some-collection', function (err, collection) {
+    if (err) return console.error(err);
+    collection.createFulltextIndex('description', function (err) {
+        if (err) return console.error(err);
+        collection.indexes(function (err, indexes) {
+            if (err) return console.error(err);
+            indexes.length === 1;
+            // indexes contains information about the index
+        });
+    });
+});
+```
+
+#### collection.dropIndex(indexHandle, callback)
+
+Deletes the index with the given *indexHandle* from the collection.
+
+The value of *indexHandle* can either be a fully-qualified *index.id* or the collection-specific key of the index.
+
+*Examples*
+
+```js
+var db = require('arangojs')();
+db.createCollection('some-collection', function (err, collection) {
+    if (err) return console.error(err);
+    collection.createFulltextIndex('description', function (err, index) {
+        if (err) return console.error(err);
+        collection.dropIndex(index.id, function (err) {
+            if (err) return console.error(err);
+            // the index has been removed from the collection
+        });
+        // -- or --
+        collection.dropIndex(index.id.split('/')[1], function (err) {
+            if (err) return console.error(err);
+            // the index has been removed from the collection
+        });
+    });
+});
+```
+
 ### Bulk importing documents
 
 This function implements the [HTTP API for bulk imports](https://docs.arangodb.com/HttpBulkImports/README.html).
