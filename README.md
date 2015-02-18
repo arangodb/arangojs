@@ -1607,7 +1607,7 @@ Performs a fulltext query searching for *query* in the given *fieldName* of all 
 
 For more information on the properties of the *opts* object see [the HTTP API for fulltext queries](https://docs.arangodb.com/HttpIndexes/Fulltext.html).
 
-For more information on *Cursor* instances see the [*Cursor API* below](#cursor-api).
+For more information on *Cursor* instances see the [*Cursor API* above](#cursor-api).
 
 *Examples*
 
@@ -1620,6 +1620,84 @@ db.collection('some-collection', function (err, collection) {
         collection.fulltext('description', 'hello', function (err, cursor) {
             if (err) return console.error(err);
             // cursor is a Cursor instance for the query results
+        });
+    });
+});
+```
+
+### Geo queries
+
+These functions implement the [HTTP API for geo-spatial queries](https://docs.arangodb.com/HttpIndexes/Geo.html).
+
+Note that a collection must have geo-spatial indexes in order to perform geo-spatial queries on it.
+
+#### collection.near(latitude, longitude, [opts,] callback)
+
+Performs a geo-spatial query for documents near the given location.
+
+*Parameter*
+
+* *latitude*: latitude of the target location.
+* *longitude*: longitude of the target location.
+* *opts* (optional): an object additional options for the query.
+
+For more information on the properties of the *opts* object see [the HTTP API for geo-spatial queries](https://docs.arangodb.com/HttpIndexes/Geo.html).
+
+For more information on *Cursor* instances see the [*Cursor API* above](#cursor-api).
+
+*Examples*
+
+```js
+var db = require('arangojs')();
+db.collection('some-collection', function (err, collection) {
+    if (err) return console.error(err);
+    collection.createGeoIndex('location', function (err) {
+        if (err) return console.error(err);
+        collection.near(0, 0, {
+            limit: 100,
+            distance: 'distance'
+        }, function (err, cursor) {
+            if (err) return console.error(err);
+            // cursor is a Cursor instance for the closest 100 query results
+            // each result has an additional property "distance" containing
+            // the document's distance to the target location in meters
+        });
+    });
+});
+```
+
+#### collection.within(latitude, longitude, radius, [opts,] callback)
+
+Performs a geo-spatial query for documents within the given *radius* of the given location.
+
+*Parameter*
+
+* *latitude*: latitude of the target location.
+* *longitude*: longitude of the target location.
+* *radius*: the search radius (in meters).
+* *opts* (optional): an object additional options for the query.
+
+For more information on the properties of the *opts* object see [the HTTP API for geo-spatial queries](https://docs.arangodb.com/HttpIndexes/Geo.html).
+
+For more information on *Cursor* instances see the [*Cursor API* above](#cursor-api).
+
+*Examples*
+
+```js
+var db = require('arangojs')();
+db.collection('some-collection', function (err, collection) {
+    if (err) return console.error(err);
+    collection.createGeoIndex('location', function (err) {
+        if (err) return console.error(err);
+        collection.within(0, 0, 500, {
+            limit: 100,
+            distance: 'distance'
+        }, function (err, cursor) {
+            if (err) return console.error(err);
+            // cursor is a Cursor instance for the closest 100 query results
+            // within up to 500 meters of the target location
+            // each result has an additional property "distance" containing
+            // the document's distance to the target location in meters
         });
     });
 });
