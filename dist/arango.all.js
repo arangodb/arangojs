@@ -24,10 +24,18 @@ function BaseCollection(connection, body) {
 }
 extend(BaseCollection.prototype, {
     _documentPath: function (documentHandle) {
+        return (this.type === 3 ? 'edge/' : 'document/') + this._documentHandle(documentHandle);
+    },
+    _documentHandle: function (documentHandle) {
+        if (documentHandle._id) {
+            documentHandle = documentHandle._id;
+        } else if (documentHandle._key) {
+            documentHandle = documentHandle._key;
+        }
         if (documentHandle.indexOf('/') === -1) {
             documentHandle = this.name + '/' + documentHandle;
         }
-        return (this.type === 3 ? 'edge/' : 'document/') + documentHandle;
+        return documentHandle;
     },
     _get: function (path, update, opts, callback) {
         if (typeof opts === 'function') {
@@ -181,7 +189,13 @@ extend(BaseCollection.prototype, {
         }
         if (!callback)
             callback = noop;
-        this._api.post('import', data, extend({ type: 'auto' }, opts, { collection: this.name }), function (err, body) {
+        this._api.request({
+            method: 'POST',
+            path: 'import',
+            body: data,
+            ld: Boolean(opts.type !== 'array'),
+            qs: extend({}, opts, { collection: this.name })
+        }, function (err, body) {
             if (err)
                 callback(err);
             else
@@ -197,10 +211,7 @@ extend(DocumentCollection.prototype, {
     document: function (documentHandle, callback) {
         if (!callback)
             callback = noop;
-        if (documentHandle.indexOf('/') === -1) {
-            documentHandle = this.name + '/' + documentHandle;
-        }
-        this._api.get('document/' + documentHandle, function (err, body) {
+        this._api.get('document/' + this._documentHandle(documentHandle), function (err, body) {
             if (err)
                 callback(err);
             else
@@ -226,10 +237,7 @@ extend(EdgeCollection.prototype, {
     edge: function (documentHandle, callback) {
         if (!callback)
             callback = noop;
-        if (documentHandle.indexOf('/') === -1) {
-            documentHandle = this.name + '/' + documentHandle;
-        }
-        this._api.get('edge/' + documentHandle, function (err, body) {
+        this._api.get('edge/' + this._documentHandle(documentHandle), function (err, body) {
             if (err)
                 callback(err);
             else
@@ -241,8 +249,8 @@ extend(EdgeCollection.prototype, {
             callback = noop;
         this._api.post('edge/', data, {
             collection: this.name,
-            from: fromId,
-            to: toId
+            from: this._documentHandle(fromId),
+            to: this._documentHandle(toId)
         }, function (err, body) {
             if (err)
                 callback(err);
@@ -250,11 +258,11 @@ extend(EdgeCollection.prototype, {
                 callback(null, body);
         });
     },
-    _edges: function (vertex, direction, callback) {
+    _edges: function (documentHandle, direction, callback) {
         if (!callback)
             callback = noop;
         this._api.get('edges/' + this.name, {
-            vertex: vertex,
+            vertex: this._documentHandle(documentHandle),
             direction: direction
         }, function (err, body) {
             if (err)
@@ -322,7 +330,10 @@ Connection.defaults = {
 extend(Connection.prototype, {
   _resolveUrl: function (opts) {
     var url = this.config.url;
-    if (!opts.absolutePath) url += '/_db/' + this.config.databaseName;
+    if (!opts.absolutePath) {
+      url += '/_db/' + this.config.databaseName;
+      if (opts.basePath) url += '/' + opts.basePath;
+    }
     url += opts.path ? (opts.path.charAt(0) === '/' ? '' : '/') + opts.path : '';
     if (opts.qs) url += '?' + (typeof opts.qs === 'string' ? opts.qs : qs.stringify(opts.qs));
     return url;
@@ -337,8 +348,15 @@ extend(Connection.prototype, {
       headers = {'content-type': 'text/plain'};
 
     if (body && typeof body === 'object') {
-      body = JSON.stringify(body);
-      headers['content-type'] = 'application/json';
+      if (opts.ld) {
+        body = body.map(function (obj) {
+          return JSON.stringify(obj);
+        }).join('\r\n') + '\r\n';
+        headers['content-type'] = 'application/x-ldjson';
+      } else {
+        body = JSON.stringify(body);
+        headers['content-type'] = 'application/json';
+      }
     }
 
     request({
@@ -348,7 +366,7 @@ extend(Connection.prototype, {
       body: body
     }, function (err, response, rawBody) {
       if (err) callback(err);
-      else if (!response.headers['content-type'].match(jsonMime)) callback(null, rawBody);
+      else if (!response.headers['content-type'].match(jsonMime)) callback(null, rawBody, response);
       else {
         try {
           var body = JSON.parse(rawBody);
@@ -598,7 +616,21 @@ extend(Database.prototype, {
             properties = { name: properties };
         }
         var self = this;
-        self._api.post('collection', properties, function (err, body) {
+        self._api.post('collection', extend({ type: 2 }, properties), function (err, body) {
+            if (err)
+                callback(err);
+            else
+                callback(null, createCollection(self._connection, body));
+        });
+    },
+    createEdgeCollection: function (properties, callback) {
+        if (!callback)
+            callback = noop;
+        if (typeof properties === 'string') {
+            properties = { name: properties };
+        }
+        var self = this;
+        self._api.post('collection', extend({}, properties, { type: 3 }), function (err, body) {
             if (err)
                 callback(err);
             else
@@ -623,15 +655,24 @@ extend(Database.prototype, {
                 callback(null, createCollection(self._connection, body));
         });
     },
-    collections: function (excludeSystem, callback) {
-        if (typeof excludeSystem === 'function') {
-            callback = excludeSystem;
-            excludeSystem = undefined;
-        }
+    collections: function (callback) {
         if (!callback)
             callback = noop;
         var self = this;
-        self._api.get('collection', { excludeSystem: excludeSystem }, function (err, body) {
+        self._api.get('collection', { excludeSystem: true }, function (err, body) {
+            if (err)
+                callback(err);
+            else
+                callback(null, body.collections.map(function (data) {
+                    return createCollection(self._connection, data);
+                }));
+        });
+    },
+    allCollections: function (callback) {
+        if (!callback)
+            callback = noop;
+        var self = this;
+        self._api.get('collection', { excludeSystem: false }, function (err, body) {
             if (err)
                 callback(err);
             else
@@ -761,15 +802,32 @@ extend(Database.prototype, {
                 callback(null);
         });
     },
-    truncate: function (excludeSystem, callback) {
-        if (typeof excludeSystem === 'function') {
-            callback = excludeSystem;
-            excludeSystem = undefined;
-        }
+    truncate: function (callback) {
         if (!callback)
             callback = noop;
         var self = this;
-        self._api.get('collection', { excludeSystem: excludeSystem }, function (err, body) {
+        self._api.get('collection', { excludeSystem: true }, function (err, body) {
+            if (err)
+                callback(err);
+            else {
+                all(body.collections.map(function (data) {
+                    return function (cb) {
+                        self._api.put('collection/' + data.name + '/truncate', function (err, body) {
+                            if (err)
+                                cb(err);
+                            else
+                                cb(null, body);
+                        });
+                    };
+                }), callback);
+            }
+        });
+    },
+    truncateAll: function (callback) {
+        if (!callback)
+            callback = noop;
+        var self = this;
+        self._api.get('collection', { excludeSystem: false }, function (err, body) {
             if (err)
                 callback(err);
             else {
@@ -836,6 +894,39 @@ extend(Database.prototype, {
             else
                 callback(null, new ArrayCursor(self._connection, body));
         });
+    },
+    functions: function (callback) {
+        if (!callback)
+            callback = noop;
+        this._api.get('aqlfunction', function (err, body) {
+            if (err)
+                callback(err);
+            else
+                callback(null, body);
+        });
+    },
+    createFunction: function (name, code, callback) {
+        this._api.post('aqlfunction', {
+            name: name,
+            code: code
+        }, function (err, body) {
+            if (err)
+                callback(err);
+            else
+                callback(null, body);
+        });
+    },
+    dropFunction: function (name, group, callback) {
+        if (typeof group === 'function') {
+            callback = group;
+            group = undefined;
+        }
+        this._api['delete']('aqlfunction/' + name, { group: Boolean(group) }, function (err, body) {
+            if (err)
+                callback(err);
+            else
+                callback(null, body);
+        });
     }
 });
 },{"./collection":2,"./connection":3,"./cursor":4,"./graph":8,"./util/all":9,"./util/noop":10,"extend":18}],6:[function(require,module,exports){
@@ -857,6 +948,7 @@ extend(Endpoint.prototype, {
     },
     request: function (opts, callback) {
         opts = extend({}, opts);
+        opts.basePath = this._path;
         opts.headers = extend({}, this._headers, opts.headers);
         return this._connection.request(opts, callback);
     },
@@ -876,7 +968,7 @@ extend(Endpoint.prototype, {
             path = '/' + path;
         this.request({
             method: 'get',
-            path: this._path + path,
+            path: path,
             qs: qs
         }, callback);
     },
@@ -901,7 +993,7 @@ extend(Endpoint.prototype, {
             path = '/' + path;
         this.request({
             method: 'post',
-            path: this._path + path,
+            path: path,
             body: body,
             qs: qs
         }, callback);
@@ -927,7 +1019,7 @@ extend(Endpoint.prototype, {
             path = '/' + path;
         this.request({
             method: 'put',
-            path: this._path + path,
+            path: path,
             body: body,
             qs: qs
         }, callback);
@@ -953,7 +1045,7 @@ extend(Endpoint.prototype, {
             path = '/' + path;
         this.request({
             method: 'patch',
-            path: this._path + path,
+            path: path,
             body: body,
             qs: qs
         }, callback);
@@ -974,7 +1066,7 @@ extend(Endpoint.prototype, {
             path = '/' + path;
         this.request({
             method: 'delete',
-            path: this._path + path,
+            path: path,
             qs: qs
         }, callback);
     },
@@ -994,7 +1086,7 @@ extend(Endpoint.prototype, {
             path = '/' + path;
         this.request({
             method: 'head',
-            path: this._path + path,
+            path: path,
             qs: qs
         }, callback);
     }
@@ -1159,8 +1251,8 @@ extend(EdgeCollection.prototype, {
             callback = noop;
         this._gharial.post(data, {
             collection: this.name,
-            from: fromId,
-            to: toId
+            from: this._documentHandle(fromId),
+            to: this._documentHandle(toId)
         }, function (err, body) {
             if (err)
                 callback(err);
