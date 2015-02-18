@@ -1413,9 +1413,28 @@ If *opts* is set, it must be an object with any of the following properties:
  * if *policy* is set to `"last"`, the document will be replaced regardless of the revision.
  * if *policy* is set to `"error"` or not set, the replacement will fail with an error.
 
-The *documentHandle* can be either the `_id` or the `_key` of a document in the collection.
+The *documentHandle* can be either the `_id` or the `_key` of a document in the collection, or a document (i.e. an object with an `_id` or `_key` property).
 
 For more information on the *opts* object, see [the HTTP API documentation for working with documents](https://docs.arangodb.com/HttpDocument/WorkingWithDocuments.html).
+
+*Examples*
+
+```js
+var db = require('arangojs')();
+db.collection('some-collection', function (err, collection) {
+    if (err) return console.error(err);
+    collection.save({number: 1, hello: 'world'}, function (err, doc) {
+        if (err) return console.error(err);
+        collection.replace(doc, {number: 2}, function (err, doc2) {
+            if (err) return console.error(err);
+            doc2._id === doc._id;
+            doc2._rev !== doc._rev;
+            doc2.number === 2;
+            doc2.hello === undefined;
+        });
+    });
+});
+```
 
 #### collection.update(documentHandle, data, [opts,] callback)
 
@@ -1431,9 +1450,28 @@ If *opts* is set, it must be an object with any of the following properties:
  * if *policy* is set to `"last"`, the document will be replaced regardless of the revision.
  * if *policy* is set to `"error"` or not set, the replacement will fail with an error.
 
-The *documentHandle* can be either the `_id` or the `_key` of a document in the collection.
+The *documentHandle* can be either the `_id` or the `_key` of a document in the collection, or a document (i.e. an object with an `_id` or `_key` property).
 
 For more information on the *opts* object, see [the HTTP API documentation for working with documents](https://docs.arangodb.com/HttpDocument/WorkingWithDocuments.html).
+
+*Examples*
+
+```js
+var db = require('arangojs')();
+db.collection('some-collection', function (err, collection) {
+    if (err) return console.error(err);
+    collection.save({number: 1, hello: 'world'}, function (err, doc) {
+        if (err) return console.error(err);
+        collection.update(doc, {number: 2}, function (err, doc2) {
+            if (err) return console.error(err);
+            doc2._id === doc._id;
+            doc2._rev !== doc._rev;
+            doc2.number === 2;
+            doc2.hello === doc.hello;
+        });
+    });
+});
+```
 
 #### collection.remove(documentHandle, [opts,] callback)
 
@@ -1447,7 +1485,7 @@ If *opts* is set, it must be an object with any of the following properties:
  * if *policy* is set to `"last"`, the document will be replaced regardless of the revision.
  * if *policy* is set to `"error"` or not set, the replacement will fail with an error.
 
-The *documentHandle* can be either the `_id` or the `_key` of a document in the collection.
+The *documentHandle* can be either the `_id` or the `_key` of a document in the collection, or a document (i.e. an object with an `_id` or `_key` property).
 
 For more information on the *opts* object, see [the HTTP API documentation for working with documents](https://docs.arangodb.com/HttpDocument/WorkingWithDocuments.html).
 
@@ -1487,7 +1525,7 @@ The *DocumentCollection API* extends the [*Collection API* (see above)](#collect
 
 Retrieves the document with the given *documentHandle* from the collection.
 
-The *documentHandle* can be either the `_id` or the `_key` of a document in the collection.
+The *documentHandle* can be either the `_id` or the `_key` of a document in the collection, or a document (i.e. an object with an `_id` or `_key` property).
 
 *Examples*
 
@@ -1542,7 +1580,7 @@ The *EdgeCollection API* extends the [*Collection API* (see above)](#collection-
 
 Retrieves the edge with the given *documentHandle* from the collection.
 
-The *documentHandle* can be either the `_id` or the `_key` of an edge in the collection.
+The *documentHandle* can be either the `_id` or the `_key` of an edge in the collection, or an edge (i.e. an object with an `_id` or `_key` property).
 
 *Examples*
 
@@ -1598,6 +1636,8 @@ db.createEdgeCollection('my-edges', function (err, collection) {
 
 Retrieves a list of all edges of the document with the given *documentHandle*.
 
+The *documentHandle* can be either the `_id` or the `_key` of a document in any collection, or a document (i.e. an object with an `_id` or `_key` property).
+
 *Examples*
 
 ```js
@@ -1625,6 +1665,8 @@ db.createEdgeCollection('my-edges', function (err, collection) {
 
 Retrieves a list of all incoming edges of the document with the given *documentHandle*.
 
+The *documentHandle* can be either the `_id` or the `_key` of a document in any collection, or a document (i.e. an object with an `_id` or `_key` property).
+
 *Examples*
 
 ```js
@@ -1651,6 +1693,8 @@ db.createEdgeCollection('my-edges', function (err, collection) {
 #### edgeCollection.outEdges(documentHandle, callback)
 
 Retrieves a list of all outgoing edges of the document with the given *documentHandle*.
+
+The *documentHandle* can be either the `_id` or the `_key` of a document in any collection, or a document (i.e. an object with an `_id` or `_key` property).
 
 *Examples*
 
@@ -1771,7 +1815,7 @@ The *GraphVertexCollection API* extends the [*Collection API* (see above)](#coll
 
 Retrieves the vertex with the given *documentHandle* from the collection.
 
-The *documentHandle* can be either the `_id` or the `_key` of a vertex in the collection.
+The *documentHandle* can be either the `_id` or the `_key` of a vertex in the collection, or a vertex (i.e. an object with an `_id` or `_key` property).
 
 #### graphVertexCollection.save(data, callback)
 
@@ -1785,7 +1829,7 @@ The *GraphEdgeCollection API* extends the *Collection API* (see above) with the 
 
 Retrieves the edge with the given *documentHandle* from the collection.
 
-The *documentHandle* can be either the `_id` or the `_key` of an edge in the collection.
+The *documentHandle* can be either the `_id` or the `_key` of an edge in the collection, or an edge (i.e. an object with an `_id` or `_key` property).
 
 #### graphEdgeCollection.save(data, fromId, toId, callback)
 
