@@ -1093,23 +1093,92 @@ See [the HTTP API documentation](https://docs.arangodb.com/HttpCollection/Gettin
 
 Retrieves the collection's properties.
 
+*Examples*
+
+```js
+var db = require('arangojs')();
+db.collection('some-collection', function (err, collection) {
+    if (err) return console.error(err);
+    collection.properties(function (err, props) {
+        if (err) return console.error(err);
+        // props contains the collection's properties
+    });
+});
+```
+
 #### collection.count(callback)
 
 Retrieves the number of documents in a collection.
+
+*Examples*
+
+```js
+var db = require('arangojs')();
+db.collection('some-collection', function (err, collection) {
+    if (err) return console.error(err);
+    collection.count(function (err, count) {
+        if (err) return console.error(err);
+        // count contains the collection's count
+    });
+});
+```
 
 #### collection.figures(callback)
 
 Retrieves statistics for a collection.
 
+*Examples*
+
+```js
+var db = require('arangojs')();
+db.collection('some-collection', function (err, collection) {
+    if (err) return console.error(err);
+    collection.figures(function (err, figures) {
+        if (err) return console.error(err);
+        // figures contains the collection's figures
+    });
+});
+```
+
 #### collection.revision(callback)
 
 Retrieves the collection revision ID.
+
+*Examples*
+
+```js
+var db = require('arangojs')();
+db.collection('some-collection', function (err, collection) {
+    if (err) return console.error(err);
+    collection.revision(function (err, revision) {
+        if (err) return console.error(err);
+        // revision contains the collection's revision
+    });
+});
+```
 
 #### collection.checksum([opts,] callback)
 
 Retrieves the collection checksum.
 
+For information on the possible options see [the HTTP API for getting collection information](https://docs.arangodb.com/HttpCollection/Getting.html).
+
+*Examples*
+
+```js
+var db = require('arangojs')();
+db.collection('some-collection', function (err, collection) {
+    if (err) return console.error(err);
+    collection.checksum(function (err, checksum) {
+        if (err) return console.error(err);
+        // checksum contains the collection's checksum
+    });
+});
+```
+
 ### Manipulating the collection
+
+These functions implement [the HTTP API for modifying collections](https://docs.arangodb.com/HttpCollection/Modifying.html).
 
 #### collection.load([count,] callback)
 
@@ -1117,21 +1186,92 @@ Tells the server to load the collection into memory.
 
 If *count* is set to `false`, the return value will not include the number of documents in the collection (which may speed up the process).
 
+*Examples*
+
+```js
+var db = require('arangojs')();
+db.collection('some-collection', function (err, collection) {
+    if (err) return console.error(err);
+    collection.load(false, function (err) {
+        if (err) return console.error(err);
+        // the collection has now been loaded into memory
+    });
+});
+```
+
 #### collection.unload(callback)
 
 Tells the server to remove the collection from memory.
+
+*Examples*
+
+```js
+var db = require('arangojs')();
+db.collection('some-collection', function (err, collection) {
+    if (err) return console.error(err);
+    collection.unload(function (err) {
+        if (err) return console.error(err);
+        // the collection has now been unloaded from memory
+    });
+});
+```
 
 #### collection.setProperties(properties, callback)
 
 Replaces the properties of the collection.
 
+For information on the *properties* argument see [the HTTP API for modifying collections](https://docs.arangodb.com/HttpCollection/Modifying.html).
+
+*Examples*
+
+```js
+var db = require('arangojs')();
+db.collection('some-collection', function (err, collection) {
+    if (err) return console.error(err);
+    collection.setProperties({waitForSync: true}, function (err, result) {
+        if (err) return console.error(err);
+        result.waitForSync === true;
+        // the collection will now wait for data being written to disk
+        // whenever a document is changed
+    });
+});
+```
+
 #### collection.rename(name, callback)
 
 Renames the collection. The *Collection* instance will automatically update its name according to the server response.
 
+*Examples*
+
+```js
+var db = require('arangojs')();
+db.collection('some-collection', function (err, collection) {
+    if (err) return console.error(err);
+    collection.rename('new-collection-name', function (err, result) {
+        if (err) return console.error(err);
+        result.name === 'new-collection-name';
+        collection.name === result.name;
+        // result contains additional information about the collection
+    });
+});
+```
+
 #### collection.rotate(callback)
 
 Rotates the journal of the collection.
+
+*Examples*
+
+```js
+var db = require('arangojs')();
+db.collection('some-collection', function (err, collection) {
+    if (err) return console.error(err);
+    collection.rotate(function (err, result) {
+        if (err) return console.error(err);
+        // result.result will be true if rotation succeeded
+    });
+});
+```
 
 #### collection.truncate(callback)
 
