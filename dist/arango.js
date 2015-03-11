@@ -203,7 +203,7 @@ extend(BaseCollection.prototype, {
             path: 'import',
             body: data,
             ld: Boolean(opts.type !== 'array'),
-            qs: extend({}, opts, { collection: this.name })
+            qs: extend({ type: 'auto' }, opts, { collection: this.name })
         }, function (err, body) {
             if (err)
                 callback(err);

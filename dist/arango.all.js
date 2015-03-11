@@ -203,7 +203,7 @@ extend(BaseCollection.prototype, {
             path: 'import',
             body: data,
             ld: Boolean(opts.type !== 'array'),
-            qs: extend({}, opts, { collection: this.name })
+            qs: extend({ type: 'auto' }, opts, { collection: this.name })
         }, function (err, body) {
             if (err)
                 callback(err);
@@ -2533,8 +2533,8 @@ function createXHR(options, callback) {
     
     function errorFunc(evt) {
         clearTimeout(timeoutTimer)
-        if(! evt instanceof Error){
-            evt = new Error(""+evt)
+        if(!(evt instanceof Error)){
+            evt = new Error("" + (evt || "unknown") )
         }
         evt.statusCode = 0
         callback(evt, failureResponse)
@@ -2572,6 +2572,9 @@ function createXHR(options, callback) {
     }
 
     options = options || {}
+    if(typeof callback === "undefined"){
+        throw new Error("callback argument missing")
+    }
     callback = once(callback)
 
     var xhr = options.xhr || null
