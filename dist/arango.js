@@ -583,7 +583,7 @@ extend(Connection.prototype, {
       method: (opts.method || 'get').toUpperCase(),
       body: body
     }, function (err, response, rawBody) {
-      if (err) callback(err);
+      if (err) callback(err, rawBody, response);
       else if (!response.headers['content-type'].match(jsonMime)) callback(null, rawBody, response);
       else {
         try {
