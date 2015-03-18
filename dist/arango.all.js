@@ -1303,6 +1303,13 @@ extend(EdgeCollection.prototype, {
         });
     },
     save: function (data, fromId, toId, callback) {
+        if (typeof fromId === 'function') {
+            callback = fromId;
+            fromId = undefined;
+        } else {
+            data._from = fromId;
+            data._to = toId;
+        }
         if (!callback)
             callback = noop;
         this._gharial.post(data, {

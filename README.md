@@ -2534,9 +2534,11 @@ db.createGraph({
 });
 ```
 
-#### graphEdgeCollection.save(data, fromId, toId, callback)
+#### graphEdgeCollection.save(data, [fromId, toId, ]callback)
 
 Creates a new edge between the vertices *fromId* and *toId* with the given *data*.
+
+If *fromId* and *toId* are not specified, the *data* needs to contain the properties *_from* and *_to*.
 
 *Examples*
 
