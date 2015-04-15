@@ -202,7 +202,7 @@ extend(BaseCollection.prototype, {
             method: 'POST',
             path: 'import',
             body: data,
-            ld: Boolean(opts.type !== 'array'),
+            ld: Boolean(!opts || opts.type !== 'array'),
             qs: extend({ type: 'auto' }, opts, { collection: this.name })
         }, function (err, body) {
             if (err)
