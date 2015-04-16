@@ -22,19 +22,20 @@
     "LICENSE"
   ],
   "scripts": {
-    "test": "npm run lint && npm run test-only",
+    "test": "npm run lint && npm run babel && npm run test-only",
     "test-only": "mocha -t 30000 --growl -R spec",
     "cover": "npm run lint && istanbul cover --report lcov _mocha -- -t 30000 -R spec",
     "coveralls": "npm run cover && cat ./coverage/lcov.info | coveralls ; rm -rf ./coverage",
     "watch": "dirwatch -d 500 -c 'npm run test-only && npm run lint && npm run dist' ./lib ./test",
-    "dist": "npm run bundle && npm run minify",
+    "dist": "npm run babel && npm run bundle && npm run minify",
+    "babel": "babel --optional utility.deadCodeElimination --compact false -d lib src",
     "bundle": "npm run all-bundle && npm run raw-bundle",
     "minify": "npm run all-minify && npm run raw-minify",
-    "all-bundle": "browserify -t dekeywordify -s arangojs ./index.js > dist/arango.all.js",
+    "all-bundle": "browserify -s arangojs ./index.js > dist/arango.all.js",
     "all-minify": "uglifyjs dist/arango.all.js > dist/arango.all.min.js",
-    "raw-bundle": "browserify -t dekeywordify -x extend -x request -s arangojs ./index.js > dist/arango.js",
+    "raw-bundle": "browserify -x extend -x request -s arangojs ./index.js > dist/arango.js",
     "raw-minify": "uglifyjs dist/arango.js > dist/arango.min.js",
-    "lint": "jshint index.js lib test",
+    "lint": "jshint index.js src test",
     "prepublish": "npm run lint"
   },
   "repository": {
@@ -49,6 +50,7 @@
   "homepage": "https://github.com/arangodb/arangojs",
   "devDependencies": {
     "async": "^0.9.0",
+    "babel": "^5.1.10",
     "browserify": "^7.0.2",
     "coveralls": "^2.11.2",
     "dekeywordify": "^0.2.0",

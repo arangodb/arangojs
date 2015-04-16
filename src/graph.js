@@ -1,5 +1,5 @@
 /*jshint browserify: true */
-'use strict';
+"use strict";
 
 var noop = require('./util/noop');
 var extend = require('extend');
@@ -19,55 +19,57 @@ Graph.VertexCollection = VertexCollection;
 Graph.EdgeCollection = EdgeCollection;
 
 extend(Graph.prototype, {
-  drop: function drop(dropCollections, callback) {
+  drop: function (dropCollections, callback) {
     if (typeof dropCollections === 'function') {
       callback = dropCollections;
       dropCollections = undefined;
     }
     if (!callback) callback = noop;
-    this._gharial['delete']({
+    this._gharial.delete({
       dropCollections: dropCollections
     }, callback);
   },
-  vertexCollection: function vertexCollection(collectionName, callback) {
+  vertexCollection: function (collectionName, callback) {
     if (!callback) callback = noop;
     var self = this;
     self._api.get('collection/' + collectionName, function (err, body) {
-      if (err) callback(err);else callback(null, new VertexCollection(self._connection, body, self));
+      if (err) callback(err);
+      else callback(null, new VertexCollection(self._connection, body, self));
     });
   },
-  addVertexCollection: function addVertexCollection(collectionName, callback) {
-    this._gharial.post('vertex', { collection: collectionName }, callback);
+  addVertexCollection: function (collectionName, callback) {
+    this._gharial.post('vertex', {collection: collectionName}, callback);
   },
-  removeVertexCollection: function removeVertexCollection(collectionName, dropCollection, callback) {
+  removeVertexCollection: function (collectionName, dropCollection, callback) {
     if (typeof dropCollection === 'function') {
       callback = dropCollection;
       dropCollection = undefined;
     }
-    this._gharial['delete']('vertex/' + collectionName, { dropCollection: dropCollection }, callback);
+    this._gharial.delete('vertex/' + collectionName, {dropCollection: dropCollection}, callback);
   },
-  edgeCollection: function edgeCollection(collectionName, callback) {
+  edgeCollection: function (collectionName, callback) {
     if (!callback) callback = noop;
     var self = this;
     self._api.get('collection/' + collectionName, function (err, body) {
-      if (err) callback(err);else callback(null, new EdgeCollection(self._connection, body, self));
+      if (err) callback(err);
+      else callback(null, new EdgeCollection(self._connection, body, self));
     });
   },
-  addEdgeDefinition: function addEdgeDefinition(definition, callback) {
+  addEdgeDefinition: function (definition, callback) {
     this._gharial.post('edge', definition, callback);
   },
-  replaceEdgeDefinition: function replaceEdgeDefinition(definitionName, definition, callback) {
+  replaceEdgeDefinition: function (definitionName, definition, callback) {
     if (!callback) callback = noop;
     this._api.put('gharial/' + this.name + '/edge/' + definitionName, definition, callback);
   },
-  removeEdgeDefinition: function removeEdgeDefinition(definitionName, dropCollection, callback) {
+  removeEdgeDefinition: function (definitionName, dropCollection, callback) {
     if (typeof dropCollection === 'function') {
       callback = dropCollection;
       dropCollection = undefined;
     }
-    this._gharial['delete']('edge/' + definitionName, { dropCollection: dropCollection }, callback);
+    this._gharial.delete('edge/' + definitionName, {dropCollection: dropCollection}, callback);
   },
-  traversal: function traversal(startVertex, opts, callback) {
+  traversal: function (startVertex, opts, callback) {
     if (typeof opts === 'function') {
       callback = opts;
       opts = undefined;
@@ -76,7 +78,8 @@ extend(Graph.prototype, {
       startVertex: startVertex,
       graphName: this.name
     }), function (err, data) {
-      if (err) callback(err);else callback(null, data.result);
+      if (err) callback(err);
+      else callback(null, data.result);
     });
   }
 });
@@ -89,18 +92,20 @@ function VertexCollection(connection, body, graph) {
 inherits(VertexCollection, BaseCollection);
 
 extend(VertexCollection.prototype, {
-  vertex: function vertex(documentHandle, callback) {
+  vertex: function (documentHandle, callback) {
     if (!callback) callback = noop;
     this._gharial.get(documentHandle, function (err, body) {
-      if (err) callback(err);else callback(null, body);
+      if (err) callback(err);
+      else callback(null, body);
     });
   },
-  save: function save(data, callback) {
+  save: function (data, callback) {
     if (!callback) callback = noop;
     this._gharial.post(data, {
       collection: this.name
     }, function (err, body) {
-      if (err) callback(err);else callback(null, body);
+      if (err) callback(err);
+      else callback(null, body);
     });
   }
 });
@@ -113,13 +118,14 @@ function EdgeCollection(connection, body, graph) {
 inherits(EdgeCollection, BaseCollection);
 
 extend(EdgeCollection.prototype, {
-  edge: function edge(documentHandle, callback) {
+  edge: function (documentHandle, callback) {
     if (!callback) callback = noop;
     this._gharial.get(documentHandle, function (err, body) {
-      if (err) callback(err);else callback(null, body);
+      if (err) callback(err);
+      else callback(null, body);
     });
   },
-  save: function save(data, fromId, toId, callback) {
+  save: function (data, fromId, toId, callback) {
     if (typeof fromId === 'function') {
       callback = fromId;
       fromId = undefined;
@@ -129,7 +135,8 @@ extend(EdgeCollection.prototype, {
     }
     if (!callback) callback = noop;
     this._gharial.post(data, function (err, body) {
-      if (err) callback(err);else callback(null, body);
+      if (err) callback(err);
+      else callback(null, body);
     });
   }
 });

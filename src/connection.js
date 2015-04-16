@@ -1,5 +1,5 @@
 /*jshint browserify: true */
-'use strict';
+"use strict";
 
 var noop = require('./util/noop');
 var extend = require('extend');
@@ -13,7 +13,7 @@ module.exports = Connection;
 
 function Connection(config) {
   if (typeof config === 'string') {
-    config = { url: config };
+    config = {url: config};
   }
   this.config = extend({}, Connection.defaults, config);
   if (!this.config.headers) this.config.headers = {};
@@ -29,7 +29,7 @@ Connection.defaults = {
 };
 
 extend(Connection.prototype, {
-  _resolveUrl: function _resolveUrl(opts) {
+  _resolveUrl: function (opts) {
     var url = this.config.url;
     if (!opts.absolutePath) {
       url += '/_db/' + this.config.databaseName;
@@ -39,24 +39,14 @@ extend(Connection.prototype, {
     if (opts.qs) url += '?' + (typeof opts.qs === 'string' ? opts.qs : qs.stringify(opts.qs));
     return url;
   },
-  route: function route(path) {
+  route: function (path) {
     return new Route(this, path);
   },
-  request: (function (_request) {
-    function request(_x, _x2) {
-      return _request.apply(this, arguments);
-    }
-
-    request.toString = function () {
-      return _request.toString();
-    };
-
-    return request;
-  })(function (opts, callback) {
+  request: function (opts, callback) {
     if (!callback) callback = noop;
     if (!opts) opts = {};
     var body = opts.body,
-        headers = { 'content-type': 'text/plain' };
+      headers = {'content-type': 'text/plain'};
 
     if (body && typeof body === 'object') {
       if (opts.ld) {
@@ -76,14 +66,17 @@ extend(Connection.prototype, {
       method: (opts.method || 'get').toUpperCase(),
       body: body
     }, function (err, response, rawBody) {
-      if (err) callback(err, rawBody, response);else if (!response.headers['content-type'].match(jsonMime)) callback(null, rawBody, response);else {
+      if (err) callback(err, rawBody, response);
+      else if (!response.headers['content-type'].match(jsonMime)) callback(null, rawBody, response);
+      else {
         try {
           var body = JSON.parse(rawBody);
-          if (!body.error) callback(null, body, response);else callback(new ArangoError(body));
+          if (!body.error) callback(null, body, response);
+          else callback(new ArangoError(body));
         } catch (e) {
           callback(e, rawBody, response);
         }
       }
     });
-  })
+  }
 });
