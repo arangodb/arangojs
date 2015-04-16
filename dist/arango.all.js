@@ -1,536 +1,449 @@
 !function(e){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define([],e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.arangojs=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-/*jshint browserify: true */
-"use strict";
-
+'use strict';
 module.exports = require('./lib/database');
 
 },{"./lib/database":5}],2:[function(require,module,exports){
 'use strict';
-var noop = require('./util/noop'), inherits = require('util').inherits, extend = require('extend'), ArrayCursor = require('./cursor');
+var noop = require('./util/noop');
+var inherits = require('util').inherits;
+var extend = require('extend');
+var ArrayCursor = require('./cursor');
+
 module.exports = extend(function (connection, body) {
-    var Ctor = body.type === 3 ? EdgeCollection : DocumentCollection;
-    return new Ctor(connection, body);
+  var Ctor = body.type === 3 ? EdgeCollection : DocumentCollection;
+  return new Ctor(connection, body);
 }, {
-    _BaseCollection: BaseCollection,
-    DocumentCollection: DocumentCollection,
-    EdgeCollection: EdgeCollection
+  _BaseCollection: BaseCollection,
+  DocumentCollection: DocumentCollection,
+  EdgeCollection: EdgeCollection
 });
+
 function BaseCollection(connection, body) {
-    this._connection = connection;
-    this._api = this._connection.route('_api');
-    extend(this, body);
-    delete this.code;
-    delete this.error;
+  this._connection = connection;
+  this._api = this._connection.route('_api');
+  extend(this, body);
+  delete this.code;
+  delete this.error;
 }
+
 extend(BaseCollection.prototype, {
-    _documentPath: function (documentHandle) {
-        return (this.type === 3 ? 'edge/' : 'document/') + this._documentHandle(documentHandle);
-    },
-    _documentHandle: function (documentHandle) {
-        if (documentHandle._id) {
-            documentHandle = documentHandle._id;
-        } else if (documentHandle._key) {
-            documentHandle = documentHandle._key;
-        }
-        if (documentHandle.indexOf('/') === -1) {
-            documentHandle = this.name + '/' + documentHandle;
-        }
-        return documentHandle;
-    },
-    _indexHandle: function (indexHandle) {
-        if (indexHandle.id) {
-            indexHandle = indexHandle.id;
-        }
-        if (indexHandle.indexOf('/') === -1) {
-            indexHandle = this.name + '/' + indexHandle;
-        }
-        return indexHandle;
-    },
-    _get: function (path, update, opts, callback) {
-        if (typeof opts === 'function') {
-            callback = opts;
-            opts = undefined;
-        }
-        if (!callback)
-            callback = noop;
-        var self = this;
-        self._api.get('collection/' + self.name + '/' + path, opts, function (err, body) {
-            if (err)
-                callback(err);
-            else {
-                if (update) {
-                    extend(self, body);
-                    delete self.code;
-                    delete self.error;
-                }
-                callback(null, body);
-            }
-        });
-    },
-    _put: function (path, data, update, callback) {
-        if (!callback)
-            callback = noop;
-        var self = this;
-        self._api.put('collection/' + self.name + '/' + path, data, function (err, body) {
-            if (err)
-                callback(err);
-            else {
-                if (update)
-                    extend(self, body);
-                callback(null, body);
-            }
-        });
-    },
-    properties: function (callback) {
-        return this._get('properties', true, callback);
-    },
-    count: function (callback) {
-        return this._get('count', true, callback);
-    },
-    figures: function (callback) {
-        return this._get('figures', true, callback);
-    },
-    revision: function (callback) {
-        return this._get('revision', true, callback);
-    },
-    checksum: function (opts, callback) {
-        return this._get('checksum', true, opts, callback);
-    },
-    load: function (count, callback) {
-        if (typeof count === 'function') {
-            callback = count;
-            count = undefined;
-        }
-        return this._put('load', typeof count === 'boolean' ? { count: count } : undefined, true, callback);
-    },
-    unload: function (callback) {
-        return this._put('unload', undefined, true, callback);
-    },
-    setProperties: function (properties, callback) {
-        return this._put('properties', properties, true, callback);
-    },
-    rename: function (name, callback) {
-        return this._put('rename', { name: name }, true, callback);
-    },
-    rotate: function (callback) {
-        return this._put('rotate', undefined, false, callback);
-    },
-    truncate: function (callback) {
-        return this._put('truncate', undefined, true, callback);
-    },
-    drop: function (callback) {
-        if (!callback)
-            callback = noop;
-        var self = this;
-        self._api['delete']('collection/' + self.name, function (err, body) {
-            if (err)
-                callback(err);
-            else
-                callback(null, body);
-        });
-    },
-    replace: function (documentHandle, data, opts, callback) {
-        if (typeof opts === 'function') {
-            callback = opts;
-            opts = undefined;
-        }
-        if (!callback)
-            callback = noop;
-        opts = extend({}, opts, { collection: this.name });
-        this._api.put(this._documentPath(documentHandle), data, opts, function (err, body) {
-            if (err)
-                callback(err);
-            else
-                callback(null, body);
-        });
-    },
-    update: function (documentHandle, data, opts, callback) {
-        if (typeof opts === 'function') {
-            callback = opts;
-            opts = undefined;
-        }
-        if (!callback)
-            callback = noop;
-        opts = extend({}, opts, { collection: this.name });
-        this._api.patch(this._documentPath(documentHandle), data, opts, function (err, body) {
-            if (err)
-                callback(err);
-            else
-                callback(null, body);
-        });
-    },
-    remove: function (documentHandle, opts, callback) {
-        if (typeof opts === 'function') {
-            callback = opts;
-            opts = undefined;
-        }
-        if (!callback)
-            callback = noop;
-        opts = extend({}, opts, { collection: this.name });
-        this._api['delete'](this._documentPath(documentHandle), opts, function (err, body) {
-            if (err)
-                callback(err);
-            else
-                callback(null, body);
-        });
-    },
-    all: function (type, callback) {
-        if (typeof type === 'function') {
-            callback = type;
-            type = undefined;
-        }
-        if (!callback)
-            callback = noop;
-        this._api.get('document', {
-            type: type || 'id',
-            collection: this.name
-        }, function (err, body) {
-            if (err)
-                callback(err);
-            else
-                callback(null, body.documents);
-        });
-    },
-    'import': function (data, opts, callback) {
-        if (typeof opts === 'function') {
-            callback = opts;
-            opts = undefined;
-        }
-        if (!callback)
-            callback = noop;
-        this._api.request({
-            method: 'POST',
-            path: 'import',
-            body: data,
-            ld: Boolean(!opts || opts.type !== 'array'),
-            qs: extend({ type: 'auto' }, opts, { collection: this.name })
-        }, function (err, body) {
-            if (err)
-                callback(err);
-            else
-                callback(null, body);
-        });
-    },
-    indexes: function (callback) {
-        if (!callback)
-            callback = noop;
-        this._api.get('index', { collection: this.name }, function (err, result) {
-            if (err)
-                callback(err);
-            else
-                callback(null, result.indexes);
-        });
-    },
-    index: function (indexHandle, callback) {
-        if (!callback)
-            callback = noop;
-        this._api.get('index/' + this._indexHandle(indexHandle), function (err, result) {
-            if (err)
-                callback(err);
-            else
-                callback(null, result);
-        });
-    },
-    createIndex: function (details, callback) {
-        if (!callback)
-            callback = noop;
-        this._api.post('index', details, { collection: this.name }, function (err, result) {
-            if (err)
-                callback(err);
-            else
-                callback(null, result);
-        });
-    },
-    dropIndex: function (indexHandle, callback) {
-        if (!callback)
-            callback = noop;
-        this._api['delete']('index/' + this._indexHandle(indexHandle), function (err, result) {
-            if (err)
-                callback(err);
-            else
-                callback(null, result);
-        });
-    },
-    createCapConstraint: function (size, callback) {
-        if (typeof size === 'number') {
-            size = { size: size };
-        }
-        if (!callback)
-            callback = noop;
-        this._api.post('index', extend({}, size, { type: 'cap' }), { collection: this.name }, function (err, result) {
-            if (err)
-                callback(err);
-            else
-                callback(null, result);
-        });
-    },
-    createHashIndex: function (fields, unique, callback) {
-        if (typeof unique === 'function') {
-            callback = unique;
-            unique = undefined;
-        }
-        if (typeof fields === 'string') {
-            fields = [fields];
-        }
-        if (!callback)
-            callback = noop;
-        this._api.post('index', {
-            type: 'hash',
-            fields: fields,
-            unique: Boolean(unique)
-        }, { collection: this.name }, function (err, result) {
-            if (err)
-                callback(err);
-            else
-                callback(null, result);
-        });
-    },
-    createSkipList: function (fields, unique, callback) {
-        if (typeof unique === 'function') {
-            callback = unique;
-            unique = undefined;
-        }
-        if (typeof fields === 'string') {
-            fields = [fields];
-        }
-        if (!callback)
-            callback = noop;
-        this._api.post('index', {
-            type: 'skiplist',
-            fields: fields,
-            unique: Boolean(unique)
-        }, { collection: this.name }, function (err, result) {
-            if (err)
-                callback(err);
-            else
-                callback(null, result);
-        });
-    },
-    createGeoIndex: function (fields, opts, callback) {
-        if (typeof opts === 'function') {
-            callback = opts;
-            opts = undefined;
-        }
-        if (typeof fields === 'string') {
-            fields = [fields];
-        }
-        if (!callback)
-            callback = noop;
-        this._api.post('index', extend({}, opts, {
-            type: 'geo',
-            fields: fields
-        }), { collection: this.name }, function (err, result) {
-            if (err)
-                callback(err);
-            else
-                callback(null, result);
-        });
-    },
-    createFulltextIndex: function (fields, minLength, callback) {
-        if (typeof minLength === 'function') {
-            callback = minLength;
-            minLength = undefined;
-        }
-        if (typeof fields === 'string') {
-            fields = [fields];
-        }
-        if (!callback)
-            callback = noop;
-        this._api.post('index', {
-            type: 'fulltext',
-            fields: fields,
-            minLength: minLength ? Number(minLength) : undefined
-        }, { collection: this.name }, function (err, result) {
-            if (err)
-                callback(err);
-            else
-                callback(null, result);
-        });
-    },
-    fulltext: function (field, query, opts, callback) {
-        if (typeof opts === 'function') {
-            callback = opts;
-            opts = undefined;
-        }
-        if (opts) {
-            opts = extend({}, opts);
-            if (opts.index)
-                opts.index = this._indexHandle(opts.index);
-        }
-        if (!callback)
-            callback = noop;
-        var self = this;
-        self._api.put('simple/fulltext', extend(opts, {
-            collection: this.name,
-            attribute: field,
-            query: query
-        }), function (err, body) {
-            if (err)
-                callback(err);
-            else
-                callback(null, new ArrayCursor(self._connection, body));
-        });
-    },
-    near: function (latitude, longitude, opts, callback) {
-        if (typeof opts === 'function') {
-            callback = opts;
-            opts = undefined;
-        }
-        if (opts) {
-            opts = extend({}, opts);
-            if (opts.geo)
-                opts.geo = this._indexHandle(opts.geo);
-        }
-        if (!callback)
-            callback = noop;
-        var self = this;
-        self._api.put('simple/near', extend(opts, {
-            collection: this.name,
-            latitude: latitude,
-            longitude: longitude
-        }), function (err, body) {
-            if (err)
-                callback(err);
-            else
-                callback(null, new ArrayCursor(self._connection, body));
-        });
-    },
-    within: function (latitude, longitude, radius, opts, callback) {
-        if (typeof opts === 'function') {
-            callback = opts;
-            opts = undefined;
-        }
-        if (opts) {
-            opts = extend({}, opts);
-            if (opts.geo)
-                opts.geo = this._indexHandle(opts.geo);
-        }
-        if (!callback)
-            callback = noop;
-        var self = this;
-        self._api.put('simple/within', extend(opts, {
-            collection: this.name,
-            latitude: latitude,
-            longitude: longitude,
-            radius: Number(radius)
-        }), function (err, body) {
-            if (err)
-                callback(err);
-            else
-                callback(null, new ArrayCursor(self._connection, body));
-        });
+  _documentPath: function _documentPath(documentHandle) {
+    return (this.type === 3 ? 'edge/' : 'document/') + this._documentHandle(documentHandle);
+  },
+  _documentHandle: function _documentHandle(documentHandle) {
+    if (documentHandle._id) {
+      documentHandle = documentHandle._id;
+    } else if (documentHandle._key) {
+      documentHandle = documentHandle._key;
     }
+    if (documentHandle.indexOf('/') === -1) {
+      documentHandle = this.name + '/' + documentHandle;
+    }
+    return documentHandle;
+  },
+  _indexHandle: function _indexHandle(indexHandle) {
+    if (indexHandle.id) {
+      indexHandle = indexHandle.id;
+    }
+    if (indexHandle.indexOf('/') === -1) {
+      indexHandle = this.name + '/' + indexHandle;
+    }
+    return indexHandle;
+  },
+  _get: function _get(path, update, opts, callback) {
+    if (typeof opts === 'function') {
+      callback = opts;
+      opts = undefined;
+    }
+    if (!callback) callback = noop;
+    var self = this;
+    self._api.get('collection/' + self.name + '/' + path, opts, function (err, body) {
+      if (err) callback(err);else {
+        if (update) {
+          extend(self, body);
+          delete self.code;
+          delete self.error;
+        }
+        callback(null, body);
+      }
+    });
+  },
+  _put: function _put(path, data, update, callback) {
+    if (!callback) callback = noop;
+    var self = this;
+    self._api.put('collection/' + self.name + '/' + path, data, function (err, body) {
+      if (err) callback(err);else {
+        if (update) extend(self, body);
+        callback(null, body);
+      }
+    });
+  },
+  properties: function properties(callback) {
+    return this._get('properties', true, callback);
+  },
+  count: function count(callback) {
+    return this._get('count', true, callback);
+  },
+  figures: function figures(callback) {
+    return this._get('figures', true, callback);
+  },
+  revision: function revision(callback) {
+    return this._get('revision', true, callback);
+  },
+  checksum: function checksum(opts, callback) {
+    return this._get('checksum', true, opts, callback);
+  },
+  load: function load(count, callback) {
+    if (typeof count === 'function') {
+      callback = count;
+      count = undefined;
+    }
+    return this._put('load', typeof count === 'boolean' ? { count: count } : undefined, true, callback);
+  },
+  unload: function unload(callback) {
+    return this._put('unload', undefined, true, callback);
+  },
+  setProperties: function setProperties(properties, callback) {
+    return this._put('properties', properties, true, callback);
+  },
+  rename: function rename(name, callback) {
+    return this._put('rename', { name: name }, true, callback);
+  },
+  rotate: function rotate(callback) {
+    return this._put('rotate', undefined, false, callback);
+  },
+  truncate: function truncate(callback) {
+    return this._put('truncate', undefined, true, callback);
+  },
+  drop: function drop(callback) {
+    if (!callback) callback = noop;
+    var self = this;
+    self._api['delete']('collection/' + self.name, function (err, body) {
+      if (err) callback(err);else callback(null, body);
+    });
+  },
+  replace: function replace(documentHandle, data, opts, callback) {
+    if (typeof opts === 'function') {
+      callback = opts;
+      opts = undefined;
+    }
+    if (!callback) callback = noop;
+    opts = extend({}, opts, { collection: this.name });
+    this._api.put(this._documentPath(documentHandle), data, opts, function (err, body) {
+      if (err) callback(err);else callback(null, body);
+    });
+  },
+  update: function update(documentHandle, data, opts, callback) {
+    if (typeof opts === 'function') {
+      callback = opts;
+      opts = undefined;
+    }
+    if (!callback) callback = noop;
+    opts = extend({}, opts, { collection: this.name });
+    this._api.patch(this._documentPath(documentHandle), data, opts, function (err, body) {
+      if (err) callback(err);else callback(null, body);
+    });
+  },
+  remove: function remove(documentHandle, opts, callback) {
+    if (typeof opts === 'function') {
+      callback = opts;
+      opts = undefined;
+    }
+    if (!callback) callback = noop;
+    opts = extend({}, opts, { collection: this.name });
+    this._api['delete'](this._documentPath(documentHandle), opts, function (err, body) {
+      if (err) callback(err);else callback(null, body);
+    });
+  },
+  all: function all(type, callback) {
+    if (typeof type === 'function') {
+      callback = type;
+      type = undefined;
+    }
+    if (!callback) callback = noop;
+    this._api.get('document', {
+      type: type || 'id',
+      collection: this.name
+    }, function (err, body) {
+      if (err) callback(err);else callback(null, body.documents);
+    });
+  },
+  'import': function _import(data, opts, callback) {
+    if (typeof opts === 'function') {
+      callback = opts;
+      opts = undefined;
+    }
+    if (!callback) callback = noop;
+    this._api.request({
+      method: 'POST',
+      path: 'import',
+      body: data,
+      ld: Boolean(!opts || opts.type !== 'array'),
+      qs: extend({
+        type: 'auto'
+      }, opts, {
+        collection: this.name
+      })
+    }, function (err, body) {
+      if (err) callback(err);else callback(null, body);
+    });
+  },
+  indexes: function indexes(callback) {
+    if (!callback) callback = noop;
+    this._api.get('index', { collection: this.name }, function (err, result) {
+      if (err) callback(err);else callback(null, result.indexes);
+    });
+  },
+  index: function index(indexHandle, callback) {
+    if (!callback) callback = noop;
+    this._api.get('index/' + this._indexHandle(indexHandle), function (err, result) {
+      if (err) callback(err);else callback(null, result);
+    });
+  },
+  createIndex: function createIndex(details, callback) {
+    if (!callback) callback = noop;
+    this._api.post('index', details, {
+      collection: this.name
+    }, function (err, result) {
+      if (err) callback(err);else callback(null, result);
+    });
+  },
+  dropIndex: function dropIndex(indexHandle, callback) {
+    if (!callback) callback = noop;
+    this._api['delete']('index/' + this._indexHandle(indexHandle), function (err, result) {
+      if (err) callback(err);else callback(null, result);
+    });
+  },
+  createCapConstraint: function createCapConstraint(size, callback) {
+    if (typeof size === 'number') {
+      size = { size: size };
+    }
+    if (!callback) callback = noop;
+    this._api.post('index', extend({}, size, {
+      type: 'cap'
+    }), { collection: this.name }, function (err, result) {
+      if (err) callback(err);else callback(null, result);
+    });
+  },
+  createHashIndex: function createHashIndex(fields, unique, callback) {
+    if (typeof unique === 'function') {
+      callback = unique;
+      unique = undefined;
+    }
+    if (typeof fields === 'string') {
+      fields = [fields];
+    }
+    if (!callback) callback = noop;
+    this._api.post('index', {
+      type: 'hash',
+      fields: fields,
+      unique: Boolean(unique)
+    }, { collection: this.name }, function (err, result) {
+      if (err) callback(err);else callback(null, result);
+    });
+  },
+  createSkipList: function createSkipList(fields, unique, callback) {
+    if (typeof unique === 'function') {
+      callback = unique;
+      unique = undefined;
+    }
+    if (typeof fields === 'string') {
+      fields = [fields];
+    }
+    if (!callback) callback = noop;
+    this._api.post('index', {
+      type: 'skiplist',
+      fields: fields,
+      unique: Boolean(unique)
+    }, { collection: this.name }, function (err, result) {
+      if (err) callback(err);else callback(null, result);
+    });
+  },
+  createGeoIndex: function createGeoIndex(fields, opts, callback) {
+    if (typeof opts === 'function') {
+      callback = opts;
+      opts = undefined;
+    }
+    if (typeof fields === 'string') {
+      fields = [fields];
+    }
+    if (!callback) callback = noop;
+    this._api.post('index', extend({}, opts, {
+      type: 'geo',
+      fields: fields
+    }), { collection: this.name }, function (err, result) {
+      if (err) callback(err);else callback(null, result);
+    });
+  },
+  createFulltextIndex: function createFulltextIndex(fields, minLength, callback) {
+    if (typeof minLength === 'function') {
+      callback = minLength;
+      minLength = undefined;
+    }
+    if (typeof fields === 'string') {
+      fields = [fields];
+    }
+    if (!callback) callback = noop;
+    this._api.post('index', {
+      type: 'fulltext',
+      fields: fields,
+      minLength: minLength ? Number(minLength) : undefined
+    }, { collection: this.name }, function (err, result) {
+      if (err) callback(err);else callback(null, result);
+    });
+  },
+  fulltext: function fulltext(field, query, opts, callback) {
+    if (typeof opts === 'function') {
+      callback = opts;
+      opts = undefined;
+    }
+    if (opts) {
+      opts = extend({}, opts);
+      if (opts.index) opts.index = this._indexHandle(opts.index);
+    }
+    if (!callback) callback = noop;
+    var self = this;
+    self._api.put('simple/fulltext', extend(opts, {
+      collection: this.name,
+      attribute: field,
+      query: query
+    }), function (err, body) {
+      if (err) callback(err);else callback(null, new ArrayCursor(self._connection, body));
+    });
+  },
+  near: function near(latitude, longitude, opts, callback) {
+    if (typeof opts === 'function') {
+      callback = opts;
+      opts = undefined;
+    }
+    if (opts) {
+      opts = extend({}, opts);
+      if (opts.geo) opts.geo = this._indexHandle(opts.geo);
+    }
+    if (!callback) callback = noop;
+    var self = this;
+    self._api.put('simple/near', extend(opts, {
+      collection: this.name,
+      latitude: latitude,
+      longitude: longitude
+    }), function (err, body) {
+      if (err) callback(err);else callback(null, new ArrayCursor(self._connection, body));
+    });
+  },
+  within: function within(latitude, longitude, radius, opts, callback) {
+    if (typeof opts === 'function') {
+      callback = opts;
+      opts = undefined;
+    }
+    if (opts) {
+      opts = extend({}, opts);
+      if (opts.geo) opts.geo = this._indexHandle(opts.geo);
+    }
+    if (!callback) callback = noop;
+    var self = this;
+    self._api.put('simple/within', extend(opts, {
+      collection: this.name,
+      latitude: latitude,
+      longitude: longitude,
+      radius: Number(radius)
+    }), function (err, body) {
+      if (err) callback(err);else callback(null, new ArrayCursor(self._connection, body));
+    });
+  }
 });
+
 function DocumentCollection(connection, body) {
-    BaseCollection.call(this, connection, body);
+  BaseCollection.call(this, connection, body);
 }
+
 inherits(DocumentCollection, BaseCollection);
+
 extend(DocumentCollection.prototype, {
-    document: function (documentHandle, callback) {
-        if (!callback)
-            callback = noop;
-        this._api.get('document/' + this._documentHandle(documentHandle), function (err, body) {
-            if (err)
-                callback(err);
-            else
-                callback(null, body);
-        });
-    },
-    save: function (data, callback) {
-        if (!callback)
-            callback = noop;
-        this._api.post('document/', data, { collection: this.name }, function (err, body) {
-            if (err)
-                callback(err);
-            else
-                callback(null, body);
-        });
-    }
+  document: function document(documentHandle, callback) {
+    if (!callback) callback = noop;
+    this._api.get('document/' + this._documentHandle(documentHandle), function (err, body) {
+      if (err) callback(err);else callback(null, body);
+    });
+  },
+  save: function save(data, callback) {
+    if (!callback) callback = noop;
+    this._api.post('document/', data, {
+      collection: this.name
+    }, function (err, body) {
+      if (err) callback(err);else callback(null, body);
+    });
+  }
 });
+
 function EdgeCollection(connection, body) {
-    BaseCollection.call(this, connection, body);
+  BaseCollection.call(this, connection, body);
 }
+
 inherits(EdgeCollection, BaseCollection);
+
 extend(EdgeCollection.prototype, {
-    edge: function (documentHandle, callback) {
-        if (!callback)
-            callback = noop;
-        this._api.get('edge/' + this._documentHandle(documentHandle), function (err, body) {
-            if (err)
-                callback(err);
-            else
-                callback(null, body);
-        });
-    },
-    save: function (data, fromId, toId, callback) {
-        if (!callback)
-            callback = noop;
-        this._api.post('edge/', data, {
-            collection: this.name,
-            from: this._documentHandle(fromId),
-            to: this._documentHandle(toId)
-        }, function (err, body) {
-            if (err)
-                callback(err);
-            else
-                callback(null, body);
-        });
-    },
-    _edges: function (documentHandle, direction, callback) {
-        if (!callback)
-            callback = noop;
-        this._api.get('edges/' + this.name, {
-            vertex: this._documentHandle(documentHandle),
-            direction: direction
-        }, function (err, body) {
-            if (err)
-                callback(err);
-            else
-                callback(null, body.edges);
-        });
-    },
-    edges: function (vertex, callback) {
-        return this._edges(vertex, undefined, callback);
-    },
-    inEdges: function (vertex, callback) {
-        return this._edges(vertex, 'in', callback);
-    },
-    outEdges: function (vertex, callback) {
-        return this._edges(vertex, 'out', callback);
-    },
-    traversal: function (startVertex, opts, callback) {
-        if (typeof opts === 'function') {
-            callback = opts;
-            opts = undefined;
-        }
-        this._api.post('traversal', extend({}, opts, {
-            startVertex: startVertex,
-            edgeCollection: this.name
-        }), function (err, data) {
-            if (err)
-                callback(err);
-            else
-                callback(null, data.result);
-        });
+  edge: function edge(documentHandle, callback) {
+    if (!callback) callback = noop;
+    this._api.get('edge/' + this._documentHandle(documentHandle), function (err, body) {
+      if (err) callback(err);else callback(null, body);
+    });
+  },
+  save: function save(data, fromId, toId, callback) {
+    if (!callback) callback = noop;
+    this._api.post('edge/', data, {
+      collection: this.name,
+      from: this._documentHandle(fromId),
+      to: this._documentHandle(toId)
+    }, function (err, body) {
+      if (err) callback(err);else callback(null, body);
+    });
+  },
+  _edges: function _edges(documentHandle, direction, callback) {
+    if (!callback) callback = noop;
+    this._api.get('edges/' + this.name, {
+      vertex: this._documentHandle(documentHandle),
+      direction: direction
+    }, function (err, body) {
+      if (err) callback(err);else callback(null, body.edges);
+    });
+  },
+  edges: function edges(vertex, callback) {
+    return this._edges(vertex, undefined, callback);
+  },
+  inEdges: function inEdges(vertex, callback) {
+    return this._edges(vertex, 'in', callback);
+  },
+  outEdges: function outEdges(vertex, callback) {
+    return this._edges(vertex, 'out', callback);
+  },
+  traversal: function traversal(startVertex, opts, callback) {
+    if (typeof opts === 'function') {
+      callback = opts;
+      opts = undefined;
     }
+    this._api.post('traversal', extend({}, opts, {
+      startVertex: startVertex,
+      edgeCollection: this.name
+    }), function (err, data) {
+      if (err) callback(err);else callback(null, data.result);
+    });
+  }
 });
 },{"./cursor":4,"./util/noop":10,"extend":18,"util":17}],3:[function(require,module,exports){
-/*jshint browserify: true */
-"use strict";
-
-var noop = require('./util/noop'),
-  extend = require('extend'),
-  qs = require('querystring'),
-  request = require('request'),
-  ArangoError = require('./error'),
-  Route = require('./route'),
-  jsonMime = /\/(json|javascript)(\W|$)/;
+'use strict';
+var noop = require('./util/noop');
+var extend = require('extend');
+var qs = require('querystring');
+var request = require('request');
+var ArangoError = require('./error');
+var Route = require('./route');
+var jsonMime = /\/(json|javascript)(\W|$)/;
 
 module.exports = Connection;
 
 function Connection(config) {
   if (typeof config === 'string') {
-    config = {url: config};
+    config = { url: config };
   }
   this.config = extend({}, Connection.defaults, config);
   if (!this.config.headers) this.config.headers = {};
@@ -546,7 +459,7 @@ Connection.defaults = {
 };
 
 extend(Connection.prototype, {
-  _resolveUrl: function (opts) {
+  _resolveUrl: function _resolveUrl(opts) {
     var url = this.config.url;
     if (!opts.absolutePath) {
       url += '/_db/' + this.config.databaseName;
@@ -556,14 +469,24 @@ extend(Connection.prototype, {
     if (opts.qs) url += '?' + (typeof opts.qs === 'string' ? opts.qs : qs.stringify(opts.qs));
     return url;
   },
-  route: function (path) {
+  route: function route(path) {
     return new Route(this, path);
   },
-  request: function (opts, callback) {
+  request: (function (_request) {
+    function request(_x, _x2) {
+      return _request.apply(this, arguments);
+    }
+
+    request.toString = function () {
+      return _request.toString();
+    };
+
+    return request;
+  })(function (opts, callback) {
     if (!callback) callback = noop;
     if (!opts) opts = {};
     var body = opts.body,
-      headers = {'content-type': 'text/plain'};
+        headers = { 'content-type': 'text/plain' };
 
     if (body && typeof body === 'object') {
       if (opts.ld) {
@@ -583,27 +506,21 @@ extend(Connection.prototype, {
       method: (opts.method || 'get').toUpperCase(),
       body: body
     }, function (err, response, rawBody) {
-      if (err) callback(err, rawBody, response);
-      else if (!response.headers['content-type'].match(jsonMime)) callback(null, rawBody, response);
-      else {
+      if (err) callback(err, rawBody, response);else if (!response.headers['content-type'].match(jsonMime)) callback(null, rawBody, response);else {
         try {
           var body = JSON.parse(rawBody);
-          if (!body.error) callback(null, body, response);
-          else callback(new ArangoError(body));
+          if (!body.error) callback(null, body, response);else callback(new ArangoError(body));
         } catch (e) {
           callback(e, rawBody, response);
         }
       }
     });
-  }
+  })
 });
-
 },{"./error":6,"./route":8,"./util/noop":10,"extend":18,"querystring":15,"request":19}],4:[function(require,module,exports){
-/*jshint browserify: true */
-"use strict";
-
-var noop = require('./util/noop'),
-  extend = require('extend');
+'use strict';
+var noop = require('./util/noop');
+var extend = require('extend');
 
 module.exports = ArrayCursor;
 
@@ -618,23 +535,19 @@ function ArrayCursor(connection, body) {
 }
 
 extend(ArrayCursor.prototype, {
-  _drain: function (callback) {
+  _drain: function _drain(callback) {
     if (!callback) callback = noop;
     var self = this;
     self._more(function (err) {
-      if (err) callback(err);
-      else if (!self._hasMore) callback(null, self);
-      else self._drain(callback);
+      if (err) callback(err);else if (!self._hasMore) callback(null, self);else self._drain(callback);
     });
   },
-  _more: function (callback) {
+  _more: function _more(callback) {
     if (!callback) callback = noop;
     var self = this;
-    if (!self._hasMore) callback(null, self);
-    else {
+    if (!self._hasMore) callback(null, self);else {
       self._api.put('cursor/' + this._id, function (err, body) {
-        if (err) callback(err);
-        else {
+        if (err) callback(err);else {
           self._result.push.apply(self._result, body.result);
           self._hasMore = body.hasMore;
           callback(null, self);
@@ -642,16 +555,15 @@ extend(ArrayCursor.prototype, {
       });
     }
   },
-  all: function (callback) {
+  all: function all(callback) {
     if (!callback) callback = noop;
     var self = this;
     self._drain(function (err) {
       self._index = self._result.length;
-      if (err) callback(err);
-      else callback(null, self._result);
+      if (err) callback(err);else callback(null, self._result);
     });
   },
-  next: function (callback) {
+  next: function next(callback) {
     if (!callback) callback = noop;
     var self = this;
     function next() {
@@ -659,26 +571,22 @@ extend(ArrayCursor.prototype, {
       self._index += 1;
       callback(null, value);
     }
-    if (self._index < self._result.length) next();
-    else {
-      if (!self._hasMore) callback(null);
-      else {
+    if (self._index < self._result.length) next();else {
+      if (!self._hasMore) callback(null);else {
         self._more(function (err) {
-          if (err) callback(err);
-          else next();
+          if (err) callback(err);else next();
         });
       }
     }
   },
-  hasNext: function () {
-    return (this._hasMore || this._index < this._result.length);
+  hasNext: function hasNext() {
+    return this._hasMore || this._index < this._result.length;
   },
-  each: function (fn, callback) {
+  each: function each(fn, callback) {
     if (!callback) callback = noop;
     var self = this;
     self._drain(function (err) {
-      if (err) callback(err);
-      else {
+      if (err) callback(err);else {
         try {
           var result;
           for (self._index = 0; self._index < self._result.length; self._index++) {
@@ -686,12 +594,13 @@ extend(ArrayCursor.prototype, {
             if (result === false) break;
           }
           callback(null);
+        } catch (e) {
+          callback(e);
         }
-        catch (e) {callback(e);}
       }
     });
   },
-  every: function (fn, callback) {
+  every: function every(fn, callback) {
     if (!callback) callback = noop;
     var self = this;
     function loop() {
@@ -702,20 +611,19 @@ extend(ArrayCursor.prototype, {
           self._index++;
           if (!result) break;
         }
-        if (!self._hasMore || !result) callback(null, result);
-        else {
+        if (!self._hasMore || !result) callback(null, result);else {
           self._more(function (err) {
-            if (err) callback(err);
-            else loop();
+            if (err) callback(err);else loop();
           });
         }
+      } catch (e) {
+        callback(e);
       }
-      catch(e) {callback(e);}
     }
     self._index = 0;
     loop();
   },
-  some: function (fn, callback) {
+  some: function some(fn, callback) {
     if (!callback) callback = noop;
     var self = this;
     function loop() {
@@ -726,23 +634,22 @@ extend(ArrayCursor.prototype, {
           self._index++;
           if (result) break;
         }
-        if (!self._hasMore || result) callback(null, result);
-        else {
+        if (!self._hasMore || result) callback(null, result);else {
           self._more(function (err) {
-            if (err) callback(err);
-            else loop();
+            if (err) callback(err);else loop();
           });
         }
+      } catch (e) {
+        callback(e);
       }
-      catch(e) {callback(e);}
     }
     self._index = 0;
     loop();
   },
-  map: function (fn, callback) {
+  map: function map(fn, callback) {
     if (!callback) callback = noop;
     var self = this,
-      result = [];
+        result = [];
 
     function loop(x) {
       try {
@@ -750,20 +657,19 @@ extend(ArrayCursor.prototype, {
           result.push(fn(self._result[self._index], self._index, self));
           self._index++;
         }
-        if (!self._hasMore) callback(null, result);
-        else {
+        if (!self._hasMore) callback(null, result);else {
           self._more(function (err) {
-            if (err) callback(err);
-            else loop();
+            if (err) callback(err);else loop();
           });
         }
+      } catch (e) {
+        callback(e);
       }
-      catch(e) {callback(e);}
     }
     self._index = 0;
     loop();
   },
-  reduce: function (fn, accu, callback) {
+  reduce: function reduce(fn, accu, callback) {
     if (typeof accu === 'function') {
       callback = accu;
       accu = undefined;
@@ -776,29 +682,25 @@ extend(ArrayCursor.prototype, {
           accu = fn(accu, self._result[self._index], self._index, self);
           self._index++;
         }
-        if (!self._hasMore) callback(null, accu);
-        else {
+        if (!self._hasMore) callback(null, accu);else {
           self._more(function (err) {
-            if (err) callback(err);
-            else loop();
+            if (err) callback(err);else loop();
           });
         }
+      } catch (e) {
+        callback(e);
       }
-      catch(e) {callback(e);}
     }
     if (accu !== undefined) {
       self._index = 0;
       loop();
-    }
-    else if (self._result.length > 1) {
+    } else if (self._result.length > 1) {
       accu = self._result[0];
       self._index = 1;
       loop();
-    }
-    else {
+    } else {
       self._more(function (err) {
-        if (err) callback(err);
-        else {
+        if (err) callback(err);else {
           accu = self._result[0];
           self._index = 1;
           loop();
@@ -806,351 +708,313 @@ extend(ArrayCursor.prototype, {
       });
     }
   },
-  rewind: function () {
+  rewind: function rewind() {
     this._index = 0;
   }
 });
-
 },{"./util/noop":10,"extend":18}],5:[function(require,module,exports){
 'use strict';
-var noop = require('./util/noop'), extend = require('extend'), Connection = require('./connection'), ArrayCursor = require('./cursor'), createCollection = require('./collection'), Graph = require('./graph'), all = require('./util/all');
+var noop = require('./util/noop');
+var extend = require('extend');
+var Connection = require('./connection');
+var ArrayCursor = require('./cursor');
+var createCollection = require('./collection');
+var Graph = require('./graph');
+var all = require('./util/all');
+
 module.exports = Database;
+
 function Database(config) {
-    if (!(this instanceof Database)) {
-        return new Database(config);
-    }
-    this._connection = new Connection(config);
-    this._api = this._connection.route('_api');
-    this.name = this._connection.config.databaseName;
+  if (!(this instanceof Database)) {
+    return new Database(config);
+  }
+  this._connection = new Connection(config);
+  this._api = this._connection.route('_api');
+  this.name = this._connection.config.databaseName;
 }
+
 extend(Database.prototype, {
-    route: function (path, headers) {
-        return this._connection.route(path, headers);
-    },
-    createCollection: function (properties, callback) {
-        if (!callback)
-            callback = noop;
-        if (typeof properties === 'string') {
-            properties = { name: properties };
-        }
-        var self = this;
-        self._api.post('collection', extend({ type: 2 }, properties), function (err, body) {
-            if (err)
-                callback(err);
-            else
-                callback(null, createCollection(self._connection, body));
-        });
-    },
-    createEdgeCollection: function (properties, callback) {
-        if (!callback)
-            callback = noop;
-        if (typeof properties === 'string') {
-            properties = { name: properties };
-        }
-        var self = this;
-        self._api.post('collection', extend({}, properties, { type: 3 }), function (err, body) {
-            if (err)
-                callback(err);
-            else
-                callback(null, createCollection(self._connection, body));
-        });
-    },
-    collection: function (collectionName, autoCreate, callback) {
-        if (typeof autoCreate === 'function') {
-            callback = autoCreate;
-            autoCreate = undefined;
-        }
-        if (!callback)
-            callback = noop;
-        var self = this;
-        self._api.get('collection/' + collectionName, function (err, body) {
-            if (err) {
-                if (!autoCreate || err.name !== 'ArangoError' || err.errorNum !== 1203)
-                    callback(err);
-                else
-                    self.createCollection({ name: collectionName }, callback);
-            } else
-                callback(null, createCollection(self._connection, body));
-        });
-    },
-    collections: function (callback) {
-        if (!callback)
-            callback = noop;
-        var self = this;
-        self._api.get('collection', { excludeSystem: true }, function (err, body) {
-            if (err)
-                callback(err);
-            else
-                callback(null, body.collections.map(function (data) {
-                    return createCollection(self._connection, data);
-                }));
-        });
-    },
-    allCollections: function (callback) {
-        if (!callback)
-            callback = noop;
-        var self = this;
-        self._api.get('collection', { excludeSystem: false }, function (err, body) {
-            if (err)
-                callback(err);
-            else
-                callback(null, body.collections.map(function (data) {
-                    return createCollection(self._connection, data);
-                }));
-        });
-    },
-    dropCollection: function (collectionName, callback) {
-        if (!callback)
-            callback = noop;
-        var self = this;
-        self._api['delete']('collection/' + collectionName, function (err, body) {
-            if (err)
-                callback(err);
-            else
-                callback(null);
-        });
-    },
-    createGraph: function (properties, callback) {
-        if (!callback)
-            callback = noop;
-        var self = this;
-        self._api.post('gharial', properties, function (err, body) {
-            if (err)
-                callback(err);
-            else
-                callback(null, new Graph(self._connection, body.graph));
-        });
-    },
-    graph: function (graphName, autoCreate, callback) {
-        if (typeof autoCreate === 'function') {
-            callback = autoCreate;
-            autoCreate = undefined;
-        }
-        if (!callback)
-            callback = noop;
-        var self = this;
-        self._api.get('gharial/' + graphName, function (err, body) {
-            if (err) {
-                if (!autoCreate || err.name !== 'ArangoError' || err.errorNum !== 1924)
-                    callback(err);
-                else
-                    self.createGraph({ name: graphName }, callback);
-            } else
-                callback(null, new Graph(self._connection, body.graph));
-        });
-    },
-    graphs: function (callback) {
-        if (!callback)
-            callback = noop;
-        var self = this;
-        self._api.get('gharial', function (err, body) {
-            if (err)
-                callback(err);
-            else
-                callback(null, body.graphs.map(function (graph) {
-                    return new Graph(self._connection, graph);
-                }));
-        });
-    },
-    dropGraph: function (graphName, dropCollections, callback) {
-        if (typeof dropCollections === 'function') {
-            callback = dropCollections;
-            dropCollections = undefined;
-        }
-        if (!callback)
-            callback = noop;
-        this._api['delete']('graph/' + graphName, { dropCollections: dropCollections }, callback);
-    },
-    createDatabase: function (databaseName, callback) {
-        if (!callback)
-            callback = noop;
-        var self = this;
-        self._api.post('database', { name: databaseName }, function (err, body) {
-            if (err)
-                callback(err);
-            else {
-                callback(null, new Database(extend({}, self._connection.config, { databaseName: databaseName })));
-            }
-        });
-    },
-    database: function (databaseName, autoCreate, callback) {
-        if (typeof autoCreate === 'function') {
-            callback = autoCreate;
-            autoCreate = undefined;
-        }
-        if (!callback)
-            callback = noop;
-        var self = this;
-        self._connection.request({
-            method: 'get',
-            path: '/_db/' + databaseName + '/_api/database/current',
-            absolutePath: true
-        }, function (err, body) {
-            if (err) {
-                if (!autoCreate || err.name !== 'ArangoError' || err.errorNum !== 1228)
-                    callback(err);
-                else
-                    self.createDatabase(databaseName, callback);
-            } else {
-                callback(null, new Database(extend({}, self._connection.config, { databaseName: databaseName })));
-            }
-        });
-    },
-    databases: function (callback) {
-        if (!callback)
-            callback = noop;
-        var self = this;
-        self._api.get('database', function (err, body) {
-            if (err)
-                callback(err);
-            else
-                callback(null, body.result.map(function (databaseName) {
-                    return new Database(extend({}, self._connection.config, { databaseName: databaseName }));
-                }));
-        });
-    },
-    dropDatabase: function (databaseName, callback) {
-        if (!callback)
-            callback = noop;
-        var self = this;
-        self._api['delete']('database/' + databaseName, function (err, body) {
-            if (err)
-                callback(err);
-            else
-                callback(null);
-        });
-    },
-    truncate: function (callback) {
-        if (!callback)
-            callback = noop;
-        var self = this;
-        self._api.get('collection', { excludeSystem: true }, function (err, body) {
-            if (err)
-                callback(err);
-            else {
-                all(body.collections.map(function (data) {
-                    return function (cb) {
-                        self._api.put('collection/' + data.name + '/truncate', function (err, body) {
-                            if (err)
-                                cb(err);
-                            else
-                                cb(null, body);
-                        });
-                    };
-                }), callback);
-            }
-        });
-    },
-    truncateAll: function (callback) {
-        if (!callback)
-            callback = noop;
-        var self = this;
-        self._api.get('collection', { excludeSystem: false }, function (err, body) {
-            if (err)
-                callback(err);
-            else {
-                all(body.collections.map(function (data) {
-                    return function (cb) {
-                        self._api.put('collection/' + data.name + '/truncate', function (err, body) {
-                            if (err)
-                                cb(err);
-                            else
-                                cb(null, body);
-                        });
-                    };
-                }), callback);
-            }
-        });
-    },
-    transaction: function (collections, action, params, lockTimeout, callback) {
-        if (typeof lockTimeout === 'function') {
-            callback = lockTimeout;
-            lockTimeout = undefined;
-        }
-        if (typeof params === 'function') {
-            callback = params;
-            params = undefined;
-        }
-        if (typeof params === 'number') {
-            lockTimeout = params;
-            params = undefined;
-        }
-        if (typeof collections === 'string' || Array.isArray(collections)) {
-            collections = { write: collections };
-        }
-        if (!callback)
-            callback = noop;
-        this._api.post('transaction', {
-            collections: collections,
-            action: action,
-            params: params,
-            lockTimeout: lockTimeout
-        }, function (err, body) {
-            if (err)
-                callback(err);
-            else
-                callback(null, body.result);
-        });
-    },
-    query: function (query, bindVars, callback) {
-        if (typeof bindVars === 'function') {
-            callback = bindVars;
-            bindVars = undefined;
-        }
-        if (!callback)
-            callback = noop;
-        if (query && typeof query.toAQL === 'function') {
-            query = query.toAQL();
-        }
-        var self = this;
-        self._api.post('cursor', {
-            query: query,
-            bindVars: bindVars
-        }, function (err, body) {
-            if (err)
-                callback(err);
-            else
-                callback(null, new ArrayCursor(self._connection, body));
-        });
-    },
-    functions: function (callback) {
-        if (!callback)
-            callback = noop;
-        this._api.get('aqlfunction', function (err, body) {
-            if (err)
-                callback(err);
-            else
-                callback(null, body);
-        });
-    },
-    createFunction: function (name, code, callback) {
-        this._api.post('aqlfunction', {
-            name: name,
-            code: code
-        }, function (err, body) {
-            if (err)
-                callback(err);
-            else
-                callback(null, body);
-        });
-    },
-    dropFunction: function (name, group, callback) {
-        if (typeof group === 'function') {
-            callback = group;
-            group = undefined;
-        }
-        this._api['delete']('aqlfunction/' + name, { group: Boolean(group) }, function (err, body) {
-            if (err)
-                callback(err);
-            else
-                callback(null, body);
-        });
+  route: function route(path, headers) {
+    return this._connection.route(path, headers);
+  },
+  createCollection: (function (_createCollection) {
+    function createCollection(_x, _x2) {
+      return _createCollection.apply(this, arguments);
     }
+
+    createCollection.toString = function () {
+      return _createCollection.toString();
+    };
+
+    return createCollection;
+  })(function (properties, callback) {
+    if (!callback) callback = noop;
+    if (typeof properties === 'string') {
+      properties = { name: properties };
+    }
+    var self = this;
+    self._api.post('collection', extend({
+      type: 2
+    }, properties), function (err, body) {
+      if (err) callback(err);else callback(null, createCollection(self._connection, body));
+    });
+  }),
+  createEdgeCollection: function createEdgeCollection(properties, callback) {
+    if (!callback) callback = noop;
+    if (typeof properties === 'string') {
+      properties = { name: properties };
+    }
+    var self = this;
+    self._api.post('collection', extend({}, properties, { type: 3 }), function (err, body) {
+      if (err) callback(err);else callback(null, createCollection(self._connection, body));
+    });
+  },
+  collection: function collection(collectionName, autoCreate, callback) {
+    if (typeof autoCreate === 'function') {
+      callback = autoCreate;
+      autoCreate = undefined;
+    }
+    if (!callback) callback = noop;
+    var self = this;
+    self._api.get('collection/' + collectionName, function (err, body) {
+      if (err) {
+        if (!autoCreate || err.name !== 'ArangoError' || err.errorNum !== 1203) callback(err);else self.createCollection({ name: collectionName }, callback);
+      } else callback(null, createCollection(self._connection, body));
+    });
+  },
+  collections: function collections(callback) {
+    if (!callback) callback = noop;
+    var self = this;
+    self._api.get('collection', {
+      excludeSystem: true
+    }, function (err, body) {
+      if (err) callback(err);else {
+        callback(null, body.collections.map(function (data) {
+          return createCollection(self._connection, data);
+        }));
+      }
+    });
+  },
+  allCollections: function allCollections(callback) {
+    if (!callback) callback = noop;
+    var self = this;
+    self._api.get('collection', {
+      excludeSystem: false
+    }, function (err, body) {
+      if (err) callback(err);else {
+        callback(null, body.collections.map(function (data) {
+          return createCollection(self._connection, data);
+        }));
+      }
+    });
+  },
+  dropCollection: function dropCollection(collectionName, callback) {
+    if (!callback) callback = noop;
+    var self = this;
+    self._api['delete']('collection/' + collectionName, function (err, body) {
+      if (err) callback(err);else callback(null);
+    });
+  },
+  createGraph: function createGraph(properties, callback) {
+    if (!callback) callback = noop;
+    var self = this;
+    self._api.post('gharial', properties, function (err, body) {
+      if (err) callback(err);else callback(null, new Graph(self._connection, body.graph));
+    });
+  },
+  graph: function graph(graphName, autoCreate, callback) {
+    if (typeof autoCreate === 'function') {
+      callback = autoCreate;
+      autoCreate = undefined;
+    }
+    if (!callback) callback = noop;
+    var self = this;
+    self._api.get('gharial/' + graphName, function (err, body) {
+      if (err) {
+        if (!autoCreate || err.name !== 'ArangoError' || err.errorNum !== 1924) callback(err);else self.createGraph({ name: graphName }, callback);
+      } else callback(null, new Graph(self._connection, body.graph));
+    });
+  },
+  graphs: function graphs(callback) {
+    if (!callback) callback = noop;
+    var self = this;
+    self._api.get('gharial', function (err, body) {
+      if (err) callback(err);else {
+        callback(null, body.graphs.map(function (graph) {
+          return new Graph(self._connection, graph);
+        }));
+      }
+    });
+  },
+  dropGraph: function dropGraph(graphName, dropCollections, callback) {
+    if (typeof dropCollections === 'function') {
+      callback = dropCollections;
+      dropCollections = undefined;
+    }
+    if (!callback) callback = noop;
+    this._api['delete']('graph/' + graphName, { dropCollections: dropCollections }, callback);
+  },
+  createDatabase: function createDatabase(databaseName, callback) {
+    if (!callback) callback = noop;
+    var self = this;
+    self._api.post('database', { name: databaseName }, function (err, body) {
+      if (err) callback(err);else {
+        callback(null, new Database(extend({}, self._connection.config, { databaseName: databaseName })));
+      }
+    });
+  },
+  database: function database(databaseName, autoCreate, callback) {
+    if (typeof autoCreate === 'function') {
+      callback = autoCreate;
+      autoCreate = undefined;
+    }
+    if (!callback) callback = noop;
+    var self = this;
+    self._connection.request({
+      method: 'get',
+      path: '/_db/' + databaseName + '/_api/database/current',
+      absolutePath: true
+    }, function (err, body) {
+      if (err) {
+        if (!autoCreate || err.name !== 'ArangoError' || err.errorNum !== 1228) callback(err);else self.createDatabase(databaseName, callback);
+      } else {
+        callback(null, new Database(extend({}, self._connection.config, { databaseName: databaseName })));
+      }
+    });
+  },
+  databases: function databases(callback) {
+    if (!callback) callback = noop;
+    var self = this;
+    self._api.get('database', function (err, body) {
+      if (err) callback(err);else {
+        callback(null, body.result.map(function (databaseName) {
+          return new Database(extend({}, self._connection.config, { databaseName: databaseName }));
+        }));
+      }
+    });
+  },
+  dropDatabase: function dropDatabase(databaseName, callback) {
+    if (!callback) callback = noop;
+    var self = this;
+    self._api['delete']('database/' + databaseName, function (err, body) {
+      if (err) callback(err);else callback(null);
+    });
+  },
+  truncate: function truncate(callback) {
+    if (!callback) callback = noop;
+    var self = this;
+    self._api.get('collection', {
+      excludeSystem: true
+    }, function (err, body) {
+      if (err) callback(err);else {
+        all(body.collections.map(function (data) {
+          return function (cb) {
+            self._api.put('collection/' + data.name + '/truncate', function (err, body) {
+              if (err) cb(err);else cb(null, body);
+            });
+          };
+        }), callback);
+      }
+    });
+  },
+  truncateAll: function truncateAll(callback) {
+    if (!callback) callback = noop;
+    var self = this;
+    self._api.get('collection', {
+      excludeSystem: false
+    }, function (err, body) {
+      if (err) callback(err);else {
+        all(body.collections.map(function (data) {
+          return function (cb) {
+            self._api.put('collection/' + data.name + '/truncate', function (err, body) {
+              if (err) cb(err);else cb(null, body);
+            });
+          };
+        }), callback);
+      }
+    });
+  },
+  transaction: function transaction(collections, action, params, lockTimeout, callback) {
+    if (typeof lockTimeout === 'function') {
+      callback = lockTimeout;
+      lockTimeout = undefined;
+    }
+    if (typeof params === 'function') {
+      callback = params;
+      params = undefined;
+    }
+    if (typeof params === 'number') {
+      lockTimeout = params;
+      params = undefined;
+    }
+    if (typeof collections === 'string' || Array.isArray(collections)) {
+      collections = { write: collections };
+    }
+    if (!callback) callback = noop;
+    this._api.post('transaction', {
+      collections: collections,
+      action: action,
+      params: params,
+      lockTimeout: lockTimeout
+    }, function (err, body) {
+      if (err) callback(err);else callback(null, body.result);
+    });
+  },
+  query: (function (_query) {
+    function query(_x3, _x4, _x5) {
+      return _query.apply(this, arguments);
+    }
+
+    query.toString = function () {
+      return _query.toString();
+    };
+
+    return query;
+  })(function (query, bindVars, callback) {
+    if (typeof bindVars === 'function') {
+      callback = bindVars;
+      bindVars = undefined;
+    }
+    if (!callback) callback = noop;
+    if (query && typeof query.toAQL === 'function') {
+      query = query.toAQL();
+    }
+    var self = this;
+    self._api.post('cursor', {
+      query: query,
+      bindVars: bindVars
+    }, function (err, body) {
+      if (err) callback(err);else callback(null, new ArrayCursor(self._connection, body));
+    });
+  }),
+  functions: function functions(callback) {
+    if (!callback) callback = noop;
+    this._api.get('aqlfunction', function (err, body) {
+      if (err) callback(err);else callback(null, body);
+    });
+  },
+  createFunction: function createFunction(name, code, callback) {
+    this._api.post('aqlfunction', {
+      name: name,
+      code: code
+    }, function (err, body) {
+      if (err) callback(err);else callback(null, body);
+    });
+  },
+  dropFunction: function dropFunction(name, group, callback) {
+    if (typeof group === 'function') {
+      callback = group;
+      group = undefined;
+    }
+    this._api['delete']('aqlfunction/' + name, {
+      group: Boolean(group)
+    }, function (err, body) {
+      if (err) callback(err);else callback(null, body);
+    });
+  }
 });
 },{"./collection":2,"./connection":3,"./cursor":4,"./graph":7,"./util/all":9,"./util/noop":10,"extend":18}],6:[function(require,module,exports){
-/*jshint browserify: true */
-"use strict";
-
+'use strict';
 var util = require('util');
 
 module.exports = ArangoError;
@@ -1171,349 +1035,310 @@ function ArangoError(obj) {
 
 util.inherits(ArangoError, Error);
 ArangoError.prototype.name = 'ArangoError';
-
 },{"util":17}],7:[function(require,module,exports){
 'use strict';
-var noop = require('./util/noop'), extend = require('extend'), inherits = require('util').inherits, BaseCollection = require('./collection')._BaseCollection;
+var noop = require('./util/noop');
+var extend = require('extend');
+var inherits = require('util').inherits;
+var BaseCollection = require('./collection')._BaseCollection;
+
 module.exports = Graph;
+
 function Graph(connection, body) {
-    this._connection = connection;
-    this._api = this._connection.route('_api');
-    extend(this, body);
-    this._gharial = this._api.route('gharial/' + this.name);
+  this._connection = connection;
+  this._api = this._connection.route('_api');
+  extend(this, body);
+  this._gharial = this._api.route('gharial/' + this.name);
 }
+
 Graph.VertexCollection = VertexCollection;
 Graph.EdgeCollection = EdgeCollection;
+
 extend(Graph.prototype, {
-    drop: function (dropCollections, callback) {
-        if (typeof dropCollections === 'function') {
-            callback = dropCollections;
-            dropCollections = undefined;
-        }
-        if (!callback)
-            callback = noop;
-        this._gharial['delete']({ dropCollections: dropCollections }, callback);
-    },
-    vertexCollection: function (collectionName, callback) {
-        if (!callback)
-            callback = noop;
-        var self = this;
-        self._api.get('collection/' + collectionName, function (err, body) {
-            if (err)
-                callback(err);
-            else
-                callback(null, new VertexCollection(self._connection, body, self));
-        });
-    },
-    addVertexCollection: function (collectionName, callback) {
-        this._gharial.post('vertex', { collection: collectionName }, callback);
-    },
-    removeVertexCollection: function (collectionName, dropCollection, callback) {
-        if (typeof dropCollection === 'function') {
-            callback = dropCollection;
-            dropCollection = undefined;
-        }
-        this._gharial['delete']('vertex/' + collectionName, { dropCollection: dropCollection }, callback);
-    },
-    edgeCollection: function (collectionName, callback) {
-        if (!callback)
-            callback = noop;
-        var self = this;
-        self._api.get('collection/' + collectionName, function (err, body) {
-            if (err)
-                callback(err);
-            else
-                callback(null, new EdgeCollection(self._connection, body, self));
-        });
-    },
-    addEdgeDefinition: function (definition, callback) {
-        this._gharial.post('edge', definition, callback);
-    },
-    replaceEdgeDefinition: function (definitionName, definition, callback) {
-        if (!callback)
-            callback = noop;
-        this._api.put('gharial/' + this.name + '/edge/' + definitionName, definition, callback);
-    },
-    removeEdgeDefinition: function (definitionName, dropCollection, callback) {
-        if (typeof dropCollection === 'function') {
-            callback = dropCollection;
-            dropCollection = undefined;
-        }
-        this._gharial['delete']('edge/' + definitionName, { dropCollection: dropCollection }, callback);
-    },
-    traversal: function (startVertex, opts, callback) {
-        if (typeof opts === 'function') {
-            callback = opts;
-            opts = undefined;
-        }
-        this._api.post('traversal', extend({}, opts, {
-            startVertex: startVertex,
-            graphName: this.name
-        }), function (err, data) {
-            if (err)
-                callback(err);
-            else
-                callback(null, data.result);
-        });
+  drop: function drop(dropCollections, callback) {
+    if (typeof dropCollections === 'function') {
+      callback = dropCollections;
+      dropCollections = undefined;
     }
+    if (!callback) callback = noop;
+    this._gharial['delete']({
+      dropCollections: dropCollections
+    }, callback);
+  },
+  vertexCollection: function vertexCollection(collectionName, callback) {
+    if (!callback) callback = noop;
+    var self = this;
+    self._api.get('collection/' + collectionName, function (err, body) {
+      if (err) callback(err);else callback(null, new VertexCollection(self._connection, body, self));
+    });
+  },
+  addVertexCollection: function addVertexCollection(collectionName, callback) {
+    this._gharial.post('vertex', { collection: collectionName }, callback);
+  },
+  removeVertexCollection: function removeVertexCollection(collectionName, dropCollection, callback) {
+    if (typeof dropCollection === 'function') {
+      callback = dropCollection;
+      dropCollection = undefined;
+    }
+    this._gharial['delete']('vertex/' + collectionName, { dropCollection: dropCollection }, callback);
+  },
+  edgeCollection: function edgeCollection(collectionName, callback) {
+    if (!callback) callback = noop;
+    var self = this;
+    self._api.get('collection/' + collectionName, function (err, body) {
+      if (err) callback(err);else callback(null, new EdgeCollection(self._connection, body, self));
+    });
+  },
+  addEdgeDefinition: function addEdgeDefinition(definition, callback) {
+    this._gharial.post('edge', definition, callback);
+  },
+  replaceEdgeDefinition: function replaceEdgeDefinition(definitionName, definition, callback) {
+    if (!callback) callback = noop;
+    this._api.put('gharial/' + this.name + '/edge/' + definitionName, definition, callback);
+  },
+  removeEdgeDefinition: function removeEdgeDefinition(definitionName, dropCollection, callback) {
+    if (typeof dropCollection === 'function') {
+      callback = dropCollection;
+      dropCollection = undefined;
+    }
+    this._gharial['delete']('edge/' + definitionName, { dropCollection: dropCollection }, callback);
+  },
+  traversal: function traversal(startVertex, opts, callback) {
+    if (typeof opts === 'function') {
+      callback = opts;
+      opts = undefined;
+    }
+    this._api.post('traversal', extend({}, opts, {
+      startVertex: startVertex,
+      graphName: this.name
+    }), function (err, data) {
+      if (err) callback(err);else callback(null, data.result);
+    });
+  }
 });
+
 function VertexCollection(connection, body, graph) {
-    this.graph = graph;
-    BaseCollection.call(this, connection, body);
-    this._gharial = this._api.route('gharial/' + this.graph.name + '/vertex/' + this.name);
+  this.graph = graph;
+  BaseCollection.call(this, connection, body);
+  this._gharial = this._api.route('gharial/' + this.graph.name + '/vertex/' + this.name);
 }
 inherits(VertexCollection, BaseCollection);
+
 extend(VertexCollection.prototype, {
-    vertex: function (documentHandle, callback) {
-        if (!callback)
-            callback = noop;
-        this._gharial.get(documentHandle, function (err, body) {
-            if (err)
-                callback(err);
-            else
-                callback(null, body);
-        });
-    },
-    save: function (data, callback) {
-        if (!callback)
-            callback = noop;
-        this._gharial.post(data, { collection: this.name }, function (err, body) {
-            if (err)
-                callback(err);
-            else
-                callback(null, body);
-        });
-    }
+  vertex: function vertex(documentHandle, callback) {
+    if (!callback) callback = noop;
+    this._gharial.get(documentHandle, function (err, body) {
+      if (err) callback(err);else callback(null, body);
+    });
+  },
+  save: function save(data, callback) {
+    if (!callback) callback = noop;
+    this._gharial.post(data, {
+      collection: this.name
+    }, function (err, body) {
+      if (err) callback(err);else callback(null, body);
+    });
+  }
 });
+
 function EdgeCollection(connection, body, graph) {
-    this.graph = graph;
-    BaseCollection.call(this, connection, body);
-    this._gharial = this._api.route('gharial/' + this.graph.name + '/edge/' + this.name);
+  this.graph = graph;
+  BaseCollection.call(this, connection, body);
+  this._gharial = this._api.route('gharial/' + this.graph.name + '/edge/' + this.name);
 }
 inherits(EdgeCollection, BaseCollection);
+
 extend(EdgeCollection.prototype, {
-    edge: function (documentHandle, callback) {
-        if (!callback)
-            callback = noop;
-        this._gharial.get(documentHandle, function (err, body) {
-            if (err)
-                callback(err);
-            else
-                callback(null, body);
-        });
-    },
-    save: function (data, fromId, toId, callback) {
-        if (typeof fromId === 'function') {
-            callback = fromId;
-            fromId = undefined;
-        } else {
-            data._from = this._documentHandle(fromId);
-            data._to = this._documentHandle(toId);
-        }
-        if (!callback)
-            callback = noop;
-        this._gharial.post(data, function (err, body) {
-            if (err)
-                callback(err);
-            else
-                callback(null, body);
-        });
+  edge: function edge(documentHandle, callback) {
+    if (!callback) callback = noop;
+    this._gharial.get(documentHandle, function (err, body) {
+      if (err) callback(err);else callback(null, body);
+    });
+  },
+  save: function save(data, fromId, toId, callback) {
+    if (typeof fromId === 'function') {
+      callback = fromId;
+      fromId = undefined;
+    } else {
+      data._from = this._documentHandle(fromId);
+      data._to = this._documentHandle(toId);
     }
+    if (!callback) callback = noop;
+    this._gharial.post(data, function (err, body) {
+      if (err) callback(err);else callback(null, body);
+    });
+  }
 });
 },{"./collection":2,"./util/noop":10,"extend":18,"util":17}],8:[function(require,module,exports){
 'use strict';
 var extend = require('extend');
+
 module.exports = Route;
+
 function Route(connection, path, headers) {
-    this._connection = connection;
-    this._path = path || '';
-    this._headers = headers;
+  this._connection = connection;
+  this._path = path || '';
+  this._headers = headers;
 }
+
 extend(Route.prototype, {
-    route: function (path, headers) {
-        if (!path)
-            path = '';
-        else if (path.charAt(0) !== '/')
-            path = '/' + path;
-        return new Route(this._connection, this._path + path, extend({}, this._headers, headers));
-    },
-    request: function (opts, callback) {
-        opts = extend({}, opts);
-        opts.basePath = this._path;
-        opts.headers = extend({}, this._headers, opts.headers);
-        return this._connection.request(opts, callback);
-    },
-    get: function (path, qs, callback) {
-        if (typeof path !== 'string') {
-            callback = qs;
-            qs = path;
-            path = undefined;
-        }
-        if (typeof qs === 'function') {
-            callback = qs;
-            qs = undefined;
-        }
-        if (!path)
-            path = '';
-        else if (this._path && path.charAt(0) !== '/')
-            path = '/' + path;
-        this.request({
-            method: 'get',
-            path: path,
-            qs: qs
-        }, callback);
-    },
-    post: function (path, body, qs, callback) {
-        if (typeof path !== 'string') {
-            callback = qs;
-            qs = body;
-            body = path;
-            path = undefined;
-        }
-        if (typeof qs === 'function') {
-            callback = qs;
-            qs = undefined;
-        }
-        if (typeof body === 'function') {
-            callback = body;
-            body = undefined;
-        }
-        if (!path)
-            path = '';
-        else if (this._path && path.charAt(0) !== '/')
-            path = '/' + path;
-        this.request({
-            method: 'post',
-            path: path,
-            body: body,
-            qs: qs
-        }, callback);
-    },
-    put: function (path, body, qs, callback) {
-        if (typeof path !== 'string') {
-            callback = body;
-            body = qs;
-            qs = path;
-            path = undefined;
-        }
-        if (typeof qs === 'function') {
-            callback = qs;
-            qs = undefined;
-        }
-        if (typeof body === 'function') {
-            callback = body;
-            body = undefined;
-        }
-        if (!path)
-            path = '';
-        else if (this._path && path.charAt(0) !== '/')
-            path = '/' + path;
-        this.request({
-            method: 'put',
-            path: path,
-            body: body,
-            qs: qs
-        }, callback);
-    },
-    patch: function (path, body, qs, callback) {
-        if (typeof path !== 'string') {
-            callback = body;
-            body = qs;
-            qs = path;
-            path = undefined;
-        }
-        if (typeof qs === 'function') {
-            callback = qs;
-            qs = undefined;
-        }
-        if (typeof body === 'function') {
-            callback = body;
-            body = undefined;
-        }
-        if (!path)
-            path = '';
-        else if (this._path && path.charAt(0) !== '/')
-            path = '/' + path;
-        this.request({
-            method: 'patch',
-            path: path,
-            body: body,
-            qs: qs
-        }, callback);
-    },
-    'delete': function (path, qs, callback) {
-        if (typeof path !== 'string') {
-            callback = qs;
-            qs = path;
-            path = undefined;
-        }
-        if (typeof qs === 'function') {
-            callback = qs;
-            qs = undefined;
-        }
-        if (!path)
-            path = '';
-        else if (this._path && path.charAt(0) !== '/')
-            path = '/' + path;
-        this.request({
-            method: 'delete',
-            path: path,
-            qs: qs
-        }, callback);
-    },
-    head: function (path, qs, callback) {
-        if (typeof path !== 'string') {
-            callback = qs;
-            qs = path;
-            path = undefined;
-        }
-        if (typeof qs === 'function') {
-            callback = qs;
-            qs = undefined;
-        }
-        if (!path)
-            path = '';
-        else if (this._path && path.charAt(0) !== '/')
-            path = '/' + path;
-        this.request({
-            method: 'head',
-            path: path,
-            qs: qs
-        }, callback);
+  route: function route(path, headers) {
+    if (!path) path = '';else if (path.charAt(0) !== '/') path = '/' + path;
+    return new Route(this._connection, this._path + path, extend({}, this._headers, headers));
+  },
+  request: function request(opts, callback) {
+    opts = extend({}, opts);
+    opts.basePath = this._path;
+    opts.headers = extend({}, this._headers, opts.headers);
+    return this._connection.request(opts, callback);
+  },
+  get: function get(path, qs, callback) {
+    if (typeof path !== 'string') {
+      callback = qs;
+      qs = path;
+      path = undefined;
     }
+    if (typeof qs === 'function') {
+      callback = qs;
+      qs = undefined;
+    }
+    if (!path) path = '';else if (this._path && path.charAt(0) !== '/') path = '/' + path;
+    this.request({
+      method: 'get',
+      path: path,
+      qs: qs
+    }, callback);
+  },
+  post: function post(path, body, qs, callback) {
+    if (typeof path !== 'string') {
+      callback = qs;
+      qs = body;
+      body = path;
+      path = undefined;
+    }
+    if (typeof qs === 'function') {
+      callback = qs;
+      qs = undefined;
+    }
+    if (typeof body === 'function') {
+      callback = body;
+      body = undefined;
+    }
+    if (!path) path = '';else if (this._path && path.charAt(0) !== '/') path = '/' + path;
+    this.request({
+      method: 'post',
+      path: path,
+      body: body,
+      qs: qs
+    }, callback);
+  },
+  put: function put(path, body, qs, callback) {
+    if (typeof path !== 'string') {
+      callback = body;
+      body = qs;
+      qs = path;
+      path = undefined;
+    }
+    if (typeof qs === 'function') {
+      callback = qs;
+      qs = undefined;
+    }
+    if (typeof body === 'function') {
+      callback = body;
+      body = undefined;
+    }
+    if (!path) path = '';else if (this._path && path.charAt(0) !== '/') path = '/' + path;
+    this.request({
+      method: 'put',
+      path: path,
+      body: body,
+      qs: qs
+    }, callback);
+  },
+  patch: function patch(path, body, qs, callback) {
+    if (typeof path !== 'string') {
+      callback = body;
+      body = qs;
+      qs = path;
+      path = undefined;
+    }
+    if (typeof qs === 'function') {
+      callback = qs;
+      qs = undefined;
+    }
+    if (typeof body === 'function') {
+      callback = body;
+      body = undefined;
+    }
+    if (!path) path = '';else if (this._path && path.charAt(0) !== '/') path = '/' + path;
+    this.request({
+      method: 'patch',
+      path: path,
+      body: body,
+      qs: qs
+    }, callback);
+  },
+  'delete': function _delete(path, qs, callback) {
+    if (typeof path !== 'string') {
+      callback = qs;
+      qs = path;
+      path = undefined;
+    }
+    if (typeof qs === 'function') {
+      callback = qs;
+      qs = undefined;
+    }
+    if (!path) path = '';else if (this._path && path.charAt(0) !== '/') path = '/' + path;
+    this.request({
+      method: 'delete',
+      path: path,
+      qs: qs
+    }, callback);
+  },
+  head: function head(path, qs, callback) {
+    if (typeof path !== 'string') {
+      callback = qs;
+      qs = path;
+      path = undefined;
+    }
+    if (typeof qs === 'function') {
+      callback = qs;
+      qs = undefined;
+    }
+    if (!path) path = '';else if (this._path && path.charAt(0) !== '/') path = '/' + path;
+    this.request({
+      method: 'head',
+      path: path,
+      qs: qs
+    }, callback);
+  }
 });
 },{"extend":18}],9:[function(require,module,exports){
-/*jshint browserify: true */
-"use strict";
-
+'use strict';
 module.exports = function all(arr, callback) {
-  var result = [],
-    pending = arr.length,
-    called = false;
+  var result = [];
+  var pending = arr.length;
+  var called = false;
 
-  if (arr.length === 0) return callback(null, result);
-
-  function step(i) {
+  if (arr.length === 0) {
+    return callback(null, result);
+  }function step(i) {
     return function (err, res) {
       pending -= 1;
       if (!err) result[i] = res;
       if (!called) {
-        if (err) callback(err);
-        else if (pending === 0) callback(null, result);
-        else return;
+        if (err) callback(err);else if (pending === 0) callback(null, result);else return;
         called = true;
       }
     };
   }
 
-  for (var i = 0; i < arr.length; i++) {
-    arr[i](step(i));
-  }
+  arr.forEach(function (fn, i) {
+    fn(step(i));
+  });
 };
 },{}],10:[function(require,module,exports){
-/*jshint browserify: true */
-"use strict";
-
+'use strict';
 module.exports = function () {};
 },{}],11:[function(require,module,exports){
 if (typeof Object.create === 'function') {
