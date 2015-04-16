@@ -2,7 +2,7 @@
 var noop = require('./util/noop');
 var extend = require('extend');
 var qs = require('querystring');
-var request = require('request');
+var xhr = require('request');
 var ArangoError = require('./error');
 var Route = require('./route');
 var jsonMime = /\/(json|javascript)(\W|$)/;
@@ -43,8 +43,8 @@ extend(Connection.prototype, {
   request: function (opts, callback) {
     if (!callback) callback = noop;
     if (!opts) opts = {};
-    var body = opts.body,
-      headers = {'content-type': 'text/plain'};
+    var body = opts.body;
+    var headers = {'content-type': 'text/plain'};
 
     if (body && typeof body === 'object') {
       if (opts.ld) {
@@ -58,7 +58,7 @@ extend(Connection.prototype, {
       }
     }
 
-    request({
+    xhr({
       url: this._resolveUrl(opts),
       headers: extend(headers, this.config.headers, opts.headers),
       method: (opts.method || 'get').toUpperCase(),
@@ -67,13 +67,13 @@ extend(Connection.prototype, {
       if (err) callback(err, rawBody, response);
       else if (!response.headers['content-type'].match(jsonMime)) callback(null, rawBody, response);
       else {
+        var body;
         try {
-          var body = JSON.parse(rawBody);
-          if (!body.error) callback(null, body, response);
-          else callback(new ArangoError(body));
+          body = JSON.parse(rawBody);
         } catch (e) {
-          callback(e, rawBody, response);
+          return callback(e, rawBody, response);
         }
+        callback(body.error ? new ArangoError(body) : null, body, response);
       }
     });
   }
