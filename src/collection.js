@@ -1,5 +1,5 @@
 'use strict';
-var noop = require('./util/noop');
+var promisify = require('./util/promisify');
 var inherits = require('util').inherits;
 var extend = require('extend');
 var ArrayCursor = require('./cursor');
@@ -47,12 +47,12 @@ extend(BaseCollection.prototype, {
     }
     return indexHandle;
   },
-  _get: function (path, update, opts, callback) {
+  _get: function (path, update, opts, cb) {
     if (typeof opts === 'function') {
-      callback = opts;
+      cb = opts;
       opts = undefined;
     }
-    if (!callback) callback = noop;
+    var {promise, callback} = promisify(cb);
     var self = this;
     self._api.get('collection/' + self.name + '/' + path, opts, function (err, body) {
       if (err) callback(err);
@@ -65,9 +65,10 @@ extend(BaseCollection.prototype, {
         callback(null, body);
       }
     });
+    return promise;
   },
-  _put: function (path, data, update, callback) {
-    if (!callback) callback = noop;
+  _put: function (path, data, update, cb) {
+    var {promise, callback} = promisify(cb);
     var self = this;
     self._api.put('collection/' + self.name + '/' + path, data, function (err, body) {
       if (err) callback(err);
@@ -76,96 +77,101 @@ extend(BaseCollection.prototype, {
         callback(null, body);
       }
     });
+    return promise;
   },
-  properties: function (callback) {
-    return this._get('properties', true, callback);
+  properties: function (cb) {
+    return this._get('properties', true, cb);
   },
-  count: function (callback) {
-    return this._get('count', true, callback);
+  count: function (cb) {
+    return this._get('count', true, cb);
   },
-  figures: function (callback) {
-    return this._get('figures', true, callback);
+  figures: function (cb) {
+    return this._get('figures', true, cb);
   },
-  revision: function (callback) {
-    return this._get('revision', true, callback);
+  revision: function (cb) {
+    return this._get('revision', true, cb);
   },
-  checksum: function (opts, callback) {
-    return this._get('checksum', true, opts, callback);
+  checksum: function (opts, cb) {
+    return this._get('checksum', true, opts, cb);
   },
-  load: function (count, callback) {
+  load: function (count, cb) {
     if (typeof count === 'function') {
-      callback = count;
+      cb = count;
       count = undefined;
     }
     return this._put('load', (
       typeof count === 'boolean' ? {count: count} : undefined
-    ), true, callback);
+    ), true, cb);
   },
-  unload: function (callback) {
-    return this._put('unload', undefined, true, callback);
+  unload: function (cb) {
+    return this._put('unload', undefined, true, cb);
   },
-  setProperties: function (properties, callback) {
-    return this._put('properties', properties, true, callback);
+  setProperties: function (properties, cb) {
+    return this._put('properties', properties, true, cb);
   },
-  rename: function (name, callback) {
-    return this._put('rename', {name: name}, true, callback);
+  rename: function (name, cb) {
+    return this._put('rename', {name: name}, true, cb);
   },
-  rotate: function (callback) {
-    return this._put('rotate', undefined, false, callback);
+  rotate: function (cb) {
+    return this._put('rotate', undefined, false, cb);
   },
-  truncate: function (callback) {
-    return this._put('truncate', undefined, true, callback);
+  truncate: function (cb) {
+    return this._put('truncate', undefined, true, cb);
   },
-  drop: function (callback) {
-    if (!callback) callback = noop;
+  drop: function (cb) {
+    var {promise, callback} = promisify(cb);
     var self = this;
     self._api.delete('collection/' + self.name, function (err, body) {
       if (err) callback(err);
       else callback(null, body);
     });
+    return promise;
   },
-  replace: function (documentHandle, data, opts, callback) {
+  replace: function (documentHandle, data, opts, cb) {
     if (typeof opts === 'function') {
-      callback = opts;
+      cb = opts;
       opts = undefined;
     }
-    if (!callback) callback = noop;
+    var {promise, callback} = promisify(cb);
     opts = extend({}, opts, {collection: this.name});
     this._api.put(this._documentPath(documentHandle), data, opts, function (err, body) {
       if (err) callback(err);
       else callback(null, body);
     });
+    return promise;
   },
-  update: function (documentHandle, data, opts, callback) {
+  update: function (documentHandle, data, opts, cb) {
     if (typeof opts === 'function') {
-      callback = opts;
+      cb = opts;
       opts = undefined;
     }
-    if (!callback) callback = noop;
+    var {promise, callback} = promisify(cb);
     opts = extend({}, opts, {collection: this.name});
     this._api.patch(this._documentPath(documentHandle), data, opts, function (err, body) {
       if (err) callback(err);
       else callback(null, body);
     });
+    return promise;
   },
-  remove: function (documentHandle, opts, callback) {
+  remove: function (documentHandle, opts, cb) {
     if (typeof opts === 'function') {
-      callback = opts;
+      cb = opts;
       opts = undefined;
     }
-    if (!callback) callback = noop;
+    var {promise, callback} = promisify(cb);
     opts = extend({}, opts, {collection: this.name});
     this._api.delete(this._documentPath(documentHandle), opts, function (err, body) {
       if (err) callback(err);
       else callback(null, body);
     });
+    return promise;
   },
-  all: function (type, callback) {
+  all: function (type, cb) {
     if (typeof type === 'function') {
-      callback = type;
+      cb = type;
       type = undefined;
     }
-    if (!callback) callback = noop;
+    var {promise, callback} = promisify(cb);
     this._api.get('document', {
       type: type || 'id',
       collection: this.name
@@ -173,13 +179,14 @@ extend(BaseCollection.prototype, {
       if (err) callback(err);
       else callback(null, body.documents);
     });
+    return promise;
   },
-  import: function (data, opts, callback) {
+  import: function (data, opts, cb) {
     if (typeof opts === 'function') {
-      callback = opts;
+      cb = opts;
       opts = undefined;
     }
-    if (!callback) callback = noop;
+    var {promise, callback} = promisify(cb);
     this._api.request({
       method: 'POST',
       path: 'import',
@@ -194,16 +201,18 @@ extend(BaseCollection.prototype, {
       if (err) callback(err);
       else callback(null, body);
     });
+    return promise;
   },
-  indexes: function (callback) {
-    if (!callback) callback = noop;
+  indexes: function (cb) {
+    var {promise, callback} = promisify(cb);
     this._api.get('index', {collection: this.name}, function (err, result) {
       if (err) callback(err);
       else callback(null, result.indexes);
     });
+    return promise;
   },
-  index: function (indexHandle, callback) {
-    if (!callback) callback = noop;
+  index: function (indexHandle, cb) {
+    var {promise, callback} = promisify(cb);
     this._api.get(
       'index/' + this._indexHandle(indexHandle),
       function (err, result) {
@@ -211,18 +220,20 @@ extend(BaseCollection.prototype, {
         else callback(null, result);
       }
     );
+    return promise;
   },
-  createIndex: function (details, callback) {
-    if (!callback) callback = noop;
+  createIndex: function (details, cb) {
+    var {promise, callback} = promisify(cb);
     this._api.post('index', details, {
       collection: this.name
     }, function (err, result) {
       if (err) callback(err);
       else callback(null, result);
     });
+    return promise;
   },
-  dropIndex: function (indexHandle, callback) {
-    if (!callback) callback = noop;
+  dropIndex: function (indexHandle, cb) {
+    var {promise, callback} = promisify(cb);
     this._api.delete(
       'index/' + this._indexHandle(indexHandle),
       function (err, result) {
@@ -230,28 +241,30 @@ extend(BaseCollection.prototype, {
         else callback(null, result);
       }
     );
+    return promise;
   },
-  createCapConstraint: function (size, callback) {
+  createCapConstraint: function (size, cb) {
     if (typeof size === 'number') {
       size = {size: size};
     }
-    if (!callback) callback = noop;
+    var {promise, callback} = promisify(cb);
     this._api.post('index', extend({}, size, {
       type: 'cap'
     }), {collection: this.name}, function (err, result) {
       if (err) callback(err);
       else callback(null, result);
     });
+    return promise;
   },
-  createHashIndex: function (fields, unique, callback) {
+  createHashIndex: function (fields, unique, cb) {
     if (typeof unique === 'function') {
-      callback = unique;
+      cb = unique;
       unique = undefined;
     }
     if (typeof fields === 'string') {
       fields = [fields];
     }
-    if (!callback) callback = noop;
+    var {promise, callback} = promisify(cb);
     this._api.post('index', {
       type: 'hash',
       fields: fields,
@@ -260,16 +273,17 @@ extend(BaseCollection.prototype, {
       if (err) callback(err);
       else callback(null, result);
     });
+    return promise;
   },
-  createSkipList: function (fields, unique, callback) {
+  createSkipList: function (fields, unique, cb) {
     if (typeof unique === 'function') {
-      callback = unique;
+      cb = unique;
       unique = undefined;
     }
     if (typeof fields === 'string') {
       fields = [fields];
     }
-    if (!callback) callback = noop;
+    var {promise, callback} = promisify(cb);
     this._api.post('index', {
       type: 'skiplist',
       fields: fields,
@@ -278,16 +292,17 @@ extend(BaseCollection.prototype, {
       if (err) callback(err);
       else callback(null, result);
     });
+    return promise;
   },
-  createGeoIndex: function (fields, opts, callback) {
+  createGeoIndex: function (fields, opts, cb) {
     if (typeof opts === 'function') {
-      callback = opts;
+      cb = opts;
       opts = undefined;
     }
     if (typeof fields === 'string') {
       fields = [fields];
     }
-    if (!callback) callback = noop;
+    var {promise, callback} = promisify(cb);
     this._api.post('index', extend({}, opts, {
       type: 'geo',
       fields: fields
@@ -295,16 +310,17 @@ extend(BaseCollection.prototype, {
       if (err) callback(err);
       else callback(null, result);
     });
+    return promise;
   },
-  createFulltextIndex: function (fields, minLength, callback) {
+  createFulltextIndex: function (fields, minLength, cb) {
     if (typeof minLength === 'function') {
-      callback = minLength;
+      cb = minLength;
       minLength = undefined;
     }
     if (typeof fields === 'string') {
       fields = [fields];
     }
-    if (!callback) callback = noop;
+    var {promise, callback} = promisify(cb);
     this._api.post('index', {
       type: 'fulltext',
       fields: fields,
@@ -313,17 +329,18 @@ extend(BaseCollection.prototype, {
       if (err) callback(err);
       else callback(null, result);
     });
+    return promise;
   },
-  fulltext: function (field, query, opts, callback) {
+  fulltext: function (field, query, opts, cb) {
     if (typeof opts === 'function') {
-      callback = opts;
+      cb = opts;
       opts = undefined;
     }
     if (opts) {
       opts = extend({}, opts);
       if (opts.index) opts.index = this._indexHandle(opts.index);
     }
-    if (!callback) callback = noop;
+    var {promise, callback} = promisify(cb);
     var self = this;
     self._api.put('simple/fulltext', extend(opts, {
       collection: this.name,
@@ -333,17 +350,18 @@ extend(BaseCollection.prototype, {
       if (err) callback(err);
       else callback(null, new ArrayCursor(self._connection, body));
     });
+    return promise;
   },
-  near: function (latitude, longitude, opts, callback) {
+  near: function (latitude, longitude, opts, cb) {
     if (typeof opts === 'function') {
-      callback = opts;
+      cb = opts;
       opts = undefined;
     }
     if (opts) {
       opts = extend({}, opts);
       if (opts.geo) opts.geo = this._indexHandle(opts.geo);
     }
-    if (!callback) callback = noop;
+    var {promise, callback} = promisify(cb);
     var self = this;
     self._api.put('simple/near', extend(opts, {
       collection: this.name,
@@ -353,17 +371,18 @@ extend(BaseCollection.prototype, {
       if (err) callback(err);
       else callback(null, new ArrayCursor(self._connection, body));
     });
+    return promise;
   },
-  within: function (latitude, longitude, radius, opts, callback) {
+  within: function (latitude, longitude, radius, opts, cb) {
     if (typeof opts === 'function') {
-      callback = opts;
+      cb = opts;
       opts = undefined;
     }
     if (opts) {
       opts = extend({}, opts);
       if (opts.geo) opts.geo = this._indexHandle(opts.geo);
     }
-    if (!callback) callback = noop;
+    var {promise, callback} = promisify(cb);
     var self = this;
     self._api.put('simple/within', extend(opts, {
       collection: this.name,
@@ -374,6 +393,7 @@ extend(BaseCollection.prototype, {
       if (err) callback(err);
       else callback(null, new ArrayCursor(self._connection, body));
     });
+    return promise;
   }
 });
 
@@ -384,21 +404,23 @@ function DocumentCollection(connection, body) {
 inherits(DocumentCollection, BaseCollection);
 
 extend(DocumentCollection.prototype, {
-  document: function (documentHandle, callback) {
-    if (!callback) callback = noop;
+  document: function (documentHandle, cb) {
+    var {promise, callback} = promisify(cb);
     this._api.get('document/' + this._documentHandle(documentHandle), function (err, body) {
       if (err) callback(err);
       else callback(null, body);
     });
+    return promise;
   },
-  save: function (data, callback) {
-    if (!callback) callback = noop;
+  save: function (data, cb) {
+    var {promise, callback} = promisify(cb);
     this._api.post('document/', data, {
       collection: this.name
     }, function (err, body) {
       if (err) callback(err);
       else callback(null, body);
     });
+    return promise;
   }
 });
 
@@ -409,15 +431,16 @@ function EdgeCollection(connection, body) {
 inherits(EdgeCollection, BaseCollection);
 
 extend(EdgeCollection.prototype, {
-  edge: function (documentHandle, callback) {
-    if (!callback) callback = noop;
+  edge: function (documentHandle, cb) {
+    var {promise, callback} = promisify(cb);
     this._api.get('edge/' + this._documentHandle(documentHandle), function (err, body) {
       if (err) callback(err);
       else callback(null, body);
     });
+    return promise;
   },
-  save: function (data, fromId, toId, callback) {
-    if (!callback) callback = noop;
+  save: function (data, fromId, toId, cb) {
+    var {promise, callback} = promisify(cb);
     this._api.post('edge/', data, {
       collection: this.name,
       from: this._documentHandle(fromId),
@@ -426,9 +449,10 @@ extend(EdgeCollection.prototype, {
       if (err) callback(err);
       else callback(null, body);
     });
+    return promise;
   },
-  _edges: function (documentHandle, direction, callback) {
-    if (!callback) callback = noop;
+  _edges: function (documentHandle, direction, cb) {
+    var {promise, callback} = promisify(cb);
     this._api.get('edges/' + this.name, {
       vertex: this._documentHandle(documentHandle),
       direction: direction
@@ -436,21 +460,23 @@ extend(EdgeCollection.prototype, {
       if (err) callback(err);
       else callback(null, body.edges);
     });
+    return promise;
   },
-  edges: function (vertex, callback) {
-    return this._edges(vertex, undefined, callback);
+  edges: function (vertex, cb) {
+    return this._edges(vertex, undefined, cb);
   },
-  inEdges: function (vertex, callback) {
-    return this._edges(vertex, 'in', callback);
+  inEdges: function (vertex, cb) {
+    return this._edges(vertex, 'in', cb);
   },
-  outEdges: function (vertex, callback) {
-    return this._edges(vertex, 'out', callback);
+  outEdges: function (vertex, cb) {
+    return this._edges(vertex, 'out', cb);
   },
-  traversal: function (startVertex, opts, callback) {
+  traversal: function (startVertex, opts, cb) {
     if (typeof opts === 'function') {
-      callback = opts;
+      cb = opts;
       opts = undefined;
     }
+    var {promise, callback} = promisify(cb);
     this._api.post('traversal', extend({}, opts, {
       startVertex: startVertex,
       edgeCollection: this.name
@@ -458,5 +484,6 @@ extend(EdgeCollection.prototype, {
       if (err) callback(err);
       else callback(null, data.result);
     });
+    return promise;
   }
 });

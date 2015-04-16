@@ -1,5 +1,5 @@
 'use strict';
-var noop = require('./util/noop');
+var promisify = require('./util/promisify');
 var extend = require('extend');
 var qs = require('querystring');
 var xhr = require('request');
@@ -40,8 +40,8 @@ extend(Connection.prototype, {
   route: function (path) {
     return new Route(this, path);
   },
-  request: function (opts, callback) {
-    if (!callback) callback = noop;
+  request: function (opts, cb) {
+    var {promise, callback} = promisify(cb);
     if (!opts) opts = {};
     var body = opts.body;
     var headers = {'content-type': 'text/plain'};
@@ -76,5 +76,6 @@ extend(Connection.prototype, {
         callback(body.error ? new ArangoError(body) : null, body, response);
       }
     });
+    return promise;
   }
 });

@@ -1,5 +1,5 @@
 'use strict';
-var noop = require('./util/noop');
+var promisify = require('./util/promisify');
 var extend = require('extend');
 var Connection = require('./connection');
 var ArrayCursor = require('./cursor');
@@ -22,8 +22,8 @@ extend(Database.prototype, {
   route: function (path, headers) {
     return this._connection.route(path, headers);
   },
-  createCollection: function (properties, callback) {
-    if (!callback) callback = noop;
+  createCollection: function (properties, cb) {
+    var {promise, callback} = promisify(cb);
     if (typeof properties === 'string') {
       properties = {name: properties};
     }
@@ -34,9 +34,10 @@ extend(Database.prototype, {
       if (err) callback(err);
       else callback(null, createCollection(self._connection, body));
     });
+    return promise;
   },
-  createEdgeCollection: function (properties, callback) {
-    if (!callback) callback = noop;
+  createEdgeCollection: function (properties, cb) {
+    var {promise, callback} = promisify(cb);
     if (typeof properties === 'string') {
       properties = {name: properties};
     }
@@ -46,24 +47,26 @@ extend(Database.prototype, {
       if (err) callback(err);
       else callback(null, createCollection(self._connection, body));
     });
+    return promise;
   },
-  collection: function (collectionName, autoCreate, callback) {
+  collection: function (collectionName, autoCreate, cb) {
     if (typeof autoCreate === 'function') {
-      callback = autoCreate;
+      cb = autoCreate;
       autoCreate = undefined;
     }
-    if (!callback) callback = noop;
+    var {promise, callback} = promisify(cb);
     var self = this;
     self._api.get('collection/' + collectionName, function (err, body) {
       if (err) {
         if (!autoCreate || err.name !== 'ArangoError' || err.errorNum !== 1203) callback(err);
-        else self.createCollection({name: collectionName}, callback);
+        else self.createCollection({name: collectionName}, cb);
       }
       else callback(null, createCollection(self._connection, body));
     });
+    return promise;
   },
-  collections: function (callback) {
-    if (!callback) callback = noop;
+  collections: function (cb) {
+    var {promise, callback} = promisify(cb);
     var self = this;
     self._api.get('collection', {
       excludeSystem: true
@@ -75,9 +78,10 @@ extend(Database.prototype, {
         }));
       }
     });
+    return promise;
   },
-  allCollections: function (callback) {
-    if (!callback) callback = noop;
+  allCollections: function (cb) {
+    var {promise, callback} = promisify(cb);
     var self = this;
     self._api.get('collection', {
       excludeSystem: false
@@ -89,40 +93,44 @@ extend(Database.prototype, {
         }));
       }
     });
+    return promise;
   },
-  dropCollection: function (collectionName, callback) {
-    if (!callback) callback = noop;
+  dropCollection: function (collectionName, cb) {
+    var {promise, callback} = promisify(cb);
     var self = this;
     self._api.delete('collection/' + collectionName, function (err, body) {
       if (err) callback(err);
       else callback(null);
     });
+    return promise;
   },
-  createGraph: function (properties, callback) {
-    if (!callback) callback = noop;
+  createGraph: function (properties, cb) {
+    var {promise, callback} = promisify(cb);
     var self = this;
     self._api.post('gharial', properties, function (err, body) {
       if (err) callback(err);
       else callback(null, new Graph(self._connection, body.graph));
     });
+    return promise;
   },
-  graph: function (graphName, autoCreate, callback) {
+  graph: function (graphName, autoCreate, cb) {
     if (typeof autoCreate === 'function') {
-      callback = autoCreate;
+      cb = autoCreate;
       autoCreate = undefined;
     }
-    if (!callback) callback = noop;
+    var {promise, callback} = promisify(cb);
     var self = this;
     self._api.get('gharial/' + graphName, function (err, body) {
       if (err) {
         if (!autoCreate || err.name !== 'ArangoError' || err.errorNum !== 1924) callback(err);
-        else self.createGraph({name: graphName}, callback);
+        else self.createGraph({name: graphName}, cb);
       }
       else callback(null, new Graph(self._connection, body.graph));
     });
+    return promise;
   },
-  graphs: function (callback) {
-    if (!callback) callback = noop;
+  graphs: function (cb) {
+    var {promise, callback} = promisify(cb);
     var self = this;
     self._api.get('gharial', function (err, body) {
       if (err) callback(err);
@@ -132,17 +140,17 @@ extend(Database.prototype, {
         }));
       }
     });
+    return promise;
   },
-  dropGraph: function (graphName, dropCollections, callback) {
+  dropGraph: function (graphName, dropCollections, cb) {
     if (typeof dropCollections === 'function') {
-      callback = dropCollections;
+      cb = dropCollections;
       dropCollections = undefined;
     }
-    if (!callback) callback = noop;
-    this._api.delete('graph/' + graphName, {dropCollections: dropCollections}, callback);
+    return this._api.delete('graph/' + graphName, {dropCollections: dropCollections}, cb);
   },
-  createDatabase: function (databaseName, callback) {
-    if (!callback) callback = noop;
+  createDatabase: function (databaseName, cb) {
+    var {promise, callback} = promisify(cb);
     var self = this;
     self._api.post('database', {name: databaseName}, function (err, body) {
       if (err) callback(err);
@@ -152,13 +160,14 @@ extend(Database.prototype, {
         )));
       }
     });
+    return promise;
   },
-  database: function (databaseName, autoCreate, callback) {
+  database: function (databaseName, autoCreate, cb) {
     if (typeof autoCreate === 'function') {
-      callback = autoCreate;
+      cb = autoCreate;
       autoCreate = undefined;
     }
-    if (!callback) callback = noop;
+    var {promise, callback} = promisify(cb);
     var self = this;
     self._connection.request({
       method: 'get',
@@ -167,7 +176,7 @@ extend(Database.prototype, {
     }, function (err, body) {
       if (err) {
         if (!autoCreate || err.name !== 'ArangoError' || err.errorNum !== 1228) callback(err);
-        else self.createDatabase(databaseName, callback);
+        else self.createDatabase(databaseName, cb);
       }
       else {
         callback(null, new Database(extend(
@@ -175,9 +184,10 @@ extend(Database.prototype, {
         )));
       }
     });
+    return promise;
   },
-  databases: function (callback) {
-    if (!callback) callback = noop;
+  databases: function (cb) {
+    var {promise, callback} = promisify(cb);
     var self = this;
     self._api.get('database', function (err, body) {
       if (err) callback(err);
@@ -189,17 +199,19 @@ extend(Database.prototype, {
         }));
       }
     });
+    return promise;
   },
-  dropDatabase: function (databaseName, callback) {
-    if (!callback) callback = noop;
+  dropDatabase: function (databaseName, cb) {
+    var {promise, callback} = promisify(cb);
     var self = this;
     self._api.delete('database/' + databaseName, function (err, body) {
       if (err) callback(err);
       else callback(null);
     });
+    return promise;
   },
-  truncate: function (callback) {
-    if (!callback) callback = noop;
+  truncate: function (cb) {
+    var {promise, callback} = promisify(cb);
     var self = this;
     self._api.get('collection', {
       excludeSystem: true
@@ -213,12 +225,13 @@ extend(Database.prototype, {
               else cb(null, body);
             });
           };
-        }), callback);
+        }), cb);
       }
     });
+    return promise;
   },
-  truncateAll: function (callback) {
-    if (!callback) callback = noop;
+  truncateAll: function (cb) {
+    var {promise, callback} = promisify(cb);
     var self = this;
     self._api.get('collection', {
       excludeSystem: false
@@ -232,17 +245,18 @@ extend(Database.prototype, {
               else cb(null, body);
             });
           };
-        }), callback);
+        }), cb);
       }
     });
+    return promise;
   },
-  transaction: function (collections, action, params, lockTimeout, callback) {
+  transaction: function (collections, action, params, lockTimeout, cb) {
     if (typeof lockTimeout === 'function') {
-      callback = lockTimeout;
+      cb = lockTimeout;
       lockTimeout = undefined;
     }
     if (typeof params === 'function') {
-      callback = params;
+      cb = params;
       params = undefined;
     }
     if (typeof params === 'number') {
@@ -252,7 +266,7 @@ extend(Database.prototype, {
     if (typeof collections === 'string' || Array.isArray(collections)) {
       collections = {write: collections};
     }
-    if (!callback) callback = noop;
+    var {promise, callback} = promisify(cb);
     this._api.post('transaction', {
       collections: collections,
       action: action,
@@ -262,13 +276,14 @@ extend(Database.prototype, {
       if (err) callback(err);
       else callback(null, body.result);
     });
+    return promise;
   },
-  query: function (query, bindVars, callback) {
+  query: function (query, bindVars, cb) {
     if (typeof bindVars === 'function') {
-      callback = bindVars;
+      cb = bindVars;
       bindVars = undefined;
     }
-    if (!callback) callback = noop;
+    var {promise, callback} = promisify(cb);
     if (query && typeof query.toAQL === 'function') {
       query = query.toAQL();
     }
@@ -280,15 +295,18 @@ extend(Database.prototype, {
       if (err) callback(err);
       else callback(null, new ArrayCursor(self._connection, body));
     });
+    return promise;
   },
-  functions: function (callback) {
-    if (!callback) callback = noop;
+  functions: function (cb) {
+    var {promise, callback} = promisify(cb);
     this._api.get('aqlfunction', function (err, body) {
       if (err) callback(err);
       else callback(null, body);
     });
+    return promise;
   },
-  createFunction: function (name, code, callback) {
+  createFunction: function (name, code, cb) {
+    var {promise, callback} = promisify(cb);
     this._api.post('aqlfunction', {
       name: name,
       code: code
@@ -296,17 +314,20 @@ extend(Database.prototype, {
       if (err) callback(err);
       else callback(null, body);
     });
+    return promise;
   },
-  dropFunction: function (name, group, callback) {
+  dropFunction: function (name, group, cb) {
     if (typeof group === 'function') {
-      callback = group;
+      cb = group;
       group = undefined;
     }
+    var {promise, callback} = promisify(cb);
     this._api.delete('aqlfunction/' + name, {
       group: Boolean(group)
     }, function (err, body) {
       if (err) callback(err);
       else callback(null, body);
     });
+    return promise;
   }
 });

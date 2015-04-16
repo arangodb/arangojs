@@ -1,5 +1,5 @@
 'use strict';
-var noop = require('./util/noop');
+var promisify = require('./util/promisify');
 var extend = require('extend');
 
 module.exports = ArrayCursor;
@@ -15,17 +15,17 @@ function ArrayCursor(connection, body) {
 }
 
 extend(ArrayCursor.prototype, {
-  _drain: function (callback) {
-    if (!callback) callback = noop;
+  _drain: function (cb) {
+    var {promise, callback} = promisify(cb);
     var self = this;
     self._more(function (err) {
       if (err) callback(err);
       else if (!self._hasMore) callback(null, self);
-      else self._drain(callback);
+      else self._drain(cb);
     });
+    return promise;
   },
   _more: function (callback) {
-    if (!callback) callback = noop;
     var self = this;
     if (!self._hasMore) callback(null, self);
     else {
@@ -39,17 +39,18 @@ extend(ArrayCursor.prototype, {
       });
     }
   },
-  all: function (callback) {
-    if (!callback) callback = noop;
+  all: function (cb) {
+    var {promise, callback} = promisify(cb);
     var self = this;
     self._drain(function (err) {
       self._index = self._result.length;
       if (err) callback(err);
       else callback(null, self._result);
     });
+    return promise;
   },
-  next: function (callback) {
-    if (!callback) callback = noop;
+  next: function (cb) {
+    var {promise, callback} = promisify(cb);
     var self = this;
     function next() {
       var value = self._result[self._index];
@@ -66,12 +67,13 @@ extend(ArrayCursor.prototype, {
         });
       }
     }
+    return promise;
   },
   hasNext: function () {
     return (this._hasMore || this._index < this._result.length);
   },
-  each: function (fn, callback) {
-    if (!callback) callback = noop;
+  each: function (fn, cb) {
+    var {promise, callback} = promisify(cb);
     var self = this;
     self._drain(function (err) {
       if (err) callback(err);
@@ -87,9 +89,10 @@ extend(ArrayCursor.prototype, {
         catch (e) {callback(e);}
       }
     });
+    return promise;
   },
-  every: function (fn, callback) {
-    if (!callback) callback = noop;
+  every: function (fn, cb) {
+    var {promise, callback} = promisify(cb);
     var self = this;
     function loop() {
       try {
@@ -111,9 +114,10 @@ extend(ArrayCursor.prototype, {
     }
     self._index = 0;
     loop();
+    return promise;
   },
-  some: function (fn, callback) {
-    if (!callback) callback = noop;
+  some: function (fn, cb) {
+    var {promise, callback} = promisify(cb);
     var self = this;
     function loop() {
       try {
@@ -135,9 +139,10 @@ extend(ArrayCursor.prototype, {
     }
     self._index = 0;
     loop();
+    return promise;
   },
-  map: function (fn, callback) {
-    if (!callback) callback = noop;
+  map: function (fn, cb) {
+    var {promise, callback} = promisify(cb);
     var self = this,
       result = [];
 
@@ -159,13 +164,14 @@ extend(ArrayCursor.prototype, {
     }
     self._index = 0;
     loop();
+    return promise;
   },
-  reduce: function (fn, accu, callback) {
+  reduce: function (fn, accu, cb) {
     if (typeof accu === 'function') {
-      callback = accu;
+      cb = accu;
       accu = undefined;
     }
-    if (!callback) callback = noop;
+    var {promise, callback} = promisify(cb);
     var self = this;
     function loop() {
       try {
@@ -202,6 +208,7 @@ extend(ArrayCursor.prototype, {
         }
       });
     }
+    return promise;
   },
   rewind: function () {
     this._index = 0;
