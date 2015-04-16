@@ -1,5 +1,3 @@
-/*jshint node: true */
-/*globals describe, it, before, after, beforeEach */
 'use strict';
 var expect = require('expect.js');
 var async = require('async');

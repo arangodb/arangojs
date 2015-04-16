@@ -1,6 +1,4 @@
-/*jshint browserify: true */
-"use strict";
-
+'use strict';
 module.exports = function all(arr, callback) {
   var result = [];
   var pending = arr.length;
@@ -21,7 +19,7 @@ module.exports = function all(arr, callback) {
     };
   }
 
-  for (var i = 0; i < arr.length; i++) {
-    arr[i](step(i));
-  }
+  arr.forEach(function (fn, i) {
+    fn(step(i));
+  });
 };

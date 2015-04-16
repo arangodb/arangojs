@@ -1,7 +1,4 @@
-/*jshint node: true */
-/*globals describe, it */
 'use strict';
-
 describe('collection', function () {
   describe('truncate', function () {
     it('is missing tests');

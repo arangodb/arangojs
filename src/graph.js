@@ -1,6 +1,4 @@
-/*jshint browserify: true */
-"use strict";
-
+'use strict';
 var noop = require('./util/noop');
 var extend = require('extend');
 var inherits = require('util').inherits;

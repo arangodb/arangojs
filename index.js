@@ -1,4 +1,2 @@
-/*jshint browserify: true */
-"use strict";
-
+'use strict';
 module.exports = require('./lib/database');

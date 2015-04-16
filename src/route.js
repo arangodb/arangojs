@@ -1,6 +1,4 @@
-/*jshint browserify: true */
-"use strict";
-
+'use strict';
 var extend = require('extend');
 
 module.exports = Route;

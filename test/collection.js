@@ -1,5 +1,3 @@
-/*jshint node: true */
-/*globals describe, it, beforeEach */
 'use strict';
 var expect = require('expect.js');
 var Database = require('../');

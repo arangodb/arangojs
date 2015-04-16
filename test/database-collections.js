@@ -1,5 +1,3 @@
-/*jshint node: true */
-/*globals describe, it, before, after, beforeEach */
 'use strict';
 var expect = require('expect.js');
 var ArangoError = require('../lib/error');
@@ -219,6 +217,7 @@ describe('database', function () {
   describe('truncate', function () {
     beforeEach(function (done) {
       db.collection('_users', function (err, collection) {
+        expect(err).not.to.be.ok();
         collection.remove('chicken', function () {
           done();
         });

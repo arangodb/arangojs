@@ -1,6 +1,4 @@
-/*jshint browserify: true */
-"use strict";
-
+'use strict';
 var noop = require('./util/noop');
 var extend = require('extend');
 var Connection = require('./connection');
@@ -71,9 +69,11 @@ extend(Database.prototype, {
       excludeSystem: true
     }, function (err, body) {
       if (err) callback(err);
-      else callback(null, body.collections.map(function (data) {
-        return createCollection(self._connection, data);
-      }));
+      else {
+        callback(null, body.collections.map(function (data) {
+          return createCollection(self._connection, data);
+        }));
+      }
     });
   },
   allCollections: function (callback) {
@@ -83,9 +83,11 @@ extend(Database.prototype, {
       excludeSystem: false
     }, function (err, body) {
       if (err) callback(err);
-      else callback(null, body.collections.map(function (data) {
-        return createCollection(self._connection, data);
-      }));
+      else {
+        callback(null, body.collections.map(function (data) {
+          return createCollection(self._connection, data);
+        }));
+      }
     });
   },
   dropCollection: function (collectionName, callback) {
@@ -118,16 +120,17 @@ extend(Database.prototype, {
       }
       else callback(null, new Graph(self._connection, body.graph));
     });
-
   },
   graphs: function (callback) {
     if (!callback) callback = noop;
     var self = this;
     self._api.get('gharial', function (err, body) {
       if (err) callback(err);
-      else callback(null, body.graphs.map(function (graph) {
-        return new Graph(self._connection, graph);
-      }));
+      else {
+        callback(null, body.graphs.map(function (graph) {
+          return new Graph(self._connection, graph);
+        }));
+      }
     });
   },
   dropGraph: function (graphName, dropCollections, callback) {
@@ -178,11 +181,13 @@ extend(Database.prototype, {
     var self = this;
     self._api.get('database', function (err, body) {
       if (err) callback(err);
-      else callback(null, body.result.map(function (databaseName) {
-        return new Database(extend(
-          {}, self._connection.config, {databaseName: databaseName}
-        ));
-      }));
+      else {
+        callback(null, body.result.map(function (databaseName) {
+          return new Database(extend(
+            {}, self._connection.config, {databaseName: databaseName}
+          ));
+        }));
+      }
     });
   },
   dropDatabase: function (databaseName, callback) {

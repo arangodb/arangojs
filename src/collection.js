@@ -1,6 +1,4 @@
-/*jshint browserify: true */
-"use strict";
-
+'use strict';
 var noop = require('./util/noop');
 var inherits = require('util').inherits;
 var extend = require('extend');
@@ -462,4 +460,3 @@ extend(EdgeCollection.prototype, {
     });
   }
 });
-

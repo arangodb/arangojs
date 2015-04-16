@@ -35,7 +35,7 @@
     "all-minify": "uglifyjs dist/arango.all.js > dist/arango.all.min.js",
     "raw-bundle": "browserify -x extend -x request -s arangojs ./index.js > dist/arango.js",
     "raw-minify": "uglifyjs dist/arango.js > dist/arango.min.js",
-    "lint": "jshint index.js src test",
+    "lint": "eslint index.js src test",
     "prepublish": "npm run lint"
   },
   "repository": {
@@ -55,9 +55,9 @@
     "coveralls": "^2.11.2",
     "dekeywordify": "^0.2.0",
     "dirwatch": "^1.1.0",
+    "eslint": "^0.19.0",
     "expect.js": "^0.3",
     "istanbul": "^0.3.5",
-    "jshint": "^2.5.6",
     "mocha": "^2.0.1",
     "uglify-js": "^2.4.15",
     "xhr": "^2.0.0"
