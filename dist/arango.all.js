@@ -62,14 +62,14 @@ extend(BaseCollection.prototype, {
     var callback = _promisify.callback;
 
     var self = this;
-    self._api.get('collection/' + self.name + '/' + path, opts, function (err, body) {
+    self._api.get('collection/' + self.name + '/' + path, opts, function (err, res) {
       if (err) callback(err);else {
         if (update) {
-          extend(self, body);
+          extend(self, res.body);
           delete self.code;
           delete self.error;
         }
-        callback(null, body);
+        callback(null, res.body);
       }
     });
     return promise;
@@ -81,10 +81,10 @@ extend(BaseCollection.prototype, {
     var callback = _promisify2.callback;
 
     var self = this;
-    self._api.put('collection/' + self.name + '/' + path, data, function (err, body) {
+    self._api.put('collection/' + self.name + '/' + path, data, function (err, res) {
       if (err) callback(err);else {
-        if (update) extend(self, body);
-        callback(null, body);
+        if (update) extend(self, res.body);
+        callback(null, res.body);
       }
     });
     return promise;
@@ -133,8 +133,8 @@ extend(BaseCollection.prototype, {
     var callback = _promisify3.callback;
 
     var self = this;
-    self._api['delete']('collection/' + self.name, function (err, body) {
-      if (err) callback(err);else callback(null, body);
+    self._api['delete']('collection/' + self.name, function (err, res) {
+      if (err) callback(err);else callback(null, res.body);
     });
     return promise;
   },
@@ -150,8 +150,8 @@ extend(BaseCollection.prototype, {
     var callback = _promisify4.callback;
 
     opts = extend({}, opts, { collection: this.name });
-    this._api.put(this._documentPath(documentHandle), data, opts, function (err, body) {
-      if (err) callback(err);else callback(null, body);
+    this._api.put(this._documentPath(documentHandle), data, opts, function (err, res) {
+      if (err) callback(err);else callback(null, res.body);
     });
     return promise;
   },
@@ -167,8 +167,8 @@ extend(BaseCollection.prototype, {
     var callback = _promisify5.callback;
 
     opts = extend({}, opts, { collection: this.name });
-    this._api.patch(this._documentPath(documentHandle), data, opts, function (err, body) {
-      if (err) callback(err);else callback(null, body);
+    this._api.patch(this._documentPath(documentHandle), data, opts, function (err, res) {
+      if (err) callback(err);else callback(null, res.body);
     });
     return promise;
   },
@@ -184,8 +184,8 @@ extend(BaseCollection.prototype, {
     var callback = _promisify6.callback;
 
     opts = extend({}, opts, { collection: this.name });
-    this._api['delete'](this._documentPath(documentHandle), opts, function (err, body) {
-      if (err) callback(err);else callback(null, body);
+    this._api['delete'](this._documentPath(documentHandle), opts, function (err, res) {
+      if (err) callback(err);else callback(null, res.body);
     });
     return promise;
   },
@@ -203,8 +203,8 @@ extend(BaseCollection.prototype, {
     this._api.get('document', {
       type: type || 'id',
       collection: this.name
-    }, function (err, body) {
-      if (err) callback(err);else callback(null, body.documents);
+    }, function (err, res) {
+      if (err) callback(err);else callback(null, res.body.documents);
     });
     return promise;
   },
@@ -229,8 +229,8 @@ extend(BaseCollection.prototype, {
       }, opts, {
         collection: this.name
       })
-    }, function (err, body) {
-      if (err) callback(err);else callback(null, body);
+    }, function (err, res) {
+      if (err) callback(err);else callback(null, res.body);
     });
     return promise;
   },
@@ -240,8 +240,8 @@ extend(BaseCollection.prototype, {
     var promise = _promisify9.promise;
     var callback = _promisify9.callback;
 
-    this._api.get('index', { collection: this.name }, function (err, result) {
-      if (err) callback(err);else callback(null, result.indexes);
+    this._api.get('index', { collection: this.name }, function (err, res) {
+      if (err) callback(err);else callback(null, res.body.indexes);
     });
     return promise;
   },
@@ -251,8 +251,8 @@ extend(BaseCollection.prototype, {
     var promise = _promisify10.promise;
     var callback = _promisify10.callback;
 
-    this._api.get('index/' + this._indexHandle(indexHandle), function (err, result) {
-      if (err) callback(err);else callback(null, result);
+    this._api.get('index/' + this._indexHandle(indexHandle), function (err, res) {
+      if (err) callback(err);else callback(null, res.body);
     });
     return promise;
   },
@@ -264,8 +264,8 @@ extend(BaseCollection.prototype, {
 
     this._api.post('index', details, {
       collection: this.name
-    }, function (err, result) {
-      if (err) callback(err);else callback(null, result);
+    }, function (err, res) {
+      if (err) callback(err);else callback(null, res.body);
     });
     return promise;
   },
@@ -275,8 +275,8 @@ extend(BaseCollection.prototype, {
     var promise = _promisify12.promise;
     var callback = _promisify12.callback;
 
-    this._api['delete']('index/' + this._indexHandle(indexHandle), function (err, result) {
-      if (err) callback(err);else callback(null, result);
+    this._api['delete']('index/' + this._indexHandle(indexHandle), function (err, res) {
+      if (err) callback(err);else callback(null, res.body);
     });
     return promise;
   },
@@ -292,8 +292,8 @@ extend(BaseCollection.prototype, {
 
     this._api.post('index', extend({}, size, {
       type: 'cap'
-    }), { collection: this.name }, function (err, result) {
-      if (err) callback(err);else callback(null, result);
+    }), { collection: this.name }, function (err, res) {
+      if (err) callback(err);else callback(null, res.body);
     });
     return promise;
   },
@@ -315,8 +315,8 @@ extend(BaseCollection.prototype, {
       type: 'hash',
       fields: fields,
       unique: Boolean(unique)
-    }, { collection: this.name }, function (err, result) {
-      if (err) callback(err);else callback(null, result);
+    }, { collection: this.name }, function (err, res) {
+      if (err) callback(err);else callback(null, res.body);
     });
     return promise;
   },
@@ -338,8 +338,8 @@ extend(BaseCollection.prototype, {
       type: 'skiplist',
       fields: fields,
       unique: Boolean(unique)
-    }, { collection: this.name }, function (err, result) {
-      if (err) callback(err);else callback(null, result);
+    }, { collection: this.name }, function (err, res) {
+      if (err) callback(err);else callback(null, res.body);
     });
     return promise;
   },
@@ -360,8 +360,8 @@ extend(BaseCollection.prototype, {
     this._api.post('index', extend({}, opts, {
       type: 'geo',
       fields: fields
-    }), { collection: this.name }, function (err, result) {
-      if (err) callback(err);else callback(null, result);
+    }), { collection: this.name }, function (err, res) {
+      if (err) callback(err);else callback(null, res.body);
     });
     return promise;
   },
@@ -383,8 +383,8 @@ extend(BaseCollection.prototype, {
       type: 'fulltext',
       fields: fields,
       minLength: minLength ? Number(minLength) : undefined
-    }, { collection: this.name }, function (err, result) {
-      if (err) callback(err);else callback(null, result);
+    }, { collection: this.name }, function (err, res) {
+      if (err) callback(err);else callback(null, res.body);
     });
     return promise;
   },
@@ -408,8 +408,8 @@ extend(BaseCollection.prototype, {
       collection: this.name,
       attribute: field,
       query: query
-    }), function (err, body) {
-      if (err) callback(err);else callback(null, new ArrayCursor(self._connection, body));
+    }), function (err, res) {
+      if (err) callback(err);else callback(null, new ArrayCursor(self._connection, res.body));
     });
     return promise;
   },
@@ -433,8 +433,8 @@ extend(BaseCollection.prototype, {
       collection: this.name,
       latitude: latitude,
       longitude: longitude
-    }), function (err, body) {
-      if (err) callback(err);else callback(null, new ArrayCursor(self._connection, body));
+    }), function (err, res) {
+      if (err) callback(err);else callback(null, new ArrayCursor(self._connection, res.body));
     });
     return promise;
   },
@@ -459,8 +459,8 @@ extend(BaseCollection.prototype, {
       latitude: latitude,
       longitude: longitude,
       radius: Number(radius)
-    }), function (err, body) {
-      if (err) callback(err);else callback(null, new ArrayCursor(self._connection, body));
+    }), function (err, res) {
+      if (err) callback(err);else callback(null, new ArrayCursor(self._connection, res.body));
     });
     return promise;
   }
@@ -479,8 +479,8 @@ extend(DocumentCollection.prototype, {
     var promise = _promisify21.promise;
     var callback = _promisify21.callback;
 
-    this._api.get('document/' + this._documentHandle(documentHandle), function (err, body) {
-      if (err) callback(err);else callback(null, body);
+    this._api.get('document/' + this._documentHandle(documentHandle), function (err, res) {
+      if (err) callback(err);else callback(null, res.body);
     });
     return promise;
   },
@@ -492,8 +492,8 @@ extend(DocumentCollection.prototype, {
 
     this._api.post('document/', data, {
       collection: this.name
-    }, function (err, body) {
-      if (err) callback(err);else callback(null, body);
+    }, function (err, res) {
+      if (err) callback(err);else callback(null, res.body);
     });
     return promise;
   }
@@ -512,8 +512,8 @@ extend(EdgeCollection.prototype, {
     var promise = _promisify23.promise;
     var callback = _promisify23.callback;
 
-    this._api.get('edge/' + this._documentHandle(documentHandle), function (err, body) {
-      if (err) callback(err);else callback(null, body);
+    this._api.get('edge/' + this._documentHandle(documentHandle), function (err, res) {
+      if (err) callback(err);else callback(null, res.body);
     });
     return promise;
   },
@@ -527,8 +527,8 @@ extend(EdgeCollection.prototype, {
       collection: this.name,
       from: this._documentHandle(fromId),
       to: this._documentHandle(toId)
-    }, function (err, body) {
-      if (err) callback(err);else callback(null, body);
+    }, function (err, res) {
+      if (err) callback(err);else callback(null, res.body);
     });
     return promise;
   },
@@ -541,8 +541,8 @@ extend(EdgeCollection.prototype, {
     this._api.get('edges/' + this.name, {
       vertex: this._documentHandle(documentHandle),
       direction: direction
-    }, function (err, body) {
-      if (err) callback(err);else callback(null, body.edges);
+    }, function (err, res) {
+      if (err) callback(err);else callback(null, res.body.edges);
     });
     return promise;
   },
@@ -569,8 +569,8 @@ extend(EdgeCollection.prototype, {
     this._api.post('traversal', extend({}, opts, {
       startVertex: startVertex,
       edgeCollection: this.name
-    }), function (err, data) {
-      if (err) callback(err);else callback(null, data.result);
+    }), function (err, res) {
+      if (err) callback(err);else callback(null, res.body.result);
     });
     return promise;
   }
@@ -646,15 +646,15 @@ extend(Connection.prototype, {
       method: (opts.method || 'get').toUpperCase(),
       body: body
     }, function (err, response, rawBody) {
-      if (err) callback(err, rawBody, response);else if (!response.headers['content-type'].match(jsonMime)) callback(null, rawBody, response);else {
-        var body;
+      response.rawBody = rawBody;
+      if (err) callback(err, response);else if (response.headers['content-type'].match(jsonMime)) {
         try {
-          body = JSON.parse(rawBody);
+          response.body = JSON.parse(rawBody);
         } catch (e) {
-          return callback(e, rawBody, response);
+          return callback(extend(e, { response: response }));
         }
-        callback(body.error ? new ArangoError(body) : null, body, response);
-      }
+        if (!response.body.error) callback(null, response);else callback(extend(new ArangoError(response.body), { response: response }));
+      } else callback(null, extend(response, { body: rawBody }));
     });
     return promise;
   }
@@ -692,10 +692,10 @@ extend(ArrayCursor.prototype, {
   _more: function _more(callback) {
     var self = this;
     if (!self._hasMore) callback(null, self);else {
-      self._api.put('cursor/' + this._id, function (err, body) {
+      self._api.put('cursor/' + this._id, function (err, res) {
         if (err) callback(err);else {
-          self._result.push.apply(self._result, body.result);
-          self._hasMore = body.hasMore;
+          self._result.push.apply(self._result, res.body.result);
+          self._hasMore = res.body.hasMore;
           callback(null, self);
         }
       });
@@ -892,6 +892,7 @@ extend(ArrayCursor.prototype, {
   },
   rewind: function rewind() {
     this._index = 0;
+    return this;
   }
 });
 },{"./util/promisify":10,"extend":18}],5:[function(require,module,exports){
@@ -941,8 +942,8 @@ extend(Database.prototype, {
     var self = this;
     self._api.post('collection', extend({
       type: 2
-    }, properties), function (err, body) {
-      if (err) callback(err);else callback(null, createCollection(self._connection, body));
+    }, properties), function (err, res) {
+      if (err) callback(err);else callback(null, createCollection(self._connection, res.body));
     });
     return promise;
   }),
@@ -956,8 +957,8 @@ extend(Database.prototype, {
       properties = { name: properties };
     }
     var self = this;
-    self._api.post('collection', extend({}, properties, { type: 3 }), function (err, body) {
-      if (err) callback(err);else callback(null, createCollection(self._connection, body));
+    self._api.post('collection', extend({}, properties, { type: 3 }), function (err, res) {
+      if (err) callback(err);else callback(null, createCollection(self._connection, res.body));
     });
     return promise;
   },
@@ -973,10 +974,10 @@ extend(Database.prototype, {
     var callback = _promisify3.callback;
 
     var self = this;
-    self._api.get('collection/' + collectionName, function (err, body) {
+    self._api.get('collection/' + collectionName, function (err, res) {
       if (err) {
         if (!autoCreate || err.name !== 'ArangoError' || err.errorNum !== 1203) callback(err);else self.createCollection({ name: collectionName }, cb);
-      } else callback(null, createCollection(self._connection, body));
+      } else callback(null, createCollection(self._connection, res.body));
     });
     return promise;
   },
@@ -989,9 +990,9 @@ extend(Database.prototype, {
     var self = this;
     self._api.get('collection', {
       excludeSystem: true
-    }, function (err, body) {
+    }, function (err, res) {
       if (err) callback(err);else {
-        callback(null, body.collections.map(function (data) {
+        callback(null, res.body.collections.map(function (data) {
           return createCollection(self._connection, data);
         }));
       }
@@ -1007,9 +1008,9 @@ extend(Database.prototype, {
     var self = this;
     self._api.get('collection', {
       excludeSystem: false
-    }, function (err, body) {
+    }, function (err, res) {
       if (err) callback(err);else {
-        callback(null, body.collections.map(function (data) {
+        callback(null, res.body.collections.map(function (data) {
           return createCollection(self._connection, data);
         }));
       }
@@ -1023,7 +1024,7 @@ extend(Database.prototype, {
     var callback = _promisify6.callback;
 
     var self = this;
-    self._api['delete']('collection/' + collectionName, function (err, body) {
+    self._api['delete']('collection/' + collectionName, function (err, res) {
       if (err) callback(err);else callback(null);
     });
     return promise;
@@ -1035,8 +1036,8 @@ extend(Database.prototype, {
     var callback = _promisify7.callback;
 
     var self = this;
-    self._api.post('gharial', properties, function (err, body) {
-      if (err) callback(err);else callback(null, new Graph(self._connection, body.graph));
+    self._api.post('gharial', properties, function (err, res) {
+      if (err) callback(err);else callback(null, new Graph(self._connection, res.body.graph));
     });
     return promise;
   },
@@ -1052,10 +1053,10 @@ extend(Database.prototype, {
     var callback = _promisify8.callback;
 
     var self = this;
-    self._api.get('gharial/' + graphName, function (err, body) {
+    self._api.get('gharial/' + graphName, function (err, res) {
       if (err) {
         if (!autoCreate || err.name !== 'ArangoError' || err.errorNum !== 1924) callback(err);else self.createGraph({ name: graphName }, cb);
-      } else callback(null, new Graph(self._connection, body.graph));
+      } else callback(null, new Graph(self._connection, res.body.graph));
     });
     return promise;
   },
@@ -1066,9 +1067,9 @@ extend(Database.prototype, {
     var callback = _promisify9.callback;
 
     var self = this;
-    self._api.get('gharial', function (err, body) {
+    self._api.get('gharial', function (err, res) {
       if (err) callback(err);else {
-        callback(null, body.graphs.map(function (graph) {
+        callback(null, res.body.graphs.map(function (graph) {
           return new Graph(self._connection, graph);
         }));
       }
@@ -1089,7 +1090,7 @@ extend(Database.prototype, {
     var callback = _promisify10.callback;
 
     var self = this;
-    self._api.post('database', { name: databaseName }, function (err, body) {
+    self._api.post('database', { name: databaseName }, function (err, res) {
       if (err) callback(err);else {
         callback(null, new Database(extend({}, self._connection.config, { databaseName: databaseName })));
       }
@@ -1112,7 +1113,7 @@ extend(Database.prototype, {
       method: 'get',
       path: '/_db/' + databaseName + '/_api/database/current',
       absolutePath: true
-    }, function (err, body) {
+    }, function (err, res) {
       if (err) {
         if (!autoCreate || err.name !== 'ArangoError' || err.errorNum !== 1228) callback(err);else self.createDatabase(databaseName, cb);
       } else {
@@ -1128,9 +1129,9 @@ extend(Database.prototype, {
     var callback = _promisify12.callback;
 
     var self = this;
-    self._api.get('database', function (err, body) {
+    self._api.get('database', function (err, res) {
       if (err) callback(err);else {
-        callback(null, body.result.map(function (databaseName) {
+        callback(null, res.body.result.map(function (databaseName) {
           return new Database(extend({}, self._connection.config, { databaseName: databaseName }));
         }));
       }
@@ -1144,7 +1145,7 @@ extend(Database.prototype, {
     var callback = _promisify13.callback;
 
     var self = this;
-    self._api['delete']('database/' + databaseName, function (err, body) {
+    self._api['delete']('database/' + databaseName, function (err, res) {
       if (err) callback(err);else callback(null);
     });
     return promise;
@@ -1158,12 +1159,12 @@ extend(Database.prototype, {
     var self = this;
     self._api.get('collection', {
       excludeSystem: true
-    }, function (err, body) {
+    }, function (err, res) {
       if (err) callback(err);else {
-        all(body.collections.map(function (data) {
+        all(res.body.collections.map(function (data) {
           return function (cb) {
-            self._api.put('collection/' + data.name + '/truncate', function (err, body) {
-              if (err) cb(err);else cb(null, body);
+            self._api.put('collection/' + data.name + '/truncate', function (err, res) {
+              if (err) cb(err);else cb(null, res.body);
             });
           };
         }), cb);
@@ -1180,12 +1181,12 @@ extend(Database.prototype, {
     var self = this;
     self._api.get('collection', {
       excludeSystem: false
-    }, function (err, body) {
+    }, function (err, res) {
       if (err) callback(err);else {
-        all(body.collections.map(function (data) {
+        all(res.body.collections.map(function (data) {
           return function (cb) {
-            self._api.put('collection/' + data.name + '/truncate', function (err, body) {
-              if (err) cb(err);else cb(null, body);
+            self._api.put('collection/' + data.name + '/truncate', function (err, res) {
+              if (err) cb(err);else cb(null, res.body);
             });
           };
         }), cb);
@@ -1220,8 +1221,8 @@ extend(Database.prototype, {
       action: action,
       params: params,
       lockTimeout: lockTimeout
-    }, function (err, body) {
-      if (err) callback(err);else callback(null, body.result);
+    }, function (err, res) {
+      if (err) callback(err);else callback(null, res.body.result);
     });
     return promise;
   },
@@ -1253,8 +1254,8 @@ extend(Database.prototype, {
     self._api.post('cursor', {
       query: query,
       bindVars: bindVars
-    }, function (err, body) {
-      if (err) callback(err);else callback(null, new ArrayCursor(self._connection, body));
+    }, function (err, res) {
+      if (err) callback(err);else callback(null, new ArrayCursor(self._connection, res.body));
     });
     return promise;
   }),
@@ -1264,8 +1265,8 @@ extend(Database.prototype, {
     var promise = _promisify18.promise;
     var callback = _promisify18.callback;
 
-    this._api.get('aqlfunction', function (err, body) {
-      if (err) callback(err);else callback(null, body);
+    this._api.get('aqlfunction', function (err, res) {
+      if (err) callback(err);else callback(null, res.body);
     });
     return promise;
   },
@@ -1278,8 +1279,8 @@ extend(Database.prototype, {
     this._api.post('aqlfunction', {
       name: name,
       code: code
-    }, function (err, body) {
-      if (err) callback(err);else callback(null, body);
+    }, function (err, res) {
+      if (err) callback(err);else callback(null, res.body);
     });
     return promise;
   },
@@ -1296,8 +1297,8 @@ extend(Database.prototype, {
 
     this._api['delete']('aqlfunction/' + name, {
       group: Boolean(group)
-    }, function (err, body) {
-      if (err) callback(err);else callback(null, body);
+    }, function (err, res) {
+      if (err) callback(err);else callback(null, res.body);
     });
     return promise;
   }
@@ -1349,56 +1350,107 @@ extend(Graph.prototype, {
       cb = dropCollections;
       dropCollections = undefined;
     }
-    return this._gharial['delete']({
-      dropCollections: dropCollections
-    }, cb);
-  },
-  vertexCollection: function vertexCollection(collectionName, cb) {
+
     var _promisify = promisify(cb);
 
     var promise = _promisify.promise;
     var callback = _promisify.callback;
 
-    var self = this;
-    self._api.get('collection/' + collectionName, function (err, body) {
-      if (err) callback(err);else callback(null, new VertexCollection(self._connection, body, self));
+    this._gharial['delete']({
+      dropCollections: dropCollections
+    }, function (err, res) {
+      if (err) callback(err);else callback(null, res.body);
     });
     return promise;
   },
-  addVertexCollection: function addVertexCollection(collectionName, cb) {
-    return this._gharial.post('vertex', { collection: collectionName }, cb);
-  },
-  removeVertexCollection: function removeVertexCollection(collectionName, dropCollection, cb) {
-    if (typeof dropCollection === 'function') {
-      cb = dropCollection;
-      dropCollection = undefined;
-    }
-    return this._gharial['delete']('vertex/' + collectionName, { dropCollection: dropCollection }, cb);
-  },
-  edgeCollection: function edgeCollection(collectionName, cb) {
+  vertexCollection: function vertexCollection(collectionName, cb) {
     var _promisify2 = promisify(cb);
 
     var promise = _promisify2.promise;
     var callback = _promisify2.callback;
 
     var self = this;
-    self._api.get('collection/' + collectionName, function (err, body) {
-      if (err) callback(err);else callback(null, new EdgeCollection(self._connection, body, self));
+    self._api.get('collection/' + collectionName, function (err, res) {
+      if (err) callback(err);else callback(null, new VertexCollection(self._connection, res.body, self));
+    });
+    return promise;
+  },
+  addVertexCollection: function addVertexCollection(collectionName, cb) {
+    var _promisify3 = promisify(cb);
+
+    var promise = _promisify3.promise;
+    var callback = _promisify3.callback;
+
+    this._gharial.post('vertex', { collection: collectionName }, function (err, res) {
+      if (err) callback(err);else callback(null, res.body);
+    });
+    return promise;
+  },
+  removeVertexCollection: function removeVertexCollection(collectionName, dropCollection, cb) {
+    if (typeof dropCollection === 'function') {
+      cb = dropCollection;
+      dropCollection = undefined;
+    }
+
+    var _promisify4 = promisify(cb);
+
+    var promise = _promisify4.promise;
+    var callback = _promisify4.callback;
+
+    this._gharial['delete']('vertex/' + collectionName, { dropCollection: dropCollection }, function (err, res) {
+      if (err) callback(err);else callback(null, res.body);
+    });
+    return promise;
+  },
+  edgeCollection: function edgeCollection(collectionName, cb) {
+    var _promisify5 = promisify(cb);
+
+    var promise = _promisify5.promise;
+    var callback = _promisify5.callback;
+
+    var self = this;
+    self._api.get('collection/' + collectionName, function (err, res) {
+      if (err) callback(err);else callback(null, new EdgeCollection(self._connection, res.body, self));
     });
     return promise;
   },
   addEdgeDefinition: function addEdgeDefinition(definition, cb) {
-    return this._gharial.post('edge', definition, cb);
+    var _promisify6 = promisify(cb);
+
+    var promise = _promisify6.promise;
+    var callback = _promisify6.callback;
+
+    this._gharial.post('edge', definition, function (err, res) {
+      if (err) callback(err);else callback(null, res.body);
+    });
+    return promise;
   },
   replaceEdgeDefinition: function replaceEdgeDefinition(definitionName, definition, cb) {
-    return this._api.put('gharial/' + this.name + '/edge/' + definitionName, definition, cb);
+    var _promisify7 = promisify(cb);
+
+    var promise = _promisify7.promise;
+    var callback = _promisify7.callback;
+
+    this._api.put('gharial/' + this.name + '/edge/' + definitionName, definition, function (err, res) {
+      if (err) callback(err);else callback(null, res.body);
+    });
+    return promise;
   },
   removeEdgeDefinition: function removeEdgeDefinition(definitionName, dropCollection, cb) {
     if (typeof dropCollection === 'function') {
       cb = dropCollection;
       dropCollection = undefined;
     }
-    return this._gharial['delete']('edge/' + definitionName, { dropCollection: dropCollection }, cb);
+
+    var _promisify8 = promisify(cb);
+
+    var promise = _promisify8.promise;
+    var callback = _promisify8.callback;
+
+    this._gharial['delete']('edge/' + definitionName, { dropCollection: dropCollection }, function (err, res) {
+      if (err) callback(err);else callback(null, res.body);
+    });
+    return promise;
   },
   traversal: function traversal(startVertex, opts, cb) {
     if (typeof opts === 'function') {
@@ -1406,16 +1458,16 @@ extend(Graph.prototype, {
       opts = undefined;
     }
 
-    var _promisify3 = promisify(cb);
+    var _promisify9 = promisify(cb);
 
-    var promise = _promisify3.promise;
-    var callback = _promisify3.callback;
+    var promise = _promisify9.promise;
+    var callback = _promisify9.callback;
 
     this._api.post('traversal', extend({}, opts, {
       startVertex: startVertex,
       graphName: this.name
-    }), function (err, data) {
-      if (err) callback(err);else callback(null, data.result);
+    }), function (err, res) {
+      if (err) callback(err);else callback(null, res.body.result);
     });
     return promise;
   }
@@ -1430,26 +1482,26 @@ inherits(VertexCollection, BaseCollection);
 
 extend(VertexCollection.prototype, {
   vertex: function vertex(documentHandle, cb) {
-    var _promisify4 = promisify(cb);
+    var _promisify10 = promisify(cb);
 
-    var promise = _promisify4.promise;
-    var callback = _promisify4.callback;
+    var promise = _promisify10.promise;
+    var callback = _promisify10.callback;
 
-    this._gharial.get(documentHandle, function (err, body) {
-      if (err) callback(err);else callback(null, body);
+    this._gharial.get(documentHandle, function (err, res) {
+      if (err) callback(err);else callback(null, res.body);
     });
     return promise;
   },
   save: function save(data, cb) {
-    var _promisify5 = promisify(cb);
+    var _promisify11 = promisify(cb);
 
-    var promise = _promisify5.promise;
-    var callback = _promisify5.callback;
+    var promise = _promisify11.promise;
+    var callback = _promisify11.callback;
 
     this._gharial.post(data, {
       collection: this.name
-    }, function (err, body) {
-      if (err) callback(err);else callback(null, body);
+    }, function (err, res) {
+      if (err) callback(err);else callback(null, res.body);
     });
     return promise;
   }
@@ -1464,13 +1516,13 @@ inherits(EdgeCollection, BaseCollection);
 
 extend(EdgeCollection.prototype, {
   edge: function edge(documentHandle, cb) {
-    var _promisify6 = promisify(cb);
+    var _promisify12 = promisify(cb);
 
-    var promise = _promisify6.promise;
-    var callback = _promisify6.callback;
+    var promise = _promisify12.promise;
+    var callback = _promisify12.callback;
 
-    this._gharial.get(documentHandle, function (err, body) {
-      if (err) callback(err);else callback(null, body);
+    this._gharial.get(documentHandle, function (err, res) {
+      if (err) callback(err);else callback(null, res.body);
     });
     return promise;
   },
@@ -1483,13 +1535,13 @@ extend(EdgeCollection.prototype, {
       data._to = this._documentHandle(toId);
     }
 
-    var _promisify7 = promisify(cb);
+    var _promisify13 = promisify(cb);
 
-    var promise = _promisify7.promise;
-    var callback = _promisify7.callback;
+    var promise = _promisify13.promise;
+    var callback = _promisify13.callback;
 
-    this._gharial.post(data, function (err, body) {
-      if (err) callback(err);else callback(null, body);
+    this._gharial.post(data, function (err, res) {
+      if (err) callback(err);else callback(null, res.body);
     });
     return promise;
   }
@@ -1528,7 +1580,7 @@ extend(Route.prototype, {
       qs = undefined;
     }
     if (!path) path = '';else if (this._path && path.charAt(0) !== '/') path = '/' + path;
-    this.request({
+    return this.request({
       method: 'get',
       path: path,
       qs: qs
@@ -1550,7 +1602,7 @@ extend(Route.prototype, {
       body = undefined;
     }
     if (!path) path = '';else if (this._path && path.charAt(0) !== '/') path = '/' + path;
-    this.request({
+    return this.request({
       method: 'post',
       path: path,
       body: body,
@@ -1573,7 +1625,7 @@ extend(Route.prototype, {
       body = undefined;
     }
     if (!path) path = '';else if (this._path && path.charAt(0) !== '/') path = '/' + path;
-    this.request({
+    return this.request({
       method: 'put',
       path: path,
       body: body,
@@ -1596,7 +1648,7 @@ extend(Route.prototype, {
       body = undefined;
     }
     if (!path) path = '';else if (this._path && path.charAt(0) !== '/') path = '/' + path;
-    this.request({
+    return this.request({
       method: 'patch',
       path: path,
       body: body,
@@ -1614,7 +1666,7 @@ extend(Route.prototype, {
       qs = undefined;
     }
     if (!path) path = '';else if (this._path && path.charAt(0) !== '/') path = '/' + path;
-    this.request({
+    return this.request({
       method: 'delete',
       path: path,
       qs: qs
@@ -1631,7 +1683,7 @@ extend(Route.prototype, {
       qs = undefined;
     }
     if (!path) path = '';else if (this._path && path.charAt(0) !== '/') path = '/' + path;
-    this.request({
+    return this.request({
       method: 'head',
       path: path,
       qs: qs
@@ -1664,7 +1716,6 @@ module.exports = function all(arr, callback) {
 };
 },{}],10:[function(require,module,exports){
 'use strict';
-
 module.exports = function promisify(callback) {
   if (typeof Promise !== 'function') {
     return { callback: callback || function () {} };
@@ -1672,14 +1723,8 @@ module.exports = function promisify(callback) {
   var cb = callback;
   var promise = new Promise(function (resolve, reject) {
     callback = function (err, res) {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(res);
-      }
-      if (cb) {
-        cb(err, res);
-      }
+      if (err) reject(err);else resolve(res);
+      if (cb) cb(err, res);
     };
   });
   return { callback: callback, promise: promise };
