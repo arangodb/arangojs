@@ -71,6 +71,10 @@ If you want to use promises in environments that don't provide the global `Promi
 
 If *config* is a string, it will be interpreted as *config.url*.
 
+#### Authentication
+
+If you want to use ArangoDB with HTTP Basic authentication, you can provide the credentials as part of the *config.url* string, e.g. `http://user:pass@localhost:8529`.
+
 ### Manipulating collections
 
 These functions implement the [HTTP API for manipulating collections](https://docs.arangodb.com/HttpCollection/index.html).
