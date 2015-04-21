@@ -1,9 +1,12 @@
 language: node_js
 node_js:
   - 0.10
+  - 0.12
+  - iojs
 env:
   - ARANGODB_VERSION=2.3
   - ARANGODB_VERSION=2.4
+  - ARANGODB_VERSION=2.5
 before_install:
   - curl https://www.arangodb.com/repositories/travisCI/setup_arangodb_${ARANGODB_VERSION}.sh | bash
 script:
