@@ -59,7 +59,15 @@ extend(Database.prototype, {
     self._api.get('collection/' + collectionName, function (err, res) {
       if (err) {
         if (!autoCreate || err.name !== 'ArangoError' || err.errorNum !== 1203) callback(err);
-        else self.createCollection({name: collectionName}, cb);
+        else {
+          self.createCollection({name: collectionName}, function (err, collection) {
+            if (err) {
+              if (err.name !== 'ArangoError' || err.errorNum !== 1207) callback(err);
+              else self.collection(collectionName, callback);
+            }
+            else callback(null, collection);
+          });
+        }
       }
       else callback(null, createCollection(self._connection, res.body));
     });
@@ -123,7 +131,15 @@ extend(Database.prototype, {
     self._api.get('gharial/' + graphName, function (err, res) {
       if (err) {
         if (!autoCreate || err.name !== 'ArangoError' || err.errorNum !== 1924) callback(err);
-        else self.createGraph({name: graphName}, cb);
+        else {
+          self.createGraph({name: graphName}, function (err, graph) {
+            if (err) {
+              if (err.name !== 'ArangoError' || err.errorNum !== 1925) callback(err);
+              else self.graph(graphName, callback);
+            }
+            else callback(null, graph);
+          });
+        }
       }
       else callback(null, new Graph(self._connection, res.body.graph));
     });
@@ -147,7 +163,9 @@ extend(Database.prototype, {
       cb = dropCollections;
       dropCollections = undefined;
     }
-    return this._api.delete('graph/' + graphName, {dropCollections: dropCollections}, cb);
+    var {promise, callback} = promisify(cb);
+    this._api.delete('graph/' + graphName, {dropCollections: dropCollections}, callback);
+    return promise;
   },
   createDatabase: function (databaseName, cb) {
     var {promise, callback} = promisify(cb);
@@ -176,7 +194,15 @@ extend(Database.prototype, {
     }, function (err, res) {
       if (err) {
         if (!autoCreate || err.name !== 'ArangoError' || err.errorNum !== 1228) callback(err);
-        else self.createDatabase(databaseName, cb);
+        else {
+          self.createDatabase(databaseName, function (err, database) {
+            if (err) {
+              if (err.name !== 'ArangoError' || err.errorNum !== 1207) callback(err);
+              else self.database(databaseName, callback);
+            }
+            else callback(null, database);
+          });
+        }
       }
       else {
         callback(null, new Database(extend(
@@ -225,7 +251,7 @@ extend(Database.prototype, {
               else cb(null, res.body);
             });
           };
-        }), cb);
+        }), callback);
       }
     });
     return promise;
@@ -245,7 +271,7 @@ extend(Database.prototype, {
               else cb(null, res.body);
             });
           };
-        }), cb);
+        }), callback);
       }
     });
     return promise;
