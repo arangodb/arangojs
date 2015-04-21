@@ -1,6 +1,6 @@
 {
   "name": "arangojs",
-  "version": "3.4.3",
+  "version": "3.5.0",
   "description": "The official ArangoDB JavaScript driver.",
   "main": "index.js",
   "keywords": [
