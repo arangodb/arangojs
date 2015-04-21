@@ -29,11 +29,11 @@ extend(ArrayCursor.prototype, {
     var self = this;
     if (!self._hasMore) callback(null, self);
     else {
-      self._api.put('cursor/' + this._id, function (err, body) {
+      self._api.put('cursor/' + this._id, function (err, res) {
         if (err) callback(err);
         else {
-          self._result.push.apply(self._result, body.result);
-          self._hasMore = body.hasMore;
+          self._result.push.apply(self._result, res.body.result);
+          self._hasMore = res.body.hasMore;
           callback(null, self);
         }
       });
@@ -85,8 +85,9 @@ extend(ArrayCursor.prototype, {
             if (result === false) break;
           }
           callback(null);
+        } catch (e) {
+          callback(e);
         }
-        catch (e) {callback(e);}
       }
     });
     return promise;
@@ -109,8 +110,9 @@ extend(ArrayCursor.prototype, {
             else loop();
           });
         }
+      } catch(e) {
+        callback(e);
       }
-      catch(e) {callback(e);}
     }
     self._index = 0;
     loop();
@@ -134,8 +136,9 @@ extend(ArrayCursor.prototype, {
             else loop();
           });
         }
+      } catch(e) {
+        callback(e);
       }
-      catch(e) {callback(e);}
     }
     self._index = 0;
     loop();
@@ -159,8 +162,9 @@ extend(ArrayCursor.prototype, {
             else loop();
           });
         }
+      } catch(e) {
+        callback(e);
       }
-      catch(e) {callback(e);}
     }
     self._index = 0;
     loop();
@@ -186,19 +190,18 @@ extend(ArrayCursor.prototype, {
             else loop();
           });
         }
+      } catch(e) {
+        callback(e);
       }
-      catch(e) {callback(e);}
     }
     if (accu !== undefined) {
       self._index = 0;
       loop();
-    }
-    else if (self._result.length > 1) {
+    } else if (self._result.length > 1) {
       accu = self._result[0];
       self._index = 1;
       loop();
-    }
-    else {
+    } else {
       self._more(function (err) {
         if (err) callback(err);
         else {
@@ -212,5 +215,6 @@ extend(ArrayCursor.prototype, {
   },
   rewind: function () {
     this._index = 0;
+    return this;
   }
 });

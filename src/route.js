@@ -37,7 +37,7 @@ extend(Route.prototype, {
     }
     if (!path) path = '';
     else if (this._path && path.charAt(0) !== '/') path = '/' + path;
-    this.request({
+    return this.request({
       method: 'get',
       path: path,
       qs: qs
@@ -60,7 +60,7 @@ extend(Route.prototype, {
     }
     if (!path) path = '';
     else if (this._path && path.charAt(0) !== '/') path = '/' + path;
-    this.request({
+    return this.request({
       method: 'post',
       path: path,
       body: body,
@@ -84,7 +84,7 @@ extend(Route.prototype, {
     }
     if (!path) path = '';
     else if (this._path && path.charAt(0) !== '/') path = '/' + path;
-    this.request({
+    return this.request({
       method: 'put',
       path: path,
       body: body,
@@ -108,7 +108,7 @@ extend(Route.prototype, {
     }
     if (!path) path = '';
     else if (this._path && path.charAt(0) !== '/') path = '/' + path;
-    this.request({
+    return this.request({
       method: 'patch',
       path: path,
       body: body,
@@ -127,7 +127,7 @@ extend(Route.prototype, {
     }
     if (!path) path = '';
     else if (this._path && path.charAt(0) !== '/') path = '/' + path;
-    this.request({
+    return this.request({
       method: 'delete',
       path: path,
       qs: qs
@@ -145,7 +145,7 @@ extend(Route.prototype, {
     }
     if (!path) path = '';
     else if (this._path && path.charAt(0) !== '/') path = '/' + path;
-    this.request({
+    return this.request({
       method: 'head',
       path: path,
       qs: qs

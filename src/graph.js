@@ -22,50 +22,80 @@ extend(Graph.prototype, {
       cb = dropCollections;
       dropCollections = undefined;
     }
-    return this._gharial.delete({
+    var {promise, callback} = promisify(cb);
+    this._gharial.delete({
       dropCollections: dropCollections
-    }, cb);
+    }, function (err, res) {
+      if (err) callback(err);
+      else callback(null, res.body);
+    });
+    return promise;
   },
   vertexCollection: function (collectionName, cb) {
     var {promise, callback} = promisify(cb);
     var self = this;
-    self._api.get('collection/' + collectionName, function (err, body) {
+    self._api.get('collection/' + collectionName, function (err, res) {
       if (err) callback(err);
-      else callback(null, new VertexCollection(self._connection, body, self));
+      else callback(null, new VertexCollection(self._connection, res.body, self));
     });
     return promise;
   },
   addVertexCollection: function (collectionName, cb) {
-    return this._gharial.post('vertex', {collection: collectionName}, cb);
+    var {promise, callback} = promisify(cb);
+    this._gharial.post('vertex', {collection: collectionName}, function (err, res) {
+      if (err) callback(err);
+      else callback(null, res.body);
+    });
+    return promise;
   },
   removeVertexCollection: function (collectionName, dropCollection, cb) {
     if (typeof dropCollection === 'function') {
       cb = dropCollection;
       dropCollection = undefined;
     }
-    return this._gharial.delete('vertex/' + collectionName, {dropCollection: dropCollection}, cb);
+    var {promise, callback} = promisify(cb);
+    this._gharial.delete('vertex/' + collectionName, {dropCollection: dropCollection}, function (err, res) {
+      if (err) callback(err);
+      else callback(null, res.body);
+    });
+    return promise;
   },
   edgeCollection: function (collectionName, cb) {
     var {promise, callback} = promisify(cb);
     var self = this;
-    self._api.get('collection/' + collectionName, function (err, body) {
+    self._api.get('collection/' + collectionName, function (err, res) {
       if (err) callback(err);
-      else callback(null, new EdgeCollection(self._connection, body, self));
+      else callback(null, new EdgeCollection(self._connection, res.body, self));
     });
     return promise;
   },
   addEdgeDefinition: function (definition, cb) {
-    return this._gharial.post('edge', definition, cb);
+    var {promise, callback} = promisify(cb);
+    this._gharial.post('edge', definition, function (err, res) {
+      if (err) callback(err);
+      else callback(null, res.body);
+    });
+    return promise;
   },
   replaceEdgeDefinition: function (definitionName, definition, cb) {
-    return this._api.put('gharial/' + this.name + '/edge/' + definitionName, definition, cb);
+    var {promise, callback} = promisify(cb);
+    this._api.put('gharial/' + this.name + '/edge/' + definitionName, definition, function (err, res) {
+      if (err) callback(err);
+      else callback(null, res.body);
+    });
+    return promise;
   },
   removeEdgeDefinition: function (definitionName, dropCollection, cb) {
     if (typeof dropCollection === 'function') {
       cb = dropCollection;
       dropCollection = undefined;
     }
-    return this._gharial.delete('edge/' + definitionName, {dropCollection: dropCollection}, cb);
+    var {promise, callback} = promisify(cb);
+    this._gharial.delete('edge/' + definitionName, {dropCollection: dropCollection}, function (err, res) {
+      if (err) callback(err);
+      else callback(null, res.body);
+    });
+    return promise;
   },
   traversal: function (startVertex, opts, cb) {
     if (typeof opts === 'function') {
@@ -76,9 +106,9 @@ extend(Graph.prototype, {
     this._api.post('traversal', extend({}, opts, {
       startVertex: startVertex,
       graphName: this.name
-    }), function (err, data) {
+    }), function (err, res) {
       if (err) callback(err);
-      else callback(null, data.result);
+      else callback(null, res.body.result);
     });
     return promise;
   }
@@ -94,9 +124,9 @@ inherits(VertexCollection, BaseCollection);
 extend(VertexCollection.prototype, {
   vertex: function (documentHandle, cb) {
     var {promise, callback} = promisify(cb);
-    this._gharial.get(documentHandle, function (err, body) {
+    this._gharial.get(documentHandle, function (err, res) {
       if (err) callback(err);
-      else callback(null, body);
+      else callback(null, res.body);
     });
     return promise;
   },
@@ -104,9 +134,9 @@ extend(VertexCollection.prototype, {
     var {promise, callback} = promisify(cb);
     this._gharial.post(data, {
       collection: this.name
-    }, function (err, body) {
+    }, function (err, res) {
       if (err) callback(err);
-      else callback(null, body);
+      else callback(null, res.body);
     });
     return promise;
   }
@@ -122,9 +152,9 @@ inherits(EdgeCollection, BaseCollection);
 extend(EdgeCollection.prototype, {
   edge: function (documentHandle, cb) {
     var {promise, callback} = promisify(cb);
-    this._gharial.get(documentHandle, function (err, body) {
+    this._gharial.get(documentHandle, function (err, res) {
       if (err) callback(err);
-      else callback(null, body);
+      else callback(null, res.body);
     });
     return promise;
   },
@@ -137,9 +167,9 @@ extend(EdgeCollection.prototype, {
       data._to = this._documentHandle(toId);
     }
     var {promise, callback} = promisify(cb);
-    this._gharial.post(data, function (err, body) {
+    this._gharial.post(data, function (err, res) {
       if (err) callback(err);
-      else callback(null, body);
+      else callback(null, res.body);
     });
     return promise;
   }

@@ -54,15 +54,15 @@ extend(BaseCollection.prototype, {
     }
     var {promise, callback} = promisify(cb);
     var self = this;
-    self._api.get('collection/' + self.name + '/' + path, opts, function (err, body) {
+    self._api.get('collection/' + self.name + '/' + path, opts, function (err, res) {
       if (err) callback(err);
       else {
         if (update) {
-          extend(self, body);
+          extend(self, res.body);
           delete self.code;
           delete self.error;
         }
-        callback(null, body);
+        callback(null, res.body);
       }
     });
     return promise;
@@ -70,11 +70,11 @@ extend(BaseCollection.prototype, {
   _put: function (path, data, update, cb) {
     var {promise, callback} = promisify(cb);
     var self = this;
-    self._api.put('collection/' + self.name + '/' + path, data, function (err, body) {
+    self._api.put('collection/' + self.name + '/' + path, data, function (err, res) {
       if (err) callback(err);
       else {
-        if (update) extend(self, body);
-        callback(null, body);
+        if (update) extend(self, res.body);
+        callback(null, res.body);
       }
     });
     return promise;
@@ -121,9 +121,9 @@ extend(BaseCollection.prototype, {
   drop: function (cb) {
     var {promise, callback} = promisify(cb);
     var self = this;
-    self._api.delete('collection/' + self.name, function (err, body) {
+    self._api.delete('collection/' + self.name, function (err, res) {
       if (err) callback(err);
-      else callback(null, body);
+      else callback(null, res.body);
     });
     return promise;
   },
@@ -134,9 +134,9 @@ extend(BaseCollection.prototype, {
     }
     var {promise, callback} = promisify(cb);
     opts = extend({}, opts, {collection: this.name});
-    this._api.put(this._documentPath(documentHandle), data, opts, function (err, body) {
+    this._api.put(this._documentPath(documentHandle), data, opts, function (err, res) {
       if (err) callback(err);
-      else callback(null, body);
+      else callback(null, res.body);
     });
     return promise;
   },
@@ -147,9 +147,9 @@ extend(BaseCollection.prototype, {
     }
     var {promise, callback} = promisify(cb);
     opts = extend({}, opts, {collection: this.name});
-    this._api.patch(this._documentPath(documentHandle), data, opts, function (err, body) {
+    this._api.patch(this._documentPath(documentHandle), data, opts, function (err, res) {
       if (err) callback(err);
-      else callback(null, body);
+      else callback(null, res.body);
     });
     return promise;
   },
@@ -160,9 +160,9 @@ extend(BaseCollection.prototype, {
     }
     var {promise, callback} = promisify(cb);
     opts = extend({}, opts, {collection: this.name});
-    this._api.delete(this._documentPath(documentHandle), opts, function (err, body) {
+    this._api.delete(this._documentPath(documentHandle), opts, function (err, res) {
       if (err) callback(err);
-      else callback(null, body);
+      else callback(null, res.body);
     });
     return promise;
   },
@@ -175,9 +175,9 @@ extend(BaseCollection.prototype, {
     this._api.get('document', {
       type: type || 'id',
       collection: this.name
-    }, function (err, body) {
+    }, function (err, res) {
       if (err) callback(err);
-      else callback(null, body.documents);
+      else callback(null, res.body.documents);
     });
     return promise;
   },
@@ -197,17 +197,17 @@ extend(BaseCollection.prototype, {
       }, opts, {
         collection: this.name
       })
-    }, function (err, body) {
+    }, function (err, res) {
       if (err) callback(err);
-      else callback(null, body);
+      else callback(null, res.body);
     });
     return promise;
   },
   indexes: function (cb) {
     var {promise, callback} = promisify(cb);
-    this._api.get('index', {collection: this.name}, function (err, result) {
+    this._api.get('index', {collection: this.name}, function (err, res) {
       if (err) callback(err);
-      else callback(null, result.indexes);
+      else callback(null, res.body.indexes);
     });
     return promise;
   },
@@ -215,9 +215,9 @@ extend(BaseCollection.prototype, {
     var {promise, callback} = promisify(cb);
     this._api.get(
       'index/' + this._indexHandle(indexHandle),
-      function (err, result) {
+      function (err, res) {
         if (err) callback(err);
-        else callback(null, result);
+        else callback(null, res.body);
       }
     );
     return promise;
@@ -226,9 +226,9 @@ extend(BaseCollection.prototype, {
     var {promise, callback} = promisify(cb);
     this._api.post('index', details, {
       collection: this.name
-    }, function (err, result) {
+    }, function (err, res) {
       if (err) callback(err);
-      else callback(null, result);
+      else callback(null, res.body);
     });
     return promise;
   },
@@ -236,9 +236,9 @@ extend(BaseCollection.prototype, {
     var {promise, callback} = promisify(cb);
     this._api.delete(
       'index/' + this._indexHandle(indexHandle),
-      function (err, result) {
+      function (err, res) {
         if (err) callback(err);
-        else callback(null, result);
+        else callback(null, res.body);
       }
     );
     return promise;
@@ -250,9 +250,9 @@ extend(BaseCollection.prototype, {
     var {promise, callback} = promisify(cb);
     this._api.post('index', extend({}, size, {
       type: 'cap'
-    }), {collection: this.name}, function (err, result) {
+    }), {collection: this.name}, function (err, res) {
       if (err) callback(err);
-      else callback(null, result);
+      else callback(null, res.body);
     });
     return promise;
   },
@@ -269,9 +269,9 @@ extend(BaseCollection.prototype, {
       type: 'hash',
       fields: fields,
       unique: Boolean(unique)
-    }, {collection: this.name}, function (err, result) {
+    }, {collection: this.name}, function (err, res) {
       if (err) callback(err);
-      else callback(null, result);
+      else callback(null, res.body);
     });
     return promise;
   },
@@ -288,9 +288,9 @@ extend(BaseCollection.prototype, {
       type: 'skiplist',
       fields: fields,
       unique: Boolean(unique)
-    }, {collection: this.name}, function (err, result) {
+    }, {collection: this.name}, function (err, res) {
       if (err) callback(err);
-      else callback(null, result);
+      else callback(null, res.body);
     });
     return promise;
   },
@@ -306,9 +306,9 @@ extend(BaseCollection.prototype, {
     this._api.post('index', extend({}, opts, {
       type: 'geo',
       fields: fields
-    }), {collection: this.name}, function (err, result) {
+    }), {collection: this.name}, function (err, res) {
       if (err) callback(err);
-      else callback(null, result);
+      else callback(null, res.body);
     });
     return promise;
   },
@@ -325,9 +325,9 @@ extend(BaseCollection.prototype, {
       type: 'fulltext',
       fields: fields,
       minLength: minLength ? Number(minLength) : undefined
-    }, {collection: this.name}, function (err, result) {
+    }, {collection: this.name}, function (err, res) {
       if (err) callback(err);
-      else callback(null, result);
+      else callback(null, res.body);
     });
     return promise;
   },
@@ -346,9 +346,9 @@ extend(BaseCollection.prototype, {
       collection: this.name,
       attribute: field,
       query: query
-    }), function (err, body) {
+    }), function (err, res) {
       if (err) callback(err);
-      else callback(null, new ArrayCursor(self._connection, body));
+      else callback(null, new ArrayCursor(self._connection, res.body));
     });
     return promise;
   },
@@ -367,9 +367,9 @@ extend(BaseCollection.prototype, {
       collection: this.name,
       latitude: latitude,
       longitude: longitude
-    }), function (err, body) {
+    }), function (err, res) {
       if (err) callback(err);
-      else callback(null, new ArrayCursor(self._connection, body));
+      else callback(null, new ArrayCursor(self._connection, res.body));
     });
     return promise;
   },
@@ -389,9 +389,9 @@ extend(BaseCollection.prototype, {
       latitude: latitude,
       longitude: longitude,
       radius: Number(radius)
-    }), function (err, body) {
+    }), function (err, res) {
       if (err) callback(err);
-      else callback(null, new ArrayCursor(self._connection, body));
+      else callback(null, new ArrayCursor(self._connection, res.body));
     });
     return promise;
   }
@@ -406,9 +406,9 @@ inherits(DocumentCollection, BaseCollection);
 extend(DocumentCollection.prototype, {
   document: function (documentHandle, cb) {
     var {promise, callback} = promisify(cb);
-    this._api.get('document/' + this._documentHandle(documentHandle), function (err, body) {
+    this._api.get('document/' + this._documentHandle(documentHandle), function (err, res) {
       if (err) callback(err);
-      else callback(null, body);
+      else callback(null, res.body);
     });
     return promise;
   },
@@ -416,9 +416,9 @@ extend(DocumentCollection.prototype, {
     var {promise, callback} = promisify(cb);
     this._api.post('document/', data, {
       collection: this.name
-    }, function (err, body) {
+    }, function (err, res) {
       if (err) callback(err);
-      else callback(null, body);
+      else callback(null, res.body);
     });
     return promise;
   }
@@ -433,9 +433,9 @@ inherits(EdgeCollection, BaseCollection);
 extend(EdgeCollection.prototype, {
   edge: function (documentHandle, cb) {
     var {promise, callback} = promisify(cb);
-    this._api.get('edge/' + this._documentHandle(documentHandle), function (err, body) {
+    this._api.get('edge/' + this._documentHandle(documentHandle), function (err, res) {
       if (err) callback(err);
-      else callback(null, body);
+      else callback(null, res.body);
     });
     return promise;
   },
@@ -445,9 +445,9 @@ extend(EdgeCollection.prototype, {
       collection: this.name,
       from: this._documentHandle(fromId),
       to: this._documentHandle(toId)
-    }, function (err, body) {
+    }, function (err, res) {
       if (err) callback(err);
-      else callback(null, body);
+      else callback(null, res.body);
     });
     return promise;
   },
@@ -456,9 +456,9 @@ extend(EdgeCollection.prototype, {
     this._api.get('edges/' + this.name, {
       vertex: this._documentHandle(documentHandle),
       direction: direction
-    }, function (err, body) {
+    }, function (err, res) {
       if (err) callback(err);
-      else callback(null, body.edges);
+      else callback(null, res.body.edges);
     });
     return promise;
   },
@@ -480,9 +480,9 @@ extend(EdgeCollection.prototype, {
     this._api.post('traversal', extend({}, opts, {
       startVertex: startVertex,
       edgeCollection: this.name
-    }), function (err, data) {
+    }), function (err, res) {
       if (err) callback(err);
-      else callback(null, data.result);
+      else callback(null, res.body.result);
     });
     return promise;
   }

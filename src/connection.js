@@ -64,17 +64,17 @@ extend(Connection.prototype, {
       method: (opts.method || 'get').toUpperCase(),
       body: body
     }, function (err, response, rawBody) {
-      if (err) callback(err, rawBody, response);
-      else if (!response.headers['content-type'].match(jsonMime)) callback(null, rawBody, response);
-      else {
-        var body;
+      response.rawBody = rawBody;
+      if (err) callback(err, response);
+      else if (response.headers['content-type'].match(jsonMime)) {
         try {
-          body = JSON.parse(rawBody);
+          response.body = JSON.parse(rawBody);
         } catch (e) {
-          return callback(e, rawBody, response);
+          return callback(extend(e, {response: response}));
         }
-        callback(body.error ? new ArangoError(body) : null, body, response);
-      }
+        if (!response.body.error) callback(null, response);
+        else callback(extend(new ArangoError(response.body), {response: response}));
+      } else callback(null, extend(response, {body: rawBody}));
     });
     return promise;
   }

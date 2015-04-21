@@ -30,9 +30,9 @@ extend(Database.prototype, {
     var self = this;
     self._api.post('collection', extend({
       type: 2
-    }, properties), function (err, body) {
+    }, properties), function (err, res) {
       if (err) callback(err);
-      else callback(null, createCollection(self._connection, body));
+      else callback(null, createCollection(self._connection, res.body));
     });
     return promise;
   },
@@ -43,9 +43,9 @@ extend(Database.prototype, {
     }
     var self = this;
     self._api.post('collection', extend({
-    }, properties, {type: 3}), function (err, body) {
+    }, properties, {type: 3}), function (err, res) {
       if (err) callback(err);
-      else callback(null, createCollection(self._connection, body));
+      else callback(null, createCollection(self._connection, res.body));
     });
     return promise;
   },
@@ -56,12 +56,12 @@ extend(Database.prototype, {
     }
     var {promise, callback} = promisify(cb);
     var self = this;
-    self._api.get('collection/' + collectionName, function (err, body) {
+    self._api.get('collection/' + collectionName, function (err, res) {
       if (err) {
         if (!autoCreate || err.name !== 'ArangoError' || err.errorNum !== 1203) callback(err);
         else self.createCollection({name: collectionName}, cb);
       }
-      else callback(null, createCollection(self._connection, body));
+      else callback(null, createCollection(self._connection, res.body));
     });
     return promise;
   },
@@ -70,10 +70,10 @@ extend(Database.prototype, {
     var self = this;
     self._api.get('collection', {
       excludeSystem: true
-    }, function (err, body) {
+    }, function (err, res) {
       if (err) callback(err);
       else {
-        callback(null, body.collections.map(function (data) {
+        callback(null, res.body.collections.map(function (data) {
           return createCollection(self._connection, data);
         }));
       }
@@ -85,10 +85,10 @@ extend(Database.prototype, {
     var self = this;
     self._api.get('collection', {
       excludeSystem: false
-    }, function (err, body) {
+    }, function (err, res) {
       if (err) callback(err);
       else {
-        callback(null, body.collections.map(function (data) {
+        callback(null, res.body.collections.map(function (data) {
           return createCollection(self._connection, data);
         }));
       }
@@ -98,7 +98,7 @@ extend(Database.prototype, {
   dropCollection: function (collectionName, cb) {
     var {promise, callback} = promisify(cb);
     var self = this;
-    self._api.delete('collection/' + collectionName, function (err, body) {
+    self._api.delete('collection/' + collectionName, function (err, res) {
       if (err) callback(err);
       else callback(null);
     });
@@ -107,9 +107,9 @@ extend(Database.prototype, {
   createGraph: function (properties, cb) {
     var {promise, callback} = promisify(cb);
     var self = this;
-    self._api.post('gharial', properties, function (err, body) {
+    self._api.post('gharial', properties, function (err, res) {
       if (err) callback(err);
-      else callback(null, new Graph(self._connection, body.graph));
+      else callback(null, new Graph(self._connection, res.body.graph));
     });
     return promise;
   },
@@ -120,22 +120,22 @@ extend(Database.prototype, {
     }
     var {promise, callback} = promisify(cb);
     var self = this;
-    self._api.get('gharial/' + graphName, function (err, body) {
+    self._api.get('gharial/' + graphName, function (err, res) {
       if (err) {
         if (!autoCreate || err.name !== 'ArangoError' || err.errorNum !== 1924) callback(err);
         else self.createGraph({name: graphName}, cb);
       }
-      else callback(null, new Graph(self._connection, body.graph));
+      else callback(null, new Graph(self._connection, res.body.graph));
     });
     return promise;
   },
   graphs: function (cb) {
     var {promise, callback} = promisify(cb);
     var self = this;
-    self._api.get('gharial', function (err, body) {
+    self._api.get('gharial', function (err, res) {
       if (err) callback(err);
       else {
-        callback(null, body.graphs.map(function (graph) {
+        callback(null, res.body.graphs.map(function (graph) {
           return new Graph(self._connection, graph);
         }));
       }
@@ -152,7 +152,7 @@ extend(Database.prototype, {
   createDatabase: function (databaseName, cb) {
     var {promise, callback} = promisify(cb);
     var self = this;
-    self._api.post('database', {name: databaseName}, function (err, body) {
+    self._api.post('database', {name: databaseName}, function (err, res) {
       if (err) callback(err);
       else {
         callback(null, new Database(extend(
@@ -173,7 +173,7 @@ extend(Database.prototype, {
       method: 'get',
       path: '/_db/' + databaseName + '/_api/database/current',
       absolutePath: true
-    }, function (err, body) {
+    }, function (err, res) {
       if (err) {
         if (!autoCreate || err.name !== 'ArangoError' || err.errorNum !== 1228) callback(err);
         else self.createDatabase(databaseName, cb);
@@ -189,10 +189,10 @@ extend(Database.prototype, {
   databases: function (cb) {
     var {promise, callback} = promisify(cb);
     var self = this;
-    self._api.get('database', function (err, body) {
+    self._api.get('database', function (err, res) {
       if (err) callback(err);
       else {
-        callback(null, body.result.map(function (databaseName) {
+        callback(null, res.body.result.map(function (databaseName) {
           return new Database(extend(
             {}, self._connection.config, {databaseName: databaseName}
           ));
@@ -204,7 +204,7 @@ extend(Database.prototype, {
   dropDatabase: function (databaseName, cb) {
     var {promise, callback} = promisify(cb);
     var self = this;
-    self._api.delete('database/' + databaseName, function (err, body) {
+    self._api.delete('database/' + databaseName, function (err, res) {
       if (err) callback(err);
       else callback(null);
     });
@@ -215,14 +215,14 @@ extend(Database.prototype, {
     var self = this;
     self._api.get('collection', {
       excludeSystem: true
-    }, function (err, body) {
+    }, function (err, res) {
       if (err) callback(err);
       else {
-        all(body.collections.map(function (data) {
+        all(res.body.collections.map(function (data) {
           return function (cb) {
-            self._api.put('collection/' + data.name + '/truncate', function (err, body) {
+            self._api.put('collection/' + data.name + '/truncate', function (err, res) {
               if (err) cb(err);
-              else cb(null, body);
+              else cb(null, res.body);
             });
           };
         }), cb);
@@ -235,14 +235,14 @@ extend(Database.prototype, {
     var self = this;
     self._api.get('collection', {
       excludeSystem: false
-    }, function (err, body) {
+    }, function (err, res) {
       if (err) callback(err);
       else {
-        all(body.collections.map(function (data) {
+        all(res.body.collections.map(function (data) {
           return function (cb) {
-            self._api.put('collection/' + data.name + '/truncate', function (err, body) {
+            self._api.put('collection/' + data.name + '/truncate', function (err, res) {
               if (err) cb(err);
-              else cb(null, body);
+              else cb(null, res.body);
             });
           };
         }), cb);
@@ -272,9 +272,9 @@ extend(Database.prototype, {
       action: action,
       params: params,
       lockTimeout: lockTimeout
-    }, function (err, body) {
+    }, function (err, res) {
       if (err) callback(err);
-      else callback(null, body.result);
+      else callback(null, res.body.result);
     });
     return promise;
   },
@@ -291,17 +291,17 @@ extend(Database.prototype, {
     self._api.post('cursor', {
       query: query,
       bindVars: bindVars
-    }, function (err, body) {
+    }, function (err, res) {
       if (err) callback(err);
-      else callback(null, new ArrayCursor(self._connection, body));
+      else callback(null, new ArrayCursor(self._connection, res.body));
     });
     return promise;
   },
   functions: function (cb) {
     var {promise, callback} = promisify(cb);
-    this._api.get('aqlfunction', function (err, body) {
+    this._api.get('aqlfunction', function (err, res) {
       if (err) callback(err);
-      else callback(null, body);
+      else callback(null, res.body);
     });
     return promise;
   },
@@ -310,9 +310,9 @@ extend(Database.prototype, {
     this._api.post('aqlfunction', {
       name: name,
       code: code
-    }, function (err, body) {
+    }, function (err, res) {
       if (err) callback(err);
-      else callback(null, body);
+      else callback(null, res.body);
     });
     return promise;
   },
@@ -324,9 +324,9 @@ extend(Database.prototype, {
     var {promise, callback} = promisify(cb);
     this._api.delete('aqlfunction/' + name, {
       group: Boolean(group)
-    }, function (err, body) {
+    }, function (err, res) {
       if (err) callback(err);
-      else callback(null, body);
+      else callback(null, res.body);
     });
     return promise;
   }
