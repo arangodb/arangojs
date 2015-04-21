@@ -511,7 +511,7 @@ Creates an AQL user function with the given *name* and *code* if it does not alr
 
 *Parameter*
 
-* *name*: a valid AQL function name, e.g.: `"myfuncs: : accounting: : calculate_vat"`.
+* *name*: a valid AQL function name, e.g.: `"myfuncs::accounting::calculate_vat"`.
 * *code*: a string evaluating to a JavaScript function (not a JavaScript function object).
 
 *Examples*
@@ -519,7 +519,7 @@ Creates an AQL user function with the given *name* and *code* if it does not alr
 ```js
 var qb = require('aqb');
 var db = require('arangojs')();
-var vat_fn_name = 'myfuncs: : acounting: : calculate_vat';
+var vat_fn_name = 'myfuncs::acounting::calculate_vat';
 var vat_fn_code = string(function (price) {
     return price * 0.19;
 });
@@ -572,7 +572,7 @@ Deletes the AQL user function with the given name from the database.
 
 ```js
 var db = require('arangojs')();
-db.dropFunction('myfuncs: : acounting: : calculate_vat', function (err) {
+db.dropFunction('myfuncs::acounting::calculate_vat', function (err) {
     if (err) return console.error(err);
     // the function no longer exists
 });
