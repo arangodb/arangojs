@@ -976,7 +976,13 @@ extend(Database.prototype, {
     var self = this;
     self._api.get('collection/' + collectionName, function (err, res) {
       if (err) {
-        if (!autoCreate || err.name !== 'ArangoError' || err.errorNum !== 1203) callback(err);else self.createCollection({ name: collectionName }, cb);
+        if (!autoCreate || err.name !== 'ArangoError' || err.errorNum !== 1203) callback(err);else {
+          self.createCollection({ name: collectionName }, function (err, collection) {
+            if (err) {
+              if (err.name !== 'ArangoError' || err.errorNum !== 1207) callback(err);else self.collection(collectionName, callback);
+            } else callback(null, collection);
+          });
+        }
       } else callback(null, createCollection(self._connection, res.body));
     });
     return promise;
@@ -1055,7 +1061,13 @@ extend(Database.prototype, {
     var self = this;
     self._api.get('gharial/' + graphName, function (err, res) {
       if (err) {
-        if (!autoCreate || err.name !== 'ArangoError' || err.errorNum !== 1924) callback(err);else self.createGraph({ name: graphName }, cb);
+        if (!autoCreate || err.name !== 'ArangoError' || err.errorNum !== 1924) callback(err);else {
+          self.createGraph({ name: graphName }, function (err, graph) {
+            if (err) {
+              if (err.name !== 'ArangoError' || err.errorNum !== 1925) callback(err);else self.graph(graphName, callback);
+            } else callback(null, graph);
+          });
+        }
       } else callback(null, new Graph(self._connection, res.body.graph));
     });
     return promise;
@@ -1081,13 +1093,20 @@ extend(Database.prototype, {
       cb = dropCollections;
       dropCollections = undefined;
     }
-    return this._api['delete']('graph/' + graphName, { dropCollections: dropCollections }, cb);
-  },
-  createDatabase: function createDatabase(databaseName, cb) {
+
     var _promisify10 = promisify(cb);
 
     var promise = _promisify10.promise;
     var callback = _promisify10.callback;
+
+    this._api['delete']('graph/' + graphName, { dropCollections: dropCollections }, callback);
+    return promise;
+  },
+  createDatabase: function createDatabase(databaseName, cb) {
+    var _promisify11 = promisify(cb);
+
+    var promise = _promisify11.promise;
+    var callback = _promisify11.callback;
 
     var self = this;
     self._api.post('database', { name: databaseName }, function (err, res) {
@@ -1103,10 +1122,10 @@ extend(Database.prototype, {
       autoCreate = undefined;
     }
 
-    var _promisify11 = promisify(cb);
+    var _promisify12 = promisify(cb);
 
-    var promise = _promisify11.promise;
-    var callback = _promisify11.callback;
+    var promise = _promisify12.promise;
+    var callback = _promisify12.callback;
 
     var self = this;
     self._connection.request({
@@ -1115,7 +1134,13 @@ extend(Database.prototype, {
       absolutePath: true
     }, function (err, res) {
       if (err) {
-        if (!autoCreate || err.name !== 'ArangoError' || err.errorNum !== 1228) callback(err);else self.createDatabase(databaseName, cb);
+        if (!autoCreate || err.name !== 'ArangoError' || err.errorNum !== 1228) callback(err);else {
+          self.createDatabase(databaseName, function (err, database) {
+            if (err) {
+              if (err.name !== 'ArangoError' || err.errorNum !== 1207) callback(err);else self.database(databaseName, callback);
+            } else callback(null, database);
+          });
+        }
       } else {
         callback(null, new Database(extend({}, self._connection.config, { databaseName: databaseName })));
       }
@@ -1123,10 +1148,10 @@ extend(Database.prototype, {
     return promise;
   },
   databases: function databases(cb) {
-    var _promisify12 = promisify(cb);
+    var _promisify13 = promisify(cb);
 
-    var promise = _promisify12.promise;
-    var callback = _promisify12.callback;
+    var promise = _promisify13.promise;
+    var callback = _promisify13.callback;
 
     var self = this;
     self._api.get('database', function (err, res) {
@@ -1139,10 +1164,10 @@ extend(Database.prototype, {
     return promise;
   },
   dropDatabase: function dropDatabase(databaseName, cb) {
-    var _promisify13 = promisify(cb);
+    var _promisify14 = promisify(cb);
 
-    var promise = _promisify13.promise;
-    var callback = _promisify13.callback;
+    var promise = _promisify14.promise;
+    var callback = _promisify14.callback;
 
     var self = this;
     self._api['delete']('database/' + databaseName, function (err, res) {
@@ -1151,10 +1176,10 @@ extend(Database.prototype, {
     return promise;
   },
   truncate: function truncate(cb) {
-    var _promisify14 = promisify(cb);
+    var _promisify15 = promisify(cb);
 
-    var promise = _promisify14.promise;
-    var callback = _promisify14.callback;
+    var promise = _promisify15.promise;
+    var callback = _promisify15.callback;
 
     var self = this;
     self._api.get('collection', {
@@ -1167,16 +1192,16 @@ extend(Database.prototype, {
               if (err) cb(err);else cb(null, res.body);
             });
           };
-        }), cb);
+        }), callback);
       }
     });
     return promise;
   },
   truncateAll: function truncateAll(cb) {
-    var _promisify15 = promisify(cb);
+    var _promisify16 = promisify(cb);
 
-    var promise = _promisify15.promise;
-    var callback = _promisify15.callback;
+    var promise = _promisify16.promise;
+    var callback = _promisify16.callback;
 
     var self = this;
     self._api.get('collection', {
@@ -1189,7 +1214,7 @@ extend(Database.prototype, {
               if (err) cb(err);else cb(null, res.body);
             });
           };
-        }), cb);
+        }), callback);
       }
     });
     return promise;
@@ -1211,10 +1236,10 @@ extend(Database.prototype, {
       collections = { write: collections };
     }
 
-    var _promisify16 = promisify(cb);
+    var _promisify17 = promisify(cb);
 
-    var promise = _promisify16.promise;
-    var callback = _promisify16.callback;
+    var promise = _promisify17.promise;
+    var callback = _promisify17.callback;
 
     this._api.post('transaction', {
       collections: collections,
@@ -1242,10 +1267,10 @@ extend(Database.prototype, {
       bindVars = undefined;
     }
 
-    var _promisify17 = promisify(cb);
+    var _promisify18 = promisify(cb);
 
-    var promise = _promisify17.promise;
-    var callback = _promisify17.callback;
+    var promise = _promisify18.promise;
+    var callback = _promisify18.callback;
 
     if (query && typeof query.toAQL === 'function') {
       query = query.toAQL();
@@ -1260,10 +1285,10 @@ extend(Database.prototype, {
     return promise;
   }),
   functions: function functions(cb) {
-    var _promisify18 = promisify(cb);
+    var _promisify19 = promisify(cb);
 
-    var promise = _promisify18.promise;
-    var callback = _promisify18.callback;
+    var promise = _promisify19.promise;
+    var callback = _promisify19.callback;
 
     this._api.get('aqlfunction', function (err, res) {
       if (err) callback(err);else callback(null, res.body);
@@ -1271,10 +1296,10 @@ extend(Database.prototype, {
     return promise;
   },
   createFunction: function createFunction(name, code, cb) {
-    var _promisify19 = promisify(cb);
+    var _promisify20 = promisify(cb);
 
-    var promise = _promisify19.promise;
-    var callback = _promisify19.callback;
+    var promise = _promisify20.promise;
+    var callback = _promisify20.callback;
 
     this._api.post('aqlfunction', {
       name: name,
@@ -1290,10 +1315,10 @@ extend(Database.prototype, {
       group = undefined;
     }
 
-    var _promisify20 = promisify(cb);
+    var _promisify21 = promisify(cb);
 
-    var promise = _promisify20.promise;
-    var callback = _promisify20.callback;
+    var promise = _promisify21.promise;
+    var callback = _promisify21.callback;
 
     this._api['delete']('aqlfunction/' + name, {
       group: Boolean(group)
