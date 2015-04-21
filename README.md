@@ -56,7 +56,9 @@ If you want to use promises in environments that don't provide the global `Promi
 
 ## Database API
 
-### new Database([config])
+### new Database
+
+`new Database([config: Object]): Database`
 
 **Synchronous.** Creates a new *database*.
 
@@ -73,7 +75,9 @@ If *config* is a string, it will be interpreted as *config.url*.
 
 These functions implement the [HTTP API for manipulating collections](https://docs.arangodb.com/HttpCollection/index.html).
 
-#### database.createCollection(properties, callback)
+#### database.createCollection
+
+`database.createCollection(properties: Object, [callback: Function]): Promise<DocumentCollection | EdgeCollection>`
 
 Creates a collection from the given *properties*, then passes a new *Collection* instance to the callback.
 
@@ -103,7 +107,9 @@ db.createCollection({
 });
 ```
 
-#### database.createEdgeCollection(properties, callback)
+#### database.createEdgeCollection
+
+`database.createEdgeCollection(properties: Object, [callback: Function]): Promise<EdgeCollection>`
 
 Creates an edge collection from the given *properties*, then passes a new *EdgeCollection* instance to the callback.
 
@@ -124,7 +130,9 @@ db.createEdgeCollection('friends', function (err, edgeCollection) {
 });
 ```
 
-#### database.collection(collectionName, [autoCreate,] callback)
+#### database.collection
+
+`database.collection(collectionName: String, [autoCreate: Boolean,] [callback: Function]): Promise<DocumentCollection | EdgeCollection>`
 
 Fetches the collection with the given *collectionName* from the database, then passes a new *Collection* instance to the callback.
 
@@ -142,7 +150,9 @@ db.collection('potatos', function (err, collection) {
 });
 ```
 
-#### database.collections(callback)
+#### database.collections
+
+`database.collections([callback: Function]): Promise<Array<Collection>>`
 
 Fetches all non-system collections from the database and passes an array of new *Collection* instances to the callback.
 
@@ -157,7 +167,9 @@ db.collections(function (err, collections) {
 });
 ```
 
-#### database.allCollections(callback)
+#### database.allCollections
+
+`database.allCollections([callback: Function]): Promise<Array<Collection>>`
 
 Fetches all collections (including system collections) from the database and passes an array of new *Collection* instances to the callback.
 
@@ -172,7 +184,9 @@ db.allCollections(function (err, collections) {
 });
 ```
 
-#### database.dropCollection(collectionName, callback)
+#### database.dropCollection
+
+`database.dropCollection(collectionName: String, [callback: Function]): Promise`
 
 Deletes the collection with the given *collectionName* from the database.
 
@@ -186,7 +200,9 @@ db.dropCollection('friends', function (err) {
 });
 ```
 
-#### database.truncate(callback)
+#### database.truncate
+
+`database.truncate([callback: Function]): Promise`
 
 Deletes **all documents** in **all non-system collections** in the active database.
 
@@ -200,7 +216,9 @@ db.truncate(function (err) {
 });
 ```
 
-#### database.truncateAll(callback)
+#### database.truncateAll
+
+`database.truncateAll([callback: Function]): Promise`
 
 Deletes **all documents** in **all collections (including system collections)** in the active database.
 
@@ -219,7 +237,9 @@ db.truncateAll(function (err) {
 
 These functions implement the [HTTP API for manipulating general graphs](https://docs.arangodb.com/HttpGharial/index.html).
 
-#### database.createGraph(properties, callback)
+#### database.createGraph
+
+`database.createGraph(properties: Object, [callback: Function]): Promise<Graph>`
 
 Creates a graph with the given *properties*, then passes a new *Graph* instance to the callback.
 
@@ -250,7 +270,9 @@ db.createGraph({
 });
 ```
 
-#### database.graph(graphName, [autoCreate,], callback)
+#### database.graph
+
+`database.graph(graphName: String, [autoCreate: Boolean,] [callback: Function]): Promise<Graph>`
 
 Fetches the graph with the given *graphName* from the database, then passes a new *Graph* instance to the callback.
 
@@ -266,7 +288,9 @@ db.graph('some-graph', function (err, graph) {
 });
 ```
 
-#### database.graphs(callback)
+#### database.graphs
+
+`database.graphs([callback: Function]): Promise<Array<Graph>>`
 
 Fetches all graphs from the database and passes an array of new *Graph* instances to the callback.
 
@@ -280,7 +304,9 @@ db.graphs(function (err, graphs) {
 });
 ```
 
-#### database.dropGraph(graphName, [dropCollections,] callback)
+#### database.dropGraph
+
+`database.dropGraph(graphName: String, [dropCollections: Boolean,] [callback: Function]): Promise`
 
 Deletes the graph with the given *graphName* from the database.
 
@@ -300,7 +326,9 @@ db.dropGraph('some-graph', function (err) {
 
 These functions implement the [HTTP API for manipulating databases](https://docs.arangodb.com/HttpDatabase/index.html).
 
-#### database.createDatabase(databaseName, callback)
+#### database.createDatabase
+
+`database.createDatabase(databaseName: String, [callback: Function]): Promise<Database>`
 
 Creates a new database with the given *databaseName*, then passes a new *Database* instance to the callback.
 
@@ -314,7 +342,9 @@ db.createDatabase('mydb', function (err, database) {
 });
 ```
 
-#### database.database(databaseName, [autoCreate,] callback)
+#### database.database
+
+`database.database(databaseName: String, [autoCreate: Boolean,] [callback: Function]): Promise<Database>`
 
 Fetches the database with the given *databaseName* from the server, then passes a new *Database* instance to the callback.
 
@@ -330,7 +360,9 @@ db.database('mydb', function (err, database) {
 });
 ```
 
-#### database.databases(callback)
+#### database.databases
+
+`database.databases([callback: Function]): Promise<Array<Database>>`
 
 Fetches all databases from the server and passes an array of new *Database* instances to the callback.
 
@@ -344,7 +376,9 @@ db.databases(function (err, databases) {
 });
 ```
 
-#### database.dropDatabase(databaseName, callback)
+#### database.dropDatabase
+
+`database.dropDatabase(databaseName: String, [callback: Function]): Promise`
 
 Deletes the database with the given *databaseName* from the server.
 
@@ -360,7 +394,9 @@ db.dropDatabase('mydb', function (err) {
 
 This function implements the [HTTP API for transactions](https://docs.arangodb.com/HttpTransaction/index.html).
 
-#### database.transaction(collections, action, [params,] [lockTimeout,] callback)
+#### database.transaction
+
+`database.transaction(collections: Object | Array<String> | String, action: String, [params: Array,] [lockTimeout: Number,] [callback: Function]): Promise`
 
 Performs a server-side transaction and passes the *action*'s return value to the callback.
 
@@ -401,7 +437,9 @@ This function implements the [HTTP API for AQL queries](https://docs.arangodb.co
 
 For collection-specific queries see [fulltext queries](#fulltext-queries) and [geo-spatial queries](#geo-queries).
 
-#### database.query(query, [bindVars,] callback)
+#### database.query
+
+`database.query(query: String | QueryBuilder, [bindVars: Object,] [callback: Function]): Promise<Cursor>`
 
 Performs a database query using the given *query* and *bindVars*, then passes a new *Cursor* instance for the result list to the callback.
 
@@ -444,13 +482,15 @@ db.query(
 
 These functions implement the [HTTP API for managing AQL user functions](https://docs.arangodb.com/HttpAqlUserFunctions/index.html).
 
-#### database.createFunction(name, code, callback)
+#### database.createFunction
+
+`database.createFunction(name: String, code: String, [callback: Function]): Promise`
 
 Creates an AQL user function with the given *name* and *code* if it does not already exist or replaces it if a function with the same name already existed.
 
 *Parameter*
 
-* *name*: a valid AQL function name, e.g.: `"myfuncs::accounting::calculate_vat"`.
+* *name*: a valid AQL function name, e.g.: `"myfuncs: : accounting: : calculate_vat"`.
 * *code*: a string evaluating to a JavaScript function (not a JavaScript function object).
 
 *Examples*
@@ -458,7 +498,7 @@ Creates an AQL user function with the given *name* and *code* if it does not alr
 ```js
 var qb = require('aqb');
 var db = require('arangojs')();
-var vat_fn_name = 'myfuncs::acounting::calculate_vat';
+var vat_fn_name = 'myfuncs: : acounting: : calculate_vat';
 var vat_fn_code = String(function (price) {
     return price * 0.19;
 });
@@ -480,7 +520,9 @@ db.createFunction(vat_fn_name, vat_fn_code, function (err) {
 });
 ```
 
-#### database.functions(callback)
+#### database.functions
+
+`database.functions([callback: Function]): Promise<Array<Object>>`
 
 Fetches a list of all AQL user functions registered with the database.
 
@@ -494,7 +536,9 @@ db.functions(function (err, functions) {
 })
 ```
 
-#### database.dropFunction(name, [group,] callback)
+#### database.dropFunction
+
+`database.dropFunction(name: String, [group: Boolean,] [callback: Function]): Promise`
 
 Deletes the AQL user function with the given name from the database.
 
@@ -507,7 +551,7 @@ Deletes the AQL user function with the given name from the database.
 
 ```js
 var db = require('arangojs')();
-db.dropFunction('myfuncs::acounting::calculate_vat', function (err) {
+db.dropFunction('myfuncs: : acounting: : calculate_vat', function (err) {
     if (err) return console.error(err);
     // the function no longer exists
 });
@@ -515,7 +559,9 @@ db.dropFunction('myfuncs::acounting::calculate_vat', function (err) {
 
 ### Arbitrary HTTP routes
 
-#### database.route([path, [headers]])
+#### database.route
+
+`database.route([path: String, [headers: Object]]): Route`
 
 **Synchronous.** Returns a new *Route* instance for the given path (relative to the database) that can be used to perform arbitrary HTTP requests.
 
@@ -556,7 +602,9 @@ db.query(someQuery, function (err, cursor) {
 });
 ```
 
-### cursor.all(callback)
+### cursor.all
+
+`cursor.all([callback: Function]): Array<Promise<?>>`
 
 Rewinds and exhausts the cursor and passes an array containing all values returned by the query.
 
@@ -573,7 +621,9 @@ cursor.all(function (err, vals) {
 });
 ```
 
-### cursor.next(callback)
+### cursor.next
+
+`cursor.next([callback: Function]): Promise<?>`
 
 Advances the cursor and passes the next value returned by the query. If the cursor has already been exhausted, passes `undefined` instead.
 
@@ -591,7 +641,9 @@ cursor.next(function (err, val) {
 });
 ```
 
-### cursor.hasNext():Boolean
+### cursor.hasNext
+
+`cursor.hasNext(): Boolean`
 
 **Synchronous.** Returns `true` if the cursor has more values or `false` if the cursor has been exhausted. Synchronous.
 
@@ -604,7 +656,9 @@ cursor.all(function (err) { // exhausts the cursor
 });
 ```
 
-### cursor.each(fn, callback)
+### cursor.each
+
+`cursor.each(fn: Function, [callback: Function]): Promise<null>`
 
 Rewinds and exhausts the cursor by applying the function *fn* to each value returned by the query, then invokes the callback with no result value.
 
@@ -625,7 +679,9 @@ cursor.each(count, function (err, result) {
 });
 ```
 
-### cursor.every(fn, callback)
+### cursor.every
+
+`cursor.every(fn: Function<Boolean>, [callback: Function]): Promise<Boolean>`
 
 Rewinds and advances the cursor by applying the function *fn* to each value returned by the query until the cursor is exhausted or *fn* returns a value that evaluates to `false`.
 
@@ -649,7 +705,9 @@ cursor.every(even, function (err, result) {
 });
 ```
 
-### cursor.some(fn, callback)
+### cursor.some
+
+`cursor.some(fn: Function<Boolean>, [callback: Function]): Promise<Boolean>`
 
 Rewinds and advances the cursor by applying the function *fn* to each value returned by the query until the cursor is exhausted or *fn* returns a value that evaluates to `true`.
 
@@ -675,7 +733,9 @@ cursor.some(even, function (err, result) {
 });
 ```
 
-### cursor.map(fn, callback)
+### cursor.map
+
+`cursor.map(fn: Function<T>, [callback: Function]): Array<Promise<T>>`
 
 Rewinds and exhausts the cursor by applying the function *fn* to each value returned by the query, then invokes the callback with an array of the return values.
 
@@ -696,7 +756,9 @@ cursor.map(square, function (err, result) {
 });
 ```
 
-### cursor.reduce(fn, [accu,] callback)
+### cursor.reduce
+
+`cursor.reduce(fn: Function<T>, [accu: T,] [callback: Function]): Promise<T>`
 
 Rewinds and exhausts the cursor by reducing the values returned by the query with the given function *fn*. If *accu* is not provided, the first value returned by the query will be used instead (the function will not be invoked for that value).
 
@@ -727,9 +789,11 @@ cursor.reduce(add, function (err, result) {
 
 ```
 
-### cursor.rewind()
+### cursor.rewind
 
-**Synchronous.** Rewinds the cursor.
+`cursor.rewind(): cursor`
+
+**Synchronous.** Rewinds the cursor. Returns the cursor.
 
 *Examples*
 
@@ -752,7 +816,9 @@ cursor.all(function (err, result) {
 
 *Route* instances provide access for arbitrary HTTP requests. This allows easy access to Foxx apps and other HTTP APIs not covered by the driver itself.
 
-### route.route([path, [headers]])
+### route.route
+
+`route.route([path: String, [headers: Object]]): Route`
 
 **Synchronous.** Creates a new *Route* instance representing the *path* relative to the current route. Optionally *headers* can be an object with headers which will be extended with the current route's headers and the connection's headers.
 
@@ -765,7 +831,11 @@ var users = route.route('users');
 // equivalent to db.route('my-foxx-app/users')
 ```
 
-### route.get([path,] [qs,] callback)
+### route.get
+
+`route.get([path: String,] [qs: String,] [callback: Function]): Promise<Response>`
+
+`route.get([path: String,] [qs: Object,] [callback: Function]): Promise<Response>`
 
 Performs a GET request to the given URL and passes the server response to the given callback.
 
@@ -806,7 +876,9 @@ route.get('users', {group: 'admin'}, function (err, result) {
 });
 ```
 
-### route.post([path,] [body, [qs,]] callback)
+### route.post
+
+`route.post([path: String,] [body: String | Object, [qs: String | Object,]] [callback: Function]): Promise<Response>`
 
 Performs a POST request to the given URL and passes the server response to the given callback.
 
@@ -833,7 +905,7 @@ route.post(function (err, result) {
     // POST _db/_system/my-foxx-app
 });
 
-// -- or -- 
+// -- or --
 
 route.post('users', function (err, result) {
     if (err) return console.error(err);
@@ -866,7 +938,9 @@ route.post('users', {
 });
 ```
 
-### route.put([path,] [body, [qs,]] callback)
+### route.put
+
+`route.put([path: String,] [body: String | Object, [qs: String | Object,]] [callback: Function]): Promise<Response>`
 
 Performs a PUT request to the given URL and passes the server response to the given callback.
 
@@ -893,7 +967,7 @@ route.put(function (err, result) {
     // PUT _db/_system/my-foxx-app
 });
 
-// -- or -- 
+// -- or --
 
 route.put('users/admin', function (err, result) {
     if (err) return console.error(err);
@@ -926,7 +1000,9 @@ route.put('users/admin', {
 });
 ```
 
-### route.patch([path,] [body, [qs,]] callback)
+### route.patch
+
+`route.patch([path: String,] [body: String | Object, [qs: String | Object,]] [callback: Function]): Promise<Response>`
 
 Performs a PATCH request to the given URL and passes the server response to the given callback.
 
@@ -951,7 +1027,7 @@ route.patch(function (err, result) {
     // PATCH _db/_system/my-foxx-app
 });
 
-// -- or -- 
+// -- or --
 
 route.patch('users/admin', function (err, result) {
     if (err) return console.error(err);
@@ -982,7 +1058,9 @@ route.patch('users/admin', {
 });
 ```
 
-### route.delete([path,] [qs,] callback)
+### route.delete
+
+`route.delete([path: String,] [qs: String | Object,] [callback: Function]): Promise<Response>`
 
 Performs a DELETE request to the given URL and passes the server response to the given callback.
 
@@ -1023,7 +1101,9 @@ route.delete('users/admin', {permanent: true}, function (err, result) {
 });
 ```
 
-### route.head([path,] [qs,] callback)
+### route.head
+
+`route.head([path: String,] [qs: String | Object,] [callback: Function]): Promise<Response>`
 
 Performs a HEAD request to the given URL and passes the server response to the given callback.
 
@@ -1049,7 +1129,9 @@ route.head(function (err, result, response) {
 });
 ```
 
-### route.request(opts, callback)
+### route.request
+
+`route.request(opts: Object, [callback: Function]): Promise<Response>`
 
 Performs an arbitrary request to the given URL and passes the server response to the given callback.
 
@@ -1095,7 +1177,9 @@ The *Collection API* is implemented by all *Collection* instances, regardless of
 
 See [the HTTP API documentation](https://docs.arangodb.com/HttpCollection/Getting.html) for details.
 
-#### collection.properties(callback)
+#### collection.properties
+
+`collection.properties([callback: Function]): Promise`
 
 Retrieves the collection's properties.
 
@@ -1112,7 +1196,9 @@ db.collection('some-collection', function (err, collection) {
 });
 ```
 
-#### collection.count(callback)
+#### collection.count
+
+`collection.count([callback: Function]): Promise`
 
 Retrieves the number of documents in a collection.
 
@@ -1129,7 +1215,9 @@ db.collection('some-collection', function (err, collection) {
 });
 ```
 
-#### collection.figures(callback)
+#### collection.figures
+
+`collection.figures([callback: Function]): Promise`
 
 Retrieves statistics for a collection.
 
@@ -1146,7 +1234,9 @@ db.collection('some-collection', function (err, collection) {
 });
 ```
 
-#### collection.revision(callback)
+#### collection.revision
+
+`collection.revision([callback: Function]): Promise`
 
 Retrieves the collection revision ID.
 
@@ -1163,7 +1253,9 @@ db.collection('some-collection', function (err, collection) {
 });
 ```
 
-#### collection.checksum([opts,] callback)
+#### collection.checksum
+
+`collection.checksum([opts: Object,] [callback: Function]): Promise`
 
 Retrieves the collection checksum.
 
@@ -1186,7 +1278,9 @@ db.collection('some-collection', function (err, collection) {
 
 These functions implement [the HTTP API for modifying collections](https://docs.arangodb.com/HttpCollection/Modifying.html).
 
-#### collection.load([count,] callback)
+#### collection.load
+
+`collection.load([count,] [callback: Function]): Promise`
 
 Tells the server to load the collection into memory.
 
@@ -1205,7 +1299,9 @@ db.collection('some-collection', function (err, collection) {
 });
 ```
 
-#### collection.unload(callback)
+#### collection.unload
+
+`collection.unload([callback: Function]): Promise`
 
 Tells the server to remove the collection from memory.
 
@@ -1222,7 +1318,9 @@ db.collection('some-collection', function (err, collection) {
 });
 ```
 
-#### collection.setProperties(properties, callback)
+#### collection.setProperties
+
+`collection.setProperties(properties: Object, [callback: Function]): Promise`
 
 Replaces the properties of the collection.
 
@@ -1243,7 +1341,9 @@ db.collection('some-collection', function (err, collection) {
 });
 ```
 
-#### collection.rename(name, callback)
+#### collection.rename
+
+`collection.rename(name: String, [callback: Function]): Promise`
 
 Renames the collection. The *Collection* instance will automatically update its name according to the server response.
 
@@ -1262,7 +1362,9 @@ db.collection('some-collection', function (err, collection) {
 });
 ```
 
-#### collection.rotate(callback)
+#### collection.rotate
+
+`collection.rotate([callback: Function]): Promise`
 
 Rotates the journal of the collection.
 
@@ -1279,7 +1381,9 @@ db.collection('some-collection', function (err, collection) {
 });
 ```
 
-#### collection.truncate(callback)
+#### collection.truncate
+
+`collection.truncate([callback: Function]): Promise`
 
 Deletes **all documents** in the collection in the database.
 
@@ -1296,11 +1400,13 @@ db.collection('some-collection', function (err, collection) {
 });
 ```
 
-#### collection.drop(callback)
+#### collection.drop
+
+`collection.drop([callback: Function]): Promise`
 
 Deletes the collection from the database.
 
-Equivalent to *database.dropCollection(collection.name, callback)*.
+Equivalent to *database.dropCollection(collection.name, [callback: Function])*.: Promise
 
 *Examples*
 
@@ -1319,7 +1425,9 @@ db.collection('some-collection', function (err, collection) {
 
 These functions implement the [HTTP API for manipulating indexes](https://docs.arangodb.com/HttpIndexes/index.html).
 
-#### collection.createIndex(details, callback)
+#### collection.createIndex
+
+`collection.createIndex(details: Object, [callback: Function]): Promise<Index>`
 
 Creates an arbitrary index on the collection.
 
@@ -1342,7 +1450,9 @@ var collection = db.createCollection('some-collection', function (err, collectio
 });
 ```
 
-#### collection.createCapConstraint(size, callback)
+#### collection.createCapConstraint
+
+`collection.createCapConstraint(size: Object | Number, [callback: Function]): Promise<Index>`
 
 Creates a cap constraint index on the collection.
 
@@ -1378,7 +1488,9 @@ db.createCollection('some-collection', function (err, collection) {
 });
 ```
 
-#### collection.createHashIndex(fields, [unique,] callback)
+#### collection.createHashIndex
+
+`collection.createHashIndex(fields: Array<String> | String, [unique: Boolean,] [callback: Function]): Promise<Index>`
 
 Creates a hash index on the collection.
 
@@ -1413,7 +1525,9 @@ db.createCollection('some-collection', function (err, collection) {
 });
 ```
 
-#### collection.createSkipList(fields, [unique,] callback)
+#### collection.createSkipList
+
+`collection.createSkipList(fields: Array<String> | String, [unique: Boolean,] [callback: Function]): Promise<Index>`
 
 Creates a skiplist index on the collection.
 
@@ -1448,7 +1562,9 @@ db.createCollection('some-collection', function (err, collection) {
 });
 ```
 
-#### collection.createGeoIndex(fields, [opts,] callback)
+#### collection.createGeoIndex
+
+`collection.createGeoIndex(fields: Array<String> | String, [opts: Object,] [callback: Function]): Promise<Index>`
 
 Creates a geo-spatial index on the collection.
 
@@ -1483,7 +1599,9 @@ db.createCollection('some-collection', function (err, collection) {
 });
 ```
 
-#### collection.createFulltextIndex(fields, [minLength,] callback)
+#### collection.createFulltextIndex
+
+`collection.createFulltextIndex(fields: Array<String> | String, [minLength: Number,] [callback: Function]): Promise<Index>`
 
 Creates a fulltext index on the collection.
 
@@ -1518,7 +1636,9 @@ db.createCollection('some-collection', function (err, collection) {
 });
 ```
 
-#### collection.index(indexHandle, callback)
+#### collection.index
+
+`collection.index(indexHandle: String | Index, [callback: Function]): Promise<Index>`
 
 Fetches information about the index with the given *indexHandle* and passes it to the given callback.
 
@@ -1547,7 +1667,9 @@ db.createCollection('some-collection', function (err, collection) {
 });
 ```
 
-#### collection.indexes(callback)
+#### collection.indexes
+
+`collection.indexes([callback: Function]): Promise<Array<Index>>`
 
 Fetches a list of all indexes on this collection.
 
@@ -1568,7 +1690,9 @@ db.createCollection('some-collection', function (err, collection) {
 });
 ```
 
-#### collection.dropIndex(indexHandle, callback)
+#### collection.dropIndex
+
+`collection.dropIndex(indexHandle: String | Index, [callback: Function]): Promise`
 
 Deletes the index with the given *indexHandle* from the collection.
 
@@ -1601,7 +1725,9 @@ This function implements the [HTTP API for fulltext queries](https://docs.arango
 
 Note that a collection must have fulltext indexes in order to perform fulltext queries on it.
 
-#### collection.fulltext(fieldName, query, [opts,] callback)
+#### collection.fulltext
+
+`collection.fulltext(fieldName: String, query: String, [opts: Object,] [callback: Function]): Promise<Cursor>`
 
 Performs a fulltext query searching for *query* in the given *fieldName* of all documents in this collection.
 
@@ -1637,7 +1763,9 @@ These functions implement the [HTTP API for geo-spatial queries](https://docs.ar
 
 Note that a collection must have geo-spatial indexes in order to perform geo-spatial queries on it.
 
-#### collection.near(latitude, longitude, [opts,] callback)
+#### collection.near
+
+`collection.near(latitude: Number, longitude: Number, [opts: Object,] [callback: Function]): Promise<Cursor>`
 
 Performs a geo-spatial query for documents near the given location.
 
@@ -1672,7 +1800,9 @@ db.collection('some-collection', function (err, collection) {
 });
 ```
 
-#### collection.within(latitude, longitude, radius, [opts,] callback)
+#### collection.within
+
+`collection.within(latitude: Number, longitude: Number, radius: Number, [opts: Object,] [callback: Function]): Promise<Cursor>`
 
 Performs a geo-spatial query for documents within the given *radius* of the given location.
 
@@ -1713,7 +1843,9 @@ db.collection('some-collection', function (err, collection) {
 
 This function implements the [HTTP API for bulk imports](https://docs.arangodb.com/HttpBulkImports/index.html).
 
-#### collection.import(data, [opts,] callback)
+#### collection.import
+
+`collection.import(data: Array<Object> | Array<Array>, [opts: Object,] [callback: Function]): Promise`
 
 Bulk imports the given *data* into the collection.
 
@@ -1801,7 +1933,9 @@ db.collection('users', function (err, collection) {
 
 These functions implement the [HTTP API for manipulating documents](https://docs.arangodb.com/HttpDocument/index.html).
 
-#### collection.replace(documentHandle, data, [opts,] callback)
+#### collection.replace
+
+`collection.replace(documentHandle: String | Document, data: Object, [opts: Object,] [callback: Function]): Promise`
 
 Replaces the content of the document with the given *documentHandle* with the given *data*.
 
@@ -1836,7 +1970,9 @@ db.collection('some-collection', function (err, collection) {
 });
 ```
 
-#### collection.update(documentHandle, data, [opts,] callback)
+#### collection.update
+
+`collection.update(documentHandle: String | Document, data: Object, [opts: Object,] [callback: Function]): Promise`
 
 Updates (merges) the content of the document with the given *documentHandle* with the given *data*.
 
@@ -1873,7 +2009,9 @@ db.collection('some-collection', function (err, collection) {
 });
 ```
 
-#### collection.remove(documentHandle, [opts,] callback)
+#### collection.remove
+
+`collection.remove(documentHandle: String | Document, [opts: Object,] [callback: Function]): Promise`
 
 Deletes the document with the given *documentHandle* from the collection.
 
@@ -1907,7 +2045,9 @@ db.collection('some-collection', function (err, collection) {
 });
 ```
 
-#### collection.all([type,] callback)
+#### collection.all
+
+`collection.all([type: String,] [callback: Function]): Array<Promise<T>>`
 
 Retrieves a list of all documents in the collection.
 
@@ -1921,7 +2061,9 @@ If *type* is set to `"id"` or not set, the result will be the `_id` of each docu
 
 The *DocumentCollection API* extends the [*Collection API* (see above)](#collection-api) with the following methods.
 
-#### documentCollection.document(documentHandle, callback)
+#### documentCollection.document
+
+`documentCollection.document(documentHandle: String | Document, [callback: Function]): Promise<Document>`
 
 Retrieves the document with the given *documentHandle* from the collection.
 
@@ -1950,7 +2092,9 @@ db.collection('my-docs', function (err, collection) {
 });
 ```
 
-#### documentCollection.save(data, callback)
+#### documentCollection.save
+
+`documentCollection.save(data: Object, [callback: Function]): Promise<Document>`
 
 Creates a new document with the given *data*.
 
@@ -1976,7 +2120,9 @@ db.createCollection('my-docs', function (err, collection) {
 
 The *EdgeCollection API* extends the [*Collection API* (see above)](#collection-api) with the following methods.
 
-#### edgeCollection.edge(documentHandle, callback)
+#### edgeCollection.edge
+
+`edgeCollection.edge(documentHandle: String | Document, [callback: Function]): Promise<Document>`
 
 Retrieves the edge with the given *documentHandle* from the collection.
 
@@ -2005,9 +2151,13 @@ db.collection('edges', function (err, collection) {
 });
 ```
 
-#### edgeCollection.save(data, fromId, toId, callback)
+#### edgeCollection.save
+
+`edgeCollection.save(data: Object, fromId: String | Object, toId: String | Object, [callback: Function]): Promise<Document>`
 
 Creates a new edge between the documents *fromId* and *toId* with the given *data*.
+
+If *fromId* and *toId* are not specified, the *data* needs to contain the properties *_from* and *_to*.
 
 *Examples*
 
@@ -2032,7 +2182,9 @@ db.createEdgeCollection('edges', function (err, collection) {
 });
 ```
 
-#### edgeCollection.edges(documentHandle, callback)
+#### edgeCollection.edges
+
+`edgeCollection.edges(documentHandle: String | Document, [callback: Function]): Promise<Array<Document>>`
 
 Retrieves a list of all edges of the document with the given *documentHandle*.
 
@@ -2061,7 +2213,9 @@ db.createEdgeCollection('edges', function (err, collection) {
 });
 ```
 
-#### edgeCollection.inEdges(documentHandle, callback)
+#### edgeCollection.inEdges
+
+`edgeCollection.inEdges(documentHandle: String | Document, [callback: Function]): Promise<Array<Document>>`
 
 Retrieves a list of all incoming edges of the document with the given *documentHandle*.
 
@@ -2090,7 +2244,9 @@ db.createEdgeCollection('edges', function (err, collection) {
 });
 ```
 
-#### edgeCollection.outEdges(documentHandle, callback)
+#### edgeCollection.outEdges
+
+`edgeCollection.outEdges(documentHandle: String | Document, [callback: Function]): Promise<Array<Document>>`
 
 Retrieves a list of all outgoing edges of the document with the given *documentHandle*.
 
@@ -2119,7 +2275,9 @@ db.createEdgeCollection('edges', function (err, collection) {
 });
 ```
 
-#### edgeCollection.traversal(startVertex, [opts,] callback)
+#### edgeCollection.traversal
+
+`edgeCollection.traversal(startVertex: String | Document, [opts: Object,] [callback: Function]): Promise<Object>`
 
 Performs a traversal starting from the given *startVertex* and following edges contained in this edge collection.
 
@@ -2157,13 +2315,15 @@ db.createEdgeCollection('edges', function (err, collection) {
 
 These functions implement the [HTTP API for manipulating graphs](https://docs.arangodb.com/HttpGharial/index.html).
 
-### graph.drop([dropCollections,] callback)
+### graph.drop
+
+`graph.drop([dropCollections: Boolean,] [callback: Function]): Promise`
 
 Deletes the graph from the database.
 
 If *dropCollections* is set to `true`, the collections associated with the graph will also be deleted.
 
-Equivalent to *database.dropGraph(graph.name, callback)*.
+Equivalent to *database.dropGraph(graph.name, [callback: Function])*.: Promise
 
 *Examples*
 
@@ -2180,7 +2340,9 @@ db.graph('some-graph', function (err, graph) {
 
 ### Manipulating vertices
 
-#### graph.vertexCollection(collectionName, callback)
+#### graph.vertexCollection
+
+`graph.vertexCollection(collectionName: String, [callback: Function]): Promise<GraphVertexCollection>`
 
 Fetches the vertex collection with the given *collectionName* from the database, then passes a new [*GraphVertexCollection* instance](#graphvertexcollection-api) to the callback.
 
@@ -2206,7 +2368,9 @@ db.createGraph({
 });
 ```
 
-#### graph.addVertexCollection(collectionName, callback)
+#### graph.addVertexCollection
+
+`graph.addVertexCollection(collectionName: String, [callback: Function]): Promise`
 
 Adds the collection with the given *collectionName* to the graph's vertex collections.
 
@@ -2227,7 +2391,9 @@ db.createGraph({
 });
 ```
 
-#### graph.removeVertexCollection(collectionName, [dropCollection,] callback)
+#### graph.removeVertexCollection
+
+`graph.removeVertexCollection(collectionName: String, [dropCollection: Boolean,] [callback: Function]): Promise`
 
 Removes the vertex collection with the given *collectionName* from the graph.
 
@@ -2259,7 +2425,9 @@ db.createGraph({
 
 ### Manipulating edges
 
-#### graph.edgeCollection(collectionName, callback)
+#### graph.edgeCollection
+
+`graph.edgeCollection(collectionName: String, [callback: Function]): Promise<GraphEdgeCollection>`
 
 Fetches the edge collection with the given *collectionName* from the database, then passes a new [*GraphEdgeCollection* instance](#graphedgecollection-api) to the callback.
 
@@ -2285,7 +2453,9 @@ db.createGraph({
 });
 ```
 
-#### graph.addEdgeDefinition(definition, callback)
+#### graph.addEdgeDefinition
+
+`graph.addEdgeDefinition(definition: Object, [callback: Function]): Promise`
 
 Adds the given edge definition *definition* to the graph.
 
@@ -2312,7 +2482,9 @@ db.createGraph({
 });
 ```
 
-#### graph.replaceEdgeDefinition(collectionName, definition, callback)
+#### graph.replaceEdgeDefinition
+
+`graph.replaceEdgeDefinition(collectionName: String, definition: Object, [callback: Function]): Promise`
 
 Replaces the edge definition for the edge collection named *collectionName* with the given *definition*.
 
@@ -2343,7 +2515,9 @@ db.createGraph({
 });
 ```
 
-#### graph.removeEdgeDefinition(definitionName, [dropCollection,] callback)
+#### graph.removeEdgeDefinition
+
+`graph.removeEdgeDefinition(definitionName: String, [dropCollection: Boolean,] [callback: Function]): Promise`
 
 Removes the edge definition with the given *definitionName* form the graph.
 
@@ -2379,7 +2553,9 @@ db.createGraph({
 });
 ```
 
-#### graph.traversal(startVertex, [opts,] callback)
+#### graph.traversal
+
+`graph.traversal(startVertex: String | Document, [opts: Object,] [callback: Function]): Promise<Object>`
 
 Performs a traversal starting from the given *startVertex* and following edges contained in any of the edge collections of this graph.
 
@@ -2427,7 +2603,9 @@ db.createGraph({
 
 The *GraphVertexCollection API* extends the [*Collection API* (see above)](#collection-api) with the following methods.
 
-#### graphVertexCollection.vertex(documentHandle, callback)
+#### graphVertexCollection.vertex
+
+`graphVertexCollection.vertex(documentHandle: String | Document, [callback: Function]): Promise<Document>`
 
 Retrieves the vertex with the given *documentHandle* from the collection.
 
@@ -2465,7 +2643,9 @@ db.createGraph({
 });
 ```
 
-#### graphVertexCollection.save(data, callback)
+#### graphVertexCollection.save
+
+`graphVertexCollection.save(data: Object, [callback: Function]): Promise<Document>`
 
 Creates a new vertex with the given *data*.
 
@@ -2502,7 +2682,9 @@ db.createGraph({
 
 The *GraphEdgeCollection API* extends the *Collection API* (see above) with the following methods.
 
-#### graphEdgeCollection.edge(documentHandle, callback)
+#### graphEdgeCollection.edge
+
+`graphEdgeCollection.edge(documentHandle: String | Document, [callback: Function]): Promise<Document>`
 
 Retrieves the edge with the given *documentHandle* from the collection.
 
@@ -2538,7 +2720,9 @@ db.createGraph({
 });
 ```
 
-#### graphEdgeCollection.save(data, [fromId, toId,] callback)
+#### graphEdgeCollection.save
+
+`graphEdgeCollection.save(data: Object, [fromId: String | Document, toId: String | Document,] [callback: Function]): Promise<Document>`
 
 Creates a new edge between the vertices *fromId* and *toId* with the given *data*.
 
