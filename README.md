@@ -71,7 +71,7 @@ If *config* is a string, it will be interpreted as *config.url*.
 
 ### Manipulating collections
 
-These functions implement the [HTTP API for manipulating collections](https://docs.arangodb.com/HttpCollection/README.html).
+These functions implement the [HTTP API for manipulating collections](https://docs.arangodb.com/HttpCollection/index.html).
 
 #### database.createCollection(properties, callback)
 
@@ -217,7 +217,7 @@ db.truncateAll(function (err) {
 
 ### Manipulating graphs
 
-These functions implement the [HTTP API for manipulating general graphs](https://docs.arangodb.com/HttpGharial/README.html).
+These functions implement the [HTTP API for manipulating general graphs](https://docs.arangodb.com/HttpGharial/index.html).
 
 #### database.createGraph(properties, callback)
 
@@ -298,7 +298,7 @@ db.dropGraph('some-graph', function (err) {
 
 ### Manipulating databases
 
-These functions implement the [HTTP API for manipulating databases](https://docs.arangodb.com/HttpDatabase/README.html).
+These functions implement the [HTTP API for manipulating databases](https://docs.arangodb.com/HttpDatabase/index.html).
 
 #### database.createDatabase(databaseName, callback)
 
@@ -358,7 +358,7 @@ db.dropDatabase('mydb', function (err) {
 
 ### Transactions
 
-This function implements the [HTTP API for transactions](https://docs.arangodb.com/HttpTransaction/README.html).
+This function implements the [HTTP API for transactions](https://docs.arangodb.com/HttpTransaction/index.html).
 
 #### database.transaction(collections, action, [params,] [lockTimeout,] callback)
 
@@ -377,7 +377,7 @@ If *collections* is an array or string, it will be used as *collections.write*.
 
 Please note that while *action* should be a string evaluating to a well-formed JavaScript function, it's not possible to pass in a JavaScript function directly because the function needs to be evaluated on the server and will be transmitted in plain text.
 
-For more information on transactions, see [the HTTP API documentation for transactions](https://docs.arangodb.com/HttpTransaction/README.html).
+For more information on transactions, see [the HTTP API documentation for transactions](https://docs.arangodb.com/HttpTransaction/index.html).
 
 *Examples*
 
@@ -397,7 +397,7 @@ db.transaction(collections, action, function (err, result) {
 
 ### Queries
 
-This function implements the [HTTP API for AQL queries](https://docs.arangodb.com/HttpAqlQuery/README.html).
+This function implements the [HTTP API for AQL queries](https://docs.arangodb.com/HttpAqlQuery/index.html).
 
 For collection-specific queries see [fulltext queries](#fulltext-queries) and [geo-spatial queries](#geo-queries).
 
@@ -442,7 +442,7 @@ db.query(
 
 ### Managing AQL user functions
 
-These functions implement the [HTTP API for managing AQL user functions](https://docs.arangodb.com/HttpAqlUserFunctions/README.html).
+These functions implement the [HTTP API for managing AQL user functions](https://docs.arangodb.com/HttpAqlUserFunctions/index.html).
 
 #### database.createFunction(name, code, callback)
 
@@ -1087,7 +1087,7 @@ route.request({
 
 ## Collection API
 
-These functions implement the [HTTP API for manipulating collections](https://docs.arangodb.com/HttpCollection/README.html).
+These functions implement the [HTTP API for manipulating collections](https://docs.arangodb.com/HttpCollection/index.html).
 
 The *Collection API* is implemented by all *Collection* instances, regardless of their specific type. I.e. it represents a shared subset between instances of [*DocumentCollection*](#documentcollection-api), [*EdgeCollection*](#edgecollection-api), [*GraphVertexCollection*](#graphvertexcollection-api) and [*GraphEdgeCollection*](#graphedgecollection-api).
 
@@ -1317,7 +1317,7 @@ db.collection('some-collection', function (err, collection) {
 
 ### Manipulating indexes
 
-These functions implement the [HTTP API for manipulating indexes](https://docs.arangodb.com/HttpIndexes/README.html).
+These functions implement the [HTTP API for manipulating indexes](https://docs.arangodb.com/HttpIndexes/index.html).
 
 #### collection.createIndex(details, callback)
 
@@ -1711,7 +1711,7 @@ db.collection('some-collection', function (err, collection) {
 
 ### Bulk importing documents
 
-This function implements the [HTTP API for bulk imports](https://docs.arangodb.com/HttpBulkImports/README.html).
+This function implements the [HTTP API for bulk imports](https://docs.arangodb.com/HttpBulkImports/index.html).
 
 #### collection.import(data, [opts,] callback)
 
@@ -1799,7 +1799,7 @@ db.collection('users', function (err, collection) {
 
 ### Manipulating documents
 
-These functions implement the [HTTP API for manipulating documents](https://docs.arangodb.com/HttpDocument/README.html).
+These functions implement the [HTTP API for manipulating documents](https://docs.arangodb.com/HttpDocument/index.html).
 
 #### collection.replace(documentHandle, data, [opts,] callback)
 
@@ -2123,7 +2123,7 @@ db.createEdgeCollection('edges', function (err, collection) {
 
 Performs a traversal starting from the given *startVertex* and following edges contained in this edge collection.
 
-See [the HTTP API documentation](https://docs.arangodb.com/HttpTraversal/README.html) for details on the additional arguments.
+See [the HTTP API documentation](https://docs.arangodb.com/HttpTraversal/index.html) for details on the additional arguments.
 
 Please note that while *opts.filter*, *opts.visitor*, *opts.init*, *opts.expander* and *opts.sort* should be strings evaluating to well-formed JavaScript code, it's not possible to pass in JavaScript functions directly because the code needs to be evaluated on the server and will be transmitted in plain text.
 
@@ -2155,7 +2155,7 @@ db.createEdgeCollection('edges', function (err, collection) {
 
 ## Graph API
 
-These functions implement the [HTTP API for manipulating graphs](https://docs.arangodb.com/HttpGharial/README.html).
+These functions implement the [HTTP API for manipulating graphs](https://docs.arangodb.com/HttpGharial/index.html).
 
 ### graph.drop([dropCollections,] callback)
 
@@ -2383,7 +2383,7 @@ db.createGraph({
 
 Performs a traversal starting from the given *startVertex* and following edges contained in any of the edge collections of this graph.
 
-See [the HTTP API documentation](https://docs.arangodb.com/HttpTraversal/README.html) for details on the additional arguments.
+See [the HTTP API documentation](https://docs.arangodb.com/HttpTraversal/index.html) for details on the additional arguments.
 
 Please note that while *opts.filter*, *opts.visitor*, *opts.init*, *opts.expander* and *opts.sort* should be strings evaluating to well-formed JavaScript functions, it's not possible to pass in JavaScript functions directly because the functions need to be evaluated on the server and will be transmitted in plain text.
 
