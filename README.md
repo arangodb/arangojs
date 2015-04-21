@@ -43,18 +43,22 @@ npm run dist
 
 # API
 
-All asynchronous functions take node-style callback functions (or "errbacks") with the following arguments:
+All asynchronous functions take an optional node-style callback (or "errback") with the following arguments:
 
 * *err*: an *Error* object if an error occurred, or *null* if no error occurred.
 * *result*: the function's result (if applicable).
 
 For expected API errors, *err* will be an instance of *ArangoError*.
 
+As of version 3.5, if the global `Promise` constructor is defined when an asynchronous function is called, the function **will also return a promise**. When using both node-style callbacks and promises, the node-style callback will be invoked before the promise's fulfillment/rejection handlers.
+
+If you want to use promises in environments that don't provide the global `Promise` constructor, use a promise polyfill like [es6-promise](https://www.npmjs.com/package/es6-promise) or inject a ES6-compatible promise implementation like [bluebird](https://www.npmjs.com/package/bluebird) into the global scope.
+
 ## Database API
 
 ### new Database([config])
 
-Creates a new *database*.
+**Synchronous.** Creates a new *database*.
 
 *Parameter*
 * *config* (optional): an object with the following properties:
@@ -490,7 +494,7 @@ db.functions(function (err, functions) {
 })
 ```
 
-#### database.dropFunction(name[, group], callback)
+#### database.dropFunction(name, [group,] callback)
 
 Deletes the AQL user function with the given name from the database.
 
@@ -511,9 +515,9 @@ db.dropFunction('myfuncs::acounting::calculate_vat', function (err) {
 
 ### Arbitrary HTTP routes
 
-#### database.route([path[, headers]])
+#### database.route([path, [headers]])
 
-Returns a new *Route* instance for the given path (relative to the database) that can be used to perform arbitrary HTTP requests.
+**Synchronous.** Returns a new *Route* instance for the given path (relative to the database) that can be used to perform arbitrary HTTP requests.
 
 *Parameter*
 
@@ -589,7 +593,7 @@ cursor.next(function (err, val) {
 
 ### cursor.hasNext():Boolean
 
-Returns `true` if the cursor has more values or `false` if the cursor has been exhausted. Synchronous.
+**Synchronous.** Returns `true` if the cursor has more values or `false` if the cursor has been exhausted. Synchronous.
 
 *Examples*
 
@@ -725,7 +729,7 @@ cursor.reduce(add, function (err, result) {
 
 ### cursor.rewind()
 
-Rewinds the cursor. Synchronous.
+**Synchronous.** Rewinds the cursor.
 
 *Examples*
 
@@ -750,7 +754,7 @@ cursor.all(function (err, result) {
 
 ### route.route([path, [headers]])
 
-Creates a new *Route* instance representing the *path* relative to the current route. Optionally *headers* can be an object with headers which will be extended with the current route's headers and the connection's headers.
+**Synchronous.** Creates a new *Route* instance representing the *path* relative to the current route. Optionally *headers* can be an object with headers which will be extended with the current route's headers and the connection's headers.
 
 *Examples*
 
@@ -785,7 +789,7 @@ route.get(function (err, result) {
     // GET _db/_system/my-foxx-app
 });
 
-// -- or -- 
+// -- or --
 
 route.get('users', function (err, result) {
     if (err) return console.error(err);
@@ -1002,7 +1006,7 @@ route.delete(function (err, result) {
     // DELETE _db/_system/my-foxx-app
 });
 
-// -- or -- 
+// -- or --
 
 route.delete('users/admin', function (err, result) {
     if (err) return console.error(err);
@@ -1374,7 +1378,7 @@ db.createCollection('some-collection', function (err, collection) {
 });
 ```
 
-#### collection.createHashIndex(fields[, unique], callback)
+#### collection.createHashIndex(fields, [unique,] callback)
 
 Creates a hash index on the collection.
 
@@ -1409,7 +1413,7 @@ db.createCollection('some-collection', function (err, collection) {
 });
 ```
 
-#### collection.createSkipList(fields[, unique], callback)
+#### collection.createSkipList(fields, [unique,] callback)
 
 Creates a skiplist index on the collection.
 
@@ -1444,7 +1448,7 @@ db.createCollection('some-collection', function (err, collection) {
 });
 ```
 
-#### collection.createGeoIndex(fields[, opts], callback)
+#### collection.createGeoIndex(fields, [opts,] callback)
 
 Creates a geo-spatial index on the collection.
 
@@ -1479,7 +1483,7 @@ db.createCollection('some-collection', function (err, collection) {
 });
 ```
 
-#### collection.createFulltextIndex(fields[, minLength], callback)
+#### collection.createFulltextIndex(fields, [minLength,] callback)
 
 Creates a fulltext index on the collection.
 
@@ -2534,7 +2538,7 @@ db.createGraph({
 });
 ```
 
-#### graphEdgeCollection.save(data, [fromId, toId, ]callback)
+#### graphEdgeCollection.save(data, [fromId, toId,] callback)
 
 Creates a new edge between the vertices *fromId* and *toId* with the given *data*.
 
