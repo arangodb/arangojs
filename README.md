@@ -349,15 +349,22 @@ These functions implement the [HTTP API for manipulating databases](https://docs
 
 #### database.createDatabase
 
-`database.createDatabase(databaseName: string, [callback: Callback]): Promise<Database>`
+`database.createDatabase(databaseName: string, [users: Array<Object>], [callback: Callback]): Promise<Database>`
 
 Creates a new database with the given *databaseName*, then passes a new *Database* instance to the callback.
+
+If *users* is specified, it must be an array of objects with the following attributes:
+
+* *username*: the username of the user to create for the database.
+* *passwd* (optional): the password of the user. Default: empty.
+* *active* (optional): whether the user is active. Default: `true`.
+* *extra* (optional): an object containing additional user data.
 
 *Examples*
 
 ```js
 var db = require('arangojs')();
-db.createDatabase('mydb', function (err, database) {
+db.createDatabase('mydb', [{username: 'root'}], function (err, database) {
     if (err) return console.error(err);
     // database is a Database instance
 });

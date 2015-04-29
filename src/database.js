@@ -167,10 +167,17 @@ extend(Database.prototype, {
     this._api.delete('graph/' + graphName, {dropCollections: dropCollections}, callback);
     return promise;
   },
-  createDatabase: function (databaseName, cb) {
+  createDatabase: function (databaseName, users, cb) {
+    if (typeof users === 'function') {
+      cb = users;
+      users = undefined;
+    }
     var {promise, callback} = promisify(cb);
     var self = this;
-    self._api.post('database', {name: databaseName}, function (err, res) {
+    self._api.post('database', {
+      name: databaseName,
+      users: users
+    }, function (err, res) {
       if (err) callback(err);
       else {
         callback(null, new Database(extend(
