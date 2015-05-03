@@ -4,14 +4,20 @@ var inherits = require('util').inherits;
 var extend = require('extend');
 var ArrayCursor = require('./cursor');
 
+var types = {
+  DOCUMENT_COLLECTION: 2,
+  EDGE_COLLECTION: 3
+};
+
 module.exports = extend(
   function (connection, body) {
-    var Ctor = (body.type === 3 ? EdgeCollection : DocumentCollection);
+    var Ctor = (body.type === types.EDGE_COLLECTION ? EdgeCollection : DocumentCollection);
     return new Ctor(connection, body);
   }, {
     _BaseCollection: BaseCollection,
     DocumentCollection: DocumentCollection,
-    EdgeCollection: EdgeCollection
+    EdgeCollection: EdgeCollection,
+    types: types
   }
 );
 
@@ -25,7 +31,7 @@ function BaseCollection(connection, body) {
 
 extend(BaseCollection.prototype, {
   _documentPath: function (documentHandle) {
-    return (this.type === 3 ? 'edge/' : 'document/') + this._documentHandle(documentHandle);
+    return (this.type === types.EDGE_COLLECTION ? 'edge/' : 'document/') + this._documentHandle(documentHandle);
   },
   _documentHandle: function (documentHandle) {
     if (documentHandle._id) {

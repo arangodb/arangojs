@@ -3,9 +3,12 @@ var promisify = require('./util/promisify');
 var extend = require('extend');
 var Connection = require('./connection');
 var ArrayCursor = require('./cursor');
-var createCollection = require('./collection');
+var ArangoError = require('./error');
+var _createCollection = require('./collection');
 var Graph = require('./graph');
 var all = require('./util/all');
+
+var types = _createCollection.types;
 
 module.exports = Database;
 
@@ -29,10 +32,10 @@ extend(Database.prototype, {
     }
     var self = this;
     self._api.post('collection', extend({
-      type: 2
+      type: types.DOCUMENT_COLLECTION
     }, properties), function (err, res) {
       if (err) callback(err);
-      else callback(null, createCollection(self._connection, res.body));
+      else callback(null, _createCollection(self._connection, res.body));
     });
     return promise;
   },
@@ -43,9 +46,9 @@ extend(Database.prototype, {
     }
     var self = this;
     self._api.post('collection', extend({
-    }, properties, {type: 3}), function (err, res) {
+    }, properties, {type: types.EDGE_COLLECTION}), function (err, res) {
       if (err) callback(err);
-      else callback(null, createCollection(self._connection, res.body));
+      else callback(null, _createCollection(self._connection, res.body));
     });
     return promise;
   },
@@ -69,7 +72,38 @@ extend(Database.prototype, {
           });
         }
       }
-      else callback(null, createCollection(self._connection, res.body));
+      else callback(null, _createCollection(self._connection, res.body));
+    });
+    return promise;
+  },
+  edgeCollection: function (collectionName, autoCreate, cb) {
+    if (typeof autoCreate === 'function') {
+      cb = autoCreate;
+      autoCreate = undefined;
+    }
+    var {promise, callback} = promisify(cb);
+    var self = this;
+    self._api.get('collection/' + collectionName, function (err, res) {
+      if (err) {
+        if (!autoCreate || err.name !== 'ArangoError' || err.errorNum !== 1203) callback(err);
+        else {
+          self.createEdgeCollection({name: collectionName}, function (err, collection) {
+            if (err) {
+              if (err.name !== 'ArangoError' || err.errorNum !== 1207) callback(err);
+              else self.edgeCollection(collectionName, callback);
+            }
+            else callback(null, collection);
+          });
+        }
+      }
+      else if (res.body.type !== types.EDGE_COLLECTION) {
+        callback(new ArangoError({
+          code: 400,
+          errorNum: 1237,
+          errorMessage: 'wrong collection type'
+        }));
+      }
+      else callback(null, _createCollection(self._connection, res.body));
     });
     return promise;
   },
@@ -82,7 +116,7 @@ extend(Database.prototype, {
       if (err) callback(err);
       else {
         callback(null, res.body.collections.map(function (data) {
-          return createCollection(self._connection, data);
+          return _createCollection(self._connection, data);
         }));
       }
     });
@@ -97,7 +131,7 @@ extend(Database.prototype, {
       if (err) callback(err);
       else {
         callback(null, res.body.collections.map(function (data) {
-          return createCollection(self._connection, data);
+          return _createCollection(self._connection, data);
         }));
       }
     });

@@ -171,6 +171,28 @@ db.collection('potatos', function (err, collection) {
 });
 ```
 
+#### database.edgeCollection
+
+`database.edgeCollection(collectionName: string, [autoCreate: boolean,] [callback: Callback]): Promise<EdgeCollection>`
+
+Fetches the edge collection with the given *collectionName* from the database, then passes a new *EdgeCollection* instance to the callback.
+
+If *autoCreate* is set to `true`, an edge collection with the given name will be created if it doesn't already exist.
+
+If a collection with the given name exists but isn't an edge collection, an apropriate error will be passed instead.
+
+```js
+var db = require('arangojs')();
+db.collection('potatos', function (err, collection) {
+    if (err) {
+        // Collection did not exist
+        console.error(err);
+        return;
+    }
+    // collection exists
+});
+```
+
 #### database.collections
 
 `database.collections([callback: Callback]): Promise<Array<Collection>>`
