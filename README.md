@@ -183,7 +183,7 @@ If a collection with the given name exists but isn't an edge collection, an apro
 
 ```js
 var db = require('arangojs')();
-db.collection('potatos', function (err, collection) {
+db.edgeCollection('potatos', function (err, collection) {
     if (err) {
         // Collection did not exist
         console.error(err);
