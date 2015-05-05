@@ -1787,9 +1787,15 @@ module.exports = function promisify(callback) {
   var promise = new Promise(function (resolve, reject) {
     callback = function (err, res) {
       if (err) reject(err);else resolve(res);
-      if (cb) cb(err, res);
     };
   });
+  if (cb) {
+    promise.then(function (result) {
+      return cb(null, result);
+    }, function (reason) {
+      return cb(reason);
+    });
+  }
   return { callback: callback, promise: promise };
 };
 },{}],11:[function(require,module,exports){

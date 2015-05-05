@@ -8,8 +8,13 @@ module.exports = function promisify(callback) {
     callback = function (err, res) {
       if (err) reject(err);
       else resolve(res);
-      if (cb) cb(err, res);
     };
   });
+  if (cb) {
+    promise.then(
+      result => cb(null, result),
+      reason => cb(reason)
+    );
+  }
   return {callback, promise};
 };
