@@ -598,7 +598,6 @@ function Connection(config) {
     config = { url: config };
   }
   this.config = extend({}, Connection.defaults, config);
-  this.config.agentOptions = extend({}, Connection.defaults.agentOptions, this.config.agentOptions);
   if (!this.config.headers) this.config.headers = {};
   if (!this.config.headers['x-arango-version']) {
     this.config.headers['x-arango-version'] = this.config.arangoVersion;
@@ -611,9 +610,7 @@ Connection.defaults = {
   databaseName: '_system',
   arangoVersion: 20300,
   maxSockets: 5,
-  agentOptions: {
-    keepAlive: true
-  }
+  keepAlive: true
 };
 
 extend(Connection.prototype, {
@@ -657,7 +654,7 @@ extend(Connection.prototype, {
       headers: extend(headers, this.config.headers, opts.headers),
       method: (opts.method || 'get').toUpperCase(),
       pool: this.pool,
-      agentOptions: this.config.agentOptions,
+      forever: this.config.forever,
       body: body
     }, function (err, response, rawBody) {
       response.rawBody = rawBody;
