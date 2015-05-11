@@ -28,7 +28,7 @@
     "coveralls": "npm run cover && cat ./coverage/lcov.info | coveralls ; rm -rf ./coverage",
     "watch": "dirwatch -d 500 -c 'npm run test-only && npm run lint && npm run dist' ./lib ./test",
     "dist": "npm run babel && npm run bundle && npm run minify",
-    "babel": "babel --optional utility.deadCodeElimination --compact false -d lib src",
+    "babel": "babel --compact false -d lib src",
     "bundle": "npm run all-bundle && npm run raw-bundle",
     "minify": "npm run all-minify && npm run raw-minify",
     "all-bundle": "browserify -s arangojs ./index.js > dist/arango.all.js",
