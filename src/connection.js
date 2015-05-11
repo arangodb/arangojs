@@ -18,15 +18,16 @@ function Connection(config) {
   if (!this.config.headers['x-arango-version']) {
     this.config.headers['x-arango-version'] = this.config.arangoVersion;
   }
-  this.pool = {maxSockets: this.config.maxSockets};
+  this.pool = extend({}, Connection.defaults.poolOpts, this.config.poolOpts);
 }
 
 Connection.defaults = {
   url: 'http://localhost:8529',
   databaseName: '_system',
   arangoVersion: 20300,
-  maxSockets: 5,
-  keepAlive: true
+  keepAlive: true,
+  requestOpts: {},
+  poolOpts: {maxSockets: 5}
 };
 
 extend(Connection.prototype, {
@@ -61,14 +62,13 @@ extend(Connection.prototype, {
       }
     }
 
-    xhr({
+    xhr(extend({}, Connection.defaults.requestOpts, this.config.requestOpts, {
       url: this._resolveUrl(opts),
       headers: extend(headers, this.config.headers, opts.headers),
       method: (opts.method || 'get').toUpperCase(),
       pool: this.pool,
-      forever: this.config.forever,
       body: body
-    }, function (err, response, rawBody) {
+    }), function (err, response, rawBody) {
       response.rawBody = rawBody;
       if (err) callback(err, response);
       else if (response.headers['content-type'].match(jsonMime)) {
