@@ -1294,17 +1294,7 @@ extend(Database.prototype, {
     });
     return promise;
   },
-  query: (function (_query) {
-    function query(_x, _x2, _x3) {
-      return _query.apply(this, arguments);
-    }
-
-    query.toString = function () {
-      return _query.toString();
-    };
-
-    return query;
-  })(function (query, bindVars, cb) {
+  query: function query(_query, bindVars, cb) {
     if (typeof bindVars === 'function') {
       cb = bindVars;
       bindVars = undefined;
@@ -1315,18 +1305,18 @@ extend(Database.prototype, {
     var promise = _promisify19.promise;
     var callback = _promisify19.callback;
 
-    if (query && typeof query.toAQL === 'function') {
-      query = query.toAQL();
+    if (_query && typeof _query.toAQL === 'function') {
+      _query = _query.toAQL();
     }
     var self = this;
     self._api.post('cursor', {
-      query: query,
+      query: _query,
       bindVars: bindVars
     }, function (err, res) {
       if (err) callback(err);else callback(null, new ArrayCursor(self._connection, res.body));
     });
     return promise;
-  }),
+  },
   functions: function functions(cb) {
     var _promisify20 = promisify(cb);
 
@@ -1765,9 +1755,9 @@ module.exports = function all(arr, callback) {
   var pending = arr.length;
   var called = false;
 
-  if (arr.length === 0) {
-    return callback(null, result);
-  }function step(i) {
+  if (arr.length === 0) return callback(null, result);
+
+  function step(i) {
     return function (err, res) {
       pending -= 1;
       if (!err) result[i] = res;

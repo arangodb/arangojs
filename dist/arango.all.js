@@ -1294,17 +1294,7 @@ extend(Database.prototype, {
     });
     return promise;
   },
-  query: (function (_query) {
-    function query(_x, _x2, _x3) {
-      return _query.apply(this, arguments);
-    }
-
-    query.toString = function () {
-      return _query.toString();
-    };
-
-    return query;
-  })(function (query, bindVars, cb) {
+  query: function query(_query, bindVars, cb) {
     if (typeof bindVars === 'function') {
       cb = bindVars;
       bindVars = undefined;
@@ -1315,18 +1305,18 @@ extend(Database.prototype, {
     var promise = _promisify19.promise;
     var callback = _promisify19.callback;
 
-    if (query && typeof query.toAQL === 'function') {
-      query = query.toAQL();
+    if (_query && typeof _query.toAQL === 'function') {
+      _query = _query.toAQL();
     }
     var self = this;
     self._api.post('cursor', {
-      query: query,
+      query: _query,
       bindVars: bindVars
     }, function (err, res) {
       if (err) callback(err);else callback(null, new ArrayCursor(self._connection, res.body));
     });
     return promise;
-  }),
+  },
   functions: function functions(cb) {
     var _promisify20 = promisify(cb);
 
@@ -1765,9 +1755,9 @@ module.exports = function all(arr, callback) {
   var pending = arr.length;
   var called = false;
 
-  if (arr.length === 0) {
-    return callback(null, result);
-  }function step(i) {
+  if (arr.length === 0) return callback(null, result);
+
+  function step(i) {
     return function (err, res) {
       pending -= 1;
       if (!err) result[i] = res;
@@ -2694,12 +2684,20 @@ function hasOwnProperty(obj, prop) {
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"./support/isBuffer":16,"_process":12,"inherits":11}],18:[function(require,module,exports){
 var hasOwn = Object.prototype.hasOwnProperty;
-var toString = Object.prototype.toString;
+var toStr = Object.prototype.toString;
 var undefined;
+
+var isArray = function isArray(arr) {
+	if (typeof Array.isArray === 'function') {
+		return Array.isArray(arr);
+	}
+
+	return toStr.call(arr) === '[object Array]';
+};
 
 var isPlainObject = function isPlainObject(obj) {
 	'use strict';
-	if (!obj || toString.call(obj) !== '[object Object]') {
+	if (!obj || toStr.call(obj) !== '[object Object]') {
 		return false;
 	}
 
@@ -2751,10 +2749,10 @@ module.exports = function extend() {
 				}
 
 				// Recurse if we're merging plain objects or arrays
-				if (deep && copy && (isPlainObject(copy) || (copyIsArray = Array.isArray(copy)))) {
+				if (deep && copy && (isPlainObject(copy) || (copyIsArray = isArray(copy)))) {
 					if (copyIsArray) {
 						copyIsArray = false;
-						clone = src && Array.isArray(src) ? src : [];
+						clone = src && isArray(src) ? src : [];
 					} else {
 						clone = src && isPlainObject(src) ? src : {};
 					}
