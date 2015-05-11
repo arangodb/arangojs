@@ -25,7 +25,6 @@ Connection.defaults = {
   url: 'http://localhost:8529',
   databaseName: '_system',
   arangoVersion: 20300,
-  keepAlive: true,
   requestOpts: {forever: true},
   poolOpts: {maxSockets: 5}
 };
