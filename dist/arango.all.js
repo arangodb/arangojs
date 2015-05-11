@@ -610,7 +610,7 @@ Connection.defaults = {
   databaseName: '_system',
   arangoVersion: 20300,
   keepAlive: true,
-  requestOpts: {},
+  requestOpts: { forever: true },
   poolOpts: { maxSockets: 5 }
 };
 
