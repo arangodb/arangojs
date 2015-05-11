@@ -602,12 +602,14 @@ function Connection(config) {
   if (!this.config.headers['x-arango-version']) {
     this.config.headers['x-arango-version'] = this.config.arangoVersion;
   }
+  this.pool = { maxSockets: this.config.maxSockets };
 }
 
 Connection.defaults = {
   url: 'http://localhost:8529',
   databaseName: '_system',
-  arangoVersion: 20300
+  arangoVersion: 20300,
+  maxSockets: 5
 };
 
 extend(Connection.prototype, {
@@ -650,6 +652,7 @@ extend(Connection.prototype, {
       url: this._resolveUrl(opts),
       headers: extend(headers, this.config.headers, opts.headers),
       method: (opts.method || 'get').toUpperCase(),
+      pool: this.pool,
       body: body
     }, function (err, response, rawBody) {
       response.rawBody = rawBody;
