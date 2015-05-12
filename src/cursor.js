@@ -15,7 +15,7 @@ function ArrayCursor(connection, body) {
 }
 
 extend(ArrayCursor.prototype, {
-  _drain: function (cb) {
+  _drain(cb) {
     var {promise, callback} = promisify(cb);
     var self = this;
     self._more(function (err) {
@@ -25,7 +25,7 @@ extend(ArrayCursor.prototype, {
     });
     return promise;
   },
-  _more: function (callback) {
+  _more(callback) {
     var self = this;
     if (!self._hasMore) callback(null, self);
     else {
@@ -39,7 +39,7 @@ extend(ArrayCursor.prototype, {
       });
     }
   },
-  all: function (cb) {
+  all(cb) {
     var {promise, callback} = promisify(cb);
     var self = this;
     self._drain(function (err) {
@@ -49,7 +49,7 @@ extend(ArrayCursor.prototype, {
     });
     return promise;
   },
-  next: function (cb) {
+  next(cb) {
     var {promise, callback} = promisify(cb);
     var self = this;
     function next() {
@@ -69,10 +69,10 @@ extend(ArrayCursor.prototype, {
     }
     return promise;
   },
-  hasNext: function () {
+  hasNext() {
     return (this._hasMore || this._index < this._result.length);
   },
-  each: function (fn, cb) {
+  each(fn, cb) {
     var {promise, callback} = promisify(cb);
     var self = this;
     self._drain(function (err) {
@@ -92,7 +92,7 @@ extend(ArrayCursor.prototype, {
     });
     return promise;
   },
-  every: function (fn, cb) {
+  every(fn, cb) {
     var {promise, callback} = promisify(cb);
     var self = this;
     function loop() {
@@ -118,7 +118,7 @@ extend(ArrayCursor.prototype, {
     loop();
     return promise;
   },
-  some: function (fn, cb) {
+  some(fn, cb) {
     var {promise, callback} = promisify(cb);
     var self = this;
     function loop() {
@@ -144,7 +144,7 @@ extend(ArrayCursor.prototype, {
     loop();
     return promise;
   },
-  map: function (fn, cb) {
+  map(fn, cb) {
     var {promise, callback} = promisify(cb);
     var self = this,
       result = [];
@@ -170,7 +170,7 @@ extend(ArrayCursor.prototype, {
     loop();
     return promise;
   },
-  reduce: function (fn, accu, cb) {
+  reduce(fn, accu, cb) {
     if (typeof accu === 'function') {
       cb = accu;
       accu = undefined;
@@ -213,7 +213,7 @@ extend(ArrayCursor.prototype, {
     }
     return promise;
   },
-  rewind: function () {
+  rewind() {
     this._index = 0;
     return this;
   }

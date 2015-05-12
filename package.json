@@ -58,14 +58,9 @@
     "istanbul": "^0.3.14",
     "mocha": "^2.2.4",
     "uglify-js": "^2.4.21",
-    "watch": "^0.16.0",
-    "xhr": "^2.0.1"
-  },
-  "browser": {
-    "request": "xhr"
+    "watch": "^0.16.0"
   },
   "dependencies": {
-    "extend": "^2.0.1",
-    "request": "^2.55.0"
+    "extend": "^2.0.1"
   }
 }

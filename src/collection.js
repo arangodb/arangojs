@@ -30,10 +30,10 @@ function BaseCollection(connection, body) {
 }
 
 extend(BaseCollection.prototype, {
-  _documentPath: function (documentHandle) {
+  _documentPath(documentHandle) {
     return (this.type === types.EDGE_COLLECTION ? 'edge/' : 'document/') + this._documentHandle(documentHandle);
   },
-  _documentHandle: function (documentHandle) {
+  _documentHandle(documentHandle) {
     if (documentHandle._id) {
       documentHandle = documentHandle._id;
     } else if (documentHandle._key) {
@@ -44,7 +44,7 @@ extend(BaseCollection.prototype, {
     }
     return documentHandle;
   },
-  _indexHandle: function (indexHandle) {
+  _indexHandle(indexHandle) {
     if (indexHandle.id) {
       indexHandle = indexHandle.id;
     }
@@ -53,7 +53,7 @@ extend(BaseCollection.prototype, {
     }
     return indexHandle;
   },
-  _get: function (path, update, opts, cb) {
+  _get(path, update, opts, cb) {
     if (typeof opts === 'function') {
       cb = opts;
       opts = undefined;
@@ -73,7 +73,7 @@ extend(BaseCollection.prototype, {
     });
     return promise;
   },
-  _put: function (path, data, update, cb) {
+  _put(path, data, update, cb) {
     var {promise, callback} = promisify(cb);
     var self = this;
     self._api.put('collection/' + self.name + '/' + path, data, function (err, res) {
@@ -85,22 +85,22 @@ extend(BaseCollection.prototype, {
     });
     return promise;
   },
-  properties: function (cb) {
+  properties(cb) {
     return this._get('properties', true, cb);
   },
-  count: function (cb) {
+  count(cb) {
     return this._get('count', true, cb);
   },
-  figures: function (cb) {
+  figures(cb) {
     return this._get('figures', true, cb);
   },
-  revision: function (cb) {
+  revision(cb) {
     return this._get('revision', true, cb);
   },
-  checksum: function (opts, cb) {
+  checksum(opts, cb) {
     return this._get('checksum', true, opts, cb);
   },
-  load: function (count, cb) {
+  load(count, cb) {
     if (typeof count === 'function') {
       cb = count;
       count = undefined;
@@ -109,22 +109,22 @@ extend(BaseCollection.prototype, {
       typeof count === 'boolean' ? {count: count} : undefined
     ), true, cb);
   },
-  unload: function (cb) {
+  unload(cb) {
     return this._put('unload', undefined, true, cb);
   },
-  setProperties: function (properties, cb) {
+  setProperties(properties, cb) {
     return this._put('properties', properties, true, cb);
   },
-  rename: function (name, cb) {
+  rename(name, cb) {
     return this._put('rename', {name: name}, true, cb);
   },
-  rotate: function (cb) {
+  rotate(cb) {
     return this._put('rotate', undefined, false, cb);
   },
-  truncate: function (cb) {
+  truncate(cb) {
     return this._put('truncate', undefined, true, cb);
   },
-  drop: function (cb) {
+  drop(cb) {
     var {promise, callback} = promisify(cb);
     var self = this;
     self._api.delete('collection/' + self.name, function (err, res) {
@@ -133,7 +133,7 @@ extend(BaseCollection.prototype, {
     });
     return promise;
   },
-  replace: function (documentHandle, data, opts, cb) {
+  replace(documentHandle, data, opts, cb) {
     if (typeof opts === 'function') {
       cb = opts;
       opts = undefined;
@@ -146,7 +146,7 @@ extend(BaseCollection.prototype, {
     });
     return promise;
   },
-  update: function (documentHandle, data, opts, cb) {
+  update(documentHandle, data, opts, cb) {
     if (typeof opts === 'function') {
       cb = opts;
       opts = undefined;
@@ -159,7 +159,7 @@ extend(BaseCollection.prototype, {
     });
     return promise;
   },
-  remove: function (documentHandle, opts, cb) {
+  remove(documentHandle, opts, cb) {
     if (typeof opts === 'function') {
       cb = opts;
       opts = undefined;
@@ -172,7 +172,7 @@ extend(BaseCollection.prototype, {
     });
     return promise;
   },
-  all: function (type, cb) {
+  all(type, cb) {
     if (typeof type === 'function') {
       cb = type;
       type = undefined;
@@ -187,7 +187,7 @@ extend(BaseCollection.prototype, {
     });
     return promise;
   },
-  import: function (data, opts, cb) {
+  import(data, opts, cb) {
     if (typeof opts === 'function') {
       cb = opts;
       opts = undefined;
@@ -209,7 +209,7 @@ extend(BaseCollection.prototype, {
     });
     return promise;
   },
-  indexes: function (cb) {
+  indexes(cb) {
     var {promise, callback} = promisify(cb);
     this._api.get('index', {collection: this.name}, function (err, res) {
       if (err) callback(err);
@@ -217,7 +217,7 @@ extend(BaseCollection.prototype, {
     });
     return promise;
   },
-  index: function (indexHandle, cb) {
+  index(indexHandle, cb) {
     var {promise, callback} = promisify(cb);
     this._api.get(
       'index/' + this._indexHandle(indexHandle),
@@ -228,7 +228,7 @@ extend(BaseCollection.prototype, {
     );
     return promise;
   },
-  createIndex: function (details, cb) {
+  createIndex(details, cb) {
     var {promise, callback} = promisify(cb);
     this._api.post('index', details, {
       collection: this.name
@@ -238,7 +238,7 @@ extend(BaseCollection.prototype, {
     });
     return promise;
   },
-  dropIndex: function (indexHandle, cb) {
+  dropIndex(indexHandle, cb) {
     var {promise, callback} = promisify(cb);
     this._api.delete(
       'index/' + this._indexHandle(indexHandle),
@@ -249,7 +249,7 @@ extend(BaseCollection.prototype, {
     );
     return promise;
   },
-  createCapConstraint: function (size, cb) {
+  createCapConstraint(size, cb) {
     if (typeof size === 'number') {
       size = {size: size};
     }
@@ -262,7 +262,7 @@ extend(BaseCollection.prototype, {
     });
     return promise;
   },
-  createHashIndex: function (fields, unique, cb) {
+  createHashIndex(fields, unique, cb) {
     if (typeof unique === 'function') {
       cb = unique;
       unique = undefined;
@@ -281,7 +281,7 @@ extend(BaseCollection.prototype, {
     });
     return promise;
   },
-  createSkipList: function (fields, unique, cb) {
+  createSkipList(fields, unique, cb) {
     if (typeof unique === 'function') {
       cb = unique;
       unique = undefined;
@@ -300,7 +300,7 @@ extend(BaseCollection.prototype, {
     });
     return promise;
   },
-  createGeoIndex: function (fields, opts, cb) {
+  createGeoIndex(fields, opts, cb) {
     if (typeof opts === 'function') {
       cb = opts;
       opts = undefined;
@@ -318,7 +318,7 @@ extend(BaseCollection.prototype, {
     });
     return promise;
   },
-  createFulltextIndex: function (fields, minLength, cb) {
+  createFulltextIndex(fields, minLength, cb) {
     if (typeof minLength === 'function') {
       cb = minLength;
       minLength = undefined;
@@ -337,7 +337,7 @@ extend(BaseCollection.prototype, {
     });
     return promise;
   },
-  fulltext: function (field, query, opts, cb) {
+  fulltext(field, query, opts, cb) {
     if (typeof opts === 'function') {
       cb = opts;
       opts = undefined;
@@ -358,7 +358,7 @@ extend(BaseCollection.prototype, {
     });
     return promise;
   },
-  near: function (latitude, longitude, opts, cb) {
+  near(latitude, longitude, opts, cb) {
     if (typeof opts === 'function') {
       cb = opts;
       opts = undefined;
@@ -379,7 +379,7 @@ extend(BaseCollection.prototype, {
     });
     return promise;
   },
-  within: function (latitude, longitude, radius, opts, cb) {
+  within(latitude, longitude, radius, opts, cb) {
     if (typeof opts === 'function') {
       cb = opts;
       opts = undefined;
@@ -410,7 +410,7 @@ function DocumentCollection(connection, body) {
 inherits(DocumentCollection, BaseCollection);
 
 extend(DocumentCollection.prototype, {
-  document: function (documentHandle, cb) {
+  document(documentHandle, cb) {
     var {promise, callback} = promisify(cb);
     this._api.get('document/' + this._documentHandle(documentHandle), function (err, res) {
       if (err) callback(err);
@@ -418,7 +418,7 @@ extend(DocumentCollection.prototype, {
     });
     return promise;
   },
-  save: function (data, cb) {
+  save(data, cb) {
     var {promise, callback} = promisify(cb);
     this._api.post('document/', data, {
       collection: this.name
@@ -437,7 +437,7 @@ function EdgeCollection(connection, body) {
 inherits(EdgeCollection, BaseCollection);
 
 extend(EdgeCollection.prototype, {
-  edge: function (documentHandle, cb) {
+  edge(documentHandle, cb) {
     var {promise, callback} = promisify(cb);
     this._api.get('edge/' + this._documentHandle(documentHandle), function (err, res) {
       if (err) callback(err);
@@ -445,7 +445,7 @@ extend(EdgeCollection.prototype, {
     });
     return promise;
   },
-  save: function (data, fromId, toId, cb) {
+  save(data, fromId, toId, cb) {
     var {promise, callback} = promisify(cb);
     this._api.post('edge/', data, {
       collection: this.name,
@@ -457,7 +457,7 @@ extend(EdgeCollection.prototype, {
     });
     return promise;
   },
-  _edges: function (documentHandle, direction, cb) {
+  _edges(documentHandle, direction, cb) {
     var {promise, callback} = promisify(cb);
     this._api.get('edges/' + this.name, {
       vertex: this._documentHandle(documentHandle),
@@ -468,16 +468,16 @@ extend(EdgeCollection.prototype, {
     });
     return promise;
   },
-  edges: function (vertex, cb) {
+  edges(vertex, cb) {
     return this._edges(vertex, undefined, cb);
   },
-  inEdges: function (vertex, cb) {
+  inEdges(vertex, cb) {
     return this._edges(vertex, 'in', cb);
   },
-  outEdges: function (vertex, cb) {
+  outEdges(vertex, cb) {
     return this._edges(vertex, 'out', cb);
   },
-  traversal: function (startVertex, opts, cb) {
+  traversal(startVertex, opts, cb) {
     if (typeof opts === 'function') {
       cb = opts;
       opts = undefined;

@@ -10,7 +10,7 @@ function Route(connection, path, headers) {
 }
 
 extend(Route.prototype, {
-  route: function (path, headers) {
+  route(path, headers) {
     if (!path) path = '';
     else if (path.charAt(0) !== '/') path = '/' + path;
     return new Route(
@@ -19,13 +19,13 @@ extend(Route.prototype, {
       extend({}, this._headers, headers)
     );
   },
-  request: function (opts, callback) {
+  request(opts, callback) {
     opts = extend({}, opts);
     opts.basePath = this._path;
     opts.headers = extend({}, this._headers, opts.headers);
     return this._connection.request(opts, callback);
   },
-  get: function (path, qs, callback) {
+  get(path, qs, callback) {
     if (typeof path !== 'string') {
       callback = qs;
       qs = path;
@@ -43,7 +43,7 @@ extend(Route.prototype, {
       qs: qs
     }, callback);
   },
-  post: function (path, body, qs, callback) {
+  post(path, body, qs, callback) {
     if (typeof path !== 'string') {
       callback = qs;
       qs = body;
@@ -67,7 +67,7 @@ extend(Route.prototype, {
       qs: qs
     }, callback);
   },
-  put: function (path, body, qs, callback) {
+  put(path, body, qs, callback) {
     if (typeof path !== 'string') {
       callback = body;
       body = qs;
@@ -91,7 +91,7 @@ extend(Route.prototype, {
       qs: qs
     }, callback);
   },
-  patch: function (path, body, qs, callback) {
+  patch(path, body, qs, callback) {
     if (typeof path !== 'string') {
       callback = body;
       body = qs;
@@ -115,7 +115,7 @@ extend(Route.prototype, {
       qs: qs
     }, callback);
   },
-  delete: function (path, qs, callback) {
+  delete(path, qs, callback) {
     if (typeof path !== 'string') {
       callback = qs;
       qs = path;
@@ -133,7 +133,7 @@ extend(Route.prototype, {
       qs: qs
     }, callback);
   },
-  head: function (path, qs, callback) {
+  head(path, qs, callback) {
     if (typeof path !== 'string') {
       callback = qs;
       qs = path;

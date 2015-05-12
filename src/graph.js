@@ -17,7 +17,7 @@ Graph.VertexCollection = VertexCollection;
 Graph.EdgeCollection = EdgeCollection;
 
 extend(Graph.prototype, {
-  drop: function (dropCollections, cb) {
+  drop(dropCollections, cb) {
     if (typeof dropCollections === 'function') {
       cb = dropCollections;
       dropCollections = undefined;
@@ -31,7 +31,7 @@ extend(Graph.prototype, {
     });
     return promise;
   },
-  vertexCollection: function (collectionName, cb) {
+  vertexCollection(collectionName, cb) {
     var {promise, callback} = promisify(cb);
     var self = this;
     self._api.get('collection/' + collectionName, function (err, res) {
@@ -40,7 +40,7 @@ extend(Graph.prototype, {
     });
     return promise;
   },
-  addVertexCollection: function (collectionName, cb) {
+  addVertexCollection(collectionName, cb) {
     var {promise, callback} = promisify(cb);
     this._gharial.post('vertex', {collection: collectionName}, function (err, res) {
       if (err) callback(err);
@@ -48,7 +48,7 @@ extend(Graph.prototype, {
     });
     return promise;
   },
-  removeVertexCollection: function (collectionName, dropCollection, cb) {
+  removeVertexCollection(collectionName, dropCollection, cb) {
     if (typeof dropCollection === 'function') {
       cb = dropCollection;
       dropCollection = undefined;
@@ -60,7 +60,7 @@ extend(Graph.prototype, {
     });
     return promise;
   },
-  edgeCollection: function (collectionName, cb) {
+  edgeCollection(collectionName, cb) {
     var {promise, callback} = promisify(cb);
     var self = this;
     self._api.get('collection/' + collectionName, function (err, res) {
@@ -69,7 +69,7 @@ extend(Graph.prototype, {
     });
     return promise;
   },
-  addEdgeDefinition: function (definition, cb) {
+  addEdgeDefinition(definition, cb) {
     var {promise, callback} = promisify(cb);
     this._gharial.post('edge', definition, function (err, res) {
       if (err) callback(err);
@@ -77,7 +77,7 @@ extend(Graph.prototype, {
     });
     return promise;
   },
-  replaceEdgeDefinition: function (definitionName, definition, cb) {
+  replaceEdgeDefinition(definitionName, definition, cb) {
     var {promise, callback} = promisify(cb);
     this._api.put('gharial/' + this.name + '/edge/' + definitionName, definition, function (err, res) {
       if (err) callback(err);
@@ -85,7 +85,7 @@ extend(Graph.prototype, {
     });
     return promise;
   },
-  removeEdgeDefinition: function (definitionName, dropCollection, cb) {
+  removeEdgeDefinition(definitionName, dropCollection, cb) {
     if (typeof dropCollection === 'function') {
       cb = dropCollection;
       dropCollection = undefined;
@@ -97,7 +97,7 @@ extend(Graph.prototype, {
     });
     return promise;
   },
-  traversal: function (startVertex, opts, cb) {
+  traversal(startVertex, opts, cb) {
     if (typeof opts === 'function') {
       cb = opts;
       opts = undefined;
@@ -122,7 +122,7 @@ function VertexCollection(connection, body, graph) {
 inherits(VertexCollection, BaseCollection);
 
 extend(VertexCollection.prototype, {
-  vertex: function (documentHandle, cb) {
+  vertex(documentHandle, cb) {
     var {promise, callback} = promisify(cb);
     this._gharial.get(documentHandle, function (err, res) {
       if (err) callback(err);
@@ -130,7 +130,7 @@ extend(VertexCollection.prototype, {
     });
     return promise;
   },
-  save: function (data, cb) {
+  save(data, cb) {
     var {promise, callback} = promisify(cb);
     this._gharial.post(data, {
       collection: this.name
@@ -150,7 +150,7 @@ function EdgeCollection(connection, body, graph) {
 inherits(EdgeCollection, BaseCollection);
 
 extend(EdgeCollection.prototype, {
-  edge: function (documentHandle, cb) {
+  edge(documentHandle, cb) {
     var {promise, callback} = promisify(cb);
     this._gharial.get(documentHandle, function (err, res) {
       if (err) callback(err);
@@ -158,7 +158,7 @@ extend(EdgeCollection.prototype, {
     });
     return promise;
   },
-  save: function (data, fromId, toId, cb) {
+  save(data, fromId, toId, cb) {
     if (typeof fromId === 'function') {
       cb = fromId;
       fromId = undefined;

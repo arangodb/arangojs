@@ -22,10 +22,10 @@ function Database(config) {
 }
 
 extend(Database.prototype, {
-  route: function (path, headers) {
+  route(path, headers) {
     return this._connection.route(path, headers);
   },
-  createCollection: function (properties, cb) {
+  createCollection(properties, cb) {
     var {promise, callback} = promisify(cb);
     if (typeof properties === 'string') {
       properties = {name: properties};
@@ -39,7 +39,7 @@ extend(Database.prototype, {
     });
     return promise;
   },
-  createEdgeCollection: function (properties, cb) {
+  createEdgeCollection(properties, cb) {
     var {promise, callback} = promisify(cb);
     if (typeof properties === 'string') {
       properties = {name: properties};
@@ -52,7 +52,7 @@ extend(Database.prototype, {
     });
     return promise;
   },
-  collection: function (collectionName, autoCreate, cb) {
+  collection(collectionName, autoCreate, cb) {
     if (typeof autoCreate === 'function') {
       cb = autoCreate;
       autoCreate = undefined;
@@ -76,7 +76,7 @@ extend(Database.prototype, {
     });
     return promise;
   },
-  edgeCollection: function (collectionName, autoCreate, cb) {
+  edgeCollection(collectionName, autoCreate, cb) {
     if (typeof autoCreate === 'function') {
       cb = autoCreate;
       autoCreate = undefined;
@@ -107,7 +107,7 @@ extend(Database.prototype, {
     });
     return promise;
   },
-  collections: function (cb) {
+  collections(cb) {
     var {promise, callback} = promisify(cb);
     var self = this;
     self._api.get('collection', {
@@ -122,7 +122,7 @@ extend(Database.prototype, {
     });
     return promise;
   },
-  allCollections: function (cb) {
+  allCollections(cb) {
     var {promise, callback} = promisify(cb);
     var self = this;
     self._api.get('collection', {
@@ -137,7 +137,7 @@ extend(Database.prototype, {
     });
     return promise;
   },
-  dropCollection: function (collectionName, cb) {
+  dropCollection(collectionName, cb) {
     var {promise, callback} = promisify(cb);
     var self = this;
     self._api.delete('collection/' + collectionName, function (err, res) {
@@ -146,7 +146,7 @@ extend(Database.prototype, {
     });
     return promise;
   },
-  createGraph: function (properties, cb) {
+  createGraph(properties, cb) {
     var {promise, callback} = promisify(cb);
     var self = this;
     self._api.post('gharial', properties, function (err, res) {
@@ -155,7 +155,7 @@ extend(Database.prototype, {
     });
     return promise;
   },
-  graph: function (graphName, autoCreate, cb) {
+  graph(graphName, autoCreate, cb) {
     if (typeof autoCreate === 'function') {
       cb = autoCreate;
       autoCreate = undefined;
@@ -179,7 +179,7 @@ extend(Database.prototype, {
     });
     return promise;
   },
-  graphs: function (cb) {
+  graphs(cb) {
     var {promise, callback} = promisify(cb);
     var self = this;
     self._api.get('gharial', function (err, res) {
@@ -192,7 +192,7 @@ extend(Database.prototype, {
     });
     return promise;
   },
-  dropGraph: function (graphName, dropCollections, cb) {
+  dropGraph(graphName, dropCollections, cb) {
     if (typeof dropCollections === 'function') {
       cb = dropCollections;
       dropCollections = undefined;
@@ -201,7 +201,7 @@ extend(Database.prototype, {
     this._api.delete('graph/' + graphName, {dropCollections: dropCollections}, callback);
     return promise;
   },
-  createDatabase: function (databaseName, users, cb) {
+  createDatabase(databaseName, users, cb) {
     if (typeof users === 'function') {
       cb = users;
       users = undefined;
@@ -221,7 +221,7 @@ extend(Database.prototype, {
     });
     return promise;
   },
-  database: function (databaseName, autoCreate, cb) {
+  database(databaseName, autoCreate, cb) {
     if (typeof autoCreate === 'function') {
       cb = autoCreate;
       autoCreate = undefined;
@@ -253,7 +253,7 @@ extend(Database.prototype, {
     });
     return promise;
   },
-  databases: function (cb) {
+  databases(cb) {
     var {promise, callback} = promisify(cb);
     var self = this;
     self._api.get('database', function (err, res) {
@@ -268,7 +268,7 @@ extend(Database.prototype, {
     });
     return promise;
   },
-  dropDatabase: function (databaseName, cb) {
+  dropDatabase(databaseName, cb) {
     var {promise, callback} = promisify(cb);
     var self = this;
     self._api.delete('database/' + databaseName, function (err, res) {
@@ -277,7 +277,7 @@ extend(Database.prototype, {
     });
     return promise;
   },
-  truncate: function (cb) {
+  truncate(cb) {
     var {promise, callback} = promisify(cb);
     var self = this;
     self._api.get('collection', {
@@ -297,7 +297,7 @@ extend(Database.prototype, {
     });
     return promise;
   },
-  truncateAll: function (cb) {
+  truncateAll(cb) {
     var {promise, callback} = promisify(cb);
     var self = this;
     self._api.get('collection', {
@@ -317,7 +317,7 @@ extend(Database.prototype, {
     });
     return promise;
   },
-  transaction: function (collections, action, params, lockTimeout, cb) {
+  transaction(collections, action, params, lockTimeout, cb) {
     if (typeof lockTimeout === 'function') {
       cb = lockTimeout;
       lockTimeout = undefined;
@@ -345,7 +345,7 @@ extend(Database.prototype, {
     });
     return promise;
   },
-  query: function (query, bindVars, cb) {
+  query(query, bindVars, cb) {
     if (typeof bindVars === 'function') {
       cb = bindVars;
       bindVars = undefined;
@@ -364,7 +364,7 @@ extend(Database.prototype, {
     });
     return promise;
   },
-  functions: function (cb) {
+  functions(cb) {
     var {promise, callback} = promisify(cb);
     this._api.get('aqlfunction', function (err, res) {
       if (err) callback(err);
@@ -372,7 +372,7 @@ extend(Database.prototype, {
     });
     return promise;
   },
-  createFunction: function (name, code, cb) {
+  createFunction(name, code, cb) {
     var {promise, callback} = promisify(cb);
     this._api.post('aqlfunction', {
       name: name,
@@ -383,7 +383,7 @@ extend(Database.prototype, {
     });
     return promise;
   },
-  dropFunction: function (name, group, cb) {
+  dropFunction(name, group, cb) {
     if (typeof group === 'function') {
       cb = group;
       group = undefined;

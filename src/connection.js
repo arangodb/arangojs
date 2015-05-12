@@ -2,7 +2,7 @@
 var promisify = require('./util/promisify');
 var extend = require('extend');
 var qs = require('querystring');
-var xhr = require('request');
+var createRequest = require('./util/request');
 var ArangoError = require('./error');
 var Route = require('./route');
 var jsonMime = /\/(json|javascript)(\W|$)/;
@@ -14,23 +14,27 @@ function Connection(config) {
     config = {url: config};
   }
   this.config = extend({}, Connection.defaults, config);
+  this.config.agentOptions = extend({}, Connection.agentDefaults, this.config.agentOptions);
   if (!this.config.headers) this.config.headers = {};
   if (!this.config.headers['x-arango-version']) {
     this.config.headers['x-arango-version'] = this.config.arangoVersion;
   }
-  this.pool = extend({}, Connection.defaults.poolOpts, this.config.poolOpts);
+  this._request = createRequest(this.config.agentOptions);
 }
 
 Connection.defaults = {
   url: 'http://localhost:8529',
   databaseName: '_system',
-  arangoVersion: 20300,
-  requestOpts: {forever: true},
-  poolOpts: {maxSockets: 5}
+  arangoVersion: 20300
+};
+Connection.agentDefaults = {
+  maxSockets: 3,
+  keepAlive: true,
+  keepAliveMsecs: 1000
 };
 
 extend(Connection.prototype, {
-  _resolveUrl: function (opts) {
+  _resolveUrl(opts) {
     var url = this.config.url;
     if (!opts.absolutePath) {
       url += '/_db/' + this.config.databaseName;
@@ -40,10 +44,10 @@ extend(Connection.prototype, {
     if (opts.qs) url += '?' + (typeof opts.qs === 'string' ? opts.qs : qs.stringify(opts.qs));
     return url;
   },
-  route: function (path) {
+  route(path) {
     return new Route(this, path);
   },
-  request: function (opts, cb) {
+  request(opts, cb) {
     var {promise, callback} = promisify(cb);
     if (!opts) opts = {};
     var body = opts.body;
@@ -61,24 +65,23 @@ extend(Connection.prototype, {
       }
     }
 
-    xhr(extend({}, Connection.defaults.requestOpts, this.config.requestOpts, {
+    this._request({
       url: this._resolveUrl(opts),
       headers: extend(headers, this.config.headers, opts.headers),
       method: (opts.method || 'get').toUpperCase(),
-      pool: this.pool,
       body: body
-    }), function (err, response, rawBody) {
-      response.rawBody = rawBody;
-      if (err) callback(err, response);
-      else if (response.headers['content-type'].match(jsonMime)) {
+    }, function (err, res) {
+      if (err) callback(err);
+      else if (res.headers['content-type'].match(jsonMime)) {
         try {
-          response.body = JSON.parse(rawBody);
+          res.rawBody = res.body;
+          res.body = JSON.parse(res.rawBody);
         } catch (e) {
-          return callback(extend(e, {response: response}));
+          return callback(extend(e, {response: res}));
         }
-        if (!response.body.error) callback(null, response);
-        else callback(extend(new ArangoError(response.body), {response: response}));
-      } else callback(null, extend(response, {body: rawBody}));
+        if (!res.body.error) callback(null, res);
+        else callback(extend(new ArangoError(res.body), {response: res}));
+      } else callback(null, extend(res, {rawBody: res.body}));
     });
     return promise;
   }
