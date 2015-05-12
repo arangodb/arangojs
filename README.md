@@ -83,7 +83,7 @@ The type annotations in this documentation generally follow the definitions used
 * *config* (optional): an object with the following properties:
  * *url* (optional): base URL of the ArangoDB server. Default: `http://localhost:8529`.
  * *databaseName* (optional): name of the active database. Default: `_system`.
- * *arangoVersion* (optional): value of the `x-arango-version` header. Default: `20200`.
+ * *arangoVersion* (optional): value of the `x-arango-version` header. Default: `20300`.
  * *headers* (optional): an object with headers to send with every request.
 
 If *config* is a string, it will be interpreted as *config.url*.
