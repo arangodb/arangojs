@@ -85,7 +85,8 @@ The type annotations in this documentation generally follow the definitions used
  * *databaseName* (optional): name of the active database. Default: `_system`.
  * *arangoVersion* (optional): value of the `x-arango-version` header. Default: `20300`.
  * *headers* (optional): an object with headers to send with every request.
- * *agentOptions* (optional): an object with options for the underlying [`http.Agent`](https://nodejs.org/api/http.html#http_new_agent_options). This has no effect in the browser. Default: `{maxSockets: 3, keepAlive: true, keepAliveMsecs: 1000}`.
+ * *agent* (optional): an http Agent instance to use for connections. This has no effect in the browser. Default: a new [`http.Agent`](https://nodejs.org/api/http.html#http_new_agent_options) instance configured with the *agentOptions*.
+ * *agentOptions* (optional): an object with options for the agent. This will be ignored if *agent* is also provided and has no effect in the browser. Default: `{maxSockets: 3, keepAlive: true, keepAliveMsecs: 1000}`.
 
 If *config* is a string, it will be interpreted as *config.url*.
 

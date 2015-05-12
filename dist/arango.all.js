@@ -603,7 +603,7 @@ function Connection(config) {
   if (!this.config.headers['x-arango-version']) {
     this.config.headers['x-arango-version'] = this.config.arangoVersion;
   }
-  this._request = createRequest(this.config.agentOptions);
+  this._request = createRequest(this.config.agent, this.config.agentOptions);
 }
 
 Connection.defaults = {
@@ -1812,9 +1812,8 @@ var parseUrl = require('url').parse;
 var extend = require('extend');
 var once = require('./once');
 
-module.exports = function (agentOptions) {
-  var agent;
-  if (http.Agent) agent = new http.Agent(agentOptions); // server only
+module.exports = function (agent, agentOptions) {
+  if (!agent && http.Agent) agent = new http.Agent(agentOptions); // server only
   return function request(_ref, cb) {
     var method = _ref.method;
     var url = _ref.url;
