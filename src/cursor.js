@@ -12,11 +12,14 @@ function ArrayCursor(connection, body) {
   this._hasMore = Boolean(body.hasMore);
   this._id = body.id;
   this._index = 0;
+  this._promisify = connection.config.promisify
+    ? promisify
+    : function(callback) { return { callback: callback || function () {} }; };
 }
 
 extend(ArrayCursor.prototype, {
   _drain(cb) {
-    var {promise, callback} = promisify(cb);
+    var {promise, callback} = this._promisify(cb);
     var self = this;
     self._more(function (err) {
       if (err) callback(err);
@@ -40,7 +43,7 @@ extend(ArrayCursor.prototype, {
     }
   },
   all(cb) {
-    var {promise, callback} = promisify(cb);
+    var {promise, callback} = this._promisify(cb);
     var self = this;
     self._drain(function (err) {
       self._index = self._result.length;
@@ -50,7 +53,7 @@ extend(ArrayCursor.prototype, {
     return promise;
   },
   next(cb) {
-    var {promise, callback} = promisify(cb);
+    var {promise, callback} = this._promisify(cb);
     var self = this;
     function next() {
       var value = self._result[self._index];
@@ -73,7 +76,7 @@ extend(ArrayCursor.prototype, {
     return (this._hasMore || this._index < this._result.length);
   },
   each(fn, cb) {
-    var {promise, callback} = promisify(cb);
+    var {promise, callback} = this._promisify(cb);
     var self = this;
     self._drain(function (err) {
       if (err) callback(err);
@@ -93,7 +96,7 @@ extend(ArrayCursor.prototype, {
     return promise;
   },
   every(fn, cb) {
-    var {promise, callback} = promisify(cb);
+    var {promise, callback} = this._promisify(cb);
     var self = this;
     function loop() {
       try {
@@ -119,7 +122,7 @@ extend(ArrayCursor.prototype, {
     return promise;
   },
   some(fn, cb) {
-    var {promise, callback} = promisify(cb);
+    var {promise, callback} = this._promisify(cb);
     var self = this;
     function loop() {
       try {
@@ -145,7 +148,7 @@ extend(ArrayCursor.prototype, {
     return promise;
   },
   map(fn, cb) {
-    var {promise, callback} = promisify(cb);
+    var {promise, callback} = this._promisify(cb);
     var self = this,
       result = [];
 
@@ -175,7 +178,7 @@ extend(ArrayCursor.prototype, {
       cb = accu;
       accu = undefined;
     }
-    var {promise, callback} = promisify(cb);
+    var {promise, callback} = this._promisify(cb);
     var self = this;
     function loop() {
       try {

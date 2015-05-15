@@ -19,19 +19,21 @@ extend(Route.prototype, {
       extend({}, this._headers, headers)
     );
   },
-  request(opts, callback) {
+  request(opts, callback, isDocument) {
     opts = extend({}, opts);
     opts.basePath = this._path;
     opts.headers = extend({}, this._headers, opts.headers);
-    return this._connection.request(opts, callback);
+    return this._connection.request(opts, callback, isDocument);
   },
-  get(path, qs, callback) {
+  get(path, qs, callback, isDocument) {
     if (typeof path !== 'string') {
+      isDocument = callback;
       callback = qs;
       qs = path;
       path = undefined;
     }
     if (typeof qs === 'function') {
+      isDocument = callback;
       callback = qs;
       qs = undefined;
     }
@@ -41,7 +43,7 @@ extend(Route.prototype, {
       method: 'get',
       path: path,
       qs: qs
-    }, callback);
+    }, callback, isDocument);
   },
   post(path, body, qs, callback) {
     if (typeof path !== 'string') {

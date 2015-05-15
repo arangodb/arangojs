@@ -7,7 +7,10 @@ var once = require('./once');
 module.exports = function (agent, agentOptions) {
   if (!agent && http.Agent) agent = new http.Agent(agentOptions); // server only
   return function request({method, url, headers, body}, cb) {
-    var options = extend(parseUrl(url), {method, headers, agent});
+    if (typeof url === "string") {
+      url = parseUrl(url);
+    }
+    var options = extend(url, {method, headers, agent});
     var callback = once(cb);
     var req = http.request(options, function (res) {
       var data = [];
