@@ -24,9 +24,11 @@ module.exports = extend(
 function BaseCollection(connection, body) {
   this._connection = connection;
   this._api = this._connection.route('_api');
+  this._fullDocument = connection.config.fullDocument;
   this._promisify = connection.config.promisify
     ? promisify
     : function(callback) { return { callback: callback || function () {} }; };
+
   extend(this, body);
   delete this.code;
   delete this.error;
@@ -415,9 +417,10 @@ inherits(DocumentCollection, BaseCollection);
 extend(DocumentCollection.prototype, {
   document(documentHandle, cb) {
     var {promise, callback} = this._promisify(cb);
+    var fullDocument = this._fullDocument;
     this._api.get('document/' + this._documentHandle(documentHandle), function (err, res) {
       if (err) callback(err);
-      else callback(null, res.body);
+      else callback(null, fullDocument ? res : res.body);
     }, true);
     return promise;
   },
