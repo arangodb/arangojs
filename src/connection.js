@@ -158,7 +158,7 @@ extend(Connection.prototype, {
     if (0 === this._currentTasks) this.drainQueue();
   },
   drainQueue() {
-    if (0 < this._queue.length && this._currentTasks < this._maxTasks) {
+    while (0 < this._queue.length && this._currentTasks < this._maxTasks) {
       var action = this._queue.shift();
       this._currentTasks++;
 
