@@ -6,6 +6,7 @@ var createRequest = require('./util/request');
 var ArangoError = require('./error');
 var Route = require('./route');
 var jsonMime = /\/(json|javascript)(\W|$)/;
+var LinkedList = require('linkedlist');
 
 module.exports = Connection;
 
@@ -31,6 +32,12 @@ function Connection(config) {
     hostname: u[1].substr(2),
     port: u[2]
   };
+
+  this._queue = new LinkedList();
+  this._currentTasks = 0;
+  this._maxTasks = ((config.agent === undefined)
+    ? 5
+    : config.agent.maxSockets) * 20;
 }
 
 Connection.defaults = {
@@ -145,5 +152,25 @@ extend(Connection.prototype, {
       });
     }
     return promise;
+  },
+  addQueue(action) {
+    this._queue.push(action);
+    if (0 === this._currentTasks) this.drainQueue();
+  },
+  drainQueue() {
+    if (0 < this._queue.length && this._currentTasks < this._maxTasks) {
+      var action = this._queue.shift();
+      this._currentTasks++;
+
+      if (action.method === 1) {
+	var self = this;
+
+	action.action.get(action.path, function(err, res) {
+          self._currentTasks--;
+          action.callback(err, res);
+	  self.drainQueue();
+        });
+      }
+    }
   }
 });

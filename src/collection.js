@@ -418,10 +418,16 @@ extend(DocumentCollection.prototype, {
   document(documentHandle, cb) {
     var {promise, callback} = this._promisify(cb);
     var fullDocument = this._fullDocument;
-    this._api.get('document/' + this._documentHandle(documentHandle), function (err, res) {
-      if (err) callback(err);
-      else callback(null, fullDocument ? res : res.body);
-    }, true);
+    this._connection.addQueue({
+      method: 1,
+      action: this._api,
+      path: 'document/' + this._documentHandle(documentHandle),
+      callback: function (err, res) {
+        if (err) callback(err);
+        else callback(null, fullDocument ? res : res.body);
+      }
+    });
+    this._connection.drainQueue();
     return promise;
   },
   save(data, cb) {
