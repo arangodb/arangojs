@@ -14,7 +14,7 @@ function ArrayCursor(connection, body) {
   this._index = 0;
   this._promisify = connection.config.promisify
     ? promisify
-    : function(callback) { return { callback: callback || function () {} }; };
+    : function (callback) {return {callback: callback || function () {}};};
 }
 
 extend(ArrayCursor.prototype, {

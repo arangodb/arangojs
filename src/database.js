@@ -21,7 +21,7 @@ function Database(config) {
   this.name = this._connection.config.databaseName;
   this._promisify = config.promisify
     ? promisify
-    : function(callback) { return { callback: callback || function () {} }; };
+    : function (callback) {return {callback: callback || function () {}};};
 }
 
 extend(Database.prototype, {

@@ -24,7 +24,7 @@ function Connection(config) {
   this._fullDocument = config.fullDocument;
   this._promisify = config.promisify
     ? promisify
-    : function(callback) { return { callback: callback || function () {} }; };
+    : function (callback) {return {callback: callback || function () {}};};
 
   var u = this.config.url.split(':');
   this._urlParts = {
@@ -58,14 +58,13 @@ var fullProto = {};
 
 Object.defineProperty(fullProto, 'body', {
   configurable: true,
-  get: function() { 
+  get: function () {
     Object.defineProperty(this, 'body', {
       value: JSON.parse(this.rawBody)
     });
     return this.body;
   }
 });
-
 
 extend(Connection.prototype, {
   _resolveUrl(opts) {
@@ -76,7 +75,7 @@ extend(Connection.prototype, {
     }
     url += opts.path ? (opts.path.charAt(0) === '/' ? '' : '/') + opts.path : '';
     if (opts.qs) url += '?' + (typeof opts.qs === 'string' ? opts.qs : qs.stringify(opts.qs));
-    return extend({}, this._urlParts, { path: url });
+    return extend({}, this._urlParts, {path: url});
   },
   route(path, isDocument) {
     return new Route(this, path, {}, isDocument);
@@ -107,68 +106,68 @@ extend(Connection.prototype, {
 
     if (isDocument) {
       this._request({
-	url: this._resolveUrl(opts),
-	headers: extend(headers, this.config.headers, opts.headers),
-	method: (opts.method || 'get').toUpperCase(),
-	body: body
+        url: this._resolveUrl(opts),
+        headers: extend(headers, this.config.headers, opts.headers),
+        method: (opts.method || 'get').toUpperCase(),
+        body: body
       }, function (err, res) {
-	if (err) callback(err);
-	if (res.statusCode < 400) {
-	  if (fullDocument) {
-	    var res2 = Object.create(fullProto);
+        if (err) callback(err);
+        if (res.statusCode < 400) {
+          if (fullDocument) {
+            var res2 = Object.create(fullProto);
             res2.rawBody = res.body;
             res2.statusCode = res.statusCode;
-	    res = res2;
-	  }
-	  else {
+            res = res2;
+          }
+          else {
             res.rawBody = res.body;
-	    res.body = JSON.parse(res.rawBody);
-	  }
-	  callback(null, res);
-	}
-	else {
-	  callback(extend(new ArangoError(JSON.parse(res.body)), {response: res}));
-	}
+            res.body = JSON.parse(res.rawBody);
+          }
+          callback(null, res);
+        }
+        else {
+          callback(extend(new ArangoError(JSON.parse(res.body)), {response: res}));
+        }
       });
     }
     else {
       this._request({
-	url: this._resolveUrl(opts),
-	headers: extend(headers, this.config.headers, opts.headers),
-	method: (opts.method || 'get').toUpperCase(),
-	body: body
+        url: this._resolveUrl(opts),
+        headers: extend(headers, this.config.headers, opts.headers),
+        method: (opts.method || 'get').toUpperCase(),
+        body: body
       }, function (err, res) {
-	if (err) callback(err);
-	else if (res.headers['content-type'].match(jsonMime)) {
-	  try {
-	    res.rawBody = res.body;
-	    res.body = JSON.parse(res.rawBody);
-	  } catch (e) {
-	    return callback(extend(e, {response: res}));
-	  }
-	  if (!res.body.error) callback(null, res);
-	  else callback(extend(new ArangoError(res.body), {response: res}));
-	} else callback(null, extend(res, {rawBody: res.body}));
+        if (err) callback(err);
+        else if (res.headers['content-type'].match(jsonMime)) {
+          try {
+            res.rawBody = res.body;
+            res.body = JSON.parse(res.rawBody);
+          } catch (e) {
+            return callback(extend(e, {response: res}));
+          }
+          if (!res.body.error) callback(null, res);
+          else callback(extend(new ArangoError(res.body), {response: res}));
+        } else callback(null, extend(res, {rawBody: res.body}));
       });
     }
     return promise;
   },
   addQueue(action) {
     this._queue.push(action);
-    if (0 === this._currentTasks) this.drainQueue();
+    if (this._currentTasks === 0) this.drainQueue();
   },
   drainQueue() {
-    while (0 < this._queue.length && this._currentTasks < this._maxTasks) {
+    while (this._queue.length > 0 && this._currentTasks < this._maxTasks) {
       var action = this._queue.shift();
       this._currentTasks++;
 
       if (action.method === 1) {
-	var self = this;
+        var self = this;
 
-	action.action.get(action.path, function(err, res) {
+        action.action.get(action.path, function (err, res) {
           self._currentTasks--;
           action.callback(err, res);
-	  self.drainQueue();
+          self.drainQueue();
         });
       }
     }

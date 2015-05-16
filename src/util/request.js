@@ -7,7 +7,7 @@ var once = require('./once');
 module.exports = function (agent, agentOptions) {
   if (!agent && http.Agent) agent = new http.Agent(agentOptions); // server only
   return function request({method, url, headers, body}, cb) {
-    if (typeof url === "string") {
+    if (typeof url === 'string') {
       url = parseUrl(url);
     }
     var options = extend(url, {method, headers, agent});

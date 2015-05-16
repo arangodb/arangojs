@@ -11,7 +11,7 @@ function Graph(connection, body) {
   this._api = this._connection.route('_api');
   this._promisify = connection.config.promisify
     ? promisify
-    : function(callback) { return { callback: callback || function () {} }; };
+    : function (callback) {return {callback: callback || function () {}};};
   extend(this, body);
   this._gharial = this._api.route('gharial/' + this.name);
 }

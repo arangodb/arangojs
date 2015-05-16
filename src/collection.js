@@ -27,7 +27,7 @@ function BaseCollection(connection, body) {
   this._fullDocument = connection.config.fullDocument;
   this._promisify = connection.config.promisify
     ? promisify
-    : function(callback) { return { callback: callback || function () {} }; };
+    : function (callback) {return {callback: callback || function () {}};};
 
   extend(this, body);
   delete this.code;
