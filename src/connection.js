@@ -67,6 +67,9 @@ extend(Connection.prototype, {
       } else {
         body = String(body);
       }
+      if (typeof body === "string") {
+	body = new Buffer(body, "utf-8");
+      }
       headers['content-length'] = body.length;
     }
 
