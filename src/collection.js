@@ -1,5 +1,4 @@
 'use strict';
-var promisify = require('./util/promisify');
 var inherits = require('util').inherits;
 var extend = require('extend');
 var ArrayCursor = require('./cursor');
@@ -58,7 +57,7 @@ extend(BaseCollection.prototype, {
       cb = opts;
       opts = undefined;
     }
-    var {promise, callback} = promisify(cb);
+    var {promise, callback} = this._connection.promisify(cb);
     var self = this;
     self._api.get('collection/' + self.name + '/' + path, opts, function (err, res) {
       if (err) callback(err);
@@ -74,7 +73,7 @@ extend(BaseCollection.prototype, {
     return promise;
   },
   _put(path, data, update, cb) {
-    var {promise, callback} = promisify(cb);
+    var {promise, callback} = this._connection.promisify(cb);
     var self = this;
     self._api.put('collection/' + self.name + '/' + path, data, function (err, res) {
       if (err) callback(err);
@@ -125,7 +124,7 @@ extend(BaseCollection.prototype, {
     return this._put('truncate', undefined, true, cb);
   },
   drop(cb) {
-    var {promise, callback} = promisify(cb);
+    var {promise, callback} = this._connection.promisify(cb);
     var self = this;
     self._api.delete('collection/' + self.name, function (err, res) {
       if (err) callback(err);
@@ -138,7 +137,7 @@ extend(BaseCollection.prototype, {
       cb = opts;
       opts = undefined;
     }
-    var {promise, callback} = promisify(cb);
+    var {promise, callback} = this._connection.promisify(cb);
     opts = extend({}, opts, {collection: this.name});
     this._api.put(this._documentPath(documentHandle), data, opts, function (err, res) {
       if (err) callback(err);
@@ -151,7 +150,7 @@ extend(BaseCollection.prototype, {
       cb = opts;
       opts = undefined;
     }
-    var {promise, callback} = promisify(cb);
+    var {promise, callback} = this._connection.promisify(cb);
     opts = extend({}, opts, {collection: this.name});
     this._api.patch(this._documentPath(documentHandle), data, opts, function (err, res) {
       if (err) callback(err);
@@ -164,7 +163,7 @@ extend(BaseCollection.prototype, {
       cb = opts;
       opts = undefined;
     }
-    var {promise, callback} = promisify(cb);
+    var {promise, callback} = this._connection.promisify(cb);
     opts = extend({}, opts, {collection: this.name});
     this._api.delete(this._documentPath(documentHandle), opts, function (err, res) {
       if (err) callback(err);
@@ -177,7 +176,7 @@ extend(BaseCollection.prototype, {
       cb = type;
       type = undefined;
     }
-    var {promise, callback} = promisify(cb);
+    var {promise, callback} = this._connection.promisify(cb);
     this._api.get('document', {
       type: type || 'id',
       collection: this.name
@@ -192,7 +191,7 @@ extend(BaseCollection.prototype, {
       cb = opts;
       opts = undefined;
     }
-    var {promise, callback} = promisify(cb);
+    var {promise, callback} = this._connection.promisify(cb);
     this._api.request({
       method: 'POST',
       path: 'import',
@@ -210,7 +209,7 @@ extend(BaseCollection.prototype, {
     return promise;
   },
   indexes(cb) {
-    var {promise, callback} = promisify(cb);
+    var {promise, callback} = this._connection.promisify(cb);
     this._api.get('index', {collection: this.name}, function (err, res) {
       if (err) callback(err);
       else callback(null, res.body.indexes);
@@ -218,7 +217,7 @@ extend(BaseCollection.prototype, {
     return promise;
   },
   index(indexHandle, cb) {
-    var {promise, callback} = promisify(cb);
+    var {promise, callback} = this._connection.promisify(cb);
     this._api.get(
       'index/' + this._indexHandle(indexHandle),
       function (err, res) {
@@ -229,7 +228,7 @@ extend(BaseCollection.prototype, {
     return promise;
   },
   createIndex(details, cb) {
-    var {promise, callback} = promisify(cb);
+    var {promise, callback} = this._connection.promisify(cb);
     this._api.post('index', details, {
       collection: this.name
     }, function (err, res) {
@@ -239,7 +238,7 @@ extend(BaseCollection.prototype, {
     return promise;
   },
   dropIndex(indexHandle, cb) {
-    var {promise, callback} = promisify(cb);
+    var {promise, callback} = this._connection.promisify(cb);
     this._api.delete(
       'index/' + this._indexHandle(indexHandle),
       function (err, res) {
@@ -253,7 +252,7 @@ extend(BaseCollection.prototype, {
     if (typeof size === 'number') {
       size = {size: size};
     }
-    var {promise, callback} = promisify(cb);
+    var {promise, callback} = this._connection.promisify(cb);
     this._api.post('index', extend({}, size, {
       type: 'cap'
     }), {collection: this.name}, function (err, res) {
@@ -270,7 +269,7 @@ extend(BaseCollection.prototype, {
     if (typeof fields === 'string') {
       fields = [fields];
     }
-    var {promise, callback} = promisify(cb);
+    var {promise, callback} = this._connection.promisify(cb);
     this._api.post('index', {
       type: 'hash',
       fields: fields,
@@ -289,7 +288,7 @@ extend(BaseCollection.prototype, {
     if (typeof fields === 'string') {
       fields = [fields];
     }
-    var {promise, callback} = promisify(cb);
+    var {promise, callback} = this._connection.promisify(cb);
     this._api.post('index', {
       type: 'skiplist',
       fields: fields,
@@ -308,7 +307,7 @@ extend(BaseCollection.prototype, {
     if (typeof fields === 'string') {
       fields = [fields];
     }
-    var {promise, callback} = promisify(cb);
+    var {promise, callback} = this._connection.promisify(cb);
     this._api.post('index', extend({}, opts, {
       type: 'geo',
       fields: fields
@@ -326,7 +325,7 @@ extend(BaseCollection.prototype, {
     if (typeof fields === 'string') {
       fields = [fields];
     }
-    var {promise, callback} = promisify(cb);
+    var {promise, callback} = this._connection.promisify(cb);
     this._api.post('index', {
       type: 'fulltext',
       fields: fields,
@@ -346,7 +345,7 @@ extend(BaseCollection.prototype, {
       opts = extend({}, opts);
       if (opts.index) opts.index = this._indexHandle(opts.index);
     }
-    var {promise, callback} = promisify(cb);
+    var {promise, callback} = this._connection.promisify(cb);
     var self = this;
     self._api.put('simple/fulltext', extend(opts, {
       collection: this.name,
@@ -367,7 +366,7 @@ extend(BaseCollection.prototype, {
       opts = extend({}, opts);
       if (opts.geo) opts.geo = this._indexHandle(opts.geo);
     }
-    var {promise, callback} = promisify(cb);
+    var {promise, callback} = this._connection.promisify(cb);
     var self = this;
     self._api.put('simple/near', extend(opts, {
       collection: this.name,
@@ -388,7 +387,7 @@ extend(BaseCollection.prototype, {
       opts = extend({}, opts);
       if (opts.geo) opts.geo = this._indexHandle(opts.geo);
     }
-    var {promise, callback} = promisify(cb);
+    var {promise, callback} = this._connection.promisify(cb);
     var self = this;
     self._api.put('simple/within', extend(opts, {
       collection: this.name,
@@ -411,7 +410,7 @@ inherits(DocumentCollection, BaseCollection);
 
 extend(DocumentCollection.prototype, {
   document(documentHandle, cb) {
-    var {promise, callback} = promisify(cb);
+    var {promise, callback} = this._connection.promisify(cb);
     this._api.get('document/' + this._documentHandle(documentHandle), function (err, res) {
       if (err) callback(err);
       else callback(null, res.body);
@@ -419,7 +418,7 @@ extend(DocumentCollection.prototype, {
     return promise;
   },
   save(data, cb) {
-    var {promise, callback} = promisify(cb);
+    var {promise, callback} = this._connection.promisify(cb);
     this._api.post('document/', data, {
       collection: this.name
     }, function (err, res) {
@@ -438,7 +437,7 @@ inherits(EdgeCollection, BaseCollection);
 
 extend(EdgeCollection.prototype, {
   edge(documentHandle, cb) {
-    var {promise, callback} = promisify(cb);
+    var {promise, callback} = this._connection.promisify(cb);
     this._api.get('edge/' + this._documentHandle(documentHandle), function (err, res) {
       if (err) callback(err);
       else callback(null, res.body);
@@ -446,7 +445,7 @@ extend(EdgeCollection.prototype, {
     return promise;
   },
   save(data, fromId, toId, cb) {
-    var {promise, callback} = promisify(cb);
+    var {promise, callback} = this._connection.promisify(cb);
     this._api.post('edge/', data, {
       collection: this.name,
       from: this._documentHandle(fromId),
@@ -458,7 +457,7 @@ extend(EdgeCollection.prototype, {
     return promise;
   },
   _edges(documentHandle, direction, cb) {
-    var {promise, callback} = promisify(cb);
+    var {promise, callback} = this._connection.promisify(cb);
     this._api.get('edges/' + this.name, {
       vertex: this._documentHandle(documentHandle),
       direction: direction
@@ -482,7 +481,7 @@ extend(EdgeCollection.prototype, {
       cb = opts;
       opts = undefined;
     }
-    var {promise, callback} = promisify(cb);
+    var {promise, callback} = this._connection.promisify(cb);
     this._api.post('traversal', extend({}, opts, {
       startVertex: startVertex,
       edgeCollection: this.name

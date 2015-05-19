@@ -87,6 +87,7 @@ The type annotations in this documentation generally follow the definitions used
  * *headers* (optional): an object with headers to send with every request.
  * *agent* (optional): an http Agent instance to use for connections. This has no effect in the browser. Default: a new [`http.Agent`](https://nodejs.org/api/http.html#http_new_agent_options) instance configured with the *agentOptions*.
  * *agentOptions* (optional): an object with options for the agent. This will be ignored if *agent* is also provided and has no effect in the browser. Default: `{maxSockets: 3, keepAlive: true, keepAliveMsecs: 1000}`.
+ * *promise* (optional): the `Promise` implementation to use or `false` to disable promises entirely (for performance). Default: the global `Promise` constructor will be used if available when a promise is needed.
 
 If *config* is a string, it will be interpreted as *config.url*.
 

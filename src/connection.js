@@ -20,6 +20,7 @@ function Connection(config) {
     this.config.headers['x-arango-version'] = this.config.arangoVersion;
   }
   this._request = createRequest(this.config.agent, this.config.agentOptions);
+  this.promisify = promisify(this.config.promise);
 }
 
 Connection.defaults = {
@@ -48,7 +49,7 @@ extend(Connection.prototype, {
     return new Route(this, path);
   },
   request(opts, cb) {
-    var {promise, callback} = promisify(cb);
+    var {promise, callback} = this.promisify(cb);
     if (!opts) opts = {};
     var body = opts.body;
     var headers = {'content-type': 'text/plain'};
