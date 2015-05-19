@@ -67,7 +67,7 @@ extend(Connection.prototype, {
       } else {
         body = String(body);
       }
-      headers['content-length'] = Buffer.byteLength(body, "utf-8");
+      headers['content-length'] = Buffer.byteLength(body, 'utf-8');
     }
 
     this._request({
