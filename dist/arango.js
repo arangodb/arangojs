@@ -582,6 +582,7 @@ extend(EdgeCollection.prototype, {
   }
 });
 },{"./cursor":4,"./util/promisify":11,"extend":"extend","util":45}],3:[function(require,module,exports){
+(function (Buffer){
 'use strict';
 var promisify = require('./util/promisify');
 var extend = require('extend');
@@ -641,16 +642,21 @@ extend(Connection.prototype, {
     var body = opts.body;
     var headers = { 'content-type': 'text/plain' };
 
-    if (body && typeof body === 'object') {
-      if (opts.ld) {
-        body = body.map(function (obj) {
-          return JSON.stringify(obj);
-        }).join('\r\n') + '\r\n';
-        headers['content-type'] = 'application/x-ldjson';
+    if (body) {
+      if (typeof body === 'object') {
+        if (opts.ld) {
+          body = body.map(function (obj) {
+            return JSON.stringify(obj);
+          }).join('\r\n') + '\r\n';
+          headers['content-type'] = 'application/x-ldjson';
+        } else {
+          body = JSON.stringify(body);
+          headers['content-type'] = 'application/json';
+        }
       } else {
-        body = JSON.stringify(body);
-        headers['content-type'] = 'application/json';
+        body = String(body);
       }
+      headers['content-length'] = Buffer.byteLength(body, 'utf-8');
     }
 
     this._request({
@@ -672,7 +678,8 @@ extend(Connection.prototype, {
     return promise;
   }
 });
-},{"./error":6,"./route":8,"./util/promisify":11,"./util/request":12,"extend":"extend","querystring":29}],4:[function(require,module,exports){
+}).call(this,require("buffer").Buffer)
+},{"./error":6,"./route":8,"./util/promisify":11,"./util/request":12,"buffer":14,"extend":"extend","querystring":29}],4:[function(require,module,exports){
 'use strict';
 var promisify = require('./util/promisify');
 var extend = require('extend');
