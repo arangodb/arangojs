@@ -62,6 +62,7 @@
     "watch": "^0.16.0"
   },
   "dependencies": {
-    "extend": "^2.0.1"
+    "extend": "^2.0.1",
+    "linkedlist": "^1.0.1"
   }
 }
