@@ -19,7 +19,7 @@ function Connection(config) {
   if (!this.config.headers['x-arango-version']) {
     this.config.headers['x-arango-version'] = this.config.arangoVersion;
   }
-  this._request = createRequest(this.config.agent, this.config.agentOptions);
+  this._request = createRequest(this.config.url, this.config.agent, this.config.agentOptions);
   this.promisify = promisify(this.config.promise);
 }
 
@@ -36,13 +36,13 @@ Connection.agentDefaults = {
 
 extend(Connection.prototype, {
   _resolveUrl(opts) {
-    var url = this.config.url;
+    var url = {pathname: ''};
     if (!opts.absolutePath) {
-      url += '/_db/' + this.config.databaseName;
-      if (opts.basePath) url += '/' + opts.basePath;
+      url.pathname += '/_db/' + this.config.databaseName;
+      if (opts.basePath) url.pathname += '/' + opts.basePath;
     }
-    url += opts.path ? (opts.path.charAt(0) === '/' ? '' : '/') + opts.path : '';
-    if (opts.qs) url += '?' + (typeof opts.qs === 'string' ? opts.qs : qs.stringify(opts.qs));
+    url.pathname += opts.path ? (opts.path.charAt(0) === '/' ? '' : '/') + opts.path : '';
+    if (opts.qs) url.search = '?' + (typeof opts.qs === 'string' ? opts.qs : qs.stringify(opts.qs));
     return url;
   },
   route(path) {
