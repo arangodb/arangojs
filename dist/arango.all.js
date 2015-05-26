@@ -580,12 +580,11 @@ extend(EdgeCollection.prototype, {
     return promise;
   }
 });
-},{"./cursor":4,"extend":46,"util":45}],3:[function(require,module,exports){
+},{"./cursor":4,"extend":47,"util":46}],3:[function(require,module,exports){
 (function (Buffer){
 'use strict';
 var promisify = require('./util/promisify');
 var extend = require('extend');
-var qs = require('querystring');
 var createRequest = require('./util/request');
 var ArangoError = require('./error');
 var Route = require('./route');
@@ -603,7 +602,7 @@ function Connection(config) {
   if (!this.config.headers['x-arango-version']) {
     this.config.headers['x-arango-version'] = this.config.arangoVersion;
   }
-  this._request = createRequest(this.config.agent, this.config.agentOptions);
+  this._request = createRequest(this.config.url, this.config.agent, this.config.agentOptions);
   this.promisify = promisify(this.config.promise);
 }
 
@@ -620,13 +619,15 @@ Connection.agentDefaults = {
 
 extend(Connection.prototype, {
   _resolveUrl: function _resolveUrl(opts) {
-    var url = this.config.url;
+    var url = { pathname: '' };
     if (!opts.absolutePath) {
-      url += '/_db/' + this.config.databaseName;
-      if (opts.basePath) url += '/' + opts.basePath;
+      url.pathname += '/_db/' + this.config.databaseName;
+      if (opts.basePath) url.pathname += '/' + opts.basePath;
     }
-    url += opts.path ? (opts.path.charAt(0) === '/' ? '' : '/') + opts.path : '';
-    if (opts.qs) url += '?' + (typeof opts.qs === 'string' ? opts.qs : qs.stringify(opts.qs));
+    url.pathname += opts.path ? (opts.path.charAt(0) === '/' ? '' : '/') + opts.path : '';
+    if (opts.qs) {
+      if (typeof opts.qs === 'string') url.search = '?' + opts.qs;else url.query = opts.qs;
+    }
     return url;
   },
   route: function route(path) {
@@ -679,7 +680,7 @@ extend(Connection.prototype, {
   }
 });
 }).call(this,require("buffer").Buffer)
-},{"./error":6,"./route":8,"./util/promisify":11,"./util/request":12,"buffer":14,"extend":46,"querystring":29}],4:[function(require,module,exports){
+},{"./error":6,"./route":8,"./util/promisify":11,"./util/request":12,"buffer":14,"extend":47}],4:[function(require,module,exports){
 'use strict';
 var extend = require('extend');
 
@@ -914,7 +915,7 @@ extend(ArrayCursor.prototype, {
     return this;
   }
 });
-},{"extend":46}],5:[function(require,module,exports){
+},{"extend":47}],5:[function(require,module,exports){
 'use strict';
 var extend = require('extend');
 var Connection = require('./connection');
@@ -1368,7 +1369,7 @@ extend(Database.prototype, {
     return promise;
   }
 });
-},{"./collection":2,"./connection":3,"./cursor":4,"./error":6,"./graph":7,"./util/all":9,"extend":46}],6:[function(require,module,exports){
+},{"./collection":2,"./connection":3,"./cursor":4,"./error":6,"./graph":7,"./util/all":9,"extend":47}],6:[function(require,module,exports){
 'use strict';
 var inherits = require('util').inherits;
 
@@ -1390,7 +1391,7 @@ function ArangoError(obj) {
 
 inherits(ArangoError, Error);
 ArangoError.prototype.name = 'ArangoError';
-},{"util":45}],7:[function(require,module,exports){
+},{"util":46}],7:[function(require,module,exports){
 'use strict';
 var extend = require('extend');
 var inherits = require('util').inherits;
@@ -1610,7 +1611,7 @@ extend(EdgeCollection.prototype, {
     return promise;
   }
 });
-},{"./collection":2,"extend":46,"util":45}],8:[function(require,module,exports){
+},{"./collection":2,"extend":47,"util":46}],8:[function(require,module,exports){
 'use strict';
 var extend = require('extend');
 
@@ -1754,7 +1755,7 @@ extend(Route.prototype, {
     }, callback);
   }
 });
-},{"extend":46}],9:[function(require,module,exports){
+},{"extend":47}],9:[function(require,module,exports){
 'use strict';
 module.exports = function all(arr, callback) {
   var result = [];
@@ -1829,13 +1830,15 @@ var http = require('http');
 var parseUrl = require('url').parse;
 var extend = require('extend');
 var once = require('./once');
+var path = require('path');
 
-module.exports = function (agent, agentOptions) {
+module.exports = function (baseUrl, agent, agentOptions) {
   if (!agent && http.Agent) agent = new http.Agent(agentOptions); // server only
 
   var queue = [];
   var maxTasks = typeof agent.maxSockets === 'number' ? agent.maxSockets * 2 : Infinity;
   var activeTasks = 0;
+  var baseUrlParts = parseUrl(baseUrl);
 
   function drainQueue() {
     if (!queue.length || activeTasks >= maxTasks) return;
@@ -1849,11 +1852,12 @@ module.exports = function (agent, agentOptions) {
 
   return function request(_ref, cb) {
     var method = _ref.method;
-    var url = _ref.url;
+    var urlParts = _ref.urlParts;
     var headers = _ref.headers;
     var body = _ref.body;
 
-    var options = extend(parseUrl(url), { method: method, headers: headers, agent: agent });
+    var pathname = baseUrlParts.pathname ? path.join(baseUrlParts.pathname, urlParts.pathname) : urlParts.pathname;
+    var options = { method: method, headers: headers, agent: agent, url: extend({}, baseUrlParts, urlParts, { pathname: pathname }) };
 
     queue.push(function (next) {
       var callback = once(function () {
@@ -1880,7 +1884,7 @@ module.exports = function (agent, agentOptions) {
     drainQueue();
   };
 };
-},{"./once":10,"extend":46,"http":19,"url":43}],13:[function(require,module,exports){
+},{"./once":10,"extend":47,"http":19,"path":25,"url":44}],13:[function(require,module,exports){
 
 },{}],14:[function(require,module,exports){
 /*!
@@ -3994,7 +3998,7 @@ http.STATUS_CODES = {
     510 : 'Not Extended',               // RFC 2774
     511 : 'Network Authentication Required' // RFC 6585
 };
-},{"./lib/request":20,"events":18,"url":43}],20:[function(require,module,exports){
+},{"./lib/request":20,"events":18,"url":44}],20:[function(require,module,exports){
 var Stream = require('stream');
 var Response = require('./response');
 var Base64 = require('Base64');
@@ -4205,7 +4209,7 @@ var isXHR2Compatible = function (obj) {
     if (typeof FormData !== 'undefined' && obj instanceof FormData) return true;
 };
 
-},{"./response":21,"Base64":22,"inherits":23,"stream":41}],21:[function(require,module,exports){
+},{"./response":21,"Base64":22,"inherits":23,"stream":42}],21:[function(require,module,exports){
 var Stream = require('stream');
 var util = require('util');
 
@@ -4327,7 +4331,7 @@ var isArray = Array.isArray || function (xs) {
     return Object.prototype.toString.call(xs) === '[object Array]';
 };
 
-},{"stream":41,"util":45}],22:[function(require,module,exports){
+},{"stream":42,"util":46}],22:[function(require,module,exports){
 ;(function () {
 
   var object = typeof exports != 'undefined' ? exports : this; // #8: web workers
@@ -4420,6 +4424,234 @@ module.exports = Array.isArray || function (arr) {
 };
 
 },{}],25:[function(require,module,exports){
+(function (process){
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+// resolves . and .. elements in a path array with directory names there
+// must be no slashes, empty elements, or device names (c:\) in the array
+// (so also no leading and trailing slashes - it does not distinguish
+// relative and absolute paths)
+function normalizeArray(parts, allowAboveRoot) {
+  // if the path tries to go above the root, `up` ends up > 0
+  var up = 0;
+  for (var i = parts.length - 1; i >= 0; i--) {
+    var last = parts[i];
+    if (last === '.') {
+      parts.splice(i, 1);
+    } else if (last === '..') {
+      parts.splice(i, 1);
+      up++;
+    } else if (up) {
+      parts.splice(i, 1);
+      up--;
+    }
+  }
+
+  // if the path is allowed to go above the root, restore leading ..s
+  if (allowAboveRoot) {
+    for (; up--; up) {
+      parts.unshift('..');
+    }
+  }
+
+  return parts;
+}
+
+// Split a filename into [root, dir, basename, ext], unix version
+// 'root' is just a slash, or nothing.
+var splitPathRe =
+    /^(\/?|)([\s\S]*?)((?:\.{1,2}|[^\/]+?|)(\.[^.\/]*|))(?:[\/]*)$/;
+var splitPath = function(filename) {
+  return splitPathRe.exec(filename).slice(1);
+};
+
+// path.resolve([from ...], to)
+// posix version
+exports.resolve = function() {
+  var resolvedPath = '',
+      resolvedAbsolute = false;
+
+  for (var i = arguments.length - 1; i >= -1 && !resolvedAbsolute; i--) {
+    var path = (i >= 0) ? arguments[i] : process.cwd();
+
+    // Skip empty and invalid entries
+    if (typeof path !== 'string') {
+      throw new TypeError('Arguments to path.resolve must be strings');
+    } else if (!path) {
+      continue;
+    }
+
+    resolvedPath = path + '/' + resolvedPath;
+    resolvedAbsolute = path.charAt(0) === '/';
+  }
+
+  // At this point the path should be resolved to a full absolute path, but
+  // handle relative paths to be safe (might happen when process.cwd() fails)
+
+  // Normalize the path
+  resolvedPath = normalizeArray(filter(resolvedPath.split('/'), function(p) {
+    return !!p;
+  }), !resolvedAbsolute).join('/');
+
+  return ((resolvedAbsolute ? '/' : '') + resolvedPath) || '.';
+};
+
+// path.normalize(path)
+// posix version
+exports.normalize = function(path) {
+  var isAbsolute = exports.isAbsolute(path),
+      trailingSlash = substr(path, -1) === '/';
+
+  // Normalize the path
+  path = normalizeArray(filter(path.split('/'), function(p) {
+    return !!p;
+  }), !isAbsolute).join('/');
+
+  if (!path && !isAbsolute) {
+    path = '.';
+  }
+  if (path && trailingSlash) {
+    path += '/';
+  }
+
+  return (isAbsolute ? '/' : '') + path;
+};
+
+// posix version
+exports.isAbsolute = function(path) {
+  return path.charAt(0) === '/';
+};
+
+// posix version
+exports.join = function() {
+  var paths = Array.prototype.slice.call(arguments, 0);
+  return exports.normalize(filter(paths, function(p, index) {
+    if (typeof p !== 'string') {
+      throw new TypeError('Arguments to path.join must be strings');
+    }
+    return p;
+  }).join('/'));
+};
+
+
+// path.relative(from, to)
+// posix version
+exports.relative = function(from, to) {
+  from = exports.resolve(from).substr(1);
+  to = exports.resolve(to).substr(1);
+
+  function trim(arr) {
+    var start = 0;
+    for (; start < arr.length; start++) {
+      if (arr[start] !== '') break;
+    }
+
+    var end = arr.length - 1;
+    for (; end >= 0; end--) {
+      if (arr[end] !== '') break;
+    }
+
+    if (start > end) return [];
+    return arr.slice(start, end - start + 1);
+  }
+
+  var fromParts = trim(from.split('/'));
+  var toParts = trim(to.split('/'));
+
+  var length = Math.min(fromParts.length, toParts.length);
+  var samePartsLength = length;
+  for (var i = 0; i < length; i++) {
+    if (fromParts[i] !== toParts[i]) {
+      samePartsLength = i;
+      break;
+    }
+  }
+
+  var outputParts = [];
+  for (var i = samePartsLength; i < fromParts.length; i++) {
+    outputParts.push('..');
+  }
+
+  outputParts = outputParts.concat(toParts.slice(samePartsLength));
+
+  return outputParts.join('/');
+};
+
+exports.sep = '/';
+exports.delimiter = ':';
+
+exports.dirname = function(path) {
+  var result = splitPath(path),
+      root = result[0],
+      dir = result[1];
+
+  if (!root && !dir) {
+    // No dirname whatsoever
+    return '.';
+  }
+
+  if (dir) {
+    // It has a dirname, strip trailing slash
+    dir = dir.substr(0, dir.length - 1);
+  }
+
+  return root + dir;
+};
+
+
+exports.basename = function(path, ext) {
+  var f = splitPath(path)[2];
+  // TODO: make this comparison case-insensitive on windows?
+  if (ext && f.substr(-1 * ext.length) === ext) {
+    f = f.substr(0, f.length - ext.length);
+  }
+  return f;
+};
+
+
+exports.extname = function(path) {
+  return splitPath(path)[3];
+};
+
+function filter (xs, f) {
+    if (xs.filter) return xs.filter(f);
+    var res = [];
+    for (var i = 0; i < xs.length; i++) {
+        if (f(xs[i], i, xs)) res.push(xs[i]);
+    }
+    return res;
+}
+
+// String.prototype.substr - negative index don't work in IE8
+var substr = 'ab'.substr(-1) === 'b'
+    ? function (str, start, len) { return str.substr(start, len) }
+    : function (str, start, len) {
+        if (start < 0) start = str.length + start;
+        return str.substr(start, len);
+    }
+;
+
+}).call(this,require('_process'))
+},{"_process":26}],26:[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
@@ -4511,7 +4743,7 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],26:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 (function (global){
 /*! https://mths.be/punycode v1.3.2 by @mathias */
 ;(function(root) {
@@ -5045,7 +5277,7 @@ process.umask = function() { return 0; };
 }(this));
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],27:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -5131,7 +5363,7 @@ var isArray = Array.isArray || function (xs) {
   return Object.prototype.toString.call(xs) === '[object Array]';
 };
 
-},{}],28:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -5218,16 +5450,16 @@ var objectKeys = Object.keys || function (obj) {
   return res;
 };
 
-},{}],29:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 'use strict';
 
 exports.decode = exports.parse = require('./decode');
 exports.encode = exports.stringify = require('./encode');
 
-},{"./decode":27,"./encode":28}],30:[function(require,module,exports){
+},{"./decode":28,"./encode":29}],31:[function(require,module,exports){
 module.exports = require("./lib/_stream_duplex.js")
 
-},{"./lib/_stream_duplex.js":31}],31:[function(require,module,exports){
+},{"./lib/_stream_duplex.js":32}],32:[function(require,module,exports){
 (function (process){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -5320,7 +5552,7 @@ function forEach (xs, f) {
 }
 
 }).call(this,require('_process'))
-},{"./_stream_readable":33,"./_stream_writable":35,"_process":25,"core-util-is":36,"inherits":23}],32:[function(require,module,exports){
+},{"./_stream_readable":34,"./_stream_writable":36,"_process":26,"core-util-is":37,"inherits":23}],33:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -5368,7 +5600,7 @@ PassThrough.prototype._transform = function(chunk, encoding, cb) {
   cb(null, chunk);
 };
 
-},{"./_stream_transform":34,"core-util-is":36,"inherits":23}],33:[function(require,module,exports){
+},{"./_stream_transform":35,"core-util-is":37,"inherits":23}],34:[function(require,module,exports){
 (function (process){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -6323,7 +6555,7 @@ function indexOf (xs, x) {
 }
 
 }).call(this,require('_process'))
-},{"./_stream_duplex":31,"_process":25,"buffer":14,"core-util-is":36,"events":18,"inherits":23,"isarray":24,"stream":41,"string_decoder/":42,"util":13}],34:[function(require,module,exports){
+},{"./_stream_duplex":32,"_process":26,"buffer":14,"core-util-is":37,"events":18,"inherits":23,"isarray":24,"stream":42,"string_decoder/":43,"util":13}],35:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -6534,7 +6766,7 @@ function done(stream, er) {
   return stream.push(null);
 }
 
-},{"./_stream_duplex":31,"core-util-is":36,"inherits":23}],35:[function(require,module,exports){
+},{"./_stream_duplex":32,"core-util-is":37,"inherits":23}],36:[function(require,module,exports){
 (function (process){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -7015,7 +7247,7 @@ function endWritable(stream, state, cb) {
 }
 
 }).call(this,require('_process'))
-},{"./_stream_duplex":31,"_process":25,"buffer":14,"core-util-is":36,"inherits":23,"stream":41}],36:[function(require,module,exports){
+},{"./_stream_duplex":32,"_process":26,"buffer":14,"core-util-is":37,"inherits":23,"stream":42}],37:[function(require,module,exports){
 (function (Buffer){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -7125,10 +7357,10 @@ function objectToString(o) {
   return Object.prototype.toString.call(o);
 }
 }).call(this,require("buffer").Buffer)
-},{"buffer":14}],37:[function(require,module,exports){
+},{"buffer":14}],38:[function(require,module,exports){
 module.exports = require("./lib/_stream_passthrough.js")
 
-},{"./lib/_stream_passthrough.js":32}],38:[function(require,module,exports){
+},{"./lib/_stream_passthrough.js":33}],39:[function(require,module,exports){
 exports = module.exports = require('./lib/_stream_readable.js');
 exports.Stream = require('stream');
 exports.Readable = exports;
@@ -7137,13 +7369,13 @@ exports.Duplex = require('./lib/_stream_duplex.js');
 exports.Transform = require('./lib/_stream_transform.js');
 exports.PassThrough = require('./lib/_stream_passthrough.js');
 
-},{"./lib/_stream_duplex.js":31,"./lib/_stream_passthrough.js":32,"./lib/_stream_readable.js":33,"./lib/_stream_transform.js":34,"./lib/_stream_writable.js":35,"stream":41}],39:[function(require,module,exports){
+},{"./lib/_stream_duplex.js":32,"./lib/_stream_passthrough.js":33,"./lib/_stream_readable.js":34,"./lib/_stream_transform.js":35,"./lib/_stream_writable.js":36,"stream":42}],40:[function(require,module,exports){
 module.exports = require("./lib/_stream_transform.js")
 
-},{"./lib/_stream_transform.js":34}],40:[function(require,module,exports){
+},{"./lib/_stream_transform.js":35}],41:[function(require,module,exports){
 module.exports = require("./lib/_stream_writable.js")
 
-},{"./lib/_stream_writable.js":35}],41:[function(require,module,exports){
+},{"./lib/_stream_writable.js":36}],42:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -7272,7 +7504,7 @@ Stream.prototype.pipe = function(dest, options) {
   return dest;
 };
 
-},{"events":18,"inherits":23,"readable-stream/duplex.js":30,"readable-stream/passthrough.js":37,"readable-stream/readable.js":38,"readable-stream/transform.js":39,"readable-stream/writable.js":40}],42:[function(require,module,exports){
+},{"events":18,"inherits":23,"readable-stream/duplex.js":31,"readable-stream/passthrough.js":38,"readable-stream/readable.js":39,"readable-stream/transform.js":40,"readable-stream/writable.js":41}],43:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -7495,7 +7727,7 @@ function base64DetectIncompleteChar(buffer) {
   this.charLength = this.charReceived ? 3 : 0;
 }
 
-},{"buffer":14}],43:[function(require,module,exports){
+},{"buffer":14}],44:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -8204,14 +8436,14 @@ function isNullOrUndefined(arg) {
   return  arg == null;
 }
 
-},{"punycode":26,"querystring":29}],44:[function(require,module,exports){
+},{"punycode":27,"querystring":30}],45:[function(require,module,exports){
 module.exports = function isBuffer(arg) {
   return arg && typeof arg === 'object'
     && typeof arg.copy === 'function'
     && typeof arg.fill === 'function'
     && typeof arg.readUInt8 === 'function';
 }
-},{}],45:[function(require,module,exports){
+},{}],46:[function(require,module,exports){
 (function (process,global){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -8801,7 +9033,7 @@ function hasOwnProperty(obj, prop) {
 }
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./support/isBuffer":44,"_process":25,"inherits":23}],46:[function(require,module,exports){
+},{"./support/isBuffer":45,"_process":26,"inherits":23}],47:[function(require,module,exports){
 var hasOwn = Object.prototype.hasOwnProperty;
 var toStr = Object.prototype.toString;
 var undefined;
