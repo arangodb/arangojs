@@ -1,6 +1,6 @@
 # ArangoDB JavaScript driver
 
-The official ArangoDB low-level JavaScript client for node.js and browsers.
+The official ArangoDB low-level JavaScript clients.
 
 [![license - APACHE-2.0](https://img.shields.io/npm/l/arangojs.svg)](http://opensource.org/licenses/APACHE-2.0) [![Dependencies](https://img.shields.io/david/arangodb/arangojs.svg)](https://david-dm.org/arangodb/arangojs)
 
@@ -16,6 +16,7 @@ The official ArangoDB low-level JavaScript client for node.js and browsers.
 npm install arangojs
 ```
 
+<!--
 ## With Bower
 
 ```sh
@@ -26,11 +27,12 @@ bower install arangojs
 
 This CommonJS module is compatible with [browserify](http://browserify.org).
 
-If you don't want to use browserify, you can simply use the AMD-compatible [browserify bundle](https://raw.githubusercontent.com/arangodb/arangojs/master/dist/arango.all.min.js) which includes all required dependencies ([extend](https://npmjs.org/package/extend) and [xhr](https://npmjs.org/package/xhr)).
+If you don't want to use browserify, you can simply use the AMD-compatible [browserify bundle](https://raw.githubusercontent.com/arangodb/arangojs/master/dist/arango.all.min.js) which includes all required dependencies.
 
 There is also a [browserify bundle without the dependencies](https://raw.githubusercontent.com/arangodb/arangojs/master/dist/arango.min.js). In this case you need to provide modules named `request` (xhr) and `extend` yourself.
 
 If you want to use this module in non-ES5 browsers like Microsoft Internet Explorer 8 and earlier, you need to include [es5-shim](https://www.npmjs.com/package/es5-shim) or a similar ES5 polyfill.
+-->
 
 ## From source
 

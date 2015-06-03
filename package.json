@@ -33,7 +33,7 @@
     "minify": "npm run all-minify && npm run raw-minify",
     "all-bundle": "browserify -s arangojs ./index.js > dist/arango.all.js",
     "all-minify": "uglifyjs dist/arango.all.js > dist/arango.all.min.js",
-    "raw-bundle": "browserify -x extend -x request -s arangojs ./index.js > dist/arango.js",
+    "raw-bundle": "browserify -x extend -s arangojs ./index.js > dist/arango.js",
     "raw-minify": "uglifyjs dist/arango.js > dist/arango.min.js",
     "lint": "eslint index.js src test",
     "prepublish": "npm run lint"
