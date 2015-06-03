@@ -91,6 +91,18 @@ The type annotations in this documentation generally follow the definitions used
 
 If *config* is a string, it will be interpreted as *config.url*.
 
+#### HTTPS
+
+The driver automatically uses HTTPS if you specify an HTTPS *url*.
+
+If you need to support self-signed HTTPS certificates, you may have to add your certificates to the *agentOptions*, e.g.:
+
+```js
+agentOptions: {
+    ca: [fs.readFileSync('.ssl/sub.class1.server.ca.pem'), fs.readFileSync('.ssl/ca.pem')]
+}
+```
+
 #### Authentication
 
 If you want to use ArangoDB with HTTP Basic authentication, you can provide the credentials as part of the *config.url* string, e.g. `http://user:pass@localhost:8529`.
