@@ -1,5 +1,6 @@
 'use strict';
 var http = require('http');
+var https = require('https');
 var parseUrl = require('url').parse;
 var once = require('./once');
 var joinPath = require('path').join;
@@ -16,12 +17,16 @@ function rawCopy(obj) {
 }
 
 module.exports = function (baseUrl, agent, agentOptions) {
-  if (!agent && http.Agent) agent = new http.Agent(agentOptions); // server only
+  var baseUrlParts = rawCopy(parseUrl(baseUrl));
+  var isSsl = baseUrlParts.protocol === 'https:';
+
+  if (!agent) {
+    agent = new (isSsl ? https : http).Agent(agentOptions);
+  }
 
   var queue = new LinkedList();
   var maxTasks = typeof agent.maxSockets === 'number' ? agent.maxSockets * 2 : Infinity;
   var activeTasks = 0;
-  var baseUrlParts = rawCopy(parseUrl(baseUrl));
 
   function drainQueue() {
     if (!queue.length || activeTasks >= maxTasks) return;
@@ -51,7 +56,7 @@ module.exports = function (baseUrl, agent, agentOptions) {
         next();
         cb.apply(this, arguments);
       });
-      var req = http.request(options, function (res) {
+      var req = (isSsl ? https : http).request(options, function (res) {
         var data = [];
         res.on('data', function (b) {
           data.push(b);
