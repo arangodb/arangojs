@@ -1829,7 +1829,7 @@ var http = require('http');
 var https = require('https');
 var parseUrl = require('url').parse;
 var once = require('./once');
-var joinPath = require('path').join;
+var joinPath = require('path').posix.join;
 var LinkedList = require('linkedlist');
 
 function rawCopy(obj) {
