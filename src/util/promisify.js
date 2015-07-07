@@ -1,33 +1,26 @@
 'use strict';
 module.exports = function (PromiseCtor) {
   if (PromiseCtor === false) {
-    return function (callback) {
-      return {callback: callback || function () {}};
+    return function (callback = function () {}) {
+      return {callback};
     };
   }
 
-  return function (callback) {
+  return function (callback = function () {}) {
     if (!PromiseCtor && typeof Promise !== 'function') {
-      return {callback: callback || function () {}};
+      return {callback};
     }
 
     function defer(resolve, reject) {
+      var errback = callback;
       callback = function (err, res) {
         if (err) reject(err);
         else resolve(res);
+        if (errback) errback(err, res);
       };
     }
 
-    var cb = callback;
-
     var promise = PromiseCtor ? new PromiseCtor(defer) : new Promise(defer);
-
-    if (cb) {
-      promise.then(
-        result => cb(null, result),
-        reason => cb(reason)
-      );
-    }
 
     return {callback, promise};
   };
