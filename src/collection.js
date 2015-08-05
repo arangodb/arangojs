@@ -261,39 +261,39 @@ extend(BaseCollection.prototype, {
     });
     return promise;
   },
-  createHashIndex(fields, unique, cb) {
-    if (typeof unique === 'function') {
-      cb = unique;
-      unique = undefined;
+  createHashIndex(fields, opts, cb) {
+    if (typeof opts === 'function') {
+      cb = opts;
+      opts = undefined;
     }
     if (typeof fields === 'string') {
       fields = [fields];
     }
+    if (typeof opts === 'boolean') {
+      opts = {unique: opts};
+    }
     var {promise, callback} = this._connection.promisify(cb);
-    this._api.post('index', {
-      type: 'hash',
-      fields: fields,
-      unique: Boolean(unique)
-    }, {collection: this.name}, function (err, res) {
+    opts = extend({unique: false}, opts, {type: 'hash', fields: fields});
+    this._api.post('index', opts, {collection: this.name}, function (err, res) {
       if (err) callback(err);
       else callback(null, res.body);
     });
     return promise;
   },
-  createSkipList(fields, unique, cb) {
-    if (typeof unique === 'function') {
-      cb = unique;
-      unique = undefined;
+  createSkipList(fields, opts, cb) {
+    if (typeof opts === 'function') {
+      cb = opts;
+      opts = undefined;
     }
     if (typeof fields === 'string') {
       fields = [fields];
     }
+    if (typeof opts === 'boolean') {
+      opts = {unique: opts};
+    }
     var {promise, callback} = this._connection.promisify(cb);
-    this._api.post('index', {
-      type: 'skiplist',
-      fields: fields,
-      unique: Boolean(unique)
-    }, {collection: this.name}, function (err, res) {
+    opts = extend({unique: false}, opts, {type: 'skiplist', fields: fields});
+    this._api.post('index', opts, {collection: this.name}, function (err, res) {
       if (err) callback(err);
       else callback(null, res.body);
     });

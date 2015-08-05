@@ -1560,14 +1560,16 @@ db.createCollection('some-collection', function (err, collection) {
 
 #### collection.createHashIndex
 
-`collection.createHashIndex(fields: Array<string> | string, [unique: boolean,] [callback: Callback]): Promise<Index>`
+`collection.createHashIndex(fields: Array<string> | string, [opts: Object | boolean,] [callback: Callback]): Promise<Index>`
 
 Creates a hash index on the collection.
 
 *Parameter*
 
 * *fields*: an array of document fields on which to create the index.
-* *unique* (optional): whether to constrain the fields to unique values. Default: `false`.
+* *opts* (optional): additional options for this index.
+
+If *opts* is a boolean, it will be interpreted as *opts.unique*.
 
 If *fields* is a string, it will be wrapped in an array automatically.
 
@@ -1597,14 +1599,16 @@ db.createCollection('some-collection', function (err, collection) {
 
 #### collection.createSkipList
 
-`collection.createSkipList(fields: Array<string> | string, [unique: boolean,] [callback: Callback]): Promise<Index>`
+`collection.createSkipList(fields: Array<string> | string, [opts: Object | boolean,] [opts: Object,] [callback: Callback]): Promise<Index>`
 
 Creates a skiplist index on the collection.
 
 *Parameter*
 
 * *fields*: an array of document fields on which to create the index.
-* *unique* (optional): whether to constrain the fields to unique values. Default: `false`.
+* *opts* (optional): additional options for this index.
+
+If *opts* is a boolean, it will be interpreted as *opts.unique*.
 
 If *fields* is a string, it will be wrapped in an array automatically.
 
