@@ -1,15 +1,13 @@
 'use strict';
 var extend = require('extend');
 
-module.exports = Route;
+export default class Route {
+  constructor(connection, path, headers) {
+    this._connection = connection;
+    this._path = path || '';
+    this._headers = headers;
+  }
 
-function Route(connection, path, headers) {
-  this._connection = connection;
-  this._path = path || '';
-  this._headers = headers;
-}
-
-extend(Route.prototype, {
   route(path, headers) {
     if (!path) path = '';
     else if (path.charAt(0) !== '/') path = '/' + path;
@@ -18,13 +16,15 @@ extend(Route.prototype, {
       this._path + path,
       extend({}, this._headers, headers)
     );
-  },
+  }
+
   request(opts, callback) {
     opts = extend({}, opts);
     opts.basePath = this._path;
     opts.headers = extend({}, this._headers, opts.headers);
     return this._connection.request(opts, callback);
-  },
+  }
+
   get(path, qs, callback) {
     if (typeof path !== 'string') {
       callback = qs;
@@ -42,7 +42,8 @@ extend(Route.prototype, {
       path: path,
       qs: qs
     }, callback);
-  },
+  }
+
   post(path, body, qs, callback) {
     if (typeof path !== 'string') {
       callback = qs;
@@ -66,7 +67,8 @@ extend(Route.prototype, {
       body: body,
       qs: qs
     }, callback);
-  },
+  }
+
   put(path, body, qs, callback) {
     if (typeof path !== 'string') {
       callback = body;
@@ -90,7 +92,8 @@ extend(Route.prototype, {
       body: body,
       qs: qs
     }, callback);
-  },
+  }
+
   patch(path, body, qs, callback) {
     if (typeof path !== 'string') {
       callback = body;
@@ -114,7 +117,8 @@ extend(Route.prototype, {
       body: body,
       qs: qs
     }, callback);
-  },
+  }
+
   delete(path, qs, callback) {
     if (typeof path !== 'string') {
       callback = qs;
@@ -132,7 +136,8 @@ extend(Route.prototype, {
       path: path,
       qs: qs
     }, callback);
-  },
+  }
+
   head(path, qs, callback) {
     if (typeof path !== 'string') {
       callback = qs;
@@ -151,4 +156,4 @@ extend(Route.prototype, {
       qs: qs
     }, callback);
   }
-});
+}

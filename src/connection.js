@@ -1,40 +1,40 @@
 'use strict';
-var promisify = require('./util/promisify');
-var extend = require('extend');
-var qs = require('querystring');
-var createRequest = require('./util/request');
-var ArangoError = require('./error');
-var Route = require('./route');
-var jsonMime = /\/(json|javascript)(\W|$)/;
+import promisify from './util/promisify';
+import extend from 'extend';
+import qs from 'querystring';
+import createRequest from './util/request';
+import ArangoError from './error';
+import Route from './route';
 
-module.exports = Connection;
+const MIME_JSON = /\/(json|javascript)(\W|$)/;
 
-function Connection(config) {
-  if (typeof config === 'string') {
-    config = {url: config};
+export default class Connection {
+  static defaults = {
+    url: 'http://localhost:8529',
+    databaseName: '_system',
+    arangoVersion: 20300
+  };
+
+  static agentDefaults = {
+    maxSockets: 3,
+    keepAlive: true,
+    keepAliveMsecs: 1000
+  };
+
+  constructor(config) {
+    if (typeof config === 'string') {
+      config = {url: config};
+    }
+    this.config = extend({}, Connection.defaults, config);
+    this.config.agentOptions = extend({}, Connection.agentDefaults, this.config.agentOptions);
+    if (!this.config.headers) this.config.headers = {};
+    if (!this.config.headers['x-arango-version']) {
+      this.config.headers['x-arango-version'] = this.config.arangoVersion;
+    }
+    this._request = createRequest(this.config.url, this.config.agent, this.config.agentOptions);
+    this.promisify = promisify(this.config.promise);
   }
-  this.config = extend({}, Connection.defaults, config);
-  this.config.agentOptions = extend({}, Connection.agentDefaults, this.config.agentOptions);
-  if (!this.config.headers) this.config.headers = {};
-  if (!this.config.headers['x-arango-version']) {
-    this.config.headers['x-arango-version'] = this.config.arangoVersion;
-  }
-  this._request = createRequest(this.config.url, this.config.agent, this.config.agentOptions);
-  this.promisify = promisify(this.config.promise);
-}
 
-Connection.defaults = {
-  url: 'http://localhost:8529',
-  databaseName: '_system',
-  arangoVersion: 20300
-};
-Connection.agentDefaults = {
-  maxSockets: 3,
-  keepAlive: true,
-  keepAliveMsecs: 1000
-};
-
-extend(Connection.prototype, {
   _resolveUrl(opts) {
     var url = {pathname: ''};
     if (!opts.absolutePath) {
@@ -44,10 +44,12 @@ extend(Connection.prototype, {
     url.pathname += opts.path ? (opts.path.charAt(0) === '/' ? '' : '/') + opts.path : '';
     if (opts.qs) url.search = '?' + (typeof opts.qs === 'string' ? opts.qs : qs.stringify(opts.qs));
     return url;
-  },
+  }
+
   route(path) {
     return new Route(this, path);
-  },
+  }
+
   request(opts, cb) {
     var {promise, callback} = this.promisify(cb);
     if (!opts) opts = {};
@@ -78,7 +80,7 @@ extend(Connection.prototype, {
       body: body
     }, function (err, res) {
       if (err) callback(err);
-      else if (res.headers['content-type'].match(jsonMime)) {
+      else if (res.headers['content-type'].match(MIME_JSON)) {
         try {
           res.rawBody = res.body;
           res.body = JSON.parse(res.rawBody);
@@ -91,4 +93,4 @@ extend(Connection.prototype, {
     });
     return promise;
   }
-});
+}

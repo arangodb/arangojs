@@ -1,9 +1,9 @@
 'use strict';
-module.exports = function once(cb) {
+export default function once(cb) {
   var called = false;
-  return function () {
+  return function (...args) {
     if (called) return;
     called = true;
-    return cb.apply(this, arguments);
+    return cb(...args);
   };
 };

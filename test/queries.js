@@ -1,6 +1,6 @@
 'use strict';
 var expect = require('expect.js');
-var Database = require('../');
+var Database = require('../').Database;
 var ArangoError = require('../lib/error');
 var Cursor = require('../lib/cursor');
 var db = new Database();

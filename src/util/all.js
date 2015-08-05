@@ -1,5 +1,5 @@
 'use strict';
-module.exports = function all(arr, callback) {
+export default function all(arr, callback) {
   var result = [];
   var pending = arr.length;
   var called = false;

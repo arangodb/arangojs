@@ -1,13 +1,13 @@
 'use strict';
-module.exports = function (PromiseCtor) {
-  if (PromiseCtor === false) {
+export default function (Promise) {
+  if (Promise === false) {
     return function (callback = function () {}) {
       return {callback};
     };
   }
 
   return function (callback = function () {}) {
-    if (!PromiseCtor && typeof Promise !== 'function') {
+    if (!Promise && !global.Promise) {
       return {callback};
     }
 
@@ -20,7 +20,7 @@ module.exports = function (PromiseCtor) {
       };
     }
 
-    var promise = PromiseCtor ? new PromiseCtor(defer) : new Promise(defer);
+    var promise = Promise ? new Promise(defer) : new global.Promise(defer);
 
     return {callback, promise};
   };

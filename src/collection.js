@@ -1,37 +1,25 @@
 'use strict';
-var inherits = require('util').inherits;
-var extend = require('extend');
-var ArrayCursor = require('./cursor');
+import extend from 'extend';
+import ArrayCursor from './cursor';
 
-var types = {
+export var types = {
   DOCUMENT_COLLECTION: 2,
   EDGE_COLLECTION: 3
 };
 
-module.exports = extend(
-  function (connection, body) {
-    var Ctor = (body.type === types.EDGE_COLLECTION ? EdgeCollection : DocumentCollection);
-    return new Ctor(connection, body);
-  }, {
-    _BaseCollection: BaseCollection,
-    DocumentCollection: DocumentCollection,
-    EdgeCollection: EdgeCollection,
-    types: types
+class BaseCollection {
+  constructor(connection, body) {
+    this._connection = connection;
+    this._api = this._connection.route('_api');
+    extend(this, body);
+    delete this.code;
+    delete this.error;
   }
-);
 
-function BaseCollection(connection, body) {
-  this._connection = connection;
-  this._api = this._connection.route('_api');
-  extend(this, body);
-  delete this.code;
-  delete this.error;
-}
-
-extend(BaseCollection.prototype, {
   _documentPath(documentHandle) {
     return (this.type === types.EDGE_COLLECTION ? 'edge/' : 'document/') + this._documentHandle(documentHandle);
-  },
+  }
+
   _documentHandle(documentHandle) {
     if (documentHandle._id) {
       documentHandle = documentHandle._id;
@@ -42,7 +30,8 @@ extend(BaseCollection.prototype, {
       documentHandle = this.name + '/' + documentHandle;
     }
     return documentHandle;
-  },
+  }
+
   _indexHandle(indexHandle) {
     if (indexHandle.id) {
       indexHandle = indexHandle.id;
@@ -51,7 +40,8 @@ extend(BaseCollection.prototype, {
       indexHandle = this.name + '/' + indexHandle;
     }
     return indexHandle;
-  },
+  }
+
   _get(path, update, opts, cb) {
     if (typeof opts === 'function') {
       cb = opts;
@@ -71,7 +61,8 @@ extend(BaseCollection.prototype, {
       }
     });
     return promise;
-  },
+  }
+
   _put(path, data, update, cb) {
     var {promise, callback} = this._connection.promisify(cb);
     var self = this;
@@ -83,22 +74,28 @@ extend(BaseCollection.prototype, {
       }
     });
     return promise;
-  },
+  }
+
   properties(cb) {
     return this._get('properties', true, cb);
-  },
+  }
+
   count(cb) {
     return this._get('count', true, cb);
-  },
+  }
+
   figures(cb) {
     return this._get('figures', true, cb);
-  },
+  }
+
   revision(cb) {
     return this._get('revision', true, cb);
-  },
+  }
+
   checksum(opts, cb) {
     return this._get('checksum', true, opts, cb);
-  },
+  }
+
   load(count, cb) {
     if (typeof count === 'function') {
       cb = count;
@@ -107,22 +104,28 @@ extend(BaseCollection.prototype, {
     return this._put('load', (
       typeof count === 'boolean' ? {count: count} : undefined
     ), true, cb);
-  },
+  }
+
   unload(cb) {
     return this._put('unload', undefined, true, cb);
-  },
+  }
+
   setProperties(properties, cb) {
     return this._put('properties', properties, true, cb);
-  },
+  }
+
   rename(name, cb) {
     return this._put('rename', {name: name}, true, cb);
-  },
+  }
+
   rotate(cb) {
     return this._put('rotate', undefined, false, cb);
-  },
+  }
+
   truncate(cb) {
     return this._put('truncate', undefined, true, cb);
-  },
+  }
+
   drop(cb) {
     var {promise, callback} = this._connection.promisify(cb);
     var self = this;
@@ -131,7 +134,8 @@ extend(BaseCollection.prototype, {
       else callback(null, res.body);
     });
     return promise;
-  },
+  }
+
   replace(documentHandle, data, opts, cb) {
     if (typeof opts === 'function') {
       cb = opts;
@@ -144,7 +148,8 @@ extend(BaseCollection.prototype, {
       else callback(null, res.body);
     });
     return promise;
-  },
+  }
+
   update(documentHandle, data, opts, cb) {
     if (typeof opts === 'function') {
       cb = opts;
@@ -157,7 +162,8 @@ extend(BaseCollection.prototype, {
       else callback(null, res.body);
     });
     return promise;
-  },
+  }
+
   remove(documentHandle, opts, cb) {
     if (typeof opts === 'function') {
       cb = opts;
@@ -170,7 +176,8 @@ extend(BaseCollection.prototype, {
       else callback(null, res.body);
     });
     return promise;
-  },
+  }
+
   all(type, cb) {
     if (typeof type === 'function') {
       cb = type;
@@ -185,7 +192,8 @@ extend(BaseCollection.prototype, {
       else callback(null, res.body.documents);
     });
     return promise;
-  },
+  }
+
   byKeys(keys, cb) {
     var {promise, callback} = this._connection.promisify(cb);
     this._api.put('simple/lookup-by-keys', {
@@ -196,7 +204,8 @@ extend(BaseCollection.prototype, {
       else callback(null, res.body.documents);
     });
     return promise;
-  },
+  }
+
   import(data, opts, cb) {
     if (typeof opts === 'function') {
       cb = opts;
@@ -218,7 +227,8 @@ extend(BaseCollection.prototype, {
       else callback(null, res.body);
     });
     return promise;
-  },
+  }
+
   indexes(cb) {
     var {promise, callback} = this._connection.promisify(cb);
     this._api.get('index', {collection: this.name}, function (err, res) {
@@ -226,7 +236,8 @@ extend(BaseCollection.prototype, {
       else callback(null, res.body.indexes);
     });
     return promise;
-  },
+  }
+
   index(indexHandle, cb) {
     var {promise, callback} = this._connection.promisify(cb);
     this._api.get(
@@ -237,7 +248,8 @@ extend(BaseCollection.prototype, {
       }
     );
     return promise;
-  },
+  }
+
   createIndex(details, cb) {
     var {promise, callback} = this._connection.promisify(cb);
     this._api.post('index', details, {
@@ -247,7 +259,8 @@ extend(BaseCollection.prototype, {
       else callback(null, res.body);
     });
     return promise;
-  },
+  }
+
   dropIndex(indexHandle, cb) {
     var {promise, callback} = this._connection.promisify(cb);
     this._api.delete(
@@ -258,7 +271,8 @@ extend(BaseCollection.prototype, {
       }
     );
     return promise;
-  },
+  }
+
   createCapConstraint(size, cb) {
     if (typeof size === 'number') {
       size = {size: size};
@@ -271,7 +285,8 @@ extend(BaseCollection.prototype, {
       else callback(null, res.body);
     });
     return promise;
-  },
+  }
+
   createHashIndex(fields, opts, cb) {
     if (typeof opts === 'function') {
       cb = opts;
@@ -290,7 +305,8 @@ extend(BaseCollection.prototype, {
       else callback(null, res.body);
     });
     return promise;
-  },
+  }
+
   createSkipList(fields, opts, cb) {
     if (typeof opts === 'function') {
       cb = opts;
@@ -309,7 +325,8 @@ extend(BaseCollection.prototype, {
       else callback(null, res.body);
     });
     return promise;
-  },
+  }
+
   createGeoIndex(fields, opts, cb) {
     if (typeof opts === 'function') {
       cb = opts;
@@ -327,7 +344,8 @@ extend(BaseCollection.prototype, {
       else callback(null, res.body);
     });
     return promise;
-  },
+  }
+
   createFulltextIndex(fields, minLength, cb) {
     if (typeof minLength === 'function') {
       cb = minLength;
@@ -346,7 +364,8 @@ extend(BaseCollection.prototype, {
       else callback(null, res.body);
     });
     return promise;
-  },
+  }
+
   fulltext(field, query, opts, cb) {
     if (typeof opts === 'function') {
       cb = opts;
@@ -367,7 +386,8 @@ extend(BaseCollection.prototype, {
       else callback(null, new ArrayCursor(self._connection, res.body));
     });
     return promise;
-  },
+  }
+
   near(latitude, longitude, opts, cb) {
     if (typeof opts === 'function') {
       cb = opts;
@@ -388,7 +408,8 @@ extend(BaseCollection.prototype, {
       else callback(null, new ArrayCursor(self._connection, res.body));
     });
     return promise;
-  },
+  }
+
   within(latitude, longitude, radius, opts, cb) {
     if (typeof opts === 'function') {
       cb = opts;
@@ -411,15 +432,9 @@ extend(BaseCollection.prototype, {
     });
     return promise;
   }
-});
-
-function DocumentCollection(connection, body) {
-  BaseCollection.call(this, connection, body);
 }
 
-inherits(DocumentCollection, BaseCollection);
-
-extend(DocumentCollection.prototype, {
+export class DocumentCollection extends BaseCollection {
   document(documentHandle, cb) {
     var {promise, callback} = this._connection.promisify(cb);
     this._api.get('document/' + this._documentHandle(documentHandle), function (err, res) {
@@ -427,7 +442,8 @@ extend(DocumentCollection.prototype, {
       else callback(null, res.body);
     });
     return promise;
-  },
+  }
+
   save(data, cb) {
     var {promise, callback} = this._connection.promisify(cb);
     this._api.post('document/', data, {
@@ -438,15 +454,9 @@ extend(DocumentCollection.prototype, {
     });
     return promise;
   }
-});
-
-function EdgeCollection(connection, body) {
-  BaseCollection.call(this, connection, body);
 }
 
-inherits(EdgeCollection, BaseCollection);
-
-extend(EdgeCollection.prototype, {
+export class EdgeCollection extends BaseCollection {
   edge(documentHandle, cb) {
     var {promise, callback} = this._connection.promisify(cb);
     this._api.get('edge/' + this._documentHandle(documentHandle), function (err, res) {
@@ -454,7 +464,8 @@ extend(EdgeCollection.prototype, {
       else callback(null, res.body);
     });
     return promise;
-  },
+  }
+
   save(data, fromId, toId, cb) {
     var {promise, callback} = this._connection.promisify(cb);
     this._api.post('edge/', data, {
@@ -466,7 +477,8 @@ extend(EdgeCollection.prototype, {
       else callback(null, res.body);
     });
     return promise;
-  },
+  }
+
   _edges(documentHandle, direction, cb) {
     var {promise, callback} = this._connection.promisify(cb);
     this._api.get('edges/' + this.name, {
@@ -477,16 +489,20 @@ extend(EdgeCollection.prototype, {
       else callback(null, res.body.edges);
     });
     return promise;
-  },
+  }
+
   edges(vertex, cb) {
     return this._edges(vertex, undefined, cb);
-  },
+  }
+
   inEdges(vertex, cb) {
     return this._edges(vertex, 'in', cb);
-  },
+  }
+
   outEdges(vertex, cb) {
     return this._edges(vertex, 'out', cb);
-  },
+  }
+
   traversal(startVertex, opts, cb) {
     if (typeof opts === 'function') {
       cb = opts;
@@ -502,4 +518,10 @@ extend(EdgeCollection.prototype, {
     });
     return promise;
   }
-});
+}
+
+export default function (connection, body) {
+  var Ctor = (body.type === types.EDGE_COLLECTION ? EdgeCollection : DocumentCollection);
+  return new Ctor(connection, body);
+}
+export var _BaseCollection = BaseCollection;

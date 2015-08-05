@@ -1,29 +1,23 @@
 'use strict';
-var extend = require('extend');
-var Connection = require('./connection');
-var ArrayCursor = require('./cursor');
-var ArangoError = require('./error');
-var _createCollection = require('./collection');
-var Graph = require('./graph');
-var all = require('./util/all');
+import extend from 'extend';
+import Connection from './connection';
+import ArrayCursor from './cursor';
+import ArangoError from './error';
+import _createCollection, {types} from './collection';
+import Graph from './graph';
+import all from './util/all';
 
-var types = _createCollection.types;
-
-module.exports = Database;
-
-function Database(config) {
-  if (!(this instanceof Database)) {
-    return new Database(config);
+export default class Database {
+  constructor(config) {
+    this._connection = new Connection(config);
+    this._api = this._connection.route('_api');
+    this.name = this._connection.config.databaseName;
   }
-  this._connection = new Connection(config);
-  this._api = this._connection.route('_api');
-  this.name = this._connection.config.databaseName;
-}
 
-extend(Database.prototype, {
   route(path, headers) {
     return this._connection.route(path, headers);
-  },
+  }
+
   createCollection(properties, cb) {
     var {promise, callback} = this._connection.promisify(cb);
     if (typeof properties === 'string') {
@@ -37,7 +31,8 @@ extend(Database.prototype, {
       else callback(null, _createCollection(self._connection, res.body));
     });
     return promise;
-  },
+  }
+
   createEdgeCollection(properties, cb) {
     var {promise, callback} = this._connection.promisify(cb);
     if (typeof properties === 'string') {
@@ -50,7 +45,8 @@ extend(Database.prototype, {
       else callback(null, _createCollection(self._connection, res.body));
     });
     return promise;
-  },
+  }
+
   collection(collectionName, autoCreate, cb) {
     if (typeof autoCreate === 'function') {
       cb = autoCreate;
@@ -74,7 +70,8 @@ extend(Database.prototype, {
       else callback(null, _createCollection(self._connection, res.body));
     });
     return promise;
-  },
+  }
+
   edgeCollection(collectionName, autoCreate, cb) {
     if (typeof autoCreate === 'function') {
       cb = autoCreate;
@@ -105,7 +102,8 @@ extend(Database.prototype, {
       else callback(null, _createCollection(self._connection, res.body));
     });
     return promise;
-  },
+  }
+
   collections(cb) {
     var {promise, callback} = this._connection.promisify(cb);
     var self = this;
@@ -120,7 +118,8 @@ extend(Database.prototype, {
       }
     });
     return promise;
-  },
+  }
+
   allCollections(cb) {
     var {promise, callback} = this._connection.promisify(cb);
     var self = this;
@@ -135,7 +134,8 @@ extend(Database.prototype, {
       }
     });
     return promise;
-  },
+  }
+
   dropCollection(collectionName, cb) {
     var {promise, callback} = this._connection.promisify(cb);
     var self = this;
@@ -144,7 +144,8 @@ extend(Database.prototype, {
       else callback(null);
     });
     return promise;
-  },
+  }
+
   createGraph(properties, cb) {
     var {promise, callback} = this._connection.promisify(cb);
     var self = this;
@@ -153,7 +154,8 @@ extend(Database.prototype, {
       else callback(null, new Graph(self._connection, res.body.graph));
     });
     return promise;
-  },
+  }
+
   graph(graphName, autoCreate, cb) {
     if (typeof autoCreate === 'function') {
       cb = autoCreate;
@@ -177,7 +179,8 @@ extend(Database.prototype, {
       else callback(null, new Graph(self._connection, res.body.graph));
     });
     return promise;
-  },
+  }
+
   graphs(cb) {
     var {promise, callback} = this._connection.promisify(cb);
     var self = this;
@@ -190,7 +193,8 @@ extend(Database.prototype, {
       }
     });
     return promise;
-  },
+  }
+
   dropGraph(graphName, dropCollections, cb) {
     if (typeof dropCollections === 'function') {
       cb = dropCollections;
@@ -199,7 +203,8 @@ extend(Database.prototype, {
     var {promise, callback} = this._connection.promisify(cb);
     this._api.delete('graph/' + graphName, {dropCollections: dropCollections}, callback);
     return promise;
-  },
+  }
+
   createDatabase(databaseName, users, cb) {
     if (typeof users === 'function') {
       cb = users;
@@ -219,7 +224,8 @@ extend(Database.prototype, {
       }
     });
     return promise;
-  },
+  }
+
   database(databaseName, autoCreate, cb) {
     if (typeof autoCreate === 'function') {
       cb = autoCreate;
@@ -251,7 +257,8 @@ extend(Database.prototype, {
       }
     });
     return promise;
-  },
+  }
+
   databases(cb) {
     var {promise, callback} = this._connection.promisify(cb);
     var self = this;
@@ -266,7 +273,8 @@ extend(Database.prototype, {
       }
     });
     return promise;
-  },
+  }
+
   dropDatabase(databaseName, cb) {
     var {promise, callback} = this._connection.promisify(cb);
     var self = this;
@@ -275,7 +283,8 @@ extend(Database.prototype, {
       else callback(null);
     });
     return promise;
-  },
+  }
+
   truncate(cb) {
     var {promise, callback} = this._connection.promisify(cb);
     var self = this;
@@ -295,7 +304,8 @@ extend(Database.prototype, {
       }
     });
     return promise;
-  },
+  }
+
   truncateAll(cb) {
     var {promise, callback} = this._connection.promisify(cb);
     var self = this;
@@ -315,7 +325,8 @@ extend(Database.prototype, {
       }
     });
     return promise;
-  },
+  }
+
   transaction(collections, action, params, lockTimeout, cb) {
     if (typeof lockTimeout === 'function') {
       cb = lockTimeout;
@@ -343,7 +354,8 @@ extend(Database.prototype, {
       else callback(null, res.body.result);
     });
     return promise;
-  },
+  }
+
   query(query, bindVars, opts, cb) {
     if (typeof opts === 'function') {
       cb = opts;
@@ -364,7 +376,8 @@ extend(Database.prototype, {
       else callback(null, new ArrayCursor(self._connection, res.body));
     });
     return promise;
-  },
+  }
+
   functions(cb) {
     var {promise, callback} = this._connection.promisify(cb);
     this._api.get('aqlfunction', function (err, res) {
@@ -372,7 +385,8 @@ extend(Database.prototype, {
       else callback(null, res.body);
     });
     return promise;
-  },
+  }
+
   createFunction(name, code, cb) {
     var {promise, callback} = this._connection.promisify(cb);
     this._api.post('aqlfunction', {
@@ -383,7 +397,8 @@ extend(Database.prototype, {
       else callback(null, res.body);
     });
     return promise;
-  },
+  }
+
   dropFunction(name, group, cb) {
     if (typeof group === 'function') {
       cb = group;
@@ -398,4 +413,4 @@ extend(Database.prototype, {
     });
     return promise;
   }
-});
+}

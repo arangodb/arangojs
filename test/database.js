@@ -1,16 +1,12 @@
 'use strict';
 var expect = require('expect.js');
-var Database = require('../');
+var Database = require('../').Database;
 var Connection = require('../lib/connection');
 
 describe('Database', function () {
   it('is a constructor', function () {
     expect(Database).to.be.a('function');
     expect(new Database()).to.be.a(Database);
-  });
-  it('can be called without "new"', function () {
-    var createDatabase = Database;
-    expect(createDatabase()).to.be.a(Database);
   });
   it('creates a connection using the configuration', function () {
     var db = new Database({lol: 'wat'});

@@ -1,20 +1,16 @@
 'use strict';
-var extend = require('extend');
+export default class ArrayCursor {
+  constructor(connection, body) {
+    this.extra = body.extra;
+    this._connection = connection;
+    this._api = this._connection.route('_api');
+    this._result = body.result;
+    this._hasMore = Boolean(body.hasMore);
+    this._id = body.id;
+    this._index = 0;
+    this.count = body.count;
+  }
 
-module.exports = ArrayCursor;
-
-function ArrayCursor(connection, body) {
-  this.extra = body.extra;
-  this._connection = connection;
-  this._api = this._connection.route('_api');
-  this._result = body.result;
-  this._hasMore = Boolean(body.hasMore);
-  this._id = body.id;
-  this._index = 0;
-  this.count = body.count;
-}
-
-extend(ArrayCursor.prototype, {
   _drain(cb) {
     var {promise, callback} = this._connection.promisify(cb);
     var self = this;
@@ -24,7 +20,8 @@ extend(ArrayCursor.prototype, {
       else self._drain(cb);
     });
     return promise;
-  },
+  }
+
   _more(callback) {
     var self = this;
     if (!self._hasMore) callback(null, self);
@@ -38,7 +35,8 @@ extend(ArrayCursor.prototype, {
         }
       });
     }
-  },
+  }
+
   all(cb) {
     var {promise, callback} = this._connection.promisify(cb);
     var self = this;
@@ -48,7 +46,8 @@ extend(ArrayCursor.prototype, {
       else callback(null, self._result);
     });
     return promise;
-  },
+  }
+
   next(cb) {
     var {promise, callback} = this._connection.promisify(cb);
     var self = this;
@@ -68,10 +67,12 @@ extend(ArrayCursor.prototype, {
       }
     }
     return promise;
-  },
+  }
+
   hasNext() {
     return (this._hasMore || this._index < this._result.length);
-  },
+  }
+
   each(fn, cb) {
     var {promise, callback} = this._connection.promisify(cb);
     var self = this;
@@ -91,7 +92,8 @@ extend(ArrayCursor.prototype, {
       }
     });
     return promise;
-  },
+  }
+
   every(fn, cb) {
     var {promise, callback} = this._connection.promisify(cb);
     var self = this;
@@ -117,7 +119,8 @@ extend(ArrayCursor.prototype, {
     self._index = 0;
     loop();
     return promise;
-  },
+  }
+
   some(fn, cb) {
     var {promise, callback} = this._connection.promisify(cb);
     var self = this;
@@ -143,7 +146,8 @@ extend(ArrayCursor.prototype, {
     self._index = 0;
     loop();
     return promise;
-  },
+  }
+
   map(fn, cb) {
     var {promise, callback} = this._connection.promisify(cb);
     var self = this,
@@ -169,7 +173,8 @@ extend(ArrayCursor.prototype, {
     self._index = 0;
     loop();
     return promise;
-  },
+  }
+
   reduce(fn, accu, cb) {
     if (typeof accu === 'function') {
       cb = accu;
@@ -212,9 +217,10 @@ extend(ArrayCursor.prototype, {
       });
     }
     return promise;
-  },
+  }
+
   rewind() {
     this._index = 0;
     return this;
   }
-});
+}
