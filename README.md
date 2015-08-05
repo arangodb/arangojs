@@ -195,7 +195,7 @@ db.get(function (err, info) {
 
 Fetches all databases from the server and returns an array of their names.
 
-*Examples*
+**Examples**
 
 ```js
 var db = require('arangojs')();
@@ -211,7 +211,7 @@ db.databases(function (err, names) {
 
 Fetches all databases accessible to the active user from the server and returns an array of their names.
 
-*Examples*
+**Examples**
 
 ```js
 var db = require('arangojs')();
@@ -380,7 +380,7 @@ Returns a *Graph* instance representing the graph with the given graph name.
 
 Fetches all graphs from the database and returns an array of graph descriptions.
 
-*Examples*
+**Examples**
 
 ```js
 var db = require('arangojs')();
@@ -396,7 +396,7 @@ db.listGraphs(function (err, graphs) {
 
 Fetches all graphs from the database and returns an array of *Graph* instances for the graphs.
 
-*Examples*
+**Examples**
 
 ```js
 var db = require('arangojs')();
@@ -613,9 +613,9 @@ db.dropFunction('myfuncs::acounting::calculate_vat', function (err) {
 
 `database.route([path: string, [headers: Object]]): Route`
 
-**Synchronous.** Returns a new *Route* instance for the given path (relative to the database) that can be used to perform arbitrary HTTP requests.
+Returns a new *Route* instance for the given path (relative to the database) that can be used to perform arbitrary HTTP requests.
 
-*Parameter*
+**Arguments**
 
 * *path* (optional): relative URL of the route.
 * *headers* (optional): default headers that should be send with each request to the route.
@@ -624,7 +624,7 @@ If *path* is missing, the route will refer to the base URL of the database.
 
 For more information on *Route* instances see the [*Route API* below](#route-api).
 
-*Examples*
+**Examples**
 
 ```js
 var db = require('arangojs')();
@@ -658,7 +658,7 @@ db.query(someQuery, function (err, cursor) {
 
 Rewinds and exhausts the cursor and passes an array containing all values returned by the query.
 
-*Examples*
+**Examples**
 
 ```js
 // query result: [1, 2, 3, 4, 5]
@@ -677,7 +677,7 @@ cursor.all(function (err, vals) {
 
 Advances the cursor and passes the next value returned by the query. If the cursor has already been exhausted, passes `undefined` instead.
 
-*Examples*
+**Examples**
 
 ```js
 // query result: [1, 2, 3, 4, 5]
@@ -695,9 +695,9 @@ cursor.next(function (err, val) {
 
 `cursor.hasNext(): boolean`
 
-**Synchronous.** Returns `true` if the cursor has more values or `false` if the cursor has been exhausted. Synchronous.
+Returns `true` if the cursor has more values or `false` if the cursor has been exhausted. Synchronous.
 
-*Examples*
+**Examples**
 
 ```js
 cursor.all(function (err) { // exhausts the cursor
@@ -765,7 +765,7 @@ Passes the return value of the last call to *fn* to the callback.
 
 Equivalent to *Array.prototype.some*.
 
-*Examples*
+**Examples**
 
 ```js
 function even(value) {
@@ -791,7 +791,7 @@ Rewinds and exhausts the cursor by applying the function *fn* to each value retu
 
 Equivalent to *Array.prototype.map*.
 
-*Examples*
+**Examples**
 
 ```js
 function square(value) {
@@ -814,7 +814,7 @@ Rewinds and exhausts the cursor by reducing the values returned by the query wit
 
 Equivalent to *Array.prototype.reduce*.
 
-*Examples*
+**Examples**
 
 ```js
 function add(a, b) {
@@ -843,9 +843,9 @@ cursor.reduce(add, function (err, result) {
 
 `cursor.rewind(): cursor`
 
-**Synchronous.** Rewinds the cursor. Returns the cursor.
+Rewinds the cursor. Returns the cursor.
 
-*Examples*
+**Examples**
 
 ```js
 // query result: [1, 2, 3, 4, 5]
@@ -870,9 +870,9 @@ cursor.all(function (err, result) {
 
 `route.route([path: string, [headers: Object]]): Route`
 
-**Synchronous.** Creates a new *Route* instance representing the *path* relative to the current route. Optionally *headers* can be an object with headers which will be extended with the current route's headers and the connection's headers.
+Creates a new *Route* instance representing the *path* relative to the current route. Optionally *headers* can be an object with headers which will be extended with the current route's headers and the connection's headers.
 
-*Examples*
+**Examples**
 
 ```js
 var db = require('arangojs')();
@@ -889,7 +889,7 @@ var users = route.route('users');
 
 Performs a GET request to the given URL and passes the server response to the given callback.
 
-*Parameter*
+**Arguments**
 
 * *path* (optional): the route-relative URL for the request.
 * *qs* (optional): the query string for the request.
@@ -898,7 +898,7 @@ If *path* is missing, the request will be made to the base URL of the route.
 
 If *qs* is an object, it will be translated to a query string.
 
-*Examples*
+**Examples**
 
 ```js
 var db = require('arangojs')();
@@ -932,7 +932,7 @@ route.get('users', {group: 'admin'}, function (err, result) {
 
 Performs a POST request to the given URL and passes the server response to the given callback.
 
-*Parameter*
+**Arguments**
 
 * *path* (optional): the route-relative URL for the request.
 * *body* (optional): the request body for the request.
@@ -944,7 +944,7 @@ If *body* is an object, it will be converted to JSON.
 
 If *qs* is an object, it will be translated to a query string.
 
-*Examples*
+**Examples**
 
 ```js
 var db = require('arangojs')();
@@ -994,7 +994,7 @@ route.post('users', {
 
 Performs a PUT request to the given URL and passes the server response to the given callback.
 
-*Parameter*
+**Arguments**
 
 * *path* (optional): the route-relative URL for the request.
 * *body* (optional): the request body for the request.
@@ -1006,7 +1006,7 @@ If *body* is an object, it will be converted to JSON.
 
 If *qs* is an object, it will be translated to a query string.
 
-*Examples*
+**Examples**
 
 ```js
 var db = require('arangojs')();
@@ -1056,7 +1056,7 @@ route.put('users/admin', {
 
 Performs a PATCH request to the given URL and passes the server response to the given callback.
 
-*Parameter*
+**Arguments**
 
 * *path* (optional): the route-relative URL for the request.
 * *body* (optional): the request body for the request.
@@ -1114,7 +1114,7 @@ route.patch('users/admin', {
 
 Performs a DELETE request to the given URL and passes the server response to the given callback.
 
-*Parameter*
+**Arguments**
 
 * *path* (optional): the route-relative URL for the request.
 * *qs* (optional): the query string for the request.
@@ -1123,7 +1123,7 @@ If *path* is missing, the request will be made to the base URL of the route.
 
 If *qs* is an object, it will be translated to a query string.
 
-*Examples*
+**Examples**
 
 ```js
 var db = require('arangojs')();
@@ -1157,7 +1157,7 @@ route.delete('users/admin', {permanent: true}, function (err, result) {
 
 Performs a HEAD request to the given URL and passes the server response to the given callback.
 
-*Parameter*
+**Arguments**
 
 * *path* (optional): the route-relative URL for the request.
 * *qs* (optional): the query string for the request.
@@ -1166,7 +1166,7 @@ If *path* is missing, the request will be made to the base URL of the route.
 
 If *qs* is an object, it will be translated to a query string.
 
-*Examples*
+**Examples**
 
 ```js
 var db = require('arangojs')();
@@ -1185,7 +1185,7 @@ route.head(function (err, result, response) {
 
 Performs an arbitrary request to the given URL and passes the server response to the given callback.
 
-*Parameter*
+**Arguments**
 
 * *opts*: an object with the following properties:
  * *path*: the route-relative URL for the request.
@@ -1235,7 +1235,7 @@ Creates a collection from the given *properties*, then passes a new *Collection*
 
 For more information on the *properties* object, see [the HTTP API documentation for creating collections](https://docs.arangodb.com/HttpCollection/Creating.html).
 
-*Examples*
+**Examples**
 
 ```js
 var db = require('arangojs')();
@@ -1262,7 +1262,7 @@ collection.create({
 
 Retrieves the collection's properties.
 
-*Examples*
+**Examples**
 
 ```js
 var db = require('arangojs')();
@@ -1281,7 +1281,7 @@ db.collection('some-collection', function (err, collection) {
 
 Retrieves the number of documents in a collection.
 
-*Examples*
+**Examples**
 
 ```js
 var db = require('arangojs')();
@@ -1300,7 +1300,7 @@ db.collection('some-collection', function (err, collection) {
 
 Retrieves statistics for a collection.
 
-*Examples*
+**Examples**
 
 ```js
 var db = require('arangojs')();
@@ -1319,7 +1319,7 @@ db.collection('some-collection', function (err, collection) {
 
 Retrieves the collection revision ID.
 
-*Examples*
+**Examples**
 
 ```js
 var db = require('arangojs')();
@@ -1340,7 +1340,7 @@ Retrieves the collection checksum.
 
 For information on the possible options see [the HTTP API for getting collection information](https://docs.arangodb.com/HttpCollection/Getting.html).
 
-*Examples*
+**Examples**
 
 ```js
 var db = require('arangojs')();
@@ -1365,7 +1365,7 @@ Tells the server to load the collection into memory.
 
 If *count* is set to `false`, the return value will not include the number of documents in the collection (which may speed up the process).
 
-*Examples*
+**Examples**
 
 ```js
 var db = require('arangojs')();
@@ -1384,7 +1384,7 @@ db.collection('some-collection', function (err, collection) {
 
 Tells the server to remove the collection from memory.
 
-*Examples*
+**Examples**
 
 ```js
 var db = require('arangojs')();
@@ -1405,7 +1405,7 @@ Replaces the properties of the collection.
 
 For information on the *properties* argument see [the HTTP API for modifying collections](https://docs.arangodb.com/HttpCollection/Modifying.html).
 
-*Examples*
+**Examples**
 
 ```js
 var db = require('arangojs')();
@@ -1426,7 +1426,7 @@ db.collection('some-collection', function (err, collection) {
 
 Renames the collection. The *Collection* instance will automatically update its name according to the server response.
 
-*Examples*
+**Examples**
 
 ```js
 var db = require('arangojs')();
@@ -1447,7 +1447,7 @@ db.collection('some-collection', function (err, collection) {
 
 Rotates the journal of the collection.
 
-*Examples*
+**Examples**
 
 ```js
 var db = require('arangojs')();
@@ -1466,7 +1466,7 @@ db.collection('some-collection', function (err, collection) {
 
 Deletes **all documents** in the collection in the database.
 
-*Examples*
+**Examples**
 
 ```js
 var db = require('arangojs')();
@@ -1487,7 +1487,7 @@ Deletes the collection from the database.
 
 Equivalent to *database.dropCollection(collection.name, [callback: Callback])*.: Promise
 
-*Examples*
+**Examples**
 
 ```js
 var db = require('arangojs')();
@@ -1512,7 +1512,7 @@ Creates an arbitrary index on the collection.
 
 For information on the possible properties of the *details* object, see [the HTTP API for manipulating indexes](https://docs.arangodb.com/HttpIndexes/WorkingWith.html).
 
-*Examples*
+**Examples**
 
 ```js
 var db = require('arangojs')();
@@ -1535,7 +1535,7 @@ var collection = db.createCollection('some-collection', function (err, collectio
 
 Creates a cap constraint index on the collection.
 
-*Parameter*
+**Arguments**
 
 * *size*: an object with any of the following properties:
  * *size*: the maximum number of documents in the collection.
@@ -1545,7 +1545,7 @@ If *size* is a number, it will be interpreted as *size.size*.
 
  For more information on the properties of the *size* object see [the HTTP API for creating cap constraints](https://docs.arangodb.com/HttpIndexes/Cap.html).
 
-*Examples*
+**Examples**
 
 ```js
 var db = require('arangojs')();
@@ -1573,7 +1573,7 @@ db.createCollection('some-collection', function (err, collection) {
 
 Creates a hash index on the collection.
 
-*Parameter*
+**Arguments**
 
 * *fields*: an array of document fields on which to create the index.
 * *opts* (optional): additional options for this index.
@@ -1584,7 +1584,7 @@ If *fields* is a string, it will be wrapped in an array automatically.
 
 For more information on hash indexes, see [the HTTP API for hash indexes](https://docs.arangodb.com/HttpIndexes/Hash.html).
 
-*Examples*
+**Examples**
 
 ```js
 var db = require('arangojs')();
@@ -1612,7 +1612,7 @@ db.createCollection('some-collection', function (err, collection) {
 
 Creates a skiplist index on the collection.
 
-*Parameter*
+**Arguments**
 
 * *fields*: an array of document fields on which to create the index.
 * *opts* (optional): additional options for this index.
@@ -1623,7 +1623,7 @@ If *fields* is a string, it will be wrapped in an array automatically.
 
 For more information on skiplist indexes, see [the HTTP API for skiplist indexes](https://docs.arangodb.com/HttpIndexes/Skiplist.html).
 
-*Examples*
+**Examples**
 
 ```js
 var db = require('arangojs')();
@@ -1651,7 +1651,7 @@ db.createCollection('some-collection', function (err, collection) {
 
 Creates a geo-spatial index on the collection.
 
-*Parameter*
+**Arguments**
 
 * *fields*: an array of document fields on which to create the index. Currently, fulltext indexes must cover exactly one field.
 * *opts* (optional): an object containing additional properties of the index.
@@ -1660,7 +1660,7 @@ If *fields* is a string, it will be wrapped in an array automatically.
 
 For more information on the properties of the *opts* object see [the HTTP API for manipulating geo indexes](https://docs.arangodb.com/HttpIndexes/Geo.html).
 
-*Examples*
+**Examples**
 
 ```js
 var db = require('arangojs')();
@@ -1688,7 +1688,7 @@ db.createCollection('some-collection', function (err, collection) {
 
 Creates a fulltext index on the collection.
 
-*Parameter*
+**Arguments**
 
 * *fields*: an array of document fields on which to create the index. Currently, fulltext indexes must cover exactly one field.
 * *minLength* (optional): minimum character length of words to index. Uses a server-specific default value if not specified.
@@ -1697,7 +1697,7 @@ If *fields* is a string, it will be wrapped in an array automatically.
 
 For more information on fulltext indexes, see [the HTTP API for fulltext indexes](https://docs.arangodb.com/HttpIndexes/Fulltext.html).
 
-*Examples*
+**Examples**
 
 ```js
 var db = require('arangojs')();
@@ -1727,7 +1727,7 @@ Fetches information about the index with the given *indexHandle* and passes it t
 
 The value of *indexHandle* can either be a fully-qualified *index.id* or the collection-specific key of the index.
 
-*Examples*
+**Examples**
 
 ```js
 var db = require('arangojs')();
@@ -1756,7 +1756,7 @@ db.createCollection('some-collection', function (err, collection) {
 
 Fetches a list of all indexes on this collection.
 
-*Examples*
+**Examples**
 
 ```js
 var db = require('arangojs')();
@@ -1781,7 +1781,7 @@ Deletes the index with the given *indexHandle* from the collection.
 
 The value of *indexHandle* can either be a fully-qualified *index.id* or the collection-specific key of the index.
 
-*Examples*
+**Examples**
 
 ```js
 var db = require('arangojs')();
@@ -1814,7 +1814,7 @@ Note that a collection must have fulltext indexes in order to perform fulltext q
 
 Performs a fulltext query searching for *query* in the given *fieldName* of all documents in this collection.
 
-*Parameter*
+**Arguments**
 
 * *fieldName*: the name of the field to search.
 * *query*: a fulltext query string.
@@ -1824,7 +1824,7 @@ For more information on the properties of the *opts* object see [the HTTP API fo
 
 For more information on *Cursor* instances see the [*Cursor API* above](#cursor-api).
 
-*Examples*
+**Examples**
 
 ```js
 var db = require('arangojs')();
@@ -1852,7 +1852,7 @@ Note that a collection must have geo-spatial indexes in order to perform geo-spa
 
 Performs a geo-spatial query for documents near the given location.
 
-*Parameter*
+**Arguments**
 
 * *latitude*: latitude of the target location.
 * *longitude*: longitude of the target location.
@@ -1862,7 +1862,7 @@ For more information on the properties of the *opts* object see [the HTTP API fo
 
 For more information on *Cursor* instances see the [*Cursor API* above](#cursor-api).
 
-*Examples*
+**Examples**
 
 ```js
 var db = require('arangojs')();
@@ -1889,7 +1889,7 @@ db.collection('some-collection', function (err, collection) {
 
 Performs a geo-spatial query for documents within the given *radius* of the given location.
 
-*Parameter*
+**Arguments**
 
 * *latitude*: latitude of the target location.
 * *longitude*: longitude of the target location.
@@ -1900,7 +1900,7 @@ For more information on the properties of the *opts* object see [the HTTP API fo
 
 For more information on *Cursor* instances see the [*Cursor API* above](#cursor-api).
 
-*Examples*
+**Examples**
 
 ```js
 var db = require('arangojs')();
@@ -1963,7 +1963,7 @@ If *data* is a JavaScript array, it will be transmitted as a line-delimited JSON
 
 For more information on the *opts* object, see [the HTTP API documentation for bulk imports](https://docs.arangodb.com/HttpBulkImports/ImportingSelfContained.html).
 
-*Examples*
+**Examples**
 
 ```js
 var db = require('arangojs')();
@@ -2034,7 +2034,7 @@ The *documentHandle* can be either the `_id` or the `_key` of a document in the 
 
 For more information on the *opts* object, see [the HTTP API documentation for working with documents](https://docs.arangodb.com/HttpDocument/WorkingWithDocuments.html).
 
-*Examples*
+**Examples**
 
 ```js
 var db = require('arangojs')();
@@ -2073,7 +2073,7 @@ The *documentHandle* can be either the `_id` or the `_key` of a document in the 
 
 For more information on the *opts* object, see [the HTTP API documentation for working with documents](https://docs.arangodb.com/HttpDocument/WorkingWithDocuments.html).
 
-*Examples*
+**Examples**
 
 ```js
 var db = require('arangojs')();
@@ -2110,7 +2110,7 @@ The *documentHandle* can be either the `_id` or the `_key` of a document in the 
 
 For more information on the *opts* object, see [the HTTP API documentation for working with documents](https://docs.arangodb.com/HttpDocument/WorkingWithDocuments.html).
 
-*Examples*
+**Examples**
 
 ```js
 var db = require('arangojs')();
@@ -2158,7 +2158,7 @@ Retrieves the document with the given *documentHandle* from the collection.
 
 The *documentHandle* can be either the `_id` or the `_key` of a document in the collection, or a document (i.e. an object with an `_id` or `_key` property).
 
-*Examples*
+**Examples**
 
 ```js
 var db = require('arangojs')();
@@ -2187,7 +2187,7 @@ db.collection('my-docs', function (err, collection) {
 
 Creates a new document with the given *data*.
 
-*Examples*
+**Examples**
 
 ```js
 var db = require('arangojs')();
@@ -2217,7 +2217,7 @@ Retrieves the edge with the given *documentHandle* from the collection.
 
 The *documentHandle* can be either the `_id` or the `_key` of an edge in the collection, or an edge (i.e. an object with an `_id` or `_key` property).
 
-*Examples*
+**Examples**
 
 ```js
 var db = require('arangojs')();
@@ -2248,7 +2248,7 @@ Creates a new edge between the documents *fromId* and *toId* with the given *dat
 
 If *fromId* and *toId* are not specified, the *data* needs to contain the properties *_from* and *_to*.
 
-*Examples*
+**Examples**
 
 ```js
 var db = require('arangojs')();
@@ -2279,7 +2279,7 @@ Retrieves a list of all edges of the document with the given *documentHandle*.
 
 The *documentHandle* can be either the `_id` or the `_key` of a document in any collection, or a document (i.e. an object with an `_id` or `_key` property).
 
-*Examples*
+**Examples**
 
 ```js
 var db = require('arangojs')();
@@ -2310,7 +2310,7 @@ Retrieves a list of all incoming edges of the document with the given *documentH
 
 The *documentHandle* can be either the `_id` or the `_key` of a document in any collection, or a document (i.e. an object with an `_id` or `_key` property).
 
-*Examples*
+**Examples**
 
 ```js
 var db = require('arangojs')();
@@ -2341,7 +2341,7 @@ Retrieves a list of all outgoing edges of the document with the given *documentH
 
 The *documentHandle* can be either the `_id` or the `_key` of a document in any collection, or a document (i.e. an object with an `_id` or `_key` property).
 
-*Examples*
+**Examples**
 
 ```js
 var db = require('arangojs')();
@@ -2374,7 +2374,7 @@ See [the HTTP API documentation](https://docs.arangodb.com/HttpTraversal/index.h
 
 Please note that while *opts.filter*, *opts.visitor*, *opts.init*, *opts.expander* and *opts.sort* should be strings evaluating to well-formed JavaScript code, it's not possible to pass in JavaScript functions directly because the code needs to be evaluated on the server and will be transmitted in plain text.
 
-*Examples*
+**Examples**
 
 ```js
 var db = require('arangojs')();
@@ -2412,7 +2412,7 @@ Creates a graph with the given *properties*, then passes a new *Graph* instance 
 
 For more information on the *properties* object, see [the HTTP API documentation for creating graphs](https://docs.arangodb.com/HttpGharial/Management.html).
 
-*Examples*
+**Examples**
 
 ```js
 var db = require('arangojs')();
@@ -2447,7 +2447,7 @@ If *dropCollections* is set to `true`, the collections associated with the graph
 
 Equivalent to *database.dropGraph(graph.name, [callback: Callback])*.: Promise
 
-*Examples*
+**Examples**
 
 ```js
 var db = require('arangojs')();
@@ -2468,7 +2468,7 @@ db.graph('some-graph', function (err, graph) {
 
 Fetches the vertex collection with the given *collectionName* from the database, then passes a new [*GraphVertexCollection* instance](#graphvertexcollection-api) to the callback.
 
-*Examples*
+**Examples**
 
 ```js
 var db = require('arangojs')();
@@ -2496,7 +2496,7 @@ db.createGraph({
 
 Adds the collection with the given *collectionName* to the graph's vertex collections.
 
-*Examples*
+**Examples**
 
 ```js
 var db = require('arangojs')();
@@ -2521,7 +2521,7 @@ Removes the vertex collection with the given *collectionName* from the graph.
 
 If *dropCollection* is set to `true`, the collection will also be deleted from the database.
 
-*Examples*
+**Examples**
 
 ```js
 var db = require('arangojs')();
@@ -2553,7 +2553,7 @@ db.createGraph({
 
 Fetches the edge collection with the given *collectionName* from the database, then passes a new [*GraphEdgeCollection* instance](#graphedgecollection-api) to the callback.
 
-*Examples*
+**Examples**
 
 ```js
 var db = require('arangojs')();
@@ -2583,7 +2583,7 @@ Adds the given edge definition *definition* to the graph.
 
 For more information on edge definitions see [the HTTP API for managing graphs](https://docs.arangodb.com/HttpGharial/Management.html).
 
-*Examples*
+**Examples**
 
 ```js
 var db = require('arangojs')();
@@ -2612,7 +2612,7 @@ Replaces the edge definition for the edge collection named *collectionName* with
 
 For more information on edge definitions see [the HTTP API for managing graphs](https://docs.arangodb.com/HttpGharial/Management.html).
 
-*Examples*
+**Examples**
 
 ```js
 var db = require('arangojs')();
@@ -2647,7 +2647,7 @@ If *dropCollection* is set to `true`, the edge collection associated with the de
 
 For more information on edge definitions see [the HTTP API for managing graphs](https://docs.arangodb.com/HttpGharial/Management.html).
 
-*Examples*
+**Examples**
 
 ```js
 var db = require('arangojs')();
@@ -2685,7 +2685,7 @@ See [the HTTP API documentation](https://docs.arangodb.com/HttpTraversal/index.h
 
 Please note that while *opts.filter*, *opts.visitor*, *opts.init*, *opts.expander* and *opts.sort* should be strings evaluating to well-formed JavaScript functions, it's not possible to pass in JavaScript functions directly because the functions need to be evaluated on the server and will be transmitted in plain text.
 
-*Examples*
+**Examples**
 
 ```js
 var db = require('arangojs')();
@@ -2733,7 +2733,7 @@ Retrieves the vertex with the given *documentHandle* from the collection.
 
 The *documentHandle* can be either the `_id` or the `_key` of a vertex in the collection, or a vertex (i.e. an object with an `_id` or `_key` property).
 
-*Examples*
+**Examples**
 
 ```js
 // assumes the collections "edges" and "vertices" already exist
@@ -2771,7 +2771,7 @@ db.createGraph({
 
 Creates a new vertex with the given *data*.
 
-*Examples*
+**Examples**
 
 ```js
 var db = require('arangojs')();
@@ -2850,7 +2850,7 @@ Creates a new edge between the vertices *fromId* and *toId* with the given *data
 
 If *fromId* and *toId* are not specified, the *data* needs to contain the properties *_from* and *_to*.
 
-*Examples*
+**Examples**
 
 ```js
 var db = require('arangojs')();
