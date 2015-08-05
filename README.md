@@ -2121,7 +2121,7 @@ db.collection('some-collection', function (err, collection) {
 
 #### collection.all
 
-`collection.all([type: string,] [callback: Callback]): Promise<Array<T>>`
+`collection.all([type: string,] [callback: Callback]): Promise<Array<Object>>`
 
 Retrieves a list of all documents in the collection.
 
@@ -2130,6 +2130,12 @@ If *type* is set to `"key"`, the result will be the `_key` of each document.
 If *type* is set to `"path"`, the result will be the document URI paths.
 
 If *type* is set to `"id"` or not set, the result will be the `_id` of each document.
+
+#### collection.byKeys
+
+`collection.byKeys(keys: Array<string>, [callback: Callback]): Promise<Array<Object>>`
+
+Retrieves a list of the documents with the given keys in the collection.
 
 ### DocumentCollection API
 

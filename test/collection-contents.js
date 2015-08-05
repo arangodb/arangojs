@@ -15,4 +15,7 @@ describe('collection', function () {
   describe('all', function () {
     it('is missing tests');
   });
+  describe('byKeys', function () {
+    it('is missing tests');
+  });
 });

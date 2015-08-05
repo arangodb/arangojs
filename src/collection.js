@@ -186,6 +186,17 @@ extend(BaseCollection.prototype, {
     });
     return promise;
   },
+  byKeys(keys, cb) {
+    var {promise, callback} = this._connection.promisify(cb);
+    this._api.put('simple/lookup-by-keys', {
+      collection: this.name,
+      keys
+    }, function (err, res) {
+      if (err) callback(err);
+      else callback(null, res.body.documents);
+    });
+    return promise;
+  },
   import(data, opts, cb) {
     if (typeof opts === 'function') {
       cb = opts;
