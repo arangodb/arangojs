@@ -3,10 +3,9 @@ import extend from 'extend';
 import {_BaseCollection as BaseCollection} from './collection';
 
 class VertexCollection extends BaseCollection {
-  constructor(connection, body, graph) {
-    super(connection, body);
+  constructor(connection, name, graph) {
+    super(connection, name);
     this.graph = graph;
-    BaseCollection.call(this, connection, body);
     this._gharial = this._api.route('gharial/' + this.graph.name + '/vertex/' + this.name);
   }
 
@@ -32,10 +31,9 @@ class VertexCollection extends BaseCollection {
 }
 
 class EdgeCollection extends BaseCollection {
-  constructor(connection, body, graph) {
-    super(connection, body);
+  constructor(connection, name, graph) {
+    super(connection, name);
     this.graph = graph;
-    BaseCollection.call(this, connection, body);
     this._gharial = this._api.route('gharial/' + this.graph.name + '/edge/' + this.name);
   }
 
@@ -69,11 +67,35 @@ export default class Graph {
   static VertexCollection = VertexCollection;
   static EdgeCollection = EdgeCollection;
 
-  constructor(connection, body) {
+  constructor(connection, name) {
     this._connection = connection;
     this._api = this._connection.route('_api');
-    extend(this, body);
     this._gharial = this._api.route('gharial/' + this.name);
+    this.name = name;
+  }
+
+  get(cb) {
+    var {promise, callback} = this._connection.promisify(cb);
+    this._gharial.get(function (err, res) {
+      if (err) callback(err);
+      else callback(null, res.body.graph);
+    });
+    return promise;
+  }
+
+  create(properties, cb) {
+    if (typeof properties === 'function') {
+      cb = properties;
+      properties = undefined;
+    }
+    var {promise, callback} = this._connection.promisify(cb);
+    var self = this;
+    properties = extend({}, properties, {name: this.name});
+    self._api.post('gharial', properties, function (err, res) {
+      if (err) callback(err);
+      else callback(null, res.body.graph);
+    });
+    return promise;
   }
 
   drop(dropCollections, cb) {

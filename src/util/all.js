@@ -12,7 +12,10 @@ export default function all(arr, callback) {
       if (!err) result[i] = res;
       if (!called) {
         if (err) callback(err);
-        else if (pending === 0) callback(null, result);
+        else if (pending === 0) {
+          if (result.every(r => r === undefined)) callback(null);
+          else callback(null, result);
+        }
         else return;
         called = true;
       }

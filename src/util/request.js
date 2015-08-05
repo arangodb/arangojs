@@ -1,9 +1,9 @@
 'use strict';
-var http = require('http');
-var https = require('https');
-var parseUrl = require('url').parse;
-var once = require('./once');
-var LinkedList = require('linkedlist');
+import http from 'http';
+import https from 'https';
+import {parse as parseUrl} from 'url';
+import once from './once';
+import LinkedList from 'linkedlist';
 
 function joinPath(a = '', b = '') {
   if (!a && !b) return '';
@@ -36,12 +36,12 @@ function rawCopy(obj) {
   return data;
 }
 
-module.exports = function (baseUrl, agent, agentOptions) {
+export default function (baseUrl, agent, agentOptions) {
   var baseUrlParts = rawCopy(parseUrl(baseUrl));
-  var isSsl = baseUrlParts.protocol === 'https:';
+  var isTls = baseUrlParts.protocol === 'https:';
 
   if (!agent) {
-    agent = new (isSsl ? https : http).Agent(agentOptions);
+    agent = new (isTls ? https : http).Agent(agentOptions);
   }
 
   var queue = new LinkedList();
@@ -76,7 +76,7 @@ module.exports = function (baseUrl, agent, agentOptions) {
         next();
         cb.apply(this, arguments);
       });
-      var req = (isSsl ? https : http).request(options, function (res) {
+      var req = (isTls ? https : http).request(options, function (res) {
         var data = [];
         res.on('data', function (b) {
           data.push(b);
@@ -95,4 +95,4 @@ module.exports = function (baseUrl, agent, agentOptions) {
 
     drainQueue();
   };
-};
+}

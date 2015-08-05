@@ -8,16 +8,10 @@ export var types = {
 };
 
 class BaseCollection {
-  constructor(connection, body) {
+  constructor(connection, name) {
     this._connection = connection;
     this._api = this._connection.route('_api');
-    extend(this, body);
-    delete this.code;
-    delete this.error;
-  }
-
-  _documentPath(documentHandle) {
-    return (this.type === types.EDGE_COLLECTION ? 'edge/' : 'document/') + this._documentHandle(documentHandle);
+    this.name = name;
   }
 
   _documentHandle(documentHandle) {
@@ -42,58 +36,69 @@ class BaseCollection {
     return indexHandle;
   }
 
-  _get(path, update, opts, cb) {
+  _get(path, opts, cb) {
     if (typeof opts === 'function') {
       cb = opts;
       opts = undefined;
     }
     var {promise, callback} = this._connection.promisify(cb);
-    var self = this;
-    self._api.get('collection/' + self.name + '/' + path, opts, function (err, res) {
+    this._api.get('collection/' + this.name + '/' + path, opts, function (err, res) {
       if (err) callback(err);
-      else {
-        if (update) {
-          extend(self, res.body);
-          delete self.code;
-          delete self.error;
-        }
-        callback(null, res.body);
-      }
+      else callback(null, res.body);
     });
     return promise;
   }
 
-  _put(path, data, update, cb) {
+  _put(path, data, cb) {
     var {promise, callback} = this._connection.promisify(cb);
-    var self = this;
-    self._api.put('collection/' + self.name + '/' + path, data, function (err, res) {
+    this._api.put('collection/' + this.name + '/' + path, data, function (err, res) {
       if (err) callback(err);
-      else {
-        if (update) extend(self, res.body);
-        callback(null, res.body);
-      }
+      else callback(null, res.body);
+    });
+    return promise;
+  }
+
+  get(cb) {
+    var {promise, callback} = this._connection.promisify(cb);
+    this._api.get('collection/' + this.name, function (err, res) {
+      if (err) callback(err);
+      else callback(null, res.body);
+    });
+    return promise;
+  }
+
+  create(properties, cb) {
+    if (typeof properties === 'function') {
+      cb = properties;
+      properties = undefined;
+    }
+    var {promise, callback} = this._connection.promisify(cb);
+    properties = extend({}, properties, {name: this.name, type: this.type});
+    this._api.post('collection', properties, function (err, res) {
+      if (err) callback(err);
+      else callback(null, res.body);
     });
     return promise;
   }
 
   properties(cb) {
-    return this._get('properties', true, cb);
+    return this._get('properties', cb);
   }
 
   count(cb) {
-    return this._get('count', true, cb);
+    return this._get('count', cb);
   }
 
   figures(cb) {
-    return this._get('figures', true, cb);
+    return this._get('figures', cb);
   }
 
   revision(cb) {
-    return this._get('revision', true, cb);
+    return this._get('revision', cb);
   }
 
   checksum(opts, cb) {
-    return this._get('checksum', true, opts, cb);
+    return this._get('checksum', opts, cb);
   }
 
   load(count, cb) {
@@ -103,27 +108,35 @@ class BaseCollection {
     }
     return this._put('load', (
       typeof count === 'boolean' ? {count: count} : undefined
-    ), true, cb);
+    ), cb);
   }
 
   unload(cb) {
-    return this._put('unload', undefined, true, cb);
+    return this._put('unload', undefined, cb);
   }
 
   setProperties(properties, cb) {
-    return this._put('properties', properties, true, cb);
+    return this._put('properties', properties, cb);
   }
 
   rename(name, cb) {
-    return this._put('rename', {name: name}, true, cb);
+    var {promise, callback} = this._connection.promisify(cb);
+    this._api.put('collection/' + this.name + '/rename', {name}, (err, res) => {
+      if (err) callback(err);
+      else {
+        this.name = name;
+        callback(null, res.body);
+      }
+    });
+    return promise;
   }
 
   rotate(cb) {
-    return this._put('rotate', undefined, false, cb);
+    return this._put('rotate', undefined, cb);
   }
 
   truncate(cb) {
-    return this._put('truncate', undefined, true, cb);
+    return this._put('truncate', undefined, cb);
   }
 
   drop(cb) {
@@ -435,6 +448,12 @@ class BaseCollection {
 }
 
 export class DocumentCollection extends BaseCollection {
+  type = types.DOCUMENT_COLLECTION;
+
+  _documentPath(documentHandle) {
+    return 'document/' + this._documentHandle(documentHandle);
+  }
+
   document(documentHandle, cb) {
     var {promise, callback} = this._connection.promisify(cb);
     this._api.get('document/' + this._documentHandle(documentHandle), function (err, res) {
@@ -457,6 +476,12 @@ export class DocumentCollection extends BaseCollection {
 }
 
 export class EdgeCollection extends BaseCollection {
+  type = types.EDGE_COLLECTION;
+
+  _documentPath(documentHandle) {
+    return 'edge/' + this._documentHandle(documentHandle);
+  }
+
   edge(documentHandle, cb) {
     var {promise, callback} = this._connection.promisify(cb);
     this._api.get('edge/' + this._documentHandle(documentHandle), function (err, res) {
@@ -521,7 +546,7 @@ export class EdgeCollection extends BaseCollection {
 }
 
 export default function (connection, body) {
-  var Ctor = (body.type === types.EDGE_COLLECTION ? EdgeCollection : DocumentCollection);
-  return new Ctor(connection, body);
+  var Collection = (body.type === types.EDGE_COLLECTION ? EdgeCollection : DocumentCollection);
+  return new Collection(connection, body.name);
 }
 export var _BaseCollection = BaseCollection;

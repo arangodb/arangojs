@@ -52,400 +52,178 @@ All asynchronous functions take an optional node-style callback (or "errback") w
 
 For expected API errors, *err* will be an instance of *ArangoError*.
 
-## Preface
-
-### A note on promises
-
-As of version 3.5, if the global `Promise` constructor is defined when an asynchronous function is called, the function **will also return a promise**. When using both node-style callbacks and promises, the node-style callback will be invoked before the promise's fulfillment/rejection handlers.
+If `Promise` is defined globally, asynchronous functions also return a promise. When using both node-style callbacks and promises, the node-style callback will be invoked before the promise's fulfillment/rejection handlers.
 
 If you want to use promises in environments that don't provide the global `Promise` constructor, use a promise polyfill like [es6-promise](https://www.npmjs.com/package/es6-promise) or inject a ES6-compatible promise implementation like [bluebird](https://www.npmjs.com/package/bluebird) into the global scope.
-
-### A note on type annotations
-
-The type annotations in this documentation generally follow the definitions used in the [Flow type checker](http://flowtype.org/docs/type-annotations.html) with the following additions:
-
-* optional arguments or groups of optional arguments that can be omitted entirely are surrounded by square brackets, e.g. `[these: A, are: B, optional: C]`.
-* the following type definitions are used throughout the documentation:
- * `type Callback = (err: ?Error, result: ?any) => any`
- * `type Document = { _key: string, _id: ?string, _rev: ?string, [attr: string]: any }`
- * `type Index = { id: string, [attr: string]: any }`
- * `type Promise<T> = { then: (onFulfilled: (T) => A, onRejected: (Error) => B) => Promise<A | B>, [attr: string]: any }`
-* the type of the `result` argument passed to callbacks is always identical to the type of the equivalent promise's `onFulfilled` argument and is therefore not explicitly specified in the type signatures. I.e. if the return type is specified as `Promise<X>` the exact callback type is implied to be `(err: ?Error, result: ?X) => any`.
 
 ## Database API
 
 ### new Database
 
-`new Database([config: Object]): Database`
+`new Database([config]): Database`
 
-**Synchronous.** Creates a new *database*.
-
-*Parameter*
-
-* *config* (optional): an object with the following properties:
- * *url* (optional): base URL of the ArangoDB server. Default: `http://localhost:8529`.
- * *databaseName* (optional): name of the active database. Default: `_system`.
- * *arangoVersion* (optional): value of the `x-arango-version` header. Default: `20300`.
- * *headers* (optional): an object with headers to send with every request.
- * *agent* (optional): an http Agent instance to use for connections. This has no effect in the browser. Default: a new [`http.Agent`](https://nodejs.org/api/http.html#http_new_agent_options) instance configured with the *agentOptions*.
- * *agentOptions* (optional): an object with options for the agent. This will be ignored if *agent* is also provided and has no effect in the browser. Default: `{maxSockets: 3, keepAlive: true, keepAliveMsecs: 1000}`.
- * *promise* (optional): the `Promise` implementation to use or `false` to disable promises entirely (for performance). Default: the global `Promise` constructor will be used if available when a promise is needed.
+Creates a new *Database* instance.
 
 If *config* is a string, it will be interpreted as *config.url*.
 
-#### HTTPS
+**Arguments**
 
-The driver automatically uses HTTPS if you specify an HTTPS *url*.
+* **config**: *Object* (optional)
 
-If you need to support self-signed HTTPS certificates, you may have to add your certificates to the *agentOptions*, e.g.:
+  An object with the following properties:
 
-```js
-agentOptions: {
-    ca: [fs.readFileSync('.ssl/sub.class1.server.ca.pem'), fs.readFileSync('.ssl/ca.pem')]
-}
-```
+  * **url**: *string* (Default: `http://localhost:8529`)
 
-#### Authentication
+    Base URL of the ArangoDB server.
 
-If you want to use ArangoDB with HTTP Basic authentication, you can provide the credentials as part of the *config.url* string, e.g. `http://user:pass@localhost:8529`.
+    If you want to use ArangoDB with HTTP Basic authentication, you can provide the credentials as part of the URL, e.g. `http://user:pass@localhost:8529`.
 
-### Manipulating collections
+    The driver automatically uses HTTPS if you specify an HTTPS *url*.
 
-These functions implement the [HTTP API for manipulating collections](https://docs.arangodb.com/HttpCollection/index.html).
+    If you need to support self-signed HTTPS certificates, you may have to add your certificates to the *agentOptions*, e.g.:
 
-#### database.createCollection
-
-`database.createCollection(properties: Object, [callback: Callback]): Promise<DocumentCollection | EdgeCollection>`
-
-Creates a collection from the given *properties*, then passes a new *Collection* instance to the callback.
-
-For more information on the *properties* object, see [the HTTP API documentation for creating collections](https://docs.arangodb.com/HttpCollection/Creating.html).
-
-If *properties* is a string, it will be interpreted as *properties.name*.
-
-*Examples*
-
-```js
-var db = require('arangojs')();
-db.createCollection('my-data', function (err, collection) {
-    if (err) return console.error(err);
-    // collection is a DocumentCollection instance
-    // see the Collection API and DocumentCollection API below for details
-});
-
-// -- or --
-
-db.createCollection({
-    name: 'my-data',
-    type: 2 // i.e. document collection (the default)
-}, function (err, collection) {
-    if (err) return console.error(err);
-    // collection is a DocumentCollection instance
-    // see the Collection API and DocumentCollection API below for details
-});
-```
-
-#### database.createEdgeCollection
-
-`database.createEdgeCollection(properties: Object, [callback: Callback]): Promise<EdgeCollection>`
-
-Creates an edge collection from the given *properties*, then passes a new *EdgeCollection* instance to the callback.
-
-For more information on the *properties* object, see [the HTTP API documentation for creating collections](https://docs.arangodb.com/HttpCollection/Creating.html).
-
-If *properties* is a string, it will be interpreted as *properties.name*.
-
-The collection type will be set to `3` (i.e. edge collection) regardless of the value of *properties.type*.
-
-*Examples*
-
-```js
-var db = require('arangojs')();
-db.createEdgeCollection('friends', function (err, edgeCollection) {
-    if (err) return console.error(err);
-    // edgeCollection is an EdgeCollection instance
-    // see the Collection API and EdgeCollection API below for details
-});
-```
-
-#### database.collection
-
-`database.collection(collectionName: string, [autoCreate: boolean,] [callback: Callback]): Promise<DocumentCollection | EdgeCollection>`
-
-Fetches the collection with the given *collectionName* from the database, then passes a new *Collection* instance to the callback.
-
-If *autoCreate* is set to `true`, a collection with the given name will be created if it doesn't already exist.
-
-```js
-var db = require('arangojs')();
-db.collection('potatos', function (err, collection) {
-    if (err) {
-        // Collection did not exist
-        console.error(err);
-        return;
+    ```js
+    agentOptions: {
+        ca: [fs.readFileSync('.ssl/sub.class1.server.ca.pem'), fs.readFileSync('.ssl/ca.pem')]
     }
-    // collection exists
-});
-```
+    ```
 
-#### database.edgeCollection
+  * **databaseName**: *string* (Default: `_system`)
 
-`database.edgeCollection(collectionName: string, [autoCreate: boolean,] [callback: Callback]): Promise<EdgeCollection>`
+    Name of the active database.
 
-Fetches the edge collection with the given *collectionName* from the database, then passes a new *EdgeCollection* instance to the callback.
+  * **arangoVersion**: *number* (Default: `20300`)
 
-If *autoCreate* is set to `true`, an edge collection with the given name will be created if it doesn't already exist.
+    Value of the `x-arango-version` header.
 
-If a collection with the given name exists but isn't an edge collection, an apropriate error will be passed instead.
+  * **headers**: *Object* (optional)
 
-```js
-var db = require('arangojs')();
-db.edgeCollection('potatos', function (err, collection) {
-    if (err) {
-        // Collection did not exist
-        console.error(err);
-        return;
-    }
-    // collection exists
-});
-```
+    An object with additional headers to send with every request.
 
-#### database.collections
+  * **agent**: *Agent* (optional)
 
-`database.collections([callback: Callback]): Promise<Array<Collection>>`
+    An http Agent instance to use for connections. This has no effect in the browser.
 
-Fetches all non-system collections from the database and passes an array of new *Collection* instances to the callback.
+    By default a new [`http.Agent`](https://nodejs.org/api/http.html#http_new_agent_options) instance will be created using the *agentOptions*.
 
-*Examples*
+  * **agentOptions**: *Object* (Default: see below)
 
-```js
-var db = require('arangojs')();
-db.collections(function (err, collections) {
-    if (err) return console.error(err);
-    // collections is an array of Collection instances
-    // not including system collections
-});
-```
+    An object with options for the agent. This will be ignored if *agent* is also provided and has no effect in the browser.
 
-#### database.allCollections
+    Default: `{maxSockets: 3, keepAlive: true, keepAliveMsecs: 1000}`.
 
-`database.allCollections([callback: Callback]): Promise<Array<Collection>>`
+  * **promise**: *constructor* (optional)
 
-Fetches all collections (including system collections) from the database and passes an array of new *Collection* instances to the callback.
+    The `Promise` implementation to use or `false` to disable promises entirely (for performance).
 
-*Examples*
-
-```js
-var db = require('arangojs')();
-db.allCollections(function (err, collections) {
-    if (err) return console.error(err);
-    // collections is an array of Collection instances
-    // including system collections
-});
-```
-
-#### database.dropCollection
-
-`database.dropCollection(collectionName: string, [callback: Callback]): Promise<any>`
-
-Deletes the collection with the given *collectionName* from the database.
-
-*Examples*
-
-```js
-var db = require('arangojs')();
-db.dropCollection('friends', function (err) {
-    if (err) return console.error(err);
-    // collection "friends" no longer exists
-});
-```
-
-#### database.truncate
-
-`database.truncate([callback: Callback]): Promise<any>`
-
-Deletes **all documents** in **all non-system collections** in the active database.
-
-*Examples*
-
-```js
-var db = require('arangojs')();
-db.truncate(function (err) {
-    if (err) return console.error(err);
-    // all non-system collections in this database are now empty
-});
-```
-
-#### database.truncateAll
-
-`database.truncateAll([callback: Callback]): Promise<any>`
-
-Deletes **all documents** in **all collections (including system collections)** in the active database.
-
-*Examples*
-
-```js
-var db = require('arangojs')();
-db.truncateAll(function (err) {
-    if (err) return console.error(err);
-    // all collections (including system collections) in this db are now empty
-    // "I've made a huge mistake..."
-});
-```
-
-### Manipulating graphs
-
-These functions implement the [HTTP API for manipulating general graphs](https://docs.arangodb.com/HttpGharial/index.html).
-
-#### database.createGraph
-
-`database.createGraph(properties: Object, [callback: Callback]): Promise<Graph>`
-
-Creates a graph with the given *properties*, then passes a new *Graph* instance to the callback.
-
-For more information on the *properties* object, see [the HTTP API documentation for creating graphs](https://docs.arangodb.com/HttpGharial/Management.html).
-
-*Examples*
-
-```js
-var db = require('arangojs')();
-// this assumes collections `edges`, `start-vertices` and `end-vertices` exist
-db.createGraph({
-    name: 'some-graph',
-    edgeDefinitions: [
-        {
-            collection: 'edges',
-            from: [
-                'start-vertices'
-            ],
-            to: [
-                'end-vertices'
-            ]
-        }
-    ]
-}, function (err, graph) {
-    if (err) return console.error(err);
-    // graph is a Graph instance
-    // for more information see the Graph API below
-});
-```
-
-#### database.graph
-
-`database.graph(graphName: string, [autoCreate: boolean,] [callback: Callback]): Promise<Graph>`
-
-Fetches the graph with the given *graphName* from the database, then passes a new *Graph* instance to the callback.
-
-If *autoCreate* is set to `true`, a graph with the given name will be created if it doesn't already exist.
-
-*Examples*
-
-```js
-var db = require('arangojs')();
-db.graph('some-graph', function (err, graph) {
-    if (err) return console.error(err);
-    // graph exists
-});
-```
-
-#### database.graphs
-
-`database.graphs([callback: Callback]): Promise<Array<Graph>>`
-
-Fetches all graphs from the database and passes an array of new *Graph* instances to the callback.
-
-*Examples*
-
-```js
-var db = require('arangojs')();
-db.graphs(function (err, graphs) {
-    if (err) return console.error(err);
-    // graphs is an array of Graph instances
-});
-```
-
-#### database.dropGraph
-
-`database.dropGraph(graphName: string, [dropCollections: boolean,] [callback: Callback]): Promise<any>`
-
-Deletes the graph with the given *graphName* from the database.
-
-If *dropCollections* is set to `true`, the collections associated with the graphs will also be deleted.
-
-*Examples*
-
-```js
-var db = require('arangojs')();
-db.dropGraph('some-graph', function (err) {
-    if (err) return console.error(err);
-    // graph "some-graph" no longer exists
-});
-```
+    By default the global `Promise` constructor will be used if available.
 
 ### Manipulating databases
 
 These functions implement the [HTTP API for manipulating databases](https://docs.arangodb.com/HttpDatabase/index.html).
 
+#### database.useDatabase
+
+`database.useDatabase(databaseName): void`
+
+Updates the *Database* instance and its connection string to use the given *databaseName*.
+
+**Arguments**
+
+* **databaseName**: *string*
+
+  The name of the database to use.
+
+**Examples**
+
+```js
+var db = require('arangojs')();
+db.useDatabase('test');
+// The database instance now uses the database "test".
+```
+
 #### database.createDatabase
 
-`database.createDatabase(databaseName: string, [users: Array<Object>], [callback: Callback]): Promise<Database>`
+`async database.createDatabase(databaseName, [users]): void`
 
-Creates a new database with the given *databaseName*, then passes a new *Database* instance to the callback.
+Creates a new database with the given *databaseName*.
 
-If *users* is specified, it must be an array of objects with the following attributes:
+**Arguments**
 
-* *username*: the username of the user to create for the database.
-* *passwd* (optional): the password of the user. Default: empty.
-* *active* (optional): whether the user is active. Default: `true`.
-* *extra* (optional): an object containing additional user data.
+* **databaseName**: *string*
 
-*Examples*
+  Name of the database to create.
+
+* **users**: *Array* (optional)
+
+  If specified, the array must contain objects with the following properties:
+
+  * *username*: the username of the user to create for the database.
+  * *passwd* (optional): the password of the user. Default: empty.
+  * *active* (optional): whether the user is active. Default: `true`.
+  * *extra* (optional): an object containing additional user data.
+
+**Examples**
 
 ```js
 var db = require('arangojs')();
-db.createDatabase('mydb', [{username: 'root'}], function (err, database) {
+db.createDatabase('mydb', [{username: 'root'}], function (err, info) {
     if (err) return console.error(err);
-    // database is a Database instance
+    // the database has been created
 });
 ```
 
-#### database.database
+#### database.get
 
-`database.database(databaseName: string, [autoCreate: boolean,] [callback: Callback]): Promise<Database>`
+`async database.get(): Object`
 
-Fetches the database with the given *databaseName* from the server, then passes a new *Database* instance to the callback.
+Fetches the database description for the active database from the server.
 
-If *autoCreate* is set to `true`, a database with the given name will be created if it doesn't already exist.
-
-*Examples*
+**Examples**
 
 ```js
 var db = require('arangojs')();
-db.database('mydb', function (err, database) {
+db.get(function (err, info) {
     if (err) return console.error(err);
-    // mydb exists
+    // the database exists
 });
 ```
 
-#### database.databases
+#### database.listDatabases
 
-`database.databases([callback: Callback]): Promise<Array<Database>>`
+`async database.listDatabases(): Array<String>`
 
-Fetches all databases from the server and passes an array of new *Database* instances to the callback.
+Fetches all databases from the server and returns an array of their names.
 
 *Examples*
 
 ```js
 var db = require('arangojs')();
-db.databases(function (err, databases) {
+db.databases(function (err, names) {
     if (err) return console.error(err);
-    // databases is an array of Database instances
+    // databases is an array of database names
+});
+```
+
+#### database.listUserDatabases
+
+`async database.listUserDatabases(): Array<String>`
+
+Fetches all databases accessible to the active user from the server and returns an array of their names.
+
+*Examples*
+
+```js
+var db = require('arangojs')();
+db.databases(function (err, names) {
+    if (err) return console.error(err);
+    // databases is an array of database names
 });
 ```
 
 #### database.dropDatabase
 
-`database.dropDatabase(databaseName: string, [callback: Callback]): Promise<any>`
+`async database.dropDatabase(databaseName): void`
 
 Deletes the database with the given *databaseName* from the server.
 
@@ -457,42 +235,224 @@ db.dropDatabase('mydb', function (err) {
 })
 ```
 
+#### database.truncate
+
+`async database.truncate([excludeSystem]): void`
+
+Deletes **all documents in all collections** in the active database.
+
+**Arguments**
+
+* **excludeSystem**: *boolean* (Default: `true`)
+
+  Whether system collections should be excluded.
+
+**Examples**
+
+```js
+var db = require('arangojs')();
+db.truncate(function (err) {
+    if (err) return console.error(err);
+    // all non-system collections in this database are now empty
+});
+// --or--
+db.truncate(false, function (err) {
+    if (err) return console.error(err);
+    // I've made a huge mistake...
+});
+```
+
+### Accessing collections
+
+These functions implement the [HTTP API for accessing collections](https://docs.arangodb.com/HttpCollection/Getting.html).
+
+#### database.collection
+
+`database.collection(collectionName): DocumentCollection`
+
+Returns a *DocumentCollection* instance for the given collection name.
+
+**Arguments**
+
+* **collectionName**: *string*
+
+  Name of the edge collection.
+
+**Examples**
+
+```js
+var db = require('arangojs')();
+var collection = db.collection('potatos');
+```
+
+#### database.edgeCollection
+
+`database.edgeCollection(collectionName): EdgeCollection`
+
+Returns an *EdgeCollection* instance for the given collection name.
+
+**Arguments**
+
+* **collectionName**: *string*
+
+  Name of the edge collection.
+
+**Examples**
+
+```js
+var db = require('arangojs')();
+var collection = db.edgeCollection('potatos');
+```
+
+#### database.listCollections
+
+`async database.listCollections([excludeSystem]): Array<Object>`
+
+Fetches all collections from the database and returns an array of collection descriptions.
+
+**Arguments**
+
+* **excludeSystem**: *boolean* (Default: `true`)
+
+  Whether system collections should be excluded from the results.
+
+**Examples**
+
+```js
+var db = require('arangojs')();
+db.listCollections(function (err, collections) {
+    if (err) return console.error(err);
+    // collections is an array of collection descriptions
+    // not including system collections
+});
+// --or--
+db.listCollections(false, function (err, collections) {
+    if (err) return console.error(err);
+    // collections is an array of collection descriptions
+    // including system collections
+});
+```
+
+#### database.collections
+
+`async database.collections([excludeSystem]): Array<Object>`
+
+Fetches all collections from the database and returns an array of *DocumentCollection* and *EdgeCollection* instances for the collections.
+
+**Arguments**
+
+* **excludeSystem**: *boolean* (Default: `true`)
+
+  Whether system collections should be excluded from the results.
+
+**Examples**
+
+```js
+var db = require('arangojs')();
+db.listCollections(function (err, collections) {
+    if (err) return console.error(err);
+    // collections is an array of DocumentCollection
+    // and EdgeCollection instances
+    // not including system collections
+});
+// --or--
+db.listCollections(false, function (err, collections) {
+    if (err) return console.error(err);
+    // collections is an array of DocumentCollection
+    // and EdgeCollection instances
+    // including system collections
+});
+```
+
+### Accessing graphs
+
+These functions implement the [HTTP API for accessing general graphs](https://docs.arangodb.com/HttpGharial/index.html).
+
+#### database.graph
+
+`database.graph(graphName): Graph`
+
+Returns a *Graph* instance representing the graph with the given graph name.
+
+#### database.listGraphs
+
+`async database.listGraphs(): Array<Object>`
+
+Fetches all graphs from the database and returns an array of graph descriptions.
+
+*Examples*
+
+```js
+var db = require('arangojs')();
+db.listGraphs(function (err, graphs) {
+    if (err) return console.error(err);
+    // graphs is an array of graph descriptions
+});
+```
+
+#### database.graphs
+
+`async database.graphs(): Array<Graph>`
+
+Fetches all graphs from the database and returns an array of *Graph* instances for the graphs.
+
+*Examples*
+
+```js
+var db = require('arangojs')();
+db.graphs(function (err, graphs) {
+    if (err) return console.error(err);
+    // graphs is an array of Graph instances
+});
+```
+
 ### Transactions
 
 This function implements the [HTTP API for transactions](https://docs.arangodb.com/HttpTransaction/index.html).
 
 #### database.transaction
 
-`database.transaction(collections: Object | Array<string> | string, action: string, [params: Array<any>,] [lockTimeout: number,] [callback: Callback]): Promise<any>`
+`async database.transaction(collections, action, [params,] [lockTimeout]): any`
 
-Performs a server-side transaction and passes the *action*'s return value to the callback.
+Performs a server-side transaction and returns its return value.
 
-*Parameter*
+**Arguments**
 
-* *collections*: an object with the following properties:
- * *read*: an array of names (or a single name) of collections that will be read from during the transaction.
- * *write*: an array of names (or a single name) of collections that will be written to or read from during the transaction.
-* *action*: a string evaluating to a JavaScript function to be executed on the server.
-* *params* (optional): parameters that will be passed to the function.
-* *lockTimeout* (optional): determines how long the database will wait while attemping to gain locks on collections used by the transaction before timing out.
+* **collections**: *Object*
 
-If *collections* is an array or string, it will be used as *collections.write*.
+  An object with the following properties:
+
+  * *read*: an array of names (or a single name) of collections that will be read from during the transaction.
+  * *write*: an array of names (or a single name) of collections that will be written to or read from during the transaction.
+
+* **action**: *string*
+
+  A string evaluating to a JavaScript function to be executed on the server.
+
+* **params**: *Array* (optional)
+
+  Parameters that will be passed to the *action* function.
+
+* **lockTimeout**: *Number* (optional)
+
+  Determines how long the database will wait while attemping to gain locks on collections used by the transaction before timing out.
+
+If *collections* is an array or string, it will be treated as *collections.write*.
 
 Please note that while *action* should be a string evaluating to a well-formed JavaScript function, it's not possible to pass in a JavaScript function directly because the function needs to be evaluated on the server and will be transmitted in plain text.
 
 For more information on transactions, see [the HTTP API documentation for transactions](https://docs.arangodb.com/HttpTransaction/index.html).
 
-*Examples*
+**Examples**
 
 ```js
 var db = require('arangojs')();
-var collections = {read: '_users'};
-var action = string(function () {
+var action = String(function () {
     // This code will be executed inside ArangoDB!
     var db = require('org/arangodb').db;
     return db._query('FOR user IN _users RETURN u.user').toArray();
 });
-db.transaction(collections, action, function (err, result) {
+db.transaction({read: '_users'}, action, function (err, result) {
     if (err) return console.error(err);
     // result contains the return value of the action
 });
@@ -500,27 +460,35 @@ db.transaction(collections, action, function (err, result) {
 
 ### Queries
 
-This function implements the [HTTP API for AQL queries](https://docs.arangodb.com/HttpAqlQuery/index.html).
+This function implements the [HTTP API for single roundtrip AQL queries](https://docs.arangodb.com/HttpAqlQueryCursor/QueryResults.html).
 
 For collection-specific queries see [fulltext queries](#fulltext-queries) and [geo-spatial queries](#geo-queries).
 
 #### database.query
 
-`database.query(query: string | QueryBuilder, [bindVars: Object,] [opts: Object,] [callback: Callback]): Promise<Cursor>`
+`async database.query(query, [bindVars,] [opts]): Cursor`
 
-Performs a database query using the given *query* and *bindVars*, then passes a new *Cursor* instance for the result list to the callback.
+Performs a database query using the given *query* and *bindVars*, then returns a new *Cursor* instance for the result list to the callback.
 
-*Parameter*
+**Arguments**
 
-* *query*: an AQL query string or a [query builder](https://npmjs.org/package/aqb) instance.
-* *bindVars* (optional): an object with the variables to bind the query to.
-* *opts* (optional): additional options that will be passed to the query API.
+* **query**: *String*
+
+  An AQL query string or a [query builder](https://npmjs.org/package/aqb) instance.
+
+* **bindVars**: *Object* (optional)
+
+  An object defining the variables to bind the query to.
+
+* **opts**: *Object* (optional)
+
+  Additional options that will be passed to the query API.
 
 If *opts.count* is set to `true`, the cursor will have a *count* property set to the query result count.
 
 For more information on *Cursor* instances see the [*Cursor API* below](#cursor-api).
 
-*Examples*
+**Examples**
 
 ```js
 var qb = require('aqb');
@@ -552,18 +520,39 @@ db.query(
 
 These functions implement the [HTTP API for managing AQL user functions](https://docs.arangodb.com/HttpAqlUserFunctions/index.html).
 
+#### database.listFunctions
+
+`async database.listFunctions(): Array<Object>`
+
+Fetches a list of all AQL user functions registered with the database.
+
+**Examples**
+
+```js
+var db = require('arangojs')();
+db.listFunctions(function (err, functions) {
+    if (err) return console.error(err);
+    // functions is a list of function descriptions
+})
+```
+
 #### database.createFunction
 
-`database.createFunction(name: string, code: string, [callback: Callback]): Promise<any>`
+`async database.createFunction(name, code): any`
 
 Creates an AQL user function with the given *name* and *code* if it does not already exist or replaces it if a function with the same name already existed.
 
-*Parameter*
+**Arguments**
 
-* *name*: a valid AQL function name, e.g.: `"myfuncs::accounting::calculate_vat"`.
-* *code*: a string evaluating to a JavaScript function (not a JavaScript function object).
+* **name**: *String*
 
-*Examples*
+  A valid AQL function name, e.g.: `"myfuncs::accounting::calculate_vat"`.
+
+* **code**: *String*
+
+  A string evaluating to a JavaScript function (not a JavaScript function object).
+
+**Examples**
 
 ```js
 var qb = require('aqb');
@@ -590,34 +579,23 @@ db.createFunction(vat_fn_name, vat_fn_code, function (err) {
 });
 ```
 
-#### database.functions
-
-`database.functions([callback: Callback]): Promise<Array<Object>>`
-
-Fetches a list of all AQL user functions registered with the database.
-
-*Examples*
-
-```js
-var db = require('arangojs')();
-db.functions(function (err, functions) {
-    if (err) return console.error(err);
-    // functions is a list of function definitions
-})
-```
-
 #### database.dropFunction
 
-`database.dropFunction(name: string, [group: boolean,] [callback: Callback]): Promise<any>`
+`async database.dropFunction(name, [group]): any`
 
 Deletes the AQL user function with the given name from the database.
 
-*Parameter*
+**Arguments**
 
-* *name*: the name of the user function to drop.
-* *group* (optional): if set to `true`, all functions with a name starting with *name* will be deleted; otherwise only the function with the exact name will be deleted. Default: `false`.
+* **name**: *String*
 
-*Examples*
+  The name of the user function to drop.
+
+* **group**: *Boolean* (Default: `false`)
+
+  If set to `true`, all functions with a name starting with *name* will be deleted; otherwise only the function with the exact name will be deleted.
+
+**Examples**
 
 ```js
 var db = require('arangojs')();
@@ -1246,6 +1224,35 @@ The *Collection API* is implemented by all *Collection* instances, regardless of
 ### Getting information about the collection
 
 See [the HTTP API documentation](https://docs.arangodb.com/HttpCollection/Getting.html) for details.
+
+#### collection.create
+
+`collection.create(properties: Object, [callback: Callback]): Promise<Collection>`
+
+Creates a collection from the given *properties*, then passes a new *Collection* instance to the callback.
+
+For more information on the *properties* object, see [the HTTP API documentation for creating collections](https://docs.arangodb.com/HttpCollection/Creating.html).
+
+*Examples*
+
+```js
+var db = require('arangojs')();
+collection.create(function (err, collection) {
+    if (err) return console.error(err);
+    // collection is a DocumentCollection instance
+    // see the Collection API and DocumentCollection API below for details
+});
+
+// -- or --
+
+collection.create({
+    waitForSync: true // always sync document changes to disk
+}, function (err, collection) {
+    if (err) return console.error(err);
+    // collection is a DocumentCollection instance
+    // see the Collection API and DocumentCollection API below for details
+});
+```
 
 #### collection.properties
 
@@ -2394,6 +2401,39 @@ db.createEdgeCollection('edges', function (err, collection) {
 ## Graph API
 
 These functions implement the [HTTP API for manipulating graphs](https://docs.arangodb.com/HttpGharial/index.html).
+
+#### graph.create
+
+`graph.create(properties: Object, [callback: Callback]): Promise<Graph>`
+
+Creates a graph with the given *properties*, then passes a new *Graph* instance to the callback.
+
+For more information on the *properties* object, see [the HTTP API documentation for creating graphs](https://docs.arangodb.com/HttpGharial/Management.html).
+
+*Examples*
+
+```js
+var db = require('arangojs')();
+// this assumes collections `edges`, `start-vertices` and `end-vertices` exist
+db.createGraph({
+    name: 'some-graph',
+    edgeDefinitions: [
+        {
+            collection: 'edges',
+            from: [
+                'start-vertices'
+            ],
+            to: [
+                'end-vertices'
+            ]
+        }
+    ]
+}, function (err, graph) {
+    if (err) return console.error(err);
+    // graph is a Graph instance
+    // for more information see the Graph API below
+});
+```
 
 ### graph.drop
 
