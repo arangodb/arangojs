@@ -538,7 +538,7 @@ db.listFunctions(function (err, functions) {
 
 #### database.createFunction
 
-`async database.createFunction(name, code): any`
+`async database.createFunction(name, code): void`
 
 Creates an AQL user function with the given *name* and *code* if it does not already exist or replaces it if a function with the same name already existed.
 
@@ -581,7 +581,7 @@ db.createFunction(vat_fn_name, vat_fn_code, function (err) {
 
 #### database.dropFunction
 
-`async database.dropFunction(name, [group]): any`
+`async database.dropFunction(name, [group]): void`
 
 Deletes the AQL user function with the given name from the database.
 
@@ -604,6 +604,8 @@ db.dropFunction('myfuncs::acounting::calculate_vat', function (err) {
     // the function no longer exists
 });
 ```
+
+## TODO Outdated
 
 ### Arbitrary HTTP routes
 

@@ -231,7 +231,7 @@ export default class Database {
       code: code
     }, (err, res) => {
       if (err) callback(err);
-      else callback(null, res.body);
+      else callback(null);
     });
     return promise;
   }
@@ -246,7 +246,7 @@ export default class Database {
       group: Boolean(group)
     }, (err, res) => {
       if (err) callback(err);
-      else callback(null, res.body);
+      else callback(null);
     });
     return promise;
   }
