@@ -506,7 +506,7 @@ For collection-specific queries see [fulltext queries](#fulltext-queries) and [g
 
 #### database.query
 
-`database.query(query: string | QueryBuilder, [bindVars: Object,] [callback: Callback]): Promise<Cursor>`
+`database.query(query: string | QueryBuilder, [bindVars: Object,] [opts: Object,] [callback: Callback]): Promise<Cursor>`
 
 Performs a database query using the given *query* and *bindVars*, then passes a new *Cursor* instance for the result list to the callback.
 
@@ -514,6 +514,9 @@ Performs a database query using the given *query* and *bindVars*, then passes a 
 
 * *query*: an AQL query string or a [query builder](https://npmjs.org/package/aqb) instance.
 * *bindVars* (optional): an object with the variables to bind the query to.
+* *opts* (optional): additional options that will be passed to the query API.
+
+If *opts.count* is set to `true`, the cursor will have a *count* property set to the query result count.
 
 For more information on *Cursor* instances see the [*Cursor API* below](#cursor-api).
 
