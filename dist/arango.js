@@ -693,6 +693,7 @@ function ArrayCursor(connection, body) {
   this._hasMore = Boolean(body.hasMore);
   this._id = body.id;
   this._index = 0;
+  this.count = body.count;
 }
 
 extend(ArrayCursor.prototype, {
@@ -1301,7 +1302,11 @@ extend(Database.prototype, {
     });
     return promise;
   },
-  query: function query(_query, bindVars, cb) {
+  query: function query(_query, bindVars, opts, cb) {
+    if (typeof opts === 'function') {
+      cb = opts;
+      opts = undefined;
+    }
     if (typeof bindVars === 'function') {
       cb = bindVars;
       bindVars = undefined;
@@ -1316,10 +1321,8 @@ extend(Database.prototype, {
       _query = _query.toAQL();
     }
     var self = this;
-    self._api.post('cursor', {
-      query: _query,
-      bindVars: bindVars
-    }, function (err, res) {
+    opts = extend({}, opts, { query: _query, bindVars: bindVars });
+    self._api.post('cursor', opts, function (err, res) {
       if (err) callback(err);else callback(null, new ArrayCursor(self._connection, res.body));
     });
     return promise;
