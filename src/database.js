@@ -344,7 +344,11 @@ extend(Database.prototype, {
     });
     return promise;
   },
-  query(query, bindVars, cb) {
+  query(query, bindVars, opts, cb) {
+    if (typeof opts === 'function') {
+      cb = opts;
+      opts = undefined;
+    }
     if (typeof bindVars === 'function') {
       cb = bindVars;
       bindVars = undefined;
@@ -354,10 +358,8 @@ extend(Database.prototype, {
       query = query.toAQL();
     }
     var self = this;
-    self._api.post('cursor', {
-      query: query,
-      bindVars: bindVars
-    }, function (err, res) {
+    opts = extend({}, opts, {query: query, bindVars: bindVars});
+    self._api.post('cursor', opts, function (err, res) {
       if (err) callback(err);
       else callback(null, new ArrayCursor(self._connection, res.body));
     });

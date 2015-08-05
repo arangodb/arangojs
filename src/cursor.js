@@ -11,6 +11,7 @@ function ArrayCursor(connection, body) {
   this._hasMore = Boolean(body.hasMore);
   this._id = body.id;
   this._index = 0;
+  this.count = body.count;
 }
 
 extend(ArrayCursor.prototype, {

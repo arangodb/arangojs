@@ -29,6 +29,24 @@ describe('database', function () {
         done();
       });
     });
+    it('passes the bindVars with the query', function (done) {
+      db.query('RETURN @x', {x: 'hello'}, function (err, cursor) {
+        expect(err).not.to.be.ok();
+        cursor.all(function (err, records) {
+          expect(err).not.to.be.ok();
+          expect(records).to.eql(['hello']);
+          done();
+        });
+      });
+    });
+    it('sets the cursor count if opts.count is enabled', function (done) {
+      db.query('RETURN "hello"', {}, {count: true}, function (err, res) {
+        expect(err).not.to.be.ok();
+        expect(res).to.have.property('count');
+        expect(res.count).to.be.a('number');
+        done();
+      });
+    });
   });
 });
 
