@@ -484,6 +484,8 @@ Performs a database query using the given *query* and *bindVars*, then returns a
 
 If *opts.count* is set to `true`, the cursor will have a *count* property set to the query result count.
 
+If *query* is an object with *query* and *bindVars* properties, those will be used as the values of the respective arguments instead.
+
 **Examples**
 
 ```js
@@ -506,9 +508,45 @@ db.query(
     'FOR u IN _users FILTER u.authData.active == @active RETURN u.user',
     {active: true},
     function (err, cursor) {
-    if (err) return console.error(err);
+        if (err) return console.error(err);
         // cursor is a cursor for the query result
     }
+);
+```
+
+#### database.aqlQuery
+
+`database.aqlQuery(strings, ...args): Object`
+
+Template string handler for AQL queries. Converts an ES2015 template string to an object that can be passed to `database.query` by converting arguments to bind variables.
+
+Any *Collection* instances will automatically be converted to collection bind variables.
+
+**Examples**
+
+```
+var db = require('arangojs')();
+var userCollection = db.collection('_users');
+var role = 'admin';
+db.query(
+  db.aqlQuery`
+    FOR user IN ${userCollection}
+    FILTER user.role == ${role}
+    RETURN user
+  `,
+  function (err, cursor) {
+    if (err) return console.error(err);
+    // cursor is a cursor for the query result
+  }
+);
+// -- is equivalent to --
+db.query(
+  'FOR user IN @@var1 FILTER user.role == @var2 RETURN user',
+  {'@var1': userCollection.name, var2: role},
+  function (err, cursor) {
+    if (err) return console.error(err);
+    // cursor is a cursor for the query result
+  }
 );
 ```
 

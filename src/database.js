@@ -1,10 +1,14 @@
 'use strict';
 import extend from 'extend';
+import all from './util/all';
 import Connection from './connection';
 import ArrayCursor from './cursor';
-import constructCollection, {DocumentCollection, EdgeCollection} from './collection';
 import Graph from './graph';
-import all from './util/all';
+import constructCollection, {
+  DocumentCollection,
+  EdgeCollection,
+  _BaseCollection as BaseCollection
+} from './collection';
 
 export default class Database {
   constructor(config) {
@@ -195,12 +199,35 @@ export default class Database {
     if (query && typeof query.toAQL === 'function') {
       query = query.toAQL();
     }
+    if (query && query.query) {
+      bindVars = query.bindVars;
+      query = query.query;
+    }
     this._api.post(
       'cursor',
       extend({}, opts, {query, bindVars}),
       (err, res) => err ? callback(err) : callback(null, new ArrayCursor(this._connection, res.body))
     );
     return promise;
+  }
+
+  aqlQuery(strings, ...args) {
+    const bindVars = {};
+    let query = strings[0];
+    for (let i = 0; i < args.length; i++) {
+      let value = args[i];
+      let name = `var${i}`;
+      if (
+        value instanceof BaseCollection
+        || (value.constructor && value.constructor.name === 'ArangoCollection')
+      ) {
+        name = `@${name}`;
+        value = typeof value.name === 'function' ? value.name() : value.name;
+      }
+      bindVars[name] = value;
+      query += `@${name}${strings[i + 1]}`;
+    }
+    return {query, bindVars};
   }
 
   // Function manipulation
