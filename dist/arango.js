@@ -1962,28 +1962,26 @@ exports.VertexCollection = GraphVertexCollection;
 exports.EdgeCollection = GraphEdgeCollection;
 },{"./collection":1,"extend":"extend"}],7:[function(require,module,exports){
 'use strict';
-Object.defineProperty(exports, '__esModule', {
-  value: true
-});
 var _bind = Function.prototype.bind;
-exports['default'] = construct;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+var _extend = require('extend');
+
+var _extend2 = _interopRequireDefault(_extend);
 
 var _database = require('./database');
 
 var _database2 = _interopRequireDefault(_database);
 
-function construct() {
+module.exports = (0, _extend2['default'])(function construct() {
   for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
     args[_key] = arguments[_key];
   }
 
   return new (_bind.apply(_database2['default'], [null].concat(args)))();
-}
-
-exports.Database = _database2['default'];
-},{"./database":4}],8:[function(require,module,exports){
+}, { Database: _database2['default'] });
+},{"./database":4,"extend":"extend"}],8:[function(require,module,exports){
 'use strict';
 Object.defineProperty(exports, '__esModule', {
   value: true
