@@ -50,11 +50,11 @@ If *config* is a string, it will be interpreted as *config.url*.
 
 **Arguments**
 
-* **config**: *Object* (optional)
+* **config**: `Object` (optional)
 
   An object with the following properties:
 
-  * **url**: *string* (Default: `http://localhost:8529`)
+  * **url**: `string` (Default: `http://localhost:8529`)
 
     Base URL of the ArangoDB server.
 
@@ -70,31 +70,31 @@ If *config* is a string, it will be interpreted as *config.url*.
     }
     ```
 
-  * **databaseName**: *string* (Default: `_system`)
+  * **databaseName**: `string` (Default: `_system`)
 
     Name of the active database.
 
-  * **arangoVersion**: *number* (Default: `20300`)
+  * **arangoVersion**: `number` (Default: `20300`)
 
     Value of the `x-arango-version` header.
 
-  * **headers**: *Object* (optional)
+  * **headers**: `Object` (optional)
 
     An object with additional headers to send with every request.
 
-  * **agent**: *Agent* (optional)
+  * **agent**: `Agent` (optional)
 
     An http Agent instance to use for connections. This has no effect in the browser.
 
     By default a new [`http.Agent`](https://nodejs.org/api/http.html#http_new_agent_options) instance will be created using the *agentOptions*.
 
-  * **agentOptions**: *Object* (Default: see below)
+  * **agentOptions**: `Object` (Default: see below)
 
     An object with options for the agent. This will be ignored if *agent* is also provided and has no effect in the browser.
 
     Default: `{maxSockets: 3, keepAlive: true, keepAliveMsecs: 1000}`.
 
-  * **promise**: *constructor* (optional)
+  * **promise**: `Class` (optional)
 
     The `Promise` implementation to use or `false` to disable promises entirely (for performance).
 
@@ -112,7 +112,7 @@ Updates the *Database* instance and its connection string to use the given *data
 
 **Arguments**
 
-* **databaseName**: *string*
+* **databaseName**: `string`
 
   The name of the database to use.
 
@@ -132,18 +132,29 @@ Creates a new database with the given *databaseName*.
 
 **Arguments**
 
-* **databaseName**: *string*
+* **databaseName**: `string`
 
   Name of the database to create.
 
-* **users**: *Array* (optional)
+* **users**: `Array<Object>` (optional)
 
   If specified, the array must contain objects with the following properties:
 
-  * *username*: the username of the user to create for the database.
-  * *passwd* (optional): the password of the user. Default: empty.
-  * *active* (optional): whether the user is active. Default: `true`.
-  * *extra* (optional): an object containing additional user data.
+  * **username**: `string`
+
+    The username of the user to create for the database.
+
+  * **passwd**: `string` (Default: `undefined`)
+
+    The password of the user.
+
+  * **active**: `boolean` (Default: `true`)
+
+    Whether the user is active.
+
+  * **extra**: `Object` (optional)
+
+    An object containing additional user data.
 
 **Examples**
 
@@ -225,7 +236,7 @@ Deletes **all documents in all collections** in the active database.
 
 **Arguments**
 
-* **excludeSystem**: *boolean* (Default: `true`)
+* **excludeSystem**: `boolean` (Default: `true`)
 
   Whether system collections should be excluded.
 
@@ -256,7 +267,7 @@ Returns a *DocumentCollection* instance for the given collection name.
 
 **Arguments**
 
-* **collectionName**: *string*
+* **collectionName**: `string`
 
   Name of the edge collection.
 
@@ -275,7 +286,7 @@ Returns an *EdgeCollection* instance for the given collection name.
 
 **Arguments**
 
-* **collectionName**: *string*
+* **collectionName**: `string`
 
   Name of the edge collection.
 
@@ -294,7 +305,7 @@ Fetches all collections from the database and returns an array of collection des
 
 **Arguments**
 
-* **excludeSystem**: *boolean* (Default: `true`)
+* **excludeSystem**: `boolean` (Default: `true`)
 
   Whether system collections should be excluded from the results.
 
@@ -323,7 +334,7 @@ Fetches all collections from the database and returns an array of *DocumentColle
 
 **Arguments**
 
-* **excludeSystem**: *boolean* (Default: `true`)
+* **excludeSystem**: `boolean` (Default: `true`)
 
   Whether system collections should be excluded from the results.
 
@@ -400,22 +411,27 @@ Performs a server-side transaction and returns its return value.
 
 **Arguments**
 
-* **collections**: *Object*
+* **collections**: `Object`
 
   An object with the following properties:
 
-  * *read*: an array of names (or a single name) of collections that will be read from during the transaction.
-  * *write*: an array of names (or a single name) of collections that will be written to or read from during the transaction.
+  * **read**: `Array<string>` (optional)
 
-* **action**: *string*
+    An array of names (or a single name) of collections that will be read from during the transaction.
+
+  * **write**: `Array<string>` (optional)
+
+    An array of names (or a single name) of collections that will be written to or read from during the transaction.
+
+* **action**: `string`
 
   A string evaluating to a JavaScript function to be executed on the server.
 
-* **params**: *Array* (optional)
+* **params**: `Array<any>` (optional)
 
   Parameters that will be passed to the *action* function.
 
-* **lockTimeout**: *Number* (optional)
+* **lockTimeout**: `number` (optional)
 
   Determines how long the database will wait while attemping to gain locks on collections used by the transaction before timing out.
 
@@ -432,7 +448,7 @@ var db = require('arangojs')();
 var action = string(function () {
     // This code will be executed inside ArangoDB!
     var db = require('org/arangodb').db;
-    return db._query('FOR user IN _users RETURN u.user').toArray();
+    return db._query('FOR user IN _users RETURN u.user').toArray<any>();
 });
 db.transaction({read: '_users'}, action, function (err, result) {
     if (err) return console.error(err);
@@ -454,15 +470,15 @@ Performs a database query using the given *query* and *bindVars*, then returns a
 
 **Arguments**
 
-* **query**: *string*
+* **query**: `string`
 
   An AQL query string or a [query builder](https://npmjs.org/package/aqb) instance.
 
-* **bindVars**: *Object* (optional)
+* **bindVars**: `Object` (optional)
 
   An object defining the variables to bind the query to.
 
-* **opts**: *Object* (optional)
+* **opts**: `Object` (optional)
 
   Additional options that will be passed to the query API.
 
@@ -526,11 +542,11 @@ Creates an AQL user function with the given *name* and *code* if it does not alr
 
 **Arguments**
 
-* **name**: *string*
+* **name**: `string`
 
   A valid AQL function name, e.g.: `"myfuncs::accounting::calculate_vat"`.
 
-* **code**: *string*
+* **code**: `string`
 
   A string evaluating to a JavaScript function (not a JavaScript function object).
 
@@ -569,11 +585,11 @@ Deletes the AQL user function with the given name from the database.
 
 **Arguments**
 
-* **name**: *string*
+* **name**: `string`
 
   The name of the user function to drop.
 
-* **group**: *Boolean* (Default: `false`)
+* **group**: `boolean` (Default: `false`)
 
   If set to `true`, all functions with a name starting with *name* will be deleted; otherwise only the function with the exact name will be deleted.
 
@@ -597,11 +613,11 @@ Returns a new *Route* instance for the given path (relative to the database) tha
 
 **Arguments**
 
-* **path**: *string* (optional)
+* **path**: `string` (optional)
 
   The database-relative URL of the route.
 
-* **headers**: *Object* (optional)
+* **headers**: `Object` (optional)
 
   Default headers that should be sent with each request to the route.
 
@@ -639,7 +655,7 @@ db.query(someQuery, function (err, cursor) {
 
 ### cursor.count
 
-`cursor.count: Number`
+`cursor.count: number`
 
 The total number of documents in the query result.
 
@@ -699,7 +715,7 @@ cursor.all(function (err) { // exhausts the cursor
 
 ### cursor.each
 
-`async cursor.each(fn): Object`
+`async cursor.each(fn): boolean`
 
 Rewinds and exhausts the cursor by applying the function *fn* to each value returned by the query.
 
@@ -707,21 +723,21 @@ Equivalent to *Array.prototype.forEach* (except async).
 
 **Arguments**
 
-* **fn**: *Function*
+* **fn**: `Function`
 
   A function that will be invoked for each value returned by the query.
 
   The function receives the following arguments:
 
-  * **value**: *any*
+  * **value**: `any`
 
     The value returned by the query.
 
-  * **index**: *Number*
+  * **index**: `number`
 
     The index of the value.
 
-  * **cursor**: *Cursor*
+  * **cursor**: `Cursor`
 
     The cursor itself.
 
@@ -744,7 +760,7 @@ cursor.each(count, function (err, result) {
 
 ### cursor.every
 
-`async cursor.every(fn): Boolean`
+`async cursor.every(fn): boolean`
 
 Rewinds and advances the cursor by applying the function *fn* to each value returned by the query until the cursor is exhausted or *fn* returns a value that evaluates to `false`.
 
@@ -754,21 +770,21 @@ Equivalent to *Array.prototype.every* (except async).
 
 **Arguments**
 
-* **fn**: *Function*
+* **fn**: `Function`
 
   A function that will be invoked for each value returned by the query until it returns `false` or the cursor is exhausted.
 
   The function receives the following arguments:
 
-  * **value**: *any*
+  * **value**: `any`
 
     The value returned by the query.
 
-  * **index**: *Number*
+  * **index**: `number`
 
     The index of the value.
 
-  * **cursor**: *Cursor*
+  * **cursor**: `Cursor`
 
     The cursor itself.
 
@@ -818,7 +834,7 @@ cursor.some(even, function (err, result) {
 
 ### cursor.map
 
-`cursor.map(fn): Array<Object>`
+`cursor.map(fn): Array<any>`
 
 Rewinds and advances the cursor by applying the function *fn* to each value returned by the query until the cursor is exhausted.
 
@@ -828,21 +844,21 @@ Equivalent to *Array.prototype.map* (except async).
 
 **Arguments**
 
-* **fn**: *Function*
+* **fn**: `Function`
 
   A function that will be invoked for each value returned by the query until the cursor is exhausted.
 
   The function receives the following arguments:
 
-  * **value**: *any*
+  * **value**: `any`
 
     The value returned by the query.
 
-  * **index**: *Number*
+  * **index**: `number`
 
     The index of the value.
 
-  * **cursor**: *Cursor*
+  * **cursor**: `Cursor`
 
     The cursor itself.
 
@@ -871,25 +887,25 @@ Equivalent to *Array.prototype.reduce* (except async).
 
 **Arguments**
 
-* **fn**: *Function*
+* **fn**: `Function`
 
   A function that will be invoked for each value returned by the query until the cursor is exhausted.
 
   The function receives the following arguments:
 
-  * **accu**: *any*
+  * **accu**: `any`
 
     The return value of the previous call to *fn*. If this is the first call, *accu* will be set to the *accu* value passed to *reduce* or the first value returned by the query.
 
-  * **value**: *any*
+  * **value**: `any`
 
     The value returned by the query.
 
-  * **index**: *Number*
+  * **index**: `number`
 
     The index of the value.
 
-  * **cursor**: *Cursor*
+  * **cursor**: `Cursor`
 
     The cursor itself.
 
@@ -953,11 +969,11 @@ Returns a new *Route* instance for the given path (relative to the current route
 
 **Arguments**
 
-* **path**: *String* (optional)
+* **path**: `string` (optional)
 
   The relative URL of the route.
 
-* **headers**: *Object* (optional)
+* **headers**: `Object` (optional)
 
   Default headers that should be sent with each request to the route.
 
@@ -980,11 +996,11 @@ Performs a GET request to the given URL and returns the server response.
 
 **Arguments**
 
-* **path**: *string* (optional)
+* **path**: `string` (optional)
 
   The route-relative URL for the request. If omitted, the request will be made to the base URL of the route.
 
-* **qs**: *string* or *Object* (optional)
+* **qs**: `string` (optional)
 
   The query string for the request. If *qs* is an object, it will be translated to a query string.
 
@@ -1025,15 +1041,15 @@ Performs a POST request to the given URL and returns the server response.
 
 **Arguments**
 
-* **path**: *string* (optional)
+* **path**: `string` (optional)
 
   The route-relative URL for the request. If omitted, the request will be made to the base URL of the route.
 
-* **body**: *string* or *Object* (optional)
+* **body**: `string` (optional)
 
   The response body. If *body* is an object, it will be encoded as JSON.
 
-* **qs**: *string* or *Object* (optional)
+* **qs**: `string` (optional)
 
   The query string for the request. If *qs* is an object, it will be translated to a query string.
 
@@ -1089,15 +1105,15 @@ Performs a PUT request to the given URL and returns the server response.
 
 **Arguments**
 
-* **path**: *string* (optional)
+* **path**: `string` (optional)
 
   The route-relative URL for the request. If omitted, the request will be made to the base URL of the route.
 
-* **body**: *string* or *Object* (optional)
+* **body**: `string` (optional)
 
   The response body. If *body* is an object, it will be encoded as JSON.
 
-* **qs**: *string* or *Object* (optional)
+* **qs**: `string` (optional)
 
   The query string for the request. If *qs* is an object, it will be translated to a query string.
 
@@ -1153,15 +1169,15 @@ Performs a PATCH request to the given URL and returns the server response.
 
 **Arguments**
 
-* **path**: *string* (optional)
+* **path**: `string` (optional)
 
   The route-relative URL for the request. If omitted, the request will be made to the base URL of the route.
 
-* **body**: *string* or *Object* (optional)
+* **body**: `string` (optional)
 
   The response body. If *body* is an object, it will be encoded as JSON.
 
-* **qs**: *string* or *Object* (optional)
+* **qs**: `string` (optional)
 
   The query string for the request. If *qs* is an object, it will be translated to a query string.
 
@@ -1215,11 +1231,11 @@ Performs a DELETE request to the given URL and returns the server response.
 
 **Arguments**
 
-* **path**: *string* (optional)
+* **path**: `string` (optional)
 
   The route-relative URL for the request. If omitted, the request will be made to the base URL of the route.
 
-* **qs**: *string* or *Object* (optional)
+* **qs**: `string` (optional)
 
   The query string for the request. If *qs* is an object, it will be translated to a query string.
 
@@ -1259,11 +1275,11 @@ Performs a HEAD request to the given URL and returns the server response.
 
 **Arguments**
 
-* **path**: *string* (optional)
+* **path**: `string` (optional)
 
   The route-relative URL for the request. If omitted, the request will be made to the base URL of the route.
 
-* **qs**: *string* or *Object* (optional)
+* **qs**: `string` (optional)
 
   The query string for the request. If *qs* is an object, it will be translated to a query string.
 
@@ -1288,31 +1304,31 @@ Performs an arbitrary request to the given URL and returns the server response.
 
 **Arguments**
 
-* **opts**: *Object* (optional)
+* **opts**: `Object` (optional)
 
   An object with any of the following properties:
 
-  * **path**: *string* (optional)
+  * **path**: `string` (optional)
 
     The route-relative URL for the request. If omitted, the request will be made to the base URL of the route.
 
-  * **absolutePath**: *boolean* (Default: `false`)
+  * **absolutePath**: `boolean` (Default: `false`)
 
     Whether the *path* is relative to the connection's base URL instead of the route.
 
-  * **body**: *string* or *Object* (optional)
+  * **body**: `string` (optional)
 
     The response body. If *body* is an object, it will be encoded as JSON.
 
-  * **qs**: *string* or *Object* (optional)
+  * **qs**: `string` (optional)
 
     The query string for the request. If *qs* is an object, it will be translated to a query string.
 
-  * **headers**: *Object* (optional)
+  * **headers**: `Object` (optional)
 
     An object containing additional HTTP headers to be sent with the request.
 
-  * **method**: *string* (Default: `"GET"`)
+  * **method**: `string` (Default: `"GET"`)
 
     HTTP method of this request.
 
@@ -1437,7 +1453,7 @@ Retrieves the collection checksum.
 
 **Arguments**
 
-* **opts**: *Object* (optional)
+* **opts**: `Object` (optional)
 
   For information on the possible options see [the HTTP API for getting collection information](https://docs.arangodb.com/HttpCollection/Getting.html).
 
@@ -1460,11 +1476,11 @@ These functions implement [the HTTP API for modifying collections](https://docs.
 
 `async collection.create([properties]): Object`
 
-Creates a collection with the given *properties*, then returns the server response.
+Creates a collection with the given *properties* for this collection's name, then returns the server response.
 
 **Arguments**
 
-* **properties**: *Object* (optional)
+* **properties**: `Object` (optional)
 
   For more information on the *properties* object, see [the HTTP API documentation for creating collections](https://docs.arangodb.com/HttpCollection/Creating.html).
 
@@ -1497,7 +1513,7 @@ Tells the server to load the collection into memory.
 
 **Arguments**
 
-* **count**: *boolean* (Default: `true`)
+* **count**: `boolean` (Default: `true`)
 
   If set to `false`, the return value will not include the number of documents in the collection (which may speed up the process).
 
@@ -1537,7 +1553,7 @@ Replaces the properties of the collection.
 
 **Arguments**
 
-* **properties**: *Object*
+* **properties**: `Object`
 
   For information on the *properties* argument see [the HTTP API for modifying collections](https://docs.arangodb.com/HttpCollection/Modifying.html).
 
@@ -1636,7 +1652,7 @@ Creates an arbitrary index on the collection.
 
 **Arguments**
 
-* **details**: *Object*
+* **details**: `Object`
 
   For information on the possible properties of the *details* object, see [the HTTP API for manipulating indexes](https://docs.arangodb.com/HttpIndexes/WorkingWith.html).
 
@@ -1660,15 +1676,15 @@ Creates a cap constraint index on the collection.
 
 **Arguments**
 
-* **size**: *Object*
+* **size**: `Object`
 
   An object with any of the following properties:
 
-  * **size**: *Number* (optional)
+  * **size**: `number` (optional)
 
     The maximum number of documents in the collection.
 
-  * **byteSize**: *Number* (optional)
+  * **byteSize**: `number` (optional)
 
     The maximum size of active document data in the collection (in bytes).
 
@@ -1704,11 +1720,11 @@ Creates a hash index on the collection.
 
 **Arguments**
 
-* **fields**: *Array<string>*
+* **fields**: `Array<string>`
 
-  An array of document fields on which to create the index. If the value is a string, it will be wrapped in an array automatically.
+  An array of names of document fields on which to create the index. If the value is a string, it will be wrapped in an array automatically.
 
-* **opts**: *Object* (optional)
+* **opts**: `Object` (optional)
 
   Additional options for this index. If the value is a boolean, it will be interpreted as *opts.unique*.
 
@@ -1742,11 +1758,11 @@ Creates a skiplist index on the collection.
 
 **Arguments**
 
-* **fields**: *Array<string>*
+* **fields**: `Array<string>`
 
-   An array of document fields on which to create the index. If the value is a string, it will be wrapped in an array automatically.
+   An array of names of document fields on which to create the index. If the value is a string, it will be wrapped in an array automatically.
 
-* **opts**: *Object* (optional)
+* **opts**: `Object` (optional)
 
   Additional options for this index. If the value is a boolean, it will be interpreted as *opts.unique*.
 
@@ -1780,11 +1796,11 @@ Creates a geo-spatial index on the collection.
 
 **Arguments**
 
-* **fields**: *Array<string>*
+* **fields**: `Array<string>`
 
-  An array of document fields on which to create the index. Currently, geo indexes must cover exactly one field. If the value is a string, it will be wrapped in an array automatically.
+  An array of names of document fields on which to create the index. Currently, geo indexes must cover exactly one field. If the value is a string, it will be wrapped in an array automatically.
 
-* **opts**: *Object* (optional)
+* **opts**: `Object` (optional)
 
   An object containing additional properties of the index.
 
@@ -1818,9 +1834,9 @@ Creates a fulltext index on the collection.
 
 **Arguments**
 
-* **fields**: *Array<string>*
+* **fields**: `Array<string>`
 
-  An array of document fields on which to create the index. Currently, fulltext indexes must cover exactly one field. If the value is a string, it will be wrapped in an array automatically.
+  An array of names of document fields on which to create the index. Currently, fulltext indexes must cover exactly one field. If the value is a string, it will be wrapped in an array automatically.
 
 * **minLength** (optional):
 
@@ -1856,7 +1872,7 @@ Fetches information about the index with the given *indexHandle* and returns it.
 
 **Arguments**
 
-* **indexHandle**: *string*
+* **indexHandle**: `string`
 
   The handle of the index to look up. This can either be a fully-qualified identifier or the collection-specific key of the index. If the value is an object, its *id* property will be used instead.
 
@@ -1910,7 +1926,7 @@ Deletes the index with the given *indexHandle* from the collection.
 
 **Arguments**
 
-* **indexHandle**: *string*
+* **indexHandle**: `string`
 
   The handle of the index to delete. This can either be a fully-qualified identifier or the collection-specific key of the index. If the value is an object, its *id* property will be used instead.
 
@@ -2009,13 +2025,13 @@ This function implements the [HTTP API for bulk imports](https://docs.arangodb.c
 
 #### collection.import
 
-`async collection.import(data: Array<Object> | Array<Array<Object>>, [opts: Object]): Object`
+`async collection.import(data, [opts]): Object`
 
 Bulk imports the given *data* into the collection.
 
 **Arguments**
 
-* **data**: *Array*
+* **data**: `Array<Array<any>> | Array<Object>`
 
   The data to import. This can be an array of documents:
 
@@ -2038,18 +2054,18 @@ Bulk imports the given *data* into the collection.
   ]
   ```
 
-* **opts**: *Object* (optional)
+* **opts**: `Object` (optional)
   If *opts* is set, it must be an object with any of the following properties:
 
-  * **waitForSync**: *boolean* (Default: `false`)
+  * **waitForSync**: `boolean` (Default: `false`)
 
     Wait until the documents have been synced to disk.
 
-  * **details**: *boolean* (Default: `false`)
+  * **details**: `boolean` (Default: `false`)
 
     Whether the response should contain additional details about documents that could not be imported.false*.
 
-  * **type**: *string* (Default: `"auto"`)
+  * **type**: `string` (Default: `"auto"`)
 
     Indicates which format the data uses. Can be `"documents"`, `"array"` or `"auto"`.
 
@@ -2064,10 +2080,10 @@ var db = require('arangojs')();
 var collection = db.collection('users');
 collection.import(
     [// document stream
-        {username: 'admin', password: 'hunter2', 'favorite-color': 'orange'},
-        {username: 'jcd', password: 'bionicman', 'favorite-color': 'black'},
-        {username: 'jreyes', password: 'amigo', 'favorite-color': 'white'},
-        {username: 'ghermann', password: 'zeitgeist', 'favorite-color': 'blue'}
+        {username: 'admin', password: 'hunter2'},
+        {username: 'jcd', password: 'bionicman'},
+        {username: 'jreyes', password: 'amigo'},
+        {username: 'ghermann', password: 'zeitgeist'}
     ],
     function (err, result) {
         if (err) return console.error(err);
@@ -2077,11 +2093,11 @@ collection.import(
 // -- or --
 collection.import(
     [// array stream with header
-        ['username', 'password', 'favourite_color'], // keys
-        ['admin', 'hunter2', 'orange'], // row 1
-        ['jcd', 'bionicman', 'black'], // row 2
-        ['jreyes', 'amigo', 'white'],
-        ['ghermann', 'zeitgeist', 'blue']
+        ['username', 'password'], // keys
+        ['admin', 'hunter2'], // row 1
+        ['jcd', 'bionicman'], // row 2
+        ['jreyes', 'amigo'],
+        ['ghermann', 'zeitgeist']
     ],
     function (err, result) {
         if (err) return console.error(err);
@@ -2091,11 +2107,11 @@ collection.import(
 // -- or --
 collection.import(
     (// raw line-delimited JSON array stream with header
-        '["username", "password", "favourite_color"]\r\n' +
-        '["admin", "hunter2", "orange"]\r\n' +
-        '["jcd", "bionicman", "black"]\r\n' +
-        '["jreyes", "amigo", "white"]\r\n' +
-        '["ghermann", "zeitgeist", "blue"]\r\n'
+        '["username", "password"]\r\n' +
+        '["admin", "hunter2"]\r\n' +
+        '["jcd", "bionicman"]\r\n' +
+        '["jreyes", "amigo"]\r\n' +
+        '["ghermann", "zeitgeist"]\r\n'
     ),
     function (err, result) {
         if (err) return console.error(err);
@@ -2116,27 +2132,27 @@ Replaces the content of the document with the given *documentHandle* with the gi
 
 **Arguments**
 
-* **documentHandle**: *string*
+* **documentHandle**: `string`
 
   The handle of the document to replace. This can either be the `_id` or the `_key` of a document in the collection, or a document (i.e. an object with an `_id` or `_key` property).
 
-* **newValue**: *Object*
+* **newValue**: `Object`
 
   The new data of the document.
 
-* **opts**: *Object* (optional)
+* **opts**: `Object` (optional)
 
   If *opts* is set, it must be an object with any of the following properties:
 
-  * **waitForSync**: *boolean* (Default: `false`)
+  * **waitForSync**: `boolean` (Default: `false`)
 
     Wait until the document has been synced to disk. Default: `false`.
 
-  * **rev**: *string* (optional)
+  * **rev**: `string` (optional)
 
     Only replace the document if it matches this revision.
 
-  * **policy**: *string* (optional)
+  * **policy**: `string` (optional)
 
     Determines the behaviour when the revision is not matched:
 
@@ -2170,35 +2186,35 @@ Updates (merges) the content of the document with the given *documentHandle* wit
 
 **Arguments**
 
-* **documentHandle**: *string*
+* **documentHandle**: `string`
 
   Handle of the document to update. This can be either the `_id` or the `_key` of a document in the collection, or a document (i.e. an object with an `_id` or `_key` property).
 
-* **newValue**: *Object*
+* **newValue**: `Object`
 
   The new data of the document.
 
-* **opts**: *Object* (optional)
+* **opts**: `Object` (optional)
 
   If *opts* is set, it must be an object with any of the following properties:
 
-  * **waitForSync**: *boolean* (Default: `false`)
+  * **waitForSync**: `boolean` (Default: `false`)
 
     Wait until document has been synced to disk.
 
-  * **keepNull**: *boolean* (Default: `true`)
+  * **keepNull**: `boolean` (Default: `true`)
 
     If set to `false`, properties with a value of `null` indicate that a property should be deleted.
 
-  * **mergeObjects**: *boolean* (Default: `true`)
+  * **mergeObjects**: `boolean` (Default: `true`)
 
     If set to `false`, object properties that already exist in the old document will be overwritten rather than merged. This does not affect arrays.
 
-  * **rev**: *string* (optional)
+  * **rev**: `string` (optional)
 
     Only update the document if it matches this revision.
 
-  * **policy**: *string* (optional)
+  * **policy**: `string` (optional)
 
     Determines the behaviour when the revision is not matched:
 
@@ -2232,23 +2248,23 @@ Deletes the document with the given *documentHandle* from the collection.
 
 **Arguments**
 
-* **documentHandle**: *string*
+* **documentHandle**: `string`
 
   The handle of the document to delete. This can be either the `_id` or the `_key` of a document in the collection, or a document (i.e. an object with an `_id` or `_key` property).
 
-* **opts**: *Object* (optional)
+* **opts**: `Object` (optional)
 
   If *opts* is set, it must be an object with any of the following properties:
 
-  * **waitForSync**: *boolean* (Default: `false`)
+  * **waitForSync**: `boolean` (Default: `false`)
 
     Wait until document has been synced to disk.
 
-  * **rev**: *string* (optional)
+  * **rev**: `string` (optional)
 
     Only update the document if it matches this revision.
 
-  * **policy**: *string* (optional)
+  * **policy**: `string` (optional)
 
     Determines the behaviour when the revision is not matched:
 
@@ -2275,13 +2291,13 @@ collection.remove('some-collection/some-doc', function (err) {
 
 #### collection.list
 
-`async collection.list([type]): Array<Object>`
+`async collection.list([type]): Array<string>`
 
 Retrieves a list of references for all documents in the collection.
 
 **Arguments**
 
-* **type**: *string* (Default: `"id"`)
+* **type**: `string` (Default: `"id"`)
 
   The format of the document references:
 
@@ -2289,19 +2305,21 @@ Retrieves a list of references for all documents in the collection.
   * if *type* is set to `"key"`, each reference will be the `_key` of the document.
   * if *type* is set to `"path"`, each reference will be the URI path of the document.
 
-## TODO
-
 ### DocumentCollection API
 
 The *DocumentCollection API* extends the [*Collection API* (see above)](#collection-api) with the following methods.
 
 #### documentCollection.document
 
-`async documentCollection.document(documentHandle: string | Document): Document`
+`async documentCollection.document(documentHandle): Object`
 
 Retrieves the document with the given *documentHandle* from the collection.
 
-The *documentHandle* can be either the `_id` or the `_key` of a document in the collection, or a document (i.e. an object with an `_id` or `_key` property).
+**Arguments**
+
+* **documentHandle**: `string`
+
+  The handle of the document to retrieve. This can be either the `_id` or the `_key` of a document in the collection, or a document (i.e. an object with an `_id` or `_key` property).
 
 **Examples**
 
@@ -2325,9 +2343,15 @@ collection.document('my-docs/some-key', function (err, doc) {
 
 #### documentCollection.save
 
-`async documentCollection.save(data: Object): Document`
+`async documentCollection.save(data): Object`
 
 Creates a new document with the given *data*.
+
+**Arguments**
+
+* **data**: `Object`
+
+  The data of the new document, may include a `_key`.
 
 **Examples**
 
@@ -2351,11 +2375,15 @@ The *EdgeCollection API* extends the [*Collection API* (see above)](#collection-
 
 #### edgeCollection.edge
 
-`async edgeCollection.edge(documentHandle: string | Document): Document`
+`async edgeCollection.edge(documentHandle): Object`
 
 Retrieves the edge with the given *documentHandle* from the collection.
 
-The *documentHandle* can be either the `_id` or the `_key` of an edge in the collection, or an edge (i.e. an object with an `_id` or `_key` property).
+**Arguments**
+
+* **documentHandle**: `string`
+
+  The handle of the edge to retrieve. This can be either the `_id` or the `_key` of an edge in the collection, or an edge (i.e. an object with an `_id` or `_key` property).
 
 **Examples**
 
@@ -2379,11 +2407,23 @@ collection.edge('edges/some-key', function (err, edge) {
 
 #### edgeCollection.save
 
-`async edgeCollection.save(data: Object, fromId: string | Object, toId: string | Object): Document`
+`async edgeCollection.save(data, [fromId, [toId]]): Object`
 
 Creates a new edge between the documents *fromId* and *toId* with the given *data*.
 
-If *fromId* and *toId* are not specified, the *data* needs to contain the properties *_from* and *_to*.
+**Arguments**
+
+* **data**: `Object`
+
+  The data of the new edge. If *fromId* and *toId* are not specified, the *data* needs to contain the properties *_from* and *_to*.
+
+* **fromId**: `string` (optional)
+
+  The handle of the start vertex of this edge. This can be either the `_id` of a document in the database, the `_key` of an edge in the collection, or a document (i.e. an object with an `_id` or `_key` property).
+
+* **toId**: `string` (optional)
+
+  The handle of the end vertex of this edge. This can be either the `_id` of a document in the database, the `_key` of an edge in the collection, or a document (i.e. an object with an `_id` or `_key` property).
 
 **Examples**
 
@@ -2403,15 +2443,31 @@ collection.save(
         edge._to === 'vertices/end-vertex';
     }
 );
+// -- or --
+collection.save(
+    {
+        some: 'data',
+        _from: 'verticies/start-vertex',
+        _to: 'vertices/end-vertex'
+    },
+    function (err, edge) {
+        if (err) return console.error(err);
+        // ...
+    }
+)
 ```
 
 #### edgeCollection.edges
 
-`async edgeCollection.edges(documentHandle: string | Document): Array<Document>`
+`async edgeCollection.edges(documentHandle): Array<Object>`
 
 Retrieves a list of all edges of the document with the given *documentHandle*.
 
-The *documentHandle* can be either the `_id` or the `_key` of a document in any collection, or a document (i.e. an object with an `_id` or `_key` property).
+**Arguments**
+
+* **documentHandle**: `string`
+
+  The handle of the document to retrieve the edges of. This can be either the `_id` of a document in the database, the `_key` of an edge in the collection, or a document (i.e. an object with an `_id` or `_key` property).
 
 **Examples**
 
@@ -2435,11 +2491,15 @@ collection.import([
 
 #### edgeCollection.inEdges
 
-`async edgeCollection.inEdges(documentHandle: string | Document): Array<Document>`
+`async edgeCollection.inEdges(documentHandle): Array<Object>`
 
 Retrieves a list of all incoming edges of the document with the given *documentHandle*.
 
-The *documentHandle* can be either the `_id` or the `_key` of a document in any collection, or a document (i.e. an object with an `_id` or `_key` property).
+**Arguments**
+
+* **documentHandle**: `string`
+
+  The handle of the document to retrieve the edges of. This can be either the `_id` of a document in the database, the `_key` of an edge in the collection, or a document (i.e. an object with an `_id` or `_key` property).
 
 **Examples**
 
@@ -2463,11 +2523,15 @@ collection.import([
 
 #### edgeCollection.outEdges
 
-`async edgeCollection.outEdges(documentHandle: string | Document): Array<Document>`
+`async edgeCollection.outEdges(documentHandle): Array<Object>`
 
 Retrieves a list of all outgoing edges of the document with the given *documentHandle*.
 
-The *documentHandle* can be either the `_id` or the `_key` of a document in any collection, or a document (i.e. an object with an `_id` or `_key` property).
+**Arguments**
+
+* **documentHandle**: `string`
+
+  The handle of the document to retrieve the edges of. This can be either the `_id` of a document in the database, the `_key` of an edge in the collection, or a document (i.e. an object with an `_id` or `_key` property).
 
 **Examples**
 
@@ -2491,13 +2555,21 @@ collection.import([
 
 #### edgeCollection.traversal
 
-`async edgeCollection.traversal(startVertex: string | Document, [opts: Object]): Object`
+`async edgeCollection.traversal(startVertex, opts): Object`
 
 Performs a traversal starting from the given *startVertex* and following edges contained in this edge collection.
 
-See [the HTTP API documentation](https://docs.arangodb.com/HttpTraversal/index.html) for details on the additional arguments.
+**Arguments**
 
-Please note that while *opts.filter*, *opts.visitor*, *opts.init*, *opts.expander* and *opts.sort* should be strings evaluating to well-formed JavaScript code, it's not possible to pass in JavaScript functions directly because the code needs to be evaluated on the server and will be transmitted in plain text.
+* **startVertex**: `string`
+
+  The handle of the start vertex. This can be either the `_id` of a document in the database, the `_key` of an edge in the collection, or a document (i.e. an object with an `_id` or `_key` property).
+
+* **opts**: `Object`
+
+  See [the HTTP API documentation](https://docs.arangodb.com/HttpTraversal/index.html) for details on the additional arguments.
+
+  Please note that while *opts.filter*, *opts.visitor*, *opts.init*, *opts.expander* and *opts.sort* should be strings evaluating to well-formed JavaScript code, it's not possible to pass in JavaScript functions directly because the code needs to be evaluated on the server and will be transmitted in plain text.
 
 **Examples**
 
@@ -2528,11 +2600,15 @@ These functions implement the [HTTP API for manipulating graphs](https://docs.ar
 
 #### graph.create
 
-`async graph.create(properties: Object): Graph`
+`async graph.create(properties): Object`
 
-Creates a graph with the given *properties*, then passes a new *Graph* instance to the callback.
+Creates a graph with the given *properties* for this graph's name, then returns the server response.
 
-For more information on the *properties* object, see [the HTTP API documentation for creating graphs](https://docs.arangodb.com/HttpGharial/Management.html).
+**Arguments**
+
+* **properties**: `Object`
+
+  For more information on the *properties* object, see [the HTTP API documentation for creating graphs](https://docs.arangodb.com/HttpGharial/Management.html).
 
 **Examples**
 
@@ -2560,13 +2636,15 @@ graph.create({
 
 ### graph.drop
 
-`async graph.drop([dropCollections: boolean]): Object`
+`async graph.drop([dropCollections]): Object`
 
 Deletes the graph from the database.
 
-If *dropCollections* is set to `true`, the collections associated with the graph will also be deleted.
+**Arguments**
 
-Easync quivalent to *database.dropGraph(graph.name)*.: 
+* **dropCollections**: `boolean` (optional)
+
+  If set to `true`, the collections associated with the graph will also be deleted.
 
 **Examples**
 
@@ -2583,9 +2661,15 @@ graph.drop(function (err) {
 
 #### graph.vertexCollection
 
-`graph.vertexCollection(collectionName: string): GraphVertexCollection`
+`graph.vertexCollection(collectionName): GraphVertexCollection`
 
 Returns a new [*GraphVertexCollection* instance](#graphvertexcollection-api) with the given name for this graph.
+
+**Arguments**
+
+* **collectionName**: `string`
+
+  Name of the vertex collection.
 
 **Examples**
 
@@ -2599,9 +2683,15 @@ collection.name === 'vertices';
 
 #### graph.addVertexCollection
 
-`async graph.addVertexCollection(collectionName: string): Object`
+`async graph.addVertexCollection(collectionName): Object`
 
 Adds the collection with the given *collectionName* to the graph's vertex collections.
+
+**Arguments**
+
+* **collectionName**: `string`
+
+  Name of the vertex collection to add to the graph.
 
 **Examples**
 
@@ -2616,11 +2706,19 @@ graph.addVertexCollection('vertices', function (err) {
 
 #### graph.removeVertexCollection
 
-`async graph.removeVertexCollection(collectionName: string, [dropCollection: boolean]): an>`
+`async graph.removeVertexCollection(collectionName, [dropCollection]): Object`
 
 Removes the vertex collection with the given *collectionName* from the graph.
 
-If *dropCollection* is set to `true`, the collection will also be deleted from the database.
+**Arguments**
+
+* **collectionName**: `string`
+
+  Name of the vertex collection to remove from the graph.
+
+* **dropCollection**: `boolean` (optional)
+
+  If set to `true`, the collection will also be deleted from the database.
 
 **Examples**
 
@@ -2644,9 +2742,15 @@ graph.removeVertexCollection('vertices', true, function (err) {
 
 #### graph.edgeCollection
 
-`graph.edgeCollection(collectionName: string): GraphEdgeCollection`
+`graph.edgeCollection(collectionName): GraphEdgeCollection`
 
 Returns a new [*GraphEdgeCollection* instance](#graphedgecollection-api) with the given name bound to this graph.
+
+**Arguments**
+
+* **collectionName**: `string`
+
+  Name of the edge collection.
 
 **Examples**
 
@@ -2662,11 +2766,15 @@ collection.name === 'edges';
 
 #### graph.addEdgeDefinition
 
-`async graph.addEdgeDefinition(definition: Object): Object`
+`async graph.addEdgeDefinition(definition): Object`
 
 Adds the given edge definition *definition* to the graph.
 
-For more information on edge definitions see [the HTTP API for managing graphs](https://docs.arangodb.com/HttpGharial/Management.html).
+**Arguments**
+
+* **definition**: `Object`
+
+  For more information on edge definitions see [the HTTP API for managing graphs](https://docs.arangodb.com/HttpGharial/Management.html).
 
 **Examples**
 
@@ -2686,11 +2794,19 @@ graph.addEdgeDefinition({
 
 #### graph.replaceEdgeDefinition
 
-`async graph.replaceEdgeDefinition(collectionName: string, definition: Object): Object`
+`async graph.replaceEdgeDefinition(collectionName, definition): Object`
 
 Replaces the edge definition for the edge collection named *collectionName* with the given *definition*.
 
-For more information on edge definitions see [the HTTP API for managing graphs](https://docs.arangodb.com/HttpGharial/Management.html).
+**Arguments**
+
+* **collectionName**: `string`
+
+  Name of the edge collection to replace the definition of.
+
+* **definition**: `Object`
+
+  For more information on edge definitions see [the HTTP API for managing graphs](https://docs.arangodb.com/HttpGharial/Management.html).
 
 **Examples**
 
@@ -2710,13 +2826,19 @@ graph.replaceEdgeDefinition('edges', {
 
 #### graph.removeEdgeDefinition
 
-`async graph.removeEdgeDefinition(definitionName: string, [dropCollection: boolean]): Object`
+`async graph.removeEdgeDefinition(definitionName, [dropCollection]): Object`
 
 Removes the edge definition with the given *definitionName* form the graph.
 
-If *dropCollection* is set to `true`, the edge collection associated with the definition will also be deleted from the database.
+**Arguments**
 
-For more information on edge definitions see [the HTTP API for managing graphs](https://docs.arangodb.com/HttpGharial/Management.html).
+* **definitionName**: `string`
+
+  Name of the edge definition to remove from the graph.
+
+* **dropCollection**: `boolean` (optional)
+
+  If set to `true`, the edge collection associated with the definition will also be deleted from the database.
 
 **Examples**
 
@@ -2738,13 +2860,21 @@ graph.removeEdgeDefinition('edges', true, function (err) {
 
 #### graph.traversal
 
-`async graph.traversal(startVertex: string | Document, [opts: Object]): Object`
+`async graph.traversal(startVertex, opts): Object`
 
 Performs a traversal starting from the given *startVertex* and following edges contained in any of the edge collections of this graph.
 
-See [the HTTP API documentation](https://docs.arangodb.com/HttpTraversal/index.html) for details on the additional arguments.
+**Arguments**
 
-Please note that while *opts.filter*, *opts.visitor*, *opts.init*, *opts.expander* and *opts.sort* should be strings evaluating to well-formed JavaScript functions, it's not possible to pass in JavaScript functions directly because the functions need to be evaluated on the server and will be transmitted in plain text.
+* **startVertex**: `string`
+
+  The handle of the start vertex. This can be either the `_id` of a document in the graph or a document (i.e. an object with an `_id` property).
+
+* **opts**: `Object`
+
+  See [the HTTP API documentation](https://docs.arangodb.com/HttpTraversal/index.html) for details on the additional arguments.
+
+  Please note that while *opts.filter*, *opts.visitor*, *opts.init*, *opts.expander* and *opts.sort* should be strings evaluating to well-formed JavaScript functions, it's not possible to pass in JavaScript functions directly because the functions need to be evaluated on the server and will be transmitted in plain text.
 
 **Examples**
 
@@ -2778,11 +2908,15 @@ The *GraphVertexCollection API* extends the [*Collection API* (see above)](#coll
 
 #### graphVertexCollection.vertex
 
-`async graphVertexCollection.vertex(documentHandle: string | Document): Document`
+`async graphVertexCollection.vertex(documentHandle): Object`
 
 Retrieves the vertex with the given *documentHandle* from the collection.
 
-The *documentHandle* can be either the `_id` or the `_key` of a vertex in the collection, or a vertex (i.e. an object with an `_id` or `_key` property).
+**Arguments**
+
+* **documentHandle**: `string`
+
+  The handle of the vertex to retrieve. This can be either the `_id` or the `_key` of a vertex in the collection, or a vertex (i.e. an object with an `_id` or `_key` property).
 
 **Examples**
 
@@ -2807,9 +2941,15 @@ collection.vertex('vertices/some-key', function (err, doc) {
 
 #### graphVertexCollection.save
 
-`async graphVertexCollection.save(data: Object): Document`
+`async graphVertexCollection.save(data): Object`
 
 Creates a new vertex with the given *data*.
+
+**Arguments**
+
+* **data**: `Object`
+
+  The data of the vertex.
 
 **Examples**
 
@@ -2834,11 +2974,17 @@ The *GraphEdgeCollection API* extends the *Collection API* (see above) with the 
 
 #### graphEdgeCollection.edge
 
-`async graphEdgeCollection.edge(documentHandle: string | Document): Document`
+`async graphEdgeCollection.edge(documentHandle): Object`
 
 Retrieves the edge with the given *documentHandle* from the collection.
 
-The *documentHandle* can be either the `_id` or the `_key` of an edge in the collection, or an edge (i.e. an object with an `_id` or `_key` property).
+**Arguments**
+
+* **documentHandle**: `string`
+
+  The handle of the edge to retrieve. This can be either the `_id` or the `_key` of an edge in the collection, or an edge (i.e. an object with an `_id` or `_key` property).
+
+**Examples**
 
 ```js
 var graph = db.graph('some-graph');
@@ -2860,11 +3006,23 @@ collection.edge('edges/some-key', function (err, edge) {
 
 #### graphEdgeCollection.save
 
-`async graphEdgeCollection.save(data: Object, [fromId: string | Document, toId: string | Document]): Document`
+`async graphEdgeCollection.save(data, [fromId, [toId]]): Object`
 
 Creates a new edge between the vertices *fromId* and *toId* with the given *data*.
 
-If *fromId* and *toId* are not specified, the *data* needs to contain the properties *_from* and *_to*.
+**Arguments**
+
+* **data**: `Object`
+
+  The data of the new edge. If *fromId* and *toId* are not specified, the *data* needs to contain the properties *_from* and *_to*.
+
+* **fromId**: `string` (optional)
+
+  The handle of the start vertex of this edge. This can be either the `_id` of a document in the database, the `_key` of an edge in the collection, or a document (i.e. an object with an `_id` or `_key` property).
+
+* **toId**: `string` (optional)
+
+  The handle of the end vertex of this edge. This can be either the `_id` of a document in the database, the `_key` of an edge in the collection, or a document (i.e. an object with an `_id` or `_key` property).
 
 **Examples**
 
