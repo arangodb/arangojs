@@ -466,7 +466,7 @@ For collection-specific queries see [simple queries](#simple-queries).
 
 `async database.query(query, [bindVars,] [opts]): Cursor`
 
-Performs a database query using the given *query* and *bindVars*, then returns a new *Cursor* instance for the result list.
+Performs a database query using the given *query* and *bindVars*, then returns a [new *Cursor* instance](#cursor-api) for the result list.
 
 **Arguments**
 
@@ -483,8 +483,6 @@ Performs a database query using the given *query* and *bindVars*, then returns a
   Additional options that will be passed to the query API.
 
 If *opts.count* is set to `true`, the cursor will have a *count* property set to the query result count.
-
-For more information on *Cursor* instances see the [*Cursor API* below](#cursor-api).
 
 **Examples**
 
@@ -1957,67 +1955,159 @@ These functions implement the [HTTP API for simple queries](https://docs.arangod
 
 `async collection.all([opts]): Cursor`
 
-*TODO*
+Performs a query to fetch all documents in the collection. Returns a [new *Cursor* instance](#cursor-api) for the query results.
+
+**Arguments**
+
+* **opts**: `Object` (optional)
+
+  For information on the possible options see [the HTTP API for returning all documents](https://docs.arangodb.com/HttpSimpleQuery/index.html#return-all-documents).
 
 #### collection.any
 
 `async collection.any(): Object`
 
-*TODO*
+Fetches a document from the collection at random.
 
 #### collection.first
 
 `async collection.first([opts]): Array<Object>`
 
-*TODO*
+Performs a query to fetch the first documents in the collection. Returns an array of the matching documents.
+
+**Arguments**
+
+* **opts**: `Object` (optional)
+
+  For information on the possible options see [the HTTP API for returning the first documents of a collection](https://docs.arangodb.com/HttpSimpleQuery/index.html#first-document-of-a-collection).
+
+  If *opts* is a number it is treated as *opts.count*.
 
 #### collection.last
 
-`async collection.first([opts]): Array<Object>`
+`async collection.last([opts]): Array<Object>`
 
-*TODO*
+Performs a query to fetch the last documents in the collection. Returns an array of the matching documents.
+
+**Arguments**
+
+* **opts**: `Object` (optional)
+
+  For information on the possible options see [the HTTP API for returning the last documents of a collection](https://docs.arangodb.com/HttpSimpleQuery/index.html#last-document-of-a-collection).
+
+  If *opts* is a number it is treated as *opts.count*.
 
 #### collection.byExample
 
 `async collection.byExample(example, [opts]): Cursor`
 
-*TODO*
+Performs a query to fetch all documents in the collection matching the given *example*. Returns a [new *Cursor* instance](#cursor-api) for the query results.
+
+**Arguments**
+
+* **example**: *Object*
+
+  An object representing an example for documents to be matched against.
+
+* **opts**: *Object* (optional)
+
+  For information on the possible options see [the HTTP API for fetching documents by example](https://docs.arangodb.com/HttpSimpleQuery/index.html#find-documents-matching-an-example).
 
 #### collection.firstExample
 
 `async collection.firstExample(example): Object`
 
-*TODO*
+Fetches the first document in the collection matching the given *example*.
+
+**Arguments**
+
+* **example**: *Object*
+
+  An object representing an example for documents to be matched against.
 
 #### collection.removeByExample
 
 `async collection.removeByExample(example, [opts]): Object`
 
-*TODO*
+Removes all documents in the collection matching the given *example*.
+
+**Arguments**
+
+* **example**: *Object*
+
+  An object representing an example for documents to be matched against.
+
+* **opts**: *Object* (optional)
+
+  For information on the possible options see [the HTTP API for removing documents by example](https://docs.arangodb.com/HttpSimpleQuery/index.html#remove-documents-by-example).
 
 #### collection.replaceByExample
 
 `async collection.replaceByExample(example, newValue, [opts]): Object`
 
-*TODO*
+Replaces all documents in the collection matching the given *example* with the given *newValue*.
+
+**Arguments**
+
+* **example**: *Object*
+
+  An object representing an example for documents to be matched against.
+
+* **newValue**: *Object*
+
+  The new value to replace matching documents with.
+
+* **opts**: *Object* (optional)
+
+  For information on the possible options see [the HTTP API for replacing documents by example](https://docs.arangodb.com/HttpSimpleQuery/index.html#replace-documents-by-example).
 
 #### collection.updateByExample
 
 `async collection.updateByExample(example, newValue, [opts]): Object`
 
-*TODO*
+Updates (patches) all documents in the collection matching the given *example* with the given *newValue*.
+
+**Arguments**
+
+* **example**: *Object*
+
+  An object representing an example for documents to be matched against.
+
+* **newValue**: *Object*
+
+  The new value to update matching documents with.
+
+* **opts**: *Object* (optional)
+
+  For information on the possible options see [the HTTP API for updating documents by example](https://docs.arangodb.com/HttpSimpleQuery/index.html#update-documents-by-example).
 
 #### collection.lookupByKeys
 
 `async collection.lookupByKeys(keys): Array<Object>`
 
-*TODO*
+Fetches the documents with the given *keys* from the collection. Returns an array of the matching documents.
+
+**Arguments**
+
+* **keys**: *Array*
+
+  An array of document keys to look up.
 
 #### collection.removeByKeys
 
 `async collection.removeByKeys(keys, [opts]): Object`
 
-*TODO*
+Deletes the documents with the given *keys* from the collection.
+
+**Arguments**
+
+* **keys**: *Array*
+
+  An array of document keys to delete.
+
+* **opts**: *Object* (optional)
+
+  For information on the possible options see [the HTTP API for removing documents by keys](https://docs.arangodb.com/HttpSimpleQuery/index.html#remove-documents-by-their-keys).
 
 ### Bulk importing documents
 
