@@ -16,24 +16,6 @@ The official ArangoDB low-level JavaScript clients.
 npm install arangojs
 ```
 
-<!--
-## With Bower
-
-```sh
-bower install arangojs
-```
-
-## Browser
-
-This CommonJS module is compatible with [browserify](http://browserify.org).
-
-If you don't want to use browserify, you can simply use the AMD-compatible [browserify bundle](https://raw.githubusercontent.com/arangodb/arangojs/master/dist/arango.all.min.js) which includes all required dependencies.
-
-There is also a [browserify bundle without the dependencies](https://raw.githubusercontent.com/arangodb/arangojs/master/dist/arango.min.js). In this case you need to provide modules named `request` (xhr) and `extend` yourself.
-
-If you want to use this module in non-ES5 browsers like Microsoft Internet Explorer 8 and earlier, you need to include [es5-shim](https://www.npmjs.com/package/es5-shim) or a similar ES5 polyfill.
--->
-
 ## From source
 
 ```sh
@@ -191,7 +173,7 @@ db.get(function (err, info) {
 
 #### database.listDatabases
 
-`async database.listDatabases(): Array<String>`
+`async database.listDatabases(): Array<string>`
 
 Fetches all databases from the server and returns an array of their names.
 
@@ -207,7 +189,7 @@ db.databases(function (err, names) {
 
 #### database.listUserDatabases
 
-`async database.listUserDatabases(): Array<String>`
+`async database.listUserDatabases(): Array<string>`
 
 Fetches all databases accessible to the active user from the server and returns an array of their names.
 
@@ -447,7 +429,7 @@ For more information on transactions, see [the HTTP API documentation for transa
 
 ```js
 var db = require('arangojs')();
-var action = String(function () {
+var action = string(function () {
     // This code will be executed inside ArangoDB!
     var db = require('org/arangodb').db;
     return db._query('FOR user IN _users RETURN u.user').toArray();
@@ -468,11 +450,11 @@ For collection-specific queries see [fulltext queries](#fulltext-queries) and [g
 
 `async database.query(query, [bindVars,] [opts]): Cursor`
 
-Performs a database query using the given *query* and *bindVars*, then returns a new *Cursor* instance for the result list to the callback.
+Performs a database query using the given *query* and *bindVars*, then returns a new *Cursor* instance for the result list.
 
 **Arguments**
 
-* **query**: *String*
+* **query**: *string*
 
   An AQL query string or a [query builder](https://npmjs.org/package/aqb) instance.
 
@@ -544,11 +526,11 @@ Creates an AQL user function with the given *name* and *code* if it does not alr
 
 **Arguments**
 
-* **name**: *String*
+* **name**: *string*
 
   A valid AQL function name, e.g.: `"myfuncs::accounting::calculate_vat"`.
 
-* **code**: *String*
+* **code**: *string*
 
   A string evaluating to a JavaScript function (not a JavaScript function object).
 
@@ -587,7 +569,7 @@ Deletes the AQL user function with the given name from the database.
 
 **Arguments**
 
-* **name**: *String*
+* **name**: *string*
 
   The name of the user function to drop.
 
@@ -605,20 +587,23 @@ db.dropFunction('myfuncs::acounting::calculate_vat', function (err) {
 });
 ```
 
-## TODO Outdated
-
 ### Arbitrary HTTP routes
 
 #### database.route
 
-`database.route([path: string, [headers: Object]]): Route`
+`database.route([path,] [headers]): Route`
 
 Returns a new *Route* instance for the given path (relative to the database) that can be used to perform arbitrary HTTP requests.
 
 **Arguments**
 
-* *path* (optional): relative URL of the route.
-* *headers* (optional): default headers that should be send with each request to the route.
+* **path**: *string* (optional)
+
+  The database-relative URL of the route.
+
+* **headers**: *Object* (optional)
+
+  Default headers that should be sent with each request to the route.
 
 If *path* is missing, the route will refer to the base URL of the database.
 
@@ -642,7 +627,7 @@ myFoxxApp.post('users', {
 
 ## Cursor API
 
-*Cursor* instances provide an abstraction over the HTTP API's limitations. Unless a method explicitly exhausts the cursor, the driver will only fetch as many batches from the server as necessary. Unlike the server-side cursors, *Cursor* instances can also be rewinded.
+*Cursor* instances provide an abstraction over the HTTP API's limitations. Unless a method explicitly exhausts the cursor, the driver will only fetch as many batches from the server as necessary. Unlike the server-side cursors, *Cursor* instances can also be rewound.
 
 ```js
 var db = require('arangojs')();
@@ -652,11 +637,17 @@ db.query(someQuery, function (err, cursor) {
 });
 ```
 
+### cursor.count
+
+`cursor.count: Number`
+
+The total number of documents in the query result.
+
 ### cursor.all
 
-`cursor.all([callback: Callback]): Promise<Array<any>>`
+`async cursor.all(): Array<any>`
 
-Rewinds and exhausts the cursor and passes an array containing all values returned by the query.
+Rewinds and exhausts the cursor, then returns an array containing all values returned by the query.
 
 **Examples**
 
@@ -673,9 +664,9 @@ cursor.all(function (err, vals) {
 
 ### cursor.next
 
-`cursor.next([callback: Callback]): Promise<any>`
+`async cursor.next(): any`
 
-Advances the cursor and passes the next value returned by the query. If the cursor has already been exhausted, passes `undefined` instead.
+Advances the cursor and returns the next value returned by the query. If the cursor has already been exhausted, returns `undefined` instead.
 
 **Examples**
 
@@ -695,7 +686,7 @@ cursor.next(function (err, val) {
 
 `cursor.hasNext(): boolean`
 
-Returns `true` if the cursor has more values or `false` if the cursor has been exhausted. Synchronous.
+Returns `true` if the cursor has more values or `false` if the cursor has been exhausted.
 
 **Examples**
 
@@ -708,11 +699,33 @@ cursor.all(function (err) { // exhausts the cursor
 
 ### cursor.each
 
-`cursor.each(fn: (value: any, index: number, cursor: Cursor) => any, [callback: Callback]): Promise<void>`
+`async cursor.each(fn): void`
 
-Rewinds and exhausts the cursor by applying the function *fn* to each value returned by the query, then invokes the callback with no result value.
+Rewinds and exhausts the cursor by applying the function *fn* to each value returned by the query.
 
-Equivalent to *Array.prototype.forEach*.
+Equivalent to *Array.prototype.forEach* (except async).
+
+**Arguments**
+
+* **fn**: *Function*
+
+  A function that will be invoked for each value returned by the query.
+
+  The function receives the following arguments:
+
+  * **value**: *any*
+
+    The value returned by the query.
+
+  * **index**: *Number*
+
+    The index of the value.
+
+  * **cursor**: *Cursor*
+
+    The cursor itself.
+
+**Examples**
 
 ```js
 var counter = 0;
@@ -731,13 +744,33 @@ cursor.each(count, function (err, result) {
 
 ### cursor.every
 
-`cursor.every(fn: (value: any, index: number, cursor: Cursor) => boolean, [callback: Callback]): Promise<boolean>`
+`async cursor.every(fn): Boolean`
 
 Rewinds and advances the cursor by applying the function *fn* to each value returned by the query until the cursor is exhausted or *fn* returns a value that evaluates to `false`.
 
-Passes the return value of the last call to *fn* to the callback.
+Returns the last return value of *fn*.
 
-Equivalent to *Array.prototype.every*.
+Equivalent to *Array.prototype.every* (except async).
+
+**Arguments**
+
+* **fn**: *Function*
+
+  A function that will be invoked for each value returned by the query until it returns `false` or the cursor is exhausted.
+
+  The function receives the following arguments:
+
+  * **value**: *any*
+
+    The value returned by the query.
+
+  * **index**: *Number*
+
+    The index of the value.
+
+  * **cursor**: *Cursor*
+
+    The cursor itself.
 
 ```js
 function even(value) {
@@ -757,13 +790,13 @@ cursor.every(even, function (err, result) {
 
 ### cursor.some
 
-`cursor.some(fn: (value: any, index: number, cursor: Cursor) => boolean, [callback: Callback]): Promise<boolean>`
+`async cursor.some(fn): boolean`
 
 Rewinds and advances the cursor by applying the function *fn* to each value returned by the query until the cursor is exhausted or *fn* returns a value that evaluates to `true`.
 
-Passes the return value of the last call to *fn* to the callback.
+Returns the return value of the last call to *fn*.
 
-Equivalent to *Array.prototype.some*.
+Equivalent to *Array.prototype.some* (except async).
 
 **Examples**
 
@@ -785,11 +818,33 @@ cursor.some(even, function (err, result) {
 
 ### cursor.map
 
-`cursor.map(fn: (value: any, index: number, cursor: Cursor) => any, [callback: Callback]): Promise<Array<any>>`
+`cursor.map(fn): Array<any>`
 
-Rewinds and exhausts the cursor by applying the function *fn* to each value returned by the query, then invokes the callback with an array of the return values.
+Rewinds and advances the cursor by applying the function *fn* to each value returned by the query until the cursor is exhausted.
 
-Equivalent to *Array.prototype.map*.
+Returns an array of the return values of *fn*.
+
+Equivalent to *Array.prototype.map* (except async).
+
+**Arguments**
+
+* **fn**: *Function*
+
+  A function that will be invoked for each value returned by the query until the cursor is exhausted.
+
+  The function receives the following arguments:
+
+  * **value**: *any*
+
+    The value returned by the query.
+
+  * **index**: *Number*
+
+    The index of the value.
+
+  * **cursor**: *Cursor*
+
+    The cursor itself.
 
 **Examples**
 
@@ -808,11 +863,35 @@ cursor.map(square, function (err, result) {
 
 ### cursor.reduce
 
-`cursor.reduce(fn: (prev: any, accu: any, index: number, cursor: Cursor) => T, [accu: T,] [callback: Callback]): Promise<T>`
+`cursor.reduce(fn, [accu]): any`
 
 Rewinds and exhausts the cursor by reducing the values returned by the query with the given function *fn*. If *accu* is not provided, the first value returned by the query will be used instead (the function will not be invoked for that value).
 
-Equivalent to *Array.prototype.reduce*.
+Equivalent to *Array.prototype.reduce* (except async).
+
+**Arguments**
+
+* **fn**: *Function*
+
+  A function that will be invoked for each value returned by the query until the cursor is exhausted.
+
+  The function receives the following arguments:
+
+  * **accu**: *any*
+
+    The return value of the previous call to *fn*. If this is the first call, *accu* will be set to the *accu* value passed to *reduce* or the first value returned by the query.
+
+  * **value**: *any*
+
+    The value returned by the query.
+
+  * **index**: *Number*
+
+    The index of the value.
+
+  * **cursor**: *Cursor*
+
+    The cursor itself.
 
 **Examples**
 
@@ -868,9 +947,21 @@ cursor.all(function (err, result) {
 
 ### route.route
 
-`route.route([path: string, [headers: Object]]): Route`
+`route.route([path], [headers]): Route`
 
-Creates a new *Route* instance representing the *path* relative to the current route. Optionally *headers* can be an object with headers which will be extended with the current route's headers and the connection's headers.
+Returns a new *Route* instance for the given path (relative to the current route) that can be used to perform arbitrary HTTP requests.
+
+**Arguments**
+
+* **path**: *String* (optional)
+
+  The relative URL of the route.
+
+* **headers**: *Object* (optional)
+
+  Default headers that should be sent with each request to the route.
+
+If *path* is missing, the route will refer to the base URL of the database.
 
 **Examples**
 
@@ -883,20 +974,20 @@ var users = route.route('users');
 
 ### route.get
 
-`route.get([path: string,] [qs: string,] [callback: Callback]): Promise<Response>`
+`async route.get([path,] [qs]): Response`
 
-`route.get([path: string,] [qs: Object,] [callback: Callback]): Promise<Response>`
-
-Performs a GET request to the given URL and passes the server response to the given callback.
+Performs a GET request to the given URL and returns the server response.
 
 **Arguments**
 
-* *path* (optional): the route-relative URL for the request.
-* *qs* (optional): the query string for the request.
+* **path**: *string* (optional)
 
-If *path* is missing, the request will be made to the base URL of the route.
+  The route-relative URL for the request. If omitted, the request will be made to the base URL of the route.
 
-If *qs* is an object, it will be translated to a query string.
+* **qs**: *string* or *Object* (optional)
+
+  The query string for the request. If *qs* is an object, it will be translated to a query string.
+
 
 **Examples**
 
@@ -928,21 +1019,23 @@ route.get('users', {group: 'admin'}, function (err, result) {
 
 ### route.post
 
-`route.post([path: string,] [body: string | Object, [qs: string | Object,]] [callback: Callback]): Promise<Response>`
+`async route.post([path,] [body, [qs]]): Response`
 
-Performs a POST request to the given URL and passes the server response to the given callback.
+Performs a POST request to the given URL and returns the server response.
 
 **Arguments**
 
-* *path* (optional): the route-relative URL for the request.
-* *body* (optional): the request body for the request.
-* *qs* (optional): the query string for the request.
+* **path**: *string* (optional)
 
-If *path* is missing, the request will be made to the base URL of the route.
+  The route-relative URL for the request. If omitted, the request will be made to the base URL of the route.
 
-If *body* is an object, it will be converted to JSON.
+* **body**: *string* or *Object* (optional)
 
-If *qs* is an object, it will be translated to a query string.
+  The response body. If *body* is an object, it will be encoded as JSON.
+
+* **qs**: *string* or *Object* (optional)
+
+  The query string for the request. If *qs* is an object, it will be translated to a query string.
 
 **Examples**
 
@@ -990,21 +1083,23 @@ route.post('users', {
 
 ### route.put
 
-`route.put([path: string,] [body: string | Object, [qs: string | Object,]] [callback: Callback]): Promise<Response>`
+`async route.put([path,] [body, [qs]]): Response`
 
-Performs a PUT request to the given URL and passes the server response to the given callback.
+Performs a PUT request to the given URL and returns the server response.
 
 **Arguments**
 
-* *path* (optional): the route-relative URL for the request.
-* *body* (optional): the request body for the request.
-* *qs* (optional): the query string for the request.
+* **path**: *string* (optional)
 
-If *path* is missing, the request will be made to the base URL of the route.
+  The route-relative URL for the request. If omitted, the request will be made to the base URL of the route.
 
-If *body* is an object, it will be converted to JSON.
+* **body**: *string* or *Object* (optional)
 
-If *qs* is an object, it will be translated to a query string.
+  The response body. If *body* is an object, it will be encoded as JSON.
+
+* **qs**: *string* or *Object* (optional)
+
+  The query string for the request. If *qs* is an object, it will be translated to a query string.
 
 **Examples**
 
@@ -1052,21 +1147,25 @@ route.put('users/admin', {
 
 ### route.patch
 
-`route.patch([path: string,] [body: string | Object, [qs: string | Object,]] [callback: Callback]): Promise<Response>`
+`async route.patch([path,] [body, [qs]]): Response`
 
-Performs a PATCH request to the given URL and passes the server response to the given callback.
+Performs a PATCH request to the given URL and returns the server response.
 
 **Arguments**
 
-* *path* (optional): the route-relative URL for the request.
-* *body* (optional): the request body for the request.
-* *qs* (optional): the query string for the request.
+* **path**: *string* (optional)
 
-If *path* is missing, the request will be made to the base URL of the route.
+  The route-relative URL for the request. If omitted, the request will be made to the base URL of the route.
 
-If *body* is an object, it will be converted to JSON.
+* **body**: *string* or *Object* (optional)
 
-If *qs* is an object, it will be translated to a query string.
+  The response body. If *body* is an object, it will be encoded as JSON.
+
+* **qs**: *string* or *Object* (optional)
+
+  The query string for the request. If *qs* is an object, it will be translated to a query string.
+
+**Examples**
 
 ```js
 var db = require('arangojs')();
@@ -1110,18 +1209,19 @@ route.patch('users/admin', {
 
 ### route.delete
 
-`route.delete([path: string,] [qs: string | Object,] [callback: Callback]): Promise<Response>`
+`async route.delete([path,] [qs]): Response`
 
-Performs a DELETE request to the given URL and passes the server response to the given callback.
+Performs a DELETE request to the given URL and returns the server response.
 
 **Arguments**
 
-* *path* (optional): the route-relative URL for the request.
-* *qs* (optional): the query string for the request.
+* **path**: *string* (optional)
 
-If *path* is missing, the request will be made to the base URL of the route.
+  The route-relative URL for the request. If omitted, the request will be made to the base URL of the route.
 
-If *qs* is an object, it will be translated to a query string.
+* **qs**: *string* or *Object* (optional)
+
+  The query string for the request. If *qs* is an object, it will be translated to a query string.
 
 **Examples**
 
@@ -1153,18 +1253,19 @@ route.delete('users/admin', {permanent: true}, function (err, result) {
 
 ### route.head
 
-`route.head([path: string,] [qs: string | Object,] [callback: Callback]): Promise<Response>`
+`async route.head([path,] [qs]): Response`
 
-Performs a HEAD request to the given URL and passes the server response to the given callback.
+Performs a HEAD request to the given URL and returns the server response.
 
 **Arguments**
 
-* *path* (optional): the route-relative URL for the request.
-* *qs* (optional): the query string for the request.
+* **path**: *string* (optional)
 
-If *path* is missing, the request will be made to the base URL of the route.
+  The route-relative URL for the request. If omitted, the request will be made to the base URL of the route.
 
-If *qs* is an object, it will be translated to a query string.
+* **qs**: *string* or *Object* (optional)
+
+  The query string for the request. If *qs* is an object, it will be translated to a query string.
 
 **Examples**
 
@@ -1181,25 +1282,41 @@ route.head(function (err, result, response) {
 
 ### route.request
 
-`route.request(opts: Object, [callback: Callback]): Promise<Response>`
+`async route.request([opts]): Response`
 
-Performs an arbitrary request to the given URL and passes the server response to the given callback.
+Performs an arbitrary request to the given URL and returns the server response.
 
 **Arguments**
 
-* *opts*: an object with the following properties:
- * *path*: the route-relative URL for the request.
- * *absolutePath* (optional): whether the *path* is relative to the connection's base URL instead of the route. Default: `false`.
- * *body* (optional): the request body.
- * *qs* (optional): the query string.
- * *headers* (optional): an object containing additional HTTP headers to send with the request.
- * *method* (optional): HTTP method to use. Default: `"GET"`.
+* **opts**: *Object* (optional)
 
-If *opts.path* is missing, the request will be made to the base URL of the route.
+  An object with any of the following properties:
 
-If *opts.body* is an object, it will be converted to JSON.
+  * **path**: *string* (optional)
 
-If *opts.qs* is an object, it will be translated to a query string.
+    The route-relative URL for the request. If omitted, the request will be made to the base URL of the route.
+
+  * **absolutePath**: *boolean* (Default: `false`)
+
+    Whether the *path* is relative to the connection's base URL instead of the route.
+
+  * **body**: *string* or *Object* (optional)
+
+    The response body. If *body* is an object, it will be encoded as JSON.
+
+  * **qs**: *string* or *Object* (optional)
+
+    The query string for the request. If *qs* is an object, it will be translated to a query string.
+
+  * **headers**: *Object* (optional)
+
+    An object containing additional HTTP headers to be sent with the request.
+
+  * **method**: *string* (Default: `"GET"`)
+
+    HTTP method of this request.
+
+**Examples**
 
 ```js
 var db = require('arangojs')();
@@ -1227,38 +1344,26 @@ The *Collection API* is implemented by all *Collection* instances, regardless of
 
 See [the HTTP API documentation](https://docs.arangodb.com/HttpCollection/Getting.html) for details.
 
-#### collection.create
+#### collection.get
 
-`collection.create(properties: Object, [callback: Callback]): Promise<Collection>`
+`async collection.get(): Object`
 
-Creates a collection from the given *properties*, then passes a new *Collection* instance to the callback.
-
-For more information on the *properties* object, see [the HTTP API documentation for creating collections](https://docs.arangodb.com/HttpCollection/Creating.html).
+Retrieves general information about the collection.
 
 **Examples**
 
 ```js
 var db = require('arangojs')();
-collection.create(function (err, collection) {
+var collection = db.collection('some-collection');
+collection.get(function (err, data) {
     if (err) return console.error(err);
-    // collection is a DocumentCollection instance
-    // see the Collection API and DocumentCollection API below for details
-});
-
-// -- or --
-
-collection.create({
-    waitForSync: true // always sync document changes to disk
-}, function (err, collection) {
-    if (err) return console.error(err);
-    // collection is a DocumentCollection instance
-    // see the Collection API and DocumentCollection API below for details
+    // data contains general information about the collection
 });
 ```
 
 #### collection.properties
 
-`collection.properties([callback: Callback]): Promise<any>`
+`async collection.properties(): Object`
 
 Retrieves the collection's properties.
 
@@ -1266,37 +1371,33 @@ Retrieves the collection's properties.
 
 ```js
 var db = require('arangojs')();
-db.collection('some-collection', function (err, collection) {
+var collection = db.collection('some-collection');
+collection.properties(function (err, data) {
     if (err) return console.error(err);
-    collection.properties(function (err, props) {
-        if (err) return console.error(err);
-        // props contains the collection's properties
-    });
+    // data contains the collection's properties
 });
 ```
 
 #### collection.count
 
-`collection.count([callback: Callback]): Promise<any>`
+`async collection.count(): Object`
 
-Retrieves the number of documents in a collection.
+Retrieves information about the number of documents in a collection.
 
 **Examples**
 
 ```js
 var db = require('arangojs')();
-db.collection('some-collection', function (err, collection) {
+var collection = db.collection('some-collection');
+collection.count(function (err, data) {
     if (err) return console.error(err);
-    collection.count(function (err, count) {
-        if (err) return console.error(err);
-        // count contains the collection's count
-    });
+    // data contains the collection's count
 });
 ```
 
 #### collection.figures
 
-`collection.figures([callback: Callback]): Promise<any>`
+`async collection.figures(): Object`
 
 Retrieves statistics for a collection.
 
@@ -1304,18 +1405,16 @@ Retrieves statistics for a collection.
 
 ```js
 var db = require('arangojs')();
-db.collection('some-collection', function (err, collection) {
+var collection = db.collection('some-collection');
+collection.figures(function (err, data) {
     if (err) return console.error(err);
-    collection.figures(function (err, figures) {
-        if (err) return console.error(err);
-        // figures contains the collection's figures
-    });
+    // data contains the collection's figures
 });
 ```
 
 #### collection.revision
 
-`collection.revision([callback: Callback]): Promise<any>`
+`async collection.revision(): Object`
 
 Retrieves the collection revision ID.
 
@@ -1323,33 +1422,33 @@ Retrieves the collection revision ID.
 
 ```js
 var db = require('arangojs')();
-db.collection('some-collection', function (err, collection) {
+var collection = db.collection('some-collection');
+collection.revision(function (err, data) {
     if (err) return console.error(err);
-    collection.revision(function (err, revision) {
-        if (err) return console.error(err);
-        // revision contains the collection's revision
-    });
+    // data contains the collection's revision
 });
 ```
 
 #### collection.checksum
 
-`collection.checksum([opts: Object,] [callback: Callback]): Promise<any>`
+`async collection.checksum([opts]): Object`
 
 Retrieves the collection checksum.
 
-For information on the possible options see [the HTTP API for getting collection information](https://docs.arangodb.com/HttpCollection/Getting.html).
+**Arguments**
+
+* **opts**: *Object* (optional)
+
+  For information on the possible options see [the HTTP API for getting collection information](https://docs.arangodb.com/HttpCollection/Getting.html).
 
 **Examples**
 
 ```js
 var db = require('arangojs')();
-db.collection('some-collection', function (err, collection) {
+var collection = db.collection('some-collection');
+collection.checksum(function (err, data) {
     if (err) return console.error(err);
-    collection.checksum(function (err, checksum) {
-        if (err) return console.error(err);
-        // checksum contains the collection's checksum
-    });
+    // data contains the collection's checksum
 });
 ```
 
@@ -1357,30 +1456,65 @@ db.collection('some-collection', function (err, collection) {
 
 These functions implement [the HTTP API for modifying collections](https://docs.arangodb.com/HttpCollection/Modifying.html).
 
-#### collection.load
+#### collection.create
 
-`collection.load([count: boolean,] [callback: Callback]): Promise<any>`
+`async collection.create([properties]): Object`
 
-Tells the server to load the collection into memory.
+Creates a collection with the given *properties*, then returns the server response.
 
-If *count* is set to `false`, the return value will not include the number of documents in the collection (which may speed up the process).
+**Arguments**
+
+* **properties**: *Object* (optional)
+
+  For more information on the *properties* object, see [the HTTP API documentation for creating collections](https://docs.arangodb.com/HttpCollection/Creating.html).
 
 **Examples**
 
 ```js
 var db = require('arangojs')();
-db.collection('some-collection', function (err, collection) {
+collection = db.collection('potatos');
+collection.create(function (err) {
     if (err) return console.error(err);
-    collection.load(false, function (err) {
-        if (err) return console.error(err);
-        // the collection has now been loaded into memory
-    });
+    // the document collection "potatos" now exists
+});
+
+// -- or --
+
+var collection = db.edgeCollection('friends');
+collection.create({
+    waitForSync: true // always sync document changes to disk
+}, function (err) {
+    if (err) return console.error(err);
+    // the edge collection "friends" now exists
+});
+```
+
+#### collection.load
+
+`async collection.load([count]): Object`
+
+Tells the server to load the collection into memory.
+
+**Arguments**
+
+* **count**: *boolean* (Default: `true`)
+
+  If set to `false`, the return value will not include the number of documents in the collection (which may speed up the process).
+
+**Examples**
+
+```js
+var db = require('arangojs')();
+var collection = db.collection('some-collection');
+collection.load(false, function (err) {
+    if (err) return console.error(err);
+    // the collection has now been loaded into memory
 });
 ```
 
 #### collection.unload
 
-`collection.unload([callback: Callback]): Promise<any>`
+`async collection.unload(): Object`
 
 Tells the server to remove the collection from memory.
 
@@ -1388,62 +1522,60 @@ Tells the server to remove the collection from memory.
 
 ```js
 var db = require('arangojs')();
-db.collection('some-collection', function (err, collection) {
+var collection = db.collection('some-collection');
+collection.unload(function (err) {
     if (err) return console.error(err);
-    collection.unload(function (err) {
-        if (err) return console.error(err);
-        // the collection has now been unloaded from memory
-    });
+    // the collection has now been unloaded from memory
 });
 ```
 
 #### collection.setProperties
 
-`collection.setProperties(properties: Object, [callback: Callback]): Promise<any>`
+`async collection.setProperties(properties): Object`
 
 Replaces the properties of the collection.
 
-For information on the *properties* argument see [the HTTP API for modifying collections](https://docs.arangodb.com/HttpCollection/Modifying.html).
+**Arguments**
+
+* **properties**: *Object*
+
+  For information on the *properties* argument see [the HTTP API for modifying collections](https://docs.arangodb.com/HttpCollection/Modifying.html).
 
 **Examples**
 
 ```js
 var db = require('arangojs')();
-db.collection('some-collection', function (err, collection) {
+var collection = db.collection('some-collection');
+collection.setProperties({waitForSync: true}, function (err, result) {
     if (err) return console.error(err);
-    collection.setProperties({waitForSync: true}, function (err, result) {
-        if (err) return console.error(err);
-        result.waitForSync === true;
-        // the collection will now wait for data being written to disk
-        // whenever a document is changed
-    });
+    result.waitForSync === true;
+    // the collection will now wait for data being written to disk
+    // whenever a document is changed
 });
 ```
 
 #### collection.rename
 
-`collection.rename(name: string, [callback: Callback]): Promise<any>`
+`async collection.rename(name): Object`
 
-Renames the collection. The *Collection* instance will automatically update its name according to the server response.
+Renames the collection. The *Collection* instance will automatically update its name when the rename succeeds.
 
 **Examples**
 
 ```js
 var db = require('arangojs')();
-db.collection('some-collection', function (err, collection) {
+var collection = db.collection('some-collection');
+collection.rename('new-collection-name', function (err, result) {
     if (err) return console.error(err);
-    collection.rename('new-collection-name', function (err, result) {
-        if (err) return console.error(err);
-        result.name === 'new-collection-name';
-        collection.name === result.name;
-        // result contains additional information about the collection
-    });
+    result.name === 'new-collection-name';
+    collection.name === result.name;
+    // result contains additional information about the collection
 });
 ```
 
 #### collection.rotate
 
-`collection.rotate([callback: Callback]): Promise<any>`
+`async collection.rotate(): Object`
 
 Rotates the journal of the collection.
 
@@ -1451,18 +1583,16 @@ Rotates the journal of the collection.
 
 ```js
 var db = require('arangojs')();
-db.collection('some-collection', function (err, collection) {
+var collection = db.collection('some-collection');
+collection.rotate(function (err, data) {
     if (err) return console.error(err);
-    collection.rotate(function (err, result) {
-        if (err) return console.error(err);
-        // result.result will be true if rotation succeeded
-    });
+    // data.result will be true if rotation succeeded
 });
 ```
 
 #### collection.truncate
 
-`collection.truncate([callback: Callback]): Promise<any>`
+`async collection.truncate(): Object`
 
 Deletes **all documents** in the collection in the database.
 
@@ -1470,35 +1600,33 @@ Deletes **all documents** in the collection in the database.
 
 ```js
 var db = require('arangojs')();
-db.collection('some-collection', function (err, collection) {
+var collection = db.collection('some-collection');
+collection.truncate(function (err) {
     if (err) return console.error(err);
-    collection.truncate(function (err) {
-        if (err) return console.error(err);
-        // the collection "some-collection" is now empty
-    });
+    // the collection "some-collection" is now empty
 });
 ```
 
 #### collection.drop
 
-`collection.drop([callback: Callback]): Promise<any>`
+`async collection.drop(): Object`
 
 Deletes the collection from the database.
 
-Equivalent to *database.dropCollection(collection.name, [callback: Callback])*.: Promise
+Equivalent to *database.dropCollection(collection.name)*.
 
 **Examples**
 
 ```js
 var db = require('arangojs')();
-db.collection('some-collection', function (err, collection) {
+var collection = db.collection('some-collection');
+collection.drop(function (err) {
     if (err) return console.error(err);
-    collection.drop(function (err) {
-        if (err) return console.error(err);
-        // the collection "some-collection" no longer exists
-    });
+    // the collection "some-collection" no longer exists
 });
 ```
+
+## TODO Outdated
 
 ### Manipulating indexes
 
@@ -1680,7 +1808,7 @@ db.createCollection('some-collection', function (err, collection) {
         // the index has been created
     });
 });
-```
++```
 
 #### collection.createFulltextIndex
 
@@ -2128,9 +2256,9 @@ db.collection('some-collection', function (err, collection) {
 });
 ```
 
-#### collection.all
+#### collection.list
 
-`collection.all([type: string,] [callback: Callback]): Promise<Array<Object>>`
+`collection.list([type: string,] [callback: Callback]): Promise<Array<Object>>`
 
 Retrieves a list of all documents in the collection.
 
