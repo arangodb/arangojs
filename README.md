@@ -106,7 +106,7 @@ These functions implement the [HTTP API for manipulating databases](https://docs
 
 #### database.useDatabase
 
-`database.useDatabase(databaseName): void`
+`database.useDatabase(databaseName): Object`
 
 Updates the *Database* instance and its connection string to use the given *databaseName*.
 
@@ -126,7 +126,7 @@ db.useDatabase('test');
 
 #### database.createDatabase
 
-`async database.createDatabase(databaseName, [users]): void`
+`async database.createDatabase(databaseName, [users]): Object`
 
 Creates a new database with the given *databaseName*.
 
@@ -205,7 +205,7 @@ db.databases(function (err, names) {
 
 #### database.dropDatabase
 
-`async database.dropDatabase(databaseName): void`
+`async database.dropDatabase(databaseName): Object`
 
 Deletes the database with the given *databaseName* from the server.
 
@@ -219,7 +219,7 @@ db.dropDatabase('mydb', function (err) {
 
 #### database.truncate
 
-`async database.truncate([excludeSystem]): void`
+`async database.truncate([excludeSystem]): Object`
 
 Deletes **all documents in all collections** in the active database.
 
@@ -317,7 +317,7 @@ db.listCollections(false, function (err, collections) {
 
 #### database.collections
 
-`async database.collections([excludeSystem]): Array<Object>`
+`async database.collections([excludeSystem]): Array<Collection>`
 
 Fetches all collections from the database and returns an array of *DocumentCollection* and *EdgeCollection* instances for the collections.
 
@@ -394,7 +394,7 @@ This function implements the [HTTP API for transactions](https://docs.arangodb.c
 
 #### database.transaction
 
-`async database.transaction(collections, action, [params,] [lockTimeout]): any`
+`async database.transaction(collections, action, [params,] [lockTimeout]): Object`
 
 Performs a server-side transaction and returns its return value.
 
@@ -444,7 +444,7 @@ db.transaction({read: '_users'}, action, function (err, result) {
 
 This function implements the [HTTP API for single roundtrip AQL queries](https://docs.arangodb.com/HttpAqlQueryCursor/QueryResults.html).
 
-For collection-specific queries see [simple queries](#simple-queries), [fulltext queries](#fulltext-queries) and [geo-spatial queries](#geo-queries).
+For collection-specific queries see [simple queries](#simple-queries).
 
 #### database.query
 
@@ -520,7 +520,7 @@ db.listFunctions(function (err, functions) {
 
 #### database.createFunction
 
-`async database.createFunction(name, code): void`
+`async database.createFunction(name, code): Object`
 
 Creates an AQL user function with the given *name* and *code* if it does not already exist or replaces it if a function with the same name already existed.
 
@@ -563,7 +563,7 @@ db.createFunction(vat_fn_name, vat_fn_code, function (err) {
 
 #### database.dropFunction
 
-`async database.dropFunction(name, [group]): void`
+`async database.dropFunction(name, [group]): Object`
 
 Deletes the AQL user function with the given name from the database.
 
@@ -645,7 +645,7 @@ The total number of documents in the query result.
 
 ### cursor.all
 
-`async cursor.all(): Array<any>`
+`async cursor.all(): Array<Object>`
 
 Rewinds and exhausts the cursor, then returns an array containing all values returned by the query.
 
@@ -664,7 +664,7 @@ cursor.all(function (err, vals) {
 
 ### cursor.next
 
-`async cursor.next(): any`
+`async cursor.next(): Object`
 
 Advances the cursor and returns the next value returned by the query. If the cursor has already been exhausted, returns `undefined` instead.
 
@@ -699,7 +699,7 @@ cursor.all(function (err) { // exhausts the cursor
 
 ### cursor.each
 
-`async cursor.each(fn): void`
+`async cursor.each(fn): Object`
 
 Rewinds and exhausts the cursor by applying the function *fn* to each value returned by the query.
 
@@ -818,7 +818,7 @@ cursor.some(even, function (err, result) {
 
 ### cursor.map
 
-`cursor.map(fn): Array<any>`
+`cursor.map(fn): Array<Object>`
 
 Rewinds and advances the cursor by applying the function *fn* to each value returned by the query until the cursor is exhausted.
 
@@ -863,7 +863,7 @@ cursor.map(square, function (err, result) {
 
 ### cursor.reduce
 
-`cursor.reduce(fn, [accu]): any`
+`cursor.reduce(fn, [accu]): Object`
 
 Rewinds and exhausts the cursor by reducing the values returned by the query with the given function *fn*. If *accu* is not provided, the first value returned by the query will be used instead (the function will not be invoked for that value).
 
@@ -1480,7 +1480,7 @@ collection.create(function (err) {
 
 // -- or --
 
-var collection = db.edgeCollection('friends');
+var collection = var collection = db.edgeCollection('friends');
 collection.create({
     waitForSync: true // always sync document changes to disk
 }, function (err) {
@@ -1613,8 +1613,6 @@ collection.truncate(function (err) {
 
 Deletes the collection from the database.
 
-Equivalent to *database.dropCollection(collection.name)*.
-
 **Examples**
 
 ```js
@@ -1626,89 +1624,93 @@ collection.drop(function (err) {
 });
 ```
 
-## TODO Outdated
-
 ### Manipulating indexes
 
 These functions implement the [HTTP API for manipulating indexes](https://docs.arangodb.com/HttpIndexes/index.html).
 
 #### collection.createIndex
 
-`collection.createIndex(details: Object, [callback: Callback]): Promise<Index>`
+`async collection.createIndex(details): Object`
 
 Creates an arbitrary index on the collection.
 
-For information on the possible properties of the *details* object, see [the HTTP API for manipulating indexes](https://docs.arangodb.com/HttpIndexes/WorkingWith.html).
+**Arguments**
+
+* **details**: *Object*
+
+  For information on the possible properties of the *details* object, see [the HTTP API for manipulating indexes](https://docs.arangodb.com/HttpIndexes/WorkingWith.html).
 
 **Examples**
 
 ```js
 var db = require('arangojs')();
-var collection = db.createCollection('some-collection', function (err, collection) {
+var collection = db.collection('some-collection');
+collection.createIndex({type: 'cap', size: 20}, function (err, index) {
     if (err) return console.error(err);
-    collection.createIndex({
-        type: 'cap',
-        size: 20
-    }, function (err, index) {
-        if (err) return console.error(err);
-        index.id; // the index's handle
-        // the index has been created
-    });
+    index.id; // the index's handle
+    // the index has been created
 });
 ```
 
 #### collection.createCapConstraint
 
-`collection.createCapConstraint(size: Object | number, [callback: Callback]): Promise<Index>`
+`async collection.createCapConstraint(size): Object`
 
 Creates a cap constraint index on the collection.
 
 **Arguments**
 
-* *size*: an object with any of the following properties:
- * *size*: the maximum number of documents in the collection.
- * *byteSize*: the maximum size of active document data in the collection (in bytes).
+* **size**: *Object*
+
+  An object with any of the following properties:
+
+  * **size**: *Number* (optional)
+
+    The maximum number of documents in the collection.
+
+  * **byteSize**: *Number* (optional)
+
+    The maximum size of active document data in the collection (in bytes).
 
 If *size* is a number, it will be interpreted as *size.size*.
 
- For more information on the properties of the *size* object see [the HTTP API for creating cap constraints](https://docs.arangodb.com/HttpIndexes/Cap.html).
+For more information on the properties of the *size* object see [the HTTP API for creating cap constraints](https://docs.arangodb.com/HttpIndexes/Cap.html).
 
 **Examples**
 
 ```js
 var db = require('arangojs')();
-db.createCollection('some-collection', function (err, collection) {
+var collection = db.collection('some-collection');
+collection.createCapCollection(20, function (err, index) {
     if (err) return console.error(err);
-    collection.createCapCollection(20, function (err, index) {
-        if (err) return console.error(err);
-        index.id; // the index's handle
-        index.size === 20;
-        // the index has been created
-    });
-    // -- or --
-    collection.createCapCollection({size: 20}, function (err, index) {
-        if (err) return console.error(err);
-        index.id; // the index's handle
-        index.size === 20;
-        // the index has been created
-    });
+    index.id; // the index's handle
+    index.size === 20;
+    // the index has been created
+});
+// -- or --
+collection.createCapCollection({size: 20}, function (err, index) {
+    if (err) return console.error(err);
+    index.id; // the index's handle
+    index.size === 20;
+    // the index has been created
 });
 ```
 
 #### collection.createHashIndex
 
-`collection.createHashIndex(fields: Array<string> | string, [opts: Object | boolean,] [callback: Callback]): Promise<Index>`
+`async collection.createHashIndex(fields, [opts]): Object`
 
 Creates a hash index on the collection.
 
 **Arguments**
 
-* *fields*: an array of document fields on which to create the index.
-* *opts* (optional): additional options for this index.
+* **fields**: *Array<string>*
 
-If *opts* is a boolean, it will be interpreted as *opts.unique*.
+  An array of document fields on which to create the index. If the value is a string, it will be wrapped in an array automatically.
 
-If *fields* is a string, it will be wrapped in an array automatically.
+* **opts**: *Object* (optional)
+
+  Additional options for this index. If the value is a boolean, it will be interpreted as *opts.unique*.
 
 For more information on hash indexes, see [the HTTP API for hash indexes](https://docs.arangodb.com/HttpIndexes/Hash.html).
 
@@ -1716,38 +1718,37 @@ For more information on hash indexes, see [the HTTP API for hash indexes](https:
 
 ```js
 var db = require('arangojs')();
-db.createCollection('some-collection', function (err, collection) {
+var collection = db.collection('some-collection');
+collection.createHashIndex('favorite-color', function (err, index) {
     if (err) return console.error(err);
-    collection.createHashIndex('favorite-color', function (err, index) {
-        if (err) return console.error(err);
-        index.id; // the index's handle
-        index.fields; // ['favorite-color']
-        // the index has been created
-    });
-    // -- or --
-    collection.createHashIndex(['favorite-color'], function (err, index) {
-        if (err) return console.error(err);
-        index.id; // the index's handle
-        index.fields; // ['favorite-color']
-        // the index has been created
-    });
+    index.id; // the index's handle
+    index.fields; // ['favorite-color']
+    // the index has been created
+});
+// -- or --
+collection.createHashIndex(['favorite-color'], function (err, index) {
+    if (err) return console.error(err);
+    index.id; // the index's handle
+    index.fields; // ['favorite-color']
+    // the index has been created
 });
 ```
 
 #### collection.createSkipList
 
-`collection.createSkipList(fields: Array<string> | string, [opts: Object | boolean,] [opts: Object,] [callback: Callback]): Promise<Index>`
+`async collection.createSkipList(fields, [opts]): Object`
 
 Creates a skiplist index on the collection.
 
 **Arguments**
 
-* *fields*: an array of document fields on which to create the index.
-* *opts* (optional): additional options for this index.
+* **fields**: *Array<string>*
 
-If *opts* is a boolean, it will be interpreted as *opts.unique*.
+   An array of document fields on which to create the index. If the value is a string, it will be wrapped in an array automatically.
 
-If *fields* is a string, it will be wrapped in an array automatically.
+* **opts**: *Object* (optional)
+
+  Additional options for this index. If the value is a boolean, it will be interpreted as *opts.unique*.
 
 For more information on skiplist indexes, see [the HTTP API for skiplist indexes](https://docs.arangodb.com/HttpIndexes/Skiplist.html).
 
@@ -1755,36 +1756,37 @@ For more information on skiplist indexes, see [the HTTP API for skiplist indexes
 
 ```js
 var db = require('arangojs')();
-db.createCollection('some-collection', function (err, collection) {
+var collection = db.collection('some-collection');
+collection.createSkipList('favorite-color', function (err, index) {
     if (err) return console.error(err);
-    collection.createSkipList('favorite-color', function (err, index) {
-        if (err) return console.error(err);
-        index.id; // the index's handle
-        index.fields; // ['favorite-color']
-        // the index has been created
-    });
-    // -- or --
-    collection.createSkipList(['favorite-color'], function (err, index) {
-        if (err) return console.error(err);
-        index.id; // the index's handle
-        index.fields; // ['favorite-color']
-        // the index has been created
-    });
+    index.id; // the index's handle
+    index.fields; // ['favorite-color']
+    // the index has been created
+});
+// -- or --
+collection.createSkipList(['favorite-color'], function (err, index) {
+    if (err) return console.error(err);
+    index.id; // the index's handle
+    index.fields; // ['favorite-color']
+    // the index has been created
 });
 ```
 
 #### collection.createGeoIndex
 
-`collection.createGeoIndex(fields: Array<string> | string, [opts: Object,] [callback: Callback]): Promise<Index>`
+`async collection.createGeoIndex(fields, [opts]): Object`
 
 Creates a geo-spatial index on the collection.
 
 **Arguments**
 
-* *fields*: an array of document fields on which to create the index. Currently, fulltext indexes must cover exactly one field.
-* *opts* (optional): an object containing additional properties of the index.
+* **fields**: *Array<string>*
 
-If *fields* is a string, it will be wrapped in an array automatically.
+  An array of document fields on which to create the index. Currently, geo indexes must cover exactly one field. If the value is a string, it will be wrapped in an array automatically.
+
+* **opts**: *Object* (optional)
+
+  An object containing additional properties of the index.
 
 For more information on the properties of the *opts* object see [the HTTP API for manipulating geo indexes](https://docs.arangodb.com/HttpIndexes/Geo.html).
 
@@ -1792,36 +1794,37 @@ For more information on the properties of the *opts* object see [the HTTP API fo
 
 ```js
 var db = require('arangojs')();
-db.createCollection('some-collection', function (err, collection) {
+var collection = db.collection('some-collection');
+collection.createGeoIndex(['longitude', 'latitude'], function (err, index) {
     if (err) return console.error(err);
-    collection.createGeoIndex(['longitude', 'latitude'], function (err, index) {
-        if (err) return console.error(err);
-        index.id; // the index's handle
-        index.fields; // ['longitude', 'latitude']
-        // the index has been created
-    });
-    // -- or --
-    collection.createGeoIndex('location', {geoJson: true}, function (err, index) {
-        if (err) return console.error(err);
-        index.id; // the index's handle
-        index.fields; // ['location']
-        // the index has been created
-    });
+    index.id; // the index's handle
+    index.fields; // ['longitude', 'latitude']
+    // the index has been created
 });
-+```
+// -- or --
+collection.createGeoIndex('location', {geoJson: true}, function (err, index) {
+    if (err) return console.error(err);
+    index.id; // the index's handle
+    index.fields; // ['location']
+    // the index has been created
+});
+```
 
 #### collection.createFulltextIndex
 
-`collection.createFulltextIndex(fields: Array<string> | string, [minLength: number,] [callback: Callback]): Promise<Index>`
+`async collection.createFulltextIndex(fields, [minLength]): Object`
 
 Creates a fulltext index on the collection.
 
 **Arguments**
 
-* *fields*: an array of document fields on which to create the index. Currently, fulltext indexes must cover exactly one field.
-* *minLength* (optional): minimum character length of words to index. Uses a server-specific default value if not specified.
+* **fields**: *Array<string>*
 
-If *fields* is a string, it will be wrapped in an array automatically.
+  An array of document fields on which to create the index. Currently, fulltext indexes must cover exactly one field. If the value is a string, it will be wrapped in an array automatically.
+
+* **minLength** (optional):
+
+  Minimum character length of words to index. Uses a server-specific default value if not specified.
 
 For more information on fulltext indexes, see [the HTTP API for fulltext indexes](https://docs.arangodb.com/HttpIndexes/Fulltext.html).
 
@@ -1829,58 +1832,58 @@ For more information on fulltext indexes, see [the HTTP API for fulltext indexes
 
 ```js
 var db = require('arangojs')();
-db.createCollection('some-collection', function (err, collection) {
+var collection = db.collection('some-collection');
+collection.createFulltextIndex('description', function (err, index) {
     if (err) return console.error(err);
-    collection.createFulltextIndex('description', function (err, index) {
-        if (err) return console.error(err);
-        index.id; // the index's handle
-        index.fields; // ['description']
-        // the index has been created
-    });
-    // -- or --
-    collection.createFulltextIndex(['description'], function (err, index) {
-        if (err) return console.error(err);
-        index.id; // the index's handle
-        index.fields; // ['description']
-        // the index has been created
-    });
+    index.id; // the index's handle
+    index.fields; // ['description']
+    // the index has been created
+});
+// -- or --
+collection.createFulltextIndex(['description'], function (err, index) {
+    if (err) return console.error(err);
+    index.id; // the index's handle
+    index.fields; // ['description']
+    // the index has been created
 });
 ```
 
 #### collection.index
 
-`collection.index(indexHandle: string | Index, [callback: Callback]): Promise<Index>`
+`async collection.index(indexHandle): Object`
 
-Fetches information about the index with the given *indexHandle* and passes it to the given callback.
+Fetches information about the index with the given *indexHandle* and returns it.
 
-The value of *indexHandle* can either be a fully-qualified *index.id* or the collection-specific key of the index.
+**Arguments**
+
+* **indexHandle**: *string*
+
+  The handle of the index to look up. This can either be a fully-qualified identifier or the collection-specific key of the index. If the value is an object, its *id* property will be used instead.
 
 **Examples**
 
 ```js
 var db = require('arangojs')();
-db.createCollection('some-collection', function (err, collection) {
+var collection = db.collection('some-collection');
+collection.createFulltextIndex('description', function (err, index) {
     if (err) return console.error(err);
-    collection.createFulltextIndex('description', function (err, index) {
+    collection.index(index.id, function (err, result) {
         if (err) return console.error(err);
-        collection.index(index.id, function (err, result) {
-            if (err) return console.error(err);
-            result.id === index.id;
-            // result contains the properties of the index
-        });
-        // -- or --
-        collection.index(index.id.split('/')[1], function (err, result) {
-            if (err) return console.error(err);
-            result.id === index.id;
-            // result contains the properties of the index
-        });
+        result.id === index.id;
+        // result contains the properties of the index
+    });
+    // -- or --
+    collection.index(index.id.split('/')[1], function (err, result) {
+        if (err) return console.error(err);
+        result.id === index.id;
+        // result contains the properties of the index
     });
 });
 ```
 
 #### collection.indexes
 
-`collection.indexes([callback: Callback]): Promise<Array<Index>>`
+`async collection.indexes(): Array<Object>`
 
 Fetches a list of all indexes on this collection.
 
@@ -1888,44 +1891,44 @@ Fetches a list of all indexes on this collection.
 
 ```js
 var db = require('arangojs')();
-db.createCollection('some-collection', function (err, collection) {
+var collection = db.collection('some-collection');
+collection.createFulltextIndex('description', function (err) {
     if (err) return console.error(err);
-    collection.createFulltextIndex('description', function (err) {
+    collection.indexes(function (err, indexes) {
         if (err) return console.error(err);
-        collection.indexes(function (err, indexes) {
-            if (err) return console.error(err);
-            indexes.length === 1;
-            // indexes contains information about the index
-        });
+        indexes.length === 1;
+        // indexes contains information about the index
     });
 });
 ```
 
 #### collection.dropIndex
 
-`collection.dropIndex(indexHandle: string | Index, [callback: Callback]): Promise<any>`
+`async collection.dropIndex(indexHandle): Object`
 
 Deletes the index with the given *indexHandle* from the collection.
 
-The value of *indexHandle* can either be a fully-qualified *index.id* or the collection-specific key of the index.
+**Arguments**
+
+* **indexHandle**: *string*
+
+  The handle of the index to delete. This can either be a fully-qualified identifier or the collection-specific key of the index. If the value is an object, its *id* property will be used instead.
 
 **Examples**
 
 ```js
 var db = require('arangojs')();
-db.createCollection('some-collection', function (err, collection) {
+var collection = db.collection('some-collection');
+collection.createFulltextIndex('description', function (err, index) {
     if (err) return console.error(err);
-    collection.createFulltextIndex('description', function (err, index) {
+    collection.dropIndex(index.id, function (err) {
         if (err) return console.error(err);
-        collection.dropIndex(index.id, function (err) {
-            if (err) return console.error(err);
-            // the index has been removed from the collection
-        });
-        // -- or --
-        collection.dropIndex(index.id.split('/')[1], function (err) {
-            if (err) return console.error(err);
-            // the index has been removed from the collection
-        });
+        // the index has been removed from the collection
+    });
+    // -- or --
+    collection.dropIndex(index.id.split('/')[1], function (err) {
+        if (err) return console.error(err);
+        // the index has been removed from the collection
     });
 });
 ```
@@ -2000,162 +2003,55 @@ These functions implement the [HTTP API for simple queries](https://docs.arangod
 
 *TODO*
 
-### Fulltext queries
-
-This function implements the [HTTP API for fulltext queries](https://docs.arangodb.com/HttpIndexes/Fulltext.html).
-
-Note that a collection must have fulltext indexes in order to perform fulltext queries on it.
-
-#### collection.fulltext
-
-`collection.fulltext(fieldName: string, query: string, [opts: Object,] [callback: Callback]): Promise<Cursor>`
-
-Performs a fulltext query searching for *query* in the given *fieldName* of all documents in this collection.
-
-**Arguments**
-
-* *fieldName*: the name of the field to search.
-* *query*: a fulltext query string.
-* *opts* (optional): an object containing additional options for the query.
-
-For more information on the properties of the *opts* object see [the HTTP API for fulltext queries](https://docs.arangodb.com/HttpIndexes/Fulltext.html).
-
-For more information on *Cursor* instances see the [*Cursor API* above](#cursor-api).
-
-**Examples**
-
-```js
-var db = require('arangojs')();
-db.collection('some-collection', function (err, collection) {
-    if (err) return console.error(err);
-    collection.createFulltextIndex('description', function (err) {
-        if (err) return console.error(err);
-        collection.fulltext('description', 'hello', function (err, cursor) {
-            if (err) return console.error(err);
-            // cursor is a Cursor instance for the query results
-        });
-    });
-});
-```
-
-### Geo queries
-
-These functions implement the [HTTP API for geo-spatial queries](https://docs.arangodb.com/HttpIndexes/Geo.html).
-
-Note that a collection must have geo-spatial indexes in order to perform geo-spatial queries on it.
-
-#### collection.near
-
-`collection.near(latitude: number, longitude: number, [opts: Object,] [callback: Callback]): Promise<Cursor>`
-
-Performs a geo-spatial query for documents near the given location.
-
-**Arguments**
-
-* *latitude*: latitude of the target location.
-* *longitude*: longitude of the target location.
-* *opts* (optional): an object containing additional options for the query.
-
-For more information on the properties of the *opts* object see [the HTTP API for geo-spatial queries](https://docs.arangodb.com/HttpIndexes/Geo.html).
-
-For more information on *Cursor* instances see the [*Cursor API* above](#cursor-api).
-
-**Examples**
-
-```js
-var db = require('arangojs')();
-db.collection('some-collection', function (err, collection) {
-    if (err) return console.error(err);
-    collection.createGeoIndex('location', function (err) {
-        if (err) return console.error(err);
-        collection.near(0, 0, {
-            limit: 100,
-            distance: 'distance'
-        }, function (err, cursor) {
-            if (err) return console.error(err);
-            // cursor is a Cursor instance for the closest 100 query results
-            // each result has an additional property "distance" containing
-            // the document's distance to the target location in meters
-        });
-    });
-});
-```
-
-#### collection.within
-
-`collection.within(latitude: number, longitude: number, radius: number, [opts: Object,] [callback: Callback]): Promise<Cursor>`
-
-Performs a geo-spatial query for documents within the given *radius* of the given location.
-
-**Arguments**
-
-* *latitude*: latitude of the target location.
-* *longitude*: longitude of the target location.
-* *radius*: the search radius (in meters).
-* *opts* (optional): an object containing additional options for the query.
-
-For more information on the properties of the *opts* object see [the HTTP API for geo-spatial queries](https://docs.arangodb.com/HttpIndexes/Geo.html).
-
-For more information on *Cursor* instances see the [*Cursor API* above](#cursor-api).
-
-**Examples**
-
-```js
-var db = require('arangojs')();
-db.collection('some-collection', function (err, collection) {
-    if (err) return console.error(err);
-    collection.createGeoIndex('location', function (err) {
-        if (err) return console.error(err);
-        collection.within(0, 0, 500, {
-            limit: 100,
-            distance: 'distance'
-        }, function (err, cursor) {
-            if (err) return console.error(err);
-            // cursor is a Cursor instance for the closest 100 query results
-            // within up to 500 meters of the target location
-            // each result has an additional property "distance" containing
-            // the document's distance to the target location in meters
-        });
-    });
-});
-```
-
 ### Bulk importing documents
 
 This function implements the [HTTP API for bulk imports](https://docs.arangodb.com/HttpBulkImports/index.html).
 
 #### collection.import
 
-`collection.import(data: Array<Object> | Array<Array<any>>, [opts: Object,] [callback: Callback]): Promise<any>`
+`async collection.import(data: Array<Object> | Array<Array<Object>>, [opts: Object]): Object`
 
 Bulk imports the given *data* into the collection.
 
-The *data* can be an array of documents:
+**Arguments**
 
-```js
-[
-  {key1: value1, key2: value2}, // document 1
-  {key1: value1, key2: value2}, // document 2
-  ...
-]
-```
+* **data**: *Array*
 
-Or it can be an array of value arrays following an array of keys.
+  The data to import. This can be an array of documents:
 
-```js
-[
-  ['key1', 'key2'], // key names
-  [value1, value2], // document 1
-  [value1, value2], // document 2
-  ...
-]
-```
+  ```js
+  [
+    {key1: value1, key2: value2}, // document 1
+    {key1: value1, key2: value2}, // document 2
+    ...
+  ]
+  ```
 
-If *opts* is set, it must be an object with any of the following properties:
+  Or it can be an array of value arrays following an array of keys.
 
-* *waitForSync*: Wait until the documents have been synced to disk. Default: `false`.
-* *details*: Whether the response should contain additional details about documents that could not be imported. Default: *false*.
-* *type*: Indicates which format the data uses. Can be `"documents"`, `"array"` or `"auto"`. Default: `"auto"`.
+  ```js
+  [
+    ['key1', 'key2'], // key names
+    [value1, value2], // document 1
+    [value1, value2], // document 2
+    ...
+  ]
+  ```
+
+* **opts**: *Object* (optional)
+  If *opts* is set, it must be an object with any of the following properties:
+
+  * **waitForSync**: *boolean* (Default: `false`)
+
+    Wait until the documents have been synced to disk.
+
+  * **details**: *boolean* (Default: `false`)
+
+    Whether the response should contain additional details about documents that could not be imported.false*.
+
+  * **type**: *string* (Default: `"auto"`)
+
+    Indicates which format the data uses. Can be `"documents"`, `"array"` or `"auto"`.
 
 If *data* is a JavaScript array, it will be transmitted as a line-delimited JSON stream. If *opts.type* is set to `"array"`, it will be transmitted as regular JSON instead. If *data* is a string, it will be transmitted as it is without any processing.
 
@@ -2165,49 +2061,47 @@ For more information on the *opts* object, see [the HTTP API documentation for b
 
 ```js
 var db = require('arangojs')();
-db.collection('users', function (err, collection) {
-    if (err) return console.error(err);
-    collection.import(
-        [// document stream
-            {username: 'admin', password: 'hunter2', 'favorite-color': 'orange'},
-            {username: 'jcd', password: 'bionicman', 'favorite-color': 'black'},
-            {username: 'jreyes', password: 'amigo', 'favorite-color': 'white'},
-            {username: 'ghermann', password: 'zeitgeist', 'favorite-color': 'blue'}
-        ],
-        function (err, result) {
-            if (err) return console.error(err);
-            result.created === 4;
-        }
-    );
-    // -- or --
-    collection.import(
-        [// array stream with header
-            ['username', 'password', 'favourite_color'],
-            ['admin', 'hunter2', 'orange'],
-            ['jcd', 'bionicman', 'black'],
-            ['jreyes', 'amigo', 'white'],
-            ['ghermann', 'zeitgeist', 'blue']
-        ],
-        function (err, result) {
-            if (err) return console.error(err);
-            result.created === 4;
-        }
-    );
-    // -- or --
-    collection.import(
-        (// raw line-delimited JSON array stream with header
-            '["username", "password", "favourite_color"]\r\n' +
-            '["admin", "hunter2", "orange"]\r\n' +
-            '["jcd", "bionicman", "black"]\r\n' +
-            '["jreyes", "amigo", "white"]\r\n' +
-            '["ghermann", "zeitgeist", "blue"]\r\n'
-        ),
-        function (err, result) {
-            if (err) return console.error(err);
-            result.created === 4;
-        }
-    );
-});
+var collection = db.collection('users');
+collection.import(
+    [// document stream
+        {username: 'admin', password: 'hunter2', 'favorite-color': 'orange'},
+        {username: 'jcd', password: 'bionicman', 'favorite-color': 'black'},
+        {username: 'jreyes', password: 'amigo', 'favorite-color': 'white'},
+        {username: 'ghermann', password: 'zeitgeist', 'favorite-color': 'blue'}
+    ],
+    function (err, result) {
+        if (err) return console.error(err);
+        result.created === 4;
+    }
+);
+// -- or --
+collection.import(
+    [// array stream with header
+        ['username', 'password', 'favourite_color'], // keys
+        ['admin', 'hunter2', 'orange'], // row 1
+        ['jcd', 'bionicman', 'black'], // row 2
+        ['jreyes', 'amigo', 'white'],
+        ['ghermann', 'zeitgeist', 'blue']
+    ],
+    function (err, result) {
+        if (err) return console.error(err);
+        result.created === 4;
+    }
+);
+// -- or --
+collection.import(
+    (// raw line-delimited JSON array stream with header
+        '["username", "password", "favourite_color"]\r\n' +
+        '["admin", "hunter2", "orange"]\r\n' +
+        '["jcd", "bionicman", "black"]\r\n' +
+        '["jreyes", "amigo", "white"]\r\n' +
+        '["ghermann", "zeitgeist", "blue"]\r\n'
+    ),
+    function (err, result) {
+        if (err) return console.error(err);
+        result.created === 4;
+    }
+);
 ```
 
 ### Manipulating documents
@@ -2216,19 +2110,38 @@ These functions implement the [HTTP API for manipulating documents](https://docs
 
 #### collection.replace
 
-`collection.replace(documentHandle: string | Document, data: Object, [opts: Object,] [callback: Callback]): Promise<any>`
+`async collection.replace(documentHandle, newValue, [opts]): Object`
 
-Replaces the content of the document with the given *documentHandle* with the given *data*.
+Replaces the content of the document with the given *documentHandle* with the given *newValue*.
 
-If *opts* is set, it must be an object with any of the following properties:
+**Arguments**
 
-* *waitForSync*: Wait until the document has been synced to disk. Default: `false`.
-* *rev*: Only replace the document if it matches this revision. Optional.
-* *policy*: Determines the behaviour when the revision is not matched:
- * if *policy* is set to `"last"`, the document will be replaced regardless of the revision.
- * if *policy* is set to `"error"` or not set, the replacement will fail with an error.
+* **documentHandle**: *string*
 
-The *documentHandle* can be either the `_id` or the `_key` of a document in the collection, or a document (i.e. an object with an `_id` or `_key` property).
+  The handle of the document to replace. This can either be the `_id` or the `_key` of a document in the collection, or a document (i.e. an object with an `_id` or `_key` property).
+
+* **newValue**: *Object*
+
+  The new data of the document.
+
+* **opts**: *Object* (optional)
+
+  If *opts* is set, it must be an object with any of the following properties:
+
+  * **waitForSync**: *boolean* (Default: `false`)
+
+    Wait until the document has been synced to disk. Default: `false`.
+
+  * **rev**: *string* (optional)
+
+    Only replace the document if it matches this revision.
+
+  * **policy**: *string* (optional)
+
+    Determines the behaviour when the revision is not matched:
+
+    * if *policy* is set to `"last"`, the document will be replaced regardless of the revision.
+    * if *policy* is set to `"error"` or not set, the replacement will fail with an error.
 
 For more information on the *opts* object, see [the HTTP API documentation for working with documents](https://docs.arangodb.com/HttpDocument/WorkingWithDocuments.html).
 
@@ -2236,38 +2149,61 @@ For more information on the *opts* object, see [the HTTP API documentation for w
 
 ```js
 var db = require('arangojs')();
-db.collection('some-collection', function (err, collection) {
+var collection = db.collection('some-collection');
+collection.save({number: 1, hello: 'world'}, function (err, doc) {
     if (err) return console.error(err);
-    collection.save({number: 1, hello: 'world'}, function (err, doc) {
+    collection.replace(doc, {number: 2}, function (err, doc2) {
         if (err) return console.error(err);
-        collection.replace(doc, {number: 2}, function (err, doc2) {
-            if (err) return console.error(err);
-            doc2._id === doc._id;
-            doc2._rev !== doc._rev;
-            doc2.number === 2;
-            doc2.hello === undefined;
-        });
+        doc2._id === doc._id;
+        doc2._rev !== doc._rev;
+        doc2.number === 2;
+        doc2.hello === undefined;
     });
 });
 ```
 
 #### collection.update
 
-`collection.update(documentHandle: string | Document, data: Object, [opts: Object,] [callback: Callback]): Promise<any>`
+`async collection.update(documentHandle, newValue, [opts]): Object`
 
-Updates (merges) the content of the document with the given *documentHandle* with the given *data*.
+Updates (merges) the content of the document with the given *documentHandle* with the given *newValue*.
 
-If *opts* is set, it must be an object with any of the following properties:
+**Arguments**
 
-* *waitForSync*: Wait until document has been synced to disk. Default: `false`
-* *keepNull*: If set to `false`, properties with a value of `null` indicate that a property should be deleted. Default: `true`.
-* *mergeObjects*: If set to `false`, object properties that already exist in the old document will be overwritten rather than merged. This does not affect arrays. Default: `true`.
-* *rev*: Only update the document if it matches this revision. Optional.
-* *policy*: Determines the behaviour when the revision is not matched:
- * if *policy* is set to `"last"`, the document will be replaced regardless of the revision.
- * if *policy* is set to `"error"` or not set, the replacement will fail with an error.
+* **documentHandle**: *string*
 
-The *documentHandle* can be either the `_id` or the `_key` of a document in the collection, or a document (i.e. an object with an `_id` or `_key` property).
+  Handle of the document to update. This can be either the `_id` or the `_key` of a document in the collection, or a document (i.e. an object with an `_id` or `_key` property).
+
+* **newValue**: *Object*
+
+  The new data of the document.
+
+* **opts**: *Object* (optional)
+
+  If *opts* is set, it must be an object with any of the following properties:
+
+  * **waitForSync**: *boolean* (Default: `false`)
+
+    Wait until document has been synced to disk.
+
+  * **keepNull**: *boolean* (Default: `true`)
+
+    If set to `false`, properties with a value of `null` indicate that a property should be deleted.
+
+  * **mergeObjects**: *boolean* (Default: `true`)
+
+    If set to `false`, object properties that already exist in the old document will be overwritten rather than merged. This does not affect arrays.
+
+  * **rev**: *string* (optional)
+
+    Only update the document if it matches this revision.
+
+  * **policy**: *string* (optional)
+
+    Determines the behaviour when the revision is not matched:
+
+    * if *policy* is set to `"last"`, the document will be replaced regardless of the revision.
+    * if *policy* is set to `"error"` or not set, the replacement will fail with an error.
 
 For more information on the *opts* object, see [the HTTP API documentation for working with documents](https://docs.arangodb.com/HttpDocument/WorkingWithDocuments.html).
 
@@ -2275,36 +2211,49 @@ For more information on the *opts* object, see [the HTTP API documentation for w
 
 ```js
 var db = require('arangojs')();
-db.collection('some-collection', function (err, collection) {
+var collection = db.collection('some-collection');
+collection.save({number: 1, hello: 'world'}, function (err, doc) {
     if (err) return console.error(err);
-    collection.save({number: 1, hello: 'world'}, function (err, doc) {
+    collection.update(doc, {number: 2}, function (err, doc2) {
         if (err) return console.error(err);
-        collection.update(doc, {number: 2}, function (err, doc2) {
-            if (err) return console.error(err);
-            doc2._id === doc._id;
-            doc2._rev !== doc._rev;
-            doc2.number === 2;
-            doc2.hello === doc.hello;
-        });
+        doc2._id === doc._id;
+        doc2._rev !== doc._rev;
+        doc2.number === 2;
+        doc2.hello === doc.hello;
     });
 });
 ```
 
 #### collection.remove
 
-`collection.remove(documentHandle: string | Document, [opts: Object,] [callback: Callback]): Promise<any>`
+`async collection.remove(documentHandle, [opts]): Object`
 
 Deletes the document with the given *documentHandle* from the collection.
 
-If *opts* is set, it must be an object with any of the following properties:
+**Arguments**
 
-* *waitForSync*: Wait until document has been synced to disk. Default: `false`
-* *rev*: Only update the document if it matches this revision. Optional.
-* *policy*: Determines the behaviour when the revision is not matched:
- * if *policy* is set to `"last"`, the document will be replaced regardless of the revision.
- * if *policy* is set to `"error"` or not set, the replacement will fail with an error.
+* **documentHandle**: *string*
 
-The *documentHandle* can be either the `_id` or the `_key` of a document in the collection, or a document (i.e. an object with an `_id` or `_key` property).
+  The handle of the document to delete. This can be either the `_id` or the `_key` of a document in the collection, or a document (i.e. an object with an `_id` or `_key` property).
+
+* **opts**: *Object* (optional)
+
+  If *opts* is set, it must be an object with any of the following properties:
+
+  * **waitForSync**: *boolean* (Default: `false`)
+
+    Wait until document has been synced to disk.
+
+  * **rev**: *string* (optional)
+
+    Only update the document if it matches this revision.
+
+  * **policy**: *string* (optional)
+
+    Determines the behaviour when the revision is not matched:
+
+    * if *policy* is set to `"last"`, the document will be replaced regardless of the revision.
+    * if *policy* is set to `"error"` or not set, the replacement will fail with an error.
 
 For more information on the *opts* object, see [the HTTP API documentation for working with documents](https://docs.arangodb.com/HttpDocument/WorkingWithDocuments.html).
 
@@ -2312,37 +2261,35 @@ For more information on the *opts* object, see [the HTTP API documentation for w
 
 ```js
 var db = require('arangojs')();
-db.collection('some-collection', function (err, collection) {
+var collection = db.collection('some-collection');
+collection.remove('some-doc', function (err) {
     if (err) return console.error(err);
-    collection.remove('some-doc', function (err) {
-        if (err) return console.error(err);
-        // document 'some-collection/some-doc' no longer exists
-    });
-    // -- or --
-    collection.remove('some-collection/some-doc', function (err) {
-        if (err) return console.error(err);
-        // document 'some-collection/some-doc' no longer exists
-    });
+    // document 'some-collection/some-doc' no longer exists
+});
+// -- or --
+collection.remove('some-collection/some-doc', function (err) {
+    if (err) return console.error(err);
+    // document 'some-collection/some-doc' no longer exists
 });
 ```
 
 #### collection.list
 
-`collection.list([type: string,] [callback: Callback]): Promise<Array<Object>>`
+`async collection.list([type]): Array<Object>`
 
-Retrieves a list of all documents in the collection.
+Retrieves a list of references for all documents in the collection.
 
-If *type* is set to `"key"`, the result will be the `_key` of each document.
+**Arguments**
 
-If *type* is set to `"path"`, the result will be the document URI paths.
+* **type**: *string* (Default: `"id"`)
 
-If *type* is set to `"id"` or not set, the result will be the `_id` of each document.
+  The format of the document references:
 
-#### collection.byKeys
+  * if *type* is set to `"id"`, each reference will be the `_id` of the document.
+  * if *type* is set to `"key"`, each reference will be the `_key` of the document.
+  * if *type* is set to `"path"`, each reference will be the URI path of the document.
 
-`collection.byKeys(keys: Array<string>, [callback: Callback]): Promise<Array<Object>>`
-
-Retrieves a list of the documents with the given keys in the collection.
+## TODO
 
 ### DocumentCollection API
 
@@ -2350,7 +2297,7 @@ The *DocumentCollection API* extends the [*Collection API* (see above)](#collect
 
 #### documentCollection.document
 
-`documentCollection.document(documentHandle: string | Document, [callback: Callback]): Promise<Document>`
+`async documentCollection.document(documentHandle: string | Document): Document`
 
 Retrieves the document with the given *documentHandle* from the collection.
 
@@ -2360,28 +2307,25 @@ The *documentHandle* can be either the `_id` or the `_key` of a document in the 
 
 ```js
 var db = require('arangojs')();
-// assumes a document collection "my-docs" already exists
-db.collection('my-docs', function (err, collection) {
+var collection = db.collection('my-docs');
+collection.document('some-key', function (err, doc) {
     if (err) return console.error(err);
-    collection.document('some-key', function (err, doc) {
-        if (err) return console.error(err);
-        // the document exists
-        doc._key === 'some-key';
-        doc._id === 'my-docs/some-key';
-    });
-    // -- or --
-    collection.document('my-docs/some-key', function (err, doc) {
-        if (err) return console.error(err);
-        // the document exists
-        doc._key === 'some-key';
-        doc._id === 'my-docs/some-key';
-    });
+    // the document exists
+    doc._key === 'some-key';
+    doc._id === 'my-docs/some-key';
+});
+// -- or --
+collection.document('my-docs/some-key', function (err, doc) {
+    if (err) return console.error(err);
+    // the document exists
+    doc._key === 'some-key';
+    doc._id === 'my-docs/some-key';
 });
 ```
 
 #### documentCollection.save
 
-`documentCollection.save(data: Object, [callback: Callback]): Promise<Document>`
+`async documentCollection.save(data: Object): Document`
 
 Creates a new document with the given *data*.
 
@@ -2389,18 +2333,16 @@ Creates a new document with the given *data*.
 
 ```js
 var db = require('arangojs')();
-db.createCollection('my-docs', function (err, collection) {
-    if (err) return console.error(err);
-    collection.save(
-        {some: 'data'},
-        function (err, doc) {
-            if (err) return console.error(err);
-            doc._key; // the document's key
-            doc._id === ('my-docs/' + doc._key);
-            doc.some === 'data';
-        }
-    );
-});
+var collection = db.collection('my-docs');
+collection.save(
+    {some: 'data'},
+    function (err, doc) {
+        if (err) return console.error(err);
+        doc._key; // the document's key
+        doc._id === ('my-docs/' + doc._key);
+        doc.some === 'data';
+    }
+);
 ```
 
 ### EdgeCollection API
@@ -2409,7 +2351,7 @@ The *EdgeCollection API* extends the [*Collection API* (see above)](#collection-
 
 #### edgeCollection.edge
 
-`edgeCollection.edge(documentHandle: string | Document, [callback: Callback]): Promise<Document>`
+`async edgeCollection.edge(documentHandle: string | Document): Document`
 
 Retrieves the edge with the given *documentHandle* from the collection.
 
@@ -2419,28 +2361,25 @@ The *documentHandle* can be either the `_id` or the `_key` of an edge in the col
 
 ```js
 var db = require('arangojs')();
-// assumes an edge collection "edges" already exists
-db.collection('edges', function (err, collection) {
+var collection = var collection = db.edgeCollection('edges');
+collection.edge('some-key', function (err, edge) {
     if (err) return console.error(err);
-    collection.edge('some-key', function (err, edge) {
-        if (err) return console.error(err);
-        // the edge exists
-        edge._key === 'some-key';
-        edge._id === 'edges/some-key';
-    });
-    // -- or --
-    collection.edge('edges/some-key', function (err, edge) {
-        if (err) return console.error(err);
-        // the edge exists
-        edge._key === 'some-key';
-        edge._id === 'edges/some-key';
-    });
+    // the edge exists
+    edge._key === 'some-key';
+    edge._id === 'edges/some-key';
+});
+// -- or --
+collection.edge('edges/some-key', function (err, edge) {
+    if (err) return console.error(err);
+    // the edge exists
+    edge._key === 'some-key';
+    edge._id === 'edges/some-key';
 });
 ```
 
 #### edgeCollection.save
 
-`edgeCollection.save(data: Object, fromId: string | Object, toId: string | Object, [callback: Callback]): Promise<Document>`
+`async edgeCollection.save(data: Object, fromId: string | Object, toId: string | Object): Document`
 
 Creates a new edge between the documents *fromId* and *toId* with the given *data*.
 
@@ -2450,28 +2389,25 @@ If *fromId* and *toId* are not specified, the *data* needs to contain the proper
 
 ```js
 var db = require('arangojs')();
-// assumes a collection "vertices" already exists
-db.createEdgeCollection('edges', function (err, collection) {
-    if (err) return console.error(err);
-    collection.save(
-        {some: 'data'},
-        'vertices/start-vertex',
-        'vertices/end-vertex',
-        function (err, edge) {
-            if (err) return console.error(err);
-            edge._key; // the edge's key
-            edge._id === ('edges/' + edge._key);
-            edge.some === 'data';
-            edge._from === 'vertices/start-vertex';
-            edge._to === 'vertices/end-vertex';
-        }
-    );
-});
+var collection = db.edgeCollection('edges');
+collection.save(
+    {some: 'data'},
+    'vertices/start-vertex',
+    'vertices/end-vertex',
+    function (err, edge) {
+        if (err) return console.error(err);
+        edge._key; // the edge's key
+        edge._id === ('edges/' + edge._key);
+        edge.some === 'data';
+        edge._from === 'vertices/start-vertex';
+        edge._to === 'vertices/end-vertex';
+    }
+);
 ```
 
 #### edgeCollection.edges
 
-`edgeCollection.edges(documentHandle: string | Document, [callback: Callback]): Promise<Array<Document>>`
+`async edgeCollection.edges(documentHandle: string | Document): Array<Document>`
 
 Retrieves a list of all edges of the document with the given *documentHandle*.
 
@@ -2481,28 +2417,25 @@ The *documentHandle* can be either the `_id` or the `_key` of a document in any 
 
 ```js
 var db = require('arangojs')();
-// assumes a collection "vertices" already exists
-db.createEdgeCollection('edges', function (err, collection) {
+var collection = db.edgeCollection('edges');
+collection.import([
+    ['_key', '_from', '_to'],
+    ['x', 'vertices/a', 'vertices/b'],
+    ['y', 'vertices/a', 'vertices/c'],
+    ['z', 'vertices/d', 'vertices/a']
+], function (err) {
     if (err) return console.error(err);
-    collection.import([
-        ['_key', '_from', '_to'],
-        ['x', 'vertices/a', 'vertices/b'],
-        ['y', 'vertices/a', 'vertices/c'],
-        ['z', 'vertices/d', 'vertices/a']
-    ], function (err) {
+    collection.edges('vertices/a', function (err, edges) {
         if (err) return console.error(err);
-        collection.edges('vertices/a', function (err, edges) {
-            if (err) return console.error(err);
-            edges.length === 3;
-            edges.map(function (edge) {return edge._key;}); // ['x', 'y', 'z']
-        });
+        edges.length === 3;
+        edges.map(function (edge) {return edge._key;}); // ['x', 'y', 'z']
     });
 });
 ```
 
 #### edgeCollection.inEdges
 
-`edgeCollection.inEdges(documentHandle: string | Document, [callback: Callback]): Promise<Array<Document>>`
+`async edgeCollection.inEdges(documentHandle: string | Document): Array<Document>`
 
 Retrieves a list of all incoming edges of the document with the given *documentHandle*.
 
@@ -2512,28 +2445,25 @@ The *documentHandle* can be either the `_id` or the `_key` of a document in any 
 
 ```js
 var db = require('arangojs')();
-// assumes a collection "vertices" already exists
-db.createEdgeCollection('edges', function (err, collection) {
+var collection = db.edgeCollection('edges');
+collection.import([
+    ['_key', '_from', '_to'],
+    ['x', 'vertices/a', 'vertices/b'],
+    ['y', 'vertices/a', 'vertices/c'],
+    ['z', 'vertices/d', 'vertices/a']
+], function (err) {
     if (err) return console.error(err);
-    collection.import([
-        ['_key', '_from', '_to'],
-        ['x', 'vertices/a', 'vertices/b'],
-        ['y', 'vertices/a', 'vertices/c'],
-        ['z', 'vertices/d', 'vertices/a']
-    ], function (err) {
+    collection.inEdges('vertices/a', function (err, edges) {
         if (err) return console.error(err);
-        collection.inEdges('vertices/a', function (err, edges) {
-            if (err) return console.error(err);
-            edges.length === 1;
-            edges[0]._key === 'z';
-        });
+        edges.length === 1;
+        edges[0]._key === 'z';
     });
 });
 ```
 
 #### edgeCollection.outEdges
 
-`edgeCollection.outEdges(documentHandle: string | Document, [callback: Callback]): Promise<Array<Document>>`
+`async edgeCollection.outEdges(documentHandle: string | Document): Array<Document>`
 
 Retrieves a list of all outgoing edges of the document with the given *documentHandle*.
 
@@ -2543,28 +2473,25 @@ The *documentHandle* can be either the `_id` or the `_key` of a document in any 
 
 ```js
 var db = require('arangojs')();
-// assumes a collection "vertices" already exists
-db.createEdgeCollection('edges', function (err, collection) {
+var collection = db.edgeCollection('edges');
+collection.import([
+    ['_key', '_from', '_to'],
+    ['x', 'vertices/a', 'vertices/b'],
+    ['y', 'vertices/a', 'vertices/c'],
+    ['z', 'vertices/d', 'vertices/a']
+], function (err) {
     if (err) return console.error(err);
-    collection.import([
-        ['_key', '_from', '_to'],
-        ['x', 'vertices/a', 'vertices/b'],
-        ['y', 'vertices/a', 'vertices/c'],
-        ['z', 'vertices/d', 'vertices/a']
-    ], function (err) {
+    collection.outEdges('vertices/a', function (err, edges) {
         if (err) return console.error(err);
-        collection.outEdges('vertices/a', function (err, edges) {
-            if (err) return console.error(err);
-            edges.length === 2;
-            edges.map(function (edge) {return edge._key;}); // ['x', 'y']
-        });
+        edges.length === 2;
+        edges.map(function (edge) {return edge._key;}); // ['x', 'y']
     });
 });
 ```
 
 #### edgeCollection.traversal
 
-`edgeCollection.traversal(startVertex: string | Document, [opts: Object,] [callback: Callback]): Promise<Object>`
+`async edgeCollection.traversal(startVertex: string | Document, [opts: Object]): Object`
 
 Performs a traversal starting from the given *startVertex* and following edges contained in this edge collection.
 
@@ -2576,24 +2503,21 @@ Please note that while *opts.filter*, *opts.visitor*, *opts.init*, *opts.expande
 
 ```js
 var db = require('arangojs')();
-// assumes a collection "vertices" already exists
-db.createEdgeCollection('edges', function (err, collection) {
+var collection = db.edgeCollection('edges');
+collection.import([
+    ['_key', '_from', '_to'],
+    ['x', 'vertices/a', 'vertices/b'],
+    ['y', 'vertices/b', 'vertices/c'],
+    ['z', 'vertices/c', 'vertices/d']
+], function (err) {
     if (err) return console.error(err);
-    collection.import([
-        ['_key', '_from', '_to'],
-        ['x', 'vertices/a', 'vertices/b'],
-        ['y', 'vertices/b', 'vertices/c'],
-        ['z', 'vertices/c', 'vertices/d']
-    ], function (err) {
+    collection.traversal('vertices/a', {
+        direction: 'outbound',
+        visitor: 'result.vertices.push(vertex._key);',
+        init: 'result.vertices = [];'
+    }, function (err, result) {
         if (err) return console.error(err);
-        collection.traversal('vertices/a', {
-            direction: 'outbound',
-            visitor: 'result.vertices.push(vertex._key);',
-            init: 'result.vertices = [];'
-        }, function (err, result) {
-            if (err) return console.error(err);
-            result.vertices; // ['a', 'b', 'c', 'd']
-        });
+        result.vertices; // ['a', 'b', 'c', 'd']
     });
 });
 ```
@@ -2604,7 +2528,7 @@ These functions implement the [HTTP API for manipulating graphs](https://docs.ar
 
 #### graph.create
 
-`graph.create(properties: Object, [callback: Callback]): Promise<Graph>`
+`async graph.create(properties: Object): Graph`
 
 Creates a graph with the given *properties*, then passes a new *Graph* instance to the callback.
 
@@ -2614,9 +2538,8 @@ For more information on the *properties* object, see [the HTTP API documentation
 
 ```js
 var db = require('arangojs')();
-// this assumes collections `edges`, `start-vertices` and `end-vertices` exist
-db.createGraph({
-    name: 'some-graph',
+var graph = db.graph('some-graph');
+graph.create({
     edgeDefinitions: [
         {
             collection: 'edges',
@@ -2637,24 +2560,22 @@ db.createGraph({
 
 ### graph.drop
 
-`graph.drop([dropCollections: boolean,] [callback: Callback]): Promise<any>`
+`async graph.drop([dropCollections: boolean]): Object`
 
 Deletes the graph from the database.
 
 If *dropCollections* is set to `true`, the collections associated with the graph will also be deleted.
 
-Equivalent to *database.dropGraph(graph.name, [callback: Callback])*.: Promise
+Easync quivalent to *database.dropGraph(graph.name)*.: 
 
 **Examples**
 
 ```js
 var db = require('arangojs')();
-db.graph('some-graph', function (err, graph) {
+var graph = db.graph('some-graph');
+graph.drop(function (err) {
     if (err) return console.error(err);
-    graph.drop(function (err) {
-        if (err) return console.error(err);
-        // the graph "some-graph" no longer exists
-    });
+    // the graph "some-graph" no longer exists
 });
 ```
 
@@ -2662,35 +2583,23 @@ db.graph('some-graph', function (err, graph) {
 
 #### graph.vertexCollection
 
-`graph.vertexCollection(collectionName: string, [callback: Callback]): Promise<GraphVertexCollection>`
+`graph.vertexCollection(collectionName: string): GraphVertexCollection`
 
-Fetches the vertex collection with the given *collectionName* from the database, then passes a new [*GraphVertexCollection* instance](#graphvertexcollection-api) to the callback.
+Returns a new [*GraphVertexCollection* instance](#graphvertexcollection-api) with the given name for this graph.
 
 **Examples**
 
 ```js
 var db = require('arangojs')();
-// assuming the collections "edges" and "vertices" exist
-db.createGraph({
-    name: 'some-graph',
-    edgeDefinitions: [{
-        collection: 'edges',
-        from: ['vertices'],
-        to: ['vertices']
-    }]
-}, function (err, graph) {
-    if (err) return console.error(err);
-    graph.vertexCollection('vertices', function (err, collection) {
-        if (err) return console.error(err);
-        collection.name === 'vertices';
-        // collection is a GraphVertexCollection
-    });
-});
+var graph = db.graph('some-graph');
+var collection = graph.vertexCollection('vertices');
+collection.name === 'vertices';
+// collection is a GraphVertexCollection
 ```
 
 #### graph.addVertexCollection
 
-`graph.addVertexCollection(collectionName: string, [callback: Callback]): Promise<any>`
+`async graph.addVertexCollection(collectionName: string): Object`
 
 Adds the collection with the given *collectionName* to the graph's vertex collections.
 
@@ -2698,22 +2607,16 @@ Adds the collection with the given *collectionName* to the graph's vertex collec
 
 ```js
 var db = require('arangojs')();
-// assuming the collection "vertices" exist
-db.createGraph({
-    name: 'some-graph',
-    edgeDefinitions: []
-}, function (err, graph) {
+var graph = db.graph('some-graph');
+graph.addVertexCollection('vertices', function (err) {
     if (err) return console.error(err);
-    graph.addVertexCollection('vertices', function (err) {
-        if (err) return console.error(err);
-        // the collection "vertices" has been added to the graph
-    });
+    // the collection "vertices" has been added to the graph
 });
 ```
 
 #### graph.removeVertexCollection
 
-`graph.removeVertexCollection(collectionName: string, [dropCollection: boolean,] [callback: Callback]): Promise<any>`
+`async graph.removeVertexCollection(collectionName: string, [dropCollection: boolean]): an>`
 
 Removes the vertex collection with the given *collectionName* from the graph.
 
@@ -2723,23 +2626,17 @@ If *dropCollection* is set to `true`, the collection will also be deleted from t
 
 ```js
 var db = require('arangojs')();
-// assuming the collections "edges" and "vertices" exist
-db.createGraph({
-    name: 'some-graph',
-    orphanCollections: ['vertices']
-}, function (err, graph) {
+var graph = db.graph('some-graph');
+graph.removeVertexCollection('vertices', function (err) {
     if (err) return console.error(err);
-    graph.removeVertexCollection('vertices', function (err) {
-        if (err) return console.error(err);
-        // collection "vertices" has been removed from the graph
-    });
-    // -- or --
-    graph.removeVertexCollection('vertices', true, function (err) {
-        if (err) return console.error(err);
-        // collection "vertices" has been removed from the graph
-        // the collection has also been dropped from the database
-        // this may have been a bad idea
-    });
+    // collection "vertices" has been removed from the graph
+});
+// -- or --
+graph.removeVertexCollection('vertices', true, function (err) {
+    if (err) return console.error(err);
+    // collection "vertices" has been removed from the graph
+    // the collection has also been dropped from the database
+    // this may have been a bad idea
 });
 ```
 
@@ -2747,35 +2644,25 @@ db.createGraph({
 
 #### graph.edgeCollection
 
-`graph.edgeCollection(collectionName: string, [callback: Callback]): Promise<GraphEdgeCollection>`
+`graph.edgeCollection(collectionName: string): GraphEdgeCollection`
 
-Fetches the edge collection with the given *collectionName* from the database, then passes a new [*GraphEdgeCollection* instance](#graphedgecollection-api) to the callback.
+Returns a new [*GraphEdgeCollection* instance](#graphedgecollection-api) with the given name bound to this graph.
 
 **Examples**
 
 ```js
 var db = require('arangojs')();
 // assuming the collections "edges" and "vertices" exist
-db.createGraph({
-    name: 'some-graph',
-    edgeDefinitions: [{
-        collection: 'edges',
-        from: ['vertices'],
-        to: ['vertices']
-    }]
-}, function (err, graph) {
-    if (err) return console.error(err);
-    graph.edgeCollection('edges', function (err, collection) {
-        if (err) return console.error(err);
-        collection.name === 'edges';
-        // collection is a GraphEdgeCollection
-    });
-});
+var graph = db.graph('some-graph');
+var collection = graph.edgeCollection('edges');
+if (err) return console.error(err);
+collection.name === 'edges';
+// collection is a GraphEdgeCollection
 ```
 
 #### graph.addEdgeDefinition
 
-`graph.addEdgeDefinition(definition: Object, [callback: Callback]): Promise<any>`
+`async graph.addEdgeDefinition(definition: Object): Object`
 
 Adds the given edge definition *definition* to the graph.
 
@@ -2786,25 +2673,20 @@ For more information on edge definitions see [the HTTP API for managing graphs](
 ```js
 var db = require('arangojs')();
 // assuming the collections "edges" and "vertices" exist
-db.createGraph({
-    name: 'some-graph',
-    edgeDefinitions: []
-}, function (err, graph) {
+var graph = db.graph('some-graph');
+graph.addEdgeDefinition({
+    collection: 'edges',
+    from: ['vertices'],
+    to: ['vertices']
+}, function (err) {
     if (err) return console.error(err);
-    graph.addEdgeDefinition({
-        collection: 'edges',
-        from: ['vertices'],
-        to: ['vertices']
-    }, function (err) {
-        if (err) return console.error(err);
-        // the edge definition has been added to the graph
-    });
+    // the edge definition has been added to the graph
 });
 ```
 
 #### graph.replaceEdgeDefinition
 
-`graph.replaceEdgeDefinition(collectionName: string, definition: Object, [callback: Callback]): Promise<any>`
+`async graph.replaceEdgeDefinition(collectionName: string, definition: Object): Object`
 
 Replaces the edge definition for the edge collection named *collectionName* with the given *definition*.
 
@@ -2815,29 +2697,20 @@ For more information on edge definitions see [the HTTP API for managing graphs](
 ```js
 var db = require('arangojs')();
 // assuming the collections "edges", "vertices" and "more-vertices" exist
-db.createGraph({
-    name: 'some-graph',
-    edgeDefinitions: [{
-        collection: 'edges',
-        from: ['vertices'],
-        to: ['vertices']
-    }]
-}, function (err, graph) {
+var graph = db.graph('some-graph');
+graph.replaceEdgeDefinition('edges', {
+    collection: 'edges',
+    from: ['vertices'],
+    to: ['more-vertices']
+}, function (err) {
     if (err) return console.error(err);
-    graph.replaceEdgeDefinition('edges', {
-        collection: 'edges',
-        from: ['vertices'],
-        to: ['more-vertices']
-    }, function (err) {
-        if (err) return console.error(err);
-        // the edge definition has been modified
-    });
+    // the edge definition has been modified
 });
 ```
 
 #### graph.removeEdgeDefinition
 
-`graph.removeEdgeDefinition(definitionName: string, [dropCollection: boolean,] [callback: Callback]): Promise<any>`
+`async graph.removeEdgeDefinition(definitionName: string, [dropCollection: boolean]): Object`
 
 Removes the edge definition with the given *definitionName* form the graph.
 
@@ -2849,33 +2722,23 @@ For more information on edge definitions see [the HTTP API for managing graphs](
 
 ```js
 var db = require('arangojs')();
-// assuming the collections "edges" and "vertices" exist
-db.createGraph({
-    name: 'some-graph',
-    edgeDefinitions: [{
-        collection: 'edges',
-        from: ['vertices'],
-        to: ['vertices']
-    }]
-}, function (err, graph) {
+var graph = db.graph('some-graph');
+graph.removeEdgeDefinition('edges', function (err) {
     if (err) return console.error(err);
-    graph.removeEdgeDefinition('edges', function (err) {
-        if (err) return console.error(err);
-        // the edge definition has been removed
-    });
-    // -- or --
-    graph.removeEdgeDefinition('edges', true, function (err) {
-        if (err) return console.error(err);
-        // the edge definition has been removed
-        // and the edge collection "edges" has been dropped
-        // this may have been a bad idea
-    });
+    // the edge definition has been removed
+});
+// -- or --
+graph.removeEdgeDefinition('edges', true, function (err) {
+    if (err) return console.error(err);
+    // the edge definition has been removed
+    // and the edge collection "edges" has been dropped
+    // this may have been a bad idea
 });
 ```
 
 #### graph.traversal
 
-`graph.traversal(startVertex: string | Document, [opts: Object,] [callback: Callback]): Promise<Object>`
+`async graph.traversal(startVertex: string | Document, [opts: Object]): Object`
 
 Performs a traversal starting from the given *startVertex* and following edges contained in any of the edge collections of this graph.
 
@@ -2887,33 +2750,23 @@ Please note that while *opts.filter*, *opts.visitor*, *opts.init*, *opts.expande
 
 ```js
 var db = require('arangojs')();
-// assumes the collections "edges" and "vertices" already exist
-db.createGraph({
-    name: 'some-graph',
-    edgeDefinitions: [{
-        collection: 'edges',
-        from: ['vertices'],
-        to: ['vertices']
-    }]
-}, function (err, graph) {
+var graph = db.graph('some-graph');
+var collection = graph.edgeCollection('edges');
     if (err) return console.error(err);
-    graph.edgeCollection('edges', function (err, collection) {
+    collection.import([
+        ['_key', '_from', '_to'],
+        ['x', 'vertices/a', 'vertices/b'],
+        ['y', 'vertices/b', 'vertices/c'],
+        ['z', 'vertices/c', 'vertices/d']
+    ], function (err) {
         if (err) return console.error(err);
-        collection.import([
-            ['_key', '_from', '_to'],
-            ['x', 'vertices/a', 'vertices/b'],
-            ['y', 'vertices/b', 'vertices/c'],
-            ['z', 'vertices/c', 'vertices/d']
-        ], function (err) {
+        graph.traversal('vertices/a', {
+            direction: 'outbound',
+            visitor: 'result.vertices.push(vertex._key);',
+            init: 'result.vertices = [];'
+        }, function (err, result) {
             if (err) return console.error(err);
-            graph.traversal('vertices/a', {
-                direction: 'outbound',
-                visitor: 'result.vertices.push(vertex._key);',
-                init: 'result.vertices = [];'
-            }, function (err, result) {
-                if (err) return console.error(err);
-                result.vertices; // ['a', 'b', 'c', 'd']
-            });
+            result.vertices; // ['a', 'b', 'c', 'd']
         });
     });
 });
@@ -2925,7 +2778,7 @@ The *GraphVertexCollection API* extends the [*Collection API* (see above)](#coll
 
 #### graphVertexCollection.vertex
 
-`graphVertexCollection.vertex(documentHandle: string | Document, [callback: Callback]): Promise<Document>`
+`async graphVertexCollection.vertex(documentHandle: string | Document): Document`
 
 Retrieves the vertex with the given *documentHandle* from the collection.
 
@@ -2934,38 +2787,27 @@ The *documentHandle* can be either the `_id` or the `_key` of a vertex in the co
 **Examples**
 
 ```js
-// assumes the collections "edges" and "vertices" already exist
-db.createGraph({
-    name: 'some-graph',
-    edgeDefinitions: [{
-        collection: 'edges',
-        from: ['vertices'],
-        to: ['vertices']
-    }]
-}, function (err, graph) {
+var graph = db.graph('some-graph');
+var collection = graph.vertexCollection('vertices');
+collection.vertex('some-key', function (err, doc) {
     if (err) return console.error(err);
-    graph.vertexCollection('vertices', function (err, collection) {
-        if (err) return console.error(err);
-        collection.vertex('some-key', function (err, doc) {
-            if (err) return console.error(err);
-            // the vertex exists
-            doc._key === 'some-key';
-            doc._id === 'vertices/some-key';
-        });
-        // -- or --
-        collection.vertex('vertices/some-key', function (err, doc) {
-            if (err) return console.error(err);
-            // the vertex exists
-            doc._key === 'some-key';
-            doc._id === 'vertices/some-key';
-        });
+    // the vertex exists
+    doc._key === 'some-key';
+    doc._id === 'vertices/some-key';
+});
+// -- or --
+collection.vertex('vertices/some-key', function (err, doc) {
+    if (err) return console.error(err);
+        // the vertex exists
+        doc._key === 'some-key';
+        doc._id === 'vertices/some-key';
     });
 });
 ```
 
 #### graphVertexCollection.save
 
-`graphVertexCollection.save(data: Object, [callback: Callback]): Promise<Document>`
+`async graphVertexCollection.save(data: Object): Document`
 
 Creates a new vertex with the given *data*.
 
@@ -2973,29 +2815,17 @@ Creates a new vertex with the given *data*.
 
 ```js
 var db = require('arangojs')();
-// assumes the collections "edges" and "vertices" already exist
-db.createGraph({
-    name: 'some-graph',
-    edgeDefinitions: [{
-        collection: 'edges',
-        from: ['vertices'],
-        to: ['vertices']
-    }]
-}, function (err, graph) {
-    if (err) return console.error(err);
-    graph.vertexCollection('vertices', function (err, collection) {
+var graph = db.graph('some-graph');
+var collection = graph.vertexCollection('vertices');
+collection.save(
+    {some: 'data'},
+    function (err, doc) {
         if (err) return console.error(err);
-        collection.save(
-            {some: 'data'},
-            function (err, doc) {
-                if (err) return console.error(err);
-                doc._key; // the document's key
-                doc._id === ('vertices/' + doc._key);
-                doc.some === 'data';
-            }
-        );
-    });
-});
+        doc._key; // the document's key
+        doc._id === ('vertices/' + doc._key);
+        doc.some === 'data';
+    }
+);
 ```
 
 ### GraphEdgeCollection API
@@ -3004,45 +2834,33 @@ The *GraphEdgeCollection API* extends the *Collection API* (see above) with the 
 
 #### graphEdgeCollection.edge
 
-`graphEdgeCollection.edge(documentHandle: string | Document, [callback: Callback]): Promise<Document>`
+`async graphEdgeCollection.edge(documentHandle: string | Document): Document`
 
 Retrieves the edge with the given *documentHandle* from the collection.
 
 The *documentHandle* can be either the `_id` or the `_key` of an edge in the collection, or an edge (i.e. an object with an `_id` or `_key` property).
 
 ```js
-// assumes the collections "edges" and "vertices" already exist
-db.createGraph({
-    name: 'some-graph',
-    edgeDefinitions: [{
-        collection: 'edges',
-        from: ['vertices'],
-        to: ['vertices']
-    }]
-}, function (err, graph) {
+var graph = db.graph('some-graph');
+var collection = graph.edgeCollection('edges');
+collection.edge('some-key', function (err, edge) {
     if (err) return console.error(err);
-    graph.edgeCollection('edges', function (err, collection) {
-        if (err) return console.error(err);
-        collection.edge('some-key', function (err, edge) {
-            if (err) return console.error(err);
-            // the edge exists
-            edge._key === 'some-key';
-            edge._id === 'edges/some-key';
-        });
-        // -- or --
-        collection.edge('edges/some-key', function (err, edge) {
-            if (err) return console.error(err);
-            // the edge exists
-            edge._key === 'some-key';
-            edge._id === 'edges/some-key';
-        });
-    });
+    // the edge exists
+    edge._key === 'some-key';
+    edge._id === 'edges/some-key';
+});
+// -- or --
+collection.edge('edges/some-key', function (err, edge) {
+    if (err) return console.error(err);
+    // the edge exists
+    edge._key === 'some-key';
+    edge._id === 'edges/some-key';
 });
 ```
 
 #### graphEdgeCollection.save
 
-`graphEdgeCollection.save(data: Object, [fromId: string | Document, toId: string | Document,] [callback: Callback]): Promise<Document>`
+`async graphEdgeCollection.save(data: Object, [fromId: string | Document, toId: string | Document]): Document`
 
 Creates a new edge between the vertices *fromId* and *toId* with the given *data*.
 
@@ -3052,33 +2870,21 @@ If *fromId* and *toId* are not specified, the *data* needs to contain the proper
 
 ```js
 var db = require('arangojs')();
-// assumes the collections "edges" and "vertices" already exist
-db.createGraph({
-    name: 'some-graph',
-    edgeDefinitions: [{
-        collection: 'edges',
-        from: ['vertices'],
-        to: ['vertices']
-    }]
-}, function (err, graph) {
-    if (err) return console.error(err);
-    graph.edgeCollection('edges', function (err, collection) {
+var graph = db.graph('some-graph');
+var collection = graph.edgeCollection('edges');
+collection.save(
+    {some: 'data'},
+    'vertices/start-vertex',
+    'vertices/end-vertex',
+    function (err, edge) {
         if (err) return console.error(err);
-        collection.save(
-            {some: 'data'},
-            'vertices/start-vertex',
-            'vertices/end-vertex',
-            function (err, edge) {
-                if (err) return console.error(err);
-                edge._key; // the edge's key
-                edge._id === ('edges/' + edge._key);
-                edge.some === 'data';
-                edge._from === 'vertices/start-vertex';
-                edge._to === 'vertices/end-vertex';
-            }
-        );
-    });
-});
+        edge._key; // the edge's key
+        edge._id === ('edges/' + edge._key);
+        edge.some === 'data';
+        edge._from === 'vertices/start-vertex';
+        edge._to === 'vertices/end-vertex';
+    }
+);
 ```
 
 # License
