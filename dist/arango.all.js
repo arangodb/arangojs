@@ -1574,7 +1574,7 @@ var Database = (function () {
 
       for (var i = 0; i < args.length; i++) {
         var value = args[i];
-        var _name = 'var' + i;
+        var _name = 'value' + i;
         if (value instanceof _collection._BaseCollection || value.constructor && value.constructor.name === 'ArangoCollection') {
           _name = '@' + _name;
           value = typeof value.name === 'function' ? value.name() : value.name;

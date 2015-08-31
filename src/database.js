@@ -216,7 +216,7 @@ export default class Database {
     let query = strings[0];
     for (let i = 0; i < args.length; i++) {
       let value = args[i];
-      let name = `var${i}`;
+      let name = `value${i}`;
       if (
         value instanceof BaseCollection
         || (value.constructor && value.constructor.name === 'ArangoCollection')
