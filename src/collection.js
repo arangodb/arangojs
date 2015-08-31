@@ -191,7 +191,7 @@ class BaseCollection {
     return promise;
   }
 
-  all(type, cb) {
+  list(type, cb) {
     if (typeof type === 'function') {
       cb = type;
       type = undefined;
@@ -204,18 +204,153 @@ class BaseCollection {
       if (err) callback(err);
       else callback(null, res.body.documents);
     });
+  }
+
+  all(opts, cb) {
+    if (typeof opts === 'function') {
+      cb = opts;
+      opts = undefined;
+    }
+    let {promise, callback} = this._connection.promisify(cb);
+    this._api.put(
+      'simple/all',
+      extend({}, opts, {collection: this.name}),
+      (err, res) => err ? callback(err) : callback(null, new ArrayCursor(this._connection, res.body))
+    );
     return promise;
   }
 
-  byKeys(keys, cb) {
-    var {promise, callback} = this._connection.promisify(cb);
-    this._api.put('simple/lookup-by-keys', {
-      collection: this.name,
-      keys
-    }, function (err, res) {
-      if (err) callback(err);
-      else callback(null, res.body.documents);
-    });
+  byExample(example, opts, cb) {
+    if (typeof opts === 'function') {
+      cb = opts;
+      opts = undefined;
+    }
+    let {promise, callback} = this._connection.promisify(cb);
+    this._api.put(
+      'simple/by-example',
+      extend({}, opts, {example, collection: this.name}),
+      (err, res) => err ? callback(err) : callback(null, new ArrayCursor(this._connection, res.body))
+    );
+    return promise;
+  }
+
+  firstExample(example, cb) {
+    let {promise, callback} = this._connection.promisify(cb);
+    this._api.put(
+      'simple/first-example',
+      {example, collection: this.name},
+      (err, res) => err ? callback(err) : callback(null, res.document)
+    );
+    return promise;
+  }
+
+  any(cb) {
+    let {promise, callback} = this._connection.promisify(cb);
+    this._api.put(
+      'simple/any',
+      {collection: this.name},
+      (err, res) => err ? callback(err) : callback(null, res.document)
+    );
+    return promise;
+  }
+
+  lookupByKeys(keys, cb) {
+    let {promise, callback} = this._connection.promisify(cb);
+    this._api.put(
+      'simple/lookup-by-keys',
+      {keys, collection: this.name},
+      (err, res) => err ? callback(err) : callback(null, res.body.documents)
+    );
+    return promise;
+  }
+
+  removeByKeys(keys, opts, cb) {
+    if (typeof opts === 'function') {
+      cb = opts;
+      opts = undefined;
+    }
+    let {promise, callback} = this._connection.promisify(cb);
+    this._api.put(
+      'simple/remove-by-keys',
+      extend({}, opts, {keys, collection: this.name}),
+      (err, res) => err ? callback(err) : callback(null, res.body)
+    );
+    return promise;
+  }
+
+  removeByExample(example, opts, cb) {
+    if (typeof opts === 'function') {
+      cb = opts;
+      opts = undefined;
+    }
+    let {promise, callback} = this._connection.promisify(cb);
+    this._api.put(
+      'simple/remove-by-example',
+      extend({}, opts, {example, collection: this.name}),
+      (err, res) => err ? callback(err) : callback(null, res.body)
+    );
+    return promise;
+  }
+
+  replaceByExample(example, newValue, opts, cb) {
+    if (typeof opts === 'function') {
+      cb = opts;
+      opts = undefined;
+    }
+    let {promise, callback} = this._connection.promisify(cb);
+    this._api.put(
+      'simple/replace-by-example',
+      extend({}, opts, {example, newValue, collection: this.name}),
+      (err, res) => err ? callback(err) : callback(null, res.body)
+    );
+    return promise;
+  }
+
+  updateByExample(example, newValue, opts, cb) {
+    if (typeof opts === 'function') {
+      cb = opts;
+      opts = undefined;
+    }
+    let {promise, callback} = this._connection.promisify(cb);
+    this._api.put(
+      'simple/update-by-example',
+      extend({}, opts, {example, newValue, collection: this.name}),
+      (err, res) => err ? callback(err) : callback(null, res.body)
+    );
+    return promise;
+  }
+
+  first(opts, cb) {
+    if (typeof opts === 'function') {
+      cb = opts;
+      opts = undefined;
+    }
+    if (typeof opts === 'number') {
+      opts = {count: opts};
+    }
+    let {promise, callback} = this._connection.promisify(cb);
+    this._api.put(
+      'simple/first',
+      extend({}, opts, {collection: this.name}),
+      (err, res) => err ? callback(err) : callback(null, res.result)
+    );
+    return promise;
+  }
+
+  last(opts, cb) {
+    if (typeof opts === 'function') {
+      cb = opts;
+      opts = undefined;
+    }
+    if (typeof opts === 'number') {
+      opts = {count: opts};
+    }
+    let {promise, callback} = this._connection.promisify(cb);
+    this._api.put(
+      'simple/last',
+      extend({}, opts, {collection: this.name}),
+      (err, res) => err ? callback(err) : callback(null, res.result)
+    );
     return promise;
   }
 
