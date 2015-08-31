@@ -12,58 +12,53 @@ export default class ArrayCursor {
   }
 
   _drain(cb) {
-    var {promise, callback} = this._connection.promisify(cb);
-    var self = this;
-    self._more(function (err) {
-      if (err) callback(err);
-      else if (!self._hasMore) callback(null, self);
-      else self._drain(cb);
-    });
+    const {promise, callback} = this._connection.promisify(cb);
+    this._more(err => (
+      err ? callback(err) : (
+        !this._hasMore
+        ? callback(null, this)
+        : this._drain(cb)
+      )
+    ));
     return promise;
   }
 
   _more(callback) {
-    var self = this;
-    if (!self._hasMore) callback(null, self);
+    if (!this._hasMore) callback(null, this);
     else {
-      self._api.put('cursor/' + this._id, function (err, res) {
+      this._api.put('cursor/' + this._id, (err, res) => {
         if (err) callback(err);
         else {
-          self._result.push.apply(self._result, res.body.result);
-          self._hasMore = res.body.hasMore;
-          callback(null, self);
+          this._result.push.apply(this._result, res.body.result);
+          this._hasMore = res.body.hasMore;
+          callback(null, this);
         }
       });
     }
   }
 
   all(cb) {
-    var {promise, callback} = this._connection.promisify(cb);
-    var self = this;
-    self._drain(function (err) {
-      self._index = self._result.length;
+    const {promise, callback} = this._connection.promisify(cb);
+    this._drain(err => {
+      this._index = this._result.length;
       if (err) callback(err);
-      else callback(null, self._result);
+      else callback(null, this._result);
     });
     return promise;
   }
 
   next(cb) {
-    var {promise, callback} = this._connection.promisify(cb);
-    var self = this;
+    const {promise, callback} = this._connection.promisify(cb);
     function next() {
-      var value = self._result[self._index];
-      self._index += 1;
+      const value = this._result[this._index];
+      this._index += 1;
       callback(null, value);
     }
-    if (self._index < self._result.length) next();
+    if (this._index < this._result.length) next();
     else {
-      if (!self._hasMore) callback(null);
+      if (!this._hasMore) callback(null);
       else {
-        self._more(function (err) {
-          if (err) callback(err);
-          else next();
-        });
+        this._more(err => err ? callback(err) : next());
       }
     }
     return promise;
@@ -74,15 +69,14 @@ export default class ArrayCursor {
   }
 
   each(fn, cb) {
-    var {promise, callback} = this._connection.promisify(cb);
-    var self = this;
-    self._drain(function (err) {
+    const {promise, callback} = this._connection.promisify(cb);
+    this._drain(err => {
       if (err) callback(err);
       else {
         try {
-          var result;
-          for (self._index = 0; self._index < self._result.length; self._index++) {
-            result = fn(self._result[self._index], self._index, self);
+          let result = true;
+          for (this._index = 0; this._index < this._result.length; this._index++) {
+            result = fn(this._result[this._index], this._index, this);
             if (result === false) break;
           }
           callback(null);
@@ -95,82 +89,70 @@ export default class ArrayCursor {
   }
 
   every(fn, cb) {
-    var {promise, callback} = this._connection.promisify(cb);
-    var self = this;
+    const {promise, callback} = this._connection.promisify(cb);
     function loop() {
       try {
-        var result = true;
-        while (self._index < self._result.length) {
-          result = fn(self._result[self._index], self._index, self);
-          self._index++;
+        let result = true;
+        while (this._index < this._result.length) {
+          result = fn(this._result[this._index], this._index, this);
+          this._index++;
           if (!result) break;
         }
-        if (!self._hasMore || !result) callback(null, result);
+        if (!this._hasMore || !result) callback(null, result);
         else {
-          self._more(function (err) {
-            if (err) callback(err);
-            else loop();
-          });
+          this._more(err => err ? callback(err) : loop());
         }
       } catch(e) {
         callback(e);
       }
     }
-    self._index = 0;
+    this._index = 0;
     loop();
     return promise;
   }
 
   some(fn, cb) {
-    var {promise, callback} = this._connection.promisify(cb);
-    var self = this;
+    const {promise, callback} = this._connection.promisify(cb);
     function loop() {
       try {
-        var result = false;
-        while (self._index < self._result.length) {
-          result = fn(self._result[self._index], self._index, self);
-          self._index++;
+        let result = false;
+        while (this._index < this._result.length) {
+          result = fn(this._result[this._index], this._index, this);
+          this._index++;
           if (result) break;
         }
-        if (!self._hasMore || result) callback(null, result);
+        if (!this._hasMore || result) callback(null, result);
         else {
-          self._more(function (err) {
-            if (err) callback(err);
-            else loop();
-          });
+          this._more(err => err ? callback(err) : loop());
         }
       } catch(e) {
         callback(e);
       }
     }
-    self._index = 0;
+    this._index = 0;
     loop();
     return promise;
   }
 
   map(fn, cb) {
-    var {promise, callback} = this._connection.promisify(cb);
-    var self = this,
-      result = [];
+    const {promise, callback} = this._connection.promisify(cb);
+    const result = [];
 
     function loop(x) {
       try {
-        while (self._index < self._result.length) {
-          result.push(fn(self._result[self._index], self._index, self));
-          self._index++;
+        while (this._index < this._result.length) {
+          result.push(fn(this._result[this._index], this._index, this));
+          this._index++;
         }
-        if (!self._hasMore) callback(null, result);
+        if (!this._hasMore) callback(null, result);
         else {
-          self._more(function (err) {
-            if (err) callback(err);
-            else loop();
-          });
+          this._more(err => err ? callback(err) : loop());
         }
       } catch(e) {
         callback(e);
       }
     }
-    self._index = 0;
+    this._index = 0;
     loop();
     return promise;
   }
@@ -180,38 +162,34 @@ export default class ArrayCursor {
       cb = accu;
       accu = undefined;
     }
-    var {promise, callback} = this._connection.promisify(cb);
-    var self = this;
+    const {promise, callback} = this._connection.promisify(cb);
     function loop() {
       try {
-        while (self._index < self._result.length) {
-          accu = fn(accu, self._result[self._index], self._index, self);
-          self._index++;
+        while (this._index < this._result.length) {
+          accu = fn(accu, this._result[this._index], this._index, this);
+          this._index++;
         }
-        if (!self._hasMore) callback(null, accu);
+        if (!this._hasMore) callback(null, accu);
         else {
-          self._more(function (err) {
-            if (err) callback(err);
-            else loop();
-          });
+          this._more(err => err ? callback(err) : loop());
         }
       } catch(e) {
         callback(e);
       }
     }
     if (accu !== undefined) {
-      self._index = 0;
+      this._index = 0;
       loop();
-    } else if (self._result.length > 1) {
-      accu = self._result[0];
-      self._index = 1;
+    } else if (this._result.length > 1) {
+      accu = this._result[0];
+      this._index = 1;
       loop();
     } else {
-      self._more(function (err) {
+      this._more(err => {
         if (err) callback(err);
         else {
-          accu = self._result[0];
-          self._index = 1;
+          accu = this._result[0];
+          this._index = 1;
           loop();
         }
       });

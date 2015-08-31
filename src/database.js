@@ -2,7 +2,7 @@
 import extend from 'extend';
 import Connection from './connection';
 import ArrayCursor from './cursor';
-import createCollection, {DocumentCollection, EdgeCollection} from './collection';
+import constructCollection, {DocumentCollection, EdgeCollection} from './collection';
 import Graph from './graph';
 import all from './util/all';
 
@@ -25,11 +25,11 @@ export default class Database {
   }
 
   get(cb) {
-    var {promise, callback} = this._connection.promisify(cb);
-    this._api.get('database/current', (err, res) => {
-      if (err) callback(err);
-      else callback(null, res.body.result);
-    });
+    const {promise, callback} = this._connection.promisify(cb);
+    this._api.get(
+      'database/current',
+      (err, res) => err ? callback(err) : callback(null, res.body.result)
+    );
     return promise;
   }
 
@@ -38,45 +38,39 @@ export default class Database {
       cb = users;
       users = undefined;
     }
-    var {promise, callback} = this._connection.promisify(cb);
-    var self = this;
-    self._api.post('database', {
-      name: databaseName,
-      users: users
-    }, (err, res) => {
-      if (err) callback(err);
-      else callback(null);
-    });
+    const {promise, callback} = this._connection.promisify(cb);
+    this._api.post(
+      'database',
+      {users, name: databaseName},
+      (err, res) => err ? callback(err) : callback(null)
+    );
     return promise;
   }
 
   listDatabases(cb) {
-    var {promise, callback} = this._connection.promisify(cb);
-    var self = this;
-    self._api.get('database', (err, res) => {
-      if (err) callback(err);
-      else callback(null, res.body.result);
-    });
+    const {promise, callback} = this._connection.promisify(cb);
+    this._api.get(
+      'database',
+      (err, res) => err ? callback(err) : callback(null, res.body.result)
+    );
     return promise;
   }
 
   listUserDatabases(cb) {
-    var {promise, callback} = this._connection.promisify(cb);
-    var self = this;
-    self._api.get('database/user', (err, res) => {
-      if (err) callback(err);
-      else callback(null, res.body.result);
-    });
+    const {promise, callback} = this._connection.promisify(cb);
+    this._api.get(
+      'database/user',
+      (err, res) => err ? callback(err) : callback(null, res.body.result)
+    );
     return promise;
   }
 
   dropDatabase(databaseName, cb) {
-    var {promise, callback} = this._connection.promisify(cb);
-    var self = this;
-    self._api.delete('database/' + databaseName, (err, res) => {
-      if (err) callback(err);
-      else callback(null);
-    });
+    const {promise, callback} = this._connection.promisify(cb);
+    this._api.delete(
+      `database/${databaseName}`,
+      (err, res) => err ? callback(err) : callback(null)
+    );
     return promise;
   }
 
@@ -95,21 +89,26 @@ export default class Database {
       cb = excludeSystem;
       excludeSystem = undefined;
     }
-    var {promise, callback} = this._connection.promisify(cb);
+    const {promise, callback} = this._connection.promisify(cb);
     if (typeof excludeSystem !== 'boolean') excludeSystem = true;
-    this._api.get('collection', {excludeSystem: excludeSystem}, (err, res) => {
-      if (err) callback(err);
-      else callback(null, res.body.collections);
-    });
+    this._api.get(
+      'collection',
+      {excludeSystem},
+      (err, res) => err ? callback(err) : callback(null, res.body.collections)
+    );
     return promise;
   }
 
   collections(excludeSystem, cb) {
-    var {promise, callback} = this._connection.promisify(cb);
-    this.listCollections(excludeSystem, (err, collections) => {
-      if (err) callback(err);
-      else callback(collections.map(info => createCollection(this._connection, info)));
-    });
+    const {promise, callback} = this._connection.promisify(cb);
+    this.listCollections(
+      excludeSystem,
+      (err, collections) => (
+        err
+        ? callback(err)
+        : callback(collections.map(info => constructCollection(this._connection, info)))
+      )
+    );
     return promise;
   }
 
@@ -118,21 +117,18 @@ export default class Database {
       cb = excludeSystem;
       excludeSystem = undefined;
     }
-    var {promise, callback} = this._connection.promisify(cb);
-    var self = this;
-    this.listCollections(excludeSystem, function (err, collections) {
-      if (err) callback(err);
-      else {
-        all(collections.map(function (data) {
-          return function (cb) {
-            self._api.put('collection/' + data.name + '/truncate', (err, res) => {
-              if (err) cb(err);
-              else cb(null);
-            });
-          };
-        }), callback);
-      }
-    });
+    const {promise, callback} = this._connection.promisify(cb);
+    this.listCollections(
+      excludeSystem,
+      (err, collections) => (
+        err
+        ? callback(err)
+        : all(collections.map(data => cb => this._api.put(
+            `collection/${data.name}/truncate`,
+            (err, res) => err ? cb(err) : cb(null)
+        )), callback)
+      )
+    );
     return promise;
   }
 
@@ -143,20 +139,19 @@ export default class Database {
   }
 
   listGraphs(cb) {
-    var {promise, callback} = this._connection.promisify(cb);
-    this._api.get('gharial', (err, res) => {
-      if (err) callback(err);
-      else callback(res.body.graphs);
-    });
+    const {promise, callback} = this._connection.promisify(cb);
+    this._api.get(
+      'gharial',
+      (err, res) => err ? callback(err) : callback(res.body.graphs)
+    );
     return promise;
   }
 
   graphs(cb) {
-    var {promise, callback} = this._connection.promisify(cb);
-    this.listGraphs((err, graphs) => {
-      if (err) callback(err);
-      else callback(graphs.map(info => this.graph(info._key)));
-    });
+    const {promise, callback} = this._connection.promisify(cb);
+    this.listGraphs(
+      (err, graphs) => err ? callback(err) : callback(graphs.map(info => this.graph(info._key)))
+    );
     return promise;
   }
 
@@ -178,16 +173,12 @@ export default class Database {
     if (typeof collections === 'string' || Array.isArray(collections)) {
       collections = {write: collections};
     }
-    var {promise, callback} = this._connection.promisify(cb);
-    this._api.post('transaction', {
-      collections: collections,
-      action: action,
-      params: params,
-      lockTimeout: lockTimeout
-    }, (err, res) => {
-      if (err) callback(err);
-      else callback(null, res.body.result);
-    });
+    const {promise, callback} = this._connection.promisify(cb);
+    this._api.post(
+      'transaction',
+      {collections, action, params, lockTimeout},
+      (err, res) => err ? callback(err) : callback(null, res.body.result)
+  );
     return promise;
   }
 
@@ -200,39 +191,36 @@ export default class Database {
       cb = bindVars;
       bindVars = undefined;
     }
-    var {promise, callback} = this._connection.promisify(cb);
+    const {promise, callback} = this._connection.promisify(cb);
     if (query && typeof query.toAQL === 'function') {
       query = query.toAQL();
     }
-    var self = this;
-    opts = extend({}, opts, {query: query, bindVars: bindVars});
-    self._api.post('cursor', opts, (err, res) => {
-      if (err) callback(err);
-      else callback(null, new ArrayCursor(self._connection, res.body));
-    });
+    this._api.post(
+      'cursor',
+      extend({}, opts, {query, bindVars}),
+      (err, res) => err ? callback(err) : callback(null, new ArrayCursor(this._connection, res.body))
+    );
     return promise;
   }
 
   // Function manipulation
 
   listFunctions(cb) {
-    var {promise, callback} = this._connection.promisify(cb);
-    this._api.get('aqlfunction', (err, res) => {
-      if (err) callback(err);
-      else callback(null, res.body);
-    });
+    const {promise, callback} = this._connection.promisify(cb);
+    this._api.get(
+      'aqlfunction',
+      (err, res) => err ? callback(err) : callback(null, res.body)
+    );
     return promise;
   }
 
   createFunction(name, code, cb) {
-    var {promise, callback} = this._connection.promisify(cb);
-    this._api.post('aqlfunction', {
-      name: name,
-      code: code
-    }, (err, res) => {
-      if (err) callback(err);
-      else callback(null);
-    });
+    const {promise, callback} = this._connection.promisify(cb);
+    this._api.post(
+      'aqlfunction',
+      {name, code},
+      (err, res) => err ? callback(err) : callback(null)
+    );
     return promise;
   }
 
@@ -241,13 +229,12 @@ export default class Database {
       cb = group;
       group = undefined;
     }
-    var {promise, callback} = this._connection.promisify(cb);
-    this._api.delete('aqlfunction/' + name, {
-      group: Boolean(group)
-    }, (err, res) => {
-      if (err) callback(err);
-      else callback(null);
-    });
+    const {promise, callback} = this._connection.promisify(cb);
+    this._api.delete(
+      `aqlfunction/${name}`,
+      {group: Boolean(group)},
+      (err, res) => err ? callback(err) : callback(null)
+    );
     return promise;
   }
 }

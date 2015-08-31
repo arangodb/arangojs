@@ -1,7 +1,7 @@
 'use strict';
 export default function once(cb) {
-  var called = false;
-  return function (...args) {
+  let called = false;
+  return (...args) => {
     if (called) return;
     called = true;
     return cb(...args);

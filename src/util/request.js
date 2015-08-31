@@ -7,11 +7,11 @@ import LinkedList from 'linkedlist';
 
 function joinPath(a = '', b = '') {
   if (!a && !b) return '';
-  var leadingSlash = a.charAt(0) === '/';
-  var trailingSlash = b.charAt(b.length - 1) === '/';
-  var tokens = (a + '/' + b).split('/').filter(Boolean);
-  for (var i = 0; i < tokens.length; i++) {
-    var token = tokens[i];
+  const leadingSlash = a.charAt(0) === '/';
+  const trailingSlash = b.charAt(b.length - 1) === '/';
+  const tokens = (a + '/' + b).split('/').filter(Boolean);
+  for (let i = 0; i < tokens.length; i++) {
+    let token = tokens[i];
     if (token === '..') {
       tokens.splice(i - 1, 2);
       i--;
@@ -20,72 +20,73 @@ function joinPath(a = '', b = '') {
       i--;
     }
   }
-  var path = tokens.join('/');
+  let path = tokens.join('/');
   if (leadingSlash) path = '/' + path;
   if (trailingSlash) path = path + '/';
   return path;
 }
 
 function rawCopy(obj) {
-  var data = {};
-  for (var k in obj) {
-    if (obj.hasOwnProperty(k)) {
-      data[k] = obj[k];
+  const result = {};
+  for (let key in obj) {
+    if (obj.hasOwnProperty(key)) {
+      result[key] = obj[key];
     }
   }
-  return data;
+  return result;
 }
 
 export default function (baseUrl, agent, agentOptions) {
-  var baseUrlParts = rawCopy(parseUrl(baseUrl));
-  var isTls = baseUrlParts.protocol === 'https:';
+  const baseUrlParts = rawCopy(parseUrl(baseUrl));
+  const isTls = baseUrlParts.protocol === 'https:';
 
   if (!agent) {
-    agent = new (isTls ? https : http).Agent(agentOptions);
+    const Agent = (isTls ? https : http).Agent;
+    agent = new Agent(agentOptions);
   }
 
-  var queue = new LinkedList();
-  var maxTasks = typeof agent.maxSockets === 'number' ? agent.maxSockets * 2 : Infinity;
-  var activeTasks = 0;
+  const queue = new LinkedList();
+  const maxTasks = typeof agent.maxSockets === 'number' ? agent.maxSockets * 2 : Infinity;
+  let activeTasks = 0;
 
   function drainQueue() {
     if (!queue.length || activeTasks >= maxTasks) return;
-    var task = queue.shift();
+    const task = queue.shift();
     activeTasks += 1;
-    task(function () {
+    task(() => {
       activeTasks -= 1;
       drainQueue();
     });
   }
 
   return function request({method, url, headers, body}, cb) {
-    var path = baseUrlParts.pathname ? (
+    let path = baseUrlParts.pathname ? (
       url.pathname ? joinPath(baseUrlParts.pathname, url.pathname) : baseUrlParts.pathname
     ) : url.pathname;
-    var search = url.search ? (
+    const search = url.search ? (
       baseUrlParts.search ? baseUrlParts.search + '&' + url.search.slice(1) : url.search
     ) : baseUrlParts.search;
     if (search) path += search;
-    var options = {path, method, headers, agent};
+    const options = {path, method, headers, agent};
     options.hostname = baseUrlParts.hostname;
     options.port = baseUrlParts.port;
     options.auth = baseUrlParts.auth;
 
     queue.push(function (next) {
-      var callback = once(function () {
+      const callback = once(() => {
         next();
         cb.apply(this, arguments);
       });
-      var req = (isTls ? https : http).request(options, function (res) {
-        var data = [];
-        res.on('data', function (b) {
-          data.push(b);
-        }).on('end', function () {
+      const req = (isTls ? https : http).request(options, res => {
+        const data = [];
+        res
+        .on('data', chunk => data.push(chunk))
+        .on('end', () => {
           res.body = data.join('');
           callback(null, res);
         });
       });
-      req.on('error', function (err) {
+      req.on('error', err => {
         err.request = req;
         callback(err);
       });

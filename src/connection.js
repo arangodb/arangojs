@@ -36,7 +36,7 @@ export default class Connection {
   }
 
   _resolveUrl(opts) {
-    var url = {pathname: ''};
+    const url = {pathname: ''};
     if (!opts.absolutePath) {
       url.pathname += '/_db/' + this.config.databaseName;
       if (opts.basePath) url.pathname += '/' + opts.basePath;
@@ -51,17 +51,15 @@ export default class Connection {
   }
 
   request(opts, cb) {
-    var {promise, callback} = this.promisify(cb);
+    const {promise, callback} = this.promisify(cb);
+    const headers = {'content-type': 'text/plain'};
     if (!opts) opts = {};
-    var body = opts.body;
-    var headers = {'content-type': 'text/plain'};
+    let body = opts.body;
 
     if (body) {
       if (typeof body === 'object') {
         if (opts.ld) {
-          body = body.map(function (obj) {
-            return JSON.stringify(obj);
-          }).join('\r\n') + '\r\n';
+          body = body.map(obj => JSON.stringify(obj)).join('\r\n') + '\r\n';
           headers['content-type'] = 'application/x-ldjson';
         } else {
           body = JSON.stringify(body);
@@ -78,7 +76,7 @@ export default class Connection {
       headers: extend(headers, this.config.headers, opts.headers),
       method: (opts.method || 'get').toUpperCase(),
       body: body
-    }, function (err, res) {
+    }, (err, res) => {
       if (err) callback(err);
       else if (res.headers['content-type'].match(MIME_JSON)) {
         try {

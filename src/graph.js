@@ -6,26 +6,25 @@ class VertexCollection extends BaseCollection {
   constructor(connection, name, graph) {
     super(connection, name);
     this.graph = graph;
-    this._gharial = this._api.route('gharial/' + this.graph.name + '/vertex/' + this.name);
+    this._gharial = this._api.route(`gharial/${this.graph.name}/vertex/${this.name}`);
   }
 
   vertex(documentHandle, cb) {
-    var {promise, callback} = this._connection.promisify(cb);
-    this._gharial.get(documentHandle, function (err, res) {
-      if (err) callback(err);
-      else callback(null, res.body);
-    });
+    const {promise, callback} = this._connection.promisify(cb);
+    this._gharial.get(
+      documentHandle,
+      (err, res) => err ? callback(err) : callback(null, res.body)
+    );
     return promise;
   }
 
   save(data, cb) {
-    var {promise, callback} = this._connection.promisify(cb);
-    this._gharial.post(data, {
-      collection: this.name
-    }, function (err, res) {
-      if (err) callback(err);
-      else callback(null, res.body);
-    });
+    const {promise, callback} = this._connection.promisify(cb);
+    this._gharial.post(
+      data,
+      {collection: this.name},
+      (err, res) => err ? callback(err) : callback(null, res.body)
+    );
     return promise;
   }
 }
@@ -34,15 +33,15 @@ class EdgeCollection extends BaseCollection {
   constructor(connection, name, graph) {
     super(connection, name);
     this.graph = graph;
-    this._gharial = this._api.route('gharial/' + this.graph.name + '/edge/' + this.name);
+    this._gharial = this._api.route(`gharial/${this.graph.name}/edge/${this.name}`);
   }
 
   edge(documentHandle, cb) {
-    var {promise, callback} = this._connection.promisify(cb);
-    this._gharial.get(documentHandle, function (err, res) {
-      if (err) callback(err);
-      else callback(null, res.body);
-    });
+    const {promise, callback} = this._connection.promisify(cb);
+    this._gharial.get(
+      documentHandle,
+      (err, res) => err ? callback(err) : callback(null, res.body)
+    );
     return promise;
   }
 
@@ -54,11 +53,11 @@ class EdgeCollection extends BaseCollection {
       data._from = this._documentHandle(fromId);
       data._to = this._documentHandle(toId);
     }
-    var {promise, callback} = this._connection.promisify(cb);
-    this._gharial.post(data, function (err, res) {
-      if (err) callback(err);
-      else callback(null, res.body);
-    });
+    const {promise, callback} = this._connection.promisify(cb);
+    this._gharial.post(
+      data,
+      (err, res) => err ? callback(err) : callback(null, res.body)
+    );
     return promise;
   }
 }
@@ -70,16 +69,15 @@ export default class Graph {
   constructor(connection, name) {
     this._connection = connection;
     this._api = this._connection.route('_api');
-    this._gharial = this._api.route('gharial/' + this.name);
+    this._gharial = this._api.route(`gharial/${this.name}`);
     this.name = name;
   }
 
   get(cb) {
-    var {promise, callback} = this._connection.promisify(cb);
-    this._gharial.get(function (err, res) {
-      if (err) callback(err);
-      else callback(null, res.body.graph);
-    });
+    const {promise, callback} = this._connection.promisify(cb);
+    this._gharial.get(
+      (err, res) => err ? callback(err) : callback(null, res.body.graph)
+    );
     return promise;
   }
 
@@ -88,13 +86,12 @@ export default class Graph {
       cb = properties;
       properties = undefined;
     }
-    var {promise, callback} = this._connection.promisify(cb);
-    var self = this;
-    properties = extend({}, properties, {name: this.name});
-    self._api.post('gharial', properties, function (err, res) {
-      if (err) callback(err);
-      else callback(null, res.body.graph);
-    });
+    const {promise, callback} = this._connection.promisify(cb);
+    this._api.post(
+      'gharial',
+      extend({}, properties, {name: this.name}),
+      (err, res) => err ? callback(err) : callback(null, res.body.graph)
+    );
     return promise;
   }
 
@@ -103,32 +100,34 @@ export default class Graph {
       cb = dropCollections;
       dropCollections = undefined;
     }
-    var {promise, callback} = this._connection.promisify(cb);
-    this._gharial.delete({
-      dropCollections: dropCollections
-    }, function (err, res) {
-      if (err) callback(err);
-      else callback(null, res.body);
-    });
+    const {promise, callback} = this._connection.promisify(cb);
+    this._gharial.delete(
+      {dropCollections},
+      (err, res) => err ? callback(err) : callback(null, res.body)
+    );
     return promise;
   }
 
   vertexCollection(collectionName, cb) {
-    var {promise, callback} = this._connection.promisify(cb);
-    var self = this;
-    self._api.get('collection/' + collectionName, function (err, res) {
-      if (err) callback(err);
-      else callback(null, new VertexCollection(self._connection, res.body, self));
-    });
+    const {promise, callback} = this._connection.promisify(cb);
+    this._api.get(
+      `collection/${collectionName}`,
+      (err, res) => (
+        err
+        ? callback(err)
+        : callback(null, new VertexCollection(this._connection, res.body, this))
+      )
+    );
     return promise;
   }
 
   addVertexCollection(collectionName, cb) {
-    var {promise, callback} = this._connection.promisify(cb);
-    this._gharial.post('vertex', {collection: collectionName}, function (err, res) {
-      if (err) callback(err);
-      else callback(null, res.body);
-    });
+    const {promise, callback} = this._connection.promisify(cb);
+    this._gharial.post(
+      'vertex',
+      {collection: collectionName},
+      (err, res) => err ? callback(err) : callback(null, res.body)
+    );
     return promise;
   }
 
@@ -137,39 +136,45 @@ export default class Graph {
       cb = dropCollection;
       dropCollection = undefined;
     }
-    var {promise, callback} = this._connection.promisify(cb);
-    this._gharial.delete('vertex/' + collectionName, {dropCollection: dropCollection}, function (err, res) {
-      if (err) callback(err);
-      else callback(null, res.body);
-    });
+    const {promise, callback} = this._connection.promisify(cb);
+    this._gharial.delete(
+      `vertex/${collectionName}`,
+      {dropCollection},
+      (err, res) => err ? callback(err) : callback(null, res.body)
+    );
     return promise;
   }
 
   edgeCollection(collectionName, cb) {
-    var {promise, callback} = this._connection.promisify(cb);
-    var self = this;
-    self._api.get('collection/' + collectionName, function (err, res) {
-      if (err) callback(err);
-      else callback(null, new EdgeCollection(self._connection, res.body, self));
-    });
+    const {promise, callback} = this._connection.promisify(cb);
+    this._api.get(
+      `collection/${collectionName}`,
+      (err, res) => (
+        err
+        ? callback(err)
+        : callback(null, new EdgeCollection(this._connection, res.body, this))
+      )
+    );
     return promise;
   }
 
   addEdgeDefinition(definition, cb) {
-    var {promise, callback} = this._connection.promisify(cb);
-    this._gharial.post('edge', definition, function (err, res) {
-      if (err) callback(err);
-      else callback(null, res.body);
-    });
+    const {promise, callback} = this._connection.promisify(cb);
+    this._gharial.post(
+      'edge',
+      definition,
+      (err, res) => err ? callback(err) : callback(null, res.body)
+    );
     return promise;
   }
 
   replaceEdgeDefinition(definitionName, definition, cb) {
-    var {promise, callback} = this._connection.promisify(cb);
-    this._api.put('gharial/' + this.name + '/edge/' + definitionName, definition, function (err, res) {
-      if (err) callback(err);
-      else callback(null, res.body);
-    });
+    const {promise, callback} = this._connection.promisify(cb);
+    this._api.put(
+      `gharial/${this.name}/edge/${definitionName}`,
+      definition,
+      (err, res) => err ? callback(err) : callback(null, res.body)
+    );
     return promise;
   }
 
@@ -178,11 +183,12 @@ export default class Graph {
       cb = dropCollection;
       dropCollection = undefined;
     }
-    var {promise, callback} = this._connection.promisify(cb);
-    this._gharial.delete('edge/' + definitionName, {dropCollection: dropCollection}, function (err, res) {
-      if (err) callback(err);
-      else callback(null, res.body);
-    });
+    const {promise, callback} = this._connection.promisify(cb);
+    this._gharial.delete(
+      `edge/${definitionName}`,
+      {dropCollection},
+      (err, res) => err ? callback(err) : callback(null, res.body)
+    );
     return promise;
   }
 
@@ -191,14 +197,12 @@ export default class Graph {
       cb = opts;
       opts = undefined;
     }
-    var {promise, callback} = this._connection.promisify(cb);
-    this._api.post('traversal', extend({}, opts, {
-      startVertex: startVertex,
-      graphName: this.name
-    }), function (err, res) {
-      if (err) callback(err);
-      else callback(null, res.body.result);
-    });
+    const {promise, callback} = this._connection.promisify(cb);
+    this._api.post(
+      'traversal',
+      extend({}, opts, {startVertex, graphName: this.name}),
+      (err, res) => err ? callback(err) : callback(null, res.body.result)
+    );
     return promise;
   }
 }

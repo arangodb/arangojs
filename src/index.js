@@ -1,6 +1,8 @@
 'use strict';
-import _Database from './database';
-export default function (...args) {
-  return new _Database(...args);
+import Database from './database';
+
+export default function construct(...args) {
+  return new Database(...args);
 }
-export var Database = _Database;
+
+export {Database};

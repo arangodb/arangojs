@@ -7,7 +7,7 @@ export default class ArangoError extends Error {
     this.message = obj.errorMessage;
     this.errorNum = obj.errorNum;
     this.code = obj.code;
-    var err = new Error(this.message);
+    const err = new Error(this.message);
     err.name = this.name;
     if (err.fileName) this.fileName = err.fileName;
     if (err.lineNumber) this.lineNumber = err.lineNumber;

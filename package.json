@@ -50,8 +50,8 @@
   "devDependencies": {
     "async": "^1.4.0",
     "babel": "^5.2.17",
+    "babel-eslint": "^4.1.0",
     "browserify": "^11.0.1",
-    "babel-eslint": "^4.0.5",
     "coveralls": "^2.11.2",
     "dekeywordify": "^0.2.1",
     "eslint": "^1.0.0",

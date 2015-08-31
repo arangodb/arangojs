@@ -1,5 +1,5 @@
 'use strict';
-var extend = require('extend');
+import extend from 'extend';
 
 export default class Route {
   constructor(connection, path, headers) {
@@ -37,11 +37,7 @@ export default class Route {
     }
     if (!path) path = '';
     else if (this._path && path.charAt(0) !== '/') path = '/' + path;
-    return this.request({
-      method: 'get',
-      path: path,
-      qs: qs
-    }, callback);
+    return this.request({path, qs, method: 'get'}, callback);
   }
 
   post(path, body, qs, callback) {
@@ -61,12 +57,7 @@ export default class Route {
     }
     if (!path) path = '';
     else if (this._path && path.charAt(0) !== '/') path = '/' + path;
-    return this.request({
-      method: 'post',
-      path: path,
-      body: body,
-      qs: qs
-    }, callback);
+    return this.request({path, body, qs, method: 'post'}, callback);
   }
 
   put(path, body, qs, callback) {
@@ -86,12 +77,7 @@ export default class Route {
     }
     if (!path) path = '';
     else if (this._path && path.charAt(0) !== '/') path = '/' + path;
-    return this.request({
-      method: 'put',
-      path: path,
-      body: body,
-      qs: qs
-    }, callback);
+    return this.request({path, body, qs, method: 'put'}, callback);
   }
 
   patch(path, body, qs, callback) {
@@ -111,12 +97,7 @@ export default class Route {
     }
     if (!path) path = '';
     else if (this._path && path.charAt(0) !== '/') path = '/' + path;
-    return this.request({
-      method: 'patch',
-      path: path,
-      body: body,
-      qs: qs
-    }, callback);
+    return this.request({path, body, qs, method: 'patch'}, callback);
   }
 
   delete(path, qs, callback) {
@@ -131,11 +112,7 @@ export default class Route {
     }
     if (!path) path = '';
     else if (this._path && path.charAt(0) !== '/') path = '/' + path;
-    return this.request({
-      method: 'delete',
-      path: path,
-      qs: qs
-    }, callback);
+    return this.request({path, qs, method: 'delete'}, callback);
   }
 
   head(path, qs, callback) {
@@ -150,10 +127,6 @@ export default class Route {
     }
     if (!path) path = '';
     else if (this._path && path.charAt(0) !== '/') path = '/' + path;
-    return this.request({
-      method: 'head',
-      path: path,
-      qs: qs
-    }, callback);
+    return this.request({path, qs, method: 'head'}, callback);
   }
 }
