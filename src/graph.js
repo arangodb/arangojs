@@ -2,7 +2,7 @@
 import extend from 'extend';
 import {_BaseCollection as BaseCollection} from './collection';
 
-class VertexCollection extends BaseCollection {
+class GraphVertexCollection extends BaseCollection {
   constructor(connection, name, graph) {
     super(connection, name);
     this.graph = graph;
@@ -29,7 +29,7 @@ class VertexCollection extends BaseCollection {
   }
 }
 
-class EdgeCollection extends BaseCollection {
+class GraphEdgeCollection extends BaseCollection {
   constructor(connection, name, graph) {
     super(connection, name);
     this.graph = graph;
@@ -63,9 +63,6 @@ class EdgeCollection extends BaseCollection {
 }
 
 export default class Graph {
-  static VertexCollection = VertexCollection;
-  static EdgeCollection = EdgeCollection;
-
   constructor(connection, name) {
     this._connection = connection;
     this._api = this._connection.route('_api');
@@ -108,17 +105,8 @@ export default class Graph {
     return promise;
   }
 
-  vertexCollection(collectionName, cb) {
-    const {promise, callback} = this._connection.promisify(cb);
-    this._api.get(
-      `collection/${collectionName}`,
-      (err, res) => (
-        err
-        ? callback(err)
-        : callback(null, new VertexCollection(this._connection, res.body, this))
-      )
-    );
-    return promise;
+  vertexCollection(collectionName) {
+    return new GraphVertexCollection(this._connection, collectionName, this);
   }
 
   addVertexCollection(collectionName, cb) {
@@ -145,17 +133,8 @@ export default class Graph {
     return promise;
   }
 
-  edgeCollection(collectionName, cb) {
-    const {promise, callback} = this._connection.promisify(cb);
-    this._api.get(
-      `collection/${collectionName}`,
-      (err, res) => (
-        err
-        ? callback(err)
-        : callback(null, new EdgeCollection(this._connection, res.body, this))
-      )
-    );
-    return promise;
+  edgeCollection(collectionName) {
+    return new GraphEdgeCollection(this._connection, collectionName, this);
   }
 
   addEdgeDefinition(definition, cb) {
@@ -206,3 +185,8 @@ export default class Graph {
     return promise;
   }
 }
+
+export {
+  GraphVertexCollection as VertexCollection,
+  GraphEdgeCollection as EdgeCollection
+};
