@@ -2329,12 +2329,15 @@ exports['default'] = function (baseUrl, agent, agentOptions) {
     options.auth = baseUrlParts.auth;
 
     queue.push(function (next) {
-      var _this = this,
-          _arguments = arguments;
+      var _this = this;
 
       var callback = (0, _once2['default'])(function () {
+        for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+          args[_key] = arguments[_key];
+        }
+
         next();
-        cb.apply(_this, _arguments);
+        cb.apply(_this, args);
       });
       var req = (isTls ? _https2['default'] : _http2['default']).request(options, function (res) {
         var data = [];
