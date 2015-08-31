@@ -879,7 +879,7 @@ cursor.map(square, function (err, result) {
 
 ### cursor.reduce
 
-`cursor.reduce(fn, [accu]): Object`
+`cursor.reduce(fn, [accu]): any`
 
 Rewinds and exhausts the cursor by reducing the values returned by the query with the given function *fn*. If *accu* is not provided, the first value returned by the query will be used instead (the function will not be invoked for that value).
 
@@ -2597,6 +2597,23 @@ collection.import([
 ## Graph API
 
 These functions implement the [HTTP API for manipulating graphs](https://docs.arangodb.com/HttpGharial/index.html).
+
+#### graph.get
+
+`async graph.get(): Object`
+
+Retrieves general information about the graph.
+
+**Examples**
+
+```js
+var db = require('arangojs')();
+var graph = db.graph('some-graph');
+graph.get(function (err, data) {
+    if (err) return console.error(err);
+    // data contains general information about the graph
+});
+```
 
 #### graph.create
 
