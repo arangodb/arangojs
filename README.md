@@ -444,7 +444,7 @@ db.transaction({read: '_users'}, action, function (err, result) {
 
 This function implements the [HTTP API for single roundtrip AQL queries](https://docs.arangodb.com/HttpAqlQueryCursor/QueryResults.html).
 
-For collection-specific queries see [fulltext queries](#fulltext-queries) and [geo-spatial queries](#geo-queries).
+For collection-specific queries see [simple queries](#simple-queries), [fulltext queries](#fulltext-queries) and [geo-spatial queries](#geo-queries).
 
 #### database.query
 
@@ -1929,6 +1929,76 @@ db.createCollection('some-collection', function (err, collection) {
     });
 });
 ```
+
+### Simple queries
+
+These functions implement the [HTTP API for simple queries](https://docs.arangodb.com/HttpSimpleQuery/index.html).
+
+#### collection.all
+
+`async collection.all([opts]): Cursor`
+
+*TODO*
+
+#### collection.any
+
+`async collection.any(): Object`
+
+*TODO*
+
+#### collection.first
+
+`async collection.first([opts]): Array<Object>`
+
+*TODO*
+
+#### collection.last
+
+`async collection.first([opts]): Array<Object>`
+
+*TODO*
+
+#### collection.byExample
+
+`async collection.byExample(example, [opts]): Cursor`
+
+*TODO*
+
+#### collection.firstExample
+
+`async collection.firstExample(example): Object`
+
+*TODO*
+
+#### collection.removeByExample
+
+`async collection.removeByExample(example, [opts]): Object`
+
+*TODO*
+
+#### collection.replaceByExample
+
+`async collection.replaceByExample(example, newValue, [opts]): Object`
+
+*TODO*
+
+#### collection.updateByExample
+
+`async collection.updateByExample(example, newValue, [opts]): Object`
+
+*TODO*
+
+#### collection.lookupByKeys
+
+`async collection.lookupByKeys(keys): Array<Object>`
+
+*TODO*
+
+#### collection.removeByKeys
+
+`async collection.removeByKeys(keys, [opts]): Object`
+
+*TODO*
 
 ### Fulltext queries
 
