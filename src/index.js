@@ -1,8 +1,10 @@
 'use strict';
+import extend from 'extend';
 import Database from './database';
 
-export default function construct(...args) {
-  return new Database(...args);
-}
-
-export {Database};
+module.exports = extend(
+  function construct(...args) {
+    return new Database(...args);
+  },
+  {Database}
+);
