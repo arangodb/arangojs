@@ -73,9 +73,9 @@ export default function (baseUrl, agent, agentOptions) {
     options.auth = baseUrlParts.auth;
 
     queue.push(function (next) {
-      const callback = once(() => {
+      const callback = once((...args) => {
         next();
-        cb.apply(this, arguments);
+        cb.apply(this, args);
       });
       const req = (isTls ? https : http).request(options, res => {
         const data = [];
