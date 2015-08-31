@@ -42,7 +42,7 @@ export default class Database {
     this._api.post(
       'database',
       {users, name: databaseName},
-      (err, res) => err ? callback(err) : callback(null)
+      (err, res) => err ? callback(err) : callback(null, res.body)
     );
     return promise;
   }
@@ -69,7 +69,7 @@ export default class Database {
     const {promise, callback} = this._connection.promisify(cb);
     this._api.delete(
       `database/${databaseName}`,
-      (err, res) => err ? callback(err) : callback(null)
+      (err, res) => err ? callback(err) : callback(null, res.body)
     );
     return promise;
   }
@@ -125,7 +125,7 @@ export default class Database {
         ? callback(err)
         : all(collections.map(data => cb => this._api.put(
             `collection/${data.name}/truncate`,
-            (err, res) => err ? cb(err) : cb(null)
+            (err, res) => err ? cb(err) : cb(null, res.body)
         )), callback)
       )
     );
@@ -219,7 +219,7 @@ export default class Database {
     this._api.post(
       'aqlfunction',
       {name, code},
-      (err, res) => err ? callback(err) : callback(null)
+      (err, res) => err ? callback(err) : callback(null, res.body)
     );
     return promise;
   }
@@ -233,7 +233,7 @@ export default class Database {
     this._api.delete(
       `aqlfunction/${name}`,
       {group: Boolean(group)},
-      (err, res) => err ? callback(err) : callback(null)
+      (err, res) => err ? callback(err) : callback(null, res.body)
     );
     return promise;
   }

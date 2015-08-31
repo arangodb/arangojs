@@ -154,7 +154,7 @@ class BaseCollection {
     return promise;
   }
 
-  replace(documentHandle, data, opts, cb) {
+  replace(documentHandle, newValue, opts, cb) {
     if (typeof opts === 'function') {
       cb = opts;
       opts = undefined;
@@ -162,14 +162,14 @@ class BaseCollection {
     let {promise, callback} = this._connection.promisify(cb);
     this._api.put(
       this._documentPath(documentHandle),
-      data,
+      newValue,
       extend({}, opts, {collection: this.name}),
       (err, res) => err ? callback(err) : callback(null, res.body)
     );
     return promise;
   }
 
-  update(documentHandle, data, opts, cb) {
+  update(documentHandle, newValue, opts, cb) {
     if (typeof opts === 'function') {
       cb = opts;
       opts = undefined;
@@ -177,7 +177,7 @@ class BaseCollection {
     let {promise, callback} = this._connection.promisify(cb);
     this._api.patch(
       this._documentPath(documentHandle),
-      data,
+      newValue,
       extend({}, opts, {collection: this.name}),
       (err, res) => err ? callback(err) : callback(null, res.body)
     );
