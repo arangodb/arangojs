@@ -1273,6 +1273,10 @@ var _extend = require('extend');
 
 var _extend2 = _interopRequireDefault(_extend);
 
+var _utilAll = require('./util/all');
+
+var _utilAll2 = _interopRequireDefault(_utilAll);
+
 var _connection = require('./connection');
 
 var _connection2 = _interopRequireDefault(_connection);
@@ -1281,17 +1285,13 @@ var _cursor = require('./cursor');
 
 var _cursor2 = _interopRequireDefault(_cursor);
 
-var _collection = require('./collection');
-
-var _collection2 = _interopRequireDefault(_collection);
-
 var _graph = require('./graph');
 
 var _graph2 = _interopRequireDefault(_graph);
 
-var _utilAll = require('./util/all');
+var _collection = require('./collection');
 
-var _utilAll2 = _interopRequireDefault(_utilAll);
+var _collection2 = _interopRequireDefault(_collection);
 
 var Database = (function () {
   function Database(config) {
@@ -1553,10 +1553,36 @@ var Database = (function () {
       if (_query && typeof _query.toAQL === 'function') {
         _query = _query.toAQL();
       }
+      if (_query && _query.query) {
+        bindVars = _query.bindVars;
+        _query = _query.query;
+      }
       this._api.post('cursor', (0, _extend2['default'])({}, opts, { query: _query, bindVars: bindVars }), function (err, res) {
         return err ? callback(err) : callback(null, new _cursor2['default'](_this4._connection, res.body));
       });
       return promise;
+    }
+  }, {
+    key: 'aqlQuery',
+    value: function aqlQuery(strings) {
+      var bindVars = {};
+      var query = strings[0];
+
+      for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+        args[_key - 1] = arguments[_key];
+      }
+
+      for (var i = 0; i < args.length; i++) {
+        var value = args[i];
+        var _name = 'var' + i;
+        if (value instanceof _collection._BaseCollection || value.constructor && value.constructor.name === 'ArangoCollection') {
+          _name = '@' + _name;
+          value = typeof value.name === 'function' ? value.name() : value.name;
+        }
+        bindVars[_name] = value;
+        query += '@' + _name + strings[i + 1];
+      }
+      return { query: query, bindVars: bindVars };
     }
 
     // Function manipulation
