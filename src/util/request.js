@@ -9,7 +9,7 @@ function joinPath(a = '', b = '') {
   if (!a && !b) return '';
   const leadingSlash = a.charAt(0) === '/';
   const trailingSlash = b.charAt(b.length - 1) === '/';
-  const tokens = (a + '/' + b).split('/').filter(Boolean);
+  const tokens = `${a}/${b}`.split('/').filter(Boolean);
   for (let i = 0; i < tokens.length; i++) {
     let token = tokens[i];
     if (token === '..') {
@@ -21,8 +21,8 @@ function joinPath(a = '', b = '') {
     }
   }
   let path = tokens.join('/');
-  if (leadingSlash) path = '/' + path;
-  if (trailingSlash) path = path + '/';
+  if (leadingSlash) path = `/${path}`;
+  if (trailingSlash) path = `${path}/`;
   return path;
 }
 
@@ -64,7 +64,7 @@ export default function (baseUrl, agent, agentOptions) {
       url.pathname ? joinPath(baseUrlParts.pathname, url.pathname) : baseUrlParts.pathname
     ) : url.pathname;
     const search = url.search ? (
-      baseUrlParts.search ? baseUrlParts.search + '&' + url.search.slice(1) : url.search
+      baseUrlParts.search ? `${baseUrlParts.search}&${url.search.slice(1)}` : url.search
     ) : baseUrlParts.search;
     if (search) path += search;
     const options = {path, method, headers, agent};

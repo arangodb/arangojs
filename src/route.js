@@ -10,7 +10,7 @@ export default class Route {
 
   route(path, headers) {
     if (!path) path = '';
-    else if (path.charAt(0) !== '/') path = '/' + path;
+    else if (path.charAt(0) !== '/') path = `/${path}`;
     return new Route(
       this._connection,
       this._path + path,
@@ -36,7 +36,7 @@ export default class Route {
       qs = undefined;
     }
     if (!path) path = '';
-    else if (this._path && path.charAt(0) !== '/') path = '/' + path;
+    else if (this._path && path.charAt(0) !== '/') path = `/${path}`;
     return this.request({path, qs, method: 'get'}, callback);
   }
 
@@ -56,7 +56,7 @@ export default class Route {
       body = undefined;
     }
     if (!path) path = '';
-    else if (this._path && path.charAt(0) !== '/') path = '/' + path;
+    else if (this._path && path.charAt(0) !== '/') path = `/${path}`;
     return this.request({path, body, qs, method: 'post'}, callback);
   }
 
@@ -76,7 +76,7 @@ export default class Route {
       body = undefined;
     }
     if (!path) path = '';
-    else if (this._path && path.charAt(0) !== '/') path = '/' + path;
+    else if (this._path && path.charAt(0) !== '/') path = `/${path}`;
     return this.request({path, body, qs, method: 'put'}, callback);
   }
 
@@ -96,7 +96,7 @@ export default class Route {
       body = undefined;
     }
     if (!path) path = '';
-    else if (this._path && path.charAt(0) !== '/') path = '/' + path;
+    else if (this._path && path.charAt(0) !== '/') path = `/${path}`;
     return this.request({path, body, qs, method: 'patch'}, callback);
   }
 
@@ -111,7 +111,7 @@ export default class Route {
       qs = undefined;
     }
     if (!path) path = '';
-    else if (this._path && path.charAt(0) !== '/') path = '/' + path;
+    else if (this._path && path.charAt(0) !== '/') path = `/${path}`;
     return this.request({path, qs, method: 'delete'}, callback);
   }
 
@@ -126,7 +126,7 @@ export default class Route {
       qs = undefined;
     }
     if (!path) path = '';
-    else if (this._path && path.charAt(0) !== '/') path = '/' + path;
+    else if (this._path && path.charAt(0) !== '/') path = `/${path}`;
     return this.request({path, qs, method: 'head'}, callback);
   }
 }

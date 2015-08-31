@@ -26,7 +26,7 @@ export default class ArrayCursor {
   _more(callback) {
     if (!this._hasMore) callback(null, this);
     else {
-      this._api.put('cursor/' + this._id, (err, res) => {
+      this._api.put(`cursor/${this._id}`, (err, res) => {
         if (err) callback(err);
         else {
           this._result.push.apply(this._result, res.body.result);

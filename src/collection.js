@@ -21,7 +21,7 @@ class BaseCollection {
       documentHandle = documentHandle._key;
     }
     if (documentHandle.indexOf('/') === -1) {
-      documentHandle = this.name + '/' + documentHandle;
+      documentHandle = `${this.name}/${documentHandle}`;
     }
     return documentHandle;
   }
@@ -31,7 +31,7 @@ class BaseCollection {
       indexHandle = indexHandle.id;
     }
     if (indexHandle.indexOf('/') === -1) {
-      indexHandle = this.name + '/' + indexHandle;
+      indexHandle = `${this.name}/${indexHandle}`;
     }
     return indexHandle;
   }
@@ -413,7 +413,7 @@ class BaseCollection {
   dropIndex(indexHandle, cb) {
     let {promise, callback} = this._connection.promisify(cb);
     this._api.delete(
-      'index/' + this._indexHandle(indexHandle),
+      `index/${this._indexHandle(indexHandle)}`,
       (err, res) => err ? callback(err) : callback(null, res.body)
     );
     return promise;
@@ -533,7 +533,7 @@ class DocumentCollection extends BaseCollection {
   type = types.DOCUMENT_COLLECTION;
 
   _documentPath(documentHandle) {
-    return 'document/' + this._documentHandle(documentHandle);
+    return `document/${this._documentHandle(documentHandle)}`;
   }
 
   document(documentHandle, cb) {
@@ -561,7 +561,7 @@ class EdgeCollection extends BaseCollection {
   type = types.EDGE_COLLECTION;
 
   _documentPath(documentHandle) {
-    return 'edge/' + this._documentHandle(documentHandle);
+    return `edge/${this._documentHandle(documentHandle)}`;
   }
 
   edge(documentHandle, cb) {

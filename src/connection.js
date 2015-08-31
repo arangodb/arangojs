@@ -38,11 +38,11 @@ export default class Connection {
   _resolveUrl(opts) {
     const url = {pathname: ''};
     if (!opts.absolutePath) {
-      url.pathname += '/_db/' + this.config.databaseName;
-      if (opts.basePath) url.pathname += '/' + opts.basePath;
+      url.pathname = `${url.pathname}/_db/${this.config.databaseName}`;
+      if (opts.basePath) url.pathname = `${url.pathname}/${opts.basePath}`;
     }
     url.pathname += opts.path ? (opts.path.charAt(0) === '/' ? '' : '/') + opts.path : '';
-    if (opts.qs) url.search = '?' + (typeof opts.qs === 'string' ? opts.qs : qs.stringify(opts.qs));
+    if (opts.qs) url.search = `?${typeof opts.qs === 'string' ? opts.qs : qs.stringify(opts.qs)}`;
     return url;
   }
 
