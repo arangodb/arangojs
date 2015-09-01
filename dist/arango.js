@@ -1138,12 +1138,12 @@ var ArrayCursor = (function () {
       this._drain(function (err) {
         if (err) callback(err);else {
           try {
-            var result = true;
+            var result = undefined;
             for (_this4._index = 0; _this4._index < _this4._result.length; _this4._index++) {
               result = fn(_this4._result[_this4._index], _this4._index, _this4);
               if (result === false) break;
             }
-            callback(null);
+            callback(null, result);
           } catch (e) {
             callback(e);
           }
