@@ -752,9 +752,11 @@ cursor.all(function (err) { // exhausts the cursor
 
 ### cursor.each
 
-`async cursor.each(fn): boolean`
+`async cursor.each(fn): any`
 
 Rewinds and exhausts the cursor by applying the function *fn* to each value returned by the query.
+
+Returns the last return value of *fn*.
 
 Equivalent to *Array.prototype.forEach* (except async).
 
@@ -762,7 +764,7 @@ Equivalent to *Array.prototype.forEach* (except async).
 
 * **fn**: `Function`
 
-  A function that will be invoked for each value returned by the query.
+  A function that will be invoked for each value returned by the query until it explicitly returns `false` or the cursor is exhausted.
 
   The function receives the following arguments:
 
@@ -781,17 +783,18 @@ Equivalent to *Array.prototype.forEach* (except async).
 **Examples**
 
 ```js
-var counter = 0;
-function count() {
-    counter += 1;
-    return counter;
+var results = [];
+function doStuff(value) {
+  var VALUE = value.toUpperCase();
+  results.push(VALUE);
+  return VALUE;
 }
-// query result: [1, 2, 3, 4, 5]
-cursor.each(count, function (err, result) {
+// query result: ['a', 'b', 'c']
+cursor.each(doStuff, function (err, last) {
     if (err) return console.error(err);
-    counter === result;
-    result === 5;
+    String(results) === 'A,B,C';
     cursor.hasNext() === false;
+    last === 'C';
 });
 ```
 
@@ -809,7 +812,7 @@ Equivalent to *Array.prototype.every* (except async).
 
 * **fn**: `Function`
 
-  A function that will be invoked for each value returned by the query until it returns `false` or the cursor is exhausted.
+  A function that will be invoked for each value returned by the query until it returns a value that evaluates to `false` or the cursor is exhausted.
 
   The function receives the following arguments:
 

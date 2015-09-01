@@ -74,12 +74,12 @@ export default class ArrayCursor {
       if (err) callback(err);
       else {
         try {
-          let result = true;
+          let result;
           for (this._index = 0; this._index < this._result.length; this._index++) {
             result = fn(this._result[this._index], this._index, this);
             if (result === false) break;
           }
-          callback(null);
+          callback(null, result);
         } catch (e) {
           callback(e);
         }
