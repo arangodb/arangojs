@@ -514,9 +514,9 @@ db.query(
 );
 ```
 
-#### database.aqlQuery
+#### aqlQuery
 
-`database.aqlQuery(strings, ...args): Object`
+`aqlQuery(strings, ...args): Object`
 
 Template string handler for AQL queries. Converts an ES2015 template string to an object that can be passed to `database.query` by converting arguments to bind variables.
 
@@ -526,10 +526,11 @@ Any *Collection* instances will automatically be converted to collection bind va
 
 ```
 var db = require('arangojs')();
+var aqlQuery = require('arangojs').aqlQuery;
 var userCollection = db.collection('_users');
 var role = 'admin';
 db.query(
-  db.aqlQuery`
+  aqlQuery`
     FOR user IN ${userCollection}
     FILTER user.role == ${role}
     RETURN user
@@ -541,8 +542,8 @@ db.query(
 );
 // -- is equivalent to --
 db.query(
-  'FOR user IN @@var1 FILTER user.role == @var2 RETURN user',
-  {'@var1': userCollection.name, var2: role},
+  'FOR user IN @@value0 FILTER user.role == @value1 RETURN user',
+  {'@value0': userCollection.name, value1: role},
   function (err, cursor) {
     if (err) return console.error(err);
     // cursor is a cursor for the query result

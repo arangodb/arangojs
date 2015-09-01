@@ -1,10 +1,12 @@
 'use strict';
 import extend from 'extend';
 import Database from './database';
+import aqlQuery from './aql-query';
 
 module.exports = extend(
-  function construct(...args) {
-    return new Database(...args);
-  },
-  {Database}
+  (...args) => new Database(...args),
+  {
+    Database,
+    aqlQuery
+  }
 );

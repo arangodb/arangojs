@@ -6,8 +6,7 @@ import ArrayCursor from './cursor';
 import Graph from './graph';
 import constructCollection, {
   DocumentCollection,
-  EdgeCollection,
-  _BaseCollection as BaseCollection
+  EdgeCollection
 } from './collection';
 
 export default class Database {
@@ -209,25 +208,6 @@ export default class Database {
       (err, res) => err ? callback(err) : callback(null, new ArrayCursor(this._connection, res.body))
     );
     return promise;
-  }
-
-  aqlQuery(strings, ...args) {
-    const bindVars = {};
-    let query = strings[0];
-    for (let i = 0; i < args.length; i++) {
-      let value = args[i];
-      let name = `value${i}`;
-      if (
-        value instanceof BaseCollection
-        || (value.constructor && value.constructor.name === 'ArangoCollection')
-      ) {
-        name = `@${name}`;
-        value = typeof value.name === 'function' ? value.name() : value.name;
-      }
-      bindVars[name] = value;
-      query += `@${name}${strings[i + 1]}`;
-    }
-    return {query, bindVars};
   }
 
   // Function manipulation
