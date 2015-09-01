@@ -524,7 +524,7 @@ Any *Collection* instances will automatically be converted to collection bind va
 
 **Examples**
 
-```
+```js
 var db = require('arangojs')();
 var aqlQuery = require('arangojs').aqlQuery;
 var userCollection = db.collection('_users');
