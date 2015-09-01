@@ -889,6 +889,10 @@ var _utilPromisify = require('./util/promisify');
 
 var _utilPromisify2 = _interopRequireDefault(_utilPromisify);
 
+var _httpErrors = require('http-errors');
+
+var _httpErrors2 = _interopRequireDefault(_httpErrors);
+
 var _extend = require('extend');
 
 var _extend2 = _interopRequireDefault(_extend);
@@ -998,15 +1002,21 @@ var Connection = (function () {
         method: (opts.method || 'get').toUpperCase(),
         body: body
       }, function (err, res) {
-        if (err) callback(err);else if (res.headers['content-type'].match(MIME_JSON)) {
-          try {
-            res.rawBody = res.body;
-            res.body = JSON.parse(res.rawBody);
-          } catch (e) {
-            return callback((0, _extend2['default'])(e, { response: res }));
+        if (err) callback(err);else {
+          res.rawBody = res.body;
+          if (res.headers['content-type'].match(MIME_JSON)) {
+            try {
+              res.body = JSON.parse(res.rawBody);
+            } catch (e) {
+              return callback((0, _extend2['default'])(e, { response: res }));
+            }
           }
-          if (!res.body.error) callback(null, res);else callback((0, _extend2['default'])(new _error2['default'](res.body), { response: res }));
-        } else callback(null, (0, _extend2['default'])(res, { rawBody: res.body }));
+          if (res.body && res.body.error && res.body.hasOwnProperty('code') && res.body.hasOwnProperty('errorMessage') && res.body.hasOwnProperty('errorNum')) {
+            callback((0, _extend2['default'])(new _error2['default'](res.body), { response: res }));
+          } else if (res.statusCode >= 400) {
+            callback((0, _extend2['default'])((0, _httpErrors2['default'])(res.statusCode), { response: res }));
+          } else callback(null, res);
+        }
       });
       return promise;
     }
@@ -1018,7 +1028,7 @@ var Connection = (function () {
 exports['default'] = Connection;
 module.exports = exports['default'];
 }).call(this,require("buffer").Buffer)
-},{"./error":6,"./route":9,"./util/promisify":12,"./util/request":13,"buffer":15,"extend":"extend","querystring":27}],4:[function(require,module,exports){
+},{"./error":6,"./route":9,"./util/promisify":12,"./util/request":13,"buffer":15,"extend":"extend","http-errors":54,"querystring":27}],4:[function(require,module,exports){
 'use strict';
 Object.defineProperty(exports, '__esModule', {
   value: true
@@ -2378,7 +2388,7 @@ exports['default'] = function (baseUrl, agent, agentOptions) {
 };
 
 module.exports = exports['default'];
-},{"./once":11,"http":42,"https":20,"linkedlist":54,"url":52}],14:[function(require,module,exports){
+},{"./once":11,"http":42,"https":20,"linkedlist":58,"url":52}],14:[function(require,module,exports){
 
 },{}],15:[function(require,module,exports){
 /*!
@@ -9088,12 +9098,263 @@ function extend() {
 }
 
 },{}],54:[function(require,module,exports){
+
+var statuses = require('statuses');
+var inherits = require('inherits');
+
+function toIdentifier(str) {
+  return str.split(' ').map(function (token) {
+    return token.slice(0, 1).toUpperCase() + token.slice(1)
+  }).join('').replace(/[^ _0-9a-z]/gi, '')
+}
+
+exports = module.exports = function httpError() {
+  // so much arity going on ~_~
+  var err;
+  var msg;
+  var status = 500;
+  var props = {};
+  for (var i = 0; i < arguments.length; i++) {
+    var arg = arguments[i];
+    if (arg instanceof Error) {
+      err = arg;
+      status = err.status || err.statusCode || status;
+      continue;
+    }
+    switch (typeof arg) {
+      case 'string':
+        msg = arg;
+        break;
+      case 'number':
+        status = arg;
+        break;
+      case 'object':
+        props = arg;
+        break;
+    }
+  }
+
+  if (typeof status !== 'number' || !statuses[status]) {
+    status = 500
+  }
+
+  // constructor
+  var HttpError = exports[status]
+
+  if (!err) {
+    // create error
+    err = HttpError
+      ? new HttpError(msg)
+      : new Error(msg || statuses[status])
+    Error.captureStackTrace(err, httpError)
+  }
+
+  if (!HttpError || !(err instanceof HttpError)) {
+    // add properties to generic error
+    err.expose = status < 500
+    err.status = err.statusCode = status
+  }
+
+  for (var key in props) {
+    if (key !== 'status' && key !== 'statusCode') {
+      err[key] = props[key]
+    }
+  }
+
+  return err;
+};
+
+// create generic error objects
+var codes = statuses.codes.filter(function (num) {
+  return num >= 400;
+});
+
+codes.forEach(function (code) {
+  var name = toIdentifier(statuses[code])
+  var className = name.match(/Error$/) ? name : name + 'Error'
+
+  if (code >= 500) {
+    var ServerError = function ServerError(msg) {
+      var self = new Error(msg != null ? msg : statuses[code])
+      Error.captureStackTrace(self, ServerError)
+      self.__proto__ = ServerError.prototype
+      Object.defineProperty(self, 'name', {
+        enumerable: false,
+        configurable: true,
+        value: className,
+        writable: true
+      })
+      return self
+    }
+    inherits(ServerError, Error);
+    ServerError.prototype.status =
+    ServerError.prototype.statusCode = code;
+    ServerError.prototype.expose = false;
+    exports[code] =
+    exports[name] = ServerError
+    return;
+  }
+
+  var ClientError = function ClientError(msg) {
+    var self = new Error(msg != null ? msg : statuses[code])
+    Error.captureStackTrace(self, ClientError)
+    self.__proto__ = ClientError.prototype
+    Object.defineProperty(self, 'name', {
+      enumerable: false,
+      configurable: true,
+      value: className,
+      writable: true
+    })
+    return self
+  }
+  inherits(ClientError, Error);
+  ClientError.prototype.status =
+  ClientError.prototype.statusCode = code;
+  ClientError.prototype.expose = true;
+  exports[code] =
+  exports[name] = ClientError
+  return;
+});
+
+// backwards-compatibility
+exports["I'mateapot"] = exports.ImATeapot
+
+},{"inherits":55,"statuses":57}],55:[function(require,module,exports){
+arguments[4][21][0].apply(exports,arguments)
+},{"dup":21}],56:[function(require,module,exports){
+module.exports={
+  "100": "Continue",
+  "101": "Switching Protocols",
+  "102": "Processing",
+  "200": "OK",
+  "201": "Created",
+  "202": "Accepted",
+  "203": "Non-Authoritative Information",
+  "204": "No Content",
+  "205": "Reset Content",
+  "206": "Partial Content",
+  "207": "Multi-Status",
+  "208": "Already Reported",
+  "226": "IM Used",
+  "300": "Multiple Choices",
+  "301": "Moved Permanently",
+  "302": "Found",
+  "303": "See Other",
+  "304": "Not Modified",
+  "305": "Use Proxy",
+  "306": "(Unused)",
+  "307": "Temporary Redirect",
+  "308": "Permanent Redirect",
+  "400": "Bad Request",
+  "401": "Unauthorized",
+  "402": "Payment Required",
+  "403": "Forbidden",
+  "404": "Not Found",
+  "405": "Method Not Allowed",
+  "406": "Not Acceptable",
+  "407": "Proxy Authentication Required",
+  "408": "Request Timeout",
+  "409": "Conflict",
+  "410": "Gone",
+  "411": "Length Required",
+  "412": "Precondition Failed",
+  "413": "Payload Too Large",
+  "414": "URI Too Long",
+  "415": "Unsupported Media Type",
+  "416": "Range Not Satisfiable",
+  "417": "Expectation Failed",
+  "418": "I'm a teapot",
+  "422": "Unprocessable Entity",
+  "423": "Locked",
+  "424": "Failed Dependency",
+  "425": "Unordered Collection",
+  "426": "Upgrade Required",
+  "428": "Precondition Required",
+  "429": "Too Many Requests",
+  "431": "Request Header Fields Too Large",
+  "451": "Unavailable For Legal Reasons",
+  "500": "Internal Server Error",
+  "501": "Not Implemented",
+  "502": "Bad Gateway",
+  "503": "Service Unavailable",
+  "504": "Gateway Timeout",
+  "505": "HTTP Version Not Supported",
+  "506": "Variant Also Negotiates",
+  "507": "Insufficient Storage",
+  "508": "Loop Detected",
+  "509": "Bandwidth Limit Exceeded",
+  "510": "Not Extended",
+  "511": "Network Authentication Required"
+}
+},{}],57:[function(require,module,exports){
+
+var codes = require('./codes.json');
+
+module.exports = status;
+
+// [Integer...]
+status.codes = Object.keys(codes).map(function (code) {
+  code = ~~code;
+  var msg = codes[code];
+  status[code] = msg;
+  status[msg] = status[msg.toLowerCase()] = code;
+  return code;
+});
+
+// status codes for redirects
+status.redirect = {
+  300: true,
+  301: true,
+  302: true,
+  303: true,
+  305: true,
+  307: true,
+  308: true,
+};
+
+// status codes for empty bodies
+status.empty = {
+  204: true,
+  205: true,
+  304: true,
+};
+
+// status codes for when you should retry the request
+status.retry = {
+  502: true,
+  503: true,
+  504: true,
+};
+
+function status(code) {
+  if (typeof code === 'number') {
+    if (!status[code]) throw new Error('invalid status code: ' + code);
+    return code;
+  }
+
+  if (typeof code !== 'string') {
+    throw new TypeError('code must be a number or string');
+  }
+
+  // '403'
+  var n = parseInt(code, 10)
+  if (!isNaN(n)) {
+    if (!status[n]) throw new Error('invalid status code: ' + n);
+    return n;
+  }
+
+  n = status[code.toLowerCase()];
+  if (!n) throw new Error('invalid status message: "' + code + '"');
+  return n;
+}
+
+},{"./codes.json":56}],58:[function(require,module,exports){
 (function (process){
 module.exports = process.env.LINKEDLIST_COV
    ? require('./lib-cov/linkedlist')
    : require('./lib/linkedlist')
 }).call(this,require('_process'))
-},{"./lib-cov/linkedlist":55,"./lib/linkedlist":56,"_process":23}],55:[function(require,module,exports){
+},{"./lib-cov/linkedlist":59,"./lib/linkedlist":60,"_process":23}],59:[function(require,module,exports){
 /* automatically generated by JSCoverage - do not edit */
 if (typeof _$jscoverage === 'undefined') _$jscoverage = {};
 if (! _$jscoverage['linkedlist.js']) {
@@ -9460,7 +9721,7 @@ function Item(data, prev, next) {
 }
 _$jscoverage['linkedlist.js'].source = ["module.exports = function () {","  Object.defineProperty(this, '_head', {","    value: undefined,","    writable: true,","    enumerable: false,","    configurable: false","  })","  Object.defineProperty(this, '_tail', {","    value: undefined,","    writable: true,","    enumerable: false,","    configurable: false","  })","  Object.defineProperty(this, '_next', {","    value: undefined,","    writable: true,","    enumerable: false,","    configurable: false","  })","  Object.defineProperty(this, '_length', {","    value: 0,","    writable: true,","    enumerable: false,","    configurable: false","  })","}","","module.exports.prototype.__defineGetter__('head', function () {","  return this._head &amp;&amp; this._head.data","})","","module.exports.prototype.__defineGetter__('tail', function () {","  return this._tail &amp;&amp; this._tail.data","})","","module.exports.prototype.__defineGetter__('current', function () {","  return this._current &amp;&amp; this._current.data","})","","module.exports.prototype.__defineGetter__('length', function () {","  return this._length","})","","module.exports.prototype.push = function (data) {","  this._tail = new Item(data, this._tail)","  if (this._length === 0) {","    this._head = this._tail","    this._current = this._head","    this._next = this._head","  }","  this._length++","}","","module.exports.prototype.pop = function () {","  var tail = this._tail","  if (this._length === 0) {","    return","  }","  this._length--","  if (this._length === 0) {","    this._head = this._tail = this._current = this._next = undefined","    return tail.data","  }","  this._tail = tail.prev","  this._tail.next = undefined","  if (this._current === tail) {","    this._current = this._tail","    this._next = undefined","  }","  return tail.data","}","","module.exports.prototype.shift = function () {","  var head = this._head","  if (this._length === 0)  {","    return","  }","  this._length--","  if (this._length === 0) {","    this._head = this._tail = this._current = this._next = undefined","    return head.data","  }","  this._head = this._head.next","  if (this._current === head) {","    this._current = this._head","    this._next = this._current.next","  }","  return head.data","}","","module.exports.prototype.unshift = function (data) {","  this._head = new Item(data, undefined, this._head)","  if (this._length === 0)  {","    this._tail = this._head","    this._next = this._head","  }","  this._length++","}","","module.exports.prototype.unshiftCurrent = function () {","  var current = this._current","  if (current === this._head || this._length &lt; 2) {","    return current &amp;&amp; current.data","  }","  // remove","  if (current === this._tail) {","    this._tail = current.prev","    this._tail.next = undefined","    this._current = this._tail","  } else {","    current.next.prev = current.prev","    current.prev.next = current.next","    this._current = current.prev","  }","  this._next = this._current.next","  // unshift","  current.next = this._head","  current.prev = undefined","  this._head.prev = current","  this._head = current","  return current.data","}","","module.exports.prototype.removeCurrent = function (data) {","  var current = this._current","  if (this._length === 0) {","    return","  }","  this._length--","  if (this._length === 0) {","    this._head = this._tail = this._current = this._next = undefined","    return current.data","  }","  if (current === this._tail) {","    this._tail = current.prev","    this._tail.next = undefined","    this._current = this._tail","  } else if (current === this._head) {","    this._head = current.next","    this._head.prev = undefined","    this._current = this._head","  } else {","    current.next.prev = current.prev","    current.prev.next = current.next","    this._current = current.prev","  }","  this._next = this._current.next","  return current.data","}","","module.exports.prototype.next = function () {","  var next = this._next","  if (next !== undefined) {","    this._next = next.next","    this._current = next","    return next.data","  }","}","","module.exports.prototype.resetCursor = function () {","  this._current = this._next = this._head","  return this","}","","function Item (data, prev, next) {","  this.next = next","  if (next) next.prev = this","  this.prev = prev","  if (prev) prev.next = this","  this.data = data","}"];
 
-},{}],56:[function(require,module,exports){
+},{}],60:[function(require,module,exports){
 module.exports = function () {
   Object.defineProperty(this, '_head', {
     value: undefined,
