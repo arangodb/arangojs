@@ -144,7 +144,7 @@ Creates a new database with the given *databaseName*.
 
     The username of the user to create for the database.
 
-  * **passwd**: `string` (Default: `undefined`)
+  * **passwd**: `string` (Default: empty)
 
     The password of the user.
 
