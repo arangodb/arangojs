@@ -21,8 +21,8 @@
     "LICENSE"
   ],
   "scripts": {
-    "test": "npm run lint && npm run babel && npm run test-only",
-    "test-only": "mocha -t 30000 --growl -R spec",
+    "test": "npm run lint && npm run test-only",
+    "test-only": "mocha --compilers js:babel/register -t 30000 --growl -R spec",
     "cover": "npm run lint && npm run babel && istanbul cover --report lcov _mocha -- -t 30000 -R spec",
     "coveralls": "npm run cover && cat ./coverage/lcov.info | coveralls ; rm -rf ./coverage",
     "watch": "watch 'npm run test-only && npm run lint && npm run dist' ./lib ./test",
