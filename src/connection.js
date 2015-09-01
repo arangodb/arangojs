@@ -1,5 +1,6 @@
 'use strict';
 import promisify from './util/promisify';
+import httperr from 'http-errors';
 import extend from 'extend';
 import qs from 'querystring';
 import createRequest from './util/request';
@@ -78,16 +79,27 @@ export default class Connection {
       body: body
     }, (err, res) => {
       if (err) callback(err);
-      else if (res.headers['content-type'].match(MIME_JSON)) {
-        try {
-          res.rawBody = res.body;
-          res.body = JSON.parse(res.rawBody);
-        } catch (e) {
-          return callback(extend(e, {response: res}));
+      else {
+        res.rawBody = res.body;
+        if (res.headers['content-type'].match(MIME_JSON)) {
+          try {
+            res.body = JSON.parse(res.rawBody);
+          } catch (e) {
+            return callback(extend(e, {response: res}));
+          }
         }
-        if (!res.body.error) callback(null, res);
-        else callback(extend(new ArangoError(res.body), {response: res}));
-      } else callback(null, extend(res, {rawBody: res.body}));
+        if (
+          res.body
+          && res.body.error
+          && res.body.hasOwnProperty('code')
+          && res.body.hasOwnProperty('errorMessage')
+          && res.body.hasOwnProperty('errorNum')
+        ) {
+          callback(extend(new ArangoError(res.body), {response: res}));
+        } else if (res.statusCode >= 400) {
+          callback(extend(httperr(res.statusCode), {response: res}));
+        } else callback(null, res);
+      }
     });
     return promise;
   }
