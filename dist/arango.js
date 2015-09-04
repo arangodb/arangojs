@@ -1128,27 +1128,30 @@ var ArrayCursor = (function () {
   }, {
     key: 'each',
     value: function each(fn, cb) {
-      var _this4 = this;
-
       var _connection$promisify4 = this._connection.promisify(cb);
 
       var promise = _connection$promisify4.promise;
       var callback = _connection$promisify4.callback;
 
-      this._drain(function (err) {
-        if (err) callback(err);else {
-          try {
-            var result = undefined;
-            for (_this4._index = 0; _this4._index < _this4._result.length; _this4._index++) {
-              result = fn(_this4._result[_this4._index], _this4._index, _this4);
-              if (result === false) break;
-            }
-            callback(null, result);
-          } catch (e) {
-            callback(e);
+      function loop() {
+        try {
+          var result = undefined;
+          while (this._index < this._result.length) {
+            result = fn(this._result[this._index], this._index, this);
+            this._index++;
+            if (result === false) break;
           }
+          if (!this._hasMore || result === false) callback(null, result);else {
+            this._more(function (err) {
+              return err ? callback(err) : loop();
+            });
+          }
+        } catch (e) {
+          callback(e);
         }
-      });
+      }
+      this._index = 0;
+      loop();
       return promise;
     }
   }, {
@@ -1167,7 +1170,7 @@ var ArrayCursor = (function () {
             this._index++;
             if (!result) break;
           }
-          if (!this._hasMore || !result) callback(null, result);else {
+          if (!this._hasMore || !result) callback(null, Boolean(result));else {
             this._more(function (err) {
               return err ? callback(err) : loop();
             });
@@ -1196,7 +1199,7 @@ var ArrayCursor = (function () {
             this._index++;
             if (result) break;
           }
-          if (!this._hasMore || result) callback(null, result);else {
+          if (!this._hasMore || result) callback(null, Boolean(result));else {
             this._more(function (err) {
               return err ? callback(err) : loop();
             });
@@ -1218,7 +1221,6 @@ var ArrayCursor = (function () {
       var callback = _connection$promisify7.callback;
 
       var result = [];
-
       function loop(x) {
         try {
           while (this._index < this._result.length) {
@@ -1241,7 +1243,7 @@ var ArrayCursor = (function () {
   }, {
     key: 'reduce',
     value: function reduce(fn, accu, cb) {
-      var _this5 = this;
+      var _this4 = this;
 
       if (typeof accu === 'function') {
         cb = accu;
@@ -1278,8 +1280,8 @@ var ArrayCursor = (function () {
       } else {
         this._more(function (err) {
           if (err) callback(err);else {
-            accu = _this5._result[0];
-            _this5._index = 1;
+            accu = _this4._result[0];
+            _this4._index = 1;
             loop();
           }
         });
