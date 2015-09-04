@@ -754,7 +754,7 @@ cursor.all(function (err) { // exhausts the cursor
 
 `async cursor.each(fn): any`
 
-Rewinds and exhausts the cursor by applying the function *fn* to each value returned by the query.
+Rewinds and advances the cursor by applying the function *fn* to each value returned by the query until the cursor is exhausted or *fn* explicitly returns `false`.
 
 Returns the last return value of *fn*.
 
@@ -804,7 +804,7 @@ cursor.each(doStuff, function (err, last) {
 
 Rewinds and advances the cursor by applying the function *fn* to each value returned by the query until the cursor is exhausted or *fn* returns a value that evaluates to `false`.
 
-Returns the last return value of *fn*.
+Returns `false` if *fn* returned a value that evalutes to `false`, or `true` otherwise.
 
 Equivalent to *Array.prototype.every* (except async).
 
@@ -850,7 +850,7 @@ cursor.every(even, function (err, result) {
 
 Rewinds and advances the cursor by applying the function *fn* to each value returned by the query until the cursor is exhausted or *fn* returns a value that evaluates to `true`.
 
-Returns the return value of the last call to *fn*.
+Returns `true` if *fn* returned a value that evalutes to `true`, or `false` otherwise.
 
 Equivalent to *Array.prototype.some* (except async).
 

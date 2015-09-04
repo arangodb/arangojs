@@ -70,21 +70,24 @@ export default class ArrayCursor {
 
   each(fn, cb) {
     const {promise, callback} = this._connection.promisify(cb);
-    this._drain(err => {
-      if (err) callback(err);
-      else {
-        try {
-          let result;
-          for (this._index = 0; this._index < this._result.length; this._index++) {
-            result = fn(this._result[this._index], this._index, this);
-            if (result === false) break;
-          }
-          callback(null, result);
-        } catch (e) {
-          callback(e);
+    function loop() {
+      try {
+        let result;
+        while (this._index < this._result.length) {
+          result = fn(this._result[this._index], this._index, this);
+          this._index++;
+          if (result === false) break;
         }
+        if (!this._hasMore || result === false) callback(null, result);
+        else {
+          this._more(err => err ? callback(err) : loop());
+        }
+      } catch(e) {
+        callback(e);
       }
-    });
+    }
+    this._index = 0;
+    loop();
     return promise;
   }
 
@@ -98,7 +101,7 @@ export default class ArrayCursor {
           this._index++;
           if (!result) break;
         }
-        if (!this._hasMore || !result) callback(null, result);
+        if (!this._hasMore || !result) callback(null, Boolean(result));
         else {
           this._more(err => err ? callback(err) : loop());
         }
@@ -121,7 +124,7 @@ export default class ArrayCursor {
           this._index++;
           if (result) break;
         }
-        if (!this._hasMore || result) callback(null, result);
+        if (!this._hasMore || result) callback(null, Boolean(result));
         else {
           this._more(err => err ? callback(err) : loop());
         }
@@ -137,7 +140,6 @@ export default class ArrayCursor {
   map(fn, cb) {
     const {promise, callback} = this._connection.promisify(cb);
     const result = [];
-
     function loop(x) {
       try {
         while (this._index < this._result.length) {
