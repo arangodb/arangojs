@@ -232,7 +232,7 @@ class BaseCollection {
     this._api.put(
       'simple/any',
       {collection: this.name},
-      (err, res) => err ? callback(err) : callback(null, res.document)
+      (err, res) => err ? callback(err) : callback(null, res.body.document)
     );
     return promise;
   }
@@ -290,7 +290,7 @@ class BaseCollection {
     this._api.put(
       'simple/first-example',
       {example, collection: this.name},
-      (err, res) => err ? callback(err) : callback(null, res.document)
+      (err, res) => err ? callback(err) : callback(null, res.body.document)
     );
     return promise;
   }
