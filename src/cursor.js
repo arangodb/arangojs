@@ -49,11 +49,11 @@ export default class ArrayCursor {
 
   next(cb) {
     const {promise, callback} = this._connection.promisify(cb);
-    function next() {
+    const next = () => {
       const value = this._result[this._index];
       this._index += 1;
       callback(null, value);
-    }
+    };
     if (this._index < this._result.length) next();
     else {
       if (!this._hasMore) callback(null);
@@ -70,7 +70,7 @@ export default class ArrayCursor {
 
   each(fn, cb) {
     const {promise, callback} = this._connection.promisify(cb);
-    function loop() {
+    const loop = () => {
       try {
         let result;
         while (this._index < this._result.length) {
@@ -85,7 +85,7 @@ export default class ArrayCursor {
       } catch(e) {
         callback(e);
       }
-    }
+    };
     this._index = 0;
     loop();
     return promise;
@@ -93,7 +93,7 @@ export default class ArrayCursor {
 
   every(fn, cb) {
     const {promise, callback} = this._connection.promisify(cb);
-    function loop() {
+    const loop = () => {
       try {
         let result = true;
         while (this._index < this._result.length) {
@@ -108,7 +108,7 @@ export default class ArrayCursor {
       } catch(e) {
         callback(e);
       }
-    }
+    };
     this._index = 0;
     loop();
     return promise;
@@ -116,7 +116,7 @@ export default class ArrayCursor {
 
   some(fn, cb) {
     const {promise, callback} = this._connection.promisify(cb);
-    function loop() {
+    const loop = () => {
       try {
         let result = false;
         while (this._index < this._result.length) {
@@ -131,7 +131,7 @@ export default class ArrayCursor {
       } catch(e) {
         callback(e);
       }
-    }
+    };
     this._index = 0;
     loop();
     return promise;
@@ -140,7 +140,7 @@ export default class ArrayCursor {
   map(fn, cb) {
     const {promise, callback} = this._connection.promisify(cb);
     const result = [];
-    function loop(x) {
+    const loop = () => {
       try {
         while (this._index < this._result.length) {
           result.push(fn(this._result[this._index], this._index, this));
@@ -153,7 +153,7 @@ export default class ArrayCursor {
       } catch(e) {
         callback(e);
       }
-    }
+    };
     this._index = 0;
     loop();
     return promise;
@@ -165,7 +165,7 @@ export default class ArrayCursor {
       accu = undefined;
     }
     const {promise, callback} = this._connection.promisify(cb);
-    function loop() {
+    const loop = () => {
       try {
         while (this._index < this._result.length) {
           accu = fn(accu, this._result[this._index], this._index, this);
@@ -178,7 +178,7 @@ export default class ArrayCursor {
       } catch(e) {
         callback(e);
       }
-    }
+    };
     if (accu !== undefined) {
       this._index = 0;
       loop();
