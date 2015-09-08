@@ -67,9 +67,9 @@ var BaseCollection = (function () {
   function BaseCollection(connection, name) {
     _classCallCheck(this, BaseCollection);
 
+    this.name = name;
     this._connection = connection;
     this._api = this._connection.route('_api');
-    this.name = name;
   }
 
   _createClass(BaseCollection, [{
@@ -345,7 +345,7 @@ var BaseCollection = (function () {
       var callback = _connection$promisify12.callback;
 
       this._api.put('simple/any', { collection: this.name }, function (err, res) {
-        return err ? callback(err) : callback(null, res.document);
+        return err ? callback(err) : callback(null, res.body.document);
       });
       return promise;
     }
@@ -420,7 +420,7 @@ var BaseCollection = (function () {
       var callback = _connection$promisify16.callback;
 
       this._api.put('simple/first-example', { example: example, collection: this.name }, function (err, res) {
-        return err ? callback(err) : callback(null, res.document);
+        return err ? callback(err) : callback(null, res.body.document);
       });
       return promise;
     }
@@ -872,6 +872,7 @@ function construct(connection, body) {
 exports.EdgeCollection = EdgeCollection;
 exports.DocumentCollection = DocumentCollection;
 exports._BaseCollection = BaseCollection;
+exports._types = types;
 },{"./cursor":4,"extend":54}],3:[function(require,module,exports){
 (function (Buffer){
 'use strict';
@@ -1101,16 +1102,18 @@ var ArrayCursor = (function () {
   }, {
     key: 'next',
     value: function next(cb) {
+      var _this4 = this;
+
       var _connection$promisify3 = this._connection.promisify(cb);
 
       var promise = _connection$promisify3.promise;
       var callback = _connection$promisify3.callback;
 
-      function next() {
-        var value = this._result[this._index];
-        this._index += 1;
+      var next = function next() {
+        var value = _this4._result[_this4._index];
+        _this4._index += 1;
         callback(null, value);
-      }
+      };
       if (this._index < this._result.length) next();else {
         if (!this._hasMore) callback(null);else {
           this._more(function (err) {
@@ -1128,28 +1131,30 @@ var ArrayCursor = (function () {
   }, {
     key: 'each',
     value: function each(fn, cb) {
+      var _this5 = this;
+
       var _connection$promisify4 = this._connection.promisify(cb);
 
       var promise = _connection$promisify4.promise;
       var callback = _connection$promisify4.callback;
 
-      function loop() {
+      var loop = function loop() {
         try {
           var result = undefined;
-          while (this._index < this._result.length) {
-            result = fn(this._result[this._index], this._index, this);
-            this._index++;
+          while (_this5._index < _this5._result.length) {
+            result = fn(_this5._result[_this5._index], _this5._index, _this5);
+            _this5._index++;
             if (result === false) break;
           }
-          if (!this._hasMore || result === false) callback(null, result);else {
-            this._more(function (err) {
+          if (!_this5._hasMore || result === false) callback(null, result);else {
+            _this5._more(function (err) {
               return err ? callback(err) : loop();
             });
           }
         } catch (e) {
           callback(e);
         }
-      }
+      };
       this._index = 0;
       loop();
       return promise;
@@ -1157,28 +1162,30 @@ var ArrayCursor = (function () {
   }, {
     key: 'every',
     value: function every(fn, cb) {
+      var _this6 = this;
+
       var _connection$promisify5 = this._connection.promisify(cb);
 
       var promise = _connection$promisify5.promise;
       var callback = _connection$promisify5.callback;
 
-      function loop() {
+      var loop = function loop() {
         try {
           var result = true;
-          while (this._index < this._result.length) {
-            result = fn(this._result[this._index], this._index, this);
-            this._index++;
+          while (_this6._index < _this6._result.length) {
+            result = fn(_this6._result[_this6._index], _this6._index, _this6);
+            _this6._index++;
             if (!result) break;
           }
-          if (!this._hasMore || !result) callback(null, Boolean(result));else {
-            this._more(function (err) {
+          if (!_this6._hasMore || !result) callback(null, Boolean(result));else {
+            _this6._more(function (err) {
               return err ? callback(err) : loop();
             });
           }
         } catch (e) {
           callback(e);
         }
-      }
+      };
       this._index = 0;
       loop();
       return promise;
@@ -1186,28 +1193,30 @@ var ArrayCursor = (function () {
   }, {
     key: 'some',
     value: function some(fn, cb) {
+      var _this7 = this;
+
       var _connection$promisify6 = this._connection.promisify(cb);
 
       var promise = _connection$promisify6.promise;
       var callback = _connection$promisify6.callback;
 
-      function loop() {
+      var loop = function loop() {
         try {
           var result = false;
-          while (this._index < this._result.length) {
-            result = fn(this._result[this._index], this._index, this);
-            this._index++;
+          while (_this7._index < _this7._result.length) {
+            result = fn(_this7._result[_this7._index], _this7._index, _this7);
+            _this7._index++;
             if (result) break;
           }
-          if (!this._hasMore || result) callback(null, Boolean(result));else {
-            this._more(function (err) {
+          if (!_this7._hasMore || result) callback(null, Boolean(result));else {
+            _this7._more(function (err) {
               return err ? callback(err) : loop();
             });
           }
         } catch (e) {
           callback(e);
         }
-      }
+      };
       this._index = 0;
       loop();
       return promise;
@@ -1215,27 +1224,29 @@ var ArrayCursor = (function () {
   }, {
     key: 'map',
     value: function map(fn, cb) {
+      var _this8 = this;
+
       var _connection$promisify7 = this._connection.promisify(cb);
 
       var promise = _connection$promisify7.promise;
       var callback = _connection$promisify7.callback;
 
       var result = [];
-      function loop(x) {
+      var loop = function loop() {
         try {
-          while (this._index < this._result.length) {
-            result.push(fn(this._result[this._index], this._index, this));
-            this._index++;
+          while (_this8._index < _this8._result.length) {
+            result.push(fn(_this8._result[_this8._index], _this8._index, _this8));
+            _this8._index++;
           }
-          if (!this._hasMore) callback(null, result);else {
-            this._more(function (err) {
+          if (!_this8._hasMore) callback(null, result);else {
+            _this8._more(function (err) {
               return err ? callback(err) : loop();
             });
           }
         } catch (e) {
           callback(e);
         }
-      }
+      };
       this._index = 0;
       loop();
       return promise;
@@ -1243,7 +1254,7 @@ var ArrayCursor = (function () {
   }, {
     key: 'reduce',
     value: function reduce(fn, accu, cb) {
-      var _this4 = this;
+      var _this9 = this;
 
       if (typeof accu === 'function') {
         cb = accu;
@@ -1255,21 +1266,21 @@ var ArrayCursor = (function () {
       var promise = _connection$promisify8.promise;
       var callback = _connection$promisify8.callback;
 
-      function loop() {
+      var loop = function loop() {
         try {
-          while (this._index < this._result.length) {
-            accu = fn(accu, this._result[this._index], this._index, this);
-            this._index++;
+          while (_this9._index < _this9._result.length) {
+            accu = fn(accu, _this9._result[_this9._index], _this9._index, _this9);
+            _this9._index++;
           }
-          if (!this._hasMore) callback(null, accu);else {
-            this._more(function (err) {
+          if (!_this9._hasMore) callback(null, accu);else {
+            _this9._more(function (err) {
               return err ? callback(err) : loop();
             });
           }
         } catch (e) {
           callback(e);
         }
-      }
+      };
       if (accu !== undefined) {
         this._index = 0;
         loop();
@@ -1280,8 +1291,8 @@ var ArrayCursor = (function () {
       } else {
         this._more(function (err) {
           if (err) callback(err);else {
-            accu = _this4._result[0];
-            _this4._index = 1;
+            accu = _this9._result[0];
+            _this9._index = 1;
             loop();
           }
         });
@@ -1727,6 +1738,7 @@ var GraphVertexCollection = (function (_BaseCollection) {
     _classCallCheck(this, GraphVertexCollection);
 
     _get(Object.getPrototypeOf(GraphVertexCollection.prototype), 'constructor', this).call(this, connection, name);
+    this.type = _collection._types.DOCUMENT_COLLECTION;
     this.graph = graph;
     this._gharial = this._api.route('gharial/' + this.graph.name + '/vertex/' + this.name);
   }
@@ -1769,6 +1781,7 @@ var GraphEdgeCollection = (function (_BaseCollection2) {
     _classCallCheck(this, GraphEdgeCollection);
 
     _get(Object.getPrototypeOf(GraphEdgeCollection.prototype), 'constructor', this).call(this, connection, name);
+    this.type = _collection._types.EDGE_COLLECTION;
     this.graph = graph;
     this._gharial = this._api.route('gharial/' + this.graph.name + '/edge/' + this.name);
   }
@@ -1816,10 +1829,10 @@ var Graph = (function () {
   function Graph(connection, name) {
     _classCallCheck(this, Graph);
 
+    this.name = name;
     this._connection = connection;
     this._api = this._connection.route('_api');
     this._gharial = this._api.route('gharial/' + this.name);
-    this.name = name;
   }
 
   _createClass(Graph, [{
