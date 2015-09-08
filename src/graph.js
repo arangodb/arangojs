@@ -1,8 +1,13 @@
 'use strict';
 import extend from 'extend';
-import {_BaseCollection as BaseCollection} from './collection';
+import {
+  _BaseCollection as BaseCollection,
+  _types as types
+} from './collection';
 
 class GraphVertexCollection extends BaseCollection {
+  type = types.DOCUMENT_COLLECTION;
+
   constructor(connection, name, graph) {
     super(connection, name);
     this.graph = graph;
@@ -30,6 +35,8 @@ class GraphVertexCollection extends BaseCollection {
 }
 
 class GraphEdgeCollection extends BaseCollection {
+  type = types.EDGE_COLLECTION;
+
   constructor(connection, name, graph) {
     super(connection, name);
     this.graph = graph;

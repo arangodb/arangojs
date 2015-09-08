@@ -637,5 +637,6 @@ export default function construct(connection, body) {
 export {
   EdgeCollection,
   DocumentCollection,
-  BaseCollection as _BaseCollection
+  BaseCollection as _BaseCollection,
+  types as _types
 };
