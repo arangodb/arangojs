@@ -9,9 +9,9 @@ export const types = {
 
 class BaseCollection {
   constructor(connection, name) {
+    this.name = name;
     this._connection = connection;
     this._api = this._connection.route('_api');
-    this.name = name;
   }
 
   _documentHandle(documentHandle) {

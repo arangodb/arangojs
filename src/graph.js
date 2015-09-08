@@ -64,10 +64,10 @@ class GraphEdgeCollection extends BaseCollection {
 
 export default class Graph {
   constructor(connection, name) {
+    this.name = name;
     this._connection = connection;
     this._api = this._connection.route('_api');
     this._gharial = this._api.route(`gharial/${this.name}`);
-    this.name = name;
   }
 
   get(cb) {
