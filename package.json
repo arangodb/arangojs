@@ -35,7 +35,7 @@
     "raw-bundle": "browserify -x extend -s arangojs ./lib/index.js > dist/arango.js",
     "raw-minify": "uglifyjs dist/arango.js > dist/arango.min.js",
     "lint": "eslint src test",
-    "prepublish": "npm run lint && npm run babel"
+    "prepublish": "npm run lint && npm run babel && stat lib/index.js"
   },
   "repository": {
     "type": "git",
