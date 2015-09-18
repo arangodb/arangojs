@@ -799,6 +799,14 @@ var EdgeCollection = (function (_BaseCollection2) {
   }, {
     key: 'save',
     value: function save(data, fromId, toId, cb) {
+      if (typeof fromId === 'function') {
+        cb = fromId;
+        fromId = undefined;
+      } else if (fromId) {
+        data._from = this._documentHandle(fromId);
+        data._to = this._documentHandle(toId);
+      }
+
       var _connection$promisify36 = this._connection.promisify(cb);
 
       var promise = _connection$promisify36.promise;
@@ -806,8 +814,8 @@ var EdgeCollection = (function (_BaseCollection2) {
 
       this._api.post('edge', data, {
         collection: this.name,
-        from: this._documentHandle(fromId),
-        to: this._documentHandle(toId)
+        from: data._from,
+        to: data._to
       }, function (err, res) {
         return err ? callback(err) : callback(null, res.body);
       });
@@ -1533,7 +1541,7 @@ var Database = (function () {
       var callback = _connection$promisify9.callback;
 
       this._api.get('gharial', function (err, res) {
-        return err ? callback(err) : callback(res.body.graphs);
+        return err ? callback(err) : callback(null, res.body.graphs);
       });
       return promise;
     }
@@ -1548,7 +1556,7 @@ var Database = (function () {
       var callback = _connection$promisify10.callback;
 
       this.listGraphs(function (err, graphs) {
-        return err ? callback(err) : callback(graphs.map(function (info) {
+        return err ? callback(err) : callback(null, graphs.map(function (info) {
           return _this3.graph(info._key);
         }));
       });
@@ -1805,7 +1813,7 @@ var GraphEdgeCollection = (function (_BaseCollection2) {
       if (typeof fromId === 'function') {
         cb = fromId;
         fromId = undefined;
-      } else {
+      } else if (fromId) {
         data._from = this._documentHandle(fromId);
         data._to = this._documentHandle(toId);
       }
