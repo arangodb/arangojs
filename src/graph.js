@@ -56,7 +56,7 @@ class GraphEdgeCollection extends BaseCollection {
     if (typeof fromId === 'function') {
       cb = fromId;
       fromId = undefined;
-    } else {
+    } else if (fromId) {
       data._from = this._documentHandle(fromId);
       data._to = this._documentHandle(toId);
     }

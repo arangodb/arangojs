@@ -2539,7 +2539,7 @@ collection.edge('edges/some-key', function (err, edge) {
 
 #### edgeCollection.save
 
-`async edgeCollection.save(data, [fromId, [toId]]): Object`
+`async edgeCollection.save(data, [fromId, toId]): Object`
 
 Creates a new edge between the documents *fromId* and *toId* with the given *data*.
 
@@ -3155,7 +3155,7 @@ collection.edge('edges/some-key', function (err, edge) {
 
 #### graphEdgeCollection.save
 
-`async graphEdgeCollection.save(data, [fromId, [toId]]): Object`
+`async graphEdgeCollection.save(data, [fromId, toId]): Object`
 
 Creates a new edge between the vertices *fromId* and *toId* with the given *data*.
 
