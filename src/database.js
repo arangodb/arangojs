@@ -145,7 +145,7 @@ export default class Database {
     const {promise, callback} = this._connection.promisify(cb);
     this._api.get(
       'gharial',
-      (err, res) => err ? callback(err) : callback(res.body.graphs)
+      (err, res) => err ? callback(err) : callback(null, res.body.graphs)
     );
     return promise;
   }
@@ -153,7 +153,7 @@ export default class Database {
   graphs(cb) {
     const {promise, callback} = this._connection.promisify(cb);
     this.listGraphs(
-      (err, graphs) => err ? callback(err) : callback(graphs.map(info => this.graph(info._key)))
+      (err, graphs) => err ? callback(err) : callback(null, graphs.map(info => this.graph(info._key)))
     );
     return promise;
   }
