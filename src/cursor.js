@@ -82,7 +82,7 @@ export default class ArrayCursor {
         else {
           this._more(err => err ? callback(err) : loop());
         }
-      } catch(e) {
+      } catch (e) {
         callback(e);
       }
     };
