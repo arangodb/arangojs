@@ -29,8 +29,9 @@ export default class ArrayCursor {
       this._api.put(`cursor/${this._id}`, (err, res) => {
         if (err) callback(err);
         else {
-          this._result.push.apply(this._result, res.body.result);
+          this._result = res.body.result;
           this._hasMore = res.body.hasMore;
+          this._index = 0;
           callback(null, this);
         }
       });
@@ -58,7 +59,7 @@ export default class ArrayCursor {
     else {
       if (!this._hasMore) callback(null);
       else {
-        this._more(err => err ? callback(err) : next());
+        this._more(err => err ? callback(err) : this.rewind().next());
       }
     }
     return promise;
@@ -86,7 +87,6 @@ export default class ArrayCursor {
         callback(e);
       }
     };
-    this._index = 0;
     loop();
     return promise;
   }
@@ -109,7 +109,6 @@ export default class ArrayCursor {
         callback(e);
       }
     };
-    this._index = 0;
     loop();
     return promise;
   }
@@ -132,7 +131,6 @@ export default class ArrayCursor {
         callback(e);
       }
     };
-    this._index = 0;
     loop();
     return promise;
   }
@@ -154,7 +152,6 @@ export default class ArrayCursor {
         callback(e);
       }
     };
-    this._index = 0;
     loop();
     return promise;
   }
