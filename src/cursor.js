@@ -7,7 +7,6 @@ export default class ArrayCursor {
     this._result = body.result;
     this._hasMore = Boolean(body.hasMore);
     this._id = body.id;
-    this._index = 0;
     this.count = body.count;
   }
 
@@ -29,9 +28,8 @@ export default class ArrayCursor {
       this._api.put(`cursor/${this._id}`, (err, res) => {
         if (err) callback(err);
         else {
-          this._result = res.body.result;
+          this._result.push.apply(this._result, res.body.result);
           this._hasMore = res.body.hasMore;
-          this._index = 0;
           callback(null, this);
         }
       });
@@ -41,7 +39,6 @@ export default class ArrayCursor {
   all(cb) {
     const {promise, callback} = this._connection.promisify(cb);
     this._drain(err => {
-      this._index = this._result.length;
       if (err) callback(err);
       else callback(null, this._result);
     });
@@ -51,22 +48,21 @@ export default class ArrayCursor {
   next(cb) {
     const {promise, callback} = this._connection.promisify(cb);
     const next = () => {
-      const value = this._result[this._index];
-      this._index += 1;
+      const value = this._result.shift();
       callback(null, value);
     };
-    if (this._index < this._result.length) next();
+    if (this._result[0]) next();
     else {
       if (!this._hasMore) callback(null);
       else {
-        this._more(err => err ? callback(err) : this.rewind().next());
+        this._more(err => err ? callback(err) : next());
       }
     }
     return promise;
   }
 
   hasNext() {
-    return (this._hasMore || this._index < this._result.length);
+    return (this._hasMore || this._result.length[0]);
   }
 
   each(fn, cb) {
@@ -74,9 +70,8 @@ export default class ArrayCursor {
     const loop = () => {
       try {
         let result;
-        while (this._index < this._result.length) {
-          result = fn(this._result[this._index], this._index, this);
-          this._index++;
+        while (this._result[0]) {
+          result = fn(this._result.shift(), this);
           if (result === false) break;
         }
         if (!this._hasMore || result === false) callback(null, result);
@@ -96,9 +91,8 @@ export default class ArrayCursor {
     const loop = () => {
       try {
         let result = true;
-        while (this._index < this._result.length) {
-          result = fn(this._result[this._index], this._index, this);
-          this._index++;
+        while (this._result[0]) {
+          result = fn(this._result.shift(), this);
           if (!result) break;
         }
         if (!this._hasMore || !result) callback(null, Boolean(result));
@@ -118,9 +112,8 @@ export default class ArrayCursor {
     const loop = () => {
       try {
         let result = false;
-        while (this._index < this._result.length) {
-          result = fn(this._result[this._index], this._index, this);
-          this._index++;
+        while (this._result[0]) {
+          result = fn(this._result.shift(), this);
           if (result) break;
         }
         if (!this._hasMore || result) callback(null, Boolean(result));
@@ -140,9 +133,8 @@ export default class ArrayCursor {
     const result = [];
     const loop = () => {
       try {
-        while (this._index < this._result.length) {
-          result.push(fn(this._result[this._index], this._index, this));
-          this._index++;
+        while (this._result[0]) {
+          result.push(fn(this._result.shift(), this));
         }
         if (!this._hasMore) callback(null, result);
         else {
@@ -164,9 +156,8 @@ export default class ArrayCursor {
     const {promise, callback} = this._connection.promisify(cb);
     const loop = () => {
       try {
-        while (this._index < this._result.length) {
-          accu = fn(accu, this._result[this._index], this._index, this);
-          this._index++;
+        while (this._result[0]) {
+          accu = fn(accu, this._result.shift(), this);
         }
         if (!this._hasMore) callback(null, accu);
         else {
@@ -177,18 +168,15 @@ export default class ArrayCursor {
       }
     };
     if (accu !== undefined) {
-      this._index = 0;
       loop();
     } else if (this._result.length > 1) {
-      accu = this._result[0];
-      this._index = 1;
+      accu = this._result.shift();
       loop();
     } else {
       this._more(err => {
         if (err) callback(err);
         else {
-          accu = this._result[0];
-          this._index = 1;
+          accu = this._result.shift();
           loop();
         }
       });
@@ -197,7 +185,7 @@ export default class ArrayCursor {
   }
 
   rewind() {
-    this._index = 0;
+    //this._index = 0;
     return this;
   }
 }
