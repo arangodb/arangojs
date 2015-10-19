@@ -184,8 +184,4 @@ export default class ArrayCursor {
     return promise;
   }
 
-  rewind() {
-    //this._index = 0;
-    return this;
-  }
 }
