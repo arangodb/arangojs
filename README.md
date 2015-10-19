@@ -974,29 +974,6 @@ cursor.reduce(add, function (err, result) {
 
 ```
 
-### cursor.rewind
-
-`cursor.rewind(): cursor`
-
-Rewinds the cursor. Returns the cursor.
-
-**Examples**
-
-```js
-// query result: [1, 2, 3, 4, 5]
-cursor.all(function (err, result) {
-    if (err) return console.error(err);
-    result; // [1, 2, 3, 4, 5]
-    cursor.hasNext() === false;
-    cursor.rewind();
-    cursor.hasNext() === true;
-    cursor.next(function (err, value) {
-        if (err) return console.error(err);
-        value === 1;
-    });
-});
-```
-
 ## Route API
 
 *Route* instances provide access for arbitrary HTTP requests. This allows easy access to Foxx apps and other HTTP APIs not covered by the driver itself.
