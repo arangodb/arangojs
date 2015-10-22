@@ -680,13 +680,18 @@ myFoxxApp.post('users', {
 
 ## Cursor API
 
-*Cursor* instances provide an abstraction over the HTTP API's limitations. Unless a method explicitly exhausts the cursor, the driver will only fetch as many batches from the server as necessary. Unlike the server-side cursors, *Cursor* instances can also be rewound.
+*Cursor* instances provide an abstraction over the HTTP API's limitations. Unless a method explicitly exhausts the cursor, the driver will only fetch as many batches from the server as necessary. Like the server-side cursors, *Cursor* instances are incrementally depleted as they are read from.
 
 ```js
 var db = require('arangojs')();
-db.query(someQuery, function (err, cursor) {
+db.query('FOR x IN 1..100 RETURN x, function (err, cursor) {
     if (err) return console.error(err);
-    // cursor represents the query results
+    // query result list: [1, 2, 3, ..., 99, 100]
+    cursor.next(function (err, value) {
+      if (err) return console.error(err);
+      value === 1;
+      // remaining result list: [2, 3, 4, ..., 99, 100]
+    })
 });
 ```
 
@@ -694,21 +699,22 @@ db.query(someQuery, function (err, cursor) {
 
 `cursor.count: number`
 
-The total number of documents in the query result.
+The total number of documents in the query result. This is only available if the `count` option was used.
 
 ### cursor.all
 
 `async cursor.all(): Array<Object>`
 
-Rewinds and exhausts the cursor, then returns an array containing all values returned by the query.
+Exhausts the cursor, then returns an array containing all values in the cursor's remaining result list.
 
 **Examples**
 
 ```js
-// query result: [1, 2, 3, 4, 5]
+// query result list: [1, 2, 3, 4, 5]
 cursor.all(function (err, vals) {
     if (err) return console.error(err);
     // vals is an array containing the entire query result
+    Array.isArray(vals);
     vals.length === 5;
     vals; // [1, 2, 3, 4, 5]
     cursor.hasNext() === false;
@@ -719,18 +725,20 @@ cursor.all(function (err, vals) {
 
 `async cursor.next(): Object`
 
-Advances the cursor and returns the next value returned by the query. If the cursor has already been exhausted, returns `undefined` instead.
+Advances the cursor and returns the next value in the cursor's remaining result list. If the cursor has already been exhausted, returns `undefined` instead.
 
 **Examples**
 
 ```js
-// query result: [1, 2, 3, 4, 5]
+// query result list: [1, 2, 3, 4, 5]
 cursor.next(function (err, val) {
     if (err) return console.error(err);
     val === 1;
+    // remaining result list: [2, 3, 4, 5]
     cursor.next(function (err, val2) {
         if (err) return console.error(err);
         val2 === 2;
+        // remaining result list: [3, 4, 5]
     });
 });
 ```
@@ -754,7 +762,7 @@ cursor.all(function (err) { // exhausts the cursor
 
 `async cursor.each(fn): any`
 
-Rewinds and advances the cursor by applying the function *fn* to each value returned by the query until the cursor is exhausted or *fn* explicitly returns `false`.
+Advances the cursor by applying the function *fn* to each value in the cursor's remaining result list until the cursor is exhausted or *fn* explicitly returns `false`.
 
 Returns the last return value of *fn*.
 
@@ -764,17 +772,17 @@ Equivalent to *Array.prototype.forEach* (except async).
 
 * **fn**: `Function`
 
-  A function that will be invoked for each value returned by the query until it explicitly returns `false` or the cursor is exhausted.
+  A function that will be invoked for each value in the cursor's remaining result list until it explicitly returns `false` or the cursor is exhausted.
 
   The function receives the following arguments:
 
   * **value**: `any`
 
-    The value returned by the query.
+    The value in the cursor's remaining result list.
 
   * **index**: `number`
 
-    The index of the value.
+    The index of the value in the cursor's remaining result list.
 
   * **cursor**: `Cursor`
 
@@ -789,7 +797,7 @@ function doStuff(value) {
   results.push(VALUE);
   return VALUE;
 }
-// query result: ['a', 'b', 'c']
+// query result list: ['a', 'b', 'c']
 cursor.each(doStuff, function (err, last) {
     if (err) return console.error(err);
     String(results) === 'A,B,C';
@@ -802,7 +810,7 @@ cursor.each(doStuff, function (err, last) {
 
 `async cursor.every(fn): boolean`
 
-Rewinds and advances the cursor by applying the function *fn* to each value returned by the query until the cursor is exhausted or *fn* returns a value that evaluates to `false`.
+Advances the cursor by applying the function *fn* to each value in the cursor's remaining result list until the cursor is exhausted or *fn* returns a value that evaluates to `false`.
 
 Returns `false` if *fn* returned a value that evalutes to `false`, or `true` otherwise.
 
@@ -812,17 +820,17 @@ Equivalent to *Array.prototype.every* (except async).
 
 * **fn**: `Function`
 
-  A function that will be invoked for each value returned by the query until it returns a value that evaluates to `false` or the cursor is exhausted.
+  A function that will be invoked for each value in the cursor's remaining result list until it returns a value that evaluates to `false` or the cursor is exhausted.
 
   The function receives the following arguments:
 
   * **value**: `any`
 
-    The value returned by the query.
+    The value in the cursor's remaining result list.
 
   * **index**: `number`
 
-    The index of the value.
+    The index of the value in the cursor's remaining result list.
 
   * **cursor**: `Cursor`
 
@@ -832,7 +840,7 @@ Equivalent to *Array.prototype.every* (except async).
 function even(value) {
     return value % 2 === 0;
 }
-// query result: [0, 2, 4, 5, 6]
+// query result list: [0, 2, 4, 5, 6]
 cursor.every(even, function (err, result) {
     if (err) return console.error(err);
     result === false; // 5 is not even
@@ -848,7 +856,7 @@ cursor.every(even, function (err, result) {
 
 `async cursor.some(fn): boolean`
 
-Rewinds and advances the cursor by applying the function *fn* to each value returned by the query until the cursor is exhausted or *fn* returns a value that evaluates to `true`.
+Advances the cursor by applying the function *fn* to each value in the cursor's remaining result list until the cursor is exhausted or *fn* returns a value that evaluates to `true`.
 
 Returns `true` if *fn* returned a value that evalutes to `true`, or `false` otherwise.
 
@@ -860,7 +868,7 @@ Equivalent to *Array.prototype.some* (except async).
 function even(value) {
     return value % 2 === 0;
 }
-// query result: [1, 3, 4, 5]
+// query result list: [1, 3, 4, 5]
 cursor.some(even, function (err, result) {
     if (err) return console.error(err);
     result === true; // 4 is even
@@ -876,7 +884,7 @@ cursor.some(even, function (err, result) {
 
 `cursor.map(fn): Array<any>`
 
-Rewinds and advances the cursor by applying the function *fn* to each value returned by the query until the cursor is exhausted.
+Advances the cursor by applying the function *fn* to each value in the cursor's remaining result list until the cursor is exhausted.
 
 Returns an array of the return values of *fn*.
 
@@ -886,17 +894,17 @@ Equivalent to *Array.prototype.map* (except async).
 
 * **fn**: `Function`
 
-  A function that will be invoked for each value returned by the query until the cursor is exhausted.
+  A function that will be invoked for each value in the cursor's remaining result list until the cursor is exhausted.
 
   The function receives the following arguments:
 
   * **value**: `any`
 
-    The value returned by the query.
+    The value in the cursor's remaining result list.
 
   * **index**: `number`
 
-    The index of the value.
+    The index of the value in the cursor's remaining result list.
 
   * **cursor**: `Cursor`
 
@@ -908,7 +916,7 @@ Equivalent to *Array.prototype.map* (except async).
 function square(value) {
     return value * value;
 }
-// query result: [1, 2, 3, 4, 5]
+// query result list: [1, 2, 3, 4, 5]
 cursor.map(square, function (err, result) {
     if (err) return console.error(err);
     result.length === 5;
@@ -921,7 +929,7 @@ cursor.map(square, function (err, result) {
 
 `cursor.reduce(fn, [accu]): any`
 
-Rewinds and exhausts the cursor by reducing the values returned by the query with the given function *fn*. If *accu* is not provided, the first value returned by the query will be used instead (the function will not be invoked for that value).
+Exhausts the cursor by reducing the values in the cursor's remaining result list with the given function *fn*. If *accu* is not provided, the first value in the cursor's remaining result list will be used instead (the function will not be invoked for that value).
 
 Equivalent to *Array.prototype.reduce* (except async).
 
@@ -929,21 +937,21 @@ Equivalent to *Array.prototype.reduce* (except async).
 
 * **fn**: `Function`
 
-  A function that will be invoked for each value returned by the query until the cursor is exhausted.
+  A function that will be invoked for each value in the cursor's remaining result list until the cursor is exhausted.
 
   The function receives the following arguments:
 
   * **accu**: `any`
 
-    The return value of the previous call to *fn*. If this is the first call, *accu* will be set to the *accu* value passed to *reduce* or the first value returned by the query.
+    The return value of the previous call to *fn*. If this is the first call, *accu* will be set to the *accu* value passed to *reduce* or the first value in the cursor's remaining result list.
 
   * **value**: `any`
 
-    The value returned by the query.
+    The value in the cursor's remaining result list.
 
   * **index**: `number`
 
-    The index of the value.
+    The index of the value in the cursor's remaining result list.
 
   * **cursor**: `Cursor`
 
@@ -955,7 +963,7 @@ Equivalent to *Array.prototype.reduce* (except async).
 function add(a, b) {
     return a + b;
 }
-// query result: [1, 2, 3, 4, 5]
+// query result list: [1, 2, 3, 4, 5]
 
 var baseline = 1000;
 cursor.reduce(add, baseline, function (err, result) {
