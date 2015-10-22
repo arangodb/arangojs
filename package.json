@@ -29,7 +29,7 @@
     "watch:test": "watch 'npm run lint && npm run test' ./lib ./test",
     "dist": "babel --compact false -d lib src",
     "lint": "eslint src test",
-    "prepublish": "npm run lint && npm run babel && node -e 'require(\"./\");'"
+    "prepublish": "npm run lint && npm run dist && node -e 'require(\"./\");'"
   },
   "repository": {
     "type": "git",
@@ -42,16 +42,16 @@
   },
   "homepage": "https://github.com/arangodb/arangojs",
   "devDependencies": {
-    "async": "1.4.0",
-    "babel": "5.2.17",
-    "babel-eslint": "4.1.0",
-    "coveralls": "2.11.2",
+    "async": "1.4.2",
+    "babel": "5.8.23",
+    "babel-eslint": "4.1.3",
+    "coveralls": "2.11.4",
     "dekeywordify": "0.2.1",
     "es6-promise": "3.0.2",
-    "eslint": "1.0.0",
+    "eslint": "1.7.3",
     "expect.js": "0.3.1",
-    "istanbul": "0.3.14",
-    "mocha": "2.2.4",
+    "istanbul": "0.4.0",
+    "mocha": "2.3.3",
     "parallelshell": "2.0.0",
     "watch": "0.16.0"
   },
