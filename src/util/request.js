@@ -72,7 +72,7 @@ export default function (baseUrl, agent, agentOptions) {
     options.port = baseUrlParts.port;
     options.auth = baseUrlParts.auth;
 
-    queue.push(function (next) {
+    queue.push(next => {
       const callback = once((...args) => {
         next();
         cb.apply(this, args);

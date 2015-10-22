@@ -1,8 +1,10 @@
 {
   "name": "arangojs",
   "version": "4.0.0-alpha7",
+  "license": "APACHE-2.0",
   "description": "The official ArangoDB JavaScript driver.",
-  "main": "lib/index.js",
+  "homepage": "https://github.com/arangodb/arangojs",
+  "author": "ArangoDB GmbH",
   "keywords": [
     "arango",
     "arangodb",
@@ -14,6 +16,10 @@
     "http",
     "rest"
   ],
+  "main": "lib/index.js",
+  "directories": {
+    "lib": "lib"
+  },
   "files": [
     "lib/",
     "package.json",
@@ -21,9 +27,10 @@
     "LICENSE"
   ],
   "scripts": {
-    "test": "mocha --compilers js:babel/register -t 30000 --growl -R spec",
-    "cover": "npm run lint && npm run dist && istanbul cover --report lcov _mocha -- -t 30000 -R spec",
-    "coveralls": "npm run cover && cat ./coverage/lcov.info | coveralls ; rm -rf ./coverage",
+    "test": "mocha --growl",
+    "cover": "istanbul cover --report lcov _mocha",
+    "beforecoveralls": "npm run cover",
+    "coveralls": "cat ./coverage/lcov.info | coveralls ; rm -rf ./coverage",
     "watch": "parallelshell 'npm run watch:dist' 'npm run watch:test'",
     "watch:dist": "watch 'npm run dist' ./src",
     "watch:test": "watch 'npm run lint && npm run test' ./lib ./test",
@@ -31,33 +38,36 @@
     "lint": "eslint src test",
     "prepublish": "npm run lint && npm run dist && node -e 'require(\"./\");'"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/arangodb/arangojs.git"
+  "dependencies": {
+    "extend": "3.0.0",
+    "http-errors": "1.3.1",
+    "linkedlist": "1.0.1"
   },
-  "author": "Alan Plum <me@pluma.io>",
-  "license": "APACHE-2.0",
-  "bugs": {
-    "url": "https://github.com/arangodb/arangojs/issues"
-  },
-  "homepage": "https://github.com/arangodb/arangojs",
   "devDependencies": {
     "async": "1.4.2",
     "babel": "5.8.23",
     "babel-eslint": "4.1.3",
+    "chai": "3.4.0",
+    "core-js": "1.2.2",
     "coveralls": "2.11.4",
     "dekeywordify": "0.2.1",
-    "es6-promise": "3.0.2",
     "eslint": "1.7.3",
-    "expect.js": "0.3.1",
     "istanbul": "0.4.0",
     "mocha": "2.3.3",
     "parallelshell": "2.0.0",
     "watch": "0.16.0"
   },
-  "dependencies": {
-    "extend": "3.0.0",
-    "http-errors": "1.3.1",
-    "linkedlist": "1.0.1"
+  "contributors": [
+    {
+      "name": "Alan Plum",
+      "email": "me@pluma.io"
+    }
+  ],
+  "bugs": {
+    "url": "https://github.com/arangodb/arangojs/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/arangodb/arangojs.git"
   }
 }
