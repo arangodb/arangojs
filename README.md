@@ -34,7 +34,7 @@ All asynchronous functions take an optional node-style callback (or "errback") w
 
 For expected API errors, *err* will be an instance of *ArangoError*. For any other error responses (4xx/5xx status code), *err* will be an instance of the apropriate [http-errors](https://github.com/jshttp/http-errors) error type. If the response indicates success but the response body could not be parsed, *err* will be a *SyntaxError*. In all of these cases the error object will additionally have a *response* property containing the server response object.
 
-If `Promise` is defined globally, asynchronous functions also return a promise. When using both node-style callbacks and promises, the node-style callback will be invoked before the promise's fulfillment/rejection handlers.
+If `Promise` is defined globally, asynchronous functions return a promise if no callback is provided.
 
 If you want to use promises in environments that don't provide the global `Promise` constructor, use a promise polyfill like [es6-promise](https://www.npmjs.com/package/es6-promise) or inject a ES6-compatible promise implementation like [bluebird](https://www.npmjs.com/package/bluebird) into the global scope.
 
@@ -96,7 +96,7 @@ If *config* is a string, it will be interpreted as *config.url*.
 
   * **promise**: `Class` (optional)
 
-    The `Promise` implementation to use or `false` to disable promises entirely (for performance).
+    The `Promise` implementation to use or `false` to disable promises entirely.
 
     By default the global `Promise` constructor will be used if available.
 

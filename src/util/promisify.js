@@ -1,22 +1,20 @@
 'use strict';
 export default function promisify(Promise) {
   if (Promise === false) {
-    return function (callback = () => undefined) {
-      return {callback};
+    return function (callback) {
+      return {callback: callback || () => undefined};
     };
   }
 
-  return function (callback = () => undefined) {
-    if (!Promise && !global.Promise) {
-      return {callback};
+  return function (callback) {
+    if (callback || !Promise && !global.Promise) {
+      return {callback: callback || () => undefined};
     }
 
     function defer(resolve, reject) {
-      const errback = callback;
       callback = (err, res) => {
         if (err) reject(err);
         else resolve(res);
-        if (errback) errback(err, res);
       };
     }
 
