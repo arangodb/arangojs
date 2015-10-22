@@ -6,7 +6,6 @@ export default class ArrayCursor {
     this._api = this._connection.route('_api');
     this._result = body.result;
     this._hasMore = Boolean(body.hasMore);
-    this._index = 0;
     this._id = body.id;
     this.count = body.count;
   }
@@ -40,7 +39,6 @@ export default class ArrayCursor {
   all(cb) {
     const {promise, callback} = this._connection.promisify(cb);
     this._drain(err => {
-      this._index = this._result.length;
       if (err) callback(err);
       else callback(null, this._result);
     });
@@ -52,9 +50,8 @@ export default class ArrayCursor {
     const next = () => {
       const value = this._result.shift();
       callback(null, value);
-      this._index++;
     };
-    if (this._result[0]) next();
+    if (this._result.length) next();
     else {
       if (!this._hasMore) callback(null);
       else {
@@ -65,17 +62,18 @@ export default class ArrayCursor {
   }
 
   hasNext() {
-    return (this._hasMore || this._result.length[0]);
+    return (this._hasMore || this._result.length);
   }
 
   each(fn, cb) {
     const {promise, callback} = this._connection.promisify(cb);
+    let index = 0;
     const loop = () => {
       try {
         let result;
-        while (this._result[0]) {
-          result = fn(this._result.shift(), this._index, this);
-          this._index++;
+        while (this._result.length) {
+          result = fn(this._result.shift(), index, this);
+          index++;
           if (result === false) break;
         }
         if (!this._hasMore || result === false) callback(null, result);
@@ -92,12 +90,13 @@ export default class ArrayCursor {
 
   every(fn, cb) {
     const {promise, callback} = this._connection.promisify(cb);
+    let index = 0;
     const loop = () => {
       try {
         let result = true;
-        while (this._result[0]) {
-          result = fn(this._result.shift(), this._index, this);
-          this._index++;
+        while (this._result.length) {
+          result = fn(this._result.shift(), index, this);
+          index++;
           if (!result) break;
         }
         if (!this._hasMore || !result) callback(null, Boolean(result));
@@ -114,12 +113,13 @@ export default class ArrayCursor {
 
   some(fn, cb) {
     const {promise, callback} = this._connection.promisify(cb);
+    let index = 0;
     const loop = () => {
       try {
         let result = false;
-        while (this._result[0]) {
-          result = fn(this._result.shift(), this._index, this);
-          this._index++;
+        while (this._result.length) {
+          result = fn(this._result.shift(), index, this);
+          index++;
           if (result) break;
         }
         if (!this._hasMore || result) callback(null, Boolean(result));
@@ -136,12 +136,13 @@ export default class ArrayCursor {
 
   map(fn, cb) {
     const {promise, callback} = this._connection.promisify(cb);
+    let index = 0;
     const result = [];
     const loop = () => {
       try {
-        while (this._result[0]) {
-          result.push(fn(this._result.shift(), this._index, this));
-          this._index++;
+        while (this._result.length) {
+          result.push(fn(this._result.shift(), index, this));
+          index++;
         }
         if (!this._hasMore) callback(null, result);
         else {
@@ -160,12 +161,13 @@ export default class ArrayCursor {
       cb = accu;
       accu = undefined;
     }
+    let index = 0;
     const {promise, callback} = this._connection.promisify(cb);
     const loop = () => {
       try {
-        while (this._result[0]) {
-          accu = fn(accu, this._result.shift(), this._index, this);
-          this._index++;
+        while (this._result.length) {
+          accu = fn(accu, this._result.shift(), index, this);
+          index++;
         }
         if (!this._hasMore) callback(null, accu);
         else {
@@ -179,12 +181,14 @@ export default class ArrayCursor {
       loop();
     } else if (this._result.length > 1) {
       accu = this._result.shift();
+      index = 1;
       loop();
     } else {
       this._more(err => {
         if (err) callback(err);
         else {
           accu = this._result.shift();
+          index = 1;
           loop();
         }
       });
