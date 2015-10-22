@@ -24,4 +24,4 @@ export default function promisify(Promise) {
 
     return {callback, promise};
   };
-};
+}

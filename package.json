@@ -21,19 +21,13 @@
     "LICENSE"
   ],
   "scripts": {
-    "test": "npm run lint && npm run test-only",
-    "test-only": "mocha --compilers js:babel/register -t 30000 --growl -R spec",
-    "cover": "npm run lint && npm run babel && istanbul cover --report lcov _mocha -- -t 30000 -R spec",
+    "test": "mocha --compilers js:babel/register -t 30000 --growl -R spec",
+    "cover": "npm run lint && npm run dist && istanbul cover --report lcov _mocha -- -t 30000 -R spec",
     "coveralls": "npm run cover && cat ./coverage/lcov.info | coveralls ; rm -rf ./coverage",
-    "watch": "watch 'npm run test-only && npm run lint && npm run dist' ./lib ./test",
-    "dist": "npm run babel && npm run bundle && npm run minify",
-    "babel": "babel --compact false -d lib src",
-    "bundle": "npm run all-bundle && npm run raw-bundle",
-    "minify": "npm run all-minify && npm run raw-minify",
-    "all-bundle": "browserify -s arangojs ./lib/index.js > dist/arango.all.js",
-    "all-minify": "uglifyjs dist/arango.all.js > dist/arango.all.min.js",
-    "raw-bundle": "browserify -x extend -s arangojs ./lib/index.js > dist/arango.js",
-    "raw-minify": "uglifyjs dist/arango.js > dist/arango.min.js",
+    "watch": "parallelshell 'npm run watch:dist' 'npm run watch:test'",
+    "watch:dist": "watch 'npm run dist' ./src",
+    "watch:test": "watch 'npm run lint && npm run test' ./lib ./test",
+    "dist": "babel --compact false -d lib src",
     "lint": "eslint src test",
     "prepublish": "npm run lint && npm run babel && node -e 'require(\"./\");'"
   },
@@ -48,23 +42,22 @@
   },
   "homepage": "https://github.com/arangodb/arangojs",
   "devDependencies": {
-    "async": "^1.4.0",
-    "babel": "^5.2.17",
-    "babel-eslint": "^4.1.0",
-    "browserify": "^11.0.1",
-    "coveralls": "^2.11.2",
-    "dekeywordify": "^0.2.1",
-    "es6-promise": "^3.0.2",
-    "eslint": "^1.0.0",
-    "expect.js": "^0.3.1",
-    "istanbul": "^0.3.14",
-    "mocha": "^2.2.4",
-    "uglify-js": "^2.4.21",
-    "watch": "^0.16.0"
+    "async": "1.4.0",
+    "babel": "5.2.17",
+    "babel-eslint": "4.1.0",
+    "coveralls": "2.11.2",
+    "dekeywordify": "0.2.1",
+    "es6-promise": "3.0.2",
+    "eslint": "1.0.0",
+    "expect.js": "0.3.1",
+    "istanbul": "0.3.14",
+    "mocha": "2.2.4",
+    "parallelshell": "2.0.0",
+    "watch": "0.16.0"
   },
   "dependencies": {
-    "extend": "^3.0.0",
-    "http-errors": "^1.3.1",
-    "linkedlist": "^1.0.1"
+    "extend": "3.0.0",
+    "http-errors": "1.3.1",
+    "linkedlist": "1.0.1"
   }
 }

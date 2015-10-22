@@ -23,4 +23,4 @@ export default function all(arr, callback) {
   }
 
   arr.forEach((fn, i) => fn(step(i)));
-};
+}

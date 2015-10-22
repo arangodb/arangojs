@@ -6,4 +6,4 @@ export default function once(cb) {
     called = true;
     return cb(...args);
   };
-};
+}
