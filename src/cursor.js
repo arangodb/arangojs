@@ -62,7 +62,7 @@ export default class ArrayCursor {
   }
 
   hasNext() {
-    return (this._hasMore || this._result.length);
+    return Boolean(this._hasMore || this._result.length);
   }
 
   each(fn, cb) {
