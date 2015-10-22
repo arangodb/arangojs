@@ -2245,7 +2245,7 @@ These functions implement the [HTTP API for manipulating documents](https://docs
 
 `async collection.replace(documentHandle, newValue, [opts]): Object`
 
-Replaces the content of the document with the given *documentHandle* with the given *newValue*.
+Replaces the content of the document with the given *documentHandle* with the given *newValue* and returns an object containing the document's metadata.
 
 **Arguments**
 
@@ -2283,14 +2283,20 @@ For more information on the *opts* object, see [the HTTP API documentation for w
 ```js
 var db = require('arangojs')();
 var collection = db.collection('some-collection');
-collection.save({number: 1, hello: 'world'}, function (err, doc) {
+var doc = {number: 1, hello: 'world'};
+collection.save(doc, function (err, doc1) {
     if (err) return console.error(err);
-    collection.replace(doc, {number: 2}, function (err, doc2) {
+    collection.replace(doc1, {number: 2}, function (err, doc2) {
         if (err) return console.error(err);
-        doc2._id === doc._id;
-        doc2._rev !== doc._rev;
-        doc2.number === 2;
-        doc2.hello === undefined;
+        doc2._id === doc1._id;
+        doc2._rev !== doc1._rev;
+        collection.document(doc1, function (err, doc3) {
+          if (err) return console.error(err);
+            doc3._id === doc1._id;
+            doc3._rev === doc2._rev;
+            doc3.number === 2;
+            doc3.hello === undefined;
+        })
     });
 });
 ```
@@ -2299,7 +2305,7 @@ collection.save({number: 1, hello: 'world'}, function (err, doc) {
 
 `async collection.update(documentHandle, newValue, [opts]): Object`
 
-Updates (merges) the content of the document with the given *documentHandle* with the given *newValue*.
+Updates (merges) the content of the document with the given *documentHandle* with the given *newValue* and returns an object containing the document's metadata.
 
 **Arguments**
 
@@ -2345,14 +2351,20 @@ For more information on the *opts* object, see [the HTTP API documentation for w
 ```js
 var db = require('arangojs')();
 var collection = db.collection('some-collection');
-collection.save({number: 1, hello: 'world'}, function (err, doc) {
+var doc = {number: 1, hello: 'world'};
+collection.save(doc, function (err, doc1) {
     if (err) return console.error(err);
-    collection.update(doc, {number: 2}, function (err, doc2) {
+    collection.update(doc1, {number: 2}, function (err, doc2) {
         if (err) return console.error(err);
-        doc2._id === doc._id;
-        doc2._rev !== doc._rev;
-        doc2.number === 2;
-        doc2.hello === doc.hello;
+        doc2._id === doc1._id;
+        doc2._rev !== doc1._rev;
+        collection.document(doc2, function (err, doc3) {
+          if (err) return console.error(err);
+          doc3._id === doc2._id;
+          doc3._rev === doc2._rev;
+          doc3.number === 2;
+          doc3.hello === doc.hello;
+        });
     });
 });
 ```
@@ -2462,7 +2474,7 @@ collection.document('my-docs/some-key', function (err, doc) {
 
 `async documentCollection.save(data): Object`
 
-Creates a new document with the given *data*.
+Creates a new document with the given *data* and returns an object containing the document's metadata.
 
 **Arguments**
 
@@ -2475,15 +2487,18 @@ Creates a new document with the given *data*.
 ```js
 var db = require('arangojs')();
 var collection = db.collection('my-docs');
-collection.save(
-    {some: 'data'},
-    function (err, doc) {
+var doc = {some: 'data'};
+collection.save(doc, function (err, doc1) {
+    if (err) return console.error(err);
+    doc1._key; // the document's key
+    doc1._id === ('my-docs/' + doc1._key);
+    collection.document(doc, function (err, doc2) {
         if (err) return console.error(err);
-        doc._key; // the document's key
-        doc._id === ('my-docs/' + doc._key);
-        doc.some === 'data';
-    }
-);
+        doc2._id === doc1._id;
+        doc2._rev === doc1._rev;
+        doc2.some === 'data';
+    });
+});
 ```
 
 ### EdgeCollection API
@@ -2526,7 +2541,7 @@ collection.edge('edges/some-key', function (err, edge) {
 
 `async edgeCollection.save(data, [fromId, toId]): Object`
 
-Creates a new edge between the documents *fromId* and *toId* with the given *data*.
+Creates a new edge between the documents *fromId* and *toId* with the given *data* and returns an object containing the edge's metadata.
 
 **Arguments**
 
@@ -2547,17 +2562,23 @@ Creates a new edge between the documents *fromId* and *toId* with the given *dat
 ```js
 var db = require('arangojs')();
 var collection = db.edgeCollection('edges');
+var edge = {some: 'data'};
 collection.save(
-    {some: 'data'},
+    edge,
     'vertices/start-vertex',
     'vertices/end-vertex',
-    function (err, edge) {
+    function (err, edge1) {
         if (err) return console.error(err);
-        edge._key; // the edge's key
-        edge._id === ('edges/' + edge._key);
-        edge.some === 'data';
-        edge._from === 'vertices/start-vertex';
-        edge._to === 'vertices/end-vertex';
+        edge1._key; // the edge's key
+        edge1._id === ('edges/' + edge1._key);
+        collection.edge(edge, function (err, edge2) {
+            if (err) return console.error(err);
+            edge2._key === edge1._key;
+            edge2._rev = edge1._rev;
+            edge2.some === edge.some;
+            edge2._from === 'vertices/start-vertex';
+            edge2._to === 'vertices/end-vertex';
+        });
     }
 );
 // -- or --
