@@ -164,3 +164,14 @@ describe('configuring the driver', () => {
     });
   });
 });
+
+describe('useDatabase', () => {
+  it('updates the database name', () => {
+    const name = 'example';
+    const db = new Database();
+    expect(db.name).to.equal('_system'); // default
+    db.useDatabase(name);
+    expect(db._connection.config).to.have.a.property('databaseName', name);
+    expect(db.name).to.equal(name);
+  });
+});
