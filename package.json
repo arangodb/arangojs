@@ -29,7 +29,7 @@
   "scripts": {
     "test": "mocha --growl",
     "cover": "istanbul cover --report lcov _mocha",
-    "beforecoveralls": "npm run cover",
+    "precoveralls": "npm run cover",
     "coveralls": "cat ./coverage/lcov.info | coveralls ; rm -rf ./coverage",
     "watch": "parallelshell 'npm run watch:dist' 'npm run watch:test'",
     "watch:dist": "watch 'npm run dist' ./src",
