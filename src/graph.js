@@ -6,10 +6,9 @@ import {
 } from './collection';
 
 class GraphVertexCollection extends BaseCollection {
-  type = types.DOCUMENT_COLLECTION;
-
   constructor(connection, name, graph) {
     super(connection, name);
+    this.type = types.DOCUMENT_COLLECTION;
     this.graph = graph;
     this._gharial = this._api.route(`gharial/${this.graph.name}/vertex/${this.name}`);
   }
@@ -35,10 +34,9 @@ class GraphVertexCollection extends BaseCollection {
 }
 
 class GraphEdgeCollection extends BaseCollection {
-  type = types.EDGE_COLLECTION;
-
   constructor(connection, name, graph) {
     super(connection, name);
+    this.type = types.EDGE_COLLECTION;
     this.graph = graph;
     this._gharial = this._api.route(`gharial/${this.graph.name}/edge/${this.name}`);
   }

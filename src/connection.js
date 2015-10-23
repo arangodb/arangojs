@@ -10,18 +10,6 @@ import Route from './route';
 const MIME_JSON = /\/(json|javascript)(\W|$)/;
 
 export default class Connection {
-  static defaults = {
-    url: 'http://localhost:8529',
-    databaseName: '_system',
-    arangoVersion: 20300
-  };
-
-  static agentDefaults = {
-    maxSockets: 3,
-    keepAlive: true,
-    keepAliveMsecs: 1000
-  };
-
   constructor(config) {
     if (typeof config === 'string') {
       config = {url: config};
@@ -104,3 +92,15 @@ export default class Connection {
     return promise;
   }
 }
+
+Connection.defaults = {
+  url: 'http://localhost:8529',
+  databaseName: '_system',
+  arangoVersion: 20300
+};
+
+Connection.agentDefaults = {
+  maxSockets: 3,
+  keepAlive: true,
+  keepAliveMsecs: 1000
+};

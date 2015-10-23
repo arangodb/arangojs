@@ -530,7 +530,10 @@ class BaseCollection {
 }
 
 class DocumentCollection extends BaseCollection {
-  type = types.DOCUMENT_COLLECTION;
+  constructor(...args) {
+    super(...args);
+    this.type = types.DOCUMENT_COLLECTION;
+  }
 
   _documentPath(documentHandle) {
     return `document/${this._documentHandle(documentHandle)}`;
@@ -558,7 +561,10 @@ class DocumentCollection extends BaseCollection {
 }
 
 class EdgeCollection extends BaseCollection {
-  type = types.EDGE_COLLECTION;
+  constructor(...args) {
+    super(...args);
+    type = types.EDGE_COLLECTION;
+  }
 
   _documentPath(documentHandle) {
     return `edge/${this._documentHandle(documentHandle)}`;

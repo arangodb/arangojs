@@ -1,9 +1,8 @@
 'use strict';
 export default class ArangoError extends Error {
-  name = 'ArangoError';
-
   constructor(obj) {
     super();
+    this.name = 'ArangoError';
     this.message = obj.errorMessage;
     this.errorNum = obj.errorNum;
     this.code = obj.code;
