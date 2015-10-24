@@ -563,7 +563,7 @@ class DocumentCollection extends BaseCollection {
 class EdgeCollection extends BaseCollection {
   constructor(...args) {
     super(...args);
-    type = types.EDGE_COLLECTION;
+    this.type = types.EDGE_COLLECTION;
   }
 
   _documentPath(documentHandle) {
