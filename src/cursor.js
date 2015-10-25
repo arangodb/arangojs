@@ -40,7 +40,13 @@ export default class ArrayCursor {
     const {promise, callback} = this._connection.promisify(cb);
     this._drain(err => {
       if (err) callback(err);
-      else callback(null, this._result);
+      else {
+        let result = [];
+        while (this._result.length) {
+          result.push(this._result.shift());
+        }
+        callback(null, result);
+      }
     });
     return promise;
   }
