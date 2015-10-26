@@ -684,7 +684,7 @@ myFoxxApp.post('users', {
 
 ```js
 var db = require('arangojs')();
-db.query('FOR x IN 1..100 RETURN x, function (err, cursor) {
+db.query('FOR x IN 1..100 RETURN x', function (err, cursor) {
     if (err) return console.error(err);
     // query result list: [1, 2, 3, ..., 99, 100]
     cursor.next(function (err, value) {
