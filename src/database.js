@@ -109,7 +109,7 @@ export default class Database {
       (err, collections) => (
         err
         ? callback(err)
-        : callback(collections.map(info => constructCollection(this._connection, info)))
+        : callback(null, collections.map(info => constructCollection(this._connection, info)))
       )
     );
     return promise;
