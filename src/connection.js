@@ -57,8 +57,9 @@ export default class Connection {
       } else {
         body = String(body);
       }
-      headers['content-length'] = Buffer.byteLength(body, 'utf-8');
     }
+
+    headers['content-length'] = body ? Buffer.byteLength(body, 'utf-8') : 0;
 
     this._request({
       url: this._resolveUrl(opts),
