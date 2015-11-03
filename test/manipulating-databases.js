@@ -4,6 +4,8 @@ import {expect} from 'chai';
 import {Database} from '../src';
 import ArangoError from '../src/error';
 
+const range = n => Array.from(Array(n).keys());
+
 describe('database', () => {
   let db;
   beforeEach(() => {
@@ -83,7 +85,7 @@ describe('database', () => {
   });
   describe('truncate', () => {
     let name = 'testdb_' + Date.now();
-    let collections = Array.from(Array(8).keys()).map(i => `c_${Date.now()}_${i}`);
+    let collections = range(8).map(i => `c_${Date.now()}_${i}`);
     beforeEach(done => {
       db.createDatabase(name)
       .then(() => {
