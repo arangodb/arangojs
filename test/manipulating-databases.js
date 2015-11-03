@@ -88,14 +88,11 @@ describe('database', () => {
       db.createDatabase(name)
       .then(() => {
         db.useDatabase(name);
-        return Promise.all(collections.map(
-          name => db.collection(name).create()
-        ));
-      })
-      .then(() => {
-        return Promise.all(collections.map(
-          name => db.collection(name).save({_key: 'example'})
-        ));
+        return Promise.all(collections.map(name => {
+          let collection = db.collection(name);
+          return collection.create()
+          .then(() => collection.save({_key: 'example'}));
+        }));
       })
       .then(() => done())
       .catch(done);
