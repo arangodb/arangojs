@@ -164,19 +164,3 @@ describe('configuring the driver', () => {
     });
   });
 });
-
-describe('database.useDatabase', () => {
-  it('updates the database name', () => {
-    const name = 'example';
-    const db = new Database();
-    expect(db.name).to.equal('_system'); // default
-    db.useDatabase(name);
-    expect(db._connection.config).to.have.a.property('databaseName', name);
-    expect(db.name).to.equal(name);
-  });
-  it('returns itself', () => {
-    const db1 = new Database();
-    const db2 = db1.useDatabase('nope');
-    expect(db1).to.equal(db2);
-  });
-});
