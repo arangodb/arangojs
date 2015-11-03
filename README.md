@@ -106,9 +106,9 @@ These functions implement the [HTTP API for manipulating databases](https://docs
 
 #### database.useDatabase
 
-`database.useDatabase(databaseName): Object`
+`database.useDatabase(databaseName): this`
 
-Updates the *Database* instance and its connection string to use the given *databaseName*.
+Updates the *Database* instance and its connection string to use the given *databaseName*, then returns itself.
 
 **Arguments**
 

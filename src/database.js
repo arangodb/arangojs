@@ -25,6 +25,7 @@ export default class Database {
   useDatabase(databaseName) {
     this._connection.config.databaseName = databaseName;
     this.name = databaseName;
+    return this;
   }
 
   get(cb) {
