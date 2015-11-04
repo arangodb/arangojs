@@ -59,7 +59,7 @@ describe('database', () => {
     });
   });
   describe('createDatabase', () => {
-    let name = 'testdb_' + Date.now();
+    let name = `testdb_${Date.now()}`;
     afterEach(done => {
       db.useDatabase('_system');
       db.dropDatabase(name)
@@ -84,7 +84,7 @@ describe('database', () => {
     it('returns a list of databases accessible to the active user');
   });
   describe('truncate', () => {
-    let name = 'testdb_' + Date.now();
+    let name = `testdb_${Date.now()}`;
     let nonSystemCollections = range(4).map(i => `c_${Date.now()}_${i}`);
     let systemCollections = range(4).map(i => `_c_${Date.now()}_${i}`);
     beforeEach(done => {
