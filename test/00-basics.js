@@ -7,7 +7,7 @@ import Connection from '../src/connection';
 import https from 'https';
 import http from 'http';
 
-describe('creating a Database', () => {
+describe('Creating a Database', () => {
   describe('using the factory', () => {
     const db = arangojs({potato: 'potato'});
     it('returns a Database instance', () => {
@@ -28,7 +28,7 @@ describe('creating a Database', () => {
   });
 });
 
-describe('configuring the driver', () => {
+describe('Configuring the driver', () => {
   describe('with a string', () => {
     it('sets the url', () => {
       const url = 'https://example.com:9000';

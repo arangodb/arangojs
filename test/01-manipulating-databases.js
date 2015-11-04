@@ -6,12 +6,12 @@ import ArangoError from '../src/error';
 
 const range = n => Array.from(Array(n).keys());
 
-describe('database', () => {
+describe('Manipulating databases', () => {
   let db;
   beforeEach(() => {
     db = new Database();
   });
-  describe('useDatabase', () => {
+  describe('database.useDatabase', () => {
     it('updates the database name', () => {
       const name = 'example';
       expect(db.name).to.equal('_system'); // default
@@ -24,7 +24,7 @@ describe('database', () => {
       expect(db).to.equal(db2);
     });
   });
-  describe('get', () => {
+  describe('database.get', () => {
     it('fetches the database description if the database exists', done => {
       db.get()
       .then(info => {
@@ -47,7 +47,7 @@ describe('database', () => {
       .catch(done);
     });
   });
-  describe('listDatabases', () => {
+  describe('database.listDatabases', () => {
     it('returns a list of all databases', done => {
       db.listDatabases()
       .then(databases => {
@@ -58,7 +58,7 @@ describe('database', () => {
       .catch(done);
     });
   });
-  describe('createDatabase', () => {
+  describe('database.createDatabase', () => {
     let name = `testdb_${Date.now()}`;
     afterEach(done => {
       db.useDatabase('_system');
@@ -80,10 +80,10 @@ describe('database', () => {
     });
     it('adds the given users to the database');
   });
-  describe('listUserDatabases', () => {
+  describe('database.listUserDatabases', () => {
     it('returns a list of databases accessible to the active user');
   });
-  describe('truncate', () => {
+  describe('database.truncate', () => {
     let name = `testdb_${Date.now()}`;
     let nonSystemCollections = range(4).map(i => `c_${Date.now()}_${i}`);
     let systemCollections = range(4).map(i => `_c_${Date.now()}_${i}`);

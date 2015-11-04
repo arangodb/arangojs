@@ -7,7 +7,7 @@ import {Database} from '../src';
 const aqlQuery = 'FOR i In 0..10 RETURN i';
 const aqlResult = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
-describe('cursor', () => {
+describe('Cursor API', () => {
   let db;
   let cursor;
   before(() => {
@@ -21,7 +21,7 @@ describe('cursor', () => {
     })
     .catch(done);
   });
-  describe('all', () => {
+  describe('cursor.all', () => {
     it('returns an Array of all results', done => {
       cursor.all()
       .then(vals => {
@@ -31,7 +31,7 @@ describe('cursor', () => {
       .catch(done);
     });
   });
-  describe('next', () => {
+  describe('cursor.next', () => {
     it('returns the next result of the Cursor', done => {
       cursor.next()
       .then(val => {
@@ -45,7 +45,7 @@ describe('cursor', () => {
       .catch(done);
     });
   });
-  describe('hasNext', () => {
+  describe('cursor.hasNext', () => {
     it('returns true if the Cursor has more results', done => {
       expect(cursor.hasNext()).to.be.true;
       cursor.next()
@@ -64,7 +64,7 @@ describe('cursor', () => {
       .catch(done);
     });
   });
-  describe('each', () => {
+  describe('cursor.each', () => {
     it('invokes the callback for each value', done => {
       let results = [];
       cursor.each(value => {
@@ -89,7 +89,7 @@ describe('cursor', () => {
       .catch(done);
     });
   });
-  describe('every', () => {
+  describe('cursor.every', () => {
     it('returns true if the callback returns a truthy value for every item', done => {
       let results = [];
       cursor.every(value => {
@@ -118,7 +118,7 @@ describe('cursor', () => {
       .catch(done);
     });
   });
-  describe('some', () => {
+  describe('cursor.some', () => {
     it('returns false if the callback returns a non-truthy value for every item', done => {
       let results = [];
       cursor.some(value => {
@@ -147,7 +147,7 @@ describe('cursor', () => {
       .catch(done);
     });
   });
-  describe('map', () => {
+  describe('cursor.map', () => {
     it('maps all result values over the callback', done => {
       cursor.map(value => value * 2)
       .then(results => {
@@ -157,7 +157,7 @@ describe('cursor', () => {
       .catch(done);
     });
   });
-  describe('reduce', () => {
+  describe('cursor.reduce', () => {
     it('reduces the result values with the callback', done => {
       cursor.reduce((a, b) => a + b)
       .then(result => {

@@ -3,11 +3,10 @@ import {describe, it, before, after} from 'mocha';
 import {expect} from 'chai';
 import {Database} from '../src';
 import {DocumentCollection, EdgeCollection} from '../src/collection';
-import ArangoError from '../src/error';
 
 const range = n => Array.from(Array(n).keys());
 
-describe('database', () => {
+describe('Accessing collections', () => {
   let name = `testdb_${Date.now()}`;
   let db;
   before(done => {
@@ -25,7 +24,7 @@ describe('database', () => {
     .then(() => done())
     .catch(done);
   });
-  describe('collection', () => {
+  describe('database.collection', () => {
     it('returns a DocumentCollection instance', () => {
       let name = 'potato';
       let collection = db.collection(name);
@@ -33,7 +32,7 @@ describe('database', () => {
       expect(collection).to.have.a.property('name').that.equals(name);
     });
   });
-  describe('edgeCollection', () => {
+  describe('database.edgeCollection', () => {
     it('returns an EdgeCollection instance', () => {
       let name = 'tomato';
       let collection = db.edgeCollection(name);
@@ -41,7 +40,7 @@ describe('database', () => {
       expect(collection).to.have.a.property('name').that.equals(name);
     });
   });
-  describe('listCollections', () => {
+  describe('database.listCollections', () => {
     let nonSystemCollectionNames = range(4).map(i => `c_${Date.now()}_${i}`);
     let systemCollectionNames = range(4).map(i => `_c_${Date.now()}_${i}`);
     before(done => {
@@ -79,7 +78,7 @@ describe('database', () => {
       .catch(done);
     });
   });
-  describe('collections', () => {
+  describe('database.collections', () => {
     let documentCollectionNames = range(4).map(i => `dc_${Date.now()}_${i}`);
     let edgeCollectionNames = range(4).map(i => `ec_${Date.now()}_${i}`);
     let systemCollectionNames = range(4).map(i => `_c_${Date.now()}_${i}`);
