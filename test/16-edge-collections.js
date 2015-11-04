@@ -1,5 +1,3 @@
-'use strict';
-import 'core-js/shim';
 import {describe, it} from 'mocha';
 
 describe('EdgeCollection API', () => {

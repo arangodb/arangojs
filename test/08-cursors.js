@@ -1,5 +1,3 @@
-'use strict';
-import 'core-js/shim';
 import {describe, it, before, beforeEach} from 'mocha';
 import {expect} from 'chai';
 import {Database} from '../src';

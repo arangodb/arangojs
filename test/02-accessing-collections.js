@@ -1,4 +1,3 @@
-import 'core-js/shim';
 import {describe, it, before, after} from 'mocha';
 import {expect} from 'chai';
 import {Database} from '../src';
