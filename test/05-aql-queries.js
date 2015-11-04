@@ -117,7 +117,7 @@ describe('AQL queries', () => {
         K ${values[10]}
         EOF
       `;
-      expect(aql.query.replace(/[\n\s]+/g, ' ')).to.equal(`
+      expect(aql.query).to.equal(`
         A @value0
         B @value1
         C @value2
@@ -130,7 +130,7 @@ describe('AQL queries', () => {
         J @value9
         K @value10
         EOF
-      `.replace(/[\n\s]+/g, ' '));
+      `);
       let bindVarNames = Object.keys(aql.bindVars).sort((a, b) => +a.substr(5) > +b.substr(5) ? 1 : -1);
       expect(bindVarNames).to.eql([
         'value0',
