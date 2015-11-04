@@ -197,6 +197,7 @@ export default class Database {
     }
     const {promise, callback} = this._connection.promisify(cb);
     if (query && query.query) {
+      if (!opts) opts = bindVars;
       bindVars = query.bindVars;
       query = query.query;
     }
