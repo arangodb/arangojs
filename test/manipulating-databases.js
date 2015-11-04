@@ -85,16 +85,21 @@ describe('database', () => {
   });
   describe('truncate', () => {
     let name = 'testdb_' + Date.now();
-    let collections = range(8).map(i => `c_${Date.now()}_${i}`);
+    let nonSystemCollections = range(4).map(i => `c_${Date.now()}_${i}`);
+    let systemCollections = range(4).map(i => `_c_${Date.now()}_${i}`);
     beforeEach(done => {
       db.createDatabase(name)
       .then(() => {
         db.useDatabase(name);
-        return Promise.all(collections.map(name => {
+        return Promise.all(nonSystemCollections.map(name => {
           let collection = db.collection(name);
           return collection.create()
           .then(() => collection.save({_key: 'example'}));
-        }));
+        }).concat(systemCollections.map(name => {
+          let collection = db.collection(name);
+          return collection.create({isSystem: true})
+          .then(() => collection.save({_key: 'example'}));
+        })));
       })
       .then(() => done())
       .catch(done);
@@ -108,7 +113,23 @@ describe('database', () => {
     it('removes all documents from all non-system collections in the database', done => {
       db.truncate()
       .then(() => {
-        return Promise.all(collections.map(
+        return Promise.all(nonSystemCollections.map(
+          name => db.collection(name).document('example')
+          .then(
+            doc => Promise.reject(new Error(`Expected document to be destroyed: ${doc._id}`)),
+            err => expect(err).to.be.an.instanceof(ArangoError)
+          )
+        ).concat(systemCollections.map(
+          name => db.collection(name).document('example')
+        )));
+      })
+      .then(() => done())
+      .catch(done);
+    });
+    it('additionally truncates system collections if explicitly passed false', done => {
+      db.truncate(false)
+      .then(() => {
+        return Promise.all(nonSystemCollections.concat(systemCollections).map(
           name => db.collection(name).document('example')
           .then(
             doc => Promise.reject(new Error(`Expected document to be destroyed: ${doc._id}`)),
@@ -119,6 +140,5 @@ describe('database', () => {
       .then(() => done())
       .catch(done);
     });
-    it('additionally truncates system collections if explicitly passed false');
   });
 });
