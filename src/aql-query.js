@@ -8,7 +8,7 @@ export default function aqlQuery(strings, ...args) {
     let name = `value${i}`;
     if (
       value instanceof BaseCollection
-      || (value.constructor && value.constructor.name === 'ArangoCollection')
+      || (value && value.constructor && value.constructor.name === 'ArangoCollection')
     ) {
       name = `@${name}`;
       value = typeof value.name === 'function' ? value.name() : value.name;
