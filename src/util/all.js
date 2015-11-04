@@ -1,4 +1,3 @@
-'use strict';
 export default function all(arr, callback) {
   const result = [];
   let pending = arr.length;

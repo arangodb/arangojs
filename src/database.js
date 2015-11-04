@@ -1,4 +1,3 @@
-'use strict';
 import extend from 'extend';
 import all from './util/all';
 import Connection from './connection';

@@ -1,4 +1,3 @@
-'use strict';
 import extend from 'extend';
 import {
   _BaseCollection as BaseCollection,

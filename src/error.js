@@ -1,4 +1,3 @@
-'use strict';
 export default class ArangoError extends Error {
   constructor(obj) {
     super();

@@ -1,4 +1,3 @@
-'use strict';
 export default function promisify(Promise) {
   if (Promise === false) {
     return function (callback) {

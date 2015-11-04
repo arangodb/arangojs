@@ -1,4 +1,3 @@
-'use strict';
 export default class ArrayCursor {
   constructor(connection, body) {
     this.extra = body.extra;

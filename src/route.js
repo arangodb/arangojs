@@ -1,4 +1,3 @@
-'use strict';
 import extend from 'extend';
 
 export default class Route {

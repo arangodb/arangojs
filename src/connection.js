@@ -1,4 +1,3 @@
-'use strict';
 import promisify from './util/promisify';
 import httperr from 'http-errors';
 import extend from 'extend';

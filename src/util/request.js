@@ -1,4 +1,3 @@
-'use strict';
 import http from 'http';
 import https from 'https';
 import {parse as parseUrl} from 'url';
