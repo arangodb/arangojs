@@ -1,3 +1,2 @@
 --compilers js:babel/register
---timeout 30000
 --reporter spec
