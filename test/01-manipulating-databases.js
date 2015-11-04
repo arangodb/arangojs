@@ -91,15 +91,18 @@ describe('database', () => {
       db.createDatabase(name)
       .then(() => {
         db.useDatabase(name);
-        return Promise.all(nonSystemCollections.map(name => {
-          let collection = db.collection(name);
-          return collection.create()
-          .then(() => collection.save({_key: 'example'}));
-        }).concat(systemCollections.map(name => {
-          let collection = db.collection(name);
-          return collection.create({isSystem: true})
-          .then(() => collection.save({_key: 'example'}));
-        })));
+        return Promise.all([
+          ...nonSystemCollections.map(name => {
+            let collection = db.collection(name);
+            return collection.create()
+            .then(() => collection.save({_key: 'example'}));
+          }),
+          ...systemCollections.map(name => {
+            let collection = db.collection(name);
+            return collection.create({isSystem: true})
+            .then(() => collection.save({_key: 'example'}));
+          })
+        ]);
       })
       .then(() => done())
       .catch(done);
@@ -113,15 +116,18 @@ describe('database', () => {
     it('removes all documents from all non-system collections in the database', done => {
       db.truncate()
       .then(() => {
-        return Promise.all(nonSystemCollections.map(
-          name => db.collection(name).document('example')
-          .then(
-            doc => Promise.reject(new Error(`Expected document to be destroyed: ${doc._id}`)),
-            err => expect(err).to.be.an.instanceof(ArangoError)
+        return Promise.all([
+          ...nonSystemCollections.map(
+            name => db.collection(name).document('example')
+            .then(
+              doc => Promise.reject(new Error(`Expected document to be destroyed: ${doc._id}`)),
+              err => expect(err).to.be.an.instanceof(ArangoError)
+            )
+          ),
+          ...systemCollections.map(
+            name => db.collection(name).document('example')
           )
-        ).concat(systemCollections.map(
-          name => db.collection(name).document('example')
-        )));
+        ]);
       })
       .then(() => done())
       .catch(done);
