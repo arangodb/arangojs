@@ -196,12 +196,12 @@ export default class Database {
       bindVars = undefined;
     }
     const {promise, callback} = this._connection.promisify(cb);
-    if (query && typeof query.toAQL === 'function') {
-      query = query.toAQL();
-    }
     if (query && query.query) {
       bindVars = query.bindVars;
       query = query.query;
+    }
+    if (query && typeof query.toAQL === 'function') {
+      query = query.toAQL();
     }
     this._api.post(
       'cursor',
