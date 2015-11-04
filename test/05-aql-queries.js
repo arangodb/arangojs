@@ -3,13 +3,19 @@ import 'core-js/shim';
 import {describe, it, before, after} from 'mocha';
 import {expect} from 'chai';
 import {aqlQuery, Database} from '../src';
+import Cursor from '../src/cursor';
 
 describe('AQL queries', () => {
   let name = `testdb_${Date.now()}`;
   let db;
-  before(() => {
+  before(done => {
     db = new Database();
-    db.useDatabase(name);
+    db.createDatabase(name)
+    .then(() => {
+      db.useDatabase(name);
+      done();
+    })
+    .catch(done);
   });
   after(done => {
     db.useDatabase('_system');
@@ -18,7 +24,69 @@ describe('AQL queries', () => {
     .then(() => done());
   });
   describe('database.query', () => {
-    it('is missing tests');
+    it('returns a cursor for the query result', done => {
+      db.query('RETURN 23')
+      .then(cursor => {
+        expect(cursor).to.be.an.instanceof(Cursor);
+        done();
+      })
+      .catch(done);
+    });
+    it('supports bindVars', done => {
+      db.query('RETURN @x', {x: 5})
+      .then(cursor => cursor.next())
+      .then(value => {
+        expect(value).to.equal(5);
+        done();
+      })
+      .catch(done);
+    });
+    it('supports options', done => {
+      db.query('FOR x IN 1..10 RETURN x', undefined, {batchSize: 2, count: true})
+      .then(cursor => {
+        expect(cursor.count).to.equal(10);
+        expect(cursor._hasMore).to.be.true;
+        done();
+      })
+      .catch(done);
+    });
+    it('supports AQB queries', done => {
+      db.query({toAQL: () => 'RETURN 42'})
+      .then(cursor => cursor.next())
+      .then(value => {
+        expect(value).to.equal(42);
+        done();
+      })
+      .catch(done);
+    });
+    it('supports query objects', done => {
+      db.query({query: 'RETURN 1337'})
+      .then(cursor => cursor.next())
+      .then(value => {
+        expect(value).to.equal(1337);
+        done();
+      })
+      .catch(done);
+    });
+    it('supports compact queries', done => {
+      db.query({query: 'RETURN @potato', bindVars: {potato: 'tomato'}})
+      .then(cursor => cursor.next())
+      .then(value => {
+        expect(value).to.equal('tomato');
+        done();
+      })
+      .catch(done);
+    });
+    it('supports compact queries with options', done => {
+      let aql = {query: 'FOR x IN RANGE(1, @max) RETURN x', bindVars: {max: 10}};
+      db.query(aql, {batchSize: 2, count: true})
+      .then(cursor => {
+        expect(cursor.count).to.equal(10);
+        expect(cursor._hasMore).to.equal(true);
+        done();
+      })
+      .catch(done);
+    });
   });
   describe('aqlQuery', () => {
     it('correctly handles simple parameters', () => {
