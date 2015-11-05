@@ -34,8 +34,8 @@ export default class Connection {
     return url;
   }
 
-  route(path) {
-    return new Route(this, path);
+  route(path, headers) {
+    return new Route(this, path, headers);
   }
 
   request(opts, cb) {
