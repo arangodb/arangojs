@@ -24,7 +24,7 @@ describe('Accessing collections', () => {
     .catch(done);
   });
   describe('database.collection', () => {
-    it('returns a DocumentCollection instance', () => {
+    it('returns a DocumentCollection instance for the collection', () => {
       let name = 'potato';
       let collection = db.collection(name);
       expect(collection).to.be.an.instanceof(DocumentCollection);
@@ -32,7 +32,7 @@ describe('Accessing collections', () => {
     });
   });
   describe('database.edgeCollection', () => {
-    it('returns an EdgeCollection instance', () => {
+    it('returns an EdgeCollection instance for the collection', () => {
       let name = 'tomato';
       let collection = db.edgeCollection(name);
       expect(collection).to.be.an.instanceof(EdgeCollection);
