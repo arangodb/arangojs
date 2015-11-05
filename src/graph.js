@@ -101,6 +101,7 @@ export default class Graph {
       cb = dropCollections;
       dropCollections = undefined;
     }
+    if (typeof dropCollections !== 'boolean') dropCollections = false;
     const {promise, callback} = this._connection.promisify(cb);
     this._gharial.delete(
       {dropCollections},
