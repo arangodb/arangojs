@@ -48,7 +48,7 @@
     "babel": "5.8.29",
     "babel-eslint": "4.1.4",
     "chai": "3.4.1",
-    "core-js": "1.2.5",
+    "core-js": "1.2.6",
     "coveralls": "2.11.4",
     "dekeywordify": "0.2.1",
     "eslint": "1.9.0",
