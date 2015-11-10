@@ -62,8 +62,8 @@ describe('Manipulating databases', () => {
     afterEach(done => {
       db.useDatabase('_system');
       db.dropDatabase(name)
-      .catch(() => null)
-      .then(() => done());
+      .then(() => void done())
+      .catch(done);
     });
     it('creates a database with the given name', done => {
       db.createDatabase(name)
@@ -103,14 +103,14 @@ describe('Manipulating databases', () => {
           })
         ]);
       })
-      .then(() => done())
+      .then(() => void done())
       .catch(done);
     });
     afterEach(done => {
       db.useDatabase('_system');
       db.dropDatabase(name)
-      .catch(() => null)
-      .then(() => done());
+      .then(() => void done())
+      .catch(done);
     });
     it('removes all documents from all non-system collections in the database', done => {
       db.truncate()
@@ -128,7 +128,7 @@ describe('Manipulating databases', () => {
           )
         ]);
       })
-      .then(() => done())
+      .then(() => void done())
       .catch(done);
     });
     it('additionally truncates system collections if explicitly passed false', done => {
@@ -142,7 +142,7 @@ describe('Manipulating databases', () => {
           )
         ));
       })
-      .then(() => done())
+      .then(() => void done())
       .catch(done);
     });
   });

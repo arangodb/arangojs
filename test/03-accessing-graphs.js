@@ -20,8 +20,8 @@ describe('Accessing graphs', () => {
   after(done => {
     db.useDatabase('_system');
     db.dropDatabase(name)
-    .catch(() => null)
-    .then(() => done());
+    .then(() => void done())
+    .catch(done);
   });
   describe('database.graph', () => {
     it('returns a Graph instance', () => {
@@ -49,7 +49,7 @@ describe('Accessing graphs', () => {
           }))
         }))
       ]))
-      .then(() => done())
+      .then(() => void done())
       .catch(done);
     });
     after(done => {
@@ -57,7 +57,8 @@ describe('Accessing graphs', () => {
       .then(() => Promise.all(vertexCollectionNames.concat(edgeCollectionNames).map(
         name => db.collection(name).drop()
       )))
-      .then(() => done());
+      .then(() => void done())
+      .catch(done);
     });
     it('fetches information about all graphs', done => {
       db.listGraphs()
@@ -87,7 +88,7 @@ describe('Accessing graphs', () => {
           }))
         }))
       ]))
-      .then(() => done())
+      .then(() => void done())
       .catch(done);
     });
     after(done => {
@@ -95,7 +96,7 @@ describe('Accessing graphs', () => {
       .then(() => Promise.all(vertexCollectionNames.concat(edgeCollectionNames).map(
         name => db.collection(name).drop()
       )))
-      .then(() => done())
+      .then(() => void done())
       .catch(done);
     });
     it('creates Graph instances', done => {

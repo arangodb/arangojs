@@ -18,8 +18,8 @@ describe('AQL queries', () => {
   after(done => {
     db.useDatabase('_system');
     db.dropDatabase(name)
-    .catch(() => null)
-    .then(() => done());
+    .then(() => void done())
+    .catch(done);
   });
   describe('database.query', () => {
     it('returns a cursor for the query result', done => {

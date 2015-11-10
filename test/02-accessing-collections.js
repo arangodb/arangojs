@@ -20,7 +20,7 @@ describe('Accessing collections', () => {
   after(done => {
     db.useDatabase('_system');
     db.dropDatabase(name)
-    .then(() => done())
+    .then(() => void done())
     .catch(done);
   });
   describe('database.collection', () => {
@@ -47,14 +47,14 @@ describe('Accessing collections', () => {
         ...nonSystemCollectionNames.map(name => db.collection(name).create()),
         ...systemCollectionNames.map(name => db.collection(name).create({isSystem: true}))
       ])
-      .then(() => done())
+      .then(() => void done())
       .catch(done);
     });
     after(done => {
       Promise.all(nonSystemCollectionNames.concat(systemCollectionNames).map(
         name => db.collection(name).drop()
       ))
-      .then(() => done())
+      .then(() => void done())
       .catch(done);
     });
     it('fetches information about all non-system collections', done => {
@@ -87,7 +87,7 @@ describe('Accessing collections', () => {
         ...edgeCollectionNames.map(name => db.edgeCollection(name).create()),
         ...systemCollectionNames.map(name => db.collection(name).create({isSystem: true}))
       ])
-      .then(() => done())
+      .then(() => void done())
       .catch(done);
     });
     after(done => {
@@ -96,7 +96,7 @@ describe('Accessing collections', () => {
         ...edgeCollectionNames.map(name => db.edgeCollection(name).drop()),
         ...systemCollectionNames.map(name => db.collection(name).drop())
       ])
-      .then(() => done())
+      .then(() => void done())
       .catch(done);
     });
     it('creates DocumentCollection and EdgeCollection instances', done => {

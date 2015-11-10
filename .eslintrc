@@ -74,7 +74,6 @@
     "no-undef-init": 2,
     "no-unreachable": 2,
     "no-unused-vars": [2, {"vars": "all", "args": "none"}],
-    "no-void": 2,
     "no-with": 2,
     "operator-assignment": [0, "always"],
     "padded-blocks": [2, "never"],
