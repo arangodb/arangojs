@@ -74,7 +74,7 @@ export default function (baseUrl, agent, agentOptions) {
       let callback = (...args) => {
         callback = () => undefined;
         next();
-        cb.apply(this, args);
+        cb(...args);
       };
       const req = (isTls ? https : http).request(options, res => {
         const data = [];
