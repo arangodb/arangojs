@@ -1,7 +1,6 @@
 import http from 'http';
 import https from 'https';
 import {parse as parseUrl} from 'url';
-import once from './once';
 import LinkedList from 'linkedlist';
 
 function joinPath(a = '', b = '') {
@@ -72,10 +71,11 @@ export default function (baseUrl, agent, agentOptions) {
     options.auth = baseUrlParts.auth;
 
     queue.push(next => {
-      const callback = once((...args) => {
+      let callback = (...args) => {
+        callback = () => undefined;
         next();
         cb.apply(this, args);
-      });
+      };
       const req = (isTls ? https : http).request(options, res => {
         const data = [];
         res
