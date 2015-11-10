@@ -248,7 +248,7 @@ class BaseCollection {
     this._api.put(
       'simple/first',
       extend({}, opts, {collection: this.name}),
-      (err, res) => err ? callback(err) : callback(null, res.result)
+      (err, res) => err ? callback(err) : callback(null, res.body.result)
     );
     return promise;
   }
@@ -265,7 +265,7 @@ class BaseCollection {
     this._api.put(
       'simple/last',
       extend({}, opts, {collection: this.name}),
-      (err, res) => err ? callback(err) : callback(null, res.result)
+      (err, res) => err ? callback(err) : callback(null, res.body.result)
     );
     return promise;
   }
