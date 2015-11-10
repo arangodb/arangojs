@@ -23,6 +23,28 @@ describe('Manipulating databases', () => {
       expect(db).to.equal(db2);
     });
   });
+  describe('database.createDatabase', () => {
+    let name = `testdb_${Date.now()}`;
+    afterEach(done => {
+      db.useDatabase('_system');
+      db.dropDatabase(name)
+      .then(() => void done())
+      .catch(done);
+    });
+    it('creates a database with the given name', done => {
+      db.createDatabase(name)
+      .then(() => {
+        db.useDatabase(name);
+        return db.get();
+      })
+      .then(info => {
+        expect(info.name).to.equal(name);
+        done();
+      })
+      .catch(done);
+    });
+    it('adds the given users to the database');
+  });
   describe('database.get', () => {
     it('fetches the database description if the database exists', done => {
       db.get()
@@ -57,30 +79,26 @@ describe('Manipulating databases', () => {
       .catch(done);
     });
   });
-  describe('database.createDatabase', () => {
+  describe('database.listUserDatabases', () => {
+    it('returns a list of databases accessible to the active user');
+  });
+  describe('database.dropDatabase', () => {
     let name = `testdb_${Date.now()}`;
-    afterEach(done => {
-      db.useDatabase('_system');
-      db.dropDatabase(name)
+    beforeEach(done => {
+      db.createDatabase(name)
       .then(() => void done())
       .catch(done);
     });
-    it('creates a database with the given name', done => {
-      db.createDatabase(name)
-      .then(() => {
-        db.useDatabase(name);
-        return db.get();
-      })
-      .then(info => {
-        expect(info.name).to.equal(name);
-        done();
-      })
+    it('deletes the given database from the server', done => {
+      db.dropDatabase(name)
+      .then(() => new Database({databaseName: name}).get())
+      .then(
+        () => Promise.reject(new Error('Should not succeed')),
+        () => null
+      )
+      .then(() => void done())
       .catch(done);
     });
-    it('adds the given users to the database');
-  });
-  describe('database.listUserDatabases', () => {
-    it('returns a list of databases accessible to the active user');
   });
   describe('database.truncate', () => {
     let name = `testdb_${Date.now()}`;
