@@ -151,22 +151,24 @@ describe('Simple queries', () => {
   describe('collection.updateByExample', () => {
     it('is missing tests');
   });
-  describe('collection.lookupByKeys', () => {
-    it('returns the documents with the given keys', done => {
-      collection.lookupByKeys(['b', 'c', 'd'])
-      .then(arr => {
-        expect(arr).to.have.length(3);
-        arr.forEach(doc => {
-          expect(doc).to.have.keys('_key', '_id', '_rev', 'value', 'group');
-          expect(doc._id).to.equal(`${collection.name}/${doc._key}`);
-          expect(doc.group).to.equal(Math.floor((doc.value - 1) / 2) + 1);
-        });
-        expect(arr.map(d => d._key)).to.eql(['b', 'c', 'd']);
-        done();
-      })
-      .catch(done);
+  if (process.env.ARANGODB_VERSION >= 2.6) {
+    describe('collection.lookupByKeys', () => {
+      it('returns the documents with the given keys', done => {
+        collection.lookupByKeys(['b', 'c', 'd'])
+        .then(arr => {
+          expect(arr).to.have.length(3);
+          arr.forEach(doc => {
+            expect(doc).to.have.keys('_key', '_id', '_rev', 'value', 'group');
+            expect(doc._id).to.equal(`${collection.name}/${doc._key}`);
+            expect(doc.group).to.equal(Math.floor((doc.value - 1) / 2) + 1);
+          });
+          expect(arr.map(d => d._key)).to.eql(['b', 'c', 'd']);
+          done();
+        })
+        .catch(done);
+      });
     });
-  });
+  }
   describe('collection.removeByKeys', () => {
     it('is missing tests');
   });
