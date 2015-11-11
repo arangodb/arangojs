@@ -192,8 +192,8 @@ Creates a new database with the given *databaseName*.
 
 ```js
 var db = require('arangojs')();
-db.createDatabase('mydb', [{username: 'root'}], function (err, info) {
-    if (err) return console.error(err);
+db.createDatabase('mydb', [{username: 'root'}])
+.then(info => {
     // the database has been created
 });
 ```
@@ -208,8 +208,8 @@ Fetches the database description for the active database from the server.
 
 ```js
 var db = require('arangojs')();
-db.get(function (err, info) {
-    if (err) return console.error(err);
+db.get()
+.then(info => {
     // the database exists
 });
 ```
@@ -224,8 +224,8 @@ Fetches all databases from the server and returns an array of their names.
 
 ```js
 var db = require('arangojs')();
-db.databases(function (err, names) {
-    if (err) return console.error(err);
+db.databases()
+.then(names => {
     // databases is an array of database names
 });
 ```
@@ -240,8 +240,8 @@ Fetches all databases accessible to the active user from the server and returns 
 
 ```js
 var db = require('arangojs')();
-db.databases(function (err, names) {
-    if (err) return console.error(err);
+db.databases()
+.then(names => {
     // databases is an array of database names
 });
 ```
@@ -254,8 +254,8 @@ Deletes the database with the given *databaseName* from the server.
 
 ```js
 var db = require('arangojs')();
-db.dropDatabase('mydb', function (err) {
-    if (err) return console.error(err);
+db.dropDatabase('mydb')
+.then(() => {
     // database "mydb" no longer exists
 })
 ```
@@ -276,13 +276,16 @@ Deletes **all documents in all collections** in the active database.
 
 ```js
 var db = require('arangojs')();
-db.truncate(function (err) {
-    if (err) return console.error(err);
+
+db.truncate()
+.then(() => {
     // all non-system collections in this database are now empty
 });
-// --or--
-db.truncate(false, function (err) {
-    if (err) return console.error(err);
+
+// -- or --
+
+db.truncate(false)
+.then(() => {
     // I've made a huge mistake...
 });
 ```
@@ -345,14 +348,17 @@ Fetches all collections from the database and returns an array of collection des
 
 ```js
 var db = require('arangojs')();
-db.listCollections(function (err, collections) {
-    if (err) return console.error(err);
+
+db.listCollections()
+.then(collections => {
     // collections is an array of collection descriptions
     // not including system collections
 });
-// --or--
-db.listCollections(false, function (err, collections) {
-    if (err) return console.error(err);
+
+// -- or --
+
+db.listCollections(false)
+.then(collections => {
     // collections is an array of collection descriptions
     // including system collections
 });
@@ -374,15 +380,18 @@ Fetches all collections from the database and returns an array of *DocumentColle
 
 ```js
 var db = require('arangojs')();
-db.listCollections(function (err, collections) {
-    if (err) return console.error(err);
+
+db.listCollections()
+.then(collections => {
     // collections is an array of DocumentCollection
     // and EdgeCollection instances
     // not including system collections
 });
-// --or--
-db.listCollections(false, function (err, collections) {
-    if (err) return console.error(err);
+
+// -- or --
+
+db.listCollections(false)
+.then(collections => {
     // collections is an array of DocumentCollection
     // and EdgeCollection instances
     // including system collections
@@ -409,8 +418,8 @@ Fetches all graphs from the database and returns an array of graph descriptions.
 
 ```js
 var db = require('arangojs')();
-db.listGraphs(function (err, graphs) {
-    if (err) return console.error(err);
+db.listGraphs()
+.then(graphs => {
     // graphs is an array of graph descriptions
 });
 ```
@@ -425,8 +434,8 @@ Fetches all graphs from the database and returns an array of *Graph* instances f
 
 ```js
 var db = require('arangojs')();
-db.graphs(function (err, graphs) {
-    if (err) return console.error(err);
+db.graphs()
+.then(graphs => {
     // graphs is an array of Graph instances
 });
 ```
@@ -477,13 +486,13 @@ For more information on transactions, see [the HTTP API documentation for transa
 
 ```js
 var db = require('arangojs')();
-var action = string(function () {
+var action = String(function () {
     // This code will be executed inside ArangoDB!
     var db = require('org/arangodb').db;
     return db._query('FOR user IN _users RETURN u.user').toArray<any>();
 });
-db.transaction({read: '_users'}, action, function (err, result) {
-    if (err) return console.error(err);
+db.transaction({read: '_users'}, action)
+.then(result => {
     // result contains the return value of the action
 });
 ```
@@ -521,29 +530,46 @@ If *query* is an object with *query* and *bindVars* properties, those will be us
 **Examples**
 
 ```js
-var qb = require('aqb');
 var db = require('arangojs')();
+var active = true;
+
+// Using ES2015 string templates
+var aqlQuery = require('arangojs').aqlQuery;
+db.query(aqlQuery`
+    FOR u IN _users
+    FILTER u.authData.active == ${active}
+    RETURN u.user
+`)
+.then(cursor => {
+    // cursor is a cursor for the query result
+});
+
+// -- or --
+
+// Using the query builder
+var qb = require('aqb');
 db.query(
     qb.for('u').in('_users')
     .filter(qb.eq('u.authData.active', '@active'))
     .return('u.user'),
-    {active: true},
-    function (err, cursor) {
-        if (err) return console.error(err);
-        // cursor is a cursor for the query result
-    }
-);
+    {active: true}
+)
+.then(cursor => {
+    // cursor is a cursor for the query result
+});
 
 // -- or --
 
+// Using plain arguments
 db.query(
-    'FOR u IN _users FILTER u.authData.active == @active RETURN u.user',
-    {active: true},
-    function (err, cursor) {
-        if (err) return console.error(err);
-        // cursor is a cursor for the query result
-    }
-);
+    'FOR u IN _users'
+    + ' FILTER u.authData.active == @active'
+    + ' RETURN u.user',
+    {active: true}
+)
+.then(cursor => {
+    // cursor is a cursor for the query result
+});
 ```
 
 #### aqlQuery
@@ -561,26 +587,22 @@ var db = require('arangojs')();
 var aqlQuery = require('arangojs').aqlQuery;
 var userCollection = db.collection('_users');
 var role = 'admin';
-db.query(
-  aqlQuery`
+db.query(aqlQuery`
     FOR user IN ${userCollection}
     FILTER user.role == ${role}
     RETURN user
-  `,
-  function (err, cursor) {
-    if (err) return console.error(err);
+`)
+.then(cursor => {
     // cursor is a cursor for the query result
-  }
-);
+});
 // -- is equivalent to --
 db.query(
   'FOR user IN @@value0 FILTER user.role == @value1 RETURN user',
-  {'@value0': userCollection.name, value1: role},
-  function (err, cursor) {
-    if (err) return console.error(err);
+  {'@value0': userCollection.name, value1: role}
+)
+.then(cursor => {
     // cursor is a cursor for the query result
-  }
-);
+});
 ```
 
 ### Managing AQL user functions
@@ -597,8 +619,8 @@ Fetches a list of all AQL user functions registered with the database.
 
 ```js
 var db = require('arangojs')();
-db.listFunctions(function (err, functions) {
-    if (err) return console.error(err);
+db.listFunctions()
+.then(functions => {
     // functions is a list of function descriptions
 })
 ```
@@ -622,27 +644,24 @@ Creates an AQL user function with the given *name* and *code* if it does not alr
 **Examples**
 
 ```js
-var qb = require('aqb');
 var db = require('arangojs')();
-var vat_fn_name = 'myfuncs::acounting::calculate_vat';
-var vat_fn_code = string(function (price) {
-    return price * 0.19;
-});
-db.createFunction(vat_fn_name, vat_fn_code, function (err) {
-    if (err) return console.error(err);
-    // Use the new function in an AQL query with the query builder:
-    db.query(
-        qb.for('product').in('products')
-        .return(qb.MERGE(
-            {
-                vat: qb.fn(vat_fn_name)('product.price')
-            },
-            'product'
-        )),
-        function (err, result) {
-            // ...
-        }
-    );
+var aqlQuery = require('arangojs').aqlQuery;
+db.createFunction(
+  'ACME::ACCOUNTING::CALCULATE_VAT',
+  String(function (price) {
+      return price * 0.19;
+  })
+)
+// Use the new function in an AQL query with template handler:
+.then(() => db.query(aqlQuery`
+    FOR product IN products
+    RETURN MERGE(
+      {vat: ACME::ACCOUNTING::CALCULATE_VAT(product.price)},
+      product
+    )
+`))
+.then(cursor => {
+    // cursor is a cursor for the query result
 });
 ```
 
@@ -666,8 +685,8 @@ Deletes the AQL user function with the given name from the database.
 
 ```js
 var db = require('arangojs')();
-db.dropFunction('myfuncs::acounting::calculate_vat', function (err) {
-    if (err) return console.error(err);
+db.dropFunction('ACME::ACCOUNTING::CALCULATE_VAT')
+.then(() => {
     // the function no longer exists
 });
 ```
@@ -702,8 +721,8 @@ var myFoxxApp = db.route('my-foxx-app');
 myFoxxApp.post('users', {
     username: 'admin',
     password: 'hunter2'
-}, function (err, result) {
-    if (err) return console.error(err);
+})
+.then(result => {
     // result is the result of
     // POST /_db/_system/my-foxx-app/users
     // with JSON request body '{"username": "admin", "password": "hunter2"}'
@@ -716,14 +735,14 @@ myFoxxApp.post('users', {
 
 ```js
 var db = require('arangojs')();
-db.query('FOR x IN 1..100 RETURN x', function (err, cursor) {
-    if (err) return console.error(err);
-    // query result list: [1, 2, 3, ..., 99, 100]
-    cursor.next(function (err, value) {
-      if (err) return console.error(err);
-      value === 1;
-      // remaining result list: [2, 3, 4, ..., 99, 100]
-    })
+db.query('FOR x IN 1..100 RETURN x')
+// query result list: [1, 2, 3, ..., 99, 100]
+.then(cursor => {
+    cursor.next())
+    .then(value => {
+        value === 1;
+        // remaining result list: [2, 3, 4, ..., 99, 100]
+    });
 });
 ```
 
@@ -743,8 +762,8 @@ Exhausts the cursor, then returns an array containing all values in the cursor's
 
 ```js
 // query result list: [1, 2, 3, 4, 5]
-cursor.all(function (err, vals) {
-    if (err) return console.error(err);
+cursor.all()
+.then(vals => {
     // vals is an array containing the entire query result
     Array.isArray(vals);
     vals.length === 5;
@@ -763,15 +782,15 @@ Advances the cursor and returns the next value in the cursor's remaining result 
 
 ```js
 // query result list: [1, 2, 3, 4, 5]
-cursor.next(function (err, val) {
-    if (err) return console.error(err);
+cursor.next()
+.then(val => {
     val === 1;
     // remaining result list: [2, 3, 4, 5]
-    cursor.next(function (err, val2) {
-        if (err) return console.error(err);
-        val2 === 2;
-        // remaining result list: [3, 4, 5]
-    });
+    return cursor.next();
+})
+.then(val2 => {
+    val2 === 2;
+    // remaining result list: [3, 4, 5]
 });
 ```
 
@@ -784,8 +803,8 @@ Returns `true` if the cursor has more values or `false` if the cursor has been e
 **Examples**
 
 ```js
-cursor.all(function (err) { // exhausts the cursor
-    if (err) return console.error(err);
+cursor.all() // exhausts the cursor
+.then(() => {
     cursor.hasNext() === false;
 });
 ```
@@ -825,13 +844,13 @@ Equivalent to *Array.prototype.forEach* (except async).
 ```js
 var results = [];
 function doStuff(value) {
-  var VALUE = value.toUpperCase();
-  results.push(VALUE);
-  return VALUE;
+    var VALUE = value.toUpperCase();
+    results.push(VALUE);
+    return VALUE;
 }
 // query result list: ['a', 'b', 'c']
-cursor.each(doStuff, function (err, last) {
-    if (err) return console.error(err);
+cursor.each(doStuff)
+.then(last => {
     String(results) === 'A,B,C';
     cursor.hasNext() === false;
     last === 'C';
@@ -873,12 +892,12 @@ function even(value) {
     return value % 2 === 0;
 }
 // query result list: [0, 2, 4, 5, 6]
-cursor.every(even, function (err, result) {
-    if (err) return console.error(err);
+cursor.every(even)
+.then(result => {
     result === false; // 5 is not even
     cursor.hasNext() === true;
-    cursor.next(function (err, value) {
-        if (err) return console.error(err);
+    cursor.next()
+    .then(value => {
         value === 6; // next value after 5
     });
 });
@@ -901,12 +920,12 @@ function even(value) {
     return value % 2 === 0;
 }
 // query result list: [1, 3, 4, 5]
-cursor.some(even, function (err, result) {
-    if (err) return console.error(err);
+cursor.some(even)
+.then(result => {
     result === true; // 4 is even
     cursor.hasNext() === true;
-    cursor.next(function (err, value) {
-        if (err) return console.error(err);
+    cursor.next()
+    .then(value => {
         value === 5; // next value after 4
     });
 });
@@ -949,8 +968,8 @@ function square(value) {
     return value * value;
 }
 // query result list: [1, 2, 3, 4, 5]
-cursor.map(square, function (err, result) {
-    if (err) return console.error(err);
+cursor.map(square)
+.then(result => {
     result.length === 5;
     result; // [1, 4, 9, 16, 25]
     cursor.hasNext() === false;
@@ -998,16 +1017,16 @@ function add(a, b) {
 // query result list: [1, 2, 3, 4, 5]
 
 var baseline = 1000;
-cursor.reduce(add, baseline, function (err, result) {
-    if (err) return console.error(err);
+cursor.reduce(add, baseline)
+.then(result => {
     result === (baseline + 1 + 2 + 3 + 4 + 5);
     cursor.hasNext() === false;
 });
 
 // -- or --
 
-cursor.reduce(add, function (err, result) {
-    if (err) return console.error(err);
+cursor.reduce(add)
+.then(result => {
     result === (1 + 2 + 3 + 4 + 5);
     cursor.hasNext() === false;
 });
@@ -1067,24 +1086,24 @@ Performs a GET request to the given URL and returns the server response.
 ```js
 var db = require('arangojs')();
 var route = db.route('my-foxx-app');
-route.get(function (err, result) {
-    if (err) return console.error(err);
+route.get()
+.then(result => {
     // result is the response body of calling
     // GET _db/_system/my-foxx-app
 });
 
 // -- or --
 
-route.get('users', function (err, result) {
-    if (err) return console.error(err);
+route.get('users')
+.then(result => {
     // result is the response body of calling
     // GET _db/_system/my-foxx-app/users
 });
 
 // -- or --
 
-route.get('users', {group: 'admin'}, function (err, result) {
-    if (err) return console.error(err);
+route.get('users', {group: 'admin'})
+.then(result => {
     // result is the response body of calling
     // GET _db/_system/my-foxx-app/users?group=admin
 });
@@ -1115,16 +1134,16 @@ Performs a POST request to the given URL and returns the server response.
 ```js
 var db = require('arangojs')();
 var route = db.route('my-foxx-app');
-route.post(function (err, result) {
-    if (err) return console.error(err);
+route.post()
+.then(result => {
     // result is the response body of calling
     // POST _db/_system/my-foxx-app
 });
 
 // -- or --
 
-route.post('users', function (err, result) {
-    if (err) return console.error(err);
+route.post('users')
+.then(result => {
     // result is the response body of calling
     // POST _db/_system/my-foxx-app/users
 });
@@ -1134,8 +1153,8 @@ route.post('users', function (err, result) {
 route.post('users', {
     username: 'admin',
     password: 'hunter2'
-}, function (err, result) {
-    if (err) return console.error(err);
+})
+.then(result => {
     // result is the response body of calling
     // POST _db/_system/my-foxx-app/users
     // with JSON request body {"username": "admin", "password": "hunter2"}
@@ -1146,8 +1165,8 @@ route.post('users', {
 route.post('users', {
     username: 'admin',
     password: 'hunter2'
-}, {admin: true}, function (err, result) {
-    if (err) return console.error(err);
+}, {admin: true})
+.then(result => {
     // result is the response body of calling
     // POST _db/_system/my-foxx-app/users?admin=true
     // with JSON request body {"username": "admin", "password": "hunter2"}
@@ -1179,16 +1198,16 @@ Performs a PUT request to the given URL and returns the server response.
 ```js
 var db = require('arangojs')();
 var route = db.route('my-foxx-app');
-route.put(function (err, result) {
-    if (err) return console.error(err);
+route.put()
+.then(result => {
     // result is the response body of calling
     // PUT _db/_system/my-foxx-app
 });
 
 // -- or --
 
-route.put('users/admin', function (err, result) {
-    if (err) return console.error(err);
+route.put('users/admin')
+.then(result => {
     // result is the response body of calling
     // PUT _db/_system/my-foxx-app/users
 });
@@ -1198,8 +1217,8 @@ route.put('users/admin', function (err, result) {
 route.put('users/admin', {
     username: 'admin',
     password: 'hunter2'
-}, function (err, result) {
-    if (err) return console.error(err);
+})
+.then(result => {
     // result is the response body of calling
     // PUT _db/_system/my-foxx-app/users/admin
     // with JSON request body {"username": "admin", "password": "hunter2"}
@@ -1210,8 +1229,8 @@ route.put('users/admin', {
 route.put('users/admin', {
     username: 'admin',
     password: 'hunter2'
-}, {admin: true}, function (err, result) {
-    if (err) return console.error(err);
+}, {admin: true})
+.then(result => {
     // result is the response body of calling
     // PUT _db/_system/my-foxx-app/users/admin?admin=true
     // with JSON request body {"username": "admin", "password": "hunter2"}
@@ -1243,16 +1262,16 @@ Performs a PATCH request to the given URL and returns the server response.
 ```js
 var db = require('arangojs')();
 var route = db.route('my-foxx-app');
-route.patch(function (err, result) {
-    if (err) return console.error(err);
+route.patch()
+.then(result => {
     // result is the response body of calling
     // PATCH _db/_system/my-foxx-app
 });
 
 // -- or --
 
-route.patch('users/admin', function (err, result) {
-    if (err) return console.error(err);
+route.patch('users/admin')
+.then(result => {
     // result is the response body of calling
     // PATCH _db/_system/my-foxx-app/users
 });
@@ -1261,8 +1280,8 @@ route.patch('users/admin', function (err, result) {
 
 route.patch('users/admin', {
     password: 'hunter2'
-}, function (err, result) {
-    if (err) return console.error(err);
+})
+.then(result => {
     // result is the response body of calling
     // PATCH _db/_system/my-foxx-app/users/admin
     // with JSON request body {"password": "hunter2"}
@@ -1272,8 +1291,8 @@ route.patch('users/admin', {
 
 route.patch('users/admin', {
     password: 'hunter2'
-}, {admin: true}, function (err, result) {
-    if (err) return console.error(err);
+}, {admin: true})
+.then(result => {
     // result is the response body of calling
     // PATCH _db/_system/my-foxx-app/users/admin?admin=true
     // with JSON request body {"password": "hunter2"}
@@ -1301,24 +1320,24 @@ Performs a DELETE request to the given URL and returns the server response.
 ```js
 var db = require('arangojs')();
 var route = db.route('my-foxx-app');
-route.delete(function (err, result) {
-    if (err) return console.error(err);
+route.delete()
+.then(result => {
     // result is the response body of calling
     // DELETE _db/_system/my-foxx-app
 });
 
 // -- or --
 
-route.delete('users/admin', function (err, result) {
-    if (err) return console.error(err);
+route.delete('users/admin')
+.then(result => {
     // result is the response body of calling
     // DELETE _db/_system/my-foxx-app/users/admin
 });
 
 // -- or --
 
-route.delete('users/admin', {permanent: true}, function (err, result) {
-    if (err) return console.error(err);
+route.delete('users/admin', {permanent: true})
+.then(result => {
     // result is the response body of calling
     // DELETE _db/_system/my-foxx-app/users/admin?permanent=true
 });
@@ -1345,8 +1364,8 @@ Performs a HEAD request to the given URL and returns the server response.
 ```js
 var db = require('arangojs')();
 var route = db.route('my-foxx-app');
-route.head(function (err, result, response) {
-    if (err) return console.error(err);
+route.head()
+.then(result => response) {
     // result is empty (no response body)
     // response is the response object for
     // HEAD _db/_system/my-foxx-app
@@ -1399,8 +1418,8 @@ route.request({
     method: 'POST',
     body: {hello: 'world'},
     qs: {admin: true}
-}, function (err, result) {
-    if (err) return console.error(err);
+})
+.then(result => {
     // result is the response body of calling
     // POST _db/_system/my-foxx-app/hello-world?admin=true
     // with JSON request body '{"hello": "world"}'
@@ -1428,8 +1447,8 @@ Retrieves general information about the collection.
 ```js
 var db = require('arangojs')();
 var collection = db.collection('some-collection');
-collection.get(function (err, data) {
-    if (err) return console.error(err);
+collection.get()
+.then(data => {
     // data contains general information about the collection
 });
 ```
@@ -1445,8 +1464,8 @@ Retrieves the collection's properties.
 ```js
 var db = require('arangojs')();
 var collection = db.collection('some-collection');
-collection.properties(function (err, data) {
-    if (err) return console.error(err);
+collection.properties()
+.then(data => {
     // data contains the collection's properties
 });
 ```
@@ -1462,8 +1481,8 @@ Retrieves information about the number of documents in a collection.
 ```js
 var db = require('arangojs')();
 var collection = db.collection('some-collection');
-collection.count(function (err, data) {
-    if (err) return console.error(err);
+collection.count()
+.then(data => {
     // data contains the collection's count
 });
 ```
@@ -1479,8 +1498,8 @@ Retrieves statistics for a collection.
 ```js
 var db = require('arangojs')();
 var collection = db.collection('some-collection');
-collection.figures(function (err, data) {
-    if (err) return console.error(err);
+collection.figures()
+.then(data => {
     // data contains the collection's figures
 });
 ```
@@ -1496,8 +1515,8 @@ Retrieves the collection revision ID.
 ```js
 var db = require('arangojs')();
 var collection = db.collection('some-collection');
-collection.revision(function (err, data) {
-    if (err) return console.error(err);
+collection.revision()
+.then(data => {
     // data contains the collection's revision
 });
 ```
@@ -1519,8 +1538,8 @@ Retrieves the collection checksum.
 ```js
 var db = require('arangojs')();
 var collection = db.collection('some-collection');
-collection.checksum(function (err, data) {
-    if (err) return console.error(err);
+collection.checksum()
+.then(data => {
     // data contains the collection's checksum
 });
 ```
@@ -1546,8 +1565,8 @@ Creates a collection with the given *properties* for this collection's name, the
 ```js
 var db = require('arangojs')();
 collection = db.collection('potatos');
-collection.create(function (err) {
-    if (err) return console.error(err);
+collection.create()
+.then(() => {
     // the document collection "potatos" now exists
 });
 
@@ -1556,8 +1575,8 @@ collection.create(function (err) {
 var collection = var collection = db.edgeCollection('friends');
 collection.create({
     waitForSync: true // always sync document changes to disk
-}, function (err) {
-    if (err) return console.error(err);
+})
+.then(() => {
     // the edge collection "friends" now exists
 });
 ```
@@ -1579,8 +1598,8 @@ Tells the server to load the collection into memory.
 ```js
 var db = require('arangojs')();
 var collection = db.collection('some-collection');
-collection.load(false, function (err) {
-    if (err) return console.error(err);
+collection.load(false)
+.then(() => {
     // the collection has now been loaded into memory
 });
 ```
@@ -1596,8 +1615,8 @@ Tells the server to remove the collection from memory.
 ```js
 var db = require('arangojs')();
 var collection = db.collection('some-collection');
-collection.unload(function (err) {
-    if (err) return console.error(err);
+collection.unload()
+.then(() => {
     // the collection has now been unloaded from memory
 });
 ```
@@ -1619,8 +1638,8 @@ Replaces the properties of the collection.
 ```js
 var db = require('arangojs')();
 var collection = db.collection('some-collection');
-collection.setProperties({waitForSync: true}, function (err, result) {
-    if (err) return console.error(err);
+collection.setProperties({waitForSync: true})
+.then(result => {
     result.waitForSync === true;
     // the collection will now wait for data being written to disk
     // whenever a document is changed
@@ -1638,8 +1657,8 @@ Renames the collection. The *Collection* instance will automatically update its 
 ```js
 var db = require('arangojs')();
 var collection = db.collection('some-collection');
-collection.rename('new-collection-name', function (err, result) {
-    if (err) return console.error(err);
+collection.rename('new-collection-name')
+.then(result => {
     result.name === 'new-collection-name';
     collection.name === result.name;
     // result contains additional information about the collection
@@ -1657,8 +1676,8 @@ Rotates the journal of the collection.
 ```js
 var db = require('arangojs')();
 var collection = db.collection('some-collection');
-collection.rotate(function (err, data) {
-    if (err) return console.error(err);
+collection.rotate()
+.then(data => {
     // data.result will be true if rotation succeeded
 });
 ```
@@ -1674,8 +1693,8 @@ Deletes **all documents** in the collection in the database.
 ```js
 var db = require('arangojs')();
 var collection = db.collection('some-collection');
-collection.truncate(function (err) {
-    if (err) return console.error(err);
+collection.truncate()
+.then(() => {
     // the collection "some-collection" is now empty
 });
 ```
@@ -1691,8 +1710,8 @@ Deletes the collection from the database.
 ```js
 var db = require('arangojs')();
 var collection = db.collection('some-collection');
-collection.drop(function (err) {
-    if (err) return console.error(err);
+collection.drop()
+.then(() => {
     // the collection "some-collection" no longer exists
 });
 ```
@@ -1718,8 +1737,8 @@ Creates an arbitrary index on the collection.
 ```js
 var db = require('arangojs')();
 var collection = db.collection('some-collection');
-collection.createIndex({type: 'cap', size: 20}, function (err, index) {
-    if (err) return console.error(err);
+collection.createIndex({type: 'cap', size: 20})
+.then(index => {
     index.id; // the index's handle
     // the index has been created
 });
@@ -1754,15 +1773,18 @@ For more information on the properties of the *size* object see [the HTTP API fo
 ```js
 var db = require('arangojs')();
 var collection = db.collection('some-collection');
-collection.createCapCollection(20, function (err, index) {
-    if (err) return console.error(err);
+
+collection.createCapCollection(20)
+.then(index => {
     index.id; // the index's handle
     index.size === 20;
     // the index has been created
 });
+
 // -- or --
-collection.createCapCollection({size: 20}, function (err, index) {
-    if (err) return console.error(err);
+
+collection.createCapCollection({size: 20})
+.then(index => {
     index.id; // the index's handle
     index.size === 20;
     // the index has been created
@@ -1792,15 +1814,18 @@ For more information on hash indexes, see [the HTTP API for hash indexes](https:
 ```js
 var db = require('arangojs')();
 var collection = db.collection('some-collection');
-collection.createHashIndex('favorite-color', function (err, index) {
-    if (err) return console.error(err);
+
+collection.createHashIndex('favorite-color')
+.then(index => {
     index.id; // the index's handle
     index.fields; // ['favorite-color']
     // the index has been created
 });
+
 // -- or --
-collection.createHashIndex(['favorite-color'], function (err, index) {
-    if (err) return console.error(err);
+
+collection.createHashIndex(['favorite-color'])
+.then(index => {
     index.id; // the index's handle
     index.fields; // ['favorite-color']
     // the index has been created
@@ -1830,15 +1855,18 @@ For more information on skiplist indexes, see [the HTTP API for skiplist indexes
 ```js
 var db = require('arangojs')();
 var collection = db.collection('some-collection');
-collection.createSkipList('favorite-color', function (err, index) {
-    if (err) return console.error(err);
+
+collection.createSkipList('favorite-color')
+.then(index => {
     index.id; // the index's handle
     index.fields; // ['favorite-color']
     // the index has been created
 });
+
 // -- or --
-collection.createSkipList(['favorite-color'], function (err, index) {
-    if (err) return console.error(err);
+
+collection.createSkipList(['favorite-color'])
+.then(index => {
     index.id; // the index's handle
     index.fields; // ['favorite-color']
     // the index has been created
@@ -1868,15 +1896,18 @@ For more information on the properties of the *opts* object see [the HTTP API fo
 ```js
 var db = require('arangojs')();
 var collection = db.collection('some-collection');
-collection.createGeoIndex(['longitude', 'latitude'], function (err, index) {
-    if (err) return console.error(err);
+
+collection.createGeoIndex(['longitude', 'latitude'])
+.then(index => {
     index.id; // the index's handle
     index.fields; // ['longitude', 'latitude']
     // the index has been created
 });
+
 // -- or --
-collection.createGeoIndex('location', {geoJson: true}, function (err, index) {
-    if (err) return console.error(err);
+
+collection.createGeoIndex('location', {geoJson: true})
+.then(index => {
     index.id; // the index's handle
     index.fields; // ['location']
     // the index has been created
@@ -1906,15 +1937,18 @@ For more information on fulltext indexes, see [the HTTP API for fulltext indexes
 ```js
 var db = require('arangojs')();
 var collection = db.collection('some-collection');
-collection.createFulltextIndex('description', function (err, index) {
-    if (err) return console.error(err);
+
+collection.createFulltextIndex('description')
+.then(index => {
     index.id; // the index's handle
     index.fields; // ['description']
     // the index has been created
 });
+
 // -- or --
-collection.createFulltextIndex(['description'], function (err, index) {
-    if (err) return console.error(err);
+
+collection.createFulltextIndex(['description'])
+.then(index => {
     index.id; // the index's handle
     index.fields; // ['description']
     // the index has been created
@@ -1938,16 +1972,18 @@ Fetches information about the index with the given *indexHandle* and returns it.
 ```js
 var db = require('arangojs')();
 var collection = db.collection('some-collection');
-collection.createFulltextIndex('description', function (err, index) {
-    if (err) return console.error(err);
-    collection.index(index.id, function (err, result) {
-        if (err) return console.error(err);
+collection.createFulltextIndex('description')
+.then(index => {
+    collection.index(index.id)
+    .then(result => {
         result.id === index.id;
         // result contains the properties of the index
     });
+
     // -- or --
-    collection.index(index.id.split('/')[1], function (err, result) {
-        if (err) return console.error(err);
+
+    collection.index(index.id.split('/')[1])
+    .then(result => {
         result.id === index.id;
         // result contains the properties of the index
     });
@@ -1965,13 +2001,11 @@ Fetches a list of all indexes on this collection.
 ```js
 var db = require('arangojs')();
 var collection = db.collection('some-collection');
-collection.createFulltextIndex('description', function (err) {
-    if (err) return console.error(err);
-    collection.indexes(function (err, indexes) {
-        if (err) return console.error(err);
-        indexes.length === 1;
-        // indexes contains information about the index
-    });
+collection.createFulltextIndex('description')
+.then(() => collection.indexes())
+.then(indexes => {
+    indexes.length === 1;
+    // indexes contains information about the index
 });
 ```
 
@@ -1992,15 +2026,17 @@ Deletes the index with the given *indexHandle* from the collection.
 ```js
 var db = require('arangojs')();
 var collection = db.collection('some-collection');
-collection.createFulltextIndex('description', function (err, index) {
-    if (err) return console.error(err);
-    collection.dropIndex(index.id, function (err) {
-        if (err) return console.error(err);
+collection.createFulltextIndex('description')
+.then(index => {
+    collection.dropIndex(index.id)
+    .then(() => {
         // the index has been removed from the collection
     });
+
     // -- or --
-    collection.dropIndex(index.id.split('/')[1], function (err) {
-        if (err) return console.error(err);
+
+    collection.dropIndex(index.id.split('/')[1])
+    .then(() => {
         // the index has been removed from the collection
     });
 });
@@ -2227,19 +2263,21 @@ For more information on the *opts* object, see [the HTTP API documentation for b
 ```js
 var db = require('arangojs')();
 var collection = db.collection('users');
+
 collection.import(
     [// document stream
         {username: 'admin', password: 'hunter2'},
         {username: 'jcd', password: 'bionicman'},
         {username: 'jreyes', password: 'amigo'},
         {username: 'ghermann', password: 'zeitgeist'}
-    ],
-    function (err, result) {
-        if (err) return console.error(err);
-        result.created === 4;
-    }
-);
+    ]
+)
+.then(result => {
+    result.created === 4;
+});
+
 // -- or --
+
 collection.import(
     [// array stream with header
         ['username', 'password'], // keys
@@ -2247,26 +2285,25 @@ collection.import(
         ['jcd', 'bionicman'], // row 2
         ['jreyes', 'amigo'],
         ['ghermann', 'zeitgeist']
-    ],
-    function (err, result) {
-        if (err) return console.error(err);
-        result.created === 4;
-    }
-);
+    ]
+)
+.then(result => {
+    result.created === 4;
+});
+
 // -- or --
+
 collection.import(
-    (// raw line-delimited JSON array stream with header
-        '["username", "password"]\r\n' +
-        '["admin", "hunter2"]\r\n' +
-        '["jcd", "bionicman"]\r\n' +
-        '["jreyes", "amigo"]\r\n' +
-        '["ghermann", "zeitgeist"]\r\n'
-    ),
-    function (err, result) {
-        if (err) return console.error(err);
-        result.created === 4;
-    }
-);
+    // raw line-delimited JSON array stream with header
+    '["username", "password"]\r\n' +
+    '["admin", "hunter2"]\r\n' +
+    '["jcd", "bionicman"]\r\n' +
+    '["jreyes", "amigo"]\r\n' +
+    '["ghermann", "zeitgeist"]\r\n'
+)
+.then(result => {
+    result.created === 4;
+});
 ```
 
 ### Manipulating documents
@@ -2316,14 +2353,14 @@ For more information on the *opts* object, see [the HTTP API documentation for w
 var db = require('arangojs')();
 var collection = db.collection('some-collection');
 var doc = {number: 1, hello: 'world'};
-collection.save(doc, function (err, doc1) {
-    if (err) return console.error(err);
-    collection.replace(doc1, {number: 2}, function (err, doc2) {
-        if (err) return console.error(err);
+collection.save(doc)
+.then(doc1 => {
+    collection.replace(doc1, {number: 2})
+    .then(doc2 => {
         doc2._id === doc1._id;
         doc2._rev !== doc1._rev;
-        collection.document(doc1, function (err, doc3) {
-          if (err) return console.error(err);
+        collection.document(doc1)
+        .then(doc3 => {
             doc3._id === doc1._id;
             doc3._rev === doc2._rev;
             doc3.number === 2;
@@ -2384,14 +2421,14 @@ For more information on the *opts* object, see [the HTTP API documentation for w
 var db = require('arangojs')();
 var collection = db.collection('some-collection');
 var doc = {number: 1, hello: 'world'};
-collection.save(doc, function (err, doc1) {
-    if (err) return console.error(err);
-    collection.update(doc1, {number: 2}, function (err, doc2) {
-        if (err) return console.error(err);
+collection.save(doc)
+.then(doc1 => {
+    collection.update(doc1, {number: 2})
+    .then(doc2 => {
         doc2._id === doc1._id;
         doc2._rev !== doc1._rev;
-        collection.document(doc2, function (err, doc3) {
-          if (err) return console.error(err);
+        collection.document(doc2)
+        .then(doc3 => {
           doc3._id === doc2._id;
           doc3._rev === doc2._rev;
           doc3.number === 2;
@@ -2439,13 +2476,16 @@ For more information on the *opts* object, see [the HTTP API documentation for w
 ```js
 var db = require('arangojs')();
 var collection = db.collection('some-collection');
-collection.remove('some-doc', function (err) {
-    if (err) return console.error(err);
+
+collection.remove('some-doc')
+.then(() => {
     // document 'some-collection/some-doc' no longer exists
 });
+
 // -- or --
-collection.remove('some-collection/some-doc', function (err) {
-    if (err) return console.error(err);
+
+collection.remove('some-collection/some-doc')
+.then(() => {
     // document 'some-collection/some-doc' no longer exists
 });
 ```
@@ -2487,15 +2527,18 @@ Retrieves the document with the given *documentHandle* from the collection.
 ```js
 var db = require('arangojs')();
 var collection = db.collection('my-docs');
-collection.document('some-key', function (err, doc) {
-    if (err) return console.error(err);
+
+collection.document('some-key')
+.then(doc => {
     // the document exists
     doc._key === 'some-key';
     doc._id === 'my-docs/some-key';
 });
+
 // -- or --
-collection.document('my-docs/some-key', function (err, doc) {
-    if (err) return console.error(err);
+
+collection.document('my-docs/some-key')
+.then(doc => {
     // the document exists
     doc._key === 'some-key';
     doc._id === 'my-docs/some-key';
@@ -2520,12 +2563,12 @@ Creates a new document with the given *data* and returns an object containing th
 var db = require('arangojs')();
 var collection = db.collection('my-docs');
 var doc = {some: 'data'};
-collection.save(doc, function (err, doc1) {
-    if (err) return console.error(err);
+collection.save(doc)
+.then(doc1 => {
     doc1._key; // the document's key
     doc1._id === ('my-docs/' + doc1._key);
-    collection.document(doc, function (err, doc2) {
-        if (err) return console.error(err);
+    collection.document(doc)
+    .then(doc2 => {
         doc2._id === doc1._id;
         doc2._rev === doc1._rev;
         doc2.some === 'data';
@@ -2554,15 +2597,18 @@ Retrieves the edge with the given *documentHandle* from the collection.
 ```js
 var db = require('arangojs')();
 var collection = var collection = db.edgeCollection('edges');
-collection.edge('some-key', function (err, edge) {
-    if (err) return console.error(err);
+
+collection.edge('some-key')
+.then(edge => {
     // the edge exists
     edge._key === 'some-key';
     edge._id === 'edges/some-key';
 });
+
 // -- or --
-collection.edge('edges/some-key', function (err, edge) {
-    if (err) return console.error(err);
+
+collection.edge('edges/some-key')
+.then(edge => {
     // the edge exists
     edge._key === 'some-key';
     edge._id === 'edges/some-key';
@@ -2595,36 +2641,35 @@ Creates a new edge between the documents *fromId* and *toId* with the given *dat
 var db = require('arangojs')();
 var collection = db.edgeCollection('edges');
 var edge = {some: 'data'};
+
 collection.save(
     edge,
     'vertices/start-vertex',
-    'vertices/end-vertex',
-    function (err, edge1) {
-        if (err) return console.error(err);
-        edge1._key; // the edge's key
-        edge1._id === ('edges/' + edge1._key);
-        collection.edge(edge, function (err, edge2) {
-            if (err) return console.error(err);
-            edge2._key === edge1._key;
-            edge2._rev = edge1._rev;
-            edge2.some === edge.some;
-            edge2._from === 'vertices/start-vertex';
-            edge2._to === 'vertices/end-vertex';
-        });
-    }
-);
-// -- or --
-collection.save(
-    {
-        some: 'data',
-        _from: 'verticies/start-vertex',
-        _to: 'vertices/end-vertex'
-    },
-    function (err, edge) {
-        if (err) return console.error(err);
-        // ...
-    }
+    'vertices/end-vertex'
 )
+.then(edge1 => {
+    edge1._key; // the edge's key
+    edge1._id === ('edges/' + edge1._key);
+    collection.edge(edge)
+    .then(edge2 => {
+        edge2._key === edge1._key;
+        edge2._rev = edge1._rev;
+        edge2.some === edge.some;
+        edge2._from === 'vertices/start-vertex';
+        edge2._to === 'vertices/end-vertex';
+    });
+});
+
+// -- or --
+
+collection.save({
+    some: 'data',
+    _from: 'verticies/start-vertex',
+    _to: 'vertices/end-vertex'
+})
+.then(edge => {
+    // ...
+})
 ```
 
 #### edgeCollection.edges
@@ -2649,13 +2694,11 @@ collection.import([
     ['x', 'vertices/a', 'vertices/b'],
     ['y', 'vertices/a', 'vertices/c'],
     ['z', 'vertices/d', 'vertices/a']
-], function (err) {
-    if (err) return console.error(err);
-    collection.edges('vertices/a', function (err, edges) {
-        if (err) return console.error(err);
-        edges.length === 3;
-        edges.map(function (edge) {return edge._key;}); // ['x', 'y', 'z']
-    });
+])
+.then(() => collection.edges('vertices/a'))
+.then(edges => {
+    edges.length === 3;
+    edges.map(function (edge) {return edge._key;}); // ['x', 'y', 'z']
 });
 ```
 
@@ -2681,13 +2724,11 @@ collection.import([
     ['x', 'vertices/a', 'vertices/b'],
     ['y', 'vertices/a', 'vertices/c'],
     ['z', 'vertices/d', 'vertices/a']
-], function (err) {
-    if (err) return console.error(err);
-    collection.inEdges('vertices/a', function (err, edges) {
-        if (err) return console.error(err);
-        edges.length === 1;
-        edges[0]._key === 'z';
-    });
+])
+.then(() => collection.inEdges('vertices/a'))
+.then(edges => {
+    edges.length === 1;
+    edges[0]._key === 'z';
 });
 ```
 
@@ -2713,13 +2754,11 @@ collection.import([
     ['x', 'vertices/a', 'vertices/b'],
     ['y', 'vertices/a', 'vertices/c'],
     ['z', 'vertices/d', 'vertices/a']
-], function (err) {
-    if (err) return console.error(err);
-    collection.outEdges('vertices/a', function (err, edges) {
-        if (err) return console.error(err);
-        edges.length === 2;
-        edges.map(function (edge) {return edge._key;}); // ['x', 'y']
-    });
+])
+.then(() => collection.outEdges('vertices/a'))
+.then(edges => {
+    edges.length === 2;
+    edges.map(function (edge) {return edge._key;}); // ['x', 'y']
 });
 ```
 
@@ -2751,16 +2790,14 @@ collection.import([
     ['x', 'vertices/a', 'vertices/b'],
     ['y', 'vertices/b', 'vertices/c'],
     ['z', 'vertices/c', 'vertices/d']
-], function (err) {
-    if (err) return console.error(err);
-    collection.traversal('vertices/a', {
-        direction: 'outbound',
-        visitor: 'result.vertices.push(vertex._key);',
-        init: 'result.vertices = [];'
-    }, function (err, result) {
-        if (err) return console.error(err);
-        result.vertices; // ['a', 'b', 'c', 'd']
-    });
+])
+.then(() => collection.traversal('vertices/a', {
+    direction: 'outbound',
+    visitor: 'result.vertices.push(vertex._key);',
+    init: 'result.vertices = [];'
+}))
+.then(result => {
+    result.vertices; // ['a', 'b', 'c', 'd']
 });
 ```
 
@@ -2779,8 +2816,8 @@ Retrieves general information about the graph.
 ```js
 var db = require('arangojs')();
 var graph = db.graph('some-graph');
-graph.get(function (err, data) {
-    if (err) return console.error(err);
+graph.get()
+.then(data => {
     // data contains general information about the graph
 });
 ```
@@ -2814,8 +2851,8 @@ graph.create({
             ]
         }
     ]
-}, function (err, graph) {
-    if (err) return console.error(err);
+})
+.then(graph => {
     // graph is a Graph instance
     // for more information see the Graph API below
 });
@@ -2838,8 +2875,8 @@ Deletes the graph from the database.
 ```js
 var db = require('arangojs')();
 var graph = db.graph('some-graph');
-graph.drop(function (err) {
-    if (err) return console.error(err);
+graph.drop()
+.then(() => {
     // the graph "some-graph" no longer exists
 });
 ```
@@ -2885,8 +2922,8 @@ Adds the collection with the given *collectionName* to the graph's vertex collec
 ```js
 var db = require('arangojs')();
 var graph = db.graph('some-graph');
-graph.addVertexCollection('vertices', function (err) {
-    if (err) return console.error(err);
+graph.addVertexCollection('vertices')
+.then(() => {
     // the collection "vertices" has been added to the graph
 });
 ```
@@ -2912,13 +2949,16 @@ Removes the vertex collection with the given *collectionName* from the graph.
 ```js
 var db = require('arangojs')();
 var graph = db.graph('some-graph');
-graph.removeVertexCollection('vertices', function (err) {
-    if (err) return console.error(err);
+
+graph.removeVertexCollection('vertices')
+.then(() => {
     // collection "vertices" has been removed from the graph
 });
+
 // -- or --
-graph.removeVertexCollection('vertices', true, function (err) {
-    if (err) return console.error(err);
+
+graph.removeVertexCollection('vertices', true)
+.then(() => {
     // collection "vertices" has been removed from the graph
     // the collection has also been dropped from the database
     // this may have been a bad idea
@@ -2946,7 +2986,6 @@ var db = require('arangojs')();
 // assuming the collections "edges" and "vertices" exist
 var graph = db.graph('some-graph');
 var collection = graph.edgeCollection('edges');
-if (err) return console.error(err);
 collection.name === 'edges';
 // collection is a GraphEdgeCollection
 ```
@@ -2973,8 +3012,8 @@ graph.addEdgeDefinition({
     collection: 'edges',
     from: ['vertices'],
     to: ['vertices']
-}, function (err) {
-    if (err) return console.error(err);
+})
+.then(() => {
     // the edge definition has been added to the graph
 });
 ```
@@ -3005,8 +3044,8 @@ graph.replaceEdgeDefinition('edges', {
     collection: 'edges',
     from: ['vertices'],
     to: ['more-vertices']
-}, function (err) {
-    if (err) return console.error(err);
+})
+.then(() => {
     // the edge definition has been modified
 });
 ```
@@ -3032,13 +3071,16 @@ Removes the edge definition with the given *definitionName* form the graph.
 ```js
 var db = require('arangojs')();
 var graph = db.graph('some-graph');
-graph.removeEdgeDefinition('edges', function (err) {
-    if (err) return console.error(err);
+
+graph.removeEdgeDefinition('edges')
+.then(() => {
     // the edge definition has been removed
 });
+
 // -- or --
-graph.removeEdgeDefinition('edges', true, function (err) {
-    if (err) return console.error(err);
+
+graph.removeEdgeDefinition('edges', true)
+.then(() => {
     // the edge definition has been removed
     // and the edge collection "edges" has been dropped
     // this may have been a bad idea
@@ -3069,23 +3111,19 @@ Performs a traversal starting from the given *startVertex* and following edges c
 var db = require('arangojs')();
 var graph = db.graph('some-graph');
 var collection = graph.edgeCollection('edges');
-    if (err) return console.error(err);
-    collection.import([
-        ['_key', '_from', '_to'],
-        ['x', 'vertices/a', 'vertices/b'],
-        ['y', 'vertices/b', 'vertices/c'],
-        ['z', 'vertices/c', 'vertices/d']
-    ], function (err) {
-        if (err) return console.error(err);
-        graph.traversal('vertices/a', {
-            direction: 'outbound',
-            visitor: 'result.vertices.push(vertex._key);',
-            init: 'result.vertices = [];'
-        }, function (err, result) {
-            if (err) return console.error(err);
-            result.vertices; // ['a', 'b', 'c', 'd']
-        });
-    });
+collection.import([
+    ['_key', '_from', '_to'],
+    ['x', 'vertices/a', 'vertices/b'],
+    ['y', 'vertices/b', 'vertices/c'],
+    ['z', 'vertices/c', 'vertices/d']
+])
+.then(() => graph.traversal('vertices/a', {
+    direction: 'outbound',
+    visitor: 'result.vertices.push(vertex._key);',
+    init: 'result.vertices = [];'
+}))
+.then(result => {
+    result.vertices; // ['a', 'b', 'c', 'd']
 });
 ```
 
@@ -3110,19 +3148,21 @@ Retrieves the vertex with the given *documentHandle* from the collection.
 ```js
 var graph = db.graph('some-graph');
 var collection = graph.vertexCollection('vertices');
-collection.vertex('some-key', function (err, doc) {
-    if (err) return console.error(err);
+
+collection.vertex('some-key')
+.then(doc => {
     // the vertex exists
     doc._key === 'some-key';
     doc._id === 'vertices/some-key';
 });
+
 // -- or --
-collection.vertex('vertices/some-key', function (err, doc) {
-    if (err) return console.error(err);
-        // the vertex exists
-        doc._key === 'some-key';
-        doc._id === 'vertices/some-key';
-    });
+
+collection.vertex('vertices/some-key')
+.then(doc => {
+    // the vertex exists
+    doc._key === 'some-key';
+    doc._id === 'vertices/some-key';
 });
 ```
 
@@ -3144,15 +3184,12 @@ Creates a new vertex with the given *data*.
 var db = require('arangojs')();
 var graph = db.graph('some-graph');
 var collection = graph.vertexCollection('vertices');
-collection.save(
-    {some: 'data'},
-    function (err, doc) {
-        if (err) return console.error(err);
-        doc._key; // the document's key
-        doc._id === ('vertices/' + doc._key);
-        doc.some === 'data';
-    }
-);
+collection.save({some: 'data'})
+.then(doc => {
+    doc._key; // the document's key
+    doc._id === ('vertices/' + doc._key);
+    doc.some === 'data';
+});
 ```
 
 ### GraphEdgeCollection API
@@ -3176,15 +3213,18 @@ Retrieves the edge with the given *documentHandle* from the collection.
 ```js
 var graph = db.graph('some-graph');
 var collection = graph.edgeCollection('edges');
-collection.edge('some-key', function (err, edge) {
-    if (err) return console.error(err);
+
+collection.edge('some-key')
+.then(edge => {
     // the edge exists
     edge._key === 'some-key';
     edge._id === 'edges/some-key';
 });
+
 // -- or --
-collection.edge('edges/some-key', function (err, edge) {
-    if (err) return console.error(err);
+
+collection.edge('edges/some-key')
+.then(edge => {
     // the edge exists
     edge._key === 'some-key';
     edge._id === 'edges/some-key';
@@ -3220,16 +3260,15 @@ var collection = graph.edgeCollection('edges');
 collection.save(
     {some: 'data'},
     'vertices/start-vertex',
-    'vertices/end-vertex',
-    function (err, edge) {
-        if (err) return console.error(err);
-        edge._key; // the edge's key
-        edge._id === ('edges/' + edge._key);
-        edge.some === 'data';
-        edge._from === 'vertices/start-vertex';
-        edge._to === 'vertices/end-vertex';
-    }
-);
+    'vertices/end-vertex'
+)
+.then(edge => {
+    edge._key; // the edge's key
+    edge._id === ('edges/' + edge._key);
+    edge.some === 'data';
+    edge._from === 'vertices/start-vertex';
+    edge._to === 'vertices/end-vertex';
+});
 ```
 
 # License
