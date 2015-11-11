@@ -10,12 +10,20 @@ The official ArangoDB low-level JavaScript client.
 
 The driver is being tested with ArangoDB 2.5, 2.6 and 2.7 using Node.js 0.12, 4.2 and stable. Versions outside of this range may be compatible but are not officially supported.
 
+As of version 4.0.0 of this driver, a minified standalone browser bundle is also available.
+
 # Install
 
 ## With NPM
 
 ```sh
 npm install arangojs
+```
+
+## With bower
+
+```sh
+bower install arangojs
 ```
 
 ## From source
@@ -25,6 +33,25 @@ git clone https://github.com/arangodb/arangojs.git
 cd arangojs
 npm install
 npm run dist
+```
+
+# Basic usage example
+
+```js
+// ES2015-style
+import arangojs, {Database, aqlQuery} from 'arangojs';
+let db1 = arangojs(); // convenience short-hand
+let db2 = new Database();
+let {query, bindVars} = aqlQuery`RETURN ${Date.now()}`;
+
+// or plain old Node-style
+
+var arangojs = require('arangojs');
+var db1 = arangojs();
+var db2 = new arangojs.Database();
+var aql = arangojs.aqlQuery(['RETURN ', ''], Date.now());
+var query = aql.query;
+var bindVars = aql.bindVars;
 ```
 
 # API
@@ -86,15 +113,19 @@ If *config* is a string, it will be interpreted as *config.url*.
 
   * **agent**: `Agent` (optional)
 
-    An http Agent instance to use for connections. This has no effect in the browser.
+    An http Agent instance to use for connections.
 
-    By default a new [`http.Agent`](https://nodejs.org/api/http.html#http_new_agent_options) instance will be created using the *agentOptions*.
+    By default a new [`http.Agent`](https://nodejs.org/api/http.html#http_new_agent_options) (or https.Agent) instance will be created using the *agentOptions*.
+
+    This option has no effect when using the browser version of arangojs.
 
   * **agentOptions**: `Object` (Default: see below)
 
-    An object with options for the agent. This will be ignored if *agent* is also provided and has no effect in the browser.
+    An object with options for the agent. This will be ignored if *agent* is also provided.
 
     Default: `{maxSockets: 3, keepAlive: true, keepAliveMsecs: 1000}`.
+
+    In the browser version of arangojs this option can be used to pass additional options to the underlying calls of the [`xhr`](https://www.npmjs.com/package/xhr) module. The options `keepAlive` and `keepAliveMsecs` have no effect in the browser but `maxSockets` will still be used to limit the amount of parallel requests made by arangojs.
 
   * **promise**: `Class` (optional)
 
