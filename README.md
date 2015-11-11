@@ -120,7 +120,10 @@ If *config* is a string, it will be interpreted as *config.url*.
 
     ```js
     agentOptions: {
-        ca: [fs.readFileSync('.ssl/sub.class1.server.ca.pem'), fs.readFileSync('.ssl/ca.pem')]
+        ca: [
+            fs.readFileSync('.ssl/sub.class1.server.ca.pem'),
+            fs.readFileSync('.ssl/ca.pem')
+        ]
     }
     ```
 
