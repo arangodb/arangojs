@@ -45,7 +45,6 @@ let db2 = new Database();
 let {query, bindVars} = aqlQuery`RETURN ${Date.now()}`;
 
 // or plain old Node-style
-
 var arangojs = require('arangojs');
 var db1 = arangojs();
 var db2 = new arangojs.Database();
@@ -56,7 +55,7 @@ var bindVars = aql.bindVars;
 
 # API
 
-All asynchronous functions take an optional node-style callback (or "errback") with the following arguments:
+All asynchronous functions take an optional Node-style callback (or "errback") as the last argument with the following arguments:
 
 * *err*: an *Error* object if an error occurred, or *null* if no error occurred.
 * *result*: the function's result (if applicable).
