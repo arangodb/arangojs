@@ -26,15 +26,21 @@
     "README.md",
     "LICENSE"
   ],
+  "browser": {
+    "./src/util/request.js": "./src/util/request-xhr.js",
+    "./src/util/byte-length.js": "./node_modules/utf8-length/index.js"
+  },
   "scripts": {
     "test": "mocha --growl",
     "cover": "istanbul cover --report lcov _mocha",
     "precoveralls": "npm run cover",
     "coveralls": "cat ./coverage/lcov.info | coveralls ; rm -rf ./coverage",
-    "watch": "parallelshell 'npm run watch:dist' 'npm run watch:test'",
+    "watch": "npm-run-all -p watch:*",
     "watch:dist": "watch 'npm run dist' ./src",
-    "watch:test": "watch 'npm run lint && npm run test' ./lib ./test",
-    "dist": "babel --compact false -d lib src",
+    "watch:test": "watch 'npm run lint && npm run test' ./src ./test",
+    "dist": "npm-run-all -p dist:*",
+    "dist:node": "babel --compact false -d lib src",
+    "dist:browser": "browserify src/index.js -s arangojs -g babelify -g uglifyify -o arangojs.min.js",
     "lint": "eslint src test",
     "prepublish": "npm run lint && npm run dist && node -e 'require(\"./\");'"
   },
@@ -47,6 +53,8 @@
     "async": "1.5.0",
     "babel": "5.8.29",
     "babel-eslint": "4.1.5",
+    "babelify": "6.4.0",
+    "browserify": "12.0.1",
     "chai": "3.4.1",
     "core-js": "1.2.6",
     "coveralls": "2.11.4",
@@ -54,8 +62,11 @@
     "eslint": "1.9.0",
     "istanbul": "0.4.0",
     "mocha": "2.3.3",
-    "parallelshell": "2.0.0",
-    "watch": "0.16.0"
+    "npm-run-all": "1.2.13",
+    "uglifyify": "3.0.1",
+    "utf8-length": "0.0.1",
+    "watch": "0.16.0",
+    "xhr": "2.2.0"
   },
   "contributors": [
     {

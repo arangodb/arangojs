@@ -1,13 +1,15 @@
+const noop = () => undefined;
+
 export default function promisify(Promise) {
   if (Promise === false) {
     return function (callback) {
-      return {callback: callback || () => undefined};
+      return {callback: callback || noop};
     };
   }
 
   return function (callback) {
     if (callback || !Promise && !global.Promise) {
-      return {callback: callback || () => undefined};
+      return {callback: callback || noop};
     }
 
     function defer(resolve, reject) {

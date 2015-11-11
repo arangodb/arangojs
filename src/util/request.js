@@ -24,18 +24,8 @@ function joinPath(a = '', b = '') {
   return path;
 }
 
-function rawCopy(obj) {
-  const result = {};
-  for (let key in obj) {
-    if (obj.hasOwnProperty(key)) {
-      result[key] = obj[key];
-    }
-  }
-  return result;
-}
-
-export default function (baseUrl, agent, agentOptions) {
-  const baseUrlParts = rawCopy(parseUrl(baseUrl));
+export default function (baseUrl, agentOptions, agent) {
+  const baseUrlParts = parseUrl(baseUrl);
   const isTls = baseUrlParts.protocol === 'https:';
 
   if (!agent) {

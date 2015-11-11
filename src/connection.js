@@ -3,6 +3,7 @@ import httperr from 'http-errors';
 import extend from 'extend';
 import qs from 'querystring';
 import createRequest from './util/request';
+import byteLength from './util/byte-length';
 import ArangoError from './error';
 import Route from './route';
 
@@ -19,7 +20,7 @@ export default class Connection {
     if (!this.config.headers['x-arango-version']) {
       this.config.headers['x-arango-version'] = this.config.arangoVersion;
     }
-    this._request = createRequest(this.config.url, this.config.agent, this.config.agentOptions);
+    this._request = createRequest(this.config.url, this.config.agentOptions, this.config.agent);
     this.promisify = promisify(this.config.promise);
   }
 
@@ -58,7 +59,7 @@ export default class Connection {
       }
     }
 
-    headers['content-length'] = body ? Buffer.byteLength(body, 'utf-8') : 0;
+    headers['content-length'] = body ? byteLength(body, 'utf-8') : 0;
 
     this._request({
       url: this._resolveUrl(opts),
