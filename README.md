@@ -66,6 +66,32 @@ If `Promise` is defined globally, asynchronous functions return a promise if no 
 
 If you want to use promises in environments that don't provide the global `Promise` constructor, use a promise polyfill like [es6-promise](https://www.npmjs.com/package/es6-promise) or inject a ES6-compatible promise implementation like [bluebird](https://www.npmjs.com/package/bluebird) into the global scope.
 
+**Examples**
+
+```js
+// Node-style callbacks
+db.createDatabase('mydb', function (err, info) {
+    if (err) console.error(err.stack);
+    else {
+        // database created
+    }
+});
+
+// Using promises with ES2015 arrow functions
+db.createDatabase('mydb')
+.then(info => {
+    // database created
+}, err => console.error(err.stack));
+
+// Using ES2016 "async/await" syntax
+try {
+    let info = await db.createDatabase('mydb');
+    // database created
+} catch (err) {
+    console.error(err.stack);
+}
+```
+
 ## Database API
 
 ### new Database
