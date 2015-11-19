@@ -76,7 +76,7 @@ class BaseCollection {
     const {promise, callback} = this._connection.promisify(cb);
     this._api.post(
       'collection',
-      extend({}, properties, {name: this.name, type: this.type}),
+      extend({}, {type: this.type}, properties, {name: this.name}),
       (err, res) => err ? callback(err) : callback(null, res.body)
     );
     return promise;
