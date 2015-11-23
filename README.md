@@ -3299,6 +3299,139 @@ collection.save(
 });
 ```
 
+#### graphEdgeCollection.edges
+
+`async graphEdgeCollection.edges(documentHandle): Array<Object>`
+
+Retrieves a list of all edges of the document with the given *documentHandle*.
+
+**Arguments**
+
+* **documentHandle**: `string`
+
+  The handle of the document to retrieve the edges of. This can be either the `_id` of a document in the database, the `_key` of an edge in the collection, or a document (i.e. an object with an `_id` or `_key` property).
+
+**Examples**
+
+```js
+var db = require('arangojs')();
+var graph = db.graph('some-graph');
+var collection = graph.edgeCollection('edges');
+collection.import([
+    ['_key', '_from', '_to'],
+    ['x', 'vertices/a', 'vertices/b'],
+    ['y', 'vertices/a', 'vertices/c'],
+    ['z', 'vertices/d', 'vertices/a']
+])
+.then(() => collection.edges('vertices/a'))
+.then(edges => {
+    edges.length === 3;
+    edges.map(function (edge) {return edge._key;}); // ['x', 'y', 'z']
+});
+```
+
+#### graphEdgeCollection.inEdges
+
+`async graphEdgeCollection.inEdges(documentHandle): Array<Object>`
+
+Retrieves a list of all incoming edges of the document with the given *documentHandle*.
+
+**Arguments**
+
+* **documentHandle**: `string`
+
+  The handle of the document to retrieve the edges of. This can be either the `_id` of a document in the database, the `_key` of an edge in the collection, or a document (i.e. an object with an `_id` or `_key` property).
+
+**Examples**
+
+```js
+var db = require('arangojs')();
+var graph = db.graph('some-graph');
+var collection = graph.edgeCollection('edges');
+collection.import([
+    ['_key', '_from', '_to'],
+    ['x', 'vertices/a', 'vertices/b'],
+    ['y', 'vertices/a', 'vertices/c'],
+    ['z', 'vertices/d', 'vertices/a']
+])
+.then(() => collection.inEdges('vertices/a'))
+.then(edges => {
+    edges.length === 1;
+    edges[0]._key === 'z';
+});
+```
+
+#### graphEdgeCollection.outEdges
+
+`async graphEdgeCollection.outEdges(documentHandle): Array<Object>`
+
+Retrieves a list of all outgoing edges of the document with the given *documentHandle*.
+
+**Arguments**
+
+* **documentHandle**: `string`
+
+  The handle of the document to retrieve the edges of. This can be either the `_id` of a document in the database, the `_key` of an edge in the collection, or a document (i.e. an object with an `_id` or `_key` property).
+
+**Examples**
+
+```js
+var db = require('arangojs')();
+var graph = db.graph('some-graph');
+var collection = graph.edgeCollection('edges');
+collection.import([
+    ['_key', '_from', '_to'],
+    ['x', 'vertices/a', 'vertices/b'],
+    ['y', 'vertices/a', 'vertices/c'],
+    ['z', 'vertices/d', 'vertices/a']
+])
+.then(() => collection.outEdges('vertices/a'))
+.then(edges => {
+    edges.length === 2;
+    edges.map(function (edge) {return edge._key;}); // ['x', 'y']
+});
+```
+
+#### graphEdgeCollection.traversal
+
+`async graphEdgeCollection.traversal(startVertex, opts): Object`
+
+Performs a traversal starting from the given *startVertex* and following edges contained in this edge collection.
+
+**Arguments**
+
+* **startVertex**: `string`
+
+  The handle of the start vertex. This can be either the `_id` of a document in the database, the `_key` of an edge in the collection, or a document (i.e. an object with an `_id` or `_key` property).
+
+* **opts**: `Object`
+
+  See [the HTTP API documentation](https://docs.arangodb.com/HttpTraversal/index.html) for details on the additional arguments.
+
+  Please note that while *opts.filter*, *opts.visitor*, *opts.init*, *opts.expander* and *opts.sort* should be strings evaluating to well-formed JavaScript code, it's not possible to pass in JavaScript functions directly because the code needs to be evaluated on the server and will be transmitted in plain text.
+
+**Examples**
+
+```js
+var db = require('arangojs')();
+var graph = db.graph('some-graph');
+var collection = graph.edgeCollection('edges');
+collection.import([
+    ['_key', '_from', '_to'],
+    ['x', 'vertices/a', 'vertices/b'],
+    ['y', 'vertices/b', 'vertices/c'],
+    ['z', 'vertices/c', 'vertices/d']
+])
+.then(() => collection.traversal('vertices/a', {
+    direction: 'outbound',
+    visitor: 'result.vertices.push(vertex._key);',
+    init: 'result.vertices = [];'
+}))
+.then(result => {
+    result.vertices; // ['a', 'b', 'c', 'd']
+});
+```
+
 # License
 
 The Apache License, Version 2.0. For more information, see the accompanying LICENSE file.

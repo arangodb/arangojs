@@ -1,5 +1,6 @@
 import extend from 'extend';
 import {
+  EdgeCollection,
   _BaseCollection as BaseCollection,
   _types as types
 } from './collection';
@@ -36,7 +37,7 @@ class GraphVertexCollection extends BaseCollection {
   }
 }
 
-class GraphEdgeCollection extends BaseCollection {
+class GraphEdgeCollection extends EdgeCollection {
   constructor(connection, name, graph) {
     super(connection, name);
     this.type = types.EDGE_COLLECTION;
