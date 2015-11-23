@@ -12,6 +12,10 @@ class GraphVertexCollection extends BaseCollection {
     this._gharial = this._api.route(`gharial/${this.graph.name}/vertex/${this.name}`);
   }
 
+  _documentPath(documentHandle) {
+    return `document/${this._documentHandle(documentHandle)}`;
+  }
+
   vertex(documentHandle, cb) {
     const {promise, callback} = this._connection.promisify(cb);
     this._gharial.get(
