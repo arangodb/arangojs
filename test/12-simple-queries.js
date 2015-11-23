@@ -22,9 +22,7 @@ describe('Simple queries', () => {
   after(done => {
     db.useDatabase('_system');
     db.dropDatabase(name)
-    .then(() => {
-      done();
-    })
+    .then(() => void done())
     .catch(done);
   });
   beforeEach(done => {
