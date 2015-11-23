@@ -124,7 +124,7 @@ export default class Graph {
     this._gharial.post(
       'vertex',
       {collection: collectionName},
-      (err, res) => err ? callback(err) : callback(null, res.body)
+      (err, res) => err ? callback(err) : callback(null, res.body.graph)
     );
     return promise;
   }
@@ -139,7 +139,7 @@ export default class Graph {
     this._gharial.delete(
       `vertex/${collectionName}`,
       {dropCollection},
-      (err, res) => err ? callback(err) : callback(null, res.body)
+      (err, res) => err ? callback(err) : callback(null, res.body.graph)
     );
     return promise;
   }
@@ -153,7 +153,7 @@ export default class Graph {
     this._gharial.post(
       'edge',
       definition,
-      (err, res) => err ? callback(err) : callback(null, res.body)
+      (err, res) => err ? callback(err) : callback(null, res.body.graph)
     );
     return promise;
   }
@@ -163,7 +163,7 @@ export default class Graph {
     this._api.put(
       `gharial/${this.name}/edge/${definitionName}`,
       definition,
-      (err, res) => err ? callback(err) : callback(null, res.body)
+      (err, res) => err ? callback(err) : callback(null, res.body.graph)
     );
     return promise;
   }
@@ -178,7 +178,7 @@ export default class Graph {
     this._gharial.delete(
       `edge/${definitionName}`,
       {dropCollection},
-      (err, res) => err ? callback(err) : callback(null, res.body)
+      (err, res) => err ? callback(err) : callback(null, res.body.graph)
     );
     return promise;
   }
