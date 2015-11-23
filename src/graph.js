@@ -135,6 +135,7 @@ export default class Graph {
       dropCollection = undefined;
     }
     const {promise, callback} = this._connection.promisify(cb);
+    if (typeof dropCollection !== 'boolean') dropCollection = false;
     this._gharial.delete(
       `vertex/${collectionName}`,
       {dropCollection},
@@ -173,6 +174,7 @@ export default class Graph {
       dropCollection = undefined;
     }
     const {promise, callback} = this._connection.promisify(cb);
+    if (typeof dropCollection !== 'boolean') dropCollection = false;
     this._gharial.delete(
       `edge/${definitionName}`,
       {dropCollection},
