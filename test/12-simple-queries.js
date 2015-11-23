@@ -36,7 +36,8 @@ describe('Simple queries', () => {
     .then(() => void done())
     .catch(done);
   });
-  afterEach(done => {
+  afterEach(function (done) {
+    this.timeout(10000);
     collection.drop()
     .then(() => void done())
     .catch(done);
