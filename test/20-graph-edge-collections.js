@@ -19,4 +19,16 @@ describe('GraphEdgeCollection API', () => {
   describe('graphEdgeCollection.traversal', () => {
     it('is missing tests');
   });
+  describe('graphEdgeCollection.replace', () => {
+    it('is missing tests');
+  });
+  describe('graphEdgeCollection.update', () => {
+    it('is missing tests');
+  });
+  describe('graphEdgeCollection.remove', () => {
+    it('is missing tests');
+  });
+  describe('graphEdgeCollection.list', () => {
+    it('is missing tests');
+  });
 });

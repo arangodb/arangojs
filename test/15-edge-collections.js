@@ -19,4 +19,16 @@ describe('EdgeCollection API', () => {
   describe('edgeCollection.traversal', () => {
     it('is missing tests');
   });
+  describe('edgeCollection.replace', () => {
+    it('is missing tests');
+  });
+  describe('edgeCollection.update', () => {
+    it('is missing tests');
+  });
+  describe('edgeCollection.remove', () => {
+    it('is missing tests');
+  });
+  describe('edgeCollection.list', () => {
+    it('is missing tests');
+  });
 });
