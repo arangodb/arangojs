@@ -17,7 +17,18 @@ As of version 4.0.0 of this driver, a minified standalone browser bundle is also
 - [Basic usage example](README.md#basic-usage-example)
 - [API](README.md#api)
     - [Database API](README.md#database-api)
-        - [New database](README.md#new-database) 
+        - [New database](README.md#new-database)
+        - [Manipulating databases](readme.md#manipulating-databases)
+            - [database.useDatabase](readme.md#databaseusedatabase)
+            - [database.createDatabase](readme.md#databasecreatedatabase)
+            - [database.get](readme.md#databaseget)
+            - [database.listDatabases](readme.md#databaselistdatabases)
+            - [database.listUserDatabases](readme.md#databaselistuserdatabases)
+            - [database.dropDatabase](readme.md#databasedropdatabase)
+            - [database.truncate](readme.md#databasetruncate)
+        - [Accessing Collections](readme.md#accessing-collections)
+            - [database.collection](readme.md#databasecollection)
+            - [database.edgeCollection](readme.md#databaseedgecollection)
 
 # Install
 
@@ -295,8 +306,6 @@ db.dropDatabase('mydb')
     // database "mydb" no longer exists
 })
 ```
-
-#### database.truncate
 
 `async database.truncate([excludeSystem]): Object`
 
