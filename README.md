@@ -13,8 +13,11 @@ The driver is being tested with ArangoDB 2.5, 2.6 and 2.7 using Node.js 0.12, 4.
 As of version 4.0.0 of this driver, a minified standalone browser bundle is also available.
 
 #Table of Contents
-[Install](README.md#install)
-[Basic usage example](README.md#basic-usage-example)
+- [Install](README.md#install)
+- [Basic usage example](README.md#basic-usage-example)
+- [API](README.md#api)
+    - [Database API](README.md#database-api)
+        - [New database](README.md#new-database) 
 
 # Install
 
