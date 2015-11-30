@@ -1,4 +1,3 @@
-import extend from 'extend';
 import all from './util/all';
 import Connection from './connection';
 import ArrayCursor from './cursor';
@@ -205,7 +204,7 @@ export default class Database {
     }
     this._api.post(
       'cursor',
-      extend({}, opts, {query, bindVars}),
+      {...opts, query, bindVars},
       (err, res) => err ? callback(err) : callback(null, new ArrayCursor(this._connection, res.body))
     );
     return promise;

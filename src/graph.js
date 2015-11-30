@@ -1,4 +1,3 @@
-import extend from 'extend';
 import {
   EdgeCollection,
   _BaseCollection as BaseCollection,
@@ -95,7 +94,7 @@ export default class Graph {
     const {promise, callback} = this._connection.promisify(cb);
     this._api.post(
       'gharial',
-      extend({}, properties, {name: this.name}),
+      {...properties, name: this.name},
       (err, res) => err ? callback(err) : callback(null, res.body.graph)
     );
     return promise;
@@ -191,7 +190,7 @@ export default class Graph {
     const {promise, callback} = this._connection.promisify(cb);
     this._api.post(
       'traversal',
-      extend({}, opts, {startVertex, graphName: this.name}),
+      {...opts, startVertex, graphName: this.name},
       (err, res) => err ? callback(err) : callback(null, res.body.result)
     );
     return promise;

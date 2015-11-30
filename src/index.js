@@ -1,11 +1,6 @@
-import extend from 'extend';
 import Database from './database';
 import aqlQuery from './aql-query';
 
-module.exports = extend(
-  (...args) => new Database(...args),
-  {
-    Database,
-    aqlQuery
-  }
-);
+module.exports = (...args) => new Database(...args);
+module.exports.Database = Database;
+module.exports.aqlQuery = aqlQuery;

@@ -1,5 +1,3 @@
-import extend from 'extend';
-
 export default class Route {
   constructor(connection, path, headers) {
     this._connection = connection;
@@ -13,14 +11,14 @@ export default class Route {
     return new Route(
       this._connection,
       this._path + path,
-      extend({}, this._headers, headers)
+      {...this._headers, ...headers}
     );
   }
 
   request(opts, callback) {
-    opts = extend({}, opts);
+    opts = {...opts};
     opts.basePath = this._path;
-    opts.headers = extend({}, this._headers, opts.headers);
+    opts.headers = {...this._headers, ...opts.headers};
     return this._connection.request(opts, callback);
   }
 

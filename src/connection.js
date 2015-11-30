@@ -1,6 +1,5 @@
 import promisify from './util/promisify';
 import httperr from 'http-errors';
-import extend from 'extend';
 import qs from 'querystring';
 import createRequest from './util/request';
 import byteLength from './util/byte-length';
@@ -14,8 +13,8 @@ export default class Connection {
     if (typeof config === 'string') {
       config = {url: config};
     }
-    this.config = extend({}, Connection.defaults, config);
-    this.config.agentOptions = extend({}, Connection.agentDefaults, this.config.agentOptions);
+    this.config = {...Connection.defaults, ...config};
+    this.config.agentOptions = {...Connection.agentDefaults, ...this.config.agentOptions};
     if (!this.config.headers) this.config.headers = {};
     if (!this.config.headers['x-arango-version']) {
       this.config.headers['x-arango-version'] = this.config.arangoVersion;
@@ -63,7 +62,7 @@ export default class Connection {
 
     this._request({
       url: this._resolveUrl(opts),
-      headers: extend(headers, this.config.headers, opts.headers),
+      headers: {...headers, ...this.config.headers, ...opts.headers},
       method: (opts.method || 'get').toUpperCase(),
       body: body
     }, (err, res) => {
@@ -74,7 +73,8 @@ export default class Connection {
           try {
             res.body = JSON.parse(res.rawBody);
           } catch (e) {
-            return callback(extend(e, {response: res}));
+            e.response = res;
+            return callback(e);
           }
         }
         if (
@@ -84,9 +84,13 @@ export default class Connection {
           && res.body.hasOwnProperty('errorMessage')
           && res.body.hasOwnProperty('errorNum')
         ) {
-          callback(extend(new ArangoError(res.body), {response: res}));
+          err = new ArangoError(res.body);
+          err.response = res;
+          callback(err);
         } else if (res.statusCode >= 400) {
-          callback(extend(httperr(res.statusCode), {response: res}));
+          err = httperr(res.statusCode);
+          err.response = res;
+          callback(err);
         } else callback(null, res);
       }
     });
