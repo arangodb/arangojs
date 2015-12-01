@@ -422,6 +422,7 @@ db.dropDatabase('mydb')
     // database "mydb" no longer exists
 })
 ```
+
 #### database.truncate
 
 `async database.truncate([excludeSystem]): Object`
