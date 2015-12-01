@@ -190,19 +190,19 @@ try {
     * [collection.update](#collectionupdate)
     * [collection.remove](#collectionremove)
     * [collection.list](#collectionlist)
-  * [DocumentCollection API](#documentcollection-api)
-    * [documentCollection.document](#documentcollectiondocument)
-    * [documentCollection.save](#documentcollectionsave)
-  * [EdgeCollection API](#edgecollection-api)
-    * [edgeCollection.edge](#edgecollectionedge)
-    * [edgeCollection.save](#edgecollectionsave)
-    * [edgeCollection.edges](#edgecollectionedges)
-    * [edgeCollection.inEdges](#edgecollectioninedges)
-    * [edgeCollection.outEdges](#edgecollectionoutedges)
-    * [edgeCollection.traversal](#edgecollectiontraversal)
+* [DocumentCollection API](#documentcollection-api)
+  * [documentCollection.document](#documentcollectiondocument)
+  * [documentCollection.save](#documentcollectionsave)
+* [EdgeCollection API](#edgecollection-api)
+  * [edgeCollection.edge](#edgecollectionedge)
+  * [edgeCollection.save](#edgecollectionsave)
+  * [edgeCollection.edges](#edgecollectionedges)
+  * [edgeCollection.inEdges](#edgecollectioninedges)
+  * [edgeCollection.outEdges](#edgecollectionoutedges)
+  * [edgeCollection.traversal](#edgecollectiontraversal)
 * [Graph API](#graph-api)
-    * [graph.get](#graphget)
-    * [graph.create](#graphcreate)
+  * [graph.get](#graphget)
+  * [graph.create](#graphcreate)
   * [graph.drop](#graphdrop)
   * [Manipulating vertices](#manipulating-vertices)
     * [graph.vertexCollection](#graphvertexcollection)
@@ -214,16 +214,16 @@ try {
     * [graph.replaceEdgeDefinition](#graphreplaceedgedefinition)
     * [graph.removeEdgeDefinition](#graphremoveedgedefinition)
     * [graph.traversal](#graphtraversal)
-  * [GraphVertexCollection API](#graphvertexcollection-api)
-    * [graphVertexCollection.vertex](#graphvertexcollectionvertex)
-    * [graphVertexCollection.save](#graphvertexcollectionsave)
-  * [GraphEdgeCollection API](#graphedgecollection-api)
-    * [graphEdgeCollection.edge](#graphedgecollectionedge)
-    * [graphEdgeCollection.save](#graphedgecollectionsave)
-    * [graphEdgeCollection.edges](#graphedgecollectionedges)
-    * [graphEdgeCollection.inEdges](#graphedgecollectioninedges)
-    * [graphEdgeCollection.outEdges](#graphedgecollectionoutedges)
-    * [graphEdgeCollection.traversal](#graphedgecollectiontraversal)
+* [GraphVertexCollection API](#graphvertexcollection-api)
+  * [graphVertexCollection.vertex](#graphvertexcollectionvertex)
+  * [graphVertexCollection.save](#graphvertexcollectionsave)
+* [GraphEdgeCollection API](#graphedgecollection-api)
+  * [graphEdgeCollection.edge](#graphedgecollectionedge)
+  * [graphEdgeCollection.save](#graphedgecollectionsave)
+  * [graphEdgeCollection.edges](#graphedgecollectionedges)
+  * [graphEdgeCollection.inEdges](#graphedgecollectioninedges)
+  * [graphEdgeCollection.outEdges](#graphedgecollectionoutedges)
+  * [graphEdgeCollection.traversal](#graphedgecollectiontraversal)
 
 ## Database API
 
@@ -2687,11 +2687,11 @@ Retrieves a list of references for all documents in the collection.
   * if *type* is set to `"key"`, each reference will be the `_key` of the document.
   * if *type* is set to `"path"`, each reference will be the URI path of the document.
 
-### DocumentCollection API
+## DocumentCollection API
 
 The *DocumentCollection API* extends the [*Collection API* (see above)](#collection-api) with the following methods.
 
-#### documentCollection.document
+### documentCollection.document
 
 `async documentCollection.document(documentHandle): Object`
 
@@ -2726,7 +2726,7 @@ collection.document('my-docs/some-key')
 });
 ```
 
-#### documentCollection.save
+### documentCollection.save
 
 `async documentCollection.save(data): Object`
 
@@ -2757,11 +2757,11 @@ collection.save(doc)
 });
 ```
 
-### EdgeCollection API
+## EdgeCollection API
 
 The *EdgeCollection API* extends the [*Collection API* (see above)](#collection-api) with the following methods.
 
-#### edgeCollection.edge
+### edgeCollection.edge
 
 `async edgeCollection.edge(documentHandle): Object`
 
@@ -2796,7 +2796,7 @@ collection.edge('edges/some-key')
 });
 ```
 
-#### edgeCollection.save
+### edgeCollection.save
 
 `async edgeCollection.save(data, [fromId, toId]): Object`
 
@@ -2853,7 +2853,7 @@ collection.save({
 })
 ```
 
-#### edgeCollection.edges
+### edgeCollection.edges
 
 `async edgeCollection.edges(documentHandle): Array<Object>`
 
@@ -2883,7 +2883,7 @@ collection.import([
 });
 ```
 
-#### edgeCollection.inEdges
+### edgeCollection.inEdges
 
 `async edgeCollection.inEdges(documentHandle): Array<Object>`
 
@@ -2913,7 +2913,7 @@ collection.import([
 });
 ```
 
-#### edgeCollection.outEdges
+### edgeCollection.outEdges
 
 `async edgeCollection.outEdges(documentHandle): Array<Object>`
 
@@ -2943,7 +2943,7 @@ collection.import([
 });
 ```
 
-#### edgeCollection.traversal
+### edgeCollection.traversal
 
 `async edgeCollection.traversal(startVertex, opts): Object`
 
@@ -2986,7 +2986,7 @@ collection.import([
 
 These functions implement the [HTTP API for manipulating graphs](https://docs.arangodb.com/HttpGharial/index.html).
 
-#### graph.get
+### graph.get
 
 `async graph.get(): Object`
 
@@ -3003,7 +3003,7 @@ graph.get()
 });
 ```
 
-#### graph.create
+### graph.create
 
 `async graph.create(properties): Object`
 
@@ -3308,11 +3308,11 @@ collection.import([
 });
 ```
 
-### GraphVertexCollection API
+## GraphVertexCollection API
 
 The *GraphVertexCollection API* extends the [*Collection API* (see above)](#collection-api) with the following methods.
 
-#### graphVertexCollection.vertex
+### graphVertexCollection.vertex
 
 `async graphVertexCollection.vertex(documentHandle): Object`
 
@@ -3347,7 +3347,7 @@ collection.vertex('vertices/some-key')
 });
 ```
 
-#### graphVertexCollection.save
+### graphVertexCollection.save
 
 `async graphVertexCollection.save(data): Object`
 
@@ -3373,11 +3373,11 @@ collection.save({some: 'data'})
 });
 ```
 
-### GraphEdgeCollection API
+## GraphEdgeCollection API
 
 The *GraphEdgeCollection API* extends the *Collection API* (see above) with the following methods.
 
-#### graphEdgeCollection.edge
+### graphEdgeCollection.edge
 
 `async graphEdgeCollection.edge(documentHandle): Object`
 
@@ -3412,7 +3412,7 @@ collection.edge('edges/some-key')
 });
 ```
 
-#### graphEdgeCollection.save
+### graphEdgeCollection.save
 
 `async graphEdgeCollection.save(data, [fromId, toId]): Object`
 
@@ -3452,7 +3452,7 @@ collection.save(
 });
 ```
 
-#### graphEdgeCollection.edges
+### graphEdgeCollection.edges
 
 `async graphEdgeCollection.edges(documentHandle): Array<Object>`
 
@@ -3483,7 +3483,7 @@ collection.import([
 });
 ```
 
-#### graphEdgeCollection.inEdges
+### graphEdgeCollection.inEdges
 
 `async graphEdgeCollection.inEdges(documentHandle): Array<Object>`
 
@@ -3514,7 +3514,7 @@ collection.import([
 });
 ```
 
-#### graphEdgeCollection.outEdges
+### graphEdgeCollection.outEdges
 
 `async graphEdgeCollection.outEdges(documentHandle): Array<Object>`
 
@@ -3545,7 +3545,7 @@ collection.import([
 });
 ```
 
-#### graphEdgeCollection.traversal
+### graphEdgeCollection.traversal
 
 `async graphEdgeCollection.traversal(startVertex, opts): Object`
 
