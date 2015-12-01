@@ -2232,6 +2232,26 @@ Deletes the documents with the given *keys* from the collection.
 
   For information on the possible options see [the HTTP API for removing documents by keys](https://docs.arangodb.com/HttpSimpleQuery/index.html#remove-documents-by-their-keys).
 
+#### collection.fulltext
+
+`async collection.fulltext(fieldName, query, [opts]): Cursor`
+
+Performs a fulltext query in the given *fieldName* on the collection.
+
+**Arguments**
+
+* **fieldName**: *String*
+
+  Name of the field to search on documents in the collection.
+
+* **query**: *String*
+
+  Fulltext query string to search for.
+
+* **opts**: *Object* (optional)
+
+  For information on the possible options see [the HTTP API for fulltext queries](https://docs.arangodb.com/HttpIndexes/Fulltext.html).
+
 ### Bulk importing documents
 
 This function implements the [HTTP API for bulk imports](https://docs.arangodb.com/HttpBulkImports/index.html).
