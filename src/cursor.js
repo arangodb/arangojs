@@ -110,7 +110,7 @@ extend(ArrayCursor.prototype, {
             else loop();
           });
         }
-      } catch(e) {
+      } catch (e) {
         callback(e);
       }
     }
@@ -136,7 +136,7 @@ extend(ArrayCursor.prototype, {
             else loop();
           });
         }
-      } catch(e) {
+      } catch (e) {
         callback(e);
       }
     }
@@ -162,7 +162,7 @@ extend(ArrayCursor.prototype, {
             else loop();
           });
         }
-      } catch(e) {
+      } catch (e) {
         callback(e);
       }
     }
@@ -190,7 +190,7 @@ extend(ArrayCursor.prototype, {
             else loop();
           });
         }
-      } catch(e) {
+      } catch (e) {
         callback(e);
       }
     }
