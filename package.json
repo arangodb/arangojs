@@ -62,7 +62,7 @@
     "npm-run-all": "1.4.0",
     "uglifyify": "3.0.1",
     "utf8-length": "0.0.1",
-    "watch": "0.16.0",
+    "watch": "0.17.1",
     "xhr": "2.2.0"
   },
   "contributors": [
