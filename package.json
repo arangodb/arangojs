@@ -49,7 +49,7 @@
     "linkedlist": "1.0.1"
   },
   "devDependencies": {
-    "babel": "5.8.34",
+    "babel": "6.3.26",
     "babel-eslint": "4.1.6",
     "babelify": "6.4.0",
     "browserify": "12.0.1",
