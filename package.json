@@ -1,7 +1,7 @@
 {
   "name": "arangojs",
   "version": "4.2.1",
-  "license": "APACHE-2.0",
+  "license": "Apache-2.0",
   "description": "The official ArangoDB JavaScript driver.",
   "homepage": "https://github.com/arangodb/arangojs",
   "author": "ArangoDB GmbH",
