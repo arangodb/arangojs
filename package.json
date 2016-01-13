@@ -57,7 +57,7 @@
     "core-js": "2.0.3",
     "coveralls": "2.11.6",
     "eslint": "1.10.3",
-    "istanbul": "0.4.1",
+    "istanbul": "0.4.2",
     "mocha": "2.3.4",
     "npm-run-all": "1.4.0",
     "uglifyify": "3.0.1",
