@@ -59,7 +59,7 @@
     "eslint": "1.10.3",
     "istanbul": "0.4.2",
     "mocha": "2.3.4",
-    "npm-run-all": "1.4.0",
+    "npm-run-all": "1.5.0",
     "uglifyify": "3.0.1",
     "utf8-length": "0.0.1",
     "watch": "0.17.1",
