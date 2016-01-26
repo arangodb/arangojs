@@ -215,9 +215,11 @@ try {
     * [graph.removeEdgeDefinition](#graphremoveedgedefinition)
     * [graph.traversal](#graphtraversal)
 * [GraphVertexCollection API](#graphvertexcollection-api)
+  * [graphVertexCollection.remove](#graphvertexcollectionremove)
   * [graphVertexCollection.vertex](#graphvertexcollectionvertex)
   * [graphVertexCollection.save](#graphvertexcollectionsave)
 * [GraphEdgeCollection API](#graphedgecollection-api)
+  * [graphEdgeCollection.remove](#graphedgecollectionremove)
   * [graphEdgeCollection.edge](#graphedgecollectionedge)
   * [graphEdgeCollection.save](#graphedgecollectionsave)
   * [graphEdgeCollection.edges](#graphedgecollectionedges)
@@ -3312,6 +3314,37 @@ collection.import([
 
 The *GraphVertexCollection API* extends the [*Collection API* (see above)](#collection-api) with the following methods.
 
+#### graphVertexCollection.remove
+
+`async graphVertexCollection.remove(documentHandle): Object`
+
+Deletes the vertex with the given *documentHandle* from the collection.
+
+**Arguments**
+
+* **documentHandle**: `string`
+
+  The handle of the vertex to retrieve. This can be either the `_id` or the `_key` of a vertex in the collection, or a vertex (i.e. an object with an `_id` or `_key` property).
+
+**Examples**
+
+```js
+var graph = db.graph('some-graph');
+var collection = graph.vertexCollection('vertices');
+
+collection.remove('some-key')
+.then(() => {
+    // document 'vertices/some-key' no longer exists
+});
+
+// -- or --
+
+collection.remove('vertices/some-key')
+.then(() => {
+    // document 'vertices/some-key' no longer exists
+});
+```
+
 ### graphVertexCollection.vertex
 
 `async graphVertexCollection.vertex(documentHandle): Object`
@@ -3376,6 +3409,37 @@ collection.save({some: 'data'})
 ## GraphEdgeCollection API
 
 The *GraphEdgeCollection API* extends the *Collection API* (see above) with the following methods.
+
+#### graphEdgeCollection.remove
+
+`async graphEdgeCollection.remove(documentHandle): Object`
+
+Deletes the edge with the given *documentHandle* from the collection.
+
+**Arguments**
+
+* **documentHandle**: `string`
+
+  The handle of the edge to retrieve. This can be either the `_id` or the `_key` of an edge in the collection, or an edge (i.e. an object with an `_id` or `_key` property).
+
+**Examples**
+
+```js
+var graph = db.graph('some-graph');
+var collection = graph.edgeCollection('edges');
+
+collection.remove('some-key')
+.then(() => {
+    // document 'edges/some-key' no longer exists
+});
+
+// -- or --
+
+collection.remove('edges/some-key')
+.then(() => {
+    // document 'edges/some-key' no longer exists
+});
+```
 
 ### graphEdgeCollection.edge
 
