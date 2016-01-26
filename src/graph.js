@@ -15,6 +15,15 @@ class GraphVertexCollection extends BaseCollection {
   _documentPath(documentHandle) {
     return `document/${this._documentHandle(documentHandle)}`;
   }
+  
+  remove(documentHandle, cb) {
+    const {promise, callback} = this._connection.promisify(cb);
+    this._gharial.delete(
+      documentHandle,
+      (err, res) => err ? callback(err) : callback(null, res.body)
+    );
+    return promise;
+  }
 
   vertex(documentHandle, cb) {
     const {promise, callback} = this._connection.promisify(cb);
@@ -42,6 +51,15 @@ class GraphEdgeCollection extends EdgeCollection {
     this.type = types.EDGE_COLLECTION;
     this.graph = graph;
     this._gharial = this._api.route(`gharial/${this.graph.name}/edge/${this.name}`);
+  }
+  
+  remove(documentHandle, cb) {
+    const {promise, callback} = this._connection.promisify(cb);
+    this._gharial.delete(
+      documentHandle,
+      (err, res) => err ? callback(err) : callback(null, res.body)
+    );
+    return promise;
   }
 
   edge(documentHandle, cb) {
