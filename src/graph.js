@@ -9,7 +9,7 @@ class GraphVertexCollection extends BaseCollection {
     super(connection, name);
     this.type = types.DOCUMENT_COLLECTION;
     this.graph = graph;
-    this._gharial = this._api.route(`gharial/${this.graph.name}/vertex/${this.name}`);
+    this._gharial = this._api.route(`gharial/${this.graph.name}/vertex`);
   }
 
   _documentPath(documentHandle) {
@@ -19,7 +19,7 @@ class GraphVertexCollection extends BaseCollection {
   remove(documentHandle, cb) {
     const {promise, callback} = this._connection.promisify(cb);
     this._gharial.delete(
-      documentHandle,
+      this._documentHandle(documentHandle),
       (err, res) => err ? callback(err) : callback(null, res.body)
     );
     return promise;
@@ -28,7 +28,7 @@ class GraphVertexCollection extends BaseCollection {
   vertex(documentHandle, cb) {
     const {promise, callback} = this._connection.promisify(cb);
     this._gharial.get(
-      documentHandle,
+      this._documentHandle(documentHandle),
       (err, res) => err ? callback(err) : callback(null, res.body)
     );
     return promise;
@@ -37,8 +37,8 @@ class GraphVertexCollection extends BaseCollection {
   save(data, cb) {
     const {promise, callback} = this._connection.promisify(cb);
     this._gharial.post(
+      this.name,
       data,
-      {collection: this.name},
       (err, res) => err ? callback(err) : callback(null, res.body)
     );
     return promise;
@@ -50,13 +50,13 @@ class GraphEdgeCollection extends EdgeCollection {
     super(connection, name);
     this.type = types.EDGE_COLLECTION;
     this.graph = graph;
-    this._gharial = this._api.route(`gharial/${this.graph.name}/edge/${this.name}`);
+    this._gharial = this._api.route(`gharial/${this.graph.name}/edge`);
   }
 
   remove(documentHandle, cb) {
     const {promise, callback} = this._connection.promisify(cb);
     this._gharial.delete(
-      documentHandle,
+      this._documentHandle(documentHandle),
       (err, res) => err ? callback(err) : callback(null, res.body)
     );
     return promise;
@@ -65,7 +65,7 @@ class GraphEdgeCollection extends EdgeCollection {
   edge(documentHandle, cb) {
     const {promise, callback} = this._connection.promisify(cb);
     this._gharial.get(
-      documentHandle,
+      this._documentHandle(documentHandle),
       (err, res) => err ? callback(err) : callback(null, res.body)
     );
     return promise;
@@ -81,6 +81,7 @@ class GraphEdgeCollection extends EdgeCollection {
     }
     const {promise, callback} = this._connection.promisify(cb);
     this._gharial.post(
+      this.name,
       data,
       (err, res) => err ? callback(err) : callback(null, res.body)
     );
