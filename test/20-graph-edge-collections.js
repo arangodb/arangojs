@@ -1,6 +1,9 @@
 import {describe, it} from 'mocha';
 
 describe('GraphEdgeCollection API', () => {
+  describe('graphEdgeCollection.remove', () => {
+    it('is missing tests');
+  });
   describe('graphEdgeCollection.edge', () => {
     it('is missing tests');
   });
