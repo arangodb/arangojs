@@ -53,7 +53,7 @@
     "babel-eslint": "4.1.6",
     "babelify": "6.4.0",
     "browserify": "13.0.0",
-    "chai": "3.4.1",
+    "chai": "3.5.0",
     "core-js": "2.0.3",
     "coveralls": "2.11.6",
     "eslint": "1.10.3",
