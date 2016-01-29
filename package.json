@@ -45,7 +45,7 @@
     "prepublish": "npm run lint && npm run dist && node -e 'require(\"./\");'"
   },
   "dependencies": {
-    "http-errors": "1.3.1",
+    "http-errors": "1.4.0",
     "linkedlist": "1.0.1"
   },
   "devDependencies": {
