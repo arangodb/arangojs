@@ -83,7 +83,7 @@ db.createDatabase('mydb')
     // database created
 }, err => console.error(err.stack));
 
-// Using ES2016 "async/await" syntax
+// Using proposed ES.next "async/await" syntax
 try {
     let info = await db.createDatabase('mydb');
     // database created
