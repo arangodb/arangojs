@@ -881,14 +881,14 @@ For more information on *Route* instances see the [*Route API* below](#route-api
 
 ```js
 var db = require('arangojs')();
-var myFoxxApp = db.route('my-foxx-app');
-myFoxxApp.post('users', {
+var myFoxxService = db.route('my-foxx-service');
+myFoxxService.post('users', {
     username: 'admin',
     password: 'hunter2'
 })
 .then(response => {
     // response.body is the result of
-    // POST /_db/_system/my-foxx-app/users
+    // POST /_db/_system/my-foxx-service/users
     // with JSON request body '{"username": "admin", "password": "hunter2"}'
 });
 ```
@@ -1199,7 +1199,7 @@ cursor.reduce(add)
 
 ## Route API
 
-*Route* instances provide access for arbitrary HTTP requests. This allows easy access to Foxx apps and other HTTP APIs not covered by the driver itself.
+*Route* instances provide access for arbitrary HTTP requests. This allows easy access to Foxx services and other HTTP APIs not covered by the driver itself.
 
 ### route.route
 
@@ -1223,9 +1223,9 @@ If *path* is missing, the route will refer to the base URL of the database.
 
 ```js
 var db = require('arangojs')();
-var route = db.route('my-foxx-app');
+var route = db.route('my-foxx-service');
 var users = route.route('users');
-// equivalent to db.route('my-foxx-app/users')
+// equivalent to db.route('my-foxx-service/users')
 ```
 
 ### route.get
@@ -1249,11 +1249,11 @@ Performs a GET request to the given URL and returns the server response.
 
 ```js
 var db = require('arangojs')();
-var route = db.route('my-foxx-app');
+var route = db.route('my-foxx-service');
 route.get()
 .then(response => {
     // response.body is the response body of calling
-    // GET _db/_system/my-foxx-app
+    // GET _db/_system/my-foxx-service
 });
 
 // -- or --
@@ -1261,7 +1261,7 @@ route.get()
 route.get('users')
 .then(response => {
     // response.body is the response body of calling
-    // GET _db/_system/my-foxx-app/users
+    // GET _db/_system/my-foxx-service/users
 });
 
 // -- or --
@@ -1269,7 +1269,7 @@ route.get('users')
 route.get('users', {group: 'admin'})
 .then(response => {
     // response.body is the response body of calling
-    // GET _db/_system/my-foxx-app/users?group=admin
+    // GET _db/_system/my-foxx-service/users?group=admin
 });
 ```
 
@@ -1297,11 +1297,11 @@ Performs a POST request to the given URL and returns the server response.
 
 ```js
 var db = require('arangojs')();
-var route = db.route('my-foxx-app');
+var route = db.route('my-foxx-service');
 route.post()
 .then(response => {
     // response.body is the response body of calling
-    // POST _db/_system/my-foxx-app
+    // POST _db/_system/my-foxx-service
 });
 
 // -- or --
@@ -1309,7 +1309,7 @@ route.post()
 route.post('users')
 .then(response => {
     // response.body is the response body of calling
-    // POST _db/_system/my-foxx-app/users
+    // POST _db/_system/my-foxx-service/users
 });
 
 // -- or --
@@ -1320,7 +1320,7 @@ route.post('users', {
 })
 .then(response => {
     // response.body is the response body of calling
-    // POST _db/_system/my-foxx-app/users
+    // POST _db/_system/my-foxx-service/users
     // with JSON request body {"username": "admin", "password": "hunter2"}
 });
 
@@ -1332,7 +1332,7 @@ route.post('users', {
 }, {admin: true})
 .then(response => {
     // response.body is the response body of calling
-    // POST _db/_system/my-foxx-app/users?admin=true
+    // POST _db/_system/my-foxx-service/users?admin=true
     // with JSON request body {"username": "admin", "password": "hunter2"}
 });
 ```
@@ -1361,11 +1361,11 @@ Performs a PUT request to the given URL and returns the server response.
 
 ```js
 var db = require('arangojs')();
-var route = db.route('my-foxx-app');
+var route = db.route('my-foxx-service');
 route.put()
 .then(response => {
     // response.body is the response body of calling
-    // PUT _db/_system/my-foxx-app
+    // PUT _db/_system/my-foxx-service
 });
 
 // -- or --
@@ -1373,7 +1373,7 @@ route.put()
 route.put('users/admin')
 .then(response => {
     // response.body is the response body of calling
-    // PUT _db/_system/my-foxx-app/users
+    // PUT _db/_system/my-foxx-service/users
 });
 
 // -- or --
@@ -1384,7 +1384,7 @@ route.put('users/admin', {
 })
 .then(response => {
     // response.body is the response body of calling
-    // PUT _db/_system/my-foxx-app/users/admin
+    // PUT _db/_system/my-foxx-service/users/admin
     // with JSON request body {"username": "admin", "password": "hunter2"}
 });
 
@@ -1396,7 +1396,7 @@ route.put('users/admin', {
 }, {admin: true})
 .then(response => {
     // response.body is the response body of calling
-    // PUT _db/_system/my-foxx-app/users/admin?admin=true
+    // PUT _db/_system/my-foxx-service/users/admin?admin=true
     // with JSON request body {"username": "admin", "password": "hunter2"}
 });
 ```
@@ -1425,11 +1425,11 @@ Performs a PATCH request to the given URL and returns the server response.
 
 ```js
 var db = require('arangojs')();
-var route = db.route('my-foxx-app');
+var route = db.route('my-foxx-service');
 route.patch()
 .then(response => {
     // response.body is the response body of calling
-    // PATCH _db/_system/my-foxx-app
+    // PATCH _db/_system/my-foxx-service
 });
 
 // -- or --
@@ -1437,7 +1437,7 @@ route.patch()
 route.patch('users/admin')
 .then(response => {
     // response.body is the response body of calling
-    // PATCH _db/_system/my-foxx-app/users
+    // PATCH _db/_system/my-foxx-service/users
 });
 
 // -- or --
@@ -1447,7 +1447,7 @@ route.patch('users/admin', {
 })
 .then(response => {
     // response.body is the response body of calling
-    // PATCH _db/_system/my-foxx-app/users/admin
+    // PATCH _db/_system/my-foxx-service/users/admin
     // with JSON request body {"password": "hunter2"}
 });
 
@@ -1458,7 +1458,7 @@ route.patch('users/admin', {
 }, {admin: true})
 .then(response => {
     // response.body is the response body of calling
-    // PATCH _db/_system/my-foxx-app/users/admin?admin=true
+    // PATCH _db/_system/my-foxx-service/users/admin?admin=true
     // with JSON request body {"password": "hunter2"}
 });
 ```
@@ -1483,11 +1483,11 @@ Performs a DELETE request to the given URL and returns the server response.
 
 ```js
 var db = require('arangojs')();
-var route = db.route('my-foxx-app');
+var route = db.route('my-foxx-service');
 route.delete()
 .then(response => {
     // response.body is the response body of calling
-    // DELETE _db/_system/my-foxx-app
+    // DELETE _db/_system/my-foxx-service
 });
 
 // -- or --
@@ -1495,7 +1495,7 @@ route.delete()
 route.delete('users/admin')
 .then(response => {
     // response.body is the response body of calling
-    // DELETE _db/_system/my-foxx-app/users/admin
+    // DELETE _db/_system/my-foxx-service/users/admin
 });
 
 // -- or --
@@ -1503,7 +1503,7 @@ route.delete('users/admin')
 route.delete('users/admin', {permanent: true})
 .then(response => {
     // response.body is the response body of calling
-    // DELETE _db/_system/my-foxx-app/users/admin?permanent=true
+    // DELETE _db/_system/my-foxx-service/users/admin?permanent=true
 });
 ```
 
@@ -1527,11 +1527,11 @@ Performs a HEAD request to the given URL and returns the server response.
 
 ```js
 var db = require('arangojs')();
-var route = db.route('my-foxx-app');
+var route = db.route('my-foxx-service');
 route.head()
 .then(response => {
     // response is the response object for
-    // HEAD _db/_system/my-foxx-app
+    // HEAD _db/_system/my-foxx-service
 });
 ```
 
@@ -1575,7 +1575,7 @@ Performs an arbitrary request to the given URL and returns the server response.
 
 ```js
 var db = require('arangojs')();
-var route = db.route('my-foxx-app');
+var route = db.route('my-foxx-service');
 route.request({
     path: 'hello-world',
     method: 'POST',
@@ -1584,7 +1584,7 @@ route.request({
 })
 .then(response => {
     // response.body is the response body of calling
-    // POST _db/_system/my-foxx-app/hello-world?admin=true
+    // POST _db/_system/my-foxx-service/hello-world?admin=true
     // with JSON request body '{"hello": "world"}'
 });
 ```
