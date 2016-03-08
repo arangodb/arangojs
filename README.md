@@ -388,7 +388,7 @@ Fetches all databases from the server and returns an array of their names.
 
 ```js
 var db = require('arangojs')();
-db.databases()
+db.listDatabases()
 .then(names => {
     // databases is an array of database names
 });
@@ -404,7 +404,7 @@ Fetches all databases accessible to the active user from the server and returns 
 
 ```js
 var db = require('arangojs')();
-db.databases()
+db.listUserDatabases()
 .then(names => {
     // databases is an array of database names
 });
