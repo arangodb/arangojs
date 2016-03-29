@@ -1,13 +1,13 @@
-import {describe, it} from 'mocha';
+import {describe, it} from 'mocha'
 
 describe('Managing functions', () => {
   describe('database.listFunctions', () => {
-    it('is missing tests');
-  });
+    it('is missing tests')
+  })
   describe('database.createFunction', () => {
-    it('is missing tests');
-  });
+    it('is missing tests')
+  })
   describe('database.dropFunction', () => {
-    it('is missing tests');
-  });
-});
+    it('is missing tests')
+  })
+})

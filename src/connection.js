@@ -1,64 +1,64 @@
-import promisify from './util/promisify';
-import httperr from 'http-errors';
-import qs from 'querystring';
-import createRequest from './util/request';
-import byteLength from './util/byte-length';
-import ArangoError from './error';
-import Route from './route';
+import promisify from './util/promisify'
+import httperr from 'http-errors'
+import qs from 'querystring'
+import createRequest from './util/request'
+import byteLength from './util/byte-length'
+import ArangoError from './error'
+import Route from './route'
 
-const MIME_JSON = /\/(json|javascript)(\W|$)/;
+const MIME_JSON = /\/(json|javascript)(\W|$)/
 
 export default class Connection {
-  constructor(config) {
+  constructor (config) {
     if (typeof config === 'string') {
-      config = {url: config};
+      config = {url: config}
     }
-    this.config = {...Connection.defaults, ...config};
-    this.config.agentOptions = {...Connection.agentDefaults, ...this.config.agentOptions};
-    if (!this.config.headers) this.config.headers = {};
+    this.config = {...Connection.defaults, ...config}
+    this.config.agentOptions = {...Connection.agentDefaults, ...this.config.agentOptions}
+    if (!this.config.headers) this.config.headers = {}
     if (!this.config.headers['x-arango-version']) {
-      this.config.headers['x-arango-version'] = this.config.arangoVersion;
+      this.config.headers['x-arango-version'] = this.config.arangoVersion
     }
-    this._request = createRequest(this.config.url, this.config.agentOptions, this.config.agent);
-    this.promisify = promisify(this.config.promise);
+    this._request = createRequest(this.config.url, this.config.agentOptions, this.config.agent)
+    this.promisify = promisify(this.config.promise)
   }
 
-  _resolveUrl(opts) {
-    const url = {pathname: ''};
+  _resolveUrl (opts) {
+    const url = {pathname: ''}
     if (!opts.absolutePath) {
-      url.pathname = `${url.pathname}/_db/${this.config.databaseName}`;
-      if (opts.basePath) url.pathname = `${url.pathname}/${opts.basePath}`;
+      url.pathname = `${url.pathname}/_db/${this.config.databaseName}`
+      if (opts.basePath) url.pathname = `${url.pathname}/${opts.basePath}`
     }
-    url.pathname += opts.path ? (opts.path.charAt(0) === '/' ? '' : '/') + opts.path : '';
-    if (opts.qs) url.search = `?${typeof opts.qs === 'string' ? opts.qs : qs.stringify(opts.qs)}`;
-    return url;
+    url.pathname += opts.path ? (opts.path.charAt(0) === '/' ? '' : '/') + opts.path : ''
+    if (opts.qs) url.search = `?${typeof opts.qs === 'string' ? opts.qs : qs.stringify(opts.qs)}`
+    return url
   }
 
-  route(path, headers) {
-    return new Route(this, path, headers);
+  route (path, headers) {
+    return new Route(this, path, headers)
   }
 
-  request(opts, cb) {
-    const {promise, callback} = this.promisify(cb);
-    const headers = {'content-type': 'text/plain'};
-    if (!opts) opts = {};
-    let body = opts.body;
+  request (opts, cb) {
+    const {promise, callback} = this.promisify(cb)
+    const headers = {'content-type': 'text/plain'}
+    if (!opts) opts = {}
+    let body = opts.body
 
     if (body) {
       if (typeof body === 'object') {
         if (opts.ld) {
-          body = body.map(obj => JSON.stringify(obj)).join('\r\n') + '\r\n';
-          headers['content-type'] = 'application/x-ldjson';
+          body = body.map((obj) => JSON.stringify(obj)).join('\r\n') + '\r\n'
+          headers['content-type'] = 'application/x-ldjson'
         } else {
-          body = JSON.stringify(body);
-          headers['content-type'] = 'application/json';
+          body = JSON.stringify(body)
+          headers['content-type'] = 'application/json'
         }
       } else {
-        body = String(body);
+        body = String(body)
       }
     }
 
-    headers['content-length'] = body ? byteLength(body, 'utf-8') : 0;
+    headers['content-length'] = body ? byteLength(body, 'utf-8') : 0
 
     this._request({
       url: this._resolveUrl(opts),
@@ -66,35 +66,35 @@ export default class Connection {
       method: (opts.method || 'get').toUpperCase(),
       body: body
     }, (err, res) => {
-      if (err) callback(err);
+      if (err) callback(err)
       else {
-        res.rawBody = res.body;
+        res.rawBody = res.body
         if (res.headers['content-type'].match(MIME_JSON)) {
           try {
-            res.body = JSON.parse(res.rawBody);
+            res.body = JSON.parse(res.rawBody)
           } catch (e) {
-            e.response = res;
-            return callback(e);
+            e.response = res
+            return callback(e)
           }
         }
         if (
-          res.body
-          && res.body.error
-          && res.body.hasOwnProperty('code')
-          && res.body.hasOwnProperty('errorMessage')
-          && res.body.hasOwnProperty('errorNum')
+          res.body &&
+          res.body.error &&
+          res.body.hasOwnProperty('code') &&
+          res.body.hasOwnProperty('errorMessage') &&
+          res.body.hasOwnProperty('errorNum')
         ) {
-          err = new ArangoError(res.body);
-          err.response = res;
-          callback(err);
+          err = new ArangoError(res.body)
+          err.response = res
+          callback(err)
         } else if (res.statusCode >= 400) {
-          err = httperr(res.statusCode);
-          err.response = res;
-          callback(err);
-        } else callback(null, res);
+          err = httperr(res.statusCode)
+          err.response = res
+          callback(err)
+        } else callback(null, res)
       }
-    });
-    return promise;
+    })
+    return promise
   }
 }
 
@@ -102,10 +102,10 @@ Connection.defaults = {
   url: 'http://localhost:8529',
   databaseName: '_system',
   arangoVersion: 20300
-};
+}
 
 Connection.agentDefaults = {
   maxSockets: 3,
   keepAlive: true,
   keepAliveMsecs: 1000
-};
+}
