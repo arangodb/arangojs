@@ -1,6 +1,6 @@
 'use strict'
-const resolve = require('path').resolve
-const webpack = require('webpack')
+var resolve = require('path').resolve
+var webpack = require('webpack')
 
 module.exports = {
   entry: resolve(__dirname, 'src/index.js'),
