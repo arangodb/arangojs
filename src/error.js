@@ -1,7 +1,8 @@
-export default class ArangoError extends Error {
+import ExtendableError from 'es6-error'
+
+export default class ArangoError extends ExtendableError {
   constructor (obj) {
     super()
-    this.name = 'ArangoError'
     this.message = obj.errorMessage
     this.errorNum = obj.errorNum
     this.code = obj.code
