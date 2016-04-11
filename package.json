@@ -64,7 +64,7 @@
     "snazzy": "3.0.1",
     "utf8-length": "0.0.1",
     "watch": "0.17.1",
-    "webpack": "1.12.14",
+    "webpack": "1.12.15",
     "xhr": "2.2.0"
   },
   "contributors": [
