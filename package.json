@@ -48,7 +48,7 @@
   },
   "devDependencies": {
     "babel": "6.5.2",
-    "babel-cli": "6.6.5",
+    "babel-cli": "6.7.7",
     "babel-core": "6.7.6",
     "babel-loader": "6.2.4",
     "babel-plugin-transform-es2015-modules-commonjs": "6.7.4",
