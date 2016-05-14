@@ -42,7 +42,7 @@
     "prepublish": "npm run lint && npm run dist && node -e 'require(\"./\");'"
   },
   "dependencies": {
-    "es6-error": "2.1.0",
+    "es6-error": "2.1.1",
     "http-errors": "1.4.0",
     "linkedlist": "1.0.1"
   },
