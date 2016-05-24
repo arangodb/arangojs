@@ -81,7 +81,7 @@ describe('Graph API', () => {
     before((done) => {
       createCollections(db)
         .then((names) => {
-          [edgeCollectionNames, vertexCollectionNames] = names
+          [vertexCollectionNames, edgeCollectionNames] = names
           done()
         })
         .catch(done)
@@ -119,7 +119,7 @@ describe('Graph API', () => {
       graph = db.graph(`g_${Date.now()}`)
       createCollections(db)
         .then((names) => {
-          [edgeCollectionNames, vertexCollectionNames] = names
+          [vertexCollectionNames, edgeCollectionNames] = names
           return createGraph(graph, ...names)
         })
         .then(() => void done())
