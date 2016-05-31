@@ -35,8 +35,8 @@ export default class Connection {
     }
     if (opts.path) pathname += opts.path
     if (opts.qs) {
-      if (typeof opts.qs === 'string') search = opts.qs
-      else search = qs.stringify(opts.qs)
+      if (typeof opts.qs === 'string') search = `?${opts.qs}`
+      else search = `?${qs.stringify(opts.qs)}`
     }
     return search ? {pathname, search} : {pathname}
   }

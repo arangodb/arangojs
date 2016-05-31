@@ -14,7 +14,7 @@ export default function aql (strings, ...args) {
     let name = `value${isKnown ? index : bindVals.length}`
     if (rawValue && rawValue.isArangoCollection) {
       name = `@${name}`
-      value = rawValue.name()
+      value = rawValue.name
     }
     if (!isKnown) {
       bindVals.push(rawValue)

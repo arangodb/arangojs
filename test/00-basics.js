@@ -47,7 +47,7 @@ describe('Configuring the driver', () => {
         expect(headers).to.have.a.property('x-two', '2')
         done()
       }
-      conn.request()
+      conn.request({headers: {}})
     })
   })
   describe('with an arangoVersion', () => {
@@ -57,7 +57,7 @@ describe('Configuring the driver', () => {
         expect(headers).to.have.a.property('x-arango-version', 99999)
         done()
       }
-      conn.request()
+      conn.request({headers: {}})
     })
     it('does not overwrite explicit headers', (done) => {
       const conn = new Connection({
@@ -68,7 +68,7 @@ describe('Configuring the driver', () => {
         expect(headers).to.have.a.property('x-arango-version', 66666)
         done()
       }
-      conn.request()
+      conn.request({headers: {}})
     })
   })
   describe('with agentOptions', () => {
@@ -140,28 +140,28 @@ describe('Configuring the driver', () => {
       let agent = 1
       let conn
       conn = new Connection({agent}) // default: http
-      conn.request()
+      conn.request({headers: {}})
       expect(options).to.have.a.property('agent', agent)
       agent++
       conn = new Connection({agent, url: 'https://localhost:8529'})
-      conn.request()
+      conn.request({headers: {}})
       expect(options).to.have.a.property('agent', agent)
       agent++
       conn = new Connection({agent, url: 'http://localhost:8529'})
-      conn.request()
+      conn.request({headers: {}})
       expect(options).to.have.a.property('agent', agent)
     })
     it('uses the request function for the protocol', () => {
       const agent = 1
       let conn
       conn = new Connection({agent}) // default: http
-      conn.request()
+      conn.request({headers: {}})
       expect(protocol).to.equal('http')
       conn = new Connection({agent, url: 'https://localhost:8529'})
-      conn.request()
+      conn.request({headers: {}})
       expect(protocol).to.equal('https')
       conn = new Connection({agent, url: 'http://localhost:8529'})
-      conn.request()
+      conn.request({headers: {}})
       expect(protocol).to.equal('http')
     })
   })

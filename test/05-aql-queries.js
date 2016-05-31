@@ -120,6 +120,7 @@ describe('AQL queries', () => {
           this.name = 'tomato'
         }
       }
+      ArangoCollection.prototype.isArangoCollection = true
       let collection = new ArangoCollection()
       let aql = aqlQuery`${collection}`
       expect(aql.query).to.equal('@@value0')
