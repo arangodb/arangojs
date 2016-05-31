@@ -6,7 +6,7 @@ import Cursor from '../src/cursor'
 const range = (n) => Array.from(Array(n).keys())
 const alpha = (i) => String.fromCharCode('a'.charCodeAt(0) + i)
 const ARANGO_VERSION = Number(process.env.ARANGO_VERSION || 30000)
-const describe_2x = ARANGO_VERSION < 30000 ? describe : describe.skip
+const describe2x = ARANGO_VERSION < 30000 ? describe : describe.skip
 
 describe('Simple queries', () => {
   let name = `testdb_${Date.now()}`
@@ -83,7 +83,7 @@ describe('Simple queries', () => {
         .catch(done)
     })
   })
-  describe_2x('collection.first', () => {
+  describe2x('collection.first', () => {
     it('returns the first document in the collection', (done) => {
       collection.first()
         .then((doc) => {
@@ -97,7 +97,7 @@ describe('Simple queries', () => {
         .catch(done)
     })
   })
-  describe_2x('collection.last', () => {
+  describe2x('collection.last', () => {
     it('returns the last document in the collection', (done) => {
       collection.last()
         .then((doc) => {
