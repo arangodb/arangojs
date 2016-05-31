@@ -10,7 +10,7 @@ import constructCollection, {
 export default class Database {
   constructor (config) {
     this._connection = new Connection(config)
-    this._api = this._connection.route('_api')
+    this._api = this._connection.route('/_api')
     this.name = this._connection.config.databaseName
   }
 
@@ -22,6 +22,7 @@ export default class Database {
 
   useDatabase (databaseName) {
     this._connection.config.databaseName = databaseName
+    this._connection._databasePath = `/_db/${databaseName}`
     this.name = databaseName
     return this
   }
@@ -29,7 +30,7 @@ export default class Database {
   get (cb) {
     const {promise, callback} = this._connection.promisify(cb)
     this._api.get(
-      'database/current',
+      '/database/current',
       (err, res) => err ? callback(err) : callback(null, res.body.result)
     )
     return promise
@@ -42,7 +43,7 @@ export default class Database {
     }
     const {promise, callback} = this._connection.promisify(cb)
     this._api.post(
-      'database',
+      '/database',
       {users, name: databaseName},
       (err, res) => err ? callback(err) : callback(null, res.body)
     )
@@ -52,7 +53,7 @@ export default class Database {
   listDatabases (cb) {
     const {promise, callback} = this._connection.promisify(cb)
     this._api.get(
-      'database',
+      '/database',
       (err, res) => err ? callback(err) : callback(null, res.body.result)
     )
     return promise
@@ -61,7 +62,7 @@ export default class Database {
   listUserDatabases (cb) {
     const {promise, callback} = this._connection.promisify(cb)
     this._api.get(
-      'database/user',
+      '/database/user',
       (err, res) => err ? callback(err) : callback(null, res.body.result)
     )
     return promise
@@ -70,7 +71,7 @@ export default class Database {
   dropDatabase (databaseName, cb) {
     const {promise, callback} = this._connection.promisify(cb)
     this._api.delete(
-      `database/${databaseName}`,
+      `/database/${databaseName}`,
       (err, res) => err ? callback(err) : callback(null, res.body)
     )
     return promise
@@ -99,7 +100,7 @@ export default class Database {
       : 'result'
     )
     this._api.get(
-      'collection',
+      '/collection',
       {excludeSystem},
       (err, res) => err ? callback(err) : callback(null, res.body[resultField])
     )
@@ -131,7 +132,7 @@ export default class Database {
         err
         ? callback(err)
         : all(collections.map((data) => (cb) => this._api.put(
-            `collection/${data.name}/truncate`,
+            `/collection/${data.name}/truncate`,
             (err, res) => err ? cb(err) : cb(null, res.body)
         )), callback)
       )
@@ -148,7 +149,7 @@ export default class Database {
   listGraphs (cb) {
     const {promise, callback} = this._connection.promisify(cb)
     this._api.get(
-      'gharial',
+      '/gharial',
       (err, res) => err ? callback(err) : callback(null, res.body.graphs)
     )
     return promise
@@ -182,7 +183,7 @@ export default class Database {
     }
     const {promise, callback} = this._connection.promisify(cb)
     this._api.post(
-      'transaction',
+      '/transaction',
       {collections, action, params, lockTimeout},
       (err, res) => err ? callback(err) : callback(null, res.body.result)
   )
@@ -208,7 +209,7 @@ export default class Database {
       query = query.toAQL()
     }
     this._api.post(
-      'cursor',
+      '/cursor',
       {...opts, query, bindVars},
       (err, res) => err ? callback(err) : callback(null, new ArrayCursor(this._connection, res.body))
     )
@@ -220,7 +221,7 @@ export default class Database {
   listFunctions (cb) {
     const {promise, callback} = this._connection.promisify(cb)
     this._api.get(
-      'aqlfunction',
+      '/aqlfunction',
       (err, res) => err ? callback(err) : callback(null, res.body)
     )
     return promise
@@ -229,7 +230,7 @@ export default class Database {
   createFunction (name, code, cb) {
     const {promise, callback} = this._connection.promisify(cb)
     this._api.post(
-      'aqlfunction',
+      '/aqlfunction',
       {name, code},
       (err, res) => err ? callback(err) : callback(null, res.body)
     )
@@ -243,7 +244,7 @@ export default class Database {
     }
     const {promise, callback} = this._connection.promisify(cb)
     this._api.delete(
-      `aqlfunction/${name}`,
+      `/aqlfunction/${name}`,
       {group: Boolean(group)},
       (err, res) => err ? callback(err) : callback(null, res.body)
     )

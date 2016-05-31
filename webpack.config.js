@@ -16,7 +16,10 @@ module.exports = {
   },
   target: 'web',
   plugins: [
-    new webpack.DefinePlugin({'process.env': {NODE_ENV: '"production"'}}),
+    new webpack.DefinePlugin({
+      'process.env': {NODE_ENV: '"production"'},
+      'Buffer': {byteLength: false}
+    }),
     new webpack.optimize.OccurenceOrderPlugin(true),
     new webpack.optimize.UglifyJsPlugin({output: {comments: false}})
   ]

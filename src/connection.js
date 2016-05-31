@@ -2,9 +2,10 @@ import promisify from './util/promisify'
 import httperr from 'http-errors'
 import qs from 'querystring'
 import createRequest from './util/request'
-import byteLength from './util/byte-length'
 import ArangoError from './error'
 import Route from './route'
+
+const byteLength = Buffer.byteLength || require('utf8-length')
 
 const MIME_JSON = /\/(json|javascript)(\W|$)/
 
@@ -21,18 +22,23 @@ export default class Connection {
     }
     this.arangoMajor = Math.floor(this.config.arangoVersion / 10000)
     this._request = createRequest(this.config.url, this.config.agentOptions, this.config.agent)
+    this._databasePath = `/_db/${this.config.databaseName}`
     this.promisify = promisify(this.config.promise)
   }
 
-  _resolveUrl (opts) {
-    const url = {pathname: ''}
+  _buildUrl (opts) {
+    let pathname = ''
+    let search
     if (!opts.absolutePath) {
-      url.pathname = `${url.pathname}/_db/${this.config.databaseName}`
-      if (opts.basePath) url.pathname = `${url.pathname}/${opts.basePath}`
+      pathname = this._databasePath
+      if (opts.basePath) pathname += opts.basePath
     }
-    url.pathname += opts.path ? (opts.path.charAt(0) === '/' ? '' : '/') + opts.path : ''
-    if (opts.qs) url.search = `?${typeof opts.qs === 'string' ? opts.qs : qs.stringify(opts.qs)}`
-    return url
+    if (opts.path) pathname += opts.path
+    if (opts.qs) {
+      if (typeof opts.qs === 'string') search = opts.qs
+      else search = qs.stringify(opts.qs)
+    }
+    return search ? {pathname, search} : {pathname}
   }
 
   route (path, headers) {
@@ -41,30 +47,41 @@ export default class Connection {
 
   request (opts, cb) {
     const {promise, callback} = this.promisify(cb)
-    const headers = {'content-type': 'text/plain'}
-    if (!opts) opts = {}
+    let contentType = 'text/plain'
     let body = opts.body
 
     if (body) {
       if (typeof body === 'object') {
         if (opts.ld) {
           body = body.map((obj) => JSON.stringify(obj)).join('\r\n') + '\r\n'
-          headers['content-type'] = 'application/x-ldjson'
+          contentType = 'application/x-ldjson'
         } else {
           body = JSON.stringify(body)
-          headers['content-type'] = 'application/json'
+          contentType = 'application/json'
         }
       } else {
         body = String(body)
       }
     }
 
-    headers['content-length'] = body ? byteLength(body, 'utf-8') : 0
+    if (!opts.headers.hasOwnProperty('content-type')) {
+      opts.headers['content-type'] = contentType
+    }
+
+    if (!opts.headers.hasOwnProperty('content-length')) {
+      opts.headers['content-length'] = body ? byteLength(body, 'utf-8') : 0
+    }
+
+    for (const key of Object.keys(this.config.headers)) {
+      if (!opts.headers.hasOwnProperty(key)) {
+        opts.headers[key] = this.config.headers[key]
+      }
+    }
 
     this._request({
-      url: this._resolveUrl(opts),
-      headers: {...headers, ...this.config.headers, ...opts.headers},
-      method: (opts.method || 'get').toUpperCase(),
+      url: this._buildUrl(opts),
+      headers: opts.headers,
+      method: opts.method,
       body: body
     }, (err, res) => {
       if (err) callback(err)

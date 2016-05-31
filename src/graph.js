@@ -9,17 +9,17 @@ class GraphVertexCollection extends BaseCollection {
     super(connection, name)
     this.type = types.DOCUMENT_COLLECTION
     this.graph = graph
-    this._gharial = this._api.route(`gharial/${this.graph.name}/vertex`)
+    this._gharial = this._api.route(`/gharial/${this.graph.name}/vertex`)
   }
 
   _documentPath (documentHandle) {
-    return `document/${this._documentHandle(documentHandle)}`
+    return `/document/${this._documentHandle(documentHandle)}`
   }
 
   remove (documentHandle, cb) {
     const {promise, callback} = this._connection.promisify(cb)
     this._gharial.delete(
-      this._documentHandle(documentHandle),
+      `/${this._documentHandle(documentHandle)}`,
       (err, res) => err ? callback(err) : callback(null, res.body)
     )
     return promise
@@ -28,7 +28,7 @@ class GraphVertexCollection extends BaseCollection {
   vertex (documentHandle, cb) {
     const {promise, callback} = this._connection.promisify(cb)
     this._gharial.get(
-      this._documentHandle(documentHandle),
+      `/${this._documentHandle(documentHandle)}`,
       (err, res) => err ? callback(err) : callback(null, res.body)
     )
     return promise
@@ -37,7 +37,7 @@ class GraphVertexCollection extends BaseCollection {
   save (data, cb) {
     const {promise, callback} = this._connection.promisify(cb)
     this._gharial.post(
-      this.name,
+      this._prefix,
       data,
       (err, res) => err ? callback(err) : callback(null, res.body)
     )
@@ -50,13 +50,13 @@ class GraphEdgeCollection extends EdgeCollection {
     super(connection, name)
     this.type = types.EDGE_COLLECTION
     this.graph = graph
-    this._gharial = this._api.route(`gharial/${this.graph.name}/edge`)
+    this._gharial = this._api.route(`/gharial/${this.graph.name}/edge`)
   }
 
   remove (documentHandle, cb) {
     const {promise, callback} = this._connection.promisify(cb)
     this._gharial.delete(
-      this._documentHandle(documentHandle),
+      `/${this._documentHandle(documentHandle)}`,
       (err, res) => err ? callback(err) : callback(null, res.body)
     )
     return promise
@@ -65,7 +65,7 @@ class GraphEdgeCollection extends EdgeCollection {
   edge (documentHandle, cb) {
     const {promise, callback} = this._connection.promisify(cb)
     this._gharial.get(
-      this._documentHandle(documentHandle),
+      `/${this._documentHandle(documentHandle)}`,
       (err, res) => err ? callback(err) : callback(null, res.body)
     )
     return promise
@@ -81,7 +81,7 @@ class GraphEdgeCollection extends EdgeCollection {
     }
     const {promise, callback} = this._connection.promisify(cb)
     this._gharial.post(
-      this.name,
+      this._prefix,
       data,
       (err, res) => err ? callback(err) : callback(null, res.body)
     )
@@ -93,8 +93,8 @@ export default class Graph {
   constructor (connection, name) {
     this.name = name
     this._connection = connection
-    this._api = this._connection.route('_api')
-    this._gharial = this._api.route(`gharial/${this.name}`)
+    this._api = this._connection.route('/_api')
+    this._gharial = this._api.route(`/gharial/${this.name}`)
   }
 
   get (cb) {
@@ -112,7 +112,7 @@ export default class Graph {
     }
     const {promise, callback} = this._connection.promisify(cb)
     this._api.post(
-      'gharial',
+      '/gharial',
       {...properties, name: this.name},
       (err, res) => err ? callback(err) : callback(null, res.body.graph)
     )
@@ -140,7 +140,7 @@ export default class Graph {
   addVertexCollection (collectionName, cb) {
     const {promise, callback} = this._connection.promisify(cb)
     this._gharial.post(
-      'vertex',
+      '/vertex',
       {collection: collectionName},
       (err, res) => err ? callback(err) : callback(null, res.body.graph)
     )
@@ -155,7 +155,7 @@ export default class Graph {
     const {promise, callback} = this._connection.promisify(cb)
     if (typeof dropCollection !== 'boolean') dropCollection = false
     this._gharial.delete(
-      `vertex/${collectionName}`,
+      `/vertex/${collectionName}`,
       {dropCollection},
       (err, res) => err ? callback(err) : callback(null, res.body.graph)
     )
@@ -169,7 +169,7 @@ export default class Graph {
   addEdgeDefinition (definition, cb) {
     const {promise, callback} = this._connection.promisify(cb)
     this._gharial.post(
-      'edge',
+      '/edge',
       definition,
       (err, res) => err ? callback(err) : callback(null, res.body.graph)
     )
@@ -178,8 +178,8 @@ export default class Graph {
 
   replaceEdgeDefinition (definitionName, definition, cb) {
     const {promise, callback} = this._connection.promisify(cb)
-    this._api.put(
-      `gharial/${this.name}/edge/${definitionName}`,
+    this._gharial.put(
+      `/edge/${definitionName}`,
       definition,
       (err, res) => err ? callback(err) : callback(null, res.body.graph)
     )
@@ -208,7 +208,7 @@ export default class Graph {
     }
     const {promise, callback} = this._connection.promisify(cb)
     this._api.post(
-      'traversal',
+      '/traversal',
       {...opts, startVertex, graphName: this.name},
       (err, res) => err ? callback(err) : callback(null, res.body.result)
     )

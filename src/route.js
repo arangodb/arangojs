@@ -19,6 +19,7 @@ export default class Route {
     opts = {...opts}
     opts.basePath = this._path
     opts.headers = {...this._headers, ...opts.headers}
+    opts.method = opts.method ? opts.method.toUpperCase() : 'GET'
     return this._connection.request(opts, callback)
   }
 
@@ -38,7 +39,14 @@ export default class Route {
     }
     if (!path) path = ''
     else if (this._path && path.charAt(0) !== '/') path = `/${path}`
-    return this.request({path, qs, headers, method: 'get'}, callback)
+    headers = headers ? {...this._headers, ...headers} : {...this._headers}
+    return this._connection.request({
+      basePath: this._path,
+      path,
+      qs,
+      headers,
+      method: 'GET'
+    }, callback)
   }
 
   post (path, body, qs, headers, callback) {
@@ -62,7 +70,15 @@ export default class Route {
     }
     if (!path) path = ''
     else if (this._path && path.charAt(0) !== '/') path = `/${path}`
-    return this.request({path, body, qs, headers, method: 'post'}, callback)
+    headers = headers ? {...this._headers, ...headers} : {...this._headers}
+    return this._connection.request({
+      basePath: this._path,
+      path,
+      body,
+      qs,
+      headers,
+      method: 'POST'
+    }, callback)
   }
 
   put (path, body, qs, headers, callback) {
@@ -86,7 +102,15 @@ export default class Route {
     }
     if (!path) path = ''
     else if (this._path && path.charAt(0) !== '/') path = `/${path}`
-    return this.request({path, body, qs, headers, method: 'put'}, callback)
+    headers = headers ? {...this._headers, ...headers} : {...this._headers}
+    return this._connection.request({
+      basePath: this._path,
+      path,
+      body,
+      qs,
+      headers,
+      method: 'PUT'
+    }, callback)
   }
 
   patch (path, body, qs, headers, callback) {
@@ -110,7 +134,15 @@ export default class Route {
     }
     if (!path) path = ''
     else if (this._path && path.charAt(0) !== '/') path = `/${path}`
-    return this.request({path, body, qs, headers, method: 'patch'}, callback)
+    headers = headers ? {...this._headers, ...headers} : {...this._headers}
+    return this._connection.request({
+      basePath: this._path,
+      path,
+      body,
+      qs,
+      headers,
+      method: 'PATCH'
+    }, callback)
   }
 
   delete (path, qs, headers, callback) {
@@ -129,7 +161,14 @@ export default class Route {
     }
     if (!path) path = ''
     else if (this._path && path.charAt(0) !== '/') path = `/${path}`
-    return this.request({path, qs, headers, method: 'delete'}, callback)
+    headers = headers ? {...this._headers, ...headers} : {...this._headers}
+    return this._connection.request({
+      basePath: this._path,
+      path,
+      qs,
+      headers,
+      method: 'DELETE'
+    }, callback)
   }
 
   head (path, qs, headers, callback) {
@@ -148,6 +187,13 @@ export default class Route {
     }
     if (!path) path = ''
     else if (this._path && path.charAt(0) !== '/') path = `/${path}`
-    return this.request({path, qs, headers, method: 'head'}, callback)
+    headers = headers ? {...this._headers, ...headers} : {...this._headers}
+    return this._connection.request({
+      basePath: this._path,
+      path,
+      qs,
+      headers,
+      method: 'HEAD'
+    }, callback)
   }
 }

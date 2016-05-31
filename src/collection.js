@@ -8,8 +8,10 @@ export const types = {
 class BaseCollection {
   constructor (connection, name) {
     this.name = name
+    this._urlPrefix = `/collection/${name}/`
+    this._idPrefix = `${name}/`
     this._connection = connection
-    this._api = this._connection.route('_api')
+    this._api = this._connection.route('/_api')
     if (this._connection.arangoMajor >= 3) {
       this.first = undefined
       this.last = undefined
@@ -18,23 +20,30 @@ class BaseCollection {
   }
 
   _documentHandle (documentHandle) {
-    if (documentHandle._id) {
-      documentHandle = documentHandle._id
-    } else if (documentHandle._key) {
-      documentHandle = documentHandle._key
+    if (typeof documentHandle !== 'string') {
+      if (documentHandle._id) {
+        return documentHandle._id
+      }
+      if (documentHandle._key) {
+        return this._idPrefix + documentHandle._key
+      }
+      throw new Error('Document handle must be a document or string')
     }
     if (documentHandle.indexOf('/') === -1) {
-      documentHandle = `${this.name}/${documentHandle}`
+      return this._idPrefix + documentHandle
     }
     return documentHandle
   }
 
   _indexHandle (indexHandle) {
-    if (indexHandle.id) {
-      indexHandle = indexHandle.id
+    if (typeof documentHandle !== 'string') {
+      if (indexHandle.id) {
+        return indexHandle.id
+      }
+      throw new Error('Document handle must be a document or string')
     }
     if (indexHandle.indexOf('/') === -1) {
-      indexHandle = `${this.name}/${indexHandle}`
+      return this._idPrefix + indexHandle
     }
     return indexHandle
   }
@@ -46,7 +55,7 @@ class BaseCollection {
     }
     const {promise, callback} = this._connection.promisify(cb)
     this._api.get(
-      `collection/${this.name}/${path}`,
+      this._urlPrefix + path,
       opts,
       (err, res) => err ? callback(err) : callback(null, res.body)
     )
@@ -56,7 +65,7 @@ class BaseCollection {
   _put (path, data, cb) {
     const {promise, callback} = this._connection.promisify(cb)
     this._api.put(
-      `collection/${this.name}/${path}`,
+      this._urlPrefix + path,
       data,
       (err, res) => err ? callback(err) : callback(null, res.body)
     )
@@ -66,7 +75,7 @@ class BaseCollection {
   get (cb) {
     const {promise, callback} = this._connection.promisify(cb)
     this._api.get(
-      `collection/${this.name}`,
+      `/collection/${this.name}`,
       (err, res) => err ? callback(err) : callback(null, res.body)
     )
     return promise
@@ -79,7 +88,7 @@ class BaseCollection {
     }
     const {promise, callback} = this._connection.promisify(cb)
     this._api.post(
-      'collection',
+      '/collection',
       {...properties, name: this.name, type: this.type},
       (err, res) => err ? callback(err) : callback(null, res.body)
     )
@@ -127,12 +136,14 @@ class BaseCollection {
   rename (name, cb) {
     const {promise, callback} = this._connection.promisify(cb)
     this._api.put(
-      `collection/${this.name}/rename`,
+      this._urlPrefix + 'rename',
       {name},
       (err, res) => {
         if (err) callback(err)
         else {
           this.name = name
+          this._idPrefix = `${name}/`
+          this._urlPrefix = `/collection/${name}/`
           callback(null, res.body)
         }
       }
@@ -151,7 +162,7 @@ class BaseCollection {
   drop (cb) {
     const {promise, callback} = this._connection.promisify(cb)
     this._api.delete(
-      `collection/${this.name}`,
+      `/collection/${this.name}`,
       (err, res) => err ? callback(err) : callback(null, res.body)
     )
     return promise
@@ -166,19 +177,16 @@ class BaseCollection {
       opts = {rev: opts}
     }
     const {promise, callback} = this._connection.promisify(cb)
-    const headers = {}
-    const {rev, ...qsOpts} = opts || {}
-    if (rev) {
-      if (this._connection.arangoMajor < 3) {
-        qsOpts.rev = rev
-      } else {
-        headers.rev = rev
-      }
-    }
+    const rev = opts && opts.rev
+    const headers = (
+      rev && this._connection.arangoMajor >= 3
+      ? {'if-match': rev}
+      : undefined
+    )
     this._api.put(
       this._documentPath(documentHandle),
       newValue,
-      qsOpts,
+      opts,
       headers,
       (err, res) => err ? callback(err) : callback(null, res.body)
     )
@@ -194,19 +202,16 @@ class BaseCollection {
       opts = {rev: opts}
     }
     const {promise, callback} = this._connection.promisify(cb)
-    const headers = {}
-    const {rev, ...qsOpts} = opts || {}
-    if (rev) {
-      if (this._connection.arangoMajor < 3) {
-        qsOpts.rev = rev
-      } else {
-        headers.rev = rev
-      }
-    }
+    const rev = opts && opts.rev
+    const headers = (
+      rev && this._connection.arangoMajor >= 3
+      ? {'if-match': rev}
+      : undefined
+    )
     this._api.patch(
       this._documentPath(documentHandle),
       newValue,
-      qsOpts,
+      opts,
       headers,
       (err, res) => err ? callback(err) : callback(null, res.body)
     )
@@ -222,18 +227,15 @@ class BaseCollection {
       opts = {rev: opts}
     }
     const {promise, callback} = this._connection.promisify(cb)
-    const headers = {}
-    const {rev, ...qsOpts} = opts || {}
-    if (rev) {
-      if (this._connection.arangoMajor < 3) {
-        qsOpts.rev = rev
-      } else {
-        headers.rev = rev
-      }
-    }
+    const rev = opts && opts.rev
+    const headers = (
+      rev && this._connection.arangoMajor >= 3
+      ? {'if-match': rev}
+      : undefined
+    )
     this._api.delete(
       this._documentPath(documentHandle),
-      qsOpts,
+      opts,
       headers,
       (err, res) => err ? callback(err) : callback(null, res.body)
     )
@@ -249,13 +251,13 @@ class BaseCollection {
     const {promise, callback} = this._connection.promisify(cb)
     if (this._connection.arangoMajor < 3) {
       this._api.get(
-        'document',
+        '/document',
         {type, collection: this.name},
         (err, res) => err ? callback(err) : callback(null, res.body.documents)
       )
     } else {
       this._api.put(
-        'simple/all-keys',
+        '/simple/all-keys',
         {type, collection: this.name},
         (err, res) => err ? callback(err) : callback(res.body.result)
       )
@@ -270,7 +272,7 @@ class BaseCollection {
     }
     const {promise, callback} = this._connection.promisify(cb)
     this._api.put(
-      'simple/all',
+      '/simple/all',
       {...opts, collection: this.name},
       (err, res) => err ? callback(err) : callback(null, new ArrayCursor(this._connection, res.body))
     )
@@ -280,7 +282,7 @@ class BaseCollection {
   any (cb) {
     const {promise, callback} = this._connection.promisify(cb)
     this._api.put(
-      'simple/any',
+      '/simple/any',
       {collection: this.name},
       (err, res) => err ? callback(err) : callback(null, res.body.document)
     )
@@ -297,7 +299,7 @@ class BaseCollection {
     }
     const {promise, callback} = this._connection.promisify(cb)
     this._api.put(
-      'simple/first',
+      '/simple/first',
       {...opts, collection: this.name},
       (err, res) => err ? callback(err) : callback(null, res.body.result)
     )
@@ -314,7 +316,7 @@ class BaseCollection {
     }
     const {promise, callback} = this._connection.promisify(cb)
     this._api.put(
-      'simple/last',
+      '/simple/last',
       {...opts, collection: this.name},
       (err, res) => err ? callback(err) : callback(null, res.body.result)
     )
@@ -328,7 +330,7 @@ class BaseCollection {
     }
     const {promise, callback} = this._connection.promisify(cb)
     this._api.put(
-      'simple/by-example',
+      '/simple/by-example',
       {...opts, example, collection: this.name},
       (err, res) => err ? callback(err) : callback(null, new ArrayCursor(this._connection, res.body))
     )
@@ -338,7 +340,7 @@ class BaseCollection {
   firstExample (example, cb) {
     const {promise, callback} = this._connection.promisify(cb)
     this._api.put(
-      'simple/first-example',
+      '/simple/first-example',
       {example, collection: this.name},
       (err, res) => err ? callback(err) : callback(null, res.body.document)
     )
@@ -352,7 +354,7 @@ class BaseCollection {
     }
     const {promise, callback} = this._connection.promisify(cb)
     this._api.put(
-      'simple/remove-by-example',
+      '/simple/remove-by-example',
       {...opts, example, collection: this.name},
       (err, res) => err ? callback(err) : callback(null, res.body)
     )
@@ -366,7 +368,7 @@ class BaseCollection {
     }
     const {promise, callback} = this._connection.promisify(cb)
     this._api.put(
-      'simple/replace-by-example',
+      '/simple/replace-by-example',
       {...opts, example, newValue, collection: this.name},
       (err, res) => err ? callback(err) : callback(null, res.body)
     )
@@ -380,7 +382,7 @@ class BaseCollection {
     }
     const {promise, callback} = this._connection.promisify(cb)
     this._api.put(
-      'simple/update-by-example',
+      '/simple/update-by-example',
       {...opts, example, newValue, collection: this.name},
       (err, res) => err ? callback(err) : callback(null, res.body)
     )
@@ -390,7 +392,7 @@ class BaseCollection {
   lookupByKeys (keys, cb) {
     const {promise, callback} = this._connection.promisify(cb)
     this._api.put(
-      'simple/lookup-by-keys',
+      '/simple/lookup-by-keys',
       {keys, collection: this.name},
       (err, res) => err ? callback(err) : callback(null, res.body.documents)
     )
@@ -404,7 +406,7 @@ class BaseCollection {
     }
     const {promise, callback} = this._connection.promisify(cb)
     this._api.put(
-      'simple/remove-by-keys',
+      '/simple/remove-by-keys',
       {...opts, keys, collection: this.name},
       (err, res) => err ? callback(err) : callback(null, res.body)
     )
@@ -433,7 +435,7 @@ class BaseCollection {
   indexes (cb) {
     const {promise, callback} = this._connection.promisify(cb)
     this._api.get(
-      'index',
+      '/index',
       {collection: this.name},
       (err, res) => err ? callback(err) : callback(null, res.body.indexes)
     )
@@ -443,7 +445,7 @@ class BaseCollection {
   index (indexHandle, cb) {
     const {promise, callback} = this._connection.promisify(cb)
     this._api.get(
-      `index/${this._indexHandle(indexHandle)}`,
+      `/index/${this._indexHandle(indexHandle)}`,
       (err, res) => err ? callback(err) : callback(null, res.body)
     )
     return promise
@@ -452,7 +454,7 @@ class BaseCollection {
   createIndex (details, cb) {
     const {promise, callback} = this._connection.promisify(cb)
     this._api.post(
-      'index',
+      '/index',
       details,
       {collection: this.name},
       (err, res) => err ? callback(err) : callback(null, res.body)
@@ -463,7 +465,7 @@ class BaseCollection {
   dropIndex (indexHandle, cb) {
     const {promise, callback} = this._connection.promisify(cb)
     this._api.delete(
-      `index/${this._indexHandle(indexHandle)}`,
+      `/index/${this._indexHandle(indexHandle)}`,
       (err, res) => err ? callback(err) : callback(null, res.body)
     )
     return promise
@@ -475,7 +477,7 @@ class BaseCollection {
     }
     const {promise, callback} = this._connection.promisify(cb)
     this._api.post(
-      'index',
+      '/index',
       {...size, type: 'cap'},
       {collection: this.name},
       (err, res) => err ? callback(err) : callback(null, res.body)
@@ -496,7 +498,7 @@ class BaseCollection {
     }
     const {promise, callback} = this._connection.promisify(cb)
     this._api.post(
-      'index',
+      '/index',
       {unique: false, ...opts, type: 'hash', fields: fields},
       {collection: this.name},
       (err, res) => err ? callback(err) : callback(null, res.body)
@@ -517,7 +519,7 @@ class BaseCollection {
     }
     const {promise, callback} = this._connection.promisify(cb)
     this._api.post(
-      'index',
+      '/index',
       {unique: false, ...opts, type: 'skiplist', fields: fields},
       {collection: this.name},
       (err, res) => err ? callback(err) : callback(null, res.body)
@@ -535,7 +537,7 @@ class BaseCollection {
     }
     const {promise, callback} = this._connection.promisify(cb)
     this._api.post(
-      'index',
+      '/index',
       {...opts, fields, type: 'geo'},
       {collection: this.name},
       (err, res) => err ? callback(err) : callback(null, res.body)
@@ -554,7 +556,7 @@ class BaseCollection {
     if (minLength) minLength = Number(minLength)
     const {promise, callback} = this._connection.promisify(cb)
     this._api.post(
-      'index',
+      '/index',
       {fields, minLength, type: 'fulltext'},
       {collection: this.name},
       (err, res) => err ? callback(err) : callback(null, res.body)
@@ -571,7 +573,7 @@ class BaseCollection {
     if (opts.index) opts.index = this._indexHandle(opts.index)
     const {promise, callback} = this._connection.promisify(cb)
     this._api.put(
-      'simple/fulltext',
+      '/simple/fulltext',
       {...opts, attribute, query, collection: this.name},
       (err, res) => err ? callback(err) : callback(null, new ArrayCursor(this._connection, res.body))
     )
@@ -586,13 +588,13 @@ class DocumentCollection extends BaseCollection {
   }
 
   _documentPath (documentHandle) {
-    return `document/${this._documentHandle(documentHandle)}`
+    return `/document/${this._documentHandle(documentHandle)}`
   }
 
   document (documentHandle, cb) {
     const {promise, callback} = this._connection.promisify(cb)
     this._api.get(
-      `document/${this._documentHandle(documentHandle)}`,
+      this._documentPath(documentHandle),
       (err, res) => err ? callback(err) : callback(null, res.body)
     )
     return promise
@@ -601,7 +603,7 @@ class DocumentCollection extends BaseCollection {
   save (data, cb) {
     const {promise, callback} = this._connection.promisify(cb)
     this._api.post(
-      'document',
+      '/document',
       data,
       {collection: this.name},
       (err, res) => err ? callback(err) : callback(null, res.body)
@@ -643,7 +645,7 @@ class EdgeCollection extends BaseCollection {
     const {promise, callback} = this._connection.promisify(cb)
     if (this._connection.arangoMajor < 3) {
       this._api.post(
-        'edge',
+        '/edge',
         data,
         {
           collection: this.name,
@@ -654,7 +656,7 @@ class EdgeCollection extends BaseCollection {
       )
     } else {
       this._api.post(
-        'document',
+        '/document',
         data,
         {collection: this.name},
         (err, res) => err ? callback(err) : callback(null, res.body)
@@ -666,7 +668,7 @@ class EdgeCollection extends BaseCollection {
   _edges (documentHandle, direction, cb) {
     const {promise, callback} = this._connection.promisify(cb)
     this._api.get(
-      `edges/${this.name}`,
+      `/edges/${this.name}`,
       {direction, vertex: this._documentHandle(documentHandle)},
       (err, res) => err ? callback(err) : callback(null, res.body.edges)
     )
@@ -692,7 +694,7 @@ class EdgeCollection extends BaseCollection {
     }
     const {promise, callback} = this._connection.promisify(cb)
     this._api.post(
-      'traversal',
+      '/traversal',
       {...opts, startVertex, edgeCollection: this.name},
       (err, res) => err ? callback(err) : callback(null, res.body.result)
     )
