@@ -41,16 +41,16 @@ npm run dist
 
 ```js
 // ES2015-style
-import arangojs, {Database, aqlQuery} from 'arangojs';
+import arangojs, {Database, aql} from 'arangojs';
 let db1 = arangojs(); // convenience short-hand
 let db2 = new Database();
-let {query, bindVars} = aqlQuery`RETURN ${Date.now()}`;
+let {query, bindVars} = aql`RETURN ${Date.now()}`;
 
 // or plain old Node-style
 var arangojs = require('arangojs');
 var db1 = arangojs();
 var db2 = new arangojs.Database();
-var aql = arangojs.aqlQuery(['RETURN ', ''], Date.now());
+var aql = arangojs.aql(['RETURN ', ''], Date.now());
 var query = aql.query;
 var bindVars = aql.bindVars;
 ```
@@ -119,7 +119,7 @@ try {
     * [database.transaction](#databasetransaction)
   * [Queries](#queries)
     * [database.query](#databasequery)
-    * [aqlQuery](#aqlquery)
+    * [aql](#aql)
   * [Managing AQL user functions](#managing-aql-user-functions)
     * [database.listFunctions](#databaselistfunctions)
     * [database.createFunction](#databasecreatefunction)
@@ -700,8 +700,8 @@ var db = require('arangojs')();
 var active = true;
 
 // Using ES2015 string templates
-var aqlQuery = require('arangojs').aqlQuery;
-db.query(aqlQuery`
+var aql = require('arangojs').aql;
+db.query(aql`
     FOR u IN _users
     FILTER u.authData.active == ${active}
     RETURN u.user
@@ -738,9 +738,9 @@ db.query(
 });
 ```
 
-#### aqlQuery
+#### aql
 
-`aqlQuery(strings, ...args): Object`
+`aql(strings, ...args): Object`
 
 Template string handler for AQL queries. Converts an ES2015 template string to an object that can be passed to `database.query` by converting arguments to bind variables.
 
@@ -750,10 +750,10 @@ Any *Collection* instances will automatically be converted to collection bind va
 
 ```js
 var db = require('arangojs')();
-var aqlQuery = require('arangojs').aqlQuery;
+var aql = require('arangojs').aql;
 var userCollection = db.collection('_users');
 var role = 'admin';
-db.query(aqlQuery`
+db.query(aql`
     FOR user IN ${userCollection}
     FILTER user.role == ${role}
     RETURN user
@@ -811,7 +811,7 @@ Creates an AQL user function with the given *name* and *code* if it does not alr
 
 ```js
 var db = require('arangojs')();
-var aqlQuery = require('arangojs').aqlQuery;
+var aql = require('arangojs').aql;
 db.createFunction(
   'ACME::ACCOUNTING::CALCULATE_VAT',
   String(function (price) {
@@ -819,7 +819,7 @@ db.createFunction(
   })
 )
 // Use the new function in an AQL query with template handler:
-.then(() => db.query(aqlQuery`
+.then(() => db.query(aql`
     FOR product IN products
     RETURN MERGE(
       {vat: ACME::ACCOUNTING::CALCULATE_VAT(product.price)},
