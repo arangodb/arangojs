@@ -8,7 +8,10 @@ const range = (n) => Array.from(Array(n).keys())
 describe('Manipulating databases', () => {
   let db
   beforeEach(() => {
-    db = new Database()
+    db = new Database({
+      url: 'http://root:@localhost:8529',
+      arangoVersion: Number(process.env.ARANGO_VERSION || 30000)
+    })
   })
   describe('database.useDatabase', () => {
     it('updates the database name', () => {
