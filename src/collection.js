@@ -168,10 +168,12 @@ class BaseCollection {
     const {promise, callback} = this._connection.promisify(cb)
     const headers = {}
     const {rev, ...qsOpts} = opts || {}
-    if (this._connection.arangoMajor < 3) {
-      qsOpts.rev = rev
-    } else {
-      headers.rev = rev
+    if (rev) {
+      if (this._connection.arangoMajor < 3) {
+        qsOpts.rev = rev
+      } else {
+        headers.rev = rev
+      }
     }
     this._api.put(
       this._documentPath(documentHandle),
@@ -194,10 +196,12 @@ class BaseCollection {
     const {promise, callback} = this._connection.promisify(cb)
     const headers = {}
     const {rev, ...qsOpts} = opts || {}
-    if (this._connection.arangoMajor < 3) {
-      qsOpts.rev = rev
-    } else {
-      headers.rev = rev
+    if (rev) {
+      if (this._connection.arangoMajor < 3) {
+        qsOpts.rev = rev
+      } else {
+        headers.rev = rev
+      }
     }
     this._api.patch(
       this._documentPath(documentHandle),
@@ -220,10 +224,12 @@ class BaseCollection {
     const {promise, callback} = this._connection.promisify(cb)
     const headers = {}
     const {rev, ...qsOpts} = opts || {}
-    if (this._connection.arangoMajor < 3) {
-      qsOpts.rev = rev
-    } else {
-      headers.rev = rev
+    if (rev) {
+      if (this._connection.arangoMajor < 3) {
+        qsOpts.rev = rev
+      } else {
+        headers.rev = rev
+      }
     }
     this._api.delete(
       this._documentPath(documentHandle),
