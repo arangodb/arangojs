@@ -59,7 +59,7 @@
     "coveralls": "2.11.9",
     "istanbul": "0.4.3",
     "json-loader": "0.5.4",
-    "mocha": "2.5.1",
+    "mocha": "2.5.3",
     "npm-run-all": "2.1.1",
     "snazzy": "4.0.0",
     "utf8-length": "0.0.1",
