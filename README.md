@@ -14,6 +14,8 @@ The driver is being tested with ArangoDB 2.6, 2.7, 2.8 and the nightly developme
 
 As of version 4.0.0 of this driver, a minified standalone browser bundle is also available.
 
+**Upgrade note**: If you want to use arangojs with ArangoDB 3.0 or greater remember to set the appropriate `arangoVersion` option (`30000` for version 3.0.0). The current default value is `203000` (indicating compatibility with version 2.3.0).
+
 # Install
 
 ## With NPM
