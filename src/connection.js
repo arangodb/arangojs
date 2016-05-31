@@ -19,6 +19,7 @@ export default class Connection {
     if (!this.config.headers['x-arango-version']) {
       this.config.headers['x-arango-version'] = this.config.arangoVersion
     }
+    this.arangoMajor = Math.floor(this.config.arangoVersion / 10000)
     this._request = createRequest(this.config.url, this.config.agentOptions, this.config.agent)
     this.promisify = promisify(this.config.promise)
   }

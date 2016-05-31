@@ -9,7 +9,7 @@ describe('Accessing collections', () => {
   let name = `testdb_${Date.now()}`
   let db
   before((done) => {
-    db = new Database()
+    db = new Database({arangoVersion: Number(process.env.ARANGO_VERSION || 30000)})
     db.createDatabase(name)
       .then(() => {
         db.useDatabase(name)

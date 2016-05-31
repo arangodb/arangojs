@@ -2,12 +2,13 @@ sudo: false
 language: node_js
 node_js:
   - 0.12
-  - 4.2
-  - stable
+  - 4
+  - node
 env:
-  - ARANGODB_VERSION=2.6
-  - ARANGODB_VERSION=2.7
-  - ARANGODB_VERSION=2.8
+  - ARANGODB_VERSION=2.6 ARANGO_VERSION=20600
+  - ARANGODB_VERSION=2.7 ARANGO_VERSION=20700
+  - ARANGODB_VERSION=2.8 ARANGO_VERSION=20800
+  - ARANGODB_VERSION=devel ARANGO_VERSION=30000
 before_install:
   - curl https://www.arangodb.com/repositories/travisCI/setup_arangodb_${ARANGODB_VERSION}.sh | bash
 script:

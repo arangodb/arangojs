@@ -10,6 +10,11 @@ class BaseCollection {
     this.name = name
     this._connection = connection
     this._api = this._connection.route('_api')
+    if (this._connection.arangoMajor >= 3) {
+      this.first = undefined
+      this.last = undefined
+      this.createCapConstraint = undefined
+    }
   }
 
   _documentHandle (documentHandle) {
@@ -157,11 +162,22 @@ class BaseCollection {
       cb = opts
       opts = undefined
     }
+    if (typeof opts === 'string') {
+      opts = {rev: opts}
+    }
     const {promise, callback} = this._connection.promisify(cb)
+    const headers = {}
+    const {rev, ...qsOpts} = opts || {}
+    if (this._connection.arangoMajor < 3) {
+      qsOpts.rev = rev
+    } else {
+      headers.rev = rev
+    }
     this._api.put(
       this._documentPath(documentHandle),
       newValue,
-      {...opts, collection: this.name},
+      qsOpts,
+      headers,
       (err, res) => err ? callback(err) : callback(null, res.body)
     )
     return promise
@@ -172,11 +188,22 @@ class BaseCollection {
       cb = opts
       opts = undefined
     }
+    if (typeof opts === 'string') {
+      opts = {rev: opts}
+    }
     const {promise, callback} = this._connection.promisify(cb)
+    const headers = {}
+    const {rev, ...qsOpts} = opts || {}
+    if (this._connection.arangoMajor < 3) {
+      qsOpts.rev = rev
+    } else {
+      headers.rev = rev
+    }
     this._api.patch(
       this._documentPath(documentHandle),
       newValue,
-      {...opts, collection: this.name},
+      qsOpts,
+      headers,
       (err, res) => err ? callback(err) : callback(null, res.body)
     )
     return promise
@@ -187,10 +214,21 @@ class BaseCollection {
       cb = opts
       opts = undefined
     }
+    if (typeof opts === 'string') {
+      opts = {rev: opts}
+    }
     const {promise, callback} = this._connection.promisify(cb)
+    const headers = {}
+    const {rev, ...qsOpts} = opts || {}
+    if (this._connection.arangoMajor < 3) {
+      qsOpts.rev = rev
+    } else {
+      headers.rev = rev
+    }
     this._api.delete(
       this._documentPath(documentHandle),
-      {...opts, collection: this.name},
+      qsOpts,
+      headers,
       (err, res) => err ? callback(err) : callback(null, res.body)
     )
     return promise
@@ -203,11 +241,19 @@ class BaseCollection {
     }
     if (!type) type = 'id'
     const {promise, callback} = this._connection.promisify(cb)
-    this._api.get(
-      'document',
-      {type, collection: this.name},
-      (err, res) => err ? callback(err) : callback(null, res.body.documents)
-    )
+    if (this._connection.arangoMajor < 3) {
+      this._api.get(
+        'document',
+        {type, collection: this.name},
+        (err, res) => err ? callback(err) : callback(null, res.body.documents)
+      )
+    } else {
+      this._api.put(
+        'simple/all-keys',
+        {type, collection: this.name},
+        (err, res) => err ? callback(err) : callback(res.body.result)
+      )
+    }
     return promise
   }
 
@@ -565,13 +611,16 @@ class EdgeCollection extends BaseCollection {
   }
 
   _documentPath (documentHandle) {
-    return `edge/${this._documentHandle(documentHandle)}`
+    if (this._connection.arangoMajor < 3) {
+      return `edge/${this._documentHandle(documentHandle)}`
+    }
+    return `document/${this._documentHandle(documentHandle)}`
   }
 
   edge (documentHandle, cb) {
     const {promise, callback} = this._connection.promisify(cb)
     this._api.get(
-      `edge/${this._documentHandle(documentHandle)}`,
+      this._documentPath(documentHandle),
       (err, res) => err ? callback(err) : callback(null, res.body)
     )
     return promise
@@ -586,16 +635,25 @@ class EdgeCollection extends BaseCollection {
       data._to = this._documentHandle(toId)
     }
     const {promise, callback} = this._connection.promisify(cb)
-    this._api.post(
-      'edge',
-      data,
-      {
-        collection: this.name,
-        from: data._from,
-        to: data._to
-      },
-      (err, res) => err ? callback(err) : callback(null, res.body)
-    )
+    if (this._connection.arangoMajor < 3) {
+      this._api.post(
+        'edge',
+        data,
+        {
+          collection: this.name,
+          from: data._from,
+          to: data._to
+        },
+        (err, res) => err ? callback(err) : callback(null, res.body)
+      )
+    } else {
+      this._api.post(
+        'document',
+        data,
+        {collection: this.name},
+        (err, res) => err ? callback(err) : callback(null, res.body)
+      )
+    }
     return promise
   }
 

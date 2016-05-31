@@ -93,10 +93,15 @@ export default class Database {
     }
     const {promise, callback} = this._connection.promisify(cb)
     if (typeof excludeSystem !== 'boolean') excludeSystem = true
+    const resultField = (
+      this._connection.arangoMajor < 3
+      ? 'collections'
+      : 'result'
+    )
     this._api.get(
       'collection',
       {excludeSystem},
-      (err, res) => err ? callback(err) : callback(null, res.body.collections)
+      (err, res) => err ? callback(err) : callback(null, res.body[resultField])
     )
     return promise
   }

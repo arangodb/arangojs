@@ -22,7 +22,7 @@ export default class Route {
     return this._connection.request(opts, callback)
   }
 
-  get (path, qs, callback) {
+  get (path, qs, headers, callback) {
     if (typeof path !== 'string') {
       callback = qs
       qs = path
@@ -32,12 +32,16 @@ export default class Route {
       callback = qs
       qs = undefined
     }
+    if (typeof headers === 'function') {
+      callback = headers
+      headers = undefined
+    }
     if (!path) path = ''
     else if (this._path && path.charAt(0) !== '/') path = `/${path}`
-    return this.request({path, qs, method: 'get'}, callback)
+    return this.request({path, qs, headers, method: 'get'}, callback)
   }
 
-  post (path, body, qs, callback) {
+  post (path, body, qs, headers, callback) {
     if (typeof path !== 'string') {
       callback = qs
       qs = body
@@ -52,12 +56,16 @@ export default class Route {
       callback = body
       body = undefined
     }
+    if (typeof headers === 'function') {
+      callback = headers
+      headers = undefined
+    }
     if (!path) path = ''
     else if (this._path && path.charAt(0) !== '/') path = `/${path}`
-    return this.request({path, body, qs, method: 'post'}, callback)
+    return this.request({path, body, qs, headers, method: 'post'}, callback)
   }
 
-  put (path, body, qs, callback) {
+  put (path, body, qs, headers, callback) {
     if (typeof path !== 'string') {
       callback = body
       body = qs
@@ -72,12 +80,16 @@ export default class Route {
       callback = body
       body = undefined
     }
+    if (typeof headers === 'function') {
+      callback = headers
+      headers = undefined
+    }
     if (!path) path = ''
     else if (this._path && path.charAt(0) !== '/') path = `/${path}`
-    return this.request({path, body, qs, method: 'put'}, callback)
+    return this.request({path, body, qs, headers, method: 'put'}, callback)
   }
 
-  patch (path, body, qs, callback) {
+  patch (path, body, qs, headers, callback) {
     if (typeof path !== 'string') {
       callback = body
       body = qs
@@ -92,12 +104,16 @@ export default class Route {
       callback = body
       body = undefined
     }
+    if (typeof headers === 'function') {
+      callback = headers
+      headers = undefined
+    }
     if (!path) path = ''
     else if (this._path && path.charAt(0) !== '/') path = `/${path}`
-    return this.request({path, body, qs, method: 'patch'}, callback)
+    return this.request({path, body, qs, headers, method: 'patch'}, callback)
   }
 
-  delete (path, qs, callback) {
+  delete (path, qs, headers, callback) {
     if (typeof path !== 'string') {
       callback = qs
       qs = path
@@ -107,12 +123,16 @@ export default class Route {
       callback = qs
       qs = undefined
     }
+    if (typeof headers === 'function') {
+      callback = headers
+      headers = undefined
+    }
     if (!path) path = ''
     else if (this._path && path.charAt(0) !== '/') path = `/${path}`
-    return this.request({path, qs, method: 'delete'}, callback)
+    return this.request({path, qs, headers, method: 'delete'}, callback)
   }
 
-  head (path, qs, callback) {
+  head (path, qs, headers, callback) {
     if (typeof path !== 'string') {
       callback = qs
       qs = path
@@ -122,8 +142,12 @@ export default class Route {
       callback = qs
       qs = undefined
     }
+    if (typeof headers === 'function') {
+      callback = headers
+      headers = undefined
+    }
     if (!path) path = ''
     else if (this._path && path.charAt(0) !== '/') path = `/${path}`
-    return this.request({path, qs, method: 'head'}, callback)
+    return this.request({path, qs, headers, method: 'head'}, callback)
   }
 }

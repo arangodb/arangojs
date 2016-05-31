@@ -10,7 +10,7 @@ The official ArangoDB low-level JavaScript client.
 
 [![js-standard-style](https://cdn.rawgit.com/feross/standard/master/badge.svg)](https://github.com/feross/standard)
 
-The driver is being tested with ArangoDB 2.5, 2.6 and 2.7 using Node.js 0.12, 4.2 and stable. Versions outside of this range may be compatible but are not officially supported.
+The driver is being tested with ArangoDB 2.6, 2.7, 2.8 and the nightly development build using Node.js 0.12, 4.x (LTS) and the latest public release. Versions outside of this range may be compatible but are not officially supported.
 
 As of version 4.0.0 of this driver, a minified standalone browser bundle is also available.
 
@@ -1915,6 +1915,8 @@ collection.createIndex({type: 'cap', size: 20})
 
 Creates a cap constraint index on the collection.
 
+**Note**: This method is not available when using the driver with ArangoDB 3.0 and higher as cap constraints are no longer supported.
+
 **Arguments**
 
 * **size**: `Object`
@@ -1939,7 +1941,7 @@ For more information on the properties of the *size* object see [the HTTP API fo
 var db = require('arangojs')();
 var collection = db.collection('some-collection');
 
-collection.createCapCollection(20)
+collection.createCapConstraint(20)
 .then(index => {
     index.id; // the index's handle
     index.size === 20;
@@ -1948,7 +1950,7 @@ collection.createCapCollection(20)
 
 // -- or --
 
-collection.createCapCollection({size: 20})
+collection.createCapConstraint({size: 20})
 .then(index => {
     index.id; // the index's handle
     index.size === 20;
@@ -2235,6 +2237,8 @@ Fetches a document from the collection at random.
 
 Performs a query to fetch the first documents in the collection. Returns an array of the matching documents.
 
+**Note**: This method is not available when using the driver with ArangoDB 3.0 and higher as the corresponding API method has been removed.
+
 **Arguments**
 
 * **opts**: `Object` (optional)
@@ -2248,6 +2252,8 @@ Performs a query to fetch the first documents in the collection. Returns an arra
 `async collection.last([opts]): Array<Object>`
 
 Performs a query to fetch the last documents in the collection. Returns an array of the matching documents.
+
+**Note**: This method is not available when using the driver with ArangoDB 3.0 and higher as the corresponding API method has been removed.
 
 **Arguments**
 
@@ -2501,6 +2507,8 @@ These functions implement the [HTTP API for manipulating documents](https://docs
 
 Replaces the content of the document with the given *documentHandle* with the given *newValue* and returns an object containing the document's metadata.
 
+**Note**: The *policy* option is not available when using the driver with ArangoDB 3.0 as it is redundant when specifying the *rev* option.
+
 **Arguments**
 
 * **documentHandle**: `string`
@@ -2529,6 +2537,8 @@ Replaces the content of the document with the given *documentHandle* with the gi
 
     * if *policy* is set to `"last"`, the document will be replaced regardless of the revision.
     * if *policy* is set to `"error"` or not set, the replacement will fail with an error.
+
+If a string is passed instead of an options object, it will be interpreted as the *rev* option.
 
 For more information on the *opts* object, see [the HTTP API documentation for working with documents](https://docs.arangodb.com/HttpDocument/WorkingWithDocuments.html).
 
@@ -2560,6 +2570,8 @@ collection.save(doc)
 `async collection.update(documentHandle, newValue, [opts]): Object`
 
 Updates (merges) the content of the document with the given *documentHandle* with the given *newValue* and returns an object containing the document's metadata.
+
+**Note**: The *policy* option is not available when using the driver with ArangoDB 3.0 as it is redundant when specifying the *rev* option.
 
 **Arguments**
 
@@ -2598,6 +2610,8 @@ Updates (merges) the content of the document with the given *documentHandle* wit
     * if *policy* is set to `"last"`, the document will be replaced regardless of the revision.
     * if *policy* is set to `"error"` or not set, the replacement will fail with an error.
 
+If a string is passed instead of an options object, it will be interpreted as the *rev* option.
+
 For more information on the *opts* object, see [the HTTP API documentation for working with documents](https://docs.arangodb.com/HttpDocument/WorkingWithDocuments.html).
 
 **Examples**
@@ -2629,6 +2643,8 @@ collection.save(doc)
 
 Deletes the document with the given *documentHandle* from the collection.
 
+**Note**: The *policy* option is not available when using the driver with ArangoDB 3.0 as it is redundant when specifying the *rev* option.
+
 **Arguments**
 
 * **documentHandle**: `string`
@@ -2653,6 +2669,8 @@ Deletes the document with the given *documentHandle* from the collection.
 
     * if *policy* is set to `"last"`, the document will be replaced regardless of the revision.
     * if *policy* is set to `"error"` or not set, the replacement will fail with an error.
+
+If a string is passed instead of an options object, it will be interpreted as the *rev* option.
 
 For more information on the *opts* object, see [the HTTP API documentation for working with documents](https://docs.arangodb.com/HttpDocument/WorkingWithDocuments.html).
 

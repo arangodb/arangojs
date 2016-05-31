@@ -9,7 +9,7 @@ describe('Cursor API', () => {
   let db
   let cursor
   before(() => {
-    db = new Database()
+    db = new Database({arangoVersion: Number(process.env.ARANGO_VERSION || 30000)})
   })
   beforeEach((done) => {
     db.query(aqlQuery)

@@ -7,7 +7,7 @@ describe('DocumentCollection API', () => {
   let db
   let collection
   before((done) => {
-    db = new Database()
+    db = new Database({arangoVersion: Number(process.env.ARANGO_VERSION || 30000)})
     db.createDatabase(name)
       .then(() => {
         db.useDatabase(name)
