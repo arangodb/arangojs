@@ -16,3 +16,6 @@ export default class ArangoError extends ExtendableError {
     if (err.number) this.number = err.number
   }
 }
+
+ArangoError.prototype.name = 'ArangoError'
+ArangoError.prototype.isArangoError = true

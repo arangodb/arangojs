@@ -1,19 +1,25 @@
-import {_BaseCollection as BaseCollection} from './collection'
-
-export default function aqlQuery (strings, ...args) {
+export default function aql (strings, ...args) {
   const bindVars = {}
+  const bindVals = []
   let query = strings[0]
   for (let i = 0; i < args.length; i++) {
-    let value = args[i]
-    let name = `value${i}`
-    if (
-      value instanceof BaseCollection ||
-      (value && value.constructor && value.constructor.name === 'ArangoCollection')
-    ) {
-      name = `@${name}`
-      value = typeof value.name === 'function' ? value.name() : value.name
+    const rawValue = args[i]
+    let value = rawValue
+    if (rawValue && typeof rawValue.toAQL === 'function') {
+      query += `${rawValue.toAQL()}${strings[i + 1]}`
+      continue
     }
-    bindVars[name] = value
+    const index = bindVals.indexOf(rawValue)
+    const isKnown = index !== -1
+    let name = `value${isKnown ? index : bindVals.length}`
+    if (rawValue && rawValue.isArangoCollection) {
+      name = `@${name}`
+      value = rawValue.name()
+    }
+    if (!isKnown) {
+      bindVals.push(rawValue)
+      bindVars[name] = value
+    }
     query += `@${name}${strings[i + 1]}`
   }
   return {query, bindVars}

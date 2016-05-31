@@ -581,6 +581,8 @@ class BaseCollection {
   }
 }
 
+BaseCollection.prototype.isArangoCollection = true
+
 class DocumentCollection extends BaseCollection {
   constructor (...args) {
     super(...args)
