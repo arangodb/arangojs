@@ -4,7 +4,10 @@ import {Database} from '../src'
 import Route from '../src/route'
 
 describe('Arbitrary HTTP routes', () => {
-  const db = new Database({arangoVersion: Number(process.env.ARANGO_VERSION || 30000)})
+  const db = new Database({
+    url: 'http://root:@localhost:8529',
+    arangoVersion: Number(process.env.ARANGO_VERSION || 30000)
+  })
   describe('database.route', () => {
     it('returns a Route instance', () => {
       let route = db.route()

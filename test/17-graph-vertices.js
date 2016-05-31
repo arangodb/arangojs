@@ -35,7 +35,10 @@ describe('Manipulating graph vertices', () => {
   let graph
   let collectionNames
   before((done) => {
-    db = new Database({arangoVersion: Number(process.env.ARANGO_VERSION || 30000)})
+    db = new Database({
+      url: 'http://root:@localhost:8529',
+      arangoVersion: Number(process.env.ARANGO_VERSION || 30000)
+    })
     db.createDatabase(name)
       .then(() => {
         db.useDatabase(name)
