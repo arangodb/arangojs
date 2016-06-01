@@ -36,7 +36,7 @@ class BaseCollection {
   }
 
   _indexHandle (indexHandle) {
-    if (typeof documentHandle !== 'string') {
+    if (typeof indexHandle !== 'string') {
       if (indexHandle.id) {
         return indexHandle.id
       }
