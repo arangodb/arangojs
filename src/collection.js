@@ -422,7 +422,7 @@ class BaseCollection {
     this._api.request(
       {
         method: 'POST',
-        path: 'import',
+        path: '/import',
         body: data,
         ld: Boolean(!opts || opts.type !== 'array'),
         qs: {type: 'auto', ...opts, collection: this.name}
