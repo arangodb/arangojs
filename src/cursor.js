@@ -2,7 +2,7 @@ export default class ArrayCursor {
   constructor (connection, body) {
     this.extra = body.extra
     this._connection = connection
-    this._api = this._connection.route('_api')
+    this._api = this._connection.route('/_api')
     this._result = body.result
     this._hasMore = Boolean(body.hasMore)
     this._id = body.id
