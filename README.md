@@ -1739,7 +1739,7 @@ collection.create()
 
 // -- or --
 
-var collection = var collection = db.edgeCollection('friends');
+var collection = db.edgeCollection('friends');
 collection.create({
     waitForSync: true // always sync document changes to disk
 })
@@ -2801,7 +2801,7 @@ Retrieves the edge with the given *documentHandle* from the collection.
 
 ```js
 var db = require('arangojs')();
-var collection = var collection = db.edgeCollection('edges');
+var collection = db.edgeCollection('edges');
 
 collection.edge('some-key')
 .then(edge => {
