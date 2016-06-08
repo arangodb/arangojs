@@ -55,6 +55,17 @@ var db2 = new arangojs.Database();
 var aql = arangojs.aql(['RETURN ', ''], Date.now());
 var query = aql.query;
 var bindVars = aql.bindVars;
+
+// Using a complex connection string with authentication
+let host = process.env.ARANGODB_HOST;
+let port = process.env.ARANGODB_PORT;
+let database = process.env.ARANGODB_DB;
+let username = process.env.ARANGODB_USERNAME;
+let password = process.env.ARANGODB_PASSWORD;
+let db = arangojs({
+  url: `http://${username}:${password}@${host}:${port}`,
+  databaseName: database
+});
 ```
 
 # API
