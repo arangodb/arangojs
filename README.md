@@ -14,7 +14,7 @@ The driver is being tested with ArangoDB 2.6, 2.7, 2.8 and the nightly developme
 
 As of version 4.0.0 of this driver, a minified standalone browser bundle is also available.
 
-**Upgrade note**: If you want to use arangojs with ArangoDB 3.0 or greater remember to set the appropriate `arangoVersion` option (`30000` for version 3.0.0). The current default value is `203000` (indicating compatibility with version 2.3.0).
+**Upgrade note**: If you want to use arangojs with ArangoDB 2.8 or earlier remember to set the appropriate `arangoVersion` option (`20800` for version 2.8.0). The current default value is `30000` (indicating compatibility with version 3.0.0).
 
 # Install
 
@@ -281,7 +281,7 @@ If *config* is a string, it will be interpreted as *config.url*.
 
     Name of the active database.
 
-  * **arangoVersion**: `number` (Default: `20300`)
+  * **arangoVersion**: `number` (Default: `30000`)
 
     Value of the `x-arango-version` header.
 

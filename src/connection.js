@@ -119,7 +119,7 @@ export default class Connection {
 Connection.defaults = {
   url: 'http://localhost:8529',
   databaseName: '_system',
-  arangoVersion: 20300
+  arangoVersion: 30000
 }
 
 Connection.agentDefaults = {
