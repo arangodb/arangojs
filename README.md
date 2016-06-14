@@ -66,6 +66,11 @@ let db = arangojs({
   url: `http://${username}:${password}@${host}:${port}`,
   databaseName: database
 });
+
+// Using ArangoDB 2.8 compatibility mode
+let db = arangojs({
+  arangoVersion: 20800
+});
 ```
 
 # API
