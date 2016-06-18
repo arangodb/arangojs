@@ -68,7 +68,7 @@ export default class Connection {
       opts.headers['content-type'] = contentType
     }
 
-    if (!opts.headers.hasOwnProperty('content-length')) {
+    if (typeof window === "undefined" && !opts.headers.hasOwnProperty('content-length')) {
       opts.headers['content-length'] = body ? byteLength(body, 'utf-8') : 0
     }
 
