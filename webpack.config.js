@@ -10,6 +10,7 @@ module.exports = {
   },
   module: {
     loaders: [
+      {test: /index\.js$/, loader: 'expose?arangojs'},
       {test: /\.js$/, loader: 'babel-loader'},
       {test: /\.json$/, loader: 'json-loader'}
     ]
