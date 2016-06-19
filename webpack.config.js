@@ -6,11 +6,11 @@ module.exports = {
   entry: resolve(__dirname, 'src/index.js'),
   output: {
     path: __dirname,
-    filename: 'arangojs.min.js'
+    filename: 'arangojs.min.js',
+    library: 'arangojs'
   },
   module: {
     loaders: [
-      {test: /index\.js$/, loader: 'expose?arangojs'},
       {test: /\.js$/, loader: 'babel-loader'},
       {test: /\.json$/, loader: 'json-loader'}
     ]

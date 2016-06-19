@@ -59,7 +59,6 @@
     "chai": "3.5.0",
     "core-js": "2.4.0",
     "coveralls": "2.11.9",
-    "expose-loader": "0.7.1",
     "istanbul": "0.4.3",
     "json-loader": "0.5.4",
     "mocha": "2.5.3",
