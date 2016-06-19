@@ -47,9 +47,9 @@ export default function (baseUrl, options) {
   return function request ({method, url, headers, body}, cb) {
     const auth = typeof username === 'string' ? {username, password} : {}
 
-    if(typeof window !== "undefined" && auth.username !== undefined && headers['Authorization'] === undefined) {
-      const btoa = window.btoa ? window.btoa : base64.encode;
-      headers['Authorization'] = "Basic " + btoa(auth.username + ":" + auth.password);
+    if (typeof window !== 'undefined' && auth.username !== undefined && headers['Authorization'] === undefined) {
+      const btoa = window.btoa ? window.btoa : window.base64.encode
+      headers['Authorization'] = 'Basic ' + btoa(auth.username + ':' + auth.password)
     }
 
     const urlParts = {
