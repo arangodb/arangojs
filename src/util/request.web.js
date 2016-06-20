@@ -48,8 +48,7 @@ export default function (baseUrl, options) {
     const auth = typeof username === 'string' ? {username, password} : {}
 
     if (auth.username !== undefined && headers['Authorization'] === undefined) {
-      const btoa = window.btoa ? window.btoa : window.base64.encode
-      headers['Authorization'] = 'Basic ' + btoa(auth.username + ':' + auth.password)
+      headers['Authorization'] = 'Basic ' + window.btoa(auth.username + ':' + auth.password)
     }
 
     const urlParts = {
@@ -71,7 +70,6 @@ export default function (baseUrl, options) {
       const req = xhr({
         responseType: 'text',
         ...options,
-        ...auth,
         url: formatUrl(urlParts),
         body,
         method,
