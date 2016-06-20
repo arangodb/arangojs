@@ -7,6 +7,7 @@ module.exports = {
   output: {
     path: __dirname,
     filename: 'arangojs.min.js',
+    libraryTarget: 'umd',
     library: 'arangojs'
   },
   module: {
