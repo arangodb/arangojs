@@ -59,7 +59,7 @@
     "chai": "3.5.0",
     "core-js": "2.4.0",
     "coveralls": "2.11.9",
-    "istanbul": "0.4.3",
+    "istanbul": "0.4.4",
     "json-loader": "0.5.4",
     "mocha": "2.5.3",
     "npm-run-all": "2.2.0",
