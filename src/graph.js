@@ -37,7 +37,7 @@ class GraphVertexCollection extends BaseCollection {
   save (data, cb) {
     const {promise, callback} = this._connection.promisify(cb)
     this._gharial.post(
-      this._prefix,
+      this.name,
       data,
       (err, res) => err ? callback(err) : callback(null, res.body)
     )
@@ -81,7 +81,7 @@ class GraphEdgeCollection extends EdgeCollection {
     }
     const {promise, callback} = this._connection.promisify(cb)
     this._gharial.post(
-      this._prefix,
+      this.name,
       data,
       (err, res) => err ? callback(err) : callback(null, res.body)
     )
