@@ -43,10 +43,8 @@ export default class ArrayCursor {
     this._drain((err) => {
       if (err) callback(err)
       else {
-        let result = []
-        while (this._result.length) {
-          result.push(this._result.shift())
-        }
+        let result = this._result
+        this._result = []
         callback(null, result)
       }
     })
