@@ -584,7 +584,7 @@ db.listCollections(false)
 
 ### Accessing graphs
 
-These functions implement the [HTTP API for accessing general graphs](https://docs.arangodb.com/HttpGharial/index.html).
+These functions implement the [HTTP API for accessing general graphs](https://docs.arangodb.com/HTTP/Gharial/index.html).
 
 #### database.graph
 
@@ -3024,7 +3024,7 @@ collection.import([
 
 ## Graph API
 
-These functions implement the [HTTP API for manipulating graphs](https://docs.arangodb.com/HttpGharial/index.html).
+These functions implement the [HTTP API for manipulating graphs](https://docs.arangodb.com/HTTP/Gharial/index.html).
 
 ### graph.get
 
@@ -3053,7 +3053,7 @@ Creates a graph with the given *properties* for this graph's name, then returns 
 
 * **properties**: `Object`
 
-  For more information on the *properties* object, see [the HTTP API documentation for creating graphs](https://docs.arangodb.com/HttpGharial/Management.html).
+  For more information on the *properties* object, see [the HTTP API documentation for creating graphs](https://docs.arangodb.com/HTTP/Gharial/Management.html).
 
 **Examples**
 
@@ -3221,7 +3221,7 @@ Adds the given edge definition *definition* to the graph.
 
 * **definition**: `Object`
 
-  For more information on edge definitions see [the HTTP API for managing graphs](https://docs.arangodb.com/HttpGharial/Management.html).
+  For more information on edge definitions see [the HTTP API for managing graphs](https://docs.arangodb.com/HTTP/Gharial/Management.html).
 
 **Examples**
 
@@ -3253,7 +3253,7 @@ Replaces the edge definition for the edge collection named *collectionName* with
 
 * **definition**: `Object`
 
-  For more information on edge definitions see [the HTTP API for managing graphs](https://docs.arangodb.com/HttpGharial/Management.html).
+  For more information on edge definitions see [the HTTP API for managing graphs](https://docs.arangodb.com/HTTP/Gharial/Management.html).
 
 **Examples**
 
