@@ -318,7 +318,7 @@ If *config* is a string, it will be interpreted as *config.url*.
 
 ### Manipulating databases
 
-These functions implement the [HTTP API for manipulating databases](https://docs.arangodb.com/HttpDatabase/index.html).
+These functions implement the [HTTP API for manipulating databases](https://docs.arangodb.com/latest/HTTP/Database/index.html).
 
 #### database.useDatabase
 
@@ -476,7 +476,7 @@ db.truncate(false)
 
 ### Accessing collections
 
-These functions implement the [HTTP API for accessing collections](https://docs.arangodb.com/HttpCollection/Getting.html).
+These functions implement the [HTTP API for accessing collections](https://docs.arangodb.com/latest/HTTP/Collection/Getting.html).
 
 #### database.collection
 
@@ -584,7 +584,7 @@ db.listCollections(false)
 
 ### Accessing graphs
 
-These functions implement the [HTTP API for accessing general graphs](https://docs.arangodb.com/HttpGharial/index.html).
+These functions implement the [HTTP API for accessing general graphs](https://docs.arangodb.com/latest/HTTP/Gharial/index.html).
 
 #### database.graph
 
@@ -626,7 +626,7 @@ db.graphs()
 
 ### Transactions
 
-This function implements the [HTTP API for transactions](https://docs.arangodb.com/HttpTransaction/index.html).
+This function implements the [HTTP API for transactions](https://docs.arangodb.com/latest/HTTP/Transaction/index.html).
 
 #### database.transaction
 
@@ -664,7 +664,7 @@ If *collections* is an array or string, it will be treated as *collections.write
 
 Please note that while *action* should be a string evaluating to a well-formed JavaScript function, it's not possible to pass in a JavaScript function directly because the function needs to be evaluated on the server and will be transmitted in plain text.
 
-For more information on transactions, see [the HTTP API documentation for transactions](https://docs.arangodb.com/HttpTransaction/index.html).
+For more information on transactions, see [the HTTP API documentation for transactions](https://docs.arangodb.com/latest/HTTP/Transaction/index.html).
 
 **Examples**
 
@@ -683,7 +683,7 @@ db.transaction({read: '_users'}, action)
 
 ### Queries
 
-This function implements the [HTTP API for single roundtrip AQL queries](https://docs.arangodb.com/HttpAqlQueryCursor/QueryResults.html).
+This function implements the [HTTP API for single roundtrip AQL queries](https://docs.arangodb.com/latest/HTTP/AqlQueryCursor/QueryResults.html).
 
 For collection-specific queries see [simple queries](#simple-queries).
 
@@ -791,7 +791,7 @@ db.query(
 
 ### Managing AQL user functions
 
-These functions implement the [HTTP API for managing AQL user functions](https://docs.arangodb.com/HttpAqlUserFunctions/index.html).
+These functions implement the [HTTP API for managing AQL user functions](https://docs.arangodb.com/latest/HTTP/AqlUserFunctions/index.html).
 
 #### database.listFunctions
 
@@ -1611,13 +1611,13 @@ route.request({
 
 ## Collection API
 
-These functions implement the [HTTP API for manipulating collections](https://docs.arangodb.com/HttpCollection/index.html).
+These functions implement the [HTTP API for manipulating collections](https://docs.arangodb.com/latest/HTTP/Collection/index.html).
 
 The *Collection API* is implemented by all *Collection* instances, regardless of their specific type. I.e. it represents a shared subset between instances of [*DocumentCollection*](#documentcollection-api), [*EdgeCollection*](#edgecollection-api), [*GraphVertexCollection*](#graphvertexcollection-api) and [*GraphEdgeCollection*](#graphedgecollection-api).
 
 ### Getting information about the collection
 
-See [the HTTP API documentation](https://docs.arangodb.com/HttpCollection/Getting.html) for details.
+See [the HTTP API documentation](https://docs.arangodb.com/latest/HTTP/Collection/Getting.html) for details.
 
 #### collection.get
 
@@ -1714,7 +1714,7 @@ Retrieves the collection checksum.
 
 * **opts**: `Object` (optional)
 
-  For information on the possible options see [the HTTP API for getting collection information](https://docs.arangodb.com/HttpCollection/Getting.html).
+  For information on the possible options see [the HTTP API for getting collection information](https://docs.arangodb.com/latest/HTTP/Collection/Getting.html).
 
 **Examples**
 
@@ -1729,7 +1729,7 @@ collection.checksum()
 
 ### Manipulating the collection
 
-These functions implement [the HTTP API for modifying collections](https://docs.arangodb.com/HttpCollection/Modifying.html).
+These functions implement [the HTTP API for modifying collections](https://docs.arangodb.com/latest/HTTP/Collection/Modifying.html).
 
 #### collection.create
 
@@ -1741,7 +1741,7 @@ Creates a collection with the given *properties* for this collection's name, the
 
 * **properties**: `Object` (optional)
 
-  For more information on the *properties* object, see [the HTTP API documentation for creating collections](https://docs.arangodb.com/HttpCollection/Creating.html).
+  For more information on the *properties* object, see [the HTTP API documentation for creating collections](https://docs.arangodb.com/latest/HTTP/Collection/Creating.html).
 
 **Examples**
 
@@ -1814,7 +1814,7 @@ Replaces the properties of the collection.
 
 * **properties**: `Object`
 
-  For information on the *properties* argument see [the HTTP API for modifying collections](https://docs.arangodb.com/HttpCollection/Modifying.html).
+  For information on the *properties* argument see [the HTTP API for modifying collections](https://docs.arangodb.com/latest/HTTP/Collection/Modifying.html).
 
 **Examples**
 
@@ -1901,7 +1901,7 @@ collection.drop()
 
 ### Manipulating indexes
 
-These functions implement the [HTTP API for manipulating indexes](https://docs.arangodb.com/HttpIndexes/index.html).
+These functions implement the [HTTP API for manipulating indexes](https://docs.arangodb.com/latest/HTTP/Indexes/index.html).
 
 #### collection.createIndex
 
@@ -1913,7 +1913,7 @@ Creates an arbitrary index on the collection.
 
 * **details**: `Object`
 
-  For information on the possible properties of the *details* object, see [the HTTP API for manipulating indexes](https://docs.arangodb.com/HttpIndexes/WorkingWith.html).
+  For information on the possible properties of the *details* object, see [the HTTP API for manipulating indexes](https://docs.arangodb.com/latest/HTTP/Indexes/WorkingWith.html).
 
 **Examples**
 
@@ -1951,7 +1951,7 @@ Creates a cap constraint index on the collection.
 
 If *size* is a number, it will be interpreted as *size.size*.
 
-For more information on the properties of the *size* object see [the HTTP API for creating cap constraints](https://docs.arangodb.com/HttpIndexes/Cap.html).
+For more information on the properties of the *size* object see [the HTTP API for creating cap constraints](https://docs.arangodb.com/latest/HTTP/Indexes/Cap.html).
 
 **Examples**
 
@@ -1992,7 +1992,7 @@ Creates a hash index on the collection.
 
   Additional options for this index. If the value is a boolean, it will be interpreted as *opts.unique*.
 
-For more information on hash indexes, see [the HTTP API for hash indexes](https://docs.arangodb.com/HttpIndexes/Hash.html).
+For more information on hash indexes, see [the HTTP API for hash indexes](https://docs.arangodb.com/latest/HTTP/Indexes/Hash.html).
 
 **Examples**
 
@@ -2033,7 +2033,7 @@ Creates a skiplist index on the collection.
 
   Additional options for this index. If the value is a boolean, it will be interpreted as *opts.unique*.
 
-For more information on skiplist indexes, see [the HTTP API for skiplist indexes](https://docs.arangodb.com/HttpIndexes/Skiplist.html).
+For more information on skiplist indexes, see [the HTTP API for skiplist indexes](https://docs.arangodb.com/latest/HTTP/Indexes/Skiplist.html).
 
 **Examples**
 
@@ -2074,7 +2074,7 @@ Creates a geo-spatial index on the collection.
 
   An object containing additional properties of the index.
 
-For more information on the properties of the *opts* object see [the HTTP API for manipulating geo indexes](https://docs.arangodb.com/HttpIndexes/Geo.html).
+For more information on the properties of the *opts* object see [the HTTP API for manipulating geo indexes](https://docs.arangodb.com/latest/HTTP/Indexes/Geo.html).
 
 **Examples**
 
@@ -2115,7 +2115,7 @@ Creates a fulltext index on the collection.
 
   Minimum character length of words to index. Uses a server-specific default value if not specified.
 
-For more information on fulltext indexes, see [the HTTP API for fulltext indexes](https://docs.arangodb.com/HttpIndexes/Fulltext.html).
+For more information on fulltext indexes, see [the HTTP API for fulltext indexes](https://docs.arangodb.com/latest/HTTP/Indexes/Fulltext.html).
 
 **Examples**
 
@@ -2229,7 +2229,7 @@ collection.createFulltextIndex('description')
 
 ### Simple queries
 
-These functions implement the [HTTP API for simple queries](https://docs.arangodb.com/HttpSimpleQuery/index.html).
+These functions implement the [HTTP API for simple queries](https://docs.arangodb.com/latest/HTTP/SimpleQuery/index.html).
 
 #### collection.all
 
@@ -2241,7 +2241,7 @@ Performs a query to fetch all documents in the collection. Returns a [new *Curso
 
 * **opts**: `Object` (optional)
 
-  For information on the possible options see [the HTTP API for returning all documents](https://docs.arangodb.com/HttpSimpleQuery/index.html#return-all-documents).
+  For information on the possible options see [the HTTP API for returning all documents](https://docs.arangodb.com/latest/HTTP/SimpleQuery/index.html#return-all-documents).
 
 #### collection.any
 
@@ -2261,7 +2261,7 @@ Performs a query to fetch the first documents in the collection. Returns an arra
 
 * **opts**: `Object` (optional)
 
-  For information on the possible options see [the HTTP API for returning the first documents of a collection](https://docs.arangodb.com/HttpSimpleQuery/index.html#first-document-of-a-collection).
+  For information on the possible options see [the HTTP API for returning the first documents of a collection](https://docs.arangodb.com/latest/HTTP/SimpleQuery/index.html#find-documents-matching-an-example).
 
   If *opts* is a number it is treated as *opts.count*.
 
@@ -2277,7 +2277,7 @@ Performs a query to fetch the last documents in the collection. Returns an array
 
 * **opts**: `Object` (optional)
 
-  For information on the possible options see [the HTTP API for returning the last documents of a collection](https://docs.arangodb.com/HttpSimpleQuery/index.html#last-document-of-a-collection).
+  For information on the possible options see [the HTTP API for returning the last documents of a collection](https://docs.arangodb.com/latest/HTTP/SimpleQuery/index.html#last-document-of-a-collection).
 
   If *opts* is a number it is treated as *opts.count*.
 
@@ -2295,7 +2295,7 @@ Performs a query to fetch all documents in the collection matching the given *ex
 
 * **opts**: *Object* (optional)
 
-  For information on the possible options see [the HTTP API for fetching documents by example](https://docs.arangodb.com/HttpSimpleQuery/index.html#find-documents-matching-an-example).
+  For information on the possible options see [the HTTP API for fetching documents by example](https://docs.arangodb.com/latest/HTTP/SimpleQuery/index.html#find-documents-matching-an-example).
 
 #### collection.firstExample
 
@@ -2323,7 +2323,7 @@ Removes all documents in the collection matching the given *example*.
 
 * **opts**: *Object* (optional)
 
-  For information on the possible options see [the HTTP API for removing documents by example](https://docs.arangodb.com/HttpSimpleQuery/index.html#remove-documents-by-example).
+  For information on the possible options see [the HTTP API for removing documents by example](https://docs.arangodb.com/latest/HTTP/SimpleQuery/index.html#remove-documents-by-example).
 
 #### collection.replaceByExample
 
@@ -2343,7 +2343,7 @@ Replaces all documents in the collection matching the given *example* with the g
 
 * **opts**: *Object* (optional)
 
-  For information on the possible options see [the HTTP API for replacing documents by example](https://docs.arangodb.com/HttpSimpleQuery/index.html#replace-documents-by-example).
+  For information on the possible options see [the HTTP API for replacing documents by example](https://docs.arangodb.com/latest/HTTP/SimpleQuery/index.html#replace-documents-by-example).
 
 #### collection.updateByExample
 
@@ -2363,7 +2363,7 @@ Updates (patches) all documents in the collection matching the given *example* w
 
 * **opts**: *Object* (optional)
 
-  For information on the possible options see [the HTTP API for updating documents by example](https://docs.arangodb.com/HttpSimpleQuery/index.html#update-documents-by-example).
+  For information on the possible options see [the HTTP API for updating documents by example](https://docs.arangodb.com/latest/HTTP/SimpleQuery/index.html#update-documents-by-example).
 
 #### collection.lookupByKeys
 
@@ -2391,7 +2391,7 @@ Deletes the documents with the given *keys* from the collection.
 
 * **opts**: *Object* (optional)
 
-  For information on the possible options see [the HTTP API for removing documents by keys](https://docs.arangodb.com/HttpSimpleQuery/index.html#remove-documents-by-their-keys).
+  For information on the possible options see [the HTTP API for removing documents by keys](https://docs.arangodb.com/latest/HTTP/SimpleQuery/index.html#remove-documents-by-their-keys).
 
 #### collection.fulltext
 
@@ -2411,11 +2411,11 @@ Performs a fulltext query in the given *fieldName* on the collection.
 
 * **opts**: *Object* (optional)
 
-  For information on the possible options see [the HTTP API for fulltext queries](https://docs.arangodb.com/HttpIndexes/Fulltext.html).
+  For information on the possible options see [the HTTP API for fulltext queries](https://docs.arangodb.com/latest/HTTP/Indexes/Fulltext.html).
 
 ### Bulk importing documents
 
-This function implements the [HTTP API for bulk imports](https://docs.arangodb.com/HttpBulkImports/index.html).
+This function implements the [HTTP API for bulk imports](https://docs.arangodb.com/latest/HTTP/BulkImports/index.html).
 
 #### collection.import
 
@@ -2465,7 +2465,7 @@ Bulk imports the given *data* into the collection.
 
 If *data* is a JavaScript array, it will be transmitted as a line-delimited JSON stream. If *opts.type* is set to `"array"`, it will be transmitted as regular JSON instead. If *data* is a string, it will be transmitted as it is without any processing.
 
-For more information on the *opts* object, see [the HTTP API documentation for bulk imports](https://docs.arangodb.com/HttpBulkImports/ImportingSelfContained.html).
+For more information on the *opts* object, see [the HTTP API documentation for bulk imports](https://docs.arangodb.com/latest/HTTP/BulkImports/ImportingSelfContained.html).
 
 **Examples**
 
@@ -2517,7 +2517,7 @@ collection.import(
 
 ### Manipulating documents
 
-These functions implement the [HTTP API for manipulating documents](https://docs.arangodb.com/HttpDocument/index.html).
+These functions implement the [HTTP API for manipulating documents](https://docs.arangodb.com/latest/HTTP/Document/index.html).
 
 #### collection.replace
 
@@ -2558,7 +2558,7 @@ Replaces the content of the document with the given *documentHandle* with the gi
 
 If a string is passed instead of an options object, it will be interpreted as the *rev* option.
 
-For more information on the *opts* object, see [the HTTP API documentation for working with documents](https://docs.arangodb.com/HttpDocument/WorkingWithDocuments.html).
+For more information on the *opts* object, see [the HTTP API documentation for working with documents](https://docs.arangodb.com/latest/HTTP/Document/WorkingWithDocuments.html).
 
 **Examples**
 
@@ -2630,7 +2630,7 @@ Updates (merges) the content of the document with the given *documentHandle* wit
 
 If a string is passed instead of an options object, it will be interpreted as the *rev* option.
 
-For more information on the *opts* object, see [the HTTP API documentation for working with documents](https://docs.arangodb.com/HttpDocument/WorkingWithDocuments.html).
+For more information on the *opts* object, see [the HTTP API documentation for working with documents](https://docs.arangodb.com/latest/HTTP/Document/WorkingWithDocuments.html).
 
 **Examples**
 
@@ -2690,7 +2690,7 @@ Deletes the document with the given *documentHandle* from the collection.
 
 If a string is passed instead of an options object, it will be interpreted as the *rev* option.
 
-For more information on the *opts* object, see [the HTTP API documentation for working with documents](https://docs.arangodb.com/HttpDocument/WorkingWithDocuments.html).
+For more information on the *opts* object, see [the HTTP API documentation for working with documents](https://docs.arangodb.com/latest/HTTP/Document/WorkingWithDocuments.html).
 
 **Examples**
 
@@ -2997,7 +2997,7 @@ Performs a traversal starting from the given *startVertex* and following edges c
 
 * **opts**: `Object`
 
-  See [the HTTP API documentation](https://docs.arangodb.com/HttpTraversal/index.html) for details on the additional arguments.
+  See [the HTTP API documentation](https://docs.arangodb.com/latest/HTTP/Traversal/index.html) for details on the additional arguments.
 
   Please note that while *opts.filter*, *opts.visitor*, *opts.init*, *opts.expander* and *opts.sort* should be strings evaluating to well-formed JavaScript code, it's not possible to pass in JavaScript functions directly because the code needs to be evaluated on the server and will be transmitted in plain text.
 
@@ -3024,7 +3024,7 @@ collection.import([
 
 ## Graph API
 
-These functions implement the [HTTP API for manipulating graphs](https://docs.arangodb.com/HttpGharial/index.html).
+These functions implement the [HTTP API for manipulating graphs](https://docs.arangodb.com/latest/HTTP/Gharial/index.html).
 
 ### graph.get
 
@@ -3053,7 +3053,7 @@ Creates a graph with the given *properties* for this graph's name, then returns 
 
 * **properties**: `Object`
 
-  For more information on the *properties* object, see [the HTTP API documentation for creating graphs](https://docs.arangodb.com/HttpGharial/Management.html).
+  For more information on the *properties* object, see [the HTTP API documentation for creating graphs](https://docs.arangodb.com/latest/HTTP/Gharial/Management.html).
 
 **Examples**
 
@@ -3221,7 +3221,7 @@ Adds the given edge definition *definition* to the graph.
 
 * **definition**: `Object`
 
-  For more information on edge definitions see [the HTTP API for managing graphs](https://docs.arangodb.com/HttpGharial/Management.html).
+  For more information on edge definitions see [the HTTP API for managing graphs](https://docs.arangodb.com/latest/HTTP/Gharial/Management.html).
 
 **Examples**
 
@@ -3253,7 +3253,7 @@ Replaces the edge definition for the edge collection named *collectionName* with
 
 * **definition**: `Object`
 
-  For more information on edge definitions see [the HTTP API for managing graphs](https://docs.arangodb.com/HttpGharial/Management.html).
+  For more information on edge definitions see [the HTTP API for managing graphs](https://docs.arangodb.com/latest/HTTP/Gharial/Management.html).
 
 **Examples**
 
@@ -3322,7 +3322,7 @@ Performs a traversal starting from the given *startVertex* and following edges c
 
 * **opts**: `Object`
 
-  See [the HTTP API documentation](https://docs.arangodb.com/HttpTraversal/index.html) for details on the additional arguments.
+  See [the HTTP API documentation](https://docs.arangodb.com/latest/HTTP/Traversal/index.html) for details on the additional arguments.
 
   Please note that while *opts.filter*, *opts.visitor*, *opts.init*, *opts.expander* and *opts.sort* should be strings evaluating to well-formed JavaScript functions, it's not possible to pass in JavaScript functions directly because the functions need to be evaluated on the server and will be transmitted in plain text.
 
@@ -3661,7 +3661,7 @@ Performs a traversal starting from the given *startVertex* and following edges c
 
 * **opts**: `Object`
 
-  See [the HTTP API documentation](https://docs.arangodb.com/HttpTraversal/index.html) for details on the additional arguments.
+  See [the HTTP API documentation](https://docs.arangodb.com/latest/HTTP/Traversal/index.html) for details on the additional arguments.
 
   Please note that while *opts.filter*, *opts.visitor*, *opts.init*, *opts.expander* and *opts.sort* should be strings evaluating to well-formed JavaScript code, it's not possible to pass in JavaScript functions directly because the code needs to be evaluated on the server and will be transmitted in plain text.
 
