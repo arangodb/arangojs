@@ -58,7 +58,7 @@
     "babel-preset-stage-1": "6.13.0",
     "chai": "3.5.0",
     "core-js": "2.4.1",
-    "coveralls": "2.11.12",
+    "coveralls": "2.11.14",
     "istanbul": "0.4.5",
     "json-loader": "0.5.4",
     "mocha": "3.0.2",
