@@ -232,17 +232,11 @@ class BaseCollection {
       opts = {rev: opts}
     }
     const {promise, callback} = this._connection.promisify(cb)
-    const rev = opts && opts.rev
-    const headers = (
-      rev && this._connection.arangoMajor >= 3
-      ? {'if-match': rev}
-      : undefined
-    )
+     
     this._api.patch(
       '/document/'+this.name,
       newValues,
       opts,
-      headers,
       (err, res) => err ? callback(err) : callback(null, res.body)
     )
     return promise
