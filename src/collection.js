@@ -223,6 +223,31 @@ class BaseCollection {
     return promise
   }
 
+  bulkUpdate ( newValues, opts, cb) {
+    if (typeof opts === 'function') {
+      cb = opts
+      opts = undefined
+    }
+    if (typeof opts === 'string') {
+      opts = {rev: opts}
+    }
+    const {promise, callback} = this._connection.promisify(cb)
+    const rev = opts && opts.rev
+    const headers = (
+      rev && this._connection.arangoMajor >= 3
+      ? {'if-match': rev}
+      : undefined
+    )
+    this._api.patch(
+      '/document/'+this.name,
+      newValues,
+      opts,
+      headers,
+      (err, res) => err ? callback(err) : callback(null, res.body)
+    )
+    return promise
+  }
+  
   remove (documentHandle, opts, cb) {
     if (typeof opts === 'function') {
       cb = opts
