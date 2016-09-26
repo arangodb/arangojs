@@ -1,5 +1,4 @@
 declare module "arangojs" {
-    import {Response} from "hapi";
 
     export class Database {
         constructor (config?: any);
@@ -474,7 +473,7 @@ declare module "arangojs" {
          * @param path The route-relative URL for the request. If omitted, the request will be made to the base URL of the route
          * @param qs The query string for the request. If qs is an object, it will be translated to a query string
          */
-        get(path?: string, qs?: string): Promise<Response>;
+        get(path?: string, qs?: string): Promise<any>;
         /**
          * Performs a POST request to the given URL and returns the server response
          *
@@ -482,7 +481,7 @@ declare module "arangojs" {
          * @param body The response body. If body is an object, it will be encoded as JSON.
          * @param qs The query string for the request. If qs is an object, it will be translated to a query string
          */
-        post(path?: string, body?: string, qs?: string): Promise<Response>;
+        post(path?: string, body?: string, qs?: string): Promise<any>;
         /**
          * Performs a PUT request to the given URL and returns the server response
          *
@@ -490,7 +489,7 @@ declare module "arangojs" {
          * @param body The response body. If body is an object, it will be encoded as JSON.
          * @param qs The query string for the request. If qs is an object, it will be translated to a query string
          */
-        put(path?: string, body?: string, qs?: string): Promise<Response>;
+        put(path?: string, body?: string, qs?: string): Promise<any>;
         /**
          * Performs a PATCH request to the given URL and returns the server response
          *
@@ -498,27 +497,27 @@ declare module "arangojs" {
          * @param body The response body. If body is an object, it will be encoded as JSON.
          * @param qs The query string for the request. If qs is an object, it will be translated to a query string
          */
-        patch(path?: string, body?: string, qs?: string): Promise<Response>;
+        patch(path?: string, body?: string, qs?: string): Promise<any>;
         /**
          * Performs a DELETE request to the given URL and returns the server response
          *
          * @param path The route-relative URL for the request. If omitted, the request will be made to the base URL of the route
          * @param qs The query string for the request. If qs is an object, it will be translated to a query string
          */
-        delete(path?: string, qs?: string): Promise<Response>;
+        delete(path?: string, qs?: string): Promise<any>;
         /**
          * Performs a HEAD request to the given URL and returns the server response
          *
          * @param path The route-relative URL for the request. If omitted, the request will be made to the base URL of the route
          * @param qs The query string for the request. If qs is an object, it will be translated to a query string
          */
-        head(path?: string, qs?: string): Promise<Response>;
+        head(path?: string, qs?: string): Promise<any>;
         /**
          * Performs an arbitrary request to the given URL and returns the server response.
          *
          * @params opts
          */
-        request(opts?: Object): Promise<Response>;
+        request(opts?: Object): Promise<any>;
     }
 
     export class Graph {
