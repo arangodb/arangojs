@@ -1884,9 +1884,23 @@ collection.truncate()
 
 #### collection.drop
 
-`async collection.drop(): Object`
+`async collection.create([properties]): Object`
 
 Deletes the collection from the database.
+
+**Arguments**
+
+* **properties**: `Object` (optional)
+
+  An object with the following properties:
+
+  * **isSystem**: `Boolean` (Default: `false`)
+
+    Whether the collection should be dropped even if it is a system collection.
+
+    This parameter must be set to `true` when dropping a system collection.
+
+  For more information on the *properties* object, see [the HTTP API documentation for dropping collections](https://docs.arangodb.com/HttpCollection/Creating.html).
 
 **Examples**
 

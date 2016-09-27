@@ -159,10 +159,15 @@ class BaseCollection {
     return this._put('truncate', undefined, cb)
   }
 
-  drop (cb) {
+  drop (opts, cb) {
+    if (typeof opts === 'function') {
+      cb = opts
+      opts = undefined
+    }
     const {promise, callback} = this._connection.promisify(cb)
     this._api.delete(
       `/collection/${this.name}`,
+      opts,
       (err, res) => err ? callback(err) : callback(null, res.body)
     )
     return promise

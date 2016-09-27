@@ -54,9 +54,10 @@ describe('Accessing collections', () => {
         .catch(done)
     })
     after((done) => {
-      Promise.all(nonSystemCollectionNames.concat(systemCollectionNames).map(
-        (name) => db.collection(name).drop()
-      ))
+      Promise.all([
+        ...nonSystemCollectionNames.map((name) => db.collection(name).drop()),
+        ...systemCollectionNames.map((name) => db.collection(name).drop({isSystem: true}))
+      ])
         .then(() => void done())
         .catch(done)
     })
@@ -97,7 +98,7 @@ describe('Accessing collections', () => {
       Promise.all([
         ...documentCollectionNames.map((name) => db.collection(name).drop()),
         ...edgeCollectionNames.map((name) => db.edgeCollection(name).drop()),
-        ...systemCollectionNames.map((name) => db.collection(name).drop())
+        ...systemCollectionNames.map((name) => db.collection(name).drop({isSystem: true}))
       ])
         .then(() => void done())
         .catch(done)
