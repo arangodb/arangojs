@@ -10,7 +10,7 @@ The official ArangoDB low-level JavaScript client.
 
 [![js-standard-style](https://cdn.rawgit.com/feross/standard/master/badge.svg)](https://github.com/feross/standard)
 
-The driver is being tested with ArangoDB 2.6, 2.7, 2.8 and the nightly development build using Node.js 0.12, 4.x (LTS) and the latest public release. Versions outside of this range may be compatible but are not officially supported.
+The driver is being tested with ArangoDB 2.8, 3.0 and the nightly development build using Node.js 4.x (LTS) and the latest public release. Versions outside of this range may be compatible but are not officially supported.
 
 As of version 4.0.0 of this driver, a minified standalone browser bundle is also available.
 
