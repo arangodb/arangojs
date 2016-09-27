@@ -208,6 +208,7 @@ try {
   * [Manipulating documents](#manipulating-documents)
     * [collection.replace](#collectionreplace)
     * [collection.update](#collectionupdate)
+    * [collection.bulkUpdate](#collectionbulkupdate)
     * [collection.remove](#collectionremove)
     * [collection.list](#collectionlist)
 * [DocumentCollection API](#documentcollection-api)
@@ -2664,6 +2665,72 @@ collection.save(doc)
           doc3._rev === doc2._rev;
           doc3.number === 2;
           doc3.hello === doc.hello;
+        });
+    });
+});
+```
+#### collection.bulkUpdate
+
+`async collection.bulkUpdate(documents, [opts]): Object`
+
+Updates (merges) the content of the documents with the given *documents* and returns an object containing the documents' metadata.
+
+**Note**: This method is new in 3.0 and is available when using the driver with ArangoDB 3.0 and higher.
+
+**Arguments**
+
+* **documents**: `Array<Object>`
+
+  Documents to update. Each object must have either the `_id` or the `_key` property.
+
+* **opts**: `Object` (optional)
+
+  If *opts* is set, it must be an object with any of the following properties:
+
+  * **waitForSync**: `boolean` (Default: `false`)
+
+    Wait until document has been synced to disk.
+
+  * **keepNull**: `boolean` (Default: `true`)
+
+    If set to `false`, properties with a value of `null` indicate that a property should be deleted.
+
+  * **mergeObjects**: `boolean` (Default: `true`)
+
+    If set to `false`, object properties that already exist in the old document will be overwritten rather than merged. This does not affect arrays.
+
+  * **returnOld**:  `boolean` (Default: `false`)
+
+    If set to `false`, return additionally the complete previous revision of the changed documents under the attribute old in the result.
+
+  * **returnNew**:  `boolean` (Default: `false`)
+
+    If set to `false`, return additionally the complete new documents under the attribute new in the result.  
+
+  * **ignoreRevs**: `boolean` (Default: `true`)
+
+    By default, or if this is set to true, the _rev attributes in the given documents are ignored. If this is set to false, then any _rev attribute given in a body document is taken as a precondition. The document is only updated if the current revision is the one specified.
+
+For more information on the *opts* object, see [the HTTP API documentation for working with documents](https://docs.arangodb.com/latest/HTTP/Document/WorkingWithDocuments.html).
+
+**Examples**
+
+```js
+var db = require('arangojs')();
+var collection = db.collection('services');
+var doc1 = {number: 1, hello: 'world1'};
+collection.save(doc1)
+.then(doc1saved => {
+    console.log(JSON.stringify(doc1saved));
+    var doc2 = {number: 2, hello: 'world2'};
+    collection.save(doc2)
+    .then(doc2saved => {
+        console.log(JSON.stringify(doc2saved));
+        doc1 = {_key: doc1saved._key, number: 3};
+        doc2 = {_key: doc2saved._key, number: 4};
+        collection.bulkUpdate([doc1, doc2], {returnNew: true})
+        .then(result => {
+            console.log(JSON.stringify(result));
         });
     });
 });

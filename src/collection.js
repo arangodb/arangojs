@@ -223,7 +223,7 @@ class BaseCollection {
     return promise
   }
 
-  bulkUpdate ( newValues, opts, cb) {
+  bulkUpdate (newValues, opts, cb) {
     if (typeof opts === 'function') {
       cb = opts
       opts = undefined
@@ -234,7 +234,7 @@ class BaseCollection {
     const {promise, callback} = this._connection.promisify(cb)
      
     this._api.patch(
-      '/document/'+this.name,
+      `/document/${this.name}`,
       newValues,
       opts,
       (err, res) => err ? callback(err) : callback(null, res.body)
