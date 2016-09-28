@@ -2673,7 +2673,7 @@ collection.save(doc)
 
 `async collection.bulkUpdate(documents, [opts]): Object`
 
-Updates (merges) the content of the documents with the given *documents* and returns an object containing the documents' metadata.
+Updates (merges) the content of the documents with the given *documents* and returns an array containing the documents' metadata.
 
 **Note**: This method is new in 3.0 and is available when using the driver with ArangoDB 3.0 and higher.
 
@@ -2701,11 +2701,11 @@ Updates (merges) the content of the documents with the given *documents* and ret
 
   * **returnOld**:  `boolean` (Default: `false`)
 
-    If set to `false`, return additionally the complete previous revision of the changed documents under the attribute old in the result.
+    If set to `false`, return additionally the complete previous revision of the changed documents under the attribute `old` in the result.
 
   * **returnNew**:  `boolean` (Default: `false`)
 
-    If set to `false`, return additionally the complete new documents under the attribute new in the result.  
+    If set to `false`, return additionally the complete new documents under the attribute `new` in the result.  
 
   * **ignoreRevs**: `boolean` (Default: `true`)
 
