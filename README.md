@@ -2717,7 +2717,7 @@ For more information on the *opts* object, see [the HTTP API documentation for w
 
 ```js
 var db = require('arangojs')();
-var collection = db.collection('services');
+var collection = db.collection('some-collection');
 var doc1 = {number: 1, hello: 'world1'};
 collection.save(doc1)
 .then(doc1saved => {
