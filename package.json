@@ -65,7 +65,7 @@
     "npm-run-all": "3.1.0",
     "snazzy": "5.0.0",
     "utf8-length": "0.0.1",
-    "watch": "1.0.0",
+    "watch": "1.0.1",
     "webpack": "1.13.2",
     "xhr": "2.2.2"
   },
