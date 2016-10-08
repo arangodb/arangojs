@@ -4,6 +4,7 @@ import qs from 'querystring'
 import createRequest from './util/request'
 import ArangoError from './error'
 import Route from './route'
+import retry from 'retry'
 
 const byteLength = Buffer.byteLength || require('utf8-length')
 
@@ -78,40 +79,67 @@ export default class Connection {
       }
     }
 
-    this._request({
-      url: this._buildUrl(opts),
-      headers: opts.headers,
-      method: opts.method,
-      body: body
-    }, (err, res) => {
-      if (err) callback(err)
-      else {
-        res.rawBody = res.body
-        if (res.headers['content-type'].match(MIME_JSON)) {
-          try {
-            res.body = JSON.parse(res.rawBody)
-          } catch (e) {
-            e.response = res
-            return callback(e)
-          }
+    const url = this._buildUrl(opts)
+    const doRequest = this._request
+    const retryOpts = {
+      forever: true,
+      factor: 1.1,
+      maxTimeout: 5000,
+      randomize: true
+    }
+    const operation = retry.operation(retryOpts)
+    operation.attempt(function(currentAttempt) {
+      doRequest({
+        url,
+        headers: opts.headers,
+        method: opts.method,
+        body: body
+      }, (err, res) => {
+        if (operation.retry(err)) {
+          // these errors are likely due to arangodb being offline or unreachable, retry
+          console.warn('arangojs error', currentAttempt, err.code, 'retrying')
+          return
         }
-        if (
-          res.body &&
-          res.body.error &&
-          res.body.hasOwnProperty('code') &&
-          res.body.hasOwnProperty('errorMessage') &&
-          res.body.hasOwnProperty('errorNum')
-        ) {
-          err = new ArangoError(res.body)
-          err.response = res
-          callback(err)
-        } else if (res.statusCode >= 400) {
-          err = httperr(res.statusCode)
-          err.response = res
-          callback(err)
-        } else callback(null, res)
-      }
+        if (err) callback(err)
+        else {
+          res.rawBody = res.body
+          if (res.headers['content-type'].match(MIME_JSON)) {
+            try {
+              res.body = JSON.parse(res.rawBody)
+            } catch (e) {
+              e.response = res
+              return callback(e)
+            }
+          }
+          if (
+            res.body &&
+            res.body.error &&
+            res.body.hasOwnProperty('code') &&
+            res.body.hasOwnProperty('errorMessage') &&
+            res.body.hasOwnProperty('errorNum')
+          ) {
+            err = new ArangoError(res.body)
+            err.response = res
+            if (currentAttempt === 1 && err.code === 21 && operation.retry(err)) {
+              // can happen when arangod shuts down in the middle of a request, only retry once because it shouldn't happen again
+              console.warn('arangojs error', currentAttempt, err.name, 'retrying')
+              return
+            }
+            callback(err)
+          } else if (res.statusCode >= 400) {
+            err = httperr(res.statusCode)
+            err.response = res
+            if (currentAttempt === 1 && res.statusCode === 500 && operation.retry(err)) {
+              // can happen when arangod shuts down in the middle of a request, only retry once because it shouldn't happen again
+              console.warn('arangojs error', currentAttempt, err.name, 'retrying')
+              return
+            }
+            callback(err)
+          } else callback(null, res)
+        }
+      })
     })
+
     return promise
   }
 }
