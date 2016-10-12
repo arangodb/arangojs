@@ -28,8 +28,7 @@ export default class Connection {
     this.retryOptions = {
       forever: this.config.retryConnection,
       retries: 0,
-      factor: 1.1,
-      maxTimeout: 5000,
+      minTimeout: 5000,
       randomize: true
     }
   }
