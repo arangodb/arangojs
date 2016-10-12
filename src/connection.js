@@ -25,6 +25,13 @@ export default class Connection {
     this._request = createRequest(this.config.url, this.config.agentOptions, this.config.agent)
     this._databasePath = `/_db/${this.config.databaseName}`
     this.promisify = promisify(this.config.promise)
+    this.retryOptions = {
+      forever: this.config.retryConnection,
+      retries: 0,
+      factor: 1.1,
+      maxTimeout: 5000,
+      randomize: true
+    }
   }
 
   _buildUrl (opts) {
@@ -81,13 +88,7 @@ export default class Connection {
 
     const url = this._buildUrl(opts)
     const doRequest = this._request
-    const retryOpts = {
-      forever: true,
-      factor: 1.1,
-      maxTimeout: 5000,
-      randomize: true
-    }
-    const operation = retry.operation(retryOpts)
+    const operation = retry.operation(this.retryOptions)
     operation.attempt(function(currentAttempt) {
       doRequest({
         url,
@@ -95,11 +96,7 @@ export default class Connection {
         method: opts.method,
         body: body
       }, (err, res) => {
-        if (operation.retry(err)) {
-          // these errors are likely due to arangodb being offline or unreachable, retry
-          console.warn('arangojs error', currentAttempt, err.code, 'retrying')
-          return
-        }
+        if (operation.retry(err)) return
         if (err) callback(err)
         else {
           res.rawBody = res.body
@@ -120,20 +117,12 @@ export default class Connection {
           ) {
             err = new ArangoError(res.body)
             err.response = res
-            if (currentAttempt === 1 && err.code === 21 && operation.retry(err)) {
-              // can happen when arangod shuts down in the middle of a request, only retry once because it shouldn't happen again
-              console.warn('arangojs error', currentAttempt, err.name, 'retrying')
-              return
-            }
+            if (currentAttempt === 1 && err.errorNum === 21 && operation.retry(err)) return
             callback(err)
           } else if (res.statusCode >= 400) {
             err = httperr(res.statusCode)
             err.response = res
-            if (currentAttempt === 1 && res.statusCode === 500 && operation.retry(err)) {
-              // can happen when arangod shuts down in the middle of a request, only retry once because it shouldn't happen again
-              console.warn('arangojs error', currentAttempt, err.name, 'retrying')
-              return
-            }
+            if (currentAttempt === 1 && res.statusCode === 500 && operation.retry(err)) return
             callback(err)
           } else callback(null, res)
         }
@@ -147,7 +136,8 @@ export default class Connection {
 Connection.defaults = {
   url: 'http://localhost:8529',
   databaseName: '_system',
-  arangoVersion: 30000
+  arangoVersion: 30000,
+  retryConnection: false
 }
 
 Connection.agentDefaults = {
