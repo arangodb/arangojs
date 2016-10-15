@@ -64,7 +64,7 @@
     "istanbul": "0.4.5",
     "json-loader": "0.5.4",
     "mocha": "3.1.2",
-    "npm-run-all": "3.1.0",
+    "npm-run-all": "3.1.1",
     "snazzy": "5.0.0",
     "utf8-length": "0.0.1",
     "watch": "1.0.1",
