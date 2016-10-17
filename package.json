@@ -20,6 +20,7 @@
   "directories": {
     "lib": "lib"
   },
+  "typings": "arangojs.d.ts",
   "scripts": {
     "test": "mocha --growl",
     "lint": "snazzy --verbose src/**/*.js test/**/*.js",
