@@ -23,9 +23,11 @@
   "files": [
     "lib/",
     "package.json",
+    "arangojs.d.ts",
     "README.md",
     "LICENSE"
   ],
+  "typings": "arangojs.d.ts",
   "scripts": {
     "test": "mocha --growl",
     "lint": "snazzy --verbose src/**/*.js test/**/*.js",
