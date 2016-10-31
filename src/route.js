@@ -1,7 +1,9 @@
 export default class Route {
   constructor (connection, path, headers) {
+    if (!path) path = ''
+    else if (path.charAt(0) !== '/') path = `/${path}`
     this._connection = connection
-    this._path = path || ''
+    this._path = path
     this._headers = headers
   }
 
