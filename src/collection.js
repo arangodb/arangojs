@@ -551,6 +551,27 @@ class BaseCollection {
     return promise
   }
 
+  createPersistentIndex (fields, opts, cb) {
+    if (typeof opts === 'function') {
+      cb = opts
+      opts = undefined
+    }
+    if (typeof fields === 'string') {
+      fields = [fields]
+    }
+    if (typeof opts === 'boolean') {
+      opts = {unique: opts}
+    }
+    const {promise, callback} = this._connection.promisify(cb)
+    this._api.post(
+      '/index',
+      {unique: false, ...opts, type: 'persistent', fields: fields},
+      {collection: this.name},
+      (err, res) => err ? callback(err) : callback(null, res.body)
+    )
+    return promise
+  }
+
   createGeoIndex (fields, opts, cb) {
     if (typeof opts === 'function') {
       cb = opts
