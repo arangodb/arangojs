@@ -13,6 +13,9 @@ describe('Managing indexes', () => {
   describe('collection.createSkipList', () => {
     it('is missing tests')
   })
+  describe('collection.createPersistentIndex', () => {
+    it('is missing tests')
+  })
   describe('collection.createGeoIndex', () => {
     it('is missing tests')
   })
