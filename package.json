@@ -46,7 +46,8 @@
   "dependencies": {
     "es6-error": "^4.0.0",
     "http-errors": "^1.5.0",
-    "linkedlist": "^1.0.1"
+    "linkedlist": "^1.0.1",
+    "multi-part": "^2.0.0"
   },
   "devDependencies": {
     "babel": "6.5.2",

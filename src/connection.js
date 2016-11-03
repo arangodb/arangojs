@@ -62,6 +62,8 @@ export default class Connection {
       } else {
         body = String(body)
       }
+    } else {
+      body = opts.rawBody
     }
 
     if (!opts.headers.hasOwnProperty('content-type')) {
