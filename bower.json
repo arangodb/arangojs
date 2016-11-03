@@ -3,6 +3,14 @@
   "homepage": "https://github.com/arangodb/arangojs",
   "description": "The official ArangoDB JavaScript driver.",
   "license": "APACHE-2.0",
-  "ignore": ["**", "!/arangojs.min.js", "!/bower.json", "!/README*", "!/LICENSE*"],
-  "main": ["./arangojs.min.js"]
+  "ignore": [
+    "**",
+    "!/arangojs.min.js",
+    "!/bower.json",
+    "!/README*",
+    "!/LICENSE*"
+  ],
+  "main": [
+    "./arangojs.min.js"
+  ]
 }
