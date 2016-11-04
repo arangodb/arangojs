@@ -10,13 +10,21 @@ The official ArangoDB low-level JavaScript client.
 
 [![js-standard-style](https://cdn.rawgit.com/feross/standard/master/badge.svg)](https://github.com/feross/standard)
 
-The driver is being tested against ArangoDB 2.8, 3.0, 3.1 and the nightly development build.
+# Compatibility
 
-The driver is being tested using the oldest [active LTS version](https://github.com/nodejs/LTS) of Node.js (4.x at the time of this writing) and the latest public release (7.x at the time of this writing).
+ArangoJS is compatible with ArangoDB 2.8, 3.0 and 3.1.
 
-Older versions of ArangoDB and Node.js may be compatible but are not actively supported.
+The npm distribution of ArangoJS is compatible with Node.js 4, 6 and 7.
+
+Versions outside this range may be compatible but are not actively supported.
 
 **Upgrade note**: If you want to use arangojs with ArangoDB 2.8 or earlier remember to set the appropriate `arangoVersion` option (`20800` for version 2.8.0). The current default value is `30000` (indicating compatibility with version 3.0.0 and newer).
+
+## Testing
+
+The driver is being tested against ArangoDB 2.8, 3.0, 3.1 and the nightly development build using the [active LTS releases](https://github.com/nodejs/LTS) of Node.js (4 and 6) as well as the latest public release (7).
+
+Older versions of ArangoDB and Node.js may be compatible but are not actively supported.
 
 # Install
 
