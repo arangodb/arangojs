@@ -22,7 +22,7 @@ Versions outside this range may be compatible but are not actively supported.
 
 ## Testing
 
-The driver is being tested against ArangoDB 2.8, 3.0, 3.1 and the nightly development build using the [active LTS releases](https://github.com/nodejs/LTS) of Node.js (4 and 6) as well as the latest public release (7).
+The driver is being tested against the latest release of ArangoDB 2.8, the two most recent releases of ArangoDB 3 (currently 3.0 and 3.1) and the nightly development build of ArangoDB using the [active LTS releases](https://github.com/nodejs/LTS) of Node.js (currently 4 and 6) as well as the latest public release (7).
 
 Older versions of ArangoDB and Node.js may be compatible but are not actively supported.
 
