@@ -1,4 +1,5 @@
 import all from './util/all'
+import toForm from './util/multipart'
 import Connection from './connection'
 import ArrayCursor from './cursor'
 import Graph from './graph'
@@ -220,7 +221,7 @@ export default class Database {
     return promise
   }
 
-  // Function manipulation
+  // Function management
 
   listFunctions (cb) {
     const {promise, callback} = this._connection.promisify(cb)
@@ -250,6 +251,245 @@ export default class Database {
     this._api.delete(
       `/aqlfunction/${name}`,
       {group: Boolean(group)},
+      (err, res) => err ? callback(err) : callback(null, res.body)
+    )
+    return promise
+  }
+
+  // Service management
+
+  listServices (cb) {
+    const {promise, callback} = this._connection.promisify(cb)
+    this._api.get(
+      '/foxx',
+      (err, res) => err ? callback(err) : callback(null, res.body)
+    )
+    return promise
+  }
+
+  installService (mount, source, opts, cb) {
+    if (typeof opts === 'function') {
+      cb = opts
+      opts = undefined
+    }
+    const {configuration, dependencies, ...qs} = opts || {}
+    const {promise, callback} = this._connection.promisify(cb)
+    toForm({
+      configuration,
+      dependencies,
+      source
+    }, (err, req) => err ? callback(err) : (
+      this._api.request({
+        method: 'POST',
+        path: '/foxx',
+        rawBody: req.body,
+        qs: {...qs, mount},
+        headers: req.headers
+      }, (err, res) => err ? callback(err) : callback(null, res.body))
+    ))
+    return promise
+  }
+
+  upgradeService (mount, source, opts, cb) {
+    if (typeof opts === 'function') {
+      cb = opts
+      opts = undefined
+    }
+    const {configuration, dependencies, ...qs} = opts || {}
+    const {promise, callback} = this._connection.promisify(cb)
+    toForm({
+      configuration,
+      dependencies,
+      source
+    }, (err, req) => err ? callback(err) : (
+      this._api.request({
+        method: 'PATCH',
+        path: '/foxx/service',
+        rawBody: req.body,
+        qs: {...qs, mount},
+        headers: req.headers
+      }, (err, res) => err ? callback(err) : callback(null, res.body))
+    ))
+    return promise
+  }
+
+  replaceService (mount, source, opts, cb) {
+    if (typeof opts === 'function') {
+      cb = opts
+      opts = undefined
+    }
+    const {configuration, dependencies, ...qs} = opts || {}
+    const {promise, callback} = this._connection.promisify(cb)
+    toForm({
+      configuration,
+      dependencies,
+      source
+    }, (err, req) => err ? callback(err) : (
+      this._api.request({
+        method: 'POST',
+        path: '/foxx/service',
+        rawBody: req.body,
+        qs: {...qs, mount},
+        headers: req.headers
+      }, (err, res) => err ? callback(err) : callback(null, res.body))
+    ))
+    return promise
+  }
+
+  uninstallService (mount, opts, cb) {
+    if (typeof opts === 'function') {
+      cb = opts
+      opts = undefined
+    }
+    const {promise, callback} = this._connection.promisify(cb)
+    this._api.delete(
+      '/foxx/service',
+      {...opts, mount},
+      (err) => err ? callback(err) : callback(null)
+    )
+    return promise
+  }
+
+  getService (mount, cb) {
+    const {promise, callback} = this._connection.promisify(cb)
+    this._api.get(
+      '/foxx/service',
+      {mount},
+      (err, res) => err ? callback(err) : callback(null, res.body)
+    )
+    return promise
+  }
+
+  getServiceConfiguration (mount, cb) {
+    const {promise, callback} = this._connection.promisify(cb)
+    this._api.get(
+      '/foxx/configuration',
+      {mount},
+      (err, res) => err ? callback(err) : callback(null, res.body)
+    )
+    return promise
+  }
+
+  updateServiceConfiguration (mount, cfg, cb) {
+    const {promise, callback} = this._connection.promisify(cb)
+    this._api.patch(
+      '/foxx/configuration',
+      cfg,
+      {mount},
+      (err, res) => err ? callback(err) : callback(null, res.body)
+    )
+    return promise
+  }
+
+  replaceServiceConfiguration (mount, cfg, cb) {
+    const {promise, callback} = this._connection.promisify(cb)
+    this._api.put(
+      '/foxx/configuration',
+      cfg,
+      {mount},
+      (err, res) => err ? callback(err) : callback(null, res.body)
+    )
+    return promise
+  }
+
+  getServiceDependencies (mount, cb) {
+    const {promise, callback} = this._connection.promisify(cb)
+    this._api.get(
+      '/foxx/dependencies',
+      {mount},
+      (err, res) => err ? callback(err) : callback(null, res.body)
+    )
+    return promise
+  }
+
+  updateServiceDependencies (mount, cfg, cb) {
+    const {promise, callback} = this._connection.promisify(cb)
+    this._api.patch(
+      '/foxx/dependencies',
+      cfg,
+      {mount},
+      (err, res) => err ? callback(err) : callback(null, res.body)
+    )
+    return promise
+  }
+
+  replaceServiceDependencies (mount, cfg, cb) {
+    const {promise, callback} = this._connection.promisify(cb)
+    this._api.put(
+      '/foxx/dependencies',
+      cfg,
+      {mount},
+      (err, res) => err ? callback(err) : callback(null, res.body)
+    )
+    return promise
+  }
+
+  enableServiceDevelopmentMode (mount, cb) {
+    const {promise, callback} = this._connection.promisify(cb)
+    this._api.post(
+      '/foxx/development',
+      undefined,
+      {mount},
+      (err, res) => err ? callback(err) : callback(null, res.body)
+    )
+    return promise
+  }
+
+  disableServiceDevelopmentMode (mount, cb) {
+    const {promise, callback} = this._connection.promisify(cb)
+    this._api.delete(
+      '/foxx/development',
+      {mount},
+      (err, res) => err ? callback(err) : callback(null, res.body)
+    )
+    return promise
+  }
+
+  listServiceScripts (mount, cb) {
+    const {promise, callback} = this._connection.promisify(cb)
+    this._api.get(
+      '/foxx/scripts',
+      {mount},
+      (err, res) => err ? callback(err) : callback(null, res.body)
+    )
+    return promise
+  }
+
+  runServiceScript (mount, name, args, cb) {
+    if (typeof args === 'function') {
+      cb = args
+      args = undefined
+    }
+    const {promise, callback} = this._connection.promisify(cb)
+    this._api.post(
+      `/foxx/scripts/${name}`,
+      args,
+      {mount},
+      (err, res) => err ? callback(err) : callback(null, res.body)
+    )
+    return promise
+  }
+
+  runServiceTests (mount, opts, cb) {
+    if (typeof opts === 'function') {
+      cb = opts
+      opts = undefined
+    }
+    const {promise, callback} = this._connection.promisify(cb)
+    this._api.post(
+      '/foxx/tests',
+      undefined,
+      {...opts, mount},
+      (err, res) => err ? callback(err) : callback(null, res.body)
+    )
+    return promise
+  }
+
+  getServiceReadme (mount, cb) {
+    const {promise, callback} = this._connection.promisify(cb)
+    this._api.get(
+      '/foxx/readme',
+      {mount},
       (err, res) => err ? callback(err) : callback(null, res.body)
     )
     return promise
