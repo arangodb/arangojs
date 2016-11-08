@@ -54,19 +54,25 @@ npm run dist
 # Basic usage example
 
 ```js
-// ES2015-style
+// Modern JavaScript
 import arangojs, {Database, aql} from 'arangojs';
 let db1 = arangojs(); // convenience short-hand
 let db2 = new Database();
-let {query, bindVars} = aql`RETURN ${Date.now()}`;
+let result = await db2.query(aql`RETURN ${Date.now()}`);
 
 // or plain old Node-style
 var arangojs = require('arangojs');
 var db1 = arangojs();
 var db2 = new arangojs.Database();
-var aql = arangojs.aql(['RETURN ', ''], Date.now());
-var query = aql.query;
-var bindVars = aql.bindVars;
+db2.query(
+  {
+    query: 'RETURN @arg0',
+    bindVars: {arg0: Date.now()}
+  },
+  function (err, result) {
+    // ...
+  }
+);
 
 // Using a complex connection string with authentication
 let host = process.env.ARANGODB_HOST;
@@ -78,6 +84,18 @@ let db = arangojs({
   url: `http://${username}:${password}@${host}:${port}`,
   databaseName: database
 });
+
+// Or using a fully qualified URL containing the database path
+let db = arangojs({
+  url: `http://${username}:${password}@${host}:${port}/_db/${database}`,
+  databaseName: false // don't automatically append database path to URL
+});
+
+// Database name and credentials can be hot-swapped
+let db = arangojs(`http://${host}:${port}`);
+db.useDatabase(database);
+db.useBasicAuth(username, password);
+// or: db.useBearerAuth(token);
 
 // Using ArangoDB 2.8 compatibility mode
 let db = arangojs({
@@ -130,6 +148,8 @@ try {
   * [new Database](#new-database)
   * [Manipulating databases](#manipulating-databases)
     * [database.useDatabase](#databaseusedatabase)
+    * [database.useBasicAuth](#databaseusebasicauth)
+    * [database.useBearerAuth](#databaseusebearerauth)
     * [database.createDatabase](#databasecreatedatabase)
     * [database.get](#databaseget)
     * [database.listDatabases](#databaselistdatabases)
@@ -280,7 +300,7 @@ If *config* is a string, it will be interpreted as *config.url*.
 
     Base URL of the ArangoDB server.
 
-    If you want to use ArangoDB with HTTP Basic authentication, you can provide the credentials as part of the URL, e.g. `http://user:pass@localhost:8529`.
+    If you want to use ArangoDB with HTTP Basic authentication, you can provide the credentials as part of the URL, e.g. `http://user:pass@localhost:8529`. You can still override these credentials at any time using the *useBasicAuth* or *useBearerAuth* methods.
 
     The driver automatically uses HTTPS if you specify an HTTPS *url*.
 
@@ -299,6 +319,8 @@ If *config* is a string, it will be interpreted as *config.url*.
 
     Name of the active database.
 
+    If this option is explicitly set to `false`, the *url* is expected to contain the database path and the *useDatabase* method can not be used to switch databases.
+
   * **arangoVersion**: `number` (Default: `30000`)
 
     Value of the `x-arango-version` header.
@@ -306,6 +328,9 @@ If *config* is a string, it will be interpreted as *config.url*.
   * **headers**: `Object` (optional)
 
     An object with additional headers to send with every request.
+
+    Header names should always be lowercase. If an `"authorization"` header is provided,
+    any user credentials that are part of the *url* will be overridden.
 
   * **agent**: `Agent` (optional)
 
@@ -351,6 +376,52 @@ Updates the *Database* instance and its connection string to use the given *data
 var db = require('arangojs')();
 db.useDatabase('test');
 // The database instance now uses the database "test".
+```
+
+#### database.useBasicAuth
+
+`database.useBasicAuth(username, password): this`
+
+Updates the *Database* instance's `authorization` header to use Basic authentication with the given *username* and *password*, then returns itself.
+
+**Arguments**
+
+* **username**: `string` (Default: `"root"`)
+
+  The username to authenticate with.
+
+* **password**: `string` (Default: `""`)
+
+  The password to authenticate with.
+
+**Examples**
+
+```js
+var db = require('arangojs')();
+db.useDatabase('test')
+db.useBasicAuth('admin', 'hunter2');
+// The database instance now uses the database "test"
+// with the username "admin" and password "hunter2".
+```
+
+#### database.useBearerAuth
+
+`database.useBearerAuth(token): this`
+
+Updates the *Database* instance's `authorization` header to use Bearer authentication with the given authentication token, then returns itself.
+
+**Arguments**
+
+* **token**: `string`
+
+  The token to authenticate with.
+
+**Examples**
+
+```js
+var db = require('arangojs')();
+db.useBearerAuth('keyboardcat');
+// The database instance now uses Bearer authentication.
 ```
 
 #### database.createDatabase

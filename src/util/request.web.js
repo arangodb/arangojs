@@ -25,10 +25,6 @@ function joinPath (a = '', b = '') {
 export default function (baseUrl, options) {
   if (!options) options = {}
   const baseUrlParts = parseUrl(baseUrl)
-  const i = baseUrlParts.auth ? baseUrlParts.auth.indexOf(':') : -1
-  const username = i !== -1 ? baseUrlParts.auth.slice(0, i) : (baseUrlParts.auth || undefined)
-  const password = i !== -1 ? baseUrlParts.auth.slice(i + 1) : (baseUrlParts.auth ? '' : undefined)
-  delete baseUrlParts.auth
 
   const queue = []
   const maxTasks = typeof options.maxSockets === 'number' ? options.maxSockets * 2 : Infinity
@@ -44,11 +40,7 @@ export default function (baseUrl, options) {
     })
   }
 
-  return function request ({method, url, headers, body}, cb) {
-    if (typeof username === 'string' && !headers.authorization) {
-      headers.authorization = 'Basic ' + window.btoa(username + ':' + (password || ''))
-    }
-
+  function request ({method, url, headers, body}, cb) {
     const urlParts = {
       ...baseUrlParts,
       pathname: url.pathname ? (
@@ -83,4 +75,8 @@ export default function (baseUrl, options) {
 
     drainQueue()
   }
+
+  const auth = baseUrlParts.auth
+  delete baseUrlParts.auth
+  return {request, auth}
 }

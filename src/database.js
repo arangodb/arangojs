@@ -1,4 +1,5 @@
 import all from './util/all'
+import btoa from './util/btoa'
 import toForm from './util/multipart'
 import Connection from './connection'
 import ArrayCursor from './cursor'
@@ -22,9 +23,22 @@ export default class Database {
   // Database manipulation
 
   useDatabase (databaseName) {
+    if (this._connection.config.databaseName === false) {
+      throw new Error('Can not change database from absolute URL')
+    }
     this._connection.config.databaseName = databaseName
     this._connection._databasePath = `/_db/${databaseName}`
     this.name = databaseName
+    return this
+  }
+
+  useBearerAuth (token) {
+    this._connection.config.headers['authorization'] = `Bearer ${token}`
+    return this
+  }
+
+  useBasicAuth (username, password) {
+    this._connection.config.headers['authorization'] = `Basic ${btoa(`${username || 'root'}:${password || ''}`)}`
     return this
   }
 

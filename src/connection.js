@@ -1,4 +1,5 @@
 import promisify from './util/promisify'
+import btoa from './util/btoa'
 import httperr from 'http-errors'
 import qs from 'querystring'
 import createRequest from './util/request'
@@ -21,8 +22,20 @@ export default class Connection {
       this.config.headers['x-arango-version'] = this.config.arangoVersion
     }
     this.arangoMajor = Math.floor(this.config.arangoVersion / 10000)
-    this._request = createRequest(this.config.url, this.config.agentOptions, this.config.agent)
-    this._databasePath = `/_db/${this.config.databaseName}`
+    const {request, auth} = createRequest(
+      this.config.url,
+      this.config.agentOptions,
+      this.config.agent
+    )
+    this._request = request
+    if (auth && !this.config.headers['authorization']) {
+      this.config.headers['authorization'] = `Basic ${btoa(auth)}`
+    }
+    if (this.config.databaseName === false) {
+      this._databasePath = ''
+    } else {
+      this._databasePath = `/_db/${this.config.databaseName}`
+    }
     this.promisify = promisify(this.config.promise)
   }
 

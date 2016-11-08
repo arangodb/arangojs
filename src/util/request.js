@@ -47,7 +47,7 @@ export default function (baseUrl, agentOptions, agent) {
     })
   }
 
-  return function request ({method, url, headers, body}, cb) {
+  function request ({method, url, headers, body}, cb) {
     let path = baseUrlParts.pathname ? (
       url.pathname ? joinPath(baseUrlParts.pathname, url.pathname) : baseUrlParts.pathname
     ) : url.pathname
@@ -85,4 +85,8 @@ export default function (baseUrl, agentOptions, agent) {
 
     drainQueue()
   }
+
+  const auth = baseUrlParts.auth
+  delete baseUrlParts.auth
+  return {request, auth}
 }
