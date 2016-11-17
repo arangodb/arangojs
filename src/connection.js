@@ -104,7 +104,7 @@ export default class Connection {
         res.rawBody = res.body
         if (res.headers['content-type'].match(MIME_JSON)) {
           try {
-            res.body = JSON.parse(res.rawBody)
+            res.body = res.body ? JSON.parse(res.rawBody) : undefined
           } catch (e) {
             e.response = res
             return callback(e)
