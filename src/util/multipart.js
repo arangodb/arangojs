@@ -1,4 +1,5 @@
 import Multipart from 'multi-part'
+import {Readable} from 'stream'
 
 export default function toForm (fields, callback) {
   let called = false
@@ -8,6 +9,7 @@ export default function toForm (fields, callback) {
       let value = fields[key]
       if (value === undefined) continue
       if (
+        !(value instanceof Readable) &&
         !(value instanceof global.Buffer) &&
         (typeof value === 'object' || typeof value === 'function')
       ) {
