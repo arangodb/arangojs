@@ -1,12 +1,11 @@
-import promisify from './util/promisify'
-import btoa from './util/btoa'
 import httperr from 'http-errors'
 import qs from 'querystring'
+import btoa from './util/btoa'
+import byteLength from './util/bytelength'
+import promisify from './util/promisify'
 import createRequest from './util/request'
 import ArangoError from './error'
 import Route from './route'
-
-const byteLength = Buffer.byteLength || require('utf8-length')
 
 const MIME_JSON = /\/(json|javascript)(\W|$)/
 
