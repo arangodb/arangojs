@@ -59,6 +59,7 @@ export default class Connection {
 
   request (opts, cb) {
     const {promise, callback} = this.promisify(cb)
+    const expectBinary = opts.expectBinary || false
     let contentType = 'text/plain'
     let body = opts.body
 
@@ -96,15 +97,18 @@ export default class Connection {
       url: this._buildUrl(opts),
       headers: opts.headers,
       method: opts.method,
-      body: body
+      expectBinary,
+      body
     }, (err, res) => {
       if (err) callback(err)
       else {
-        res.rawBody = res.body
+        const rawBody = res.body
         if (res.headers['content-type'].match(MIME_JSON)) {
           try {
-            res.body = res.body ? JSON.parse(res.rawBody) : undefined
+            if (expectBinary) res.body = res.body.toString('utf-8')
+            res.body = res.body ? JSON.parse(res.body) : undefined
           } catch (e) {
+            res.body = rawBody
             e.response = res
             return callback(e)
           }
@@ -123,7 +127,10 @@ export default class Connection {
           err = httperr(res.statusCode)
           err.response = res
           callback(err)
-        } else callback(null, res)
+        } else {
+          if (expectBinary) res.body = rawBody
+          callback(null, res)
+        }
       }
     })
     return promise

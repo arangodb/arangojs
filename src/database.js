@@ -508,4 +508,13 @@ export default class Database {
     )
     return promise
   }
+
+  downloadService (mount, cb) {
+    const {promise, callback} = this._connection.promisify(cb)
+    this._api.request(
+      {method: 'POST', path: '/foxx/download', qs: {mount}, expectBinary: true},
+      (err, res) => err ? callback(err) : callback(null, res.body)
+    )
+    return promise
+  }
 }

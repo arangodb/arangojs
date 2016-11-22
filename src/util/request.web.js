@@ -40,7 +40,7 @@ export default function (baseUrl, options) {
     })
   }
 
-  function request ({method, url, headers, body}, cb) {
+  function request ({method, url, headers, body, expectBinary}, cb) {
     const urlParts = {
       ...baseUrlParts,
       pathname: url.pathname ? (
@@ -58,7 +58,7 @@ export default function (baseUrl, options) {
         cb(...args)
       }
       const req = xhr({
-        responseType: 'text',
+        responseType: expectBinary ? 'blob' : 'text',
         ...options,
         url: formatUrl(urlParts),
         body,

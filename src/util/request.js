@@ -47,7 +47,7 @@ export default function (baseUrl, agentOptions, agent) {
     })
   }
 
-  function request ({method, url, headers, body}, cb) {
+  function request ({method, url, headers, body, expectBinary}, cb) {
     let path = baseUrlParts.pathname ? (
       url.pathname ? joinPath(baseUrlParts.pathname, url.pathname) : baseUrlParts.pathname
     ) : url.pathname
@@ -71,7 +71,10 @@ export default function (baseUrl, agentOptions, agent) {
         res
         .on('data', (chunk) => data.push(chunk))
         .on('end', () => {
-          res.body = data.join('')
+          res.body = Buffer.concat(data)
+          if (!expectBinary) {
+            res.body = res.body.toString('utf-8')
+          }
           callback(null, res)
         })
       })
