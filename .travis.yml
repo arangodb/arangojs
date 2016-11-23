@@ -13,6 +13,8 @@ before_install:
   - curl https://www.arangodb.com/repositories/travisCI/setup_arangodb_${ARANGODB_VERSION}.sh | bash
 script:
   - yarn run lint && yarn run dist && yarn run ci
+after_script:
+  - process=$(pgrep arangod) kill ${process}
 cache:
   yarn: true
   directories:
