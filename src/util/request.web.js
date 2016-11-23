@@ -61,6 +61,8 @@ export default function (baseUrl, options) {
         responseType: expectBinary ? 'blob' : 'text',
         ...options,
         url: formatUrl(urlParts),
+        withCredentials: true,
+        useXDR: true,
         body,
         method,
         headers
