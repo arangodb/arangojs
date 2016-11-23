@@ -31,8 +31,7 @@
   "scripts": {
     "test": "mocha --growl",
     "lint": "snazzy --verbose src/**/*.js test/**/*.js",
-    "cover": "istanbul cover --report lcov _mocha",
-    "coveralls": "cat ./coverage/lcov.info | coveralls ; rm -rf ./coverage",
+    "ci": "mocha",
     "precoveralls": "npm run cover",
     "watch": "npm-run-all -p watch:*",
     "watch:browser": "npm run dist:browser -- --watch",

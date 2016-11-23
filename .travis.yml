@@ -12,4 +12,4 @@ env:
 before_install:
   - curl https://www.arangodb.com/repositories/travisCI/setup_arangodb_${ARANGODB_VERSION}.sh | bash
 script:
-  - npm run lint && npm run dist && npm run coveralls
+  - npm run lint && npm run dist && npm run ci
