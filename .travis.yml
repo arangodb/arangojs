@@ -14,7 +14,7 @@ before_install:
 script:
   - yarn run lint && yarn run dist && yarn run ci
 after_script:
-  - process=$(pgrep arangod) kill ${process}
+  - kill -9 $(pgrep arangod)
 cache:
   yarn: true
   directories:
