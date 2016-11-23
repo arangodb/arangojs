@@ -32,7 +32,6 @@
     "test": "mocha --growl",
     "lint": "snazzy --verbose src/**/*.js test/**/*.js",
     "ci": "mocha",
-    "precoveralls": "npm run cover",
     "watch": "npm-run-all -p watch:*",
     "watch:browser": "npm run dist:browser -- --watch",
     "watch:node": "watch 'npm run dist:node' ./src ./test",
