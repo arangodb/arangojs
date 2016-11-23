@@ -91,5 +91,5 @@ export default function (baseUrl, agentOptions, agent) {
 
   const auth = baseUrlParts.auth
   delete baseUrlParts.auth
-  return {request, auth}
+  return {request, auth, url: baseUrlParts}
 }

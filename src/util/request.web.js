@@ -80,5 +80,5 @@ export default function (baseUrl, options) {
 
   const auth = baseUrlParts.auth
   delete baseUrlParts.auth
-  return {request, auth}
+  return {request, auth, url: baseUrlParts}
 }

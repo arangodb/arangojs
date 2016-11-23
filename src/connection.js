@@ -21,11 +21,12 @@ export default class Connection {
       this.config.headers['x-arango-version'] = this.config.arangoVersion
     }
     this.arangoMajor = Math.floor(this.config.arangoVersion / 10000)
-    const {request, auth} = createRequest(
+    const {request, auth, url} = createRequest(
       this.config.url,
       this.config.agentOptions,
       this.config.agent
     )
+    this._baseUrl = url
     this._request = request
     if (auth && !this.config.headers['authorization']) {
       this.config.headers['authorization'] = `Basic ${btoa(auth)}`
