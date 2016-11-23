@@ -47,7 +47,7 @@
     "linkedlist": "^1.0.1",
     "multi-part": "^2.0.0",
     "utf8-length": "^0.0.1",
-    "xhr": "^2.3.0"
+    "xhr": "^2.3.1"
   },
   "devDependencies": {
     "babel-cli": "6.18.0",
