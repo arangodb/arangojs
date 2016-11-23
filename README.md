@@ -110,7 +110,7 @@ All asynchronous functions take an optional Node-style callback (or "errback") a
 * *err*: an *Error* object if an error occurred, or *null* if no error occurred.
 * *result*: the function's result (if applicable).
 
-For expected API errors, *err* will be an instance of *ArangoError*. For any other error responses (4xx/5xx status code), *err* will be an instance of the apropriate [http-errors](https://github.com/jshttp/http-errors) error type. If the response indicates success but the response body could not be parsed, *err* will be a *SyntaxError*. In all of these cases the error object will additionally have a *response* property containing the server response object.
+For expected API errors, *err* will be an instance of *ArangoError* with an [*errorNum* as defined in the ArangoDB documentation](https://docs.arangodb.com/devel/Manual/Appendix/ErrorCodes.html). For any other error responses (4xx/5xx status code), *err* will be an instance of the apropriate [http-errors](https://github.com/jshttp/http-errors) error type. If the response indicates success but the response body could not be parsed, *err* will be a *SyntaxError*. In all of these cases the error object will additionally have a *response* property containing the server response object.
 
 If `Promise` is defined globally, asynchronous functions return a promise if no callback is provided.
 
