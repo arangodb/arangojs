@@ -30,6 +30,12 @@ Older versions of ArangoDB and Node.js may be compatible but are not actively su
 
 # Install
 
+## With Yarn
+
+```sh
+yarn add arangojs
+```
+
 ## With NPM
 
 ```sh
