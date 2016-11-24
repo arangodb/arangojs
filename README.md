@@ -354,6 +354,12 @@ If *config* is a string, it will be interpreted as *config.url*.
 
     By default the global `Promise` constructor will be used if available.
 
+  * **retryConnection**: `boolean` (Default: `false`)
+
+    Whether to automatically retry in case of a connection error.
+
+    Will retry forever if `true`.
+
 ### Manipulating databases
 
 These functions implement the [HTTP API for manipulating databases](https://docs.arangodb.com/latest/HTTP/Database/index.html).

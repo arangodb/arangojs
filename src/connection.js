@@ -6,6 +6,7 @@ import promisify from './util/promisify'
 import createRequest from './util/request'
 import ArangoError from './error'
 import Route from './route'
+import retry from 'retry'
 
 const MIME_JSON = /\/(json|javascript)(\W|$)/
 
@@ -37,6 +38,12 @@ export default class Connection {
       this._databasePath = `/_db/${this.config.databaseName}`
     }
     this.promisify = promisify(this.config.promise)
+    this.retryOptions = {
+      forever: this.config.retryConnection,
+      retries: 0,
+      minTimeout: 5000,
+      randomize: true
+    }
   }
 
   _buildUrl (opts) {
@@ -94,45 +101,53 @@ export default class Connection {
       }
     }
 
-    this._request({
-      url: this._buildUrl(opts),
-      headers: opts.headers,
-      method: opts.method,
-      expectBinary,
-      body
-    }, (err, res) => {
-      if (err) callback(err)
-      else {
-        const rawBody = res.body
-        if (res.headers['content-type'].match(MIME_JSON)) {
-          try {
-            if (expectBinary) res.body = res.body.toString('utf-8')
-            res.body = res.body ? JSON.parse(res.body) : undefined
-          } catch (e) {
-            res.body = rawBody
-            e.response = res
-            return callback(e)
+    const url = this._buildUrl(opts)
+    const doRequest = this._request
+    const operation = retry.operation(this.retryOptions)
+    operation.attempt(function(currentAttempt) {
+      doRequest({
+        url,
+        headers: opts.headers,
+        method: opts.method,
+        expectBinary,
+        body
+      }, (err, res) => {
+        if (operation.retry(err)) return
+        if (err) callback(err)
+        else {
+          const rawBody = res.body
+          if (res.headers['content-type'].match(MIME_JSON)) {
+            try {
+              if (expectBinary) res.body = res.body.toString('utf-8')
+              res.body = res.body ? JSON.parse(res.body) : undefined
+            } catch (e) {
+              res.body = rawBody
+              e.response = res
+              return callback(e)
+            }
+          }
+          if (
+            res.body &&
+            res.body.error &&
+            res.body.hasOwnProperty('code') &&
+            res.body.hasOwnProperty('errorMessage') &&
+            res.body.hasOwnProperty('errorNum')
+          ) {
+            err = new ArangoError(res.body)
+            err.response = res
+            if (currentAttempt === 1 && err.errorNum === 21 && operation.retry(err)) return
+            callback(err)
+          } else if (res.statusCode >= 400) {
+            err = httperr(res.statusCode)
+            err.response = res
+            if (currentAttempt === 1 && res.statusCode === 500 && operation.retry(err)) return
+            callback(err)
+          } else {
+            if (expectBinary) res.body = rawBody
+            callback(null, res)
           }
         }
-        if (
-          res.body &&
-          res.body.error &&
-          res.body.hasOwnProperty('code') &&
-          res.body.hasOwnProperty('errorMessage') &&
-          res.body.hasOwnProperty('errorNum')
-        ) {
-          err = new ArangoError(res.body)
-          err.response = res
-          callback(err)
-        } else if (res.statusCode >= 400) {
-          err = httperr(res.statusCode)
-          err.response = res
-          callback(err)
-        } else {
-          if (expectBinary) res.body = rawBody
-          callback(null, res)
-        }
-      }
+      })
     })
     return promise
   }
@@ -141,7 +156,8 @@ export default class Connection {
 Connection.defaults = {
   url: 'http://localhost:8529',
   databaseName: '_system',
-  arangoVersion: 30000
+  arangoVersion: 30000,
+  retryConnection: false
 }
 
 Connection.agentDefaults = {
