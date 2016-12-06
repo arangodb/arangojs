@@ -1,0 +1,3 @@
+[submodule "fuerte"]
+	path = node_modules/fuerte
+	url = https://github.com/arangodb/fuerte

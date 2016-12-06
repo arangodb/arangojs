@@ -72,27 +72,31 @@ export default class Connection {
     let body = opts.body
 
     if (body) {
-      if (typeof body === 'object') {
-        if (opts.ld) {
-          body = body.map((obj) => JSON.stringify(obj)).join('\r\n') + '\r\n'
-          contentType = 'application/x-ldjson'
+      if (this._baseUrl.protocol !== 'vstream:') {
+        if (typeof body === 'object') {
+          if (opts.ld) {
+            body = body.map((obj) => JSON.stringify(obj)).join('\r\n') + '\r\n'
+            contentType = 'application/x-ldjson'
+          } else {
+            body = JSON.stringify(body)
+            contentType = 'application/json'
+          }
         } else {
-          body = JSON.stringify(body)
-          contentType = 'application/json'
+          body = String(body)
         }
-      } else {
-        body = String(body)
       }
     } else {
       body = opts.rawBody
     }
 
-    if (!opts.headers.hasOwnProperty('content-type')) {
-      opts.headers['content-type'] = contentType
-    }
+    if (this._baseUrl.protocol !== 'vstream:') {
+      if (!opts.headers.hasOwnProperty('content-type')) {
+        opts.headers['content-type'] = contentType
+      }
 
-    if (typeof window === 'undefined' && !opts.headers.hasOwnProperty('content-length')) {
-      opts.headers['content-length'] = body ? byteLength(body, 'utf-8') : 0
+      if (typeof window === 'undefined' && !opts.headers.hasOwnProperty('content-length')) {
+        opts.headers['content-length'] = body ? byteLength(body, 'utf-8') : 0
+      }
     }
 
     for (const key of Object.keys(this.config.headers)) {
@@ -104,7 +108,7 @@ export default class Connection {
     const url = this._buildUrl(opts)
     const doRequest = this._request
     const operation = retry.operation(this.retryOptions)
-    operation.attempt(function(currentAttempt) {
+    operation.attempt((currentAttempt) => {
       doRequest({
         url,
         headers: opts.headers,
@@ -112,11 +116,12 @@ export default class Connection {
         expectBinary,
         body
       }, (err, res) => {
+        if (err) console.error('FAILED', err)
         if (operation.retry(err)) return
         if (err) callback(err)
         else {
           const rawBody = res.body
-          if (res.headers['content-type'].match(MIME_JSON)) {
+          if (this._baseUrl.protocol !== 'vstream:' && res.headers['content-type'].match(MIME_JSON)) {
             try {
               if (expectBinary) res.body = res.body.toString('utf-8')
               res.body = res.body ? JSON.parse(res.body) : undefined

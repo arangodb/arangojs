@@ -1,0 +1,95 @@
+import http from 'http'
+import https from 'https'
+import {parse as parseUrl} from 'url'
+import LinkedList from 'linkedlist'
+
+function joinPath (a = '', b = '') {
+  if (!a && !b) return ''
+  const leadingSlash = a.charAt(0) === '/'
+  const trailingSlash = b.charAt(b.length - 1) === '/'
+  const tokens = `${a}/${b}`.split('/').filter(Boolean)
+  for (let i = 0; i < tokens.length; i++) {
+    let token = tokens[i]
+    if (token === '..') {
+      tokens.splice(i - 1, 2)
+      i--
+    } else if (token === '.') {
+      tokens.splice(i, 1)
+      i--
+    }
+  }
+  let path = tokens.join('/')
+  if (leadingSlash) path = `/${path}`
+  if (trailingSlash) path = `${path}/`
+  return path
+}
+
+export default function (baseUrl, agentOptions, agent) {
+  const baseUrlParts = parseUrl(baseUrl)
+  const isTls = baseUrlParts.protocol === 'https:'
+
+  if (!agent) {
+    const Agent = (isTls ? https : http).Agent
+    agent = new Agent(agentOptions)
+  }
+
+  const queue = new LinkedList()
+  const maxTasks = typeof agent.maxSockets === 'number' ? agent.maxSockets * 2 : Infinity
+  let activeTasks = 0
+
+  function drainQueue () {
+    if (!queue.length || activeTasks >= maxTasks) return
+    const task = queue.shift()
+    activeTasks += 1
+    task(() => {
+      activeTasks -= 1
+      drainQueue()
+    })
+  }
+
+  function request ({method, url, headers, body, expectBinary}, cb) {
+    let path = baseUrlParts.pathname ? (
+      url.pathname ? joinPath(baseUrlParts.pathname, url.pathname) : baseUrlParts.pathname
+    ) : url.pathname
+    const search = url.search ? (
+      baseUrlParts.search ? `${baseUrlParts.search}&${url.search.slice(1)}` : url.search
+    ) : baseUrlParts.search
+    if (search) path += search
+    const options = {path, method, headers, agent}
+    options.hostname = baseUrlParts.hostname
+    options.port = baseUrlParts.port
+    options.auth = baseUrlParts.auth
+
+    queue.push((next) => {
+      let callback = (...args) => {
+        callback = () => undefined
+        next()
+        cb(...args)
+      }
+      const req = (isTls ? https : http).request(options, (res) => {
+        const data = []
+        res
+        .on('data', (chunk) => data.push(chunk))
+        .on('end', () => {
+          res.body = Buffer.concat(data)
+          if (!expectBinary) {
+            res.body = res.body.toString('utf-8')
+          }
+          callback(null, res)
+        })
+      })
+      req.on('error', (err) => {
+        err.request = req
+        callback(err)
+      })
+      if (body) req.write(body)
+      req.end()
+    })
+
+    drainQueue()
+  }
+
+  const auth = baseUrlParts.auth
+  delete baseUrlParts.auth
+  return {request, auth, url: baseUrlParts}
+}

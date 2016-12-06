@@ -232,7 +232,7 @@ class BaseCollection {
       opts = {rev: opts}
     }
     const {promise, callback} = this._connection.promisify(cb)
-     
+
     this._api.patch(
       `/document/${this.name}`,
       newValues,
@@ -241,7 +241,7 @@ class BaseCollection {
     )
     return promise
   }
-  
+
   remove (documentHandle, opts, cb) {
     if (typeof opts === 'function') {
       cb = opts
