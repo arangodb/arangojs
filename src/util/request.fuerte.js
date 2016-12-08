@@ -52,9 +52,9 @@ export default function (baseUrl, agentOptions) {
     let path = baseUrlParts.pathname ? (
       url.pathname ? joinPath(baseUrlParts.pathname, url.pathname) : baseUrlParts.pathname
     ) : url.pathname
-    const search = url.search ? (
-      baseUrlParts.search ? `${baseUrlParts.search}&${url.search.slice(1)}` : url.search
-    ) : baseUrlParts.search
+    // const search = url.search ? (
+    //   baseUrlParts.search ? `${baseUrlParts.search}&${url.search.slice(1)}` : url.search
+    // ) : baseUrlParts.search
 
     queue.push((conn, next) => {
       let callback = (...args) => {
