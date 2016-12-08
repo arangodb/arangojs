@@ -65,7 +65,7 @@ export default function (baseUrl, agentOptions) {
 
       const connUrl = new fuerte.ConnectionUrl()
       connUrl.setServerUrl(`${baseUrlParts.protocol}//${baseUrlParts.host}`)
-      const parts = path.match(/^\/_db\/([^\/]+)(.*)/)
+      const parts = path.match(/^\/_db\/([^/]+)(.*)/)
       if (!parts) return callback(new Error('Invalid path?!?'))
       connUrl.setDbName(parts[1])
       connUrl.setTailUrl(parts[2])
@@ -99,7 +99,6 @@ export default function (baseUrl, agentOptions) {
           break
         default:
           return callback(new Error(`Method not implemented: "${method}"`))
-          break
       }
       conn.SetAsynchronous(true)
       function run () {

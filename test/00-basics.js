@@ -1,9 +1,10 @@
-import {describe, it, before, after, beforeEach} from 'mocha'
+// import {before, after, beforeEach} from 'mocha'
+import {describe, it} from 'mocha'
 import {expect} from 'chai'
 import arangojs, {Database} from '../src'
 import Connection from '../src/connection'
-import https from 'https'
-import http from 'http'
+// import https from 'https'
+// import http from 'http'
 
 describe('Creating a Database', () => {
   describe('using the factory', () => {
