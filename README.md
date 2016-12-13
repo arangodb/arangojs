@@ -748,9 +748,9 @@ Performs a server-side transaction and returns its return value.
 
   A string evaluating to a JavaScript function to be executed on the server.
 
-* **params**: `Array<any>` (optional)
+* **params**: `Object` (optional)
 
-  Parameters that will be passed to the *action* function.
+  Available as variable `params` when the *action* function is being executed on server. Check the example below.
 
 * **lockTimeout**: `number` (optional)
 
@@ -769,9 +769,9 @@ var db = require('arangojs')();
 var action = String(function () {
     // This code will be executed inside ArangoDB!
     var db = require('org/arangodb').db;
-    return db._query('FOR user IN _users RETURN u.user').toArray<any>();
+    return db._query('FOR user IN _users FILTER user.age > @maxage RETURN u.user',{maxage:params.age}).toArray<any>();
 });
-db.transaction({read: '_users'}, action)
+db.transaction({read: '_users'}, action, {age:12})
 .then(result => {
     // result contains the return value of the action
 });
