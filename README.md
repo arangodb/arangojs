@@ -2175,7 +2175,7 @@ This reduces memory usage and DB startup time, with the trade-off being that it 
 
   An object containing additional properties of the index.
 
-For more information on the properties of the *opts* object see [the HTTP API for manipulating geo indexes](https://docs.arangodb.com/latest/HTTP/Indexes/Persistent.html).
+For more information on the properties of the *opts* object see [the HTTP API for manipulating Persistent indexes](https://docs.arangodb.com/latest/HTTP/Indexes/Persistent.html).
 
 **Examples**
 
