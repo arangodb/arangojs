@@ -340,7 +340,7 @@ export default class Database {
       source
     }, (err, req) => err ? callback(err) : (
       this._api.request({
-        method: 'POST',
+        method: 'PUT',
         path: '/foxx/service',
         rawBody: req.body,
         qs: {...qs, mount},
