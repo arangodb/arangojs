@@ -15,12 +15,12 @@ declare module "arangojs" {
          * @param databaseName Name of the database to create
          * @param users (optional)
          */
-        createDatabase(databaseName: string, users?: Object[]): Promise<Object>;
+        createDatabase(databaseName: string, users?: any[]): Promise<any>;
         /**
          * Fetches the database description for the active database from
          * the server
          */
-        get(): Promise<Object>;
+        get(): Promise<any>;
         /**
          * Fetches all databases from the server and returns an array of
          * their names
@@ -34,13 +34,13 @@ declare module "arangojs" {
         /**
          * Deletes the database with the given `databaseName` from the server
          */
-        dropDatabase(databaseName: string): Promise<Object>;
+        dropDatabase(databaseName: string): Promise<any>;
         /**
          * Deletes all documents in all collections in the active database
          *
          * @param excludeSystem (Default: `true`) Whether system collections should be excluded
          */
-        truncate(excludeSystem?: boolean): Promise<Object>;
+        truncate(excludeSystem?: boolean): Promise<any>;
         /**
          * Returns a `DocumentCollection` instance for the given collection name
          *
@@ -58,7 +58,7 @@ declare module "arangojs" {
          *
          * @param excludeSystem (Default: `true`) Whether system collections should be excluded from the results
          */
-        listCollections(excludeSystem?: boolean): Promise<Object[]>;
+        listCollections(excludeSystem?: boolean): Promise<any[]>;
         /**
          * Fetches all collections from the database and returns an array of `DocumentCollection` and `EdgeCollection` instances for the collections.
          *
@@ -72,7 +72,7 @@ declare module "arangojs" {
         /**
          * Fetches all graphs from the database and returns an array of graph descriptions
          */
-        listGraphs(): Promise<Object[]>;
+        listGraphs(): Promise<any[]>;
         /**
          * Fetches all graphs from the database and returns an array of `Graph` instances for the graphs
          */
@@ -85,7 +85,7 @@ declare module "arangojs" {
          * @param params Parameters that will be passed to the `action` function
          * @param lockTimeout Determines how long the database will wait while attemping to gain locks on collections used by the transaction before timing out
          */
-        transaction(collections: Object, action: string, params?: any[], lockTimeout?: number): Promise<Object>;
+        transaction(collections: any[], action: string, params?: any[], lockTimeout?: number): Promise<any>;
         /**
          * Performs a database query using the given `query` and `bindVars`, then returns a new `Cursor` instance for the result list
          *
@@ -93,7 +93,7 @@ declare module "arangojs" {
          * @param bindVars An object defining the variables to bind the query to
          * @param opts Additional options that will be passed to the query API
          */
-        query(query: string, bindVars?: Object, opts?: Object): Promise<Cursor>;
+        query(query: string, bindVars?: any, opts?: any): Promise<Cursor>;
         /**
          * Template string handler for AQL queries. Converts an ES2015 template string to an object that can be passed to `database.query` by converting arguments to bind variables
          *
@@ -103,178 +103,178 @@ declare module "arangojs" {
         /**
          * Fetches a list of all AQL user functions registered with the database
          */
-        listFunctions(): Promise<Object[]>;
+        listFunctions(): Promise<any[]>;
         /**
          * Creates an AQL user function with the given name and code if it does not already exist or replaces it if a function with the same name already existed
          *
          * @param name A valid AQL function name, e.g. `myfuncs::accounting::calculate_vat`
          * @param code A string evaluating to a JavaScript function (not a JavaScript function object)
          */
-        createFunction(name: string, code: string): Object;
+        createFunction(name: string, code: string): any;
         /**
          * Deletes the AQL user function with the given name from the database
          *
          * @param name The name of the user function to drop
          * @param group (Default: `false`) If set to `true` all functions with a name starting with name will be deleted; otherwise only the function with the exact name will be deleted
          */
-        dropFunction(name: string, group?: boolean): Promise<Object>;
+        dropFunction(name: string, group?: boolean): Promise<any>;
         /**
          * Returns a new Route instance for the given path (relative to the database) that can be used to perform arbitrary HTTP requests
          *
          * @param path The database-relative URL of the route
          * @param headers Default headers that should be sent with each request to the route
          */
-        route(path?: string, headers?: Object): Promise<Route>;
+        route(path?: string, headers?: any): Promise<Route>;
     }
 
     export class Collection {
         /**
          * Retrieves general information about the collection
          */
-        get(): Promise<Object>;
+        get(): Promise<any>;
         /**
          * Retrieves the collection's properties
          */
-        properties(): Promise<Object>;
+        properties(): Promise<any>;
         /**
          * Retrieves information about the number of documents in a collection
          */
-        count(): Promise<Object>;
+        count(): Promise<any>;
         /**
          * Retrieves statistics for a collection
          */
-        figures(): Promise<Object>;
+        figures(): Promise<any>;
         /**
          * Retrieves the collection revision ID
          */
-        revision(): Promise<Object>;
+        revision(): Promise<any>;
         /**
          * Retrieves the collection checksum
          */
-        checksum(opts?: Object): Promise<Object>;
+        checksum(opts?: any): Promise<any>;
         /**
          * Creates a collection with the given properties for this collection's name, then returns the server response
          */
-        create(properties: Object): Promise<Object>;
+        create(properties: any): Promise<any>;
         /**
          * Tells the server to load the collection into memory
          *
          * @param count If set to false, the return value will not include the number of documents in the collection (which may speed up the process)
          */
-        load(count: boolean): Promise<Object>;
+        load(count: boolean): Promise<any>;
         /**
          * Tells the server to remove the collection from memory
          */
-        unload(): Promise<Object>;
+        unload(): Promise<any>;
         /**
          * Replaces the properties of the collection
          */
-        setProperties(properties: Object): Promise<Object>;
+        setProperties(properties: any): Promise<any>;
         /**
          * Renames the collection. The Collection instance will automatically update its name when the rename succeeds
          */
-        rename(name: string): Promise<Object>;
+        rename(name: string): Promise<any>;
         /**
          * Rotates the journal of the collection
          */
-        rotate(): Promise<Object>;
+        rotate(): Promise<any>;
         /**
          * Deletes all documents in the collection in the database
          */
-        truncate(): Promise<Object>;
+        truncate(): Promise<any>;
         /**
          * Deletes the collection from the database
          */
-        drop(): Promise<Object>;
+        drop(): Promise<any>;
         /**
          * Creates an arbitrary index on the collection
          */
-        createIndex(details: Object): Object;
+        createIndex(details: any): any;
         /**
          * Creates a cap constraint index on the collection
          *
          * @param size
          */
-        createCapConstraint(size: Object): Promise<Object>;
+        createCapConstraint(size: any): Promise<any>;
         /**
          * Creates a hash index on the collection
          *
          * @param fields An array of names of document fields on which to create the index. If the value is a string, it will be wrapped in an array automatically.
          * @param opts Additional options for this index. If the value is a boolean, it will be interpreted as opts.unique
          */
-        createHashIndex(fields: string[], opts?: Object): Promise<Object>;
+        createHashIndex(fields: string[], opts?: any): Promise<any>;
         /**
          * Creates a skiplist index on the collection
          *
          * @param fields An array of names of document fields on which to create the index. If the value is a string, it will be wrapped in an array automatically.
          * @param opts Additional options for this index. If the value is a boolean, it will be interpreted as opts.unique
          */
-        createSkipList(fields: string[], opts?: Object): Promise<Object>;
+        createSkipList(fields: string[], opts?: any): Promise<any>;
         /**
          * Creates a geo-spatial index on the collection
          *
          * @param fields An array of names of document fields on which to create the index. Currently, geo indices must cover exactly one field. If the value is a string, it will be wrapped in an array automatically.
          * @param opts Additional options for this index. If the value is a boolean, it will be interpreted as opts.unique
          */
-        createGeoIndex(fields: string[], opts?: Object): Promise<Object>;
+        createGeoIndex(fields: string[], opts?: any): Promise<any>;
         /**
          * Creates a hash index on the collection
          *
          * @param fields An array of names of document fields on which to create the index. Currently, full-text indices must cover exactly one field. If the value is a string, it will be wrapped in an array automatically.
          * @param minLength Minimum character length of words to index. Uses a server-specific default value if not specified
          */
-        createFulltextIndex(fields: string[], minLength?: number): Promise<Object>;
+        createFulltextIndex(fields: string[], minLength?: number): Promise<any>;
         /**
          * Fetches information about the index with the given indexHandle and returns it
          *
          * @param indexHandle The handle of the index to look up. This can either be a fully-qualified identifier or the collection-specific key of the index. If the value is an object, its id property will be used instead.
          */
-        index(indexHandle: string): Promise<Object>;
+        index(indexHandle: string): Promise<any>;
         /**
          * Fetches a list of all indexes on this collection
          */
-        indexes(): Promise<Object[]>;
+        indexes(): Promise<any[]>;
         /**
          * Deletes the index with the given indexHandle from the collection
          *
          * @param indexHandle The handle of the index to delete. This can either be a fully-qualified identifier or the collection-specific key of the index. If the value is an object, its id property will be used instead.
          */
-        dropIndex(indexHandle: string): Promise<Object>;
+        dropIndex(indexHandle: string): Promise<any>;
         /**
          * Performs a query to fetch all documents in the collection. Returns a new Cursor instance for the query results.
          */
-        all(opts?: Object): Promise<Cursor>;
+        all(opts?: any): Promise<Cursor>;
         /**
          * Fetches a document from the collection at random
          */
-        any(): Promise<Object>;
+        any(): Promise<any>;
         /**
          * Performs a query to fetch the first documents in the collection. Returns an array of the matching documents.
          */
-        first(opts?: Object): Promise<Object[]>;
+        first(opts?: any): Promise<any[]>;
         /**
          * Performs a query to fetch the last documents in the collection. Returns an array of the matching documents.
          */
-        last(opts?: Object): Promise<Object[]>;
+        last(opts?: any): Promise<any[]>;
         /**
          * Performs a query to fetch all documents in the collection matching the given example. Returns a new Cursor instance for the query results.
          *
          * @param example An object representing an example for documents to be matched against
          * @param opts
          */
-        byExample(example: Object, opts?: Object): Promise<Cursor>;
+        byExample(example: any, opts?: any): Promise<Cursor>;
         /** Fetches the first document in the collection matching the given example
          *
          * @param example An object representing an example for documents to be matched against
          */
-        firstExample(example: Object): Promise<Object>;
+        firstExample(example: any): Promise<any>;
         /**
          * Removes all documents in the collection matching the given example
          *
          * @param example An object representing an example for documents to be matched against
          * @param opts
          */
-        removeByExample(example: Object, opts?: Object): Promise<Object>;
+        removeByExample(example: any, opts?: any): Promise<any>;
         /**
          * Replaces all documents in the collection matching the given example with the given newValue
          *
@@ -282,7 +282,7 @@ declare module "arangojs" {
          * @param newValue The new value to update matching documents with
          * @param opts
          */
-        replaceByExample(example: Object, newValue: Object, opts?: Object): Promise<Object>;
+        replaceByExample(example: any, newValue: any, opts?: any): Promise<any>;
         /**
          * Updates (patches) all documents in the collection matching the given example with the given newValue
          *
@@ -290,20 +290,20 @@ declare module "arangojs" {
          * @param newValue The new value to update matching documents with
          * @param opts
          */
-        updateByExample(example: Object, newValue: Object, opts?: Object): Promise<Object>;
+        updateByExample(example: any, newValue: any, opts?: any): Promise<any>;
         /**
          * Fetches the documents with the given keys from the collection. Returns an array of the matching documents
          *
          * @param keys An array of document keys to look up
          */
-        lookupByKeys(keys: Object[]): Promise<Object[]>;
+        lookupByKeys(keys: any[]): Promise<any[]>;
         /**
          * Deletes the documents with the given keys from the collection
          *
          * @param keys An array of document keys to delete
          * @param opts
          */
-        removeByKeys(keys: Object[], opts?: Object): Promise<Object[]>;
+        removeByKeys(keys: any[], opts?: any): Promise<any[]>;
         /**
          * Performs a fulltext query in the given fieldName on the collection
          *
@@ -311,14 +311,14 @@ declare module "arangojs" {
          * @param query Fulltext query string to search for
          * @param opts
          */
-        fulltext(fieldName: string, query: string, opts?: Object): Promise<Cursor>;
+        fulltext(fieldName: string, query: string, opts?: any): Promise<Cursor>;
         /**
          * Bulk imports the given data into the collection
          *
          * @param data The data to import. This can be an array of documents, or it can be an array of value arrays following an array of keys
          * @param opts
          */
-        import(data: any[][] | Object[], opts?: Object): Promise<Object>;
+        import(data: any[][] | any[], opts?: any): Promise<any>;
         /**
          * Replaces the content of the document with the given documentHandle with the given newValue and returns an object containing the document's metadata
          *
@@ -326,19 +326,19 @@ declare module "arangojs" {
          * @param newValue The new data of the document
          * @param opts
          */
-        replace(documentHandle: string, newValue: Object, opts?: Object): Promise<Object>;
+        replace(documentHandle: string, newValue: any, opts?: any): Promise<any>;
         /**
          * Updates (merges) the content of the document with the given documentHandle with the given newValue and returns an object containing the document's metadata
          * @param documentHandle The handle of the document to retrieve. This can be either the `_id` or the `_key` of a document in the collection, or a document (i.e. an object with an `_id` or `_key` property)
          * @param newValue The new data of the document
          * @param opts
          */
-        update(documentHandle: string, newValue: Object, opts?: Object): Promise<Object>;
+        update(documentHandle: string, newValue: any, opts?: any): Promise<any>;
         /**
          * Deletes the document with the given documentHandle from the collection
          * @param documentHandle The handle of the document to retrieve. This can be either the `_id` or the `_key` of a document in the collection, or a document (i.e. an object with an `_id` or `_key` property)
          */
-        remove(documentHandle: string, opts?: Object): Promise<Object>;
+        remove(documentHandle: string, opts?: any): Promise<any>;
         /**
          * Retrieves a list of references for all documents in the collection
          * @param type The format of the document references - one of "id", "key" or "path"
@@ -351,12 +351,12 @@ declare module "arangojs" {
          * Retrieves the document with the given documentHandle from the collection
          * @param documentHandle The handle of the document to retrieve. This can be either the `_id` or the `_key` of a document in the collection, or a document (i.e. an object with an `_id` or `_key` property)
          */
-        document(documentHandle: string): Promise<Object>;
+        document(documentHandle: string): Promise<any>;
         /**
          * Creates a new document with the given data and returns an object containing the document's metadata
          * @param data The data of the new document, may include a `_key`
          */
-        save(data: Object): Promise<Object>;
+        save(data: any): Promise<any>;
     }
 
     export class EdgeCollection extends Collection {
@@ -365,7 +365,7 @@ declare module "arangojs" {
          *
          * @param documentHandle The handle of the edge to retrieve. This can be either the `_id` or the `_key` of a document in the collection, or a document (i.e. an object with an `_id` or `_key` property)
          */
-        edge(documentHandle: string): Promise<Object>;
+        edge(documentHandle: string): Promise<any>;
         /**
          * Creates a new edge between the documents fromId and toId with the given data and returns an object containing the edge's metadata
          *
@@ -373,32 +373,32 @@ declare module "arangojs" {
          * @param fromId The handle of the start vertex of this edge. This can be either the  _id  of a document in the database, the  _key  of an edge in the collection, or a document (i.e. an object with an  _id  or  _key  property)
          * @param toId The handle of the end vertex of this edge. This can be either the  _id  of a document in the database, the  _key  of an edge in the collection, or a document (i.e. an object with an  _id  or  _key  property)
          */
-        save(data: string, fromId?: string, toId?: string): Promise<Object>;
+        save(data: string, fromId?: string, toId?: string): Promise<any>;
         /**
          * Retrieves a list of all edges of the document with the given documentHandle
          *
          * @param documentHandle The handle of the document to retrieve the edges of. This can be either the  _id  of a document in the database, the  _key  of an edge in the collection, or a document (i.e. an object with an  _id  or  _key  property)
          */
-        edges(documentHandle: string): Promise<Object[]>;
+        edges(documentHandle: string): Promise<any[]>;
         /**
          * Retrieves a list of all incoming edges of the document with the given documentHandle
          *
          * @param documentHandle The handle of the document to retrieve the edges of. This can be either the  _id  of a document in the database, the  _key  of an edge in the collection, or a document (i.e. an object with an  _id  or  _key  property)
          */
-        inEdges(documentHandle: string): Promise<Object[]>;
+        inEdges(documentHandle: string): Promise<any[]>;
         /**
          * Retrieves a list of all outgoing edges of the document with the given documentHandle
          *
          * @param documentHandle The handle of the document to retrieve the edges of. This can be either the  _id  of a document in the database, the  _key  of an edge in the collection, or a document (i.e. an object with an  _id  or  _key  property)
          */
-        outEdges(documentHandle: string): Promise<Object[]>;
+        outEdges(documentHandle: string): Promise<any[]>;
         /**
          * Performs a traversal starting from the given startVertex and following edges contained in this edge collection
          *
          * @param startVertex The handle of the start vertex. This can be either the  _id  of a document in the database, the  _key  of an edge in the collection, or a document (i.e. an object with an  _id  or  _key  property)
          * @param opts
          */
-        traversal(startVertex: string, opts: Object): Object;
+        traversal(startVertex: string, opts: any): any;
     }
 
     export class Cursor {
@@ -409,11 +409,11 @@ declare module "arangojs" {
         /**
          * Exhausts the cursor, then returns an array containing all values in the cursor's remaining result list
          */
-        all(): Promise<Object[]>;
+        all(): Promise<any[]>;
         /**
          * Advances the cursor and returns the next value in the cursor's remaining result list. If the cursor has already been exhausted, returns `undefined` instead.
          */
-        next(): Promise<Object>;
+        next(): Promise<any>;
         /**
          * Returns `true` if the cursor has more values or `false` if the cursor has been exhausted.
          */
@@ -466,7 +466,7 @@ declare module "arangojs" {
          * @param path The relative URL of the route
          * @param headers Deafult headers that should be sent with each request to the route
          */
-        route(path?: string, headers?: Object): Route;
+        route(path?: string, headers?: any): Route;
         /**
          * Performs a GET request to the given URL and returns the server response
          *
@@ -517,26 +517,26 @@ declare module "arangojs" {
          *
          * @params opts
          */
-        request(opts?: Object): Promise<any>;
+        request(opts?: any): Promise<any>;
     }
 
     export class Graph {
         /**
          * Retrieves general information about the graph
          */
-        get(): Promise<Object>;
+        get(): Promise<any>;
         /**
          * Creates a graph with the given properties for this graph's name, then returns the server response
          *
          * @param properties
          */
-        create(properties: Object): Promise<Object>;
+        create(properties: any): Promise<any>;
         /**
          * Deletes the graph from the database
          *
          * @param dropCollections If set to `true`, the collections associated with the graph will also be deleted
          */
-        drop(dropCollections?: boolean): Promise<Object>;
+        drop(dropCollections?: boolean): Promise<any>;
         /**
          * Returns a new GraphVertexCollection instance with the given name for this graph
          *
@@ -548,14 +548,14 @@ declare module "arangojs" {
          *
          * @param collectionName Name of the vertex collection to add to the graph
          */
-        addVertexCollection(collectionName: string): Promise<Object>;
+        addVertexCollection(collectionName: string): Promise<any>;
         /**
          * Removes the vertex collection with the given collectionName from the graph
          *
          * @param collectionName Name of the vertex collection to remove from the graph
          * @param dropCollection If set to true, the collection will also be deleted from the database
          */
-        removeVertexCollection(collectionName: string, dropCollection?: boolean): Promise<Object>;
+        removeVertexCollection(collectionName: string, dropCollection?: boolean): Promise<any>;
         /**
          * Returns a new GraphEdgeCollection instance with the given name bound to this graph
          *
@@ -567,28 +567,28 @@ declare module "arangojs" {
          *
          * @param definition
          */
-        addEdgeDefinition(definition: Object): Promise<Object>;
+        addEdgeDefinition(definition: any): Promise<any>;
         /**
          * Replaces the edge definition for the edge collection named collectionName with the given definition
          *
          * @param collectionName Name of the edge collection to replace the definition of
          * @param definition
          */
-        replaceEdgeDefinition(collectionName: string, definition: Object): Promise<Object>;
+        replaceEdgeDefinition(collectionName: string, definition: any): Promise<any>;
         /**
          * Removes the edge definition with the given definitionName form the graph
          *
          * @param definitionName Name of the edge definition to remove from the graph
          * @param dropCollection If set to  true , the edge collection associated with the definition will also be deleted from the database
          */
-        removeEdgeDefinition(definitionName: string, dropCollection?: boolean): Promise<Object>;
+        removeEdgeDefinition(definitionName: string, dropCollection?: boolean): Promise<any>;
         /**
          * Performs a traversal starting from the given startVertex and following edges contained in any of the edge collections in this graph
          *
          * @param startVertex The handle of the start vertex. This can be either the  _id  of a document in the graph or a document (i.e. an object with an  _id  or  _key  property)
          * @param opts
          */
-        traversal(startVertex: string, opts: Object): Promise<Object>;
+        traversal(startVertex: string, opts: any): Promise<any>;
     }
 
     export class GraphVertexCollection extends Collection {
@@ -596,17 +596,17 @@ declare module "arangojs" {
          * Deletes the vertex with the given documentHandle from the collection.
          * @param documentHandle The handle of the vertex to retrieve. This can be either the _id or the _key of a vertex in the collection, or a vertex (i.e.an object with an _id or _key property).
          */
-        remove(documentHandle: string): Promise<Object>;
+        remove(documentHandle: string): Promise<any>;
         /**
          * Retrieves the vertex with the given documentHandle from the collection.
          * @param documentHandle The handle of the vertex to retrieve. This can be either the _id or the _key of a vertex in the collection, or a vertex (i.e.an object with an _id or _key property).
          */
-        vertex(documentHandle: string): Promise<Object>;
+        vertex(documentHandle: string): Promise<any>;
         /**
          * Creates a new vertex with the given data.
          * @param data The data of the vertex
          */
-        save(data: Object): Promise<Object>;
+        save(data: any): Promise<any>;
     }
 
     export class GraphEdgeCollection extends Collection {
@@ -614,39 +614,41 @@ declare module "arangojs" {
          * Deletes the edge with the given documentHandle from the collection.
          * @param documentHandle The handle of the vertex to retrieve. This can be either the _id or the _key of a vertex in the collection, or a vertex (i.e.an object with an _id or _key property).
          */
-        remove(documentHandle: string): Promise<Object>;
+        remove(documentHandle: string): Promise<any>;
         /**
          * Retrieves the edge with the given documentHandle from the collection.
          * @param documentHandle The handle of the vertex to retrieve. This can be either the _id or the _key of a vertex in the collection, or a vertex (i.e.an object with an _id or _key property).
          */
-        edge(documentHandle: string): Promise<Object>;
+        edge(documentHandle: string): Promise<any>;
         /**
          * Creates a new edge between the vertices fromId and toId with the given data.
          * @param data The data of the new edge. If fromId and toId are not specified, the data needs to contain the properties _from and _to.
          * @param fromId The handle of the start vertex of this edge. This can be either the  _id  of a document in the database, the  _key  of an edge in the collection, or a document (i.e. an object with an  _id  or  _key  property).
          * @param toID The handle of the end vertex of this edge. This can be either the  _id  of a document in the database, the  _key  of an edge in the collection, or a document (i.e. an object with an  _id  or  _key  property).
          */
-        save(data: Object, fromId?: string, toId?: string): Promise<Object>;
+        save(data: any, fromId?: string, toId?: string): Promise<any>;
         /**
          * Retrieves a list of all edges of the document with the given documentHandle.
-         * @param documentHandle The handle of the document to retrieve the edges of. This can be either the  _id  of a document in the database, the  _key  of an edge in the collection, or a document (i.e. an object with an  _id  or  _key  property).
+         * @param documentHandle The handle of the document to retrieve the edges of. This can be either the  _id  of a document in the database, the  _key  of an edge in the collection, or a document (i.e. an 
+         
+         with an  _id  or  _key  property).
          */
-        edges(documentHandle: string): Promise< Array<Object> >;
+        edges(documentHandle: string): Promise< Array<any> >;
         /**
          * Retrieves a list of all incoming edges of the document with the given documentHandle.
          * @param documentHandle The handle of the document to retrieve the edges of. This can be either the  _id  of a document in the database, the  _key  of an edge in the collection, or a document (i.e. an object with an  _id  or  _key  property).
          */
-        inEdges(documentHandle: string): Promise< Array<Object> >;
+        inEdges(documentHandle: string): Promise< Array<any> >;
         /**
          * Retrieves a list of all outgoing edges of the document with the given documentHandle.
          * @param documentHandle The handle of the document to retrieve the edges of. This can be either the  _id  of a document in the database, the  _key  of an edge in the collection, or a document (i.e. an object with an  _id  or  _key  property).
          */
-        inEdges(documentHandle: string): Promise<Array<Object>>;
+        inEdges(documentHandle: string): Promise<Array<any>>;
         /**
          * Performs a traversal starting from the given startVertex and following edges contained in this edge collection.
          * @param startVertex The handle of the start vertex. This can be either the  _id  of a document in the database, the  _key  of an edge in the collection, or a document (i.e. an object with an  _id  or  _key  property).
          * @param opts
          */
-        traversal(startVertex: string, opts: Object): Promise<Object>;
+        traversal(startVertex: string, opts: any): Promise<any>;
     }
 }
