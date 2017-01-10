@@ -860,7 +860,7 @@ db.query(
 
 Template string handler for AQL queries. Converts an ES2015 template string to an object that can be passed to `database.query` by converting arguments to bind variables.
 
-Any *Collection* instances will automatically be converted to collection bind variables.
+**Note**: If you want to pass a collection name as a bind variable, you need to pass a *Collection* instance (e.g. what you get by passing the collection name to `db.collection`) instead. If you see the error `"array expected as operand to FOR loop"`, you're likely passing a collection name instead of a collection instance.
 
 **Examples**
 
