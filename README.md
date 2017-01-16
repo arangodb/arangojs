@@ -227,6 +227,7 @@ try {
     * [collection.createSkipList](#collectioncreateskiplist)
     * [collection.createGeoIndex](#collectioncreategeoindex)
     * [collection.createFulltextIndex](#collectioncreatefulltextindex)
+    * [collection.createPersistentIndex](#collectioncreatepersistentindex)
     * [collection.index](#collectionindex)
     * [collection.indexes](#collectionindexes)
     * [collection.dropIndex](#collectiondropindex)
@@ -2249,6 +2250,42 @@ collection.createFulltextIndex(['description'])
     index.fields; // ['description']
     // the index has been created
 });
+```
+
+#### collection.createPersistentIndex
+
+`async collection.createPersistentIndex(fields, [opts]): Object`
+
+Creates a Persistent index on the collection.
+Persistent indexes are similarly in operation to skiplist indexes, only that these indexes are in disk as opposed to in memory.
+This reduces memory usage and DB startup time, with the trade-off being that it will always be orders of magnitude slower than in-memory indexes.
+
+
+**Arguments**
+
+* **fields**: `Array<string>`
+
+  An array of names of document fields on which to create the index. 
+  
+* **opts**: `Object` (optional)
+
+  An object containing additional properties of the index.
+
+For more information on the properties of the *opts* object see [the HTTP API for manipulating Persistent indexes](https://docs.arangodb.com/latest/HTTP/Indexes/Persistent.html).
+
+**Examples**
+
+```js
+var db = require('arangojs')();
+var collection = db.collection('some-collection');
+
+collection.createPersistentIndex(['name', 'email'])
+.then(index => {
+    index.id; // the index's handle
+    index.fields; // ['name', 'email']
+    // the index has been created
+});
+
 ```
 
 #### collection.index
