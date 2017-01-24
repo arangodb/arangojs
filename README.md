@@ -32,6 +32,8 @@ Older versions of ArangoDB and Node.js may be compatible but are not actively su
 
 # Install
 
+**Note**: If you are using Webpack make sure `resolve.extensions` in your configuration includes `.web.js` **before** `.js`. This is the default for Webpack 1 but no longer the case for Webpack 2. Example: `['', '.web.js', '.js', '.json']`
+
 ## With Yarn
 
 ```sh
