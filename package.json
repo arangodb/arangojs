@@ -17,6 +17,12 @@
     "rest"
   ],
   "main": "lib/index.js",
+  "browser": {
+    "./lib/util/btoa.js": "./lib/util/btoa.web.js",
+    "./lib/util/bytelength.js": "./lib/util/bytelength.web.js",
+    "./lib/util/multipart.js": "./lib/util/multipart.web.js",
+    "./lib/util/request.js": "./lib/util/request.web.js"
+  },
   "directories": {
     "lib": "lib"
   },
