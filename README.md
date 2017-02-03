@@ -3002,7 +3002,7 @@ Creates a new document with the given *data* and returns an object containing th
 
   * **returnNew**:  `boolean` (Default: `false`)
 
-    If set to `false`, return additionally the complete new documents under the attribute `new` in the result.
+    If set to `true`, return additionally the complete new documents under the attribute `new` in the result.
 
   * **silent**:  `boolean` (Default: `false`)
 
