@@ -648,12 +648,9 @@ class DocumentCollection extends BaseCollection {
   }
 
   save (data, opts, cb) {
-    if (!opts) {
-      opts = {}
-    }
     if (typeof opts === 'function') {
       cb = opts
-      opts = {}
+      opts = undefined
     }
     if (typeof opts === 'boolean') {
       opts = {returnNew: opts}
@@ -668,6 +665,7 @@ class DocumentCollection extends BaseCollection {
         (err, res) => err ? callback(err) : callback(null, res.body)
       )
     } else {
+      if (!opts) opts = {}
       opts.collection = this.name
 
       this._api.post(
