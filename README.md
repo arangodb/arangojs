@@ -2982,7 +2982,7 @@ collection.document('my-docs/some-key')
 
 ### documentCollection.save
 
-`async documentCollection.save(data): Object`
+`async documentCollection.save(data, [opts]): Object`
 
 Creates a new document with the given *data* and returns an object containing the document's metadata.
 
@@ -2991,6 +2991,26 @@ Creates a new document with the given *data* and returns an object containing th
 * **data**: `Object`
 
   The data of the new document, may include a `_key`.
+
+* **opts**: `Object` (optional)
+
+  If *opts* is set, it must be an object with any of the following properties:
+
+  * **waitForSync**: `boolean` (Default: `false`)
+
+    Wait until document has been synced to disk.
+
+  * **returnNew**:  `boolean` (Default: `false`)
+
+    If set to `true`, return additionally the complete new documents under the attribute `new` in the result.
+
+  * **silent**:  `boolean` (Default: `false`)
+
+    If set to true, an empty object will be returned as response. No meta-data will be returned for the created document. This option can be used to save some network traffic.
+
+If a boolean is passed instead of an options object, it will be interpreted as the *returnNew* option.
+
+For more information on the *opts* object, see [the HTTP API documentation for working with documents](https://docs.arangodb.com/latest/HTTP/Document/WorkingWithDocuments.html).
 
 **Examples**
 
@@ -3008,6 +3028,19 @@ collection.save(doc)
         doc2._rev === doc1._rev;
         doc2.some === 'data';
     });
+});
+
+// -- or --
+
+var db = require('arangojs')();
+var collection = db.collection('my-docs');
+var doc = {some: 'data'};
+var opts = {returnNew: true};
+collection.save(doc, opts)
+.then(doc1 => {
+    doc1._key; // the document's key
+    doc1._id === ('my-docs/' + doc1._key);
+    doc1.new.some === 'data';
 });
 ```
 
