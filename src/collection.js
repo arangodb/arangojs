@@ -656,12 +656,24 @@ class DocumentCollection extends BaseCollection {
       opts = {returnNew: opts}
     }
     const {promise, callback} = this._connection.promisify(cb)
-    this._api.post(
-      `/document/${this.name}`,
-      data,
-      opts,
-      (err, res) => err ? callback(err) : callback(null, res.body)
-    )
+
+    if (this._connection.arangoMajor >= 3) {
+      this._api.post(
+        `/document/${this.name}`,
+        data,
+        opts,
+        (err, res) => err ? callback(err) : callback(null, res.body)
+      )
+    } else {
+      opts.collection = this.name
+
+      this._api.post(
+        `/document`,
+        data,
+        opts,
+        (err, res) => err ? callback(err) : callback(null, res.body)
+      )
+    }
     return promise
   }
 }
