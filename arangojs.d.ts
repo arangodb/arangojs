@@ -356,7 +356,7 @@ declare module "arangojs" {
          * Creates a new document with the given data and returns an object containing the document's metadata
          * @param data The data of the new document, may include a `_key`
          */
-        save(data: any): Promise<any>;
+        save(data: any, opts?: any): Promise<any>;
     }
 
     export class EdgeCollection extends Collection {
