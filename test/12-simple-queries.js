@@ -155,8 +155,8 @@ describe('Simple queries', () => {
   describe('collection.updateByExample', () => {
     it('is missing tests')
   })
-  if (process.env.ARANGODB_VERSION >= 2.6) {
-    describe('collection.lookupByKeys', () => {
+  if (ARANGO_VERSION >= 20600) {
+    describe2x('collection.lookupByKeys', () => {
       it('returns the documents with the given keys', (done) => {
         collection.lookupByKeys(['b', 'c', 'd'])
           .then((arr) => {
