@@ -652,6 +652,9 @@ class DocumentCollection extends BaseCollection {
       cb = opts
       opts = {}
     }
+    if (typeof opts === 'boolean') {
+      opts = {returnNew: opts}
+    }
     const {promise, callback} = this._connection.promisify(cb)
     this._api.post(
       `/document/${this.name}`,

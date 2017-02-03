@@ -3008,6 +3008,8 @@ Creates a new document with the given *data* and returns an object containing th
 
     If set to true, an empty object will be returned as response. No meta-data will be returned for the created document. This option can be used to save some network traffic.
 
+If a boolean is passed instead of an options object, it will be interpreted as the *returnNew* option.
+
 For more information on the *opts* object, see [the HTTP API documentation for working with documents](https://docs.arangodb.com/latest/HTTP/Document/WorkingWithDocuments.html).
 
 **Examples**

@@ -97,6 +97,24 @@ describe('DocumentCollection API', () => {
         .then(() => void done())
         .catch(done)
     })
+    it('interprets opts as returnNew if it is a boolean', (done) => {
+      let data = {potato: 'tomato'}
+      let opts = true
+      collection.save(data, opts)
+        .then((meta) => {
+          expect(meta).to.be.an('object')
+          expect(meta).to.have.a.property('_id').that.is.a('string')
+          expect(meta).to.have.a.property('_rev').that.is.a('string')
+          expect(meta).to.have.a.property('_key').that.is.a('string')
+          expect(meta.new).to.be.an('object')
+          expect(meta.new).to.have.a.property('_id').that.is.a('string')
+          expect(meta.new).to.have.a.property('_rev').that.is.a('string')
+          expect(meta.new).to.have.a.property('_key').that.is.a('string')
+          expect(meta.new.potato).to.equal(data.potato)
+        })
+        .then(() => void done())
+        .catch(done)
+    })
   })
   describe('documentCollection.replace', () => {
     it('replaces the given document', (done) => {
