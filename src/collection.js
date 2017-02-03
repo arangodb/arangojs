@@ -648,6 +648,9 @@ class DocumentCollection extends BaseCollection {
   }
 
   save (data, opts, cb) {
+    if (!opts) {
+      opts = {}
+    }
     if (typeof opts === 'function') {
       cb = opts
       opts = {}
