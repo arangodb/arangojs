@@ -647,12 +647,16 @@ class DocumentCollection extends BaseCollection {
     return promise
   }
 
-  save (data, cb) {
+  save (data, opts, cb) {
+    if (typeof opts === 'function') {
+      cb = opts
+      opts = {}
+    }
     const {promise, callback} = this._connection.promisify(cb)
     this._api.post(
-      '/document',
+      `/document/${this.name}`,
       data,
-      {collection: this.name},
+      opts,
       (err, res) => err ? callback(err) : callback(null, res.body)
     )
     return promise
