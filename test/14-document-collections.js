@@ -80,7 +80,7 @@ describe('DocumentCollection API', () => {
         .then(() => void done())
         .catch(done)
     })
-    if (arangoVersion >= 3000) {
+    if (arangoVersion >= 30000) {
       it('returns the document if opts.returnNew is set', (done) => {
         let data = {potato: 'tomato'}
         let opts = {returnNew: true}
