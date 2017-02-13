@@ -22,7 +22,7 @@ The bower distribution of ArangoJS is compatible with most modern browsers.
 
 Versions outside this range may be compatible but are not actively supported.
 
-**Upgrade note**: If you want to use arangojs with ArangoDB 2.8 or earlier remember to set the appropriate `arangoVersion` option (`20800` for version 2.8.0). The current default value is `30000` (indicating compatibility with version 3.0.0 and newer).
+**Upgrade note**: If you want to use arangojs with ArangoDB 2.8 or earlier remember to set the appropriate `arangoVersion` option (e.g. `20800` for version 2.8.0). The current default value is `30000` (indicating compatibility with version 3.0.0 and newer). The driver will behave differently depending on this value when using APIs that have changed between these versions.
 
 ## Testing
 
