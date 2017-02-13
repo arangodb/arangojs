@@ -1,6 +1,7 @@
-import {fuerte, vpack} from 'fuerte/arango-node-driver'
+import fuerte from 'fuerte/arango-node-driver'
+import vpack from 'node-velocypack/build/Debug/node-velocypack.node'
+import {parse as parseQuery} from 'querystring'
 import {parse as parseUrl} from 'url'
-import LinkedList from 'linkedlist'
 
 function joinPath (a = '', b = '') {
   if (!a && !b) return ''
@@ -26,101 +27,72 @@ function joinPath (a = '', b = '') {
 export default function (baseUrl, agentOptions) {
   const baseUrlParts = parseUrl(baseUrl)
 
-  const queue = new LinkedList()
-  const maxTasks = typeof agentOptions.maxSockets === 'number' ? agentOptions.maxSockets * 2 : Infinity
-  const idleConnections = new LinkedList()
-  const activeConnections = new Set()
+  const builder = new fuerte.ConnectionBuilder()
+  const conn = builder.host(`vst://${baseUrlParts.host}`).connect()
+  let activeConnections = 0
+  let interval
 
-  function drainQueue () {
-    if (!queue.length || activeConnections.size >= maxTasks) return
-    const task = queue.shift()
-    let conn
-    if (idleConnections.length) conn = idleConnections.shift()
-    else {
-      const server = new fuerte.Server(`${baseUrlParts.protocol}//${baseUrlParts.host}`)
-      conn = server.makeConnection()
-    }
-    activeConnections.add(conn)
-    task(conn, () => {
-      activeConnections.delete(conn)
-      idleConnections.push(conn)
-      drainQueue()
-    })
+  function startPolling () {
+    activeConnections++
+    if (activeConnections > 1) return
+    interval = setInterval(() => fuerte.poll(), 100)
+  }
+
+  function stopPolling () {
+    activeConnections--
+    if (activeConnections > 0) return
+    clearInterval(interval)
   }
 
   function request ({method, url, headers, body, expectBinary}, cb) {
     let path = baseUrlParts.pathname ? (
       url.pathname ? joinPath(baseUrlParts.pathname, url.pathname) : baseUrlParts.pathname
     ) : url.pathname
-    // const search = url.search ? (
-    //   baseUrlParts.search ? `${baseUrlParts.search}&${url.search.slice(1)}` : url.search
-    // ) : baseUrlParts.search
+    const search = url.search ? (
+      baseUrlParts.search ? `${baseUrlParts.search}&${url.search.slice(1)}` : url.search
+    ) : baseUrlParts.search
 
-    queue.push((conn, next) => {
-      let callback = (...args) => {
-        callback = () => undefined
-        next()
-        cb(...args)
-      }
-
-      const connUrl = new fuerte.ConnectionUrl()
-      connUrl.setServerUrl(`${baseUrlParts.protocol}//${baseUrlParts.host}`)
-      const parts = path.match(/^\/_db\/([^/]+)(.*)/)
-      if (!parts) return callback(new Error('Invalid path?!?'))
-      connUrl.setDbName(parts[1])
-      connUrl.setTailUrl(parts[2])
-      conn.reset()
-      conn.setHeaderOpts()
-      conn.setUrl(connUrl)
-      switch (method) {
-        case 'POST':
-          conn.setPostField(vpack.encode(body))
-          conn.setPostReq()
-          conn.setBuffer()
-          break
-        case 'PUT':
-          conn.setPostField(vpack.encode(body))
-          conn.setPutReq()
-          conn.setBuffer()
-          break
-        case 'PATCH':
-          conn.setPostField(vpack.encode(body))
-          conn.setPatchReq()
-          conn.setBuffer()
-          break
-        case 'GET':
-          conn.setGetReq()
-          conn.setBuffer()
-          break
-        case 'DELETE':
-          conn.setPostField(vpack.encode(body))
-          conn.setDeleteReq()
-          conn.setBuffer()
-          break
-        default:
-          return callback(new Error(`Method not implemented: "${method}"`))
-      }
-      conn.SetAsynchronous(true)
-      function run () {
-        try {
-          conn.Run()
-          if (conn.IsRunning()) setImmediate(run)
-          else {
-            const result = conn.Result()
-            callback(null, {
-              body: vpack.decode(result),
-              statusCode: conn.ResponseCode(),
-              headers: {}
-            })
-          }
-        } catch (e) {
-          callback(e)
+    const req = new fuerte.Request()
+    req.setRestVerb(method.toLowerCase())
+    const parts = path.match(/^\/_db\/([^/]+)(.*)/)
+    if (!parts) return cb(new Error('Invalid path?!?'))
+    req.setDatabase(parts[1])
+    req.setPath(parts[2])
+    if (body) req.addVPack(vpack.encode(body))
+    if (search) {
+      const qs = parseQuery(search)
+      Object.keys(qs).forEach((key) => {
+        if (qs[key] !== undefined) {
+          req.addParameter(key, String(qs[key]))
         }
-      }
-      run()
-    })
-
-    drainQueue()
+      })
+    }
+    if (headers) {
+      Object.keys(headers).forEach((key) => {
+        if (headers[key] !== undefined) {
+          req.addMeta(key, String(headers[key]))
+        }
+      })
+    }
+    function onSuccess (req, res) {
+      stopPolling()
+      const body = (
+        res.notNull()
+        ? vpack.decode(res.payload())
+        : null
+      )
+      cb(null, {
+        statusCode: res.getResponseCode(),
+        headers: {},
+        body
+      })
+    }
+    function onFailure (code, req, res) {
+      stopPolling()
+      cb(new Error(``))
+    }
+    conn.sendRequest(req, onFailure, onSuccess)
+    startPolling()
   }
 
   const auth = baseUrlParts.auth

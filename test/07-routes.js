@@ -5,7 +5,7 @@ import Route from '../src/route'
 
 describe('Arbitrary HTTP routes', () => {
   const db = new Database({
-    url: (process.env.TEST_ARANGODB_URL || 'vstream://root:@localhost:8529'),
+    url: (process.env.TEST_ARANGODB_URL || 'vst://root:@localhost:8529'),
     arangoVersion: Number(process.env.ARANGO_VERSION || 30000)
   })
   describe('database.route', () => {

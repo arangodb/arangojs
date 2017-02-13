@@ -72,7 +72,7 @@ export default class Connection {
     let body = opts.body
 
     if (body) {
-      if (this._baseUrl.protocol !== 'vstream:') {
+      if (this._baseUrl.protocol !== 'vst:') {
         if (typeof body === 'object') {
           if (opts.ld) {
             body = body.map((obj) => JSON.stringify(obj)).join('\r\n') + '\r\n'
@@ -89,7 +89,7 @@ export default class Connection {
       body = opts.rawBody
     }
 
-    if (this._baseUrl.protocol !== 'vstream:') {
+    if (this._baseUrl.protocol !== 'vst:') {
       if (!opts.headers.hasOwnProperty('content-type')) {
         opts.headers['content-type'] = contentType
       }
@@ -121,7 +121,7 @@ export default class Connection {
         if (err) callback(err)
         else {
           const rawBody = res.body
-          if (this._baseUrl.protocol !== 'vstream:' && res.headers['content-type'].match(MIME_JSON)) {
+          if (this._baseUrl.protocol !== 'vst:' && res.headers['content-type'].match(MIME_JSON)) {
             try {
               if (expectBinary) res.body = res.body.toString('utf-8')
               res.body = res.body ? JSON.parse(res.body) : undefined

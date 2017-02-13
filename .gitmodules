@@ -1,3 +1,6 @@
 [submodule "fuerte"]
 	path = node_modules/fuerte
 	url = https://github.com/arangodb/fuerte
+[submodule "node_modules/node-velocypack"]
+	path = node_modules/node-velocypack
+	url = git@github.com:arangodb/node-velocypack.git

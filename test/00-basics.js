@@ -72,98 +72,98 @@ describe('Configuring the driver', () => {
       conn.request({headers: {}})
     })
   })
-  describe('with agentOptions', () => {
-    const _httpAgent = http.Agent
-    const _httpsAgent = https.Agent
-    let protocol
-    let options
-    beforeEach(() => {
-      protocol = undefined
-      options = undefined
-    })
-    before(() => {
-      let Agent = (ptcl) => (opts) => {
-        protocol = ptcl
-        options = opts
-        return () => null
-      }
-      http.Agent = Agent('http')
-      https.Agent = Agent('https')
-    })
-    after(() => {
-      http.Agent = _httpAgent
-      https.Agent = _httpsAgent
-    })
-    it('passes the agentOptions to the agent', () => {
-      new Connection({agentOptions: {hello: 'world'}}) // eslint-disable-line no-new
-      expect(options).to.have.a.property('hello', 'world')
-    })
-    it('uses the built-in agent for the protocol', () => {
-      // default: http
-      new Connection() // eslint-disable-line no-new
-      expect(protocol).to.equal('http')
-      new Connection('https://localhost:8529') // eslint-disable-line no-new
-      expect(protocol).to.equal('https')
-      new Connection('http://localhost:8529') // eslint-disable-line no-new
-      expect(protocol).to.equal('http')
-    })
-  })
-  describe('with agent', () => {
-    const _httpRequest = http.request
-    const _httpsRequest = https.request
-    let protocol
-    let options
-    beforeEach(() => {
-      protocol = undefined
-      options = undefined
-    })
-    before(() => {
-      let Request = (ptcl) => (opts) => {
-        protocol = ptcl
-        options = opts
-        return {
-          on () {
-            return this
-          },
-          end () {
-            return this
-          }
-        }
-      }
-      http.request = Request('http')
-      https.request = Request('https')
-    })
-    after(() => {
-      http.request = _httpRequest
-      https.request = _httpsRequest
-    })
-    it('passes the agent to the request function', () => {
-      let agent = 1
-      let conn
-      conn = new Connection({agent}) // default: http
-      conn.request({headers: {}})
-      expect(options).to.have.a.property('agent', agent)
-      agent++
-      conn = new Connection({agent, url: 'https://localhost:8529'})
-      conn.request({headers: {}})
-      expect(options).to.have.a.property('agent', agent)
-      agent++
-      conn = new Connection({agent, url: 'http://localhost:8529'})
-      conn.request({headers: {}})
-      expect(options).to.have.a.property('agent', agent)
-    })
-    it('uses the request function for the protocol', () => {
-      const agent = 1
-      let conn
-      conn = new Connection({agent}) // default: http
-      conn.request({headers: {}})
-      expect(protocol).to.equal('http')
-      conn = new Connection({agent, url: 'https://localhost:8529'})
-      conn.request({headers: {}})
-      expect(protocol).to.equal('https')
-      conn = new Connection({agent, url: 'http://localhost:8529'})
-      conn.request({headers: {}})
-      expect(protocol).to.equal('http')
-    })
-  })
+  // describe('with agentOptions', () => {
+  //   const _httpAgent = http.Agent
+  //   const _httpsAgent = https.Agent
+  //   let protocol
+  //   let options
+  //   beforeEach(() => {
+  //     protocol = undefined
+  //     options = undefined
+  //   })
+  //   before(() => {
+  //     let Agent = (ptcl) => (opts) => {
+  //       protocol = ptcl
+  //       options = opts
+  //       return () => null
+  //     }
+  //     http.Agent = Agent('http')
+  //     https.Agent = Agent('https')
+  //   })
+  //   after(() => {
+  //     http.Agent = _httpAgent
+  //     https.Agent = _httpsAgent
+  //   })
+  //   it('passes the agentOptions to the agent', () => {
+  //     new Connection({agentOptions: {hello: 'world'}}) // eslint-disable-line no-new
+  //     expect(options).to.have.a.property('hello', 'world')
+  //   })
+  //   it('uses the built-in agent for the protocol', () => {
+  //     // default: http
+  //     new Connection() // eslint-disable-line no-new
+  //     expect(protocol).to.equal('http')
+  //     new Connection('https://localhost:8529') // eslint-disable-line no-new
+  //     expect(protocol).to.equal('https')
+  //     new Connection('http://localhost:8529') // eslint-disable-line no-new
+  //     expect(protocol).to.equal('http')
+  //   })
+  // })
+  // describe('with agent', () => {
+  //   const _httpRequest = http.request
+  //   const _httpsRequest = https.request
+  //   let protocol
+  //   let options
+  //   beforeEach(() => {
+  //     protocol = undefined
+  //     options = undefined
+  //   })
+  //   before(() => {
+  //     let Request = (ptcl) => (opts) => {
+  //       protocol = ptcl
+  //       options = opts
+  //       return {
+  //         on () {
+  //           return this
+  //         },
+  //         end () {
+  //           return this
+  //         }
+  //       }
+  //     }
+  //     http.request = Request('http')
+  //     https.request = Request('https')
+  //   })
+  //   after(() => {
+  //     http.request = _httpRequest
+  //     https.request = _httpsRequest
+  //   })
+  //   it('passes the agent to the request function', () => {
+  //     let agent = 1
+  //     let conn
+  //     conn = new Connection({agent}) // default: http
+  //     conn.request({headers: {}})
+  //     expect(options).to.have.a.property('agent', agent)
+  //     agent++
+  //     conn = new Connection({agent, url: 'https://localhost:8529'})
+  //     conn.request({headers: {}})
+  //     expect(options).to.have.a.property('agent', agent)
+  //     agent++
+  //     conn = new Connection({agent, url: 'http://localhost:8529'})
+  //     conn.request({headers: {}})
+  //     expect(options).to.have.a.property('agent', agent)
+  //   })
+  //   it('uses the request function for the protocol', () => {
+  //     const agent = 1
+  //     let conn
+  //     conn = new Connection({agent}) // default: http
+  //     conn.request({headers: {}})
+  //     expect(protocol).to.equal('http')
+  //     conn = new Connection({agent, url: 'https://localhost:8529'})
+  //     conn.request({headers: {}})
+  //     expect(protocol).to.equal('https')
+  //     conn = new Connection({agent, url: 'http://localhost:8529'})
+  //     conn.request({headers: {}})
+  //     expect(protocol).to.equal('http')
+  //   })
+  // })
 })
