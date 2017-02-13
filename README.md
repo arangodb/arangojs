@@ -30,6 +30,26 @@ The driver is being tested against the latest release of ArangoDB 2.8, the two m
 
 Older versions of ArangoDB and Node.js may be compatible but are not actively supported.
 
+Run the tests using the `yarn test` or `npm test` commands:
+
+```sh
+yarn test
+```
+
+```sh
+npm test
+```
+
+By default the tests will be run against a server listening on `http://root:@localhost:8529` (i.e. using username `root` with no password). To override this, you can set the environment variable `TEST_ARANGODB_URL` to something different:
+
+```sh
+TEST_ARANGODB_URL=http://root:@myserver.local:8530 yarn test
+```
+
+```sh
+TEST_ARANGODB_URL=http://root:@myserver.local:8530 npm test
+```
+
 # Install
 
 ## With Yarn
