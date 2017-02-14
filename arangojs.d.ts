@@ -78,14 +78,19 @@ declare module "arangojs" {
          */
         graphs(): Promise<Graph[]>;
         /**
-         * Performs a server-side transaction and returns its return value
+         * Performs a server-side transaction and returns its return value.
+         * 
+         * If `collections` is an array or string, it will be treated as `collections.write`.
          *
-         * @param collections
+         * @param collections An object with arrays of names (or single name) of collections that will be read/written during the transaction.
          * @param action A string evaluating to a JavaScript function to be executed on the server
-         * @param params Parameters that will be passed to the `action` function
+         * @param params Available as variable `params` when the `action` function is being executed on server.
          * @param lockTimeout Determines how long the database will wait while attemping to gain locks on collections used by the transaction before timing out
          */
-        transaction(collections: any[], action: string, params?: any[], lockTimeout?: number): Promise<any>;
+        transaction(collections: {
+            read?: string | string[],
+            write?: string | string[]
+        } | string | string[], action: string, params?: any, lockTimeout?: number): Promise<any>;
         /**
          * Performs a database query using the given `query` and `bindVars`, then returns a new `Cursor` instance for the result list
          *
