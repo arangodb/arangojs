@@ -54,6 +54,7 @@
     "http-errors": "^1.6.0",
     "linkedlist": "^1.0.1",
     "multi-part": "^2.0.0",
+    "node-velocypack": "git+https://git@github.com/arangodb/node-velocypack.git",
     "retry": "^0.10.0",
     "utf8-length": "^0.0.1",
     "xhr": "^2.3.1"
