@@ -1,4 +1,4 @@
-import fuerte from 'fuerte'
+import fuerte from 'fuerte/arango-node-driver'
 import vpack from 'node-velocypack'
 import {parse as parseQuery} from 'querystring'
 import {parse as parseUrl} from 'url'
