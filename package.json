@@ -57,7 +57,7 @@
     "xhr": "^2.3.1"
   },
   "devDependencies": {
-    "babel-cli": "6.22.2",
+    "babel-cli": "6.23.0",
     "babel-core": "6.22.1",
     "babel-loader": "6.3.1",
     "babel-plugin-add-module-exports": "0.2.1",
