@@ -1,5 +1,5 @@
-import fuerte from 'fuerte/arango-node-driver'
-import vpack from 'node-velocypack/build/Debug/node-velocypack.node'
+import fuerte from 'fuerte'
+import vpack from 'node-velocypack'
 import {parse as parseQuery} from 'querystring'
 import {parse as parseUrl} from 'url'
 
@@ -59,8 +59,8 @@ export default function (baseUrl, agentOptions) {
     req.setDatabase(parts[1])
     req.setPath(parts[2])
     if (body) req.addVPack(vpack.encode(body))
-    if (search) {
-      const qs = parseQuery(search)
+    if (search && search.length > 1) {
+      const qs = parseQuery(search.slice(1))
       Object.keys(qs).forEach((key) => {
         if (qs[key] !== undefined) {
           req.addParameter(key, String(qs[key]))
@@ -83,13 +83,13 @@ export default function (baseUrl, agentOptions) {
       )
       cb(null, {
         statusCode: res.getResponseCode(),
-        headers: {},
+        headers: res.getMeta(),
         body
       })
     }
     function onFailure (code, req, res) {
       stopPolling()
-      cb(new Error(``))
+      cb(new Error(`Generic Fuerte Error #${code}`))
     }
     conn.sendRequest(req, onFailure, onSuccess)
     startPolling()

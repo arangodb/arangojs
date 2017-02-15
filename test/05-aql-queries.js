@@ -26,7 +26,6 @@ describe('AQL queries', () => {
   })
   describe('database.query', () => {
     it('returns a cursor for the query result', (done) => {
-        console.log(1)
       db.query('RETURN 23')
         .then((cursor) => {
           expect(cursor).to.be.an.instanceof(Cursor)
