@@ -2214,7 +2214,7 @@ For more information on the properties of the *opts* object see [the HTTP API fo
 var db = require('arangojs')();
 var collection = db.collection('some-collection');
 
-collection.createGeoIndex(['longitude', 'latitude'])
+collection.createGeoIndex(['latitude', 'longitude'])
 .then(index => {
     index.id; // the index's handle
     index.fields; // ['longitude', 'latitude']
