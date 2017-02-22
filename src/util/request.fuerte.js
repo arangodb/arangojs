@@ -2,6 +2,7 @@ import fuerte from 'fuerte'
 import vpack from 'node-velocypack'
 import {parse as parseQuery} from 'querystring'
 import {parse as parseUrl} from 'url'
+import LinkedList from 'linkedlist'
 
 function joinPath (a = '', b = '') {
   if (!a && !b) return ''
@@ -29,19 +30,32 @@ export default function (baseUrl, agentOptions) {
 
   const builder = new fuerte.ConnectionBuilder()
   const conn = builder.host(`vst://${baseUrlParts.host}`).connect()
-  let activeConnections = 0
+  let activeTasks = 0
   let interval
+  let counter = 0
+  let polling = false
 
-  function startPolling () {
-    activeConnections++
-    if (activeConnections > 1) return
-    interval = setInterval(() => fuerte.poll(), 100)
-  }
+  const queue = new LinkedList()
+  const maxTasks = typeof agentOptions.maxSockets === 'number' ? agentOptions.maxSockets : Infinity
 
-  function stopPolling () {
-    activeConnections--
-    if (activeConnections > 0) return
-    clearInterval(interval)
+  function drainQueue () {
+    if (!queue.length || activeTasks >= maxTasks) return
+    const task = queue.shift()
+    if (activeTasks === 0) {
+      polling = true
+      interval = setInterval(() => {
+        fuerte.poll()
+      }, 100)
+    }
+    activeTasks += 1
+    task(() => {
+      activeTasks -= 1
+      if (activeTasks === 0) {
+        polling = false
+        clearInterval(interval)
+      }
+      drainQueue()
+    })
   }
 
   function request ({method, url, headers, body, expectBinary}, cb) {
@@ -51,48 +65,80 @@ export default function (baseUrl, agentOptions) {
     const search = url.search ? (
       baseUrlParts.search ? `${baseUrlParts.search}&${url.search.slice(1)}` : url.search
     ) : baseUrlParts.search
+    const REQID = '#' + (++counter) + ' ' + method.toUpperCase() + ' ' + path
 
-    const req = new fuerte.Request()
-    req.setRestVerb(method.toLowerCase())
-    const parts = path.match(/^\/_db\/([^/]+)(.*)/)
-    if (!parts) return cb(new Error('Invalid path?!?'))
-    req.setDatabase(parts[1])
-    req.setPath(parts[2])
-    if (body) req.addVPack(vpack.encode(body))
-    if (search && search.length > 1) {
-      const qs = parseQuery(search.slice(1))
-      Object.keys(qs).forEach((key) => {
-        if (qs[key] !== undefined) {
-          req.addParameter(key, String(qs[key]))
+    queue.push((next) => {
+      const START = Date.now()
+      const timeout = setInterval(() => {
+        const TIME = Date.now() - START
+        console.error(REQID, 'STILL WAITING after', TIME, 'ms', '(active:', activeTasks + ', polling:', polling + ')')
+      }, 10000)
+
+      let callback = (...args) => {
+        clearInterval(timeout)
+        const TIME = Date.now() - START
+        if (TIME > 10000) {
+          console.error(REQID, 'FINALLY FINISHED after', TIME, 'ms')
         }
-      })
-    }
-    if (headers) {
-      Object.keys(headers).forEach((key) => {
-        if (headers[key] !== undefined) {
-          req.addMeta(key, String(headers[key]))
+        callback = () => undefined
+        next()
+        cb(...args)
+      }
+
+      const req = new fuerte.Request()
+      req.setRestVerb(method.toLowerCase())
+      const parts = path.match(/^\/_db\/([^/]+)(.*)/)
+      if (!parts) return callback(new Error('Invalid path?!?'))
+      req.setDatabase(parts[1])
+      req.setPath(parts[2])
+      if (body) req.addVPack(vpack.encode(body))
+      if (search && search.length > 1) {
+        const qs = parseQuery(search.slice(1))
+        Object.keys(qs).forEach((key) => {
+          if (qs[key] !== undefined) {
+            req.addParameter(key, String(qs[key]))
+          }
+        })
+      }
+      if (headers) {
+        Object.keys(headers).forEach((key) => {
+          if (headers[key] !== undefined) {
+            req.addMeta(key, String(headers[key]))
+          }
+        })
+      }
+
+      function onSuccess (req, res) {
+        let body
+        let statusCode
+        let headers
+        try {
+          body = (
+            res.notNull()
+            ? vpack.decode(res.payload())
+            : null
+          )
+          statusCode = res.getResponseCode()
+          headers = res.getMeta()
+        } catch (e) {
+          callback(e)
+          return
         }
-      })
-    }
-    function onSuccess (req, res) {
-      stopPolling()
-      const body = (
-        res.notNull()
-        ? vpack.decode(res.payload())
-        : null
-      )
-      cb(null, {
-        statusCode: res.getResponseCode(),
-        headers: res.getMeta(),
-        body
-      })
-    }
-    function onFailure (code, req, res) {
-      stopPolling()
-      cb(new Error(`Generic Fuerte Error #${code}`))
-    }
-    conn.sendRequest(req, onFailure, onSuccess)
-    startPolling()
+        callback(null, {
+          statusCode,
+          headers,
+          body
+        })
+      }
+
+      function onFailure (code, req, res) {
+        callback(new Error(`Generic Fuerte Error #${code}`))
+      }
+
+      conn.sendRequest(req, onFailure, onSuccess)
+    })
+
+    drainQueue()
   }
 
   const auth = baseUrlParts.auth
