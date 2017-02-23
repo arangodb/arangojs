@@ -27,9 +27,8 @@ function joinPath (a = '', b = '') {
 
 export default function (baseUrl, agentOptions) {
   const baseUrlParts = parseUrl(baseUrl)
-
   const builder = new fuerte.ConnectionBuilder()
-  const conn = builder.host(`vst://${baseUrlParts.host}`).connect()
+  const conn = builder.host(`${baseUrlParts.protocol}://${baseUrlParts.host}`).connect()
   let activeTasks = 0
   let interval
   let counter = 0
