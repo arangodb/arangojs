@@ -36,6 +36,7 @@
   "typings": "arangojs.d.ts",
   "scripts": {
     "test": "mocha --growl",
+    "test-gdb": "mocha --growl --gdb",
     "lint": "snazzy --verbose src/**/*.js test/**/*.js",
     "ci": "mocha",
     "preci": "npm install",
