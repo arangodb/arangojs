@@ -51,7 +51,7 @@
   },
   "dependencies": {
     "es6-error": "^4.0.1",
-    "http-errors": "^1.6.0",
+    "http-errors": "^1.6.1",
     "linkedlist": "^1.0.1",
     "multi-part": "^2.0.0",
     "retry": "^0.10.0",
