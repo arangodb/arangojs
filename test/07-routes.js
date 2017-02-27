@@ -1,9 +1,11 @@
-import {describe, it} from 'mocha'
+import {describe, it, before, after} from 'mocha'
 import {expect} from 'chai'
 import {Database} from '../src'
 import Route from '../src/route'
 
 describe('Arbitrary HTTP routes', () => {
+  console.log("JS -- env var TEST_ARANGODB -- seen in test/07-routes.js: "
+              + "'" + process.env.TEST_ARANGODB_URL + "'")
   const db = new Database({
     url: (process.env.TEST_ARANGODB_URL || 'vst://root:@localhost:8529'),
     arangoVersion: Number(process.env.ARANGO_VERSION || 30000)

@@ -12,17 +12,17 @@ vst='vst://127.0.0.1:8530'
 
 #default to http
 arangodb_url=${1:-$http}
-case arangodb_url in
-    --http)
+case $arangodb_url in
+    *'--http'*)
         arangodb_url="$http"
     ;;
-    --vst)
+    *'--vst'*)
         arangodb_url="$vst"
     ;;
 esac
 
-echo "using $arangodb_url for testing"
-export TEST_ARANGODB_URL="arangodb_url"
+export TEST_ARANGODB_URL="$arangodb_url"
+echo "using $TEST_ARANGODB_URL for testing"
 
 # remove first parameter and pass
 # remaining parameters unmodified
