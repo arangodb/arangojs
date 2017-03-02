@@ -8,7 +8,10 @@ import ArangoError from './error'
 import Route from './route'
 import retry from 'retry'
 
+let vpack = require('/mnt/local/home/oberon/nobackup/hosted-git-repos/github/arangojs/node_modules/node-velocypack/index.js');
+
 const MIME_JSON = /\/(json|javascript)(\W|$)/
+const MIME_VPACK = /\/(x-velocypack)(\W|$)/
 
 export default class Connection {
   constructor (config) {
@@ -28,6 +31,9 @@ export default class Connection {
       this.config.agent
     )
     this._baseUrl = url
+    if (this._baseUrl.protocol === 'vst:') {
+      this.config.useVpack = true;
+    }
     this._request = request
     if (auth && !this.config.headers['authorization']) {
       this.config.headers['authorization'] = `Basic ${btoa(auth)}`
@@ -72,31 +78,48 @@ export default class Connection {
     let body = opts.body
 
     if (body) {
-      if (this._baseUrl.protocol !== 'vst:') {
-        if (typeof body === 'object') {
-          if (opts.ld) {
-            body = body.map((obj) => JSON.stringify(obj)).join('\r\n') + '\r\n'
-            contentType = 'application/x-ldjson'
-          } else {
-            body = JSON.stringify(body)
-            contentType = 'application/json'
+      if (!this.config.useVpack){
+          if (this._baseUrl.protocol !== 'vst:') {
+            if (typeof body === 'object') {
+              if (opts.ld) {
+                body = body.map((obj) => JSON.stringify(obj)).join('\r\n') + '\r\n'
+                contentType = 'application/x-ldjson'
+              } else {
+                body = JSON.stringify(body)
+                contentType = 'application/json'
+              }
+            } else {
+              body = String(body)
+            }
           }
-        } else {
-          body = String(body)
-        }
+      } else {
+        //console.log('encode ###############');
+        //console.log(typeof body, body);
+        body = vpack.encode(body);
+        contentType = 'application/x-velocypack'
+        //console.log(typeof body, body);
+        //console.log('encode ###############');
       }
     } else {
       body = opts.rawBody
     }
 
-    if (this._baseUrl.protocol !== 'vst:') {
-      if (!opts.headers.hasOwnProperty('content-type')) {
-        opts.headers['content-type'] = contentType
-      }
+    if (!opts.headers.hasOwnProperty('content-type')) {
+      opts.headers['content-type'] = contentType
+    }
 
+    if (!opts.headers.hasOwnProperty('accept') && this.config.useVpack)  {
+      opts.headers['accept'] = contentType
+    }
+
+    if (this._baseUrl.protocol !== 'vst:') {
       if (typeof window === 'undefined' && !opts.headers.hasOwnProperty('content-length')) {
-        opts.headers['content-length'] = body ? byteLength(body, 'utf-8') : 0
-      }
+        if(this.config.useVpack){
+          opts.headers['content-length'] = body ? byteLength(body, 'binary') : 0
+        } else {
+          opts.headers['content-length'] = body ? byteLength(body, 'utf-8') : 0
+        }
+      } 
     }
 
     for (const key of Object.keys(this.config.headers)) {
@@ -121,7 +144,7 @@ export default class Connection {
         if (err) callback(err)
         else {
           const rawBody = res.body
-          if (this._baseUrl.protocol !== 'vst:' && res.headers['content-type'] && res.headers['content-type'].match(MIME_JSON)) {
+          if (res.headers['content-type'] && res.headers['content-type'].match(MIME_JSON)) {
             try {
               if (expectBinary) res.body = res.body.toString('utf-8')
               res.body = res.body ? JSON.parse(res.body) : undefined
@@ -131,6 +154,13 @@ export default class Connection {
               return callback(e)
             }
           }
+
+          //DEBUG
+          //if (res.headers['content-type'] && res.headers['content-type'].match(MIME_VPACK)) {
+          //  console.log("body should already be an object:")
+          //  console.log("@@@@@@@@@@@@@@@@@@@", res.body)
+          //}
+
           if (
             res.body &&
             res.body.error &&
@@ -160,6 +190,7 @@ export default class Connection {
 
 Connection.defaults = {
   url: 'http://localhost:8529',
+  useVpack : true,
   databaseName: '_system',
   arangoVersion: 30000,
   retryConnection: false

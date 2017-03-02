@@ -4,6 +4,8 @@ import {parse as parseQuery} from 'querystring'
 import {parse as parseUrl} from 'url'
 import LinkedList from 'linkedlist'
 
+const MIME_VPACK = /\/(x-velocypack)(\W|$)/
+
 function joinPath (a = '', b = '') {
   if (!a && !b) return ''
   const leadingSlash = a.charAt(0) === '/'
@@ -42,11 +44,16 @@ export default function (baseUrl, agentOptions) {
   function drainQueue () {
     if (!queue.length || activeTasks >= maxTasks) return
     const task = queue.shift()
-    if (activeTasks === 0) {
-      polling = true
-      interval = setInterval(() => {
-        fuerte.poll()
-      }, 100)
+    try{
+      if (activeTasks === 0) {
+        polling = true
+        interval = setInterval(() => {
+          fuerte.run()
+        }, 100)
+      }
+    } catch (e) {
+      console.trace()
+      throw e
     }
     activeTasks += 1
     task(() => {
@@ -92,7 +99,7 @@ export default function (baseUrl, agentOptions) {
       if (!parts) return callback(new Error('Invalid path?!?'))
       req.setDatabase(parts[1])
       req.setPath(parts[2])
-      if (body) req.addVPack(vpack.encode(body))
+      if (body) req.addVPack(body)
       if (search && search.length > 1) {
         const qs = parseQuery(search.slice(1))
         Object.keys(qs).forEach((key) => {
@@ -113,17 +120,20 @@ export default function (baseUrl, agentOptions) {
         let body
         let statusCode
         let headers
+
         try {
-          body = (
-            res.notNull()
-            ? vpack.decode(res.payload())
-            : null
-          )
+          body = res.payload()
           statusCode = res.getResponseCode()
           headers = res.getMeta()
+          if(headers['content-type'].match(MIME_VPACK)){
+            //console.log('decode - start ###############')
+            //console.log(headers['content-type']);
+            body = vpack.decode(body)
+            //console.log('decode - end ################');
+          }
         } catch (e) {
-          callback(e)
-          return
+            console.trace();
+            callback(e);
         }
         callback(null, {
           statusCode,
@@ -133,6 +143,7 @@ export default function (baseUrl, agentOptions) {
       }
 
       function onFailure (code, req, res) {
+        console.trace()
         callback(new Error(`Generic Fuerte Error #${code}`))
       }
 
