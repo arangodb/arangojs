@@ -7,8 +7,7 @@ import createRequest from './util/request'
 import ArangoError from './error'
 import Route from './route'
 import retry from 'retry'
-
-let vpack = require('bindings')('node-velocypack')
+import vpack from 'node-velocypack'
 
 const MIME_JSON = /\/(json|javascript)(\W|$)/
 // const MIME_VPACK = /\/(x-velocypack)(\W|$)/
