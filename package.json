@@ -46,7 +46,7 @@
     "watch:node": "watch 'npm run dist:node' ./src ./test",
     "watch:test": "watch 'npm run lint && npm run test' ./src ./test",
     "dist": "npm-run-all -p dist:*",
-    "dist:browser": "webpack",
+    "dist:browser": "echo 'webpack does not work with native modules' #webpack",
     "dist:node": "babel --compact false -d lib src",
     "prepublish": "npm run lint && npm run dist && node -e 'require(\"./\");'"
   },
