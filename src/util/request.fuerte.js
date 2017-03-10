@@ -30,7 +30,7 @@ function joinPath (a = '', b = '') {
 export default function (baseUrl, agentOptions) {
   const baseUrlParts = parseUrl(baseUrl)
   let connectionString = `${baseUrlParts.protocol}//${baseUrlParts.host}`
-  console.log("JS -- string seen in request.fuerte.js " + connectionString);
+  console.log('JS -- string seen in request.fuerte.js ' + connectionString)
   const builder = new fuerte.ConnectionBuilder()
   const conn = builder.host(connectionString).connect()
   let activeTasks = 0
@@ -44,7 +44,7 @@ export default function (baseUrl, agentOptions) {
   function drainQueue () {
     if (!queue.length || activeTasks >= maxTasks) return
     const task = queue.shift()
-    try{
+    try {
       if (activeTasks === 0) {
         polling = true
         interval = setInterval(() => {
@@ -125,15 +125,15 @@ export default function (baseUrl, agentOptions) {
           body = res.payload()
           statusCode = res.getResponseCode()
           headers = res.getMeta()
-          if(headers['content-type'].match(MIME_VPACK)){
-            //console.log('decode - start ###############')
-            //console.log(headers['content-type']);
+          if (headers['content-type'].match(MIME_VPACK)) {
+            // console.log('decode - start ###############')
+            // console.log(headers['content-type']);
             body = vpack.decode(body)
-            //console.log('decode - end ################');
+            // console.log('decode - end ################');
           }
         } catch (e) {
-            console.trace();
-            callback(e);
+          console.trace()
+          callback(e)
         }
         callback(null, {
           statusCode,

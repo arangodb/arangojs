@@ -8,10 +8,10 @@ import ArangoError from './error'
 import Route from './route'
 import retry from 'retry'
 
-let vpack = require('/mnt/local/home/oberon/nobackup/hosted-git-repos/github/arangojs/node_modules/node-velocypack/index.js');
+let vpack = require('bindings')('node-velocypack')
 
 const MIME_JSON = /\/(json|javascript)(\W|$)/
-const MIME_VPACK = /\/(x-velocypack)(\W|$)/
+// const MIME_VPACK = /\/(x-velocypack)(\W|$)/
 
 export default class Connection {
   constructor (config) {
@@ -32,7 +32,7 @@ export default class Connection {
     )
     this._baseUrl = url
     if (this._baseUrl.protocol === 'vst:') {
-      this.config.useVpack = true;
+      this.config.useVpack = true
     }
     this._request = request
     if (auth && !this.config.headers['authorization']) {
@@ -78,27 +78,27 @@ export default class Connection {
     let body = opts.body
 
     if (body) {
-      if (!this.config.useVpack){
-          if (this._baseUrl.protocol !== 'vst:') {
-            if (typeof body === 'object') {
-              if (opts.ld) {
-                body = body.map((obj) => JSON.stringify(obj)).join('\r\n') + '\r\n'
-                contentType = 'application/x-ldjson'
-              } else {
-                body = JSON.stringify(body)
-                contentType = 'application/json'
-              }
+      if (!this.config.useVpack) {
+        if (this._baseUrl.protocol !== 'vst:') {
+          if (typeof body === 'object') {
+            if (opts.ld) {
+              body = body.map((obj) => JSON.stringify(obj)).join('\r\n') + '\r\n'
+              contentType = 'application/x-ldjson'
             } else {
-              body = String(body)
+              body = JSON.stringify(body)
+              contentType = 'application/json'
             }
+          } else {
+            body = String(body)
           }
+        }
       } else {
-        //console.log('encode ###############');
-        //console.log(typeof body, body);
-        body = vpack.encode(body);
+        // console.log('encode ###############');
+        // console.log(typeof body, body);
+        body = vpack.encode(body)
         contentType = 'application/x-velocypack'
-        //console.log(typeof body, body);
-        //console.log('encode ###############');
+        // console.log(typeof body, body);
+        // console.log('encode ###############');
       }
     } else {
       body = opts.rawBody
@@ -108,18 +108,18 @@ export default class Connection {
       opts.headers['content-type'] = contentType
     }
 
-    if (!opts.headers.hasOwnProperty('accept') && this.config.useVpack)  {
+    if (!opts.headers.hasOwnProperty('accept') && this.config.useVpack) {
       opts.headers['accept'] = contentType
     }
 
     if (this._baseUrl.protocol !== 'vst:') {
       if (typeof window === 'undefined' && !opts.headers.hasOwnProperty('content-length')) {
-        if(this.config.useVpack){
+        if (this.config.useVpack) {
           opts.headers['content-length'] = body ? byteLength(body, 'binary') : 0
         } else {
           opts.headers['content-length'] = body ? byteLength(body, 'utf-8') : 0
         }
-      } 
+      }
     }
 
     for (const key of Object.keys(this.config.headers)) {
@@ -155,11 +155,11 @@ export default class Connection {
             }
           }
 
-          //DEBUG
-          //if (res.headers['content-type'] && res.headers['content-type'].match(MIME_VPACK)) {
-          //  console.log("body should already be an object:")
-          //  console.log("@@@@@@@@@@@@@@@@@@@", res.body)
-          //}
+          // DEBUG
+          // if (res.headers['content-type'] && res.headers['content-type'].match(MIME_VPACK)) {
+          //   console.log("body should already be an object:")
+          //   console.log("@@@@@@@@@@@@@@@@@@@", res.body)
+          // }
 
           if (
             res.body &&
@@ -190,7 +190,7 @@ export default class Connection {
 
 Connection.defaults = {
   url: 'http://localhost:8529',
-  useVpack : true,
+  useVpack: true,
   databaseName: '_system',
   arangoVersion: 30000,
   retryConnection: false

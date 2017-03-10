@@ -44,6 +44,7 @@
     "watch": "npm-run-all -p watch:*",
     "watch:browser": "npm run dist:browser -- --watch",
     "watch:node": "watch 'npm run dist:node' ./src ./test",
+    "watch:lint": "watch 'npm run lint'",
     "watch:test": "watch 'npm run lint && npm run test' ./src ./test",
     "dist": "npm-run-all -p dist:*",
     "dist:browser": "echo 'webpack does not work with native modules' #webpack",
