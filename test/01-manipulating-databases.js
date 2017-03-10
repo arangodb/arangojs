@@ -97,8 +97,8 @@ describe('Manipulating databases', () => {
     it('deletes the given database from the server', (done) => {
       db.dropDatabase(name)
         .then(() => new Database({url: connectionUrl,
-                                  arangoVersion: version,
-                                  databaseName: name}).get())
+          arangoVersion: version,
+          databaseName: name}).get())
         .then(
           () => Promise.reject(new Error('Should not succeed')),
           () => null

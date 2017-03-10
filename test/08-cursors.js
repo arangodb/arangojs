@@ -1,6 +1,12 @@
 import {describe, it, before, beforeEach} from 'mocha'
-import {expect} from 'chai'
 import {Database} from '../src'
+
+import chai from 'chai'
+// fix linting errors with chai by converting assertions like true to function
+// call syntax
+import dirtyChai from 'dirty-chai'
+var expect = chai.expect
+chai.use(dirtyChai)
 
 const aqlQuery = 'FOR i In 0..10 RETURN i'
 const aqlResult = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
@@ -48,7 +54,7 @@ describe('Cursor API', () => {
   })
   describe('cursor.hasNext', () => {
     it('returns true if the Cursor has more results', (done) => {
-      expect(cursor.hasNext()).to.be.true
+      expect(cursor.hasNext()).to.be.true()
       cursor.next()
         .then((val) => {
           expect(val).to.be.a('number')
@@ -59,7 +65,7 @@ describe('Cursor API', () => {
     it('returns false if the Cursor is empty', (done) => {
       cursor.all()
         .then(() => {
-          expect(cursor.hasNext()).to.be.false
+          expect(cursor.hasNext()).to.be.false()
           done()
         })
         .catch(done)
@@ -100,7 +106,7 @@ describe('Cursor API', () => {
       })
         .then((result) => {
           expect(results).to.eql(aqlResult)
-          expect(result).to.be.true
+          expect(result).to.be.true()
           done()
         })
         .catch(done)
@@ -113,7 +119,7 @@ describe('Cursor API', () => {
       })
         .then((result) => {
           expect(results).to.eql([0, 1, 2, 3, 4, 5])
-          expect(result).to.be.false
+          expect(result).to.be.false()
           done()
         })
         .catch(done)
@@ -129,7 +135,7 @@ describe('Cursor API', () => {
       })
         .then((result) => {
           expect(results).to.eql(aqlResult)
-          expect(result).to.be.false
+          expect(result).to.be.false()
           done()
         })
         .catch(done)
@@ -142,7 +148,7 @@ describe('Cursor API', () => {
       })
         .then((result) => {
           expect(results).to.eql([0, 1, 2, 3, 4, 5])
-          expect(result).to.be.true
+          expect(result).to.be.true()
           done()
         })
         .catch(done)
