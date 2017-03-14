@@ -117,18 +117,16 @@ export default function (baseUrl, agentOptions) {
         let headers
 
         try {
-          body = res.payload()
           statusCode = res.getResponseCode()
           headers = res.getMeta()
-          if (headers['content-type'].match(MIME_VPACK)) {
-            // console.log('decode - start ###############')
-            // console.log(headers['content-type']);
+          body = res.notNull() ? res.payload() : null
+          if (body && headers['content-type'] && headers['content-type'].match(MIME_VPACK)) {
             body = vpack.decode(body)
-            // console.log('decode - end ################');
           }
         } catch (e) {
-          console.trace()
+          console.trace() // TODO remove this
           callback(e)
+          return
         }
         callback(null, {
           statusCode,
@@ -148,6 +146,7 @@ export default function (baseUrl, agentOptions) {
     try {
       drainQueue()
     } catch (e) {
+      console.trace() // TODO remove this
       cb(e)
     }
   }
