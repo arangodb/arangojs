@@ -31,36 +31,31 @@ export default function (baseUrl, agentOptions) {
   const baseUrlParts = parseUrl(baseUrl)
   let connectionString = `${baseUrlParts.protocol}//${baseUrlParts.host}`
   console.log('JS -- string seen in request.fuerte.js ' + connectionString)
-  const builder = new fuerte.ConnectionBuilder()
-  const conn = builder.host(connectionString).connect()
-  let activeTasks = 0
+  const builder = new fuerte.ConnectionBuilder().host(connectionString)
   let interval
   let counter = 0
-  let polling = false
 
+  const idleConnections = new LinkedList()
+  const activeConnections = new Set()
   const queue = new LinkedList()
-  const maxTasks = typeof agentOptions.maxSockets === 'number' ? agentOptions.maxSockets : Infinity
+  const maxConnections = typeof agentOptions.maxSockets === 'number' ? agentOptions.maxSockets : Infinity
 
   function drainQueue () {
-    if (!queue.length || activeTasks >= maxTasks) return
+    if (!queue.length || activeConnections.size >= maxConnections) return
     const task = queue.shift()
-    try {
-      if (activeTasks === 0) {
-        polling = true
-        interval = setInterval(() => {
-          fuerte.run()
-        }, 100)
-      }
-    } catch (e) {
-      console.trace()
-      throw e
+    if (activeConnections.size === 0) {
+      interval = setInterval(() => {
+        fuerte.run()
+      }, 100)
     }
-    activeTasks += 1
-    task(() => {
-      activeTasks -= 1
-      if (activeTasks === 0) {
-        polling = false
+    const conn = idleConnections.shift() || builder.connect()
+    activeConnections.add(conn)
+    task(conn, () => {
+      activeConnections.delete(conn)
+      idleConnections.push(conn)
+      if (activeConnections.size === 0) {
         clearInterval(interval)
+        interval = undefined
       }
       drainQueue()
     })
@@ -75,11 +70,11 @@ export default function (baseUrl, agentOptions) {
     ) : baseUrlParts.search
     const REQID = '#' + (++counter) + ' ' + method.toUpperCase() + ' ' + path
 
-    queue.push((next) => {
+    queue.push((conn, next) => {
       const START = Date.now()
       const timeout = setInterval(() => {
         const TIME = Date.now() - START
-        console.error(REQID, 'STILL WAITING after', TIME, 'ms', '(active:', activeTasks + ', polling:', polling + ')')
+        console.error(REQID, 'STILL WAITING after', TIME, 'ms', '(active:', activeConnections.size + ', polling:', (interval !== undefined) + ')')
       }, 10000)
 
       let callback = (...args) => {
@@ -150,7 +145,11 @@ export default function (baseUrl, agentOptions) {
       conn.sendRequest(req, onFailure, onSuccess)
     })
 
-    drainQueue()
+    try {
+      drainQueue()
+    } catch (e) {
+      cb(e)
+    }
   }
 
   const auth = baseUrlParts.auth
