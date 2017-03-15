@@ -1,3 +1,0 @@
-[submodule "fuerte"]
-	path = fuerte
-	url = git@github.com:arangodb/fuerte.git
