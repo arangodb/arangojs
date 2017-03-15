@@ -15,9 +15,9 @@
 echo "If the following code fails on your system, please disable it!"
 set -e
 echo "build fuerte"
-( cd ~/repos/github/fuerte/arango-node-driver/build/ && make -j 8 )
+( cd node_modules/fuerte/build/ && make -j 8 )
 echo "build node-velocypack"
-( cd ~/repos/github/node-velocypack/build/ && make -j 8 )
+( cd node_modules/node-velocypack/build/ && make -j 8 )
 echo "make arangojs dist"
 
 set +e
