@@ -45,8 +45,8 @@ export default function (baseUrl, agentOptions) {
     const task = queue.shift()
     if (activeConnections.size === 0) {
       interval = setInterval(() => {
-        fuerte.run()
-      }, 100)
+        fuerte.poll()
+      })
     }
     const conn = idleConnections.shift() || builder.connect()
     activeConnections.add(conn)
