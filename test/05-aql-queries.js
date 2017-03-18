@@ -46,7 +46,7 @@ describe('AQL queries', () => {
       db.query('FOR x IN 1..10 RETURN x', undefined, {batchSize: 2, count: true})
         .then((cursor) => {
           expect(cursor.count).to.equal(10)
-          expect(cursor._hasMore).to.be.true
+          expect(cursor._hasMore).to.equal(true)
           done()
         })
         .catch(done)
