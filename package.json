@@ -75,7 +75,7 @@
     "mocha": "3.2.0",
     "npm-run-all": "4.0.2",
     "snazzy": "6.0.0",
-    "standard": "8.6.0",
+    "standard": "9.0.2",
     "watch": "1.0.2",
     "webpack": "1.14.0",
     "xunit-file": "1.0.0"
