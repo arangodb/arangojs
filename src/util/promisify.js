@@ -8,7 +8,7 @@ export default function promisify (Promise) {
   }
 
   return function (callback) {
-    if (callback || !Promise && !global.Promise) {
+    if (callback || (!Promise && !global.Promise)) {
       return {callback: callback || noop}
     }
 
