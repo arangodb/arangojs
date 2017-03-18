@@ -48,7 +48,7 @@ describe('Cursor API', () => {
   })
   describe('cursor.hasNext', () => {
     it('returns true if the Cursor has more results', (done) => {
-      expect(cursor.hasNext()).to.be.true
+      expect(cursor.hasNext()).to.equal(true)
       cursor.next()
         .then((val) => {
           expect(val).to.be.a('number')
@@ -59,7 +59,7 @@ describe('Cursor API', () => {
     it('returns false if the Cursor is empty', (done) => {
       cursor.all()
         .then(() => {
-          expect(cursor.hasNext()).to.be.false
+          expect(cursor.hasNext()).to.equal(false)
           done()
         })
         .catch(done)
@@ -100,7 +100,7 @@ describe('Cursor API', () => {
       })
         .then((result) => {
           expect(results).to.eql(aqlResult)
-          expect(result).to.be.true
+          expect(result).to.equal(true)
           done()
         })
         .catch(done)
@@ -113,7 +113,7 @@ describe('Cursor API', () => {
       })
         .then((result) => {
           expect(results).to.eql([0, 1, 2, 3, 4, 5])
-          expect(result).to.be.false
+          expect(result).to.equal(false)
           done()
         })
         .catch(done)
@@ -129,7 +129,7 @@ describe('Cursor API', () => {
       })
         .then((result) => {
           expect(results).to.eql(aqlResult)
-          expect(result).to.be.false
+          expect(result).to.equal(false)
           done()
         })
         .catch(done)
@@ -142,7 +142,7 @@ describe('Cursor API', () => {
       })
         .then((result) => {
           expect(results).to.eql([0, 1, 2, 3, 4, 5])
-          expect(result).to.be.true
+          expect(result).to.equal(true)
           done()
         })
         .catch(done)
