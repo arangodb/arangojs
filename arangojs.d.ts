@@ -121,8 +121,7 @@ declare module "arangojs" {
          * Performs a database query using the interpolated query from the tagged template from aql or aqlQuery
          * then returns a new `Cursor` instance for the result list
          *
-         * @param query An AQL query string or a query builder instance
-         * @param bindVars An object defining the variables to bind the query to
+         * @param query An AQL query built using the aql or aqlQuery template tag. Encapsulates the query string and bindVars.
          * @param opts Additional options that will be passed to the query API
          */
         query(query: AQLQuery, opts?: any): Promise<Cursor>;
