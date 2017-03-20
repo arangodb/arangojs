@@ -1,5 +1,23 @@
 declare module "arangojs" {
 
+    export interface AQLQuery {
+      query: string;
+      bindVars: any;
+    }
+
+    /**
+     * Template string handler for AQL queries. Converts an ES2015 template string to an object that can be passed to `database.query` by converting arguments to bind variables
+     *
+     * Any Collection instances will automatically be converted to collection bind variables
+     */
+    export function aqlQuery(strings: ReadonlyArray<string>, ...args): AQLQuery;
+    /**
+     * Template string handler for AQL queries. Converts an ES2015 template string to an object that can be passed to `database.query` by converting arguments to bind variables
+     *
+     * Any Collection instances will automatically be converted to collection bind variables
+     */
+    export function aql(strings: ReadonlyArray<string>, ...args): AQLQuery;
+
     export class Database {
         constructor (config?: any);
         /**
@@ -100,11 +118,13 @@ declare module "arangojs" {
          */
         query(query: string, bindVars?: any, opts?: any): Promise<Cursor>;
         /**
-         * Template string handler for AQL queries. Converts an ES2015 template string to an object that can be passed to `database.query` by converting arguments to bind variables
+         * Performs a database query using the interpolated query from the tagged template from aql or aqlQuery
+         * then returns a new `Cursor` instance for the result list
          *
-         * Any Collection instances will automatically be converted to collection bind variables
+         * @param query An AQL query built using the aql or aqlQuery template tag. Encapsulates the query string and bindVars.
+         * @param opts Additional options that will be passed to the query API
          */
-        aqlQuery(strings: string[], ...args): Promise<Cursor>;
+        query(query: AQLQuery, opts?: any): Promise<Cursor>;
         /**
          * Fetches a list of all AQL user functions registered with the database
          */
