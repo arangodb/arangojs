@@ -104,7 +104,7 @@ declare module "arangojs" {
          *
          * Any Collection instances will automatically be converted to collection bind variables
          */
-        aqlQuery(strings: string[], ...args): Promise<Cursor>;
+        aqlQuery(strings: string[], ...args: any[]): Promise<Cursor>;
         /**
          * Fetches a list of all AQL user functions registered with the database
          */
