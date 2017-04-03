@@ -77,7 +77,7 @@
     "snazzy": "6.0.0",
     "standard": "9.0.2",
     "watch": "1.0.2",
-    "webpack": "1.14.0",
+    "webpack": "2.3.3",
     "xunit-file": "1.0.0"
   },
   "contributors": [
