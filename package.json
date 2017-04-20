@@ -36,7 +36,7 @@
   "typings": "arangojs.d.ts",
   "scripts": {
     "test": "mocha --growl",
-    "lint": "snazzy --verbose src/**/*.js test/**/*.js",
+    "lint": "standard --verbose src/**/*.js test/**/*.js | snazzy",
     "ci": "mocha",
     "preci": "npm install",
     "jenkins": "npm run ci -- --timeout 0 --reporter xunit-file",
@@ -74,8 +74,8 @@
     "json-loader": "0.5.4",
     "mocha": "3.2.0",
     "npm-run-all": "4.0.2",
-    "snazzy": "6.0.0",
-    "standard": "9.0.2",
+    "snazzy": "7.0.0",
+    "standard": "10.0.0",
     "watch": "1.0.2",
     "webpack": "1.14.0",
     "xunit-file": "1.0.0"
