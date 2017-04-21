@@ -3950,6 +3950,9 @@ collection.import([
 });
 ```
 
+# ArangoDB status codes
+Use [arangodb-error-codes](https://github.com/oprogramador/arangodb-error-codes) for comparison of `errorNum` with predefined ArangoDB errors codes ex. ERROR_HTTP_NOT_FOUND.
+
 # License
 
 The Apache License, Version 2.0. For more information, see the accompanying LICENSE file.
