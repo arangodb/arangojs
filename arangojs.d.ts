@@ -1,7 +1,12 @@
 declare module "arangojs" {
-
-    export class Database {
-        constructor (config?: any);
+    interface A {
+        url: string;
+        databaseName: string | boolean;
+    }
+    function arangojs(config: A | string): Database;
+    export = arangojs;
+    class Database {
+        constructor(config?: any);
         /**
          * Updates the Database instance and its connection string to use
          * the given `databaseName`, then returns itself.
@@ -9,6 +14,8 @@ declare module "arangojs" {
          * @param databaseName The name of the database to use.
          */
         useDatabase(databaseName: string): any;
+        useBasicAuth(username: string, password: string): void;
+        useBearerAuth(token: string);
         /**
          * Creates a new database with the the given `databaseName`
          *
@@ -79,7 +86,7 @@ declare module "arangojs" {
         graphs(): Promise<Graph[]>;
         /**
          * Performs a server-side transaction and returns its return value.
-         * 
+         *
          * If `collections` is an array or string, it will be treated as `collections.write`.
          *
          * @param collections An object with arrays of names (or single name) of collections that will be read/written during the transaction.
@@ -132,7 +139,7 @@ declare module "arangojs" {
         route(path?: string, headers?: any): Promise<Route>;
     }
 
-    export class Collection {
+    class Collection {
         /**
          * Retrieves general information about the collection
          */
@@ -351,7 +358,7 @@ declare module "arangojs" {
         list(type?: string): Promise<string[]>;
     }
 
-    export class DocumentCollection extends Collection {
+    class DocumentCollection extends Collection {
         /**
          * Retrieves the document with the given documentHandle from the collection
          * @param documentHandle The handle of the document to retrieve. This can be either the `_id` or the `_key` of a document in the collection, or a document (i.e. an object with an `_id` or `_key` property)
@@ -364,7 +371,7 @@ declare module "arangojs" {
         save(data: any, opts?: any): Promise<any>;
     }
 
-    export class EdgeCollection extends Collection {
+    class EdgeCollection extends Collection {
         /**
          * Retrieves the edge with the given documentHandle from the collection
          *
@@ -406,7 +413,7 @@ declare module "arangojs" {
         traversal(startVertex: string, opts: any): any;
     }
 
-    export class Cursor {
+    class Cursor {
         /**
          * The total number of documents in the query result. This is only available if the count option was used
          */
@@ -464,7 +471,7 @@ declare module "arangojs" {
         reduce(callback: (value: any, index: number, cursor: Cursor) => any, accu?: any): Promise<any>;
     }
 
-    export class Route {
+    class Route {
         /**
          * Returns a new Route instance for the given path (relative to the current route) that can be used to perform arbitrary HTTP requests
          *
@@ -525,7 +532,7 @@ declare module "arangojs" {
         request(opts?: any): Promise<any>;
     }
 
-    export class Graph {
+    class Graph {
         /**
          * Retrieves general information about the graph
          */
@@ -596,7 +603,7 @@ declare module "arangojs" {
         traversal(startVertex: string, opts: any): Promise<any>;
     }
 
-    export class GraphVertexCollection extends Collection {
+    class GraphVertexCollection extends Collection {
         /**
          * Deletes the vertex with the given documentHandle from the collection.
          * @param documentHandle The handle of the vertex to retrieve. This can be either the _id or the _key of a vertex in the collection, or a vertex (i.e.an object with an _id or _key property).
@@ -614,7 +621,7 @@ declare module "arangojs" {
         save(data: any): Promise<any>;
     }
 
-    export class GraphEdgeCollection extends Collection {
+    class GraphEdgeCollection extends Collection {
         /**
          * Deletes the edge with the given documentHandle from the collection.
          * @param documentHandle The handle of the vertex to retrieve. This can be either the _id or the _key of a vertex in the collection, or a vertex (i.e.an object with an _id or _key property).
@@ -634,16 +641,16 @@ declare module "arangojs" {
         save(data: any, fromId?: string, toId?: string): Promise<any>;
         /**
          * Retrieves a list of all edges of the document with the given documentHandle.
-         * @param documentHandle The handle of the document to retrieve the edges of. This can be either the  _id  of a document in the database, the  _key  of an edge in the collection, or a document (i.e. an 
-         
+         * @param documentHandle The handle of the document to retrieve the edges of. This can be either the  _id  of a document in the database, the  _key  of an edge in the collection, or a document (i.e. an
+
          with an  _id  or  _key  property).
          */
-        edges(documentHandle: string): Promise< Array<any> >;
+        edges(documentHandle: string): Promise<Array<any>>;
         /**
          * Retrieves a list of all incoming edges of the document with the given documentHandle.
          * @param documentHandle The handle of the document to retrieve the edges of. This can be either the  _id  of a document in the database, the  _key  of an edge in the collection, or a document (i.e. an object with an  _id  or  _key  property).
          */
-        inEdges(documentHandle: string): Promise< Array<any> >;
+        inEdges(documentHandle: string): Promise<Array<any>>;
         /**
          * Retrieves a list of all outgoing edges of the document with the given documentHandle.
          * @param documentHandle The handle of the document to retrieve the edges of. This can be either the  _id  of a document in the database, the  _key  of an edge in the collection, or a document (i.e. an object with an  _id  or  _key  property).
