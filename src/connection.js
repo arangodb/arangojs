@@ -104,7 +104,7 @@ export default class Connection {
     const url = this._buildUrl(opts)
     const doRequest = this._request
     const operation = retry.operation(this.retryOptions)
-    operation.attempt(function(currentAttempt) {
+    operation.attempt(function (currentAttempt) {
       doRequest({
         url,
         headers: opts.headers,

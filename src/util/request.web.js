@@ -52,10 +52,10 @@ export default function (baseUrl, options) {
     }
 
     queue.push((next) => {
-      let callback = (...args) => {
+      let callback = (err, res) => {
         callback = () => undefined
         next()
-        cb(...args)
+        cb(err, res)
       }
       const req = xhr({
         responseType: expectBinary ? 'blob' : 'text',

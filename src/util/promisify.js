@@ -1,25 +1,26 @@
 const noop = () => undefined
 
-export default function promisify (Promise) {
-  if (Promise === false) {
-    return function (callback) {
-      return {callback: callback || noop}
+export default function promisify (promiseClass) {
+  if (promiseClass === false) {
+    return function (cb) {
+      return {callback: cb || noop}
     }
   }
 
-  return function (callback) {
-    if (callback || (!Promise && !global.Promise)) {
-      return {callback: callback || noop}
+  return function (cb) {
+    const Promise = promiseClass || global.Promise
+
+    if (cb || !Promise) {
+      return {callback: cb || noop}
     }
 
-    function defer (resolve, reject) {
+    let callback
+    const promise = new Promise((resolve, reject) => {
       callback = (err, res) => {
         if (err) reject(err)
         else resolve(res)
       }
-    }
-
-    const promise = Promise ? new Promise(defer) : new global.Promise(defer)
+    })
 
     return {callback, promise}
   }

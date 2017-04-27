@@ -22,7 +22,7 @@ export default function toForm (fields, callback) {
     stream.on('data', (buf) => bufs.push(buf))
     stream.on('end', () => {
       if (called) return
-      bufs.push(new Buffer('\r\n'))
+      bufs.push(Buffer.from('\r\n'))
       const body = Buffer.concat(bufs)
       const boundary = form.getBoundary()
       const headers = {
