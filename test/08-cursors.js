@@ -64,6 +64,17 @@ describe('Cursor API', () => {
         })
         .catch(done)
     })
+    it('returns true after first batch is consumed', (done) => {
+      db.query(aqlQuery, {}, {batchSize: 1})
+      .then((c) => {
+        expect(c._result.length).to.equal(1)
+        c.next()
+        expect(c._result.length).to.equal(0)
+        expect(c.hasNext()).to.equal(true)
+        done()
+      })
+      .catch(done)
+    })
   })
   describe('cursor.each', () => {
     it('invokes the callback for each value', (done) => {
