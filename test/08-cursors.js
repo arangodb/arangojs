@@ -5,7 +5,7 @@ import {Database} from '../src'
 const aqlQuery = 'FOR i In 0..10 RETURN i'
 const aqlResult = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
-function sleep(ms) {
+function sleep (ms) {
   var date = Date.now()
   var curDate = null
   do {
@@ -87,7 +87,7 @@ describe('Cursor API', () => {
       db.query('FOR i In 0..1 RETURN i', {}, {batchSize: 1})
       .then((cursor) => {
         expect(cursor.hasNext()).to.equal(true)
-          expect(cursor._result.length).to.equal(1)
+        expect(cursor._result.length).to.equal(1)
         cursor.next().then((val) => {
           expect(val).to.equal(0)
           expect(cursor.hasNext()).to.equal(true)
