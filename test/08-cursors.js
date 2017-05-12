@@ -5,6 +5,14 @@ import {Database} from '../src'
 const aqlQuery = 'FOR i In 0..10 RETURN i'
 const aqlResult = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
+function sleep(ms) {
+  var date = Date.now()
+  var curDate = null
+  do {
+    curDate = Date.now()
+  } while (curDate - date < ms)
+}
+
 describe('Cursor API', () => {
   let db
   let cursor
@@ -66,12 +74,68 @@ describe('Cursor API', () => {
     })
     it('returns true after first batch is consumed', (done) => {
       db.query(aqlQuery, {}, {batchSize: 1})
-      .then((c) => {
-        expect(c._result.length).to.equal(1)
-        c.next()
-        expect(c._result.length).to.equal(0)
-        expect(c.hasNext()).to.equal(true)
+      .then((cursor) => {
+        expect(cursor._result.length).to.equal(1)
+        cursor.next()
+        expect(cursor._result.length).to.equal(0)
+        expect(cursor.hasNext()).to.equal(true)
         done()
+      })
+      .catch(done)
+    })
+    it('returns false after last batch is consumed', (done) => {
+      db.query('FOR i In 0..1 RETURN i', {}, {batchSize: 1})
+      .then((cursor) => {
+        expect(cursor.hasNext()).to.equal(true)
+          expect(cursor._result.length).to.equal(1)
+        cursor.next().then((val) => {
+          expect(val).to.equal(0)
+          expect(cursor.hasNext()).to.equal(true)
+          expect(cursor._result.length).to.equal(0)
+          return cursor.next()
+        }).then((val) => {
+          expect(val).to.equal(1)
+          expect(cursor.hasNext()).to.equal(false)
+          expect(cursor._result.length).to.equal(0)
+          done()
+        })
+      })
+      .catch(done)
+    })
+    it('returns false after last result is consumed', (done) => {
+      db.query('FOR i In 0..1 RETURN i')
+      .then((cursor) => {
+        expect(cursor.hasNext()).to.equal(true)
+        expect(cursor._result.length).to.equal(2)
+        cursor.next().then((val) => {
+          expect(val).to.equal(0)
+          expect(cursor.hasNext()).to.equal(true)
+          expect(cursor._result.length).to.equal(1)
+          return cursor.next()
+        }).then((val) => {
+          expect(val).to.equal(1)
+          expect(cursor.hasNext()).to.equal(false)
+          expect(cursor._result.length).to.equal(0)
+          done()
+        })
+      })
+      .catch(done)
+    })
+    it('returns 404 after timeout', (done) => {
+      db.query('FOR i In 0..1 RETURN i', {}, {batchSize: 1, ttl: 0.5})
+      .then((cursor) => {
+        expect(cursor.hasNext()).to.equal(true)
+        expect(cursor._result.length).to.equal(1)
+        cursor.next().then((val) => {
+          expect(val).to.equal(0)
+          expect(cursor.hasNext()).to.equal(true)
+          expect(cursor._result.length).to.equal(0)
+          sleep(2000)
+          return cursor.next()
+        }).catch((err) => {
+          expect(err.code).to.equal(404)
+          done()
+        })
       })
       .catch(done)
     })
