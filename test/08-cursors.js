@@ -121,8 +121,8 @@ describe('Cursor API', () => {
       })
       .catch(done)
     })
-    it('returns 404 after timeout', (done) => {
-      db.query('FOR i In 0..1 RETURN i', {}, {batchSize: 1, ttl: 0.5})
+    it.skip('returns 404 after timeout', (done) => {
+      db.query('FOR i In 0..1 RETURN i', {}, {batchSize: 1, ttl: 1})
       .then((cursor) => {
         expect(cursor.hasNext()).to.equal(true)
         expect(cursor._result.length).to.equal(1)
@@ -130,7 +130,7 @@ describe('Cursor API', () => {
           expect(val).to.equal(0)
           expect(cursor.hasNext()).to.equal(true)
           expect(cursor._result.length).to.equal(0)
-          sleep(2000)
+          sleep(3000)
           return cursor.next()
         }).catch((err) => {
           expect(err.code).to.equal(404)
@@ -138,6 +138,21 @@ describe('Cursor API', () => {
         })
       })
       .catch(done)
+    })
+    it('returns false after last result is consumed (with large amount of results)', (done) => {
+      const EXPECTED_LENGTH = 100000
+      const loadMore = function (cursor, totalLength) {
+        cursor.next().then(() => {
+          totalLength++
+          expect(cursor.hasNext()).to.equal(totalLength !== EXPECTED_LENGTH)
+          if (cursor.hasNext()) {
+            loadMore(cursor, totalLength)
+          } else {
+            done()
+          }
+        }).catch(done)
+      }
+      db.query(`FOR i In 1..${EXPECTED_LENGTH} RETURN i`).then((cursor) => loadMore(cursor, 0)).catch(done)
     })
   })
   describe('cursor.each', () => {
