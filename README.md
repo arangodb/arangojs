@@ -14,21 +14,17 @@ The official ArangoDB low-level JavaScript client.
 
 # Compatibility
 
-ArangoJS is compatible with ArangoDB 2.8, 3.0 and 3.1.
+ArangoJS is compatible with ArangoDB 3.0 and later. **For using ArangoJS with 2.8 or earlier see the upgrade note below.** ArangoJS is tested against the two most-recent releases of ArangoDB 3 (currently 3.0 and 3.1) as well as the most recent version of 2.8 and the latest development version.
 
-The npm distribution of ArangoJS is compatible with Node.js 4, 6 and 7.
+The yarn/npm distribution of ArangoJS is compatible with Node.js versions 7 (latest), 6 (LTS) and 4 (Maintenance). Node.js version support follows [the official Node.js long-term support schedule](https://github.com/nodejs/LTS).
 
 The bower distribution of ArangoJS is compatible with most modern browsers.
 
 Versions outside this range may be compatible but are not actively supported.
 
-**Upgrade note**: If you want to use arangojs with ArangoDB 2.8 or earlier remember to set the appropriate `arangoVersion` option (e.g. `20800` for version 2.8.0). The current default value is `30000` (indicating compatibility with version 3.0.0 and newer). The driver will behave differently depending on this value when using APIs that have changed between these versions.
+**Upgrade note**: If you want to use arangojs with ArangoDB 2.8 or earlier remember to set the appropriate `arangoVersion` option (e.g. `20800` for version 2.8.0). The current default value is `30000` (indicating compatibility with version 3.0.0 and newer). **The driver will behave differently depending on this value when using APIs that have changed between these versions.**
 
 ## Testing
-
-The driver is being tested against the latest release of ArangoDB 2.8, the two most recent releases of ArangoDB 3 (currently 3.0 and 3.1) and the nightly development build of ArangoDB using the [active LTS releases](https://github.com/nodejs/LTS) of Node.js (currently 4 and 6) as well as the latest public release (7).
-
-Older versions of ArangoDB and Node.js may be compatible but are not actively supported.
 
 Run the tests using the `yarn test` or `npm test` commands:
 

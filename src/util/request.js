@@ -61,10 +61,10 @@ export default function (baseUrl, agentOptions, agent) {
     options.auth = baseUrlParts.auth
 
     queue.push((next) => {
-      let callback = (...args) => {
+      let callback = (err, res) => {
         callback = () => undefined
         next()
-        cb(...args)
+        cb(err, res)
       }
       const req = (isTls ? https : http).request(options, (res) => {
         const data = []
