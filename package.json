@@ -72,7 +72,7 @@
     "coveralls": "2.13.1",
     "istanbul": "0.4.5",
     "json-loader": "0.5.4",
-    "mocha": "3.2.0",
+    "mocha": "3.4.2",
     "npm-run-all": "4.0.2",
     "snazzy": "7.0.0",
     "standard": "10.0.2",
