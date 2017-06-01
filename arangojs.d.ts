@@ -98,7 +98,7 @@ declare module "arangojs" {
          * @param bindVars An object defining the variables to bind the query to
          * @param opts Additional options that will be passed to the query API
          */
-        query(query: string, bindVars?: any, opts?: any): Promise<Cursor>;
+        query(query: string | { query: string, bindVars?: any }, bindVars?: any, opts?: any): Promise<Cursor>;
         /**
          * Template string handler for AQL queries. Converts an ES2015 template string to an object that can be passed to `database.query` by converting arguments to bind variables
          *
@@ -656,4 +656,16 @@ declare module "arangojs" {
          */
         traversal(startVertex: string, opts: any): Promise<any>;
     }
+
+    /**
+     * Template string tagging function. 
+     * 
+     * Usage:
+```
+import arangojs, {Database, aql} from 'arangojs';
+let db = new Database();
+let result = await db.query(aql`RETURN ${Date.now()}`);
+```
+     */
+    export function aql(t: TemplateStringsArray, ...params: any[]): { query: string, bindVars?: any };
 }
