@@ -10,6 +10,24 @@ declare module "arangojs" {
          */
         useDatabase(databaseName: string): any;
         /**
+         * Updates the Database instance's `authorization` header to use Basic authentication with the given
+         * username and password, then returns itself.
+         *
+         * @param username The user name to log in with.
+         * @param password The password to use
+         */
+        useBasicAuth(username: string, password: string): this;
+        /**
+         * Updates the Database instance's `authorization` header to use Bearer authentication with the given
+         * authentication token, then returns itself.
+         *
+         * @param {string} token
+         * @returns {this}
+         *
+         * @memberof Database
+         */
+        useBearerAuth(token: string): this;
+        /**
          * Creates a new database with the the given `databaseName`
          *
          * @param databaseName Name of the database to create
