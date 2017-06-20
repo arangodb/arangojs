@@ -3,7 +3,7 @@ import qs from 'querystring'
 import btoa from './util/btoa'
 import byteLength from './util/bytelength'
 import promisify from './util/promisify'
-import createRequest from './util/request'
+import createRequest, {isBrowser} from './util/request'
 import ArangoError from './error'
 import Route from './route'
 import retry from 'retry'
@@ -91,7 +91,8 @@ export default class Connection {
       opts.headers['content-type'] = contentType
     }
 
-    if (typeof window === 'undefined' && !opts.headers.hasOwnProperty('content-length')) {
+    if (!isBrowser && !opts.headers.hasOwnProperty('content-length')) {
+      // Can't override content-length in browser but ArangoDB needs it to be set
       opts.headers['content-length'] = body ? byteLength(body, 'utf-8') : 0
     }
 

@@ -22,6 +22,8 @@ function joinPath (a = '', b = '') {
   return path
 }
 
+export const isBrowser = true
+
 export default function (baseUrl, options) {
   if (!options) options = {}
   const baseUrlParts = parseUrl(baseUrl)

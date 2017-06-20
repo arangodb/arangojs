@@ -24,6 +24,8 @@ function joinPath (a = '', b = '') {
   return path
 }
 
+export const isBrowser = false
+
 export default function (baseUrl, agentOptions, agent) {
   const baseUrlParts = parseUrl(baseUrl)
   const isTls = baseUrlParts.protocol === 'https:'
