@@ -1,4 +1,13 @@
 {
-  "presets": ["es2015", "stage-1"],
-  "plugins": ["transform-es2015-modules-commonjs"]
+  "presets": [
+    ["env", {
+      "targets": {
+        "browsers": ["last 2 versions", "ie >= 9"],
+        "node": 4
+      }
+    }]
+  ],
+  "plugins": [
+    "transform-object-rest-spread"
+  ]
 }
