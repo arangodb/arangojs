@@ -4,7 +4,20 @@
   "license": "Apache-2.0",
   "description": "The official ArangoDB JavaScript driver.",
   "homepage": "https://github.com/arangodb/arangojs",
+  "bugs": {
+    "url": "https://github.com/arangodb/arangojs/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/arangodb/arangojs.git"
+  },
   "author": "ArangoDB GmbH",
+  "contributors": [
+    {
+      "name": "Alan Plum",
+      "email": "me@pluma.io"
+    }
+  ],
   "keywords": [
     "arango",
     "arangodb",
@@ -23,9 +36,6 @@
     "./lib/util/multipart.js": "./lib/util/multipart.web.js",
     "./lib/util/request.js": "./lib/util/request.web.js"
   },
-  "directories": {
-    "lib": "lib"
-  },
   "files": [
     "lib/",
     "package.json",
@@ -40,13 +50,7 @@
     "ci": "mocha",
     "preci": "npm install",
     "jenkins": "npm run ci -- --timeout 0 --reporter xunit-file",
-    "watch": "npm-run-all -p watch:*",
-    "watch:browser": "npm run dist:browser -- --watch",
-    "watch:node": "watch 'npm run dist:node' ./src ./test",
-    "watch:test": "watch 'npm run lint && npm run test' ./src ./test",
-    "dist": "npm-run-all -p dist:*",
-    "dist:browser": "webpack",
-    "dist:node": "babel --compact false -d lib src",
+    "dist": "babel --compact false -d lib src && webpack",
     "prepublish": "npm run lint && npm run dist && node -e 'require(\"./\");'"
   },
   "dependencies": {
@@ -69,28 +73,11 @@
     "babel-preset-stage-1": "6.24.1",
     "chai": "4.0.0",
     "core-js": "2.4.1",
-    "coveralls": "2.13.1",
-    "istanbul": "0.4.5",
     "json-loader": "0.5.4",
     "mocha": "3.4.2",
-    "npm-run-all": "4.0.2",
     "snazzy": "7.0.0",
     "standard": "10.0.2",
-    "watch": "1.0.2",
     "webpack": "1.14.0",
     "xunit-file": "1.0.0"
-  },
-  "contributors": [
-    {
-      "name": "Alan Plum",
-      "email": "me@pluma.io"
-    }
-  ],
-  "bugs": {
-    "url": "https://github.com/arangodb/arangojs/issues"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/arangodb/arangojs.git"
   }
 }
