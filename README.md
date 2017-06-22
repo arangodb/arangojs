@@ -24,15 +24,34 @@ Versions outside this range may be compatible but are not actively supported.
 
 **Upgrade note**: If you want to use arangojs with ArangoDB 2.8 or earlier remember to set the appropriate `arangoVersion` option (e.g. `20800` for version 2.8.0). The current default value is `30000` (indicating compatibility with version 3.0.0 and newer). **The driver will behave differently depending on this value when using APIs that have changed between these versions.**
 
-## Testing
+# Versions
+
+This driver uses semantic versioning:
+
+* A change in the bugfix version (e.g. X.Y.0 -> X.Y.1) indicates internal changes and should always be safe to upgrade.
+* A change in the minor version (e.g. X.1.Z -> X.2.0) indicates additions and backwards-compatible changes that should not affect your code.
+* A change in the major version (e.g. 1.Y.Z -> 2.0.0) indicates *breaking* changes that require changes in your code to upgrade.
+
+The version number of this driver does not indicate supported ArangoDB versions!
+
+If you are getting weird errors or functions seem to be missing, make sure you are using the latest version of the driver and following documentation written for a compatible version. If you are following a tutorial written for an older version of arangojs, you can install that version using the `<name>@<version>` syntax:
+
+```sh
+# for version 4.x.x
+yarn add arangojs@4
+# - or -
+npm install --save arangojs@4
+```
+
+You can find the documentation for each version by clicking on the corresponding date on the left in [the list of version tags](https://github.com/arangodb/arangojs/tags).
+
+# Testing
 
 Run the tests using the `yarn test` or `npm test` commands:
 
 ```sh
 yarn test
-```
-
-```sh
+# - or -
 npm test
 ```
 
@@ -40,29 +59,19 @@ By default the tests will be run against a server listening on `http://root:@loc
 
 ```sh
 TEST_ARANGODB_URL=http://root:@myserver.local:8530 yarn test
-```
-
-```sh
+# - or -
 TEST_ARANGODB_URL=http://root:@myserver.local:8530 npm test
 ```
 
 # Install
 
-## With Yarn
+## With Yarn, NPM or Bower
 
 ```sh
 yarn add arangojs
-```
-
-## With NPM
-
-```sh
-npm install arangojs
-```
-
-## With bower
-
-```sh
+# - or -
+npm install --save arangojs
+# - or -
 bower install arangojs
 ```
 
