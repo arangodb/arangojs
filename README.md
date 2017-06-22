@@ -2,7 +2,7 @@
 
 The official ArangoDB low-level JavaScript client.
 
-**Note:** if you are looking for the ArangoDB JavaScript API in [Foxx](https://foxx.arangodb.com) (or the `arangosh` interactive shell) please check the [ArangoDB documentation](https://docs.arangodb.com/3.1/Manual/Foxx/Modules.html#the-arangodb-module) instead, specifically the `db` object exported by the `@arangodb` module. The JavaScript driver is **only** meant to be used when accessing ArangoDB from **outside** the database.
+**Note:** if you are looking for the ArangoDB JavaScript API in [Foxx](https://foxx.arangodb.com) (or the `arangosh` interactive shell) please check the [ArangoDB documentation](https://docs.arangodb.com/3.1/Manual/Foxx/Modules.html#the-arangodb-module) instead; specifically the `db` object exported by the `@arangodb` module. The JavaScript driver is **only** meant to be used when accessing ArangoDB from **outside** the database.
 
 [![license - APACHE-2.0](https://img.shields.io/npm/l/arangojs.svg)](http://opensource.org/licenses/APACHE-2.0)
 [![Dependencies](https://img.shields.io/david/arangodb/arangojs.svg)](https://david-dm.org/arangodb/arangojs)
@@ -26,13 +26,13 @@ Versions outside this range may be compatible but are not actively supported.
 
 # Versions
 
+The version number of this driver does not correspond with supported ArangoDB versions!
+
 This driver uses semantic versioning:
 
 * A change in the bugfix version (e.g. X.Y.0 -> X.Y.1) indicates internal changes and should always be safe to upgrade.
 * A change in the minor version (e.g. X.1.Z -> X.2.0) indicates additions and backwards-compatible changes that should not affect your code.
 * A change in the major version (e.g. 1.Y.Z -> 2.0.0) indicates *breaking* changes that require changes in your code to upgrade.
-
-The version number of this driver does not indicate supported ArangoDB versions!
 
 If you are getting weird errors or functions seem to be missing, make sure you are using the latest version of the driver and following documentation written for a compatible version. If you are following a tutorial written for an older version of arangojs, you can install that version using the `<name>@<version>` syntax:
 
