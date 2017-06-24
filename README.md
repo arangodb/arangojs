@@ -145,6 +145,8 @@ const db = new Database({
 });
 ```
 
+For AQL please check out the [`aql` template tag](#aql) for writing parametrized AQL queries without making your code vulnerable to injection attacks.
+
 # API
 
 All asynchronous functions take an optional Node-style callback (or "errback") as the last argument with the following arguments:
@@ -186,6 +188,8 @@ db.createDatabase('mydb', function (err, info) {
   }
 });
 ```
+
+**Note**: the examples in the remainder of this documentation use async/await and other modern language features like multi-line strings and template tags. When developing for an environment without support for these language features, just use node-style callbacks or promises instead as in the above example.
 
 ## Table of Contents
 
@@ -885,6 +889,30 @@ const query = {
 ```
 
 Note how the aql template tag automatically handles collection references (`@@value0` instead of `@value0`) for us so you don't have to worry about counting at-symbols.
+
+Because the aql template tag creates actual bindVars instead of inlining values directly, it also avoids injection attacks via malicious parameters:
+
+```js
+// malicious user input
+const email = '" || (FOR x IN secrets REMOVE x IN secrets) || "';
+
+// don't do this!
+const query = `
+  FOR user IN users
+  FILTER user.email == "${email}"
+  RETURN user
+`;
+// FILTER user.email == "" || (FOR x IN secrets REMOVE x IN secrets) || ""
+
+
+// do this!
+const query = aql`
+  FOR user IN users
+  FILTER user.email == ${email}
+  RETURN user
+`;
+// FILTER user.email == @value0
+```
 
 ### Managing AQL user functions
 
