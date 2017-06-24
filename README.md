@@ -896,7 +896,7 @@ Because the aql template tag creates actual bindVars instead of inlining values 
 // malicious user input
 const email = '" || (FOR x IN secrets REMOVE x IN secrets) || "';
 
-// don't do this!
+// DON'T do this!
 const query = `
   FOR user IN users
   FILTER user.email == "${email}"
@@ -904,8 +904,7 @@ const query = `
 `;
 // FILTER user.email == "" || (FOR x IN secrets REMOVE x IN secrets) || ""
 
-
-// do this!
+// instead do this!
 const query = aql`
   FOR user IN users
   FILTER user.email == ${email}
