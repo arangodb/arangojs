@@ -88,50 +88,59 @@ npm run dist
 
 ```js
 // Modern JavaScript
-import arangojs, {Database, aql} from 'arangojs';
-let db1 = arangojs(); // convenience short-hand
-let db2 = new Database();
-let result = await db2.query(aql`RETURN ${Date.now()}`);
+import {Database, aql} from 'arangojs';
+const db = new Database();
+const now = Date.now();
+try {
+  const cursor = await db.query(aql`RETURN ${now}`);
+  const result = await cursor.next();
+  // ...
+} catch (err) {
+  // ...
+}
 
 // or plain old Node-style
 var arangojs = require('arangojs');
-var db1 = arangojs();
-var db2 = new arangojs.Database();
-db2.query(
-  {
-    query: 'RETURN @arg0',
-    bindVars: {arg0: Date.now()}
-  },
-  function (err, result) {
+var db = new arangojs.Database();
+var now = Date.now();
+db.query({
+  query: 'RETURN @arg0',
+  bindVars: {arg0: now}
+}, function (err, cursor) {
+  if (err) {
     // ...
+  } else {
+    cursor.next(function (err, result) {
+      // ...
+    })
   }
-);
+});
 
 // Using a complex connection string with authentication
-let host = process.env.ARANGODB_HOST;
-let port = process.env.ARANGODB_PORT;
-let database = process.env.ARANGODB_DB;
-let username = process.env.ARANGODB_USERNAME;
-let password = process.env.ARANGODB_PASSWORD;
-let db = arangojs({
+const host = process.env.ARANGODB_HOST;
+const port = process.env.ARANGODB_PORT;
+const database = process.env.ARANGODB_DB;
+const username = process.env.ARANGODB_USERNAME;
+const password = process.env.ARANGODB_PASSWORD;
+const db = new Database({
   url: `http://${username}:${password}@${host}:${port}`,
   databaseName: database
 });
 
 // Or using a fully qualified URL containing the database path
-let db = arangojs({
+const db = new Database({
   url: `http://${username}:${password}@${host}:${port}/_db/${database}`,
   databaseName: false // don't automatically append database path to URL
 });
 
 // Database name and credentials can be hot-swapped
-let db = arangojs(`http://${host}:${port}`);
+const db = new Database(`http://${host}:${port}`);
 db.useDatabase(database);
 db.useBasicAuth(username, password);
 // or: db.useBearerAuth(token);
 
 // Using ArangoDB 2.8 compatibility mode
-let db = arangojs({
+const db = new Database({
   arangoVersion: 20800
 });
 ```
@@ -152,27 +161,30 @@ If you want to use promises in environments that don't provide the global `Promi
 **Examples**
 
 ```js
+// Using async/await
+try {
+  const info = await db.createDatabase('mydb');
+  // database created
+} catch (err) {
+  console.error(err.stack);
+}
+
+// Using promises with arrow functions
+db.createDatabase('mydb')
+.then(
+  info => {
+    // database created
+  },
+  err => console.error(err.stack)
+);
+
 // Node-style callbacks
 db.createDatabase('mydb', function (err, info) {
-    if (err) console.error(err.stack);
-    else {
-        // database created
-    }
+  if (err) console.error(err.stack);
+  else {
+    // database created
+  }
 });
-
-// Using promises with ES2015 arrow functions
-db.createDatabase('mydb')
-.then(info => {
-    // database created
-}, err => console.error(err.stack));
-
-// Using proposed ES.next "async/await" syntax
-try {
-    let info = await db.createDatabase('mydb');
-    // database created
-} catch (err) {
-    console.error(err.stack);
-}
 ```
 
 ## Table of Contents
@@ -342,10 +354,10 @@ If *config* is a string, it will be interpreted as *config.url*.
 
     ```js
     agentOptions: {
-        ca: [
-            fs.readFileSync('.ssl/sub.class1.server.ca.pem'),
-            fs.readFileSync('.ssl/ca.pem')
-        ]
+      ca: [
+        fs.readFileSync('.ssl/sub.class1.server.ca.pem'),
+        fs.readFileSync('.ssl/ca.pem')
+      ]
     }
     ```
 
@@ -413,7 +425,7 @@ Updates the *Database* instance and its connection string to use the given *data
 **Examples**
 
 ```js
-var db = require('arangojs')();
+const db = new Database();
 db.useDatabase('test');
 // The database instance now uses the database "test".
 ```
@@ -437,7 +449,7 @@ Updates the *Database* instance's `authorization` header to use Basic authentica
 **Examples**
 
 ```js
-var db = require('arangojs')();
+const db = new Database();
 db.useDatabase('test')
 db.useBasicAuth('admin', 'hunter2');
 // The database instance now uses the database "test"
@@ -459,7 +471,7 @@ Updates the *Database* instance's `authorization` header to use Bearer authentic
 **Examples**
 
 ```js
-var db = require('arangojs')();
+const db = new Database();
 db.useBearerAuth('keyboardcat');
 // The database instance now uses Bearer authentication.
 ```
@@ -499,11 +511,9 @@ Creates a new database with the given *databaseName*.
 **Examples**
 
 ```js
-var db = require('arangojs')();
-db.createDatabase('mydb', [{username: 'root'}])
-.then(info => {
-    // the database has been created
-});
+const db = new Database();
+const info = await db.createDatabase('mydb', [{username: 'root'}]);
+// the database has been created
 ```
 
 #### database.get
@@ -515,11 +525,9 @@ Fetches the database description for the active database from the server.
 **Examples**
 
 ```js
-var db = require('arangojs')();
-db.get()
-.then(info => {
-    // the database exists
-});
+const db = new Database();
+const info = await db.get();
+// the database exists
 ```
 
 #### database.listDatabases
@@ -531,11 +539,9 @@ Fetches all databases from the server and returns an array of their names.
 **Examples**
 
 ```js
-var db = require('arangojs')();
-db.listDatabases()
-.then(names => {
-    // databases is an array of database names
-});
+const db = new Database();
+const names = await db.listDatabases();
+// databases is an array of database names
 ```
 
 #### database.listUserDatabases
@@ -547,11 +553,9 @@ Fetches all databases accessible to the active user from the server and returns 
 **Examples**
 
 ```js
-var db = require('arangojs')();
-db.listUserDatabases()
-.then(names => {
-    // databases is an array of database names
-});
+const db = new Database();
+const names = await db.listUserDatabases();
+// databases is an array of database names
 ```
 
 #### database.dropDatabase
@@ -561,11 +565,9 @@ db.listUserDatabases()
 Deletes the database with the given *databaseName* from the server.
 
 ```js
-var db = require('arangojs')();
-db.dropDatabase('mydb')
-.then(() => {
-    // database "mydb" no longer exists
-})
+const db = new Database();
+await db.dropDatabase('mydb');
+// database "mydb" no longer exists
 ```
 
 #### database.truncate
@@ -583,19 +585,15 @@ Deletes **all documents in all collections** in the active database.
 **Examples**
 
 ```js
-var db = require('arangojs')();
+const db = new Database();
 
-db.truncate()
-.then(() => {
-    // all non-system collections in this database are now empty
-});
+await db.truncate();
+// all non-system collections in this database are now empty
 
 // -- or --
 
-db.truncate(false)
-.then(() => {
-    // I've made a huge mistake...
-});
+await db.truncate(false);
+// I've made a huge mistake...
 ```
 
 ### Accessing collections
@@ -617,8 +615,8 @@ Returns a *DocumentCollection* instance for the given collection name.
 **Examples**
 
 ```js
-var db = require('arangojs')();
-var collection = db.collection('potatos');
+const db = new Database();
+const collection = db.collection('potatos');
 ```
 
 #### database.edgeCollection
@@ -636,8 +634,8 @@ Returns an *EdgeCollection* instance for the given collection name.
 **Examples**
 
 ```js
-var db = require('arangojs')();
-var collection = db.edgeCollection('potatos');
+const db = new Database();
+const collection = db.edgeCollection('potatos');
 ```
 
 #### database.listCollections
@@ -655,21 +653,17 @@ Fetches all collections from the database and returns an array of collection des
 **Examples**
 
 ```js
-var db = require('arangojs')();
+const db = new Database();
 
-db.listCollections()
-.then(collections => {
-    // collections is an array of collection descriptions
-    // not including system collections
-});
+const collections = await db.listCollections();
+// collections is an array of collection descriptions
+// not including system collections
 
 // -- or --
 
-db.listCollections(false)
-.then(collections => {
-    // collections is an array of collection descriptions
-    // including system collections
-});
+const collections = await db.listCollections(false);
+// collections is an array of collection descriptions
+// including system collections
 ```
 
 #### database.collections
@@ -687,23 +681,19 @@ Fetches all collections from the database and returns an array of *DocumentColle
 **Examples**
 
 ```js
-var db = require('arangojs')();
+const db = new Database();
 
-db.listCollections()
-.then(collections => {
-    // collections is an array of DocumentCollection
-    // and EdgeCollection instances
-    // not including system collections
-});
+const collections = await db.listCollections()
+// collections is an array of DocumentCollection
+// and EdgeCollection instances
+// not including system collections
 
 // -- or --
 
-db.listCollections(false)
-.then(collections => {
-    // collections is an array of DocumentCollection
-    // and EdgeCollection instances
-    // including system collections
-});
+const collections = await db.listCollections(false)
+// collections is an array of DocumentCollection
+// and EdgeCollection instances
+// including system collections
 ```
 
 ### Accessing graphs
@@ -725,11 +715,9 @@ Fetches all graphs from the database and returns an array of graph descriptions.
 **Examples**
 
 ```js
-var db = require('arangojs')();
-db.listGraphs()
-.then(graphs => {
-    // graphs is an array of graph descriptions
-});
+const db = new Database();
+const graphs = await db.listGraphs();
+// graphs is an array of graph descriptions
 ```
 
 #### database.graphs
@@ -741,11 +729,9 @@ Fetches all graphs from the database and returns an array of *Graph* instances f
 **Examples**
 
 ```js
-var db = require('arangojs')();
-db.graphs()
-.then(graphs => {
-    // graphs is an array of Graph instances
-});
+const db = new Database();
+const graphs = await db.graphs();
+// graphs is an array of Graph instances
 ```
 
 ### Transactions
@@ -776,6 +762,8 @@ Performs a server-side transaction and returns its return value.
 
   A string evaluating to a JavaScript function to be executed on the server.
 
+  **Note**: For accessing the database from within ArangoDB, see [the documentation for the `@arangodb` module in ArangoDB](https://docs.arangodb.com/3.1/Manual/Appendix/JavaScriptModules/ArangoDB.html).
+
 * **params**: `Object` (optional)
 
   Available as variable `params` when the *action* function is being executed on server. Check the example below.
@@ -793,16 +781,23 @@ For more information on transactions, see [the HTTP API documentation for transa
 **Examples**
 
 ```js
-var db = require('arangojs')();
-var action = String(function () {
-    // This code will be executed inside ArangoDB!
-    var db = require('org/arangodb').db;
-    return db._query('FOR user IN _users FILTER user.age > @maxage RETURN u.user',{maxage:params.age}).toArray<any>();
+const db = new Database();
+const action = String(function (params) {
+  // This code will be executed inside ArangoDB!
+  const db = require('@arangodb').db;
+  return db._query(aql`
+    FOR user IN _users
+    FILTER user.age > ${params.age}
+    RETURN u.user
+  `).toArray();
 });
-db.transaction({read: '_users'}, action, {age:12})
-.then(result => {
-    // result contains the return value of the action
-});
+
+const result = await db.transaction(
+  {read: '_users'},
+  action,
+  {age: 12}
+);
+// result contains the return value of the action
 ```
 
 ### Queries
@@ -838,45 +833,27 @@ If *query* is an object with *query* and *bindVars* properties, those will be us
 **Examples**
 
 ```js
-var db = require('arangojs')();
-var active = true;
+const db = new Database();
+const active = true;
 
-// Using ES2015 string templates
-var aql = require('arangojs').aql;
-db.query(aql`
-    FOR u IN _users
-    FILTER u.authData.active == ${active}
-    RETURN u.user
-`)
-.then(cursor => {
-    // cursor is a cursor for the query result
-});
+// Using the aql template tag
+const cursor = await db.query(aql`
+  FOR u IN _users
+  FILTER u.authData.active == ${active}
+  RETURN u.user
+`);
+// cursor is a cursor for the query result
 
 // -- or --
 
-// Using the query builder
-var qb = require('aqb');
+// Old-school JS with explicit bindVars:
 db.query(
-    qb.for('u').in('_users')
-    .filter(qb.eq('u.authData.active', '@active'))
-    .return('u.user'),
-    {active: true}
-)
-.then(cursor => {
-    // cursor is a cursor for the query result
-});
-
-// -- or --
-
-// Using plain arguments
-db.query(
-    'FOR u IN _users'
-    + ' FILTER u.authData.active == @active'
-    + ' RETURN u.user',
-    {active: true}
-)
-.then(cursor => {
-    // cursor is a cursor for the query result
+  'FOR u IN _users'
+  + ' FILTER u.authData.active == @active'
+  + ' RETURN u.user',
+  {active: true}
+).then(function (cursor) {
+  // cursor is a cursor for the query result
 });
 ```
 
@@ -884,34 +861,30 @@ db.query(
 
 `aql(strings, ...args): Object`
 
-Template string handler for AQL queries. Converts an ES2015 template string to an object that can be passed to `database.query` by converting arguments to bind variables.
+Template string handler (aka template tag) for AQL queries. Converts a template string to an object that can be passed to `database.query` by converting arguments to bind variables.
 
 **Note**: If you want to pass a collection name as a bind variable, you need to pass a *Collection* instance (e.g. what you get by passing the collection name to `db.collection`) instead. If you see the error `"array expected as operand to FOR loop"`, you're likely passing a collection name instead of a collection instance.
 
 **Examples**
 
 ```js
-var db = require('arangojs')();
-var aql = require('arangojs').aql;
-var userCollection = db.collection('_users');
-var role = 'admin';
-db.query(aql`
-    FOR user IN ${userCollection}
-    FILTER user.role == ${role}
-    RETURN user
-`)
-.then(cursor => {
-    // cursor is a cursor for the query result
-});
+const userCollection = db.collection('_users');
+const role = 'admin';
+
+const query = aql`
+  FOR user IN ${userCollection}
+  FILTER user.role == ${role}
+  RETURN user
+`;
+
 // -- is equivalent to --
-db.query(
-  'FOR user IN @@value0 FILTER user.role == @value1 RETURN user',
-  {'@value0': userCollection.name, value1: role}
-)
-.then(cursor => {
-    // cursor is a cursor for the query result
-});
+const query = {
+  query: 'FOR user IN @@value0 FILTER user.role == @value1 RETURN user',
+  bindVars: {'@value0': userCollection.name, value1: role}
+};
 ```
+
+Note how the aql template tag automatically handles collection references (`@@value0` instead of `@value0`) for us so you don't have to worry about counting at-symbols.
 
 ### Managing AQL user functions
 
@@ -926,11 +899,9 @@ Fetches a list of all AQL user functions registered with the database.
 **Examples**
 
 ```js
-var db = require('arangojs')();
-db.listFunctions()
-.then(functions => {
-    // functions is a list of function descriptions
-})
+const db = new Database();
+const functions = db.listFunctions();
+// functions is a list of function descriptions
 ```
 
 #### database.createFunction
@@ -952,25 +923,22 @@ Creates an AQL user function with the given *name* and *code* if it does not alr
 **Examples**
 
 ```js
-var db = require('arangojs')();
-var aql = require('arangojs').aql;
-db.createFunction(
+const db = new Database();
+await db.createFunction(
   'ACME::ACCOUNTING::CALCULATE_VAT',
   String(function (price) {
-      return price * 0.19;
+    return price * 0.19;
   })
-)
+);
 // Use the new function in an AQL query with template handler:
-.then(() => db.query(aql`
-    FOR product IN products
-    RETURN MERGE(
-      {vat: ACME::ACCOUNTING::CALCULATE_VAT(product.price)},
-      product
-    )
-`))
-.then(cursor => {
-    // cursor is a cursor for the query result
-});
+const cursor = await db.query(aql`
+  FOR product IN products
+  RETURN MERGE(
+    {vat: ACME::ACCOUNTING::CALCULATE_VAT(product.price)},
+    product
+  )
+`);
+// cursor is a cursor for the query result
 ```
 
 #### database.dropFunction
@@ -992,11 +960,9 @@ Deletes the AQL user function with the given name from the database.
 **Examples**
 
 ```js
-var db = require('arangojs')();
-db.dropFunction('ACME::ACCOUNTING::CALCULATE_VAT')
-.then(() => {
-    // the function no longer exists
-});
+const db = new Database();
+await db.dropFunction('ACME::ACCOUNTING::CALCULATE_VAT');
+// the function no longer exists
 ```
 
 ### Arbitrary HTTP routes
@@ -1024,17 +990,15 @@ For more information on *Route* instances see the [*Route API* below](#route-api
 **Examples**
 
 ```js
-var db = require('arangojs')();
-var myFoxxService = db.route('my-foxx-service');
-myFoxxService.post('users', {
-    username: 'admin',
-    password: 'hunter2'
-})
-.then(response => {
-    // response.body is the result of
-    // POST /_db/_system/my-foxx-service/users
-    // with JSON request body '{"username": "admin", "password": "hunter2"}'
+const db = new Database();
+const myFoxxService = db.route('my-foxx-service');
+const response = await myFoxxService.post('users', {
+  username: 'admin',
+  password: 'hunter2'
 });
+// response.body is the result of
+// POST /_db/_system/my-foxx-service/users
+// with JSON request body '{"username": "admin", "password": "hunter2"}'
 ```
 
 ## Cursor API
@@ -1042,16 +1006,12 @@ myFoxxService.post('users', {
 *Cursor* instances provide an abstraction over the HTTP API's limitations. Unless a method explicitly exhausts the cursor, the driver will only fetch as many batches from the server as necessary. Like the server-side cursors, *Cursor* instances are incrementally depleted as they are read from.
 
 ```js
-var db = require('arangojs')();
-db.query('FOR x IN 1..100 RETURN x')
-// query result list: [1, 2, 3, ..., 99, 100]
-.then(cursor => {
-    cursor.next())
-    .then(value => {
-        value === 1;
-        // remaining result list: [2, 3, 4, ..., 99, 100]
-    });
-});
+const db = new Database();
+const cursor = await db.query('FOR x IN 1..5 RETURN x');
+// query result list: [1, 2, 3, 4, 5]
+const value = await cursor.next();
+assert.equal(value, 1);
+// remaining result list: [2, 3, 4, 5]
 ```
 
 ### cursor.count
@@ -1069,15 +1029,11 @@ Exhausts the cursor, then returns an array containing all values in the cursor's
 **Examples**
 
 ```js
-// query result list: [1, 2, 3, 4, 5]
-cursor.all()
-.then(vals => {
-    // vals is an array containing the entire query result
-    Array.isArray(vals);
-    vals.length === 5;
-    vals; // [1, 2, 3, 4, 5]
-    cursor.hasNext() === false;
-});
+const cursor = await db._query('FOR x IN 1..5 RETURN x');
+const result = await cursor.all()
+// result is an array containing the entire query result
+assert.deepEqual(result, [1, 2, 3, 4, 5]);
+assert.equal(cursor.hasNext(), false);
 ```
 
 ### cursor.next
@@ -1090,16 +1046,13 @@ Advances the cursor and returns the next value in the cursor's remaining result 
 
 ```js
 // query result list: [1, 2, 3, 4, 5]
-cursor.next()
-.then(val => {
-    val === 1;
-    // remaining result list: [2, 3, 4, 5]
-    return cursor.next();
-})
-.then(val2 => {
-    val2 === 2;
-    // remaining result list: [3, 4, 5]
-});
+const val = await cursor.next();
+assert.equal(val, 1);
+// remaining result list: [2, 3, 4, 5]
+
+const val2 = await cursor.next();
+assert.equal(val2, 2);
+// remaining result list: [3, 4, 5]
 ```
 
 ### cursor.hasNext
@@ -1111,10 +1064,8 @@ Returns `true` if the cursor has more values or `false` if the cursor has been e
 **Examples**
 
 ```js
-cursor.all() // exhausts the cursor
-.then(() => {
-    cursor.hasNext() === false;
-});
+await cursor.all(); // exhausts the cursor
+assert.equal(cursor.hasNext(), false);
 ```
 
 ### cursor.each
@@ -1150,19 +1101,18 @@ Equivalent to *Array.prototype.forEach* (except async).
 **Examples**
 
 ```js
-var results = [];
+const results = [];
 function doStuff(value) {
-    var VALUE = value.toUpperCase();
-    results.push(VALUE);
-    return VALUE;
+  const VALUE = value.toUpperCase();
+  results.push(VALUE);
+  return VALUE;
 }
-// query result list: ['a', 'b', 'c']
-cursor.each(doStuff)
-.then(last => {
-    String(results) === 'A,B,C';
-    cursor.hasNext() === false;
-    last === 'C';
-});
+
+const cursor = await db.query('FOR x IN ["a", "b", "c"] RETURN x')
+const last = await cursor.each(doStuff);
+assert.deepEqual(results, ['A', 'B', 'C']);
+assert.equal(cursor.hasNext(), false);
+assert.equal(last, 'C');
 ```
 
 ### cursor.every
@@ -1196,19 +1146,15 @@ Equivalent to *Array.prototype.every* (except async).
     The cursor itself.
 
 ```js
-function even(value) {
-    return value % 2 === 0;
-}
-// query result list: [0, 2, 4, 5, 6]
-cursor.every(even)
-.then(result => {
-    result === false; // 5 is not even
-    cursor.hasNext() === true;
-    cursor.next()
-    .then(value => {
-        value === 6; // next value after 5
-    });
-});
+const even = value => value % 2 === 0;
+
+const cursor = await db.query('FOR x IN 2..5 RETURN x');
+const result = await cursor.every(even);
+assert.equal(result, false); // 3 is not even
+assert.equal(cursor.hasNext(), true);
+
+const value = await cursor.next();
+assert.equal(value, 4); // next value after 3
 ```
 
 ### cursor.some
@@ -1224,19 +1170,15 @@ Equivalent to *Array.prototype.some* (except async).
 **Examples**
 
 ```js
-function even(value) {
-    return value % 2 === 0;
-}
-// query result list: [1, 3, 4, 5]
-cursor.some(even)
-.then(result => {
-    result === true; // 4 is even
-    cursor.hasNext() === true;
-    cursor.next()
-    .then(value => {
-        value === 5; // next value after 4
-    });
-});
+const even = value => value % 2 === 0;
+
+const cursor = await db.query('FOR x IN 1..5 RETURN x');
+const result = await cursor.some(even);
+assert.equal(result, true); // 2 is even
+assert.equal(cursor.hasNext(), true);
+
+const value = await cursor.next();
+assert.equal(value, 3); // next value after 2
 ```
 
 ### cursor.map
@@ -1248,6 +1190,8 @@ Advances the cursor by applying the function *fn* to each value in the cursor's 
 Returns an array of the return values of *fn*.
 
 Equivalent to *Array.prototype.map* (except async).
+
+**Note**: This creates an array of all return values. It is probably a bad idea to do this for very large query result sets.
 
 **Arguments**
 
@@ -1272,16 +1216,12 @@ Equivalent to *Array.prototype.map* (except async).
 **Examples**
 
 ```js
-function square(value) {
-    return value * value;
-}
-// query result list: [1, 2, 3, 4, 5]
-cursor.map(square)
-.then(result => {
-    result.length === 5;
-    result; // [1, 4, 9, 16, 25]
-    cursor.hasNext() === false;
-});
+const square = value => value * value;
+const cursor = await db.query('FOR x IN 1..5 RETURN x');
+const result = await cursor.map(square);
+assert.equal(result.length, 5);
+assert.deepEqual(result, [1, 4, 9, 16, 25]);
+assert.equal(cursor.hasNext(), false);
 ```
 
 ### cursor.reduce
@@ -1319,25 +1259,19 @@ Equivalent to *Array.prototype.reduce* (except async).
 **Examples**
 
 ```js
-function add(a, b) {
-    return a + b;
-}
-// query result list: [1, 2, 3, 4, 5]
+const add = (a, b) => a + b;
+const baseline = 1000;
 
-var baseline = 1000;
-cursor.reduce(add, baseline)
-.then(result => {
-    result === (baseline + 1 + 2 + 3 + 4 + 5);
-    cursor.hasNext() === false;
-});
+const cursor = await db.query('FOR x IN 1..5 RETURN x');
+const result = await cursor.reduce(add, baseline)
+assert.equal(result, baseline + 1 + 2 + 3 + 4 + 5);
+assert.equal(cursor.hasNext(), false);
 
 // -- or --
 
-cursor.reduce(add)
-.then(result => {
-    result === (1 + 2 + 3 + 4 + 5);
-    cursor.hasNext() === false;
-});
+const result = await cursor.reduce(add);
+assert.equal(result, 1 + 2 + 3 + 4 + 5);
+assert.equal(cursor.hasNext(), false);
 
 ```
 
@@ -1366,9 +1300,9 @@ If *path* is missing, the route will refer to the base URL of the database.
 **Examples**
 
 ```js
-var db = require('arangojs')();
-var route = db.route('my-foxx-service');
-var users = route.route('users');
+const db = new Database();
+const route = db.route('my-foxx-service');
+const users = route.route('users');
 // equivalent to db.route('my-foxx-service/users')
 ```
 
@@ -1392,29 +1326,23 @@ Performs a GET request to the given URL and returns the server response.
 **Examples**
 
 ```js
-var db = require('arangojs')();
-var route = db.route('my-foxx-service');
-route.get()
-.then(response => {
-    // response.body is the response body of calling
-    // GET _db/_system/my-foxx-service
-});
+const db = new Database();
+const route = db.route('my-foxx-service');
+const response = await route.get();
+// response.body is the response body of calling
+// GET _db/_system/my-foxx-service
 
 // -- or --
 
-route.get('users')
-.then(response => {
-    // response.body is the response body of calling
-    // GET _db/_system/my-foxx-service/users
-});
+const response = await route.get('users');
+// response.body is the response body of calling
+// GET _db/_system/my-foxx-service/users
 
 // -- or --
 
-route.get('users', {group: 'admin'})
-.then(response => {
-    // response.body is the response body of calling
-    // GET _db/_system/my-foxx-service/users?group=admin
-});
+const response = await route.get('users', {group: 'admin'});
+// response.body is the response body of calling
+// GET _db/_system/my-foxx-service/users?group=admin
 ```
 
 ### route.post
@@ -1440,45 +1368,37 @@ Performs a POST request to the given URL and returns the server response.
 **Examples**
 
 ```js
-var db = require('arangojs')();
-var route = db.route('my-foxx-service');
-route.post()
-.then(response => {
-    // response.body is the response body of calling
-    // POST _db/_system/my-foxx-service
-});
+const db = new Database();
+const route = db.route('my-foxx-service');
+const response = await route.post()
+// response.body is the response body of calling
+// POST _db/_system/my-foxx-service
 
 // -- or --
 
-route.post('users')
-.then(response => {
-    // response.body is the response body of calling
-    // POST _db/_system/my-foxx-service/users
-});
+const response = await route.post('users')
+// response.body is the response body of calling
+// POST _db/_system/my-foxx-service/users
 
 // -- or --
 
-route.post('users', {
-    username: 'admin',
-    password: 'hunter2'
-})
-.then(response => {
-    // response.body is the response body of calling
-    // POST _db/_system/my-foxx-service/users
-    // with JSON request body {"username": "admin", "password": "hunter2"}
+const response = await route.post('users', {
+  username: 'admin',
+  password: 'hunter2'
 });
+// response.body is the response body of calling
+// POST _db/_system/my-foxx-service/users
+// with JSON request body {"username": "admin", "password": "hunter2"}
 
 // -- or --
 
-route.post('users', {
-    username: 'admin',
-    password: 'hunter2'
-}, {admin: true})
-.then(response => {
-    // response.body is the response body of calling
-    // POST _db/_system/my-foxx-service/users?admin=true
-    // with JSON request body {"username": "admin", "password": "hunter2"}
-});
+const response = await route.post('users', {
+  username: 'admin',
+  password: 'hunter2'
+}, {admin: true});
+// response.body is the response body of calling
+// POST _db/_system/my-foxx-service/users?admin=true
+// with JSON request body {"username": "admin", "password": "hunter2"}
 ```
 
 ### route.put
@@ -1504,45 +1424,37 @@ Performs a PUT request to the given URL and returns the server response.
 **Examples**
 
 ```js
-var db = require('arangojs')();
-var route = db.route('my-foxx-service');
-route.put()
-.then(response => {
-    // response.body is the response body of calling
-    // PUT _db/_system/my-foxx-service
-});
+const db = new Database();
+const route = db.route('my-foxx-service');
+const response = await route.put();
+// response.body is the response body of calling
+// PUT _db/_system/my-foxx-service
 
 // -- or --
 
-route.put('users/admin')
-.then(response => {
-    // response.body is the response body of calling
-    // PUT _db/_system/my-foxx-service/users
-});
+const response = await route.put('users/admin');
+// response.body is the response body of calling
+// PUT _db/_system/my-foxx-service/users
 
 // -- or --
 
-route.put('users/admin', {
-    username: 'admin',
-    password: 'hunter2'
-})
-.then(response => {
-    // response.body is the response body of calling
-    // PUT _db/_system/my-foxx-service/users/admin
-    // with JSON request body {"username": "admin", "password": "hunter2"}
+const response = await route.put('users/admin', {
+  username: 'admin',
+  password: 'hunter2'
 });
+// response.body is the response body of calling
+// PUT _db/_system/my-foxx-service/users/admin
+// with JSON request body {"username": "admin", "password": "hunter2"}
 
 // -- or --
 
-route.put('users/admin', {
-    username: 'admin',
-    password: 'hunter2'
-}, {admin: true})
-.then(response => {
-    // response.body is the response body of calling
-    // PUT _db/_system/my-foxx-service/users/admin?admin=true
-    // with JSON request body {"username": "admin", "password": "hunter2"}
-});
+const response = await route.put('users/admin', {
+  username: 'admin',
+  password: 'hunter2'
+}, {admin: true});
+// response.body is the response body of calling
+// PUT _db/_system/my-foxx-service/users/admin?admin=true
+// with JSON request body {"username": "admin", "password": "hunter2"}
 ```
 
 ### route.patch
@@ -1568,43 +1480,35 @@ Performs a PATCH request to the given URL and returns the server response.
 **Examples**
 
 ```js
-var db = require('arangojs')();
-var route = db.route('my-foxx-service');
-route.patch()
-.then(response => {
-    // response.body is the response body of calling
-    // PATCH _db/_system/my-foxx-service
-});
+const db = new Database();
+const route = db.route('my-foxx-service');
+const response = await route.patch();
+// response.body is the response body of calling
+// PATCH _db/_system/my-foxx-service
 
 // -- or --
 
-route.patch('users/admin')
-.then(response => {
-    // response.body is the response body of calling
-    // PATCH _db/_system/my-foxx-service/users
-});
+const response = await route.patch('users/admin');
+// response.body is the response body of calling
+// PATCH _db/_system/my-foxx-service/users
 
 // -- or --
 
-route.patch('users/admin', {
-    password: 'hunter2'
-})
-.then(response => {
-    // response.body is the response body of calling
-    // PATCH _db/_system/my-foxx-service/users/admin
-    // with JSON request body {"password": "hunter2"}
+const response = await route.patch('users/admin', {
+  password: 'hunter2'
 });
+// response.body is the response body of calling
+// PATCH _db/_system/my-foxx-service/users/admin
+// with JSON request body {"password": "hunter2"}
 
 // -- or --
 
-route.patch('users/admin', {
-    password: 'hunter2'
-}, {admin: true})
-.then(response => {
-    // response.body is the response body of calling
-    // PATCH _db/_system/my-foxx-service/users/admin?admin=true
-    // with JSON request body {"password": "hunter2"}
-});
+const response = await route.patch('users/admin', {
+  password: 'hunter2'
+}, {admin: true});
+// response.body is the response body of calling
+// PATCH _db/_system/my-foxx-service/users/admin?admin=true
+// with JSON request body {"password": "hunter2"}
 ```
 
 ### route.delete
@@ -1626,29 +1530,23 @@ Performs a DELETE request to the given URL and returns the server response.
 **Examples**
 
 ```js
-var db = require('arangojs')();
-var route = db.route('my-foxx-service');
-route.delete()
-.then(response => {
-    // response.body is the response body of calling
-    // DELETE _db/_system/my-foxx-service
-});
+const db = new Database();
+const route = db.route('my-foxx-service');
+const response = await route.delete()
+// response.body is the response body of calling
+// DELETE _db/_system/my-foxx-service
 
 // -- or --
 
-route.delete('users/admin')
-.then(response => {
-    // response.body is the response body of calling
-    // DELETE _db/_system/my-foxx-service/users/admin
-});
+const response = await route.delete('users/admin')
+// response.body is the response body of calling
+// DELETE _db/_system/my-foxx-service/users/admin
 
 // -- or --
 
-route.delete('users/admin', {permanent: true})
-.then(response => {
-    // response.body is the response body of calling
-    // DELETE _db/_system/my-foxx-service/users/admin?permanent=true
-});
+const response = await route.delete('users/admin', {permanent: true})
+// response.body is the response body of calling
+// DELETE _db/_system/my-foxx-service/users/admin?permanent=true
 ```
 
 ### route.head
@@ -1670,13 +1568,11 @@ Performs a HEAD request to the given URL and returns the server response.
 **Examples**
 
 ```js
-var db = require('arangojs')();
-var route = db.route('my-foxx-service');
-route.head()
-.then(response => {
-    // response is the response object for
-    // HEAD _db/_system/my-foxx-service
-});
+const db = new Database();
+const route = db.route('my-foxx-service');
+const response = await route.head();
+// response is the response object for
+// HEAD _db/_system/my-foxx-service
 ```
 
 ### route.request
@@ -1718,19 +1614,17 @@ Performs an arbitrary request to the given URL and returns the server response.
 **Examples**
 
 ```js
-var db = require('arangojs')();
-var route = db.route('my-foxx-service');
-route.request({
-    path: 'hello-world',
-    method: 'POST',
-    body: {hello: 'world'},
-    qs: {admin: true}
-})
-.then(response => {
-    // response.body is the response body of calling
-    // POST _db/_system/my-foxx-service/hello-world?admin=true
-    // with JSON request body '{"hello": "world"}'
+const db = new Database();
+const route = db.route('my-foxx-service');
+const response = await route.request({
+  path: 'hello-world',
+  method: 'POST',
+  body: {hello: 'world'},
+  qs: {admin: true}
 });
+// response.body is the response body of calling
+// POST _db/_system/my-foxx-service/hello-world?admin=true
+// with JSON request body '{"hello": "world"}'
 ```
 
 ## Collection API
@@ -1752,12 +1646,10 @@ Retrieves general information about the collection.
 **Examples**
 
 ```js
-var db = require('arangojs')();
-var collection = db.collection('some-collection');
-collection.get()
-.then(data => {
-    // data contains general information about the collection
-});
+const db = new Database();
+const collection = db.collection('some-collection');
+const data = await collection.get();
+// data contains general information about the collection
 ```
 
 #### collection.properties
@@ -1769,12 +1661,10 @@ Retrieves the collection's properties.
 **Examples**
 
 ```js
-var db = require('arangojs')();
-var collection = db.collection('some-collection');
-collection.properties()
-.then(data => {
-    // data contains the collection's properties
-});
+const db = new Database();
+const collection = db.collection('some-collection');
+const data = await collection.properties();
+// data contains the collection's properties
 ```
 
 #### collection.count
@@ -1786,12 +1676,10 @@ Retrieves information about the number of documents in a collection.
 **Examples**
 
 ```js
-var db = require('arangojs')();
-var collection = db.collection('some-collection');
-collection.count()
-.then(data => {
-    // data contains the collection's count
-});
+const db = new Database();
+const collection = db.collection('some-collection');
+const data = await collection.count();
+// data contains the collection's count
 ```
 
 #### collection.figures
@@ -1803,12 +1691,10 @@ Retrieves statistics for a collection.
 **Examples**
 
 ```js
-var db = require('arangojs')();
-var collection = db.collection('some-collection');
-collection.figures()
-.then(data => {
-    // data contains the collection's figures
-});
+const db = new Database();
+const collection = db.collection('some-collection');
+const data = await collection.figures();
+// data contains the collection's figures
 ```
 
 #### collection.revision
@@ -1820,12 +1706,10 @@ Retrieves the collection revision ID.
 **Examples**
 
 ```js
-var db = require('arangojs')();
-var collection = db.collection('some-collection');
-collection.revision()
-.then(data => {
-    // data contains the collection's revision
-});
+const db = new Database();
+const collection = db.collection('some-collection');
+const data = await collection.revision();
+// data contains the collection's revision
 ```
 
 #### collection.checksum
@@ -1843,12 +1727,10 @@ Retrieves the collection checksum.
 **Examples**
 
 ```js
-var db = require('arangojs')();
-var collection = db.collection('some-collection');
-collection.checksum()
-.then(data => {
-    // data contains the collection's checksum
-});
+const db = new Database();
+const collection = db.collection('some-collection');
+const data = await collection.checksum();
+// data contains the collection's checksum
 ```
 
 ### Manipulating the collection
@@ -1870,22 +1752,18 @@ Creates a collection with the given *properties* for this collection's name, the
 **Examples**
 
 ```js
-var db = require('arangojs')();
-collection = db.collection('potatos');
-collection.create()
-.then(() => {
-    // the document collection "potatos" now exists
-});
+const db = new Database();
+const collection = db.collection('potatos');
+await collection.create()
+// the document collection "potatos" now exists
 
 // -- or --
 
-var collection = db.edgeCollection('friends');
-collection.create({
-    waitForSync: true // always sync document changes to disk
-})
-.then(() => {
-    // the edge collection "friends" now exists
+const collection = db.edgeCollection('friends');
+await collection.create({
+  waitForSync: true // always sync document changes to disk
 });
+// the edge collection "friends" now exists
 ```
 
 #### collection.load
@@ -1903,12 +1781,10 @@ Tells the server to load the collection into memory.
 **Examples**
 
 ```js
-var db = require('arangojs')();
-var collection = db.collection('some-collection');
-collection.load(false)
-.then(() => {
-    // the collection has now been loaded into memory
-});
+const db = new Database();
+const collection = db.collection('some-collection');
+await collection.load(false)
+// the collection has now been loaded into memory
 ```
 
 #### collection.unload
@@ -1920,12 +1796,10 @@ Tells the server to remove the collection from memory.
 **Examples**
 
 ```js
-var db = require('arangojs')();
-var collection = db.collection('some-collection');
-collection.unload()
-.then(() => {
-    // the collection has now been unloaded from memory
-});
+const db = new Database();
+const collection = db.collection('some-collection');
+await collection.unload()
+// the collection has now been unloaded from memory
 ```
 
 #### collection.setProperties
@@ -1943,14 +1817,12 @@ Replaces the properties of the collection.
 **Examples**
 
 ```js
-var db = require('arangojs')();
-var collection = db.collection('some-collection');
-collection.setProperties({waitForSync: true})
-.then(result => {
-    result.waitForSync === true;
-    // the collection will now wait for data being written to disk
-    // whenever a document is changed
-});
+const db = new Database();
+const collection = db.collection('some-collection');
+const result = await collection.setProperties({waitForSync: true})
+assert.equal(result.waitForSync, true);
+// the collection will now wait for data being written to disk
+// whenever a document is changed
 ```
 
 #### collection.rename
@@ -1962,14 +1834,12 @@ Renames the collection. The *Collection* instance will automatically update its 
 **Examples**
 
 ```js
-var db = require('arangojs')();
-var collection = db.collection('some-collection');
-collection.rename('new-collection-name')
-.then(result => {
-    result.name === 'new-collection-name';
-    collection.name === result.name;
-    // result contains additional information about the collection
-});
+const db = new Database();
+const collection = db.collection('some-collection');
+const result = await collection.rename('new-collection-name')
+assert.equal(result.name, 'new-collection-name');
+assert.equal(collection.name, result.name);
+// result contains additional information about the collection
 ```
 
 #### collection.rotate
@@ -1981,12 +1851,10 @@ Rotates the journal of the collection.
 **Examples**
 
 ```js
-var db = require('arangojs')();
-var collection = db.collection('some-collection');
-collection.rotate()
-.then(data => {
-    // data.result will be true if rotation succeeded
-});
+const db = new Database();
+const collection = db.collection('some-collection');
+const data = await collection.rotate();
+// data.result will be true if rotation succeeded
 ```
 
 #### collection.truncate
@@ -1998,12 +1866,10 @@ Deletes **all documents** in the collection in the database.
 **Examples**
 
 ```js
-var db = require('arangojs')();
-var collection = db.collection('some-collection');
-collection.truncate()
-.then(() => {
-    // the collection "some-collection" is now empty
-});
+const db = new Database();
+const collection = db.collection('some-collection');
+await collection.truncate();
+// the collection "some-collection" is now empty
 ```
 
 #### collection.drop
@@ -2028,12 +1894,10 @@ Deletes the collection from the database.
 **Examples**
 
 ```js
-var db = require('arangojs')();
-var collection = db.collection('some-collection');
-collection.drop()
-.then(() => {
-    // the collection "some-collection" no longer exists
-});
+const db = new Database();
+const collection = db.collection('some-collection');
+await collection.drop();
+// the collection "some-collection" no longer exists
 ```
 
 ### Manipulating indexes
@@ -2055,13 +1919,10 @@ Creates an arbitrary index on the collection.
 **Examples**
 
 ```js
-var db = require('arangojs')();
-var collection = db.collection('some-collection');
-collection.createIndex({type: 'cap', size: 20})
-.then(index => {
-    index.id; // the index's handle
-    // the index has been created
-});
+const db = new Database();
+const collection = db.collection('some-collection');
+const index = await collection.createIndex({type: 'cap', size: 20});
+// the index has been created with the handle `index.id`
 ```
 
 #### collection.createCapConstraint
@@ -2093,24 +1954,18 @@ For more information on the properties of the *size* object see [the HTTP API fo
 **Examples**
 
 ```js
-var db = require('arangojs')();
-var collection = db.collection('some-collection');
+const db = new Database();
+const collection = db.collection('some-collection');
 
-collection.createCapConstraint(20)
-.then(index => {
-    index.id; // the index's handle
-    index.size === 20;
-    // the index has been created
-});
+const index = await collection.createCapConstraint(20)
+// the index has been created with the handle `index.id`
+assert.equal(index.size, 20);
 
 // -- or --
 
-collection.createCapConstraint({size: 20})
-.then(index => {
-    index.id; // the index's handle
-    index.size === 20;
-    // the index has been created
-});
+const index = await collection.createCapConstraint({size: 20})
+// the index has been created with the handle `index.id`
+assert.equal(index.size, 20);
 ```
 
 #### collection.createHashIndex
@@ -2134,24 +1989,18 @@ For more information on hash indexes, see [the HTTP API for hash indexes](https:
 **Examples**
 
 ```js
-var db = require('arangojs')();
-var collection = db.collection('some-collection');
+const db = new Database();
+const collection = db.collection('some-collection');
 
-collection.createHashIndex('favorite-color')
-.then(index => {
-    index.id; // the index's handle
-    index.fields; // ['favorite-color']
-    // the index has been created
-});
+const index = await collection.createHashIndex('favorite-color');
+// the index has been created with the handle `index.id`
+assert.deepEqual(index.fields, ['favorite-color']);
 
 // -- or --
 
-collection.createHashIndex(['favorite-color'])
-.then(index => {
-    index.id; // the index's handle
-    index.fields; // ['favorite-color']
-    // the index has been created
-});
+const index = await collection.createHashIndex(['favorite-color']);
+// the index has been created with the handle `index.id`
+assert.deepEqual(index.fields, ['favorite-color']);
 ```
 
 #### collection.createSkipList
@@ -2175,24 +2024,18 @@ For more information on skiplist indexes, see [the HTTP API for skiplist indexes
 **Examples**
 
 ```js
-var db = require('arangojs')();
-var collection = db.collection('some-collection');
+const db = new Database();
+const collection = db.collection('some-collection');
 
-collection.createSkipList('favorite-color')
-.then(index => {
-    index.id; // the index's handle
-    index.fields; // ['favorite-color']
-    // the index has been created
-});
+const index = await collection.createSkipList('favorite-color')
+// the index has been created with the handle `index.id`
+assert.deepEqual(index.fields, ['favorite-color']);
 
 // -- or --
 
-collection.createSkipList(['favorite-color'])
-.then(index => {
-    index.id; // the index's handle
-    index.fields; // ['favorite-color']
-    // the index has been created
-});
+const index = await collection.createSkipList(['favorite-color'])
+// the index has been created with the handle `index.id`
+assert.deepEqual(index.fields, ['favorite-color']);
 ```
 
 #### collection.createGeoIndex
@@ -2216,24 +2059,18 @@ For more information on the properties of the *opts* object see [the HTTP API fo
 **Examples**
 
 ```js
-var db = require('arangojs')();
-var collection = db.collection('some-collection');
+const db = new Database();
+const collection = db.collection('some-collection');
 
-collection.createGeoIndex(['latitude', 'longitude'])
-.then(index => {
-    index.id; // the index's handle
-    index.fields; // ['longitude', 'latitude']
-    // the index has been created
-});
+const index = await collection.createGeoIndex(['latitude', 'longitude']);
+// the index has been created with the handle `index.id`
+assert.deepEqual(index.fields, ['longitude', 'latitude']);
 
 // -- or --
 
-collection.createGeoIndex('location', {geoJson: true})
-.then(index => {
-    index.id; // the index's handle
-    index.fields; // ['location']
-    // the index has been created
-});
+const index = await collection.createGeoIndex('location', {geoJson: true});
+// the index has been created with the handle `index.id`
+assert.deepEqual(index.fields, ['location']);
 ```
 
 #### collection.createFulltextIndex
@@ -2257,24 +2094,18 @@ For more information on fulltext indexes, see [the HTTP API for fulltext indexes
 **Examples**
 
 ```js
-var db = require('arangojs')();
-var collection = db.collection('some-collection');
+const db = new Database();
+const collection = db.collection('some-collection');
 
-collection.createFulltextIndex('description')
-.then(index => {
-    index.id; // the index's handle
-    index.fields; // ['description']
-    // the index has been created
-});
+const index = await collection.createFulltextIndex('description');
+// the index has been created with the handle `index.id`
+assert.deepEqual(index.fields, ['description']);
 
 // -- or --
 
-collection.createFulltextIndex(['description'])
-.then(index => {
-    index.id; // the index's handle
-    index.fields; // ['description']
-    // the index has been created
-});
+const index = await collection.createFulltextIndex(['description']);
+// the index has been created with the handle `index.id`
+assert.deepEqual(index.fields, ['description']);
 ```
 
 #### collection.createPersistentIndex
@@ -2290,8 +2121,8 @@ This reduces memory usage and DB startup time, with the trade-off being that it 
 
 * **fields**: `Array<string>`
 
-  An array of names of document fields on which to create the index. 
-  
+  An array of names of document fields on which to create the index.
+
 * **opts**: `Object` (optional)
 
   An object containing additional properties of the index.
@@ -2301,16 +2132,12 @@ For more information on the properties of the *opts* object see [the HTTP API fo
 **Examples**
 
 ```js
-var db = require('arangojs')();
-var collection = db.collection('some-collection');
+const db = new Database();
+const collection = db.collection('some-collection');
 
-collection.createPersistentIndex(['name', 'email'])
-.then(index => {
-    index.id; // the index's handle
-    index.fields; // ['name', 'email']
-    // the index has been created
-});
-
+const index = await collection.createPersistentIndex(['name', 'email']);
+// the index has been created with the handle `index.id`
+assert.deepEqual(index.fields, ['name', 'email']);
 ```
 
 #### collection.index
@@ -2328,24 +2155,18 @@ Fetches information about the index with the given *indexHandle* and returns it.
 **Examples**
 
 ```js
-var db = require('arangojs')();
-var collection = db.collection('some-collection');
-collection.createFulltextIndex('description')
-.then(index => {
-    collection.index(index.id)
-    .then(result => {
-        result.id === index.id;
-        // result contains the properties of the index
-    });
+const db = new Database();
+const collection = db.collection('some-collection');
+const index = await collection.createFulltextIndex('description');
+const result = await collection.index(index.id);
+assert.equal(result.id, index.id);
+// result contains the properties of the index
 
-    // -- or --
+// -- or --
 
-    collection.index(index.id.split('/')[1])
-    .then(result => {
-        result.id === index.id;
-        // result contains the properties of the index
-    });
-});
+const result = await collection.index(index.id.split('/')[1]);
+assert.equal(result.id, index.id);
+// result contains the properties of the index
 ```
 
 #### collection.indexes
@@ -2357,14 +2178,12 @@ Fetches a list of all indexes on this collection.
 **Examples**
 
 ```js
-var db = require('arangojs')();
-var collection = db.collection('some-collection');
-collection.createFulltextIndex('description')
-.then(() => collection.indexes())
-.then(indexes => {
-    indexes.length === 1;
-    // indexes contains information about the index
-});
+const db = new Database();
+const collection = db.collection('some-collection');
+await collection.createFulltextIndex('description')
+const indexes = await collection.indexes();
+assert.equal(indexes.length, 1);
+// indexes contains information about the index
 ```
 
 #### collection.dropIndex
@@ -2382,22 +2201,16 @@ Deletes the index with the given *indexHandle* from the collection.
 **Examples**
 
 ```js
-var db = require('arangojs')();
-var collection = db.collection('some-collection');
-collection.createFulltextIndex('description')
-.then(index => {
-    collection.dropIndex(index.id)
-    .then(() => {
-        // the index has been removed from the collection
-    });
+const db = new Database();
+const collection = db.collection('some-collection');
+const index = await collection.createFulltextIndex('description');
+await collection.dropIndex(index.id);
+// the index has been removed from the collection
 
-    // -- or --
+// -- or --
 
-    collection.dropIndex(index.id.split('/')[1])
-    .then(() => {
-        // the index has been removed from the collection
-    });
-});
+await collection.dropIndex(index.id.split('/')[1]);
+// the index has been removed from the collection
 ```
 
 ### Simple queries
@@ -2643,49 +2456,41 @@ For more information on the *opts* object, see [the HTTP API documentation for b
 **Examples**
 
 ```js
-var db = require('arangojs')();
-var collection = db.collection('users');
+const db = new Database();
+const collection = db.collection('users');
 
-collection.import(
-    [// document stream
-        {username: 'admin', password: 'hunter2'},
-        {username: 'jcd', password: 'bionicman'},
-        {username: 'jreyes', password: 'amigo'},
-        {username: 'ghermann', password: 'zeitgeist'}
-    ]
-)
-.then(result => {
-    result.created === 4;
-});
+// document stream
+const result = await collection.import([
+  {username: 'admin', password: 'hunter2'},
+  {username: 'jcd', password: 'bionicman'},
+  {username: 'jreyes', password: 'amigo'},
+  {username: 'ghermann', password: 'zeitgeist'}
+]);
+assert.equal(result.created, 4);
 
 // -- or --
 
-collection.import(
-    [// array stream with header
-        ['username', 'password'], // keys
-        ['admin', 'hunter2'], // row 1
-        ['jcd', 'bionicman'], // row 2
-        ['jreyes', 'amigo'],
-        ['ghermann', 'zeitgeist']
-    ]
-)
-.then(result => {
-    result.created === 4;
-});
+// array stream with header
+const result = await collection.import([
+  ['username', 'password'], // keys
+  ['admin', 'hunter2'], // row 1
+  ['jcd', 'bionicman'], // row 2
+  ['jreyes', 'amigo'],
+  ['ghermann', 'zeitgeist']
+]);
+assert.equal(result.created, 4);
 
 // -- or --
 
-collection.import(
-    // raw line-delimited JSON array stream with header
-    '["username", "password"]\r\n' +
-    '["admin", "hunter2"]\r\n' +
-    '["jcd", "bionicman"]\r\n' +
-    '["jreyes", "amigo"]\r\n' +
-    '["ghermann", "zeitgeist"]\r\n'
-)
-.then(result => {
-    result.created === 4;
-});
+// raw line-delimited JSON array stream with header
+const result = await collection.import([
+  '["username", "password"]',
+  '["admin", "hunter2"]',
+  '["jcd", "bionicman"]',
+  '["jreyes", "amigo"]',
+  '["ghermann", "zeitgeist"]'
+].join('\r\n') + '\r\n');
+assert.equal(result.created, 4);
 ```
 
 ### Manipulating documents
@@ -2736,24 +2541,18 @@ For more information on the *opts* object, see [the HTTP API documentation for w
 **Examples**
 
 ```js
-var db = require('arangojs')();
-var collection = db.collection('some-collection');
-var doc = {number: 1, hello: 'world'};
-collection.save(doc)
-.then(doc1 => {
-    collection.replace(doc1, {number: 2})
-    .then(doc2 => {
-        doc2._id === doc1._id;
-        doc2._rev !== doc1._rev;
-        collection.document(doc1)
-        .then(doc3 => {
-            doc3._id === doc1._id;
-            doc3._rev === doc2._rev;
-            doc3.number === 2;
-            doc3.hello === undefined;
-        })
-    });
-});
+const db = new Database();
+const collection = db.collection('some-collection');
+const doc = {number: 1, hello: 'world'};
+const doc1 = await collection.save(doc);
+const doc2 = await collection.replace(doc1, {number: 2});
+assert.equal(doc2._id, doc1._id);
+assert.notEqual(doc2._rev, doc1._rev);
+const doc3 = await collection.document(doc1);
+assert.equal(doc3._id, doc1._id);
+assert.equal(doc3._rev, doc2._rev);
+assert.equal(doc3.number, 2);
+assert.equal(doc3.hello, undefined);
 ```
 
 #### collection.update
@@ -2808,24 +2607,18 @@ For more information on the *opts* object, see [the HTTP API documentation for w
 **Examples**
 
 ```js
-var db = require('arangojs')();
-var collection = db.collection('some-collection');
-var doc = {number: 1, hello: 'world'};
-collection.save(doc)
-.then(doc1 => {
-    collection.update(doc1, {number: 2})
-    .then(doc2 => {
-        doc2._id === doc1._id;
-        doc2._rev !== doc1._rev;
-        collection.document(doc2)
-        .then(doc3 => {
-          doc3._id === doc2._id;
-          doc3._rev === doc2._rev;
-          doc3.number === 2;
-          doc3.hello === doc.hello;
-        });
-    });
-});
+const db = new Database();
+const collection = db.collection('some-collection');
+const doc = {number: 1, hello: 'world'};
+const doc1 = await collection.save(doc);
+const doc2 = await collection.update(doc1, {number: 2});
+assert.equal(doc2._id, doc1._id);
+assert.notEqual(doc2._rev, doc1._rev);
+const doc3 = await collection.document(doc2);
+assert.equal(doc3._id, doc2._id);
+assert.equal(doc3._rev, doc2._rev);
+assert.equal(doc3.number, 2);
+assert.equal(doc3.hello, doc.hello);
 ```
 #### collection.bulkUpdate
 
@@ -2874,24 +2667,16 @@ For more information on the *opts* object, see [the HTTP API documentation for w
 **Examples**
 
 ```js
-var db = require('arangojs')();
-var collection = db.collection('some-collection');
-var doc1 = {number: 1, hello: 'world1'};
-collection.save(doc1)
-.then(doc1saved => {
-    console.log(JSON.stringify(doc1saved));
-    var doc2 = {number: 2, hello: 'world2'};
-    collection.save(doc2)
-    .then(doc2saved => {
-        console.log(JSON.stringify(doc2saved));
-        doc1 = {_key: doc1saved._key, number: 3};
-        doc2 = {_key: doc2saved._key, number: 4};
-        collection.bulkUpdate([doc1, doc2], {returnNew: true})
-        .then(result => {
-            console.log(JSON.stringify(result));
-        });
-    });
-});
+const db = new Database();
+const collection = db.collection('some-collection');
+const doc1 = {number: 1, hello: 'world1'};
+const info1 = await collection.save(doc1);
+const doc2 = {number: 2, hello: 'world2'};
+const info2 = await collection.save(doc2);
+const result = await collection.bulkUpdate([
+  {_key: info1._key, number: 3},
+  {_key: info2._key, number: 4}
+], {returnNew: true})
 ```
 
 #### collection.remove
@@ -2934,20 +2719,16 @@ For more information on the *opts* object, see [the HTTP API documentation for w
 **Examples**
 
 ```js
-var db = require('arangojs')();
-var collection = db.collection('some-collection');
+const db = new Database();
+const collection = db.collection('some-collection');
 
-collection.remove('some-doc')
-.then(() => {
-    // document 'some-collection/some-doc' no longer exists
-});
+await collection.remove('some-doc');
+// document 'some-collection/some-doc' no longer exists
 
 // -- or --
 
-collection.remove('some-collection/some-doc')
-.then(() => {
-    // document 'some-collection/some-doc' no longer exists
-});
+await collection.remove('some-collection/some-doc');
+// document 'some-collection/some-doc' no longer exists
 ```
 
 #### collection.list
@@ -2985,24 +2766,30 @@ Retrieves the document with the given *documentHandle* from the collection.
 **Examples**
 
 ```js
-var db = require('arangojs')();
-var collection = db.collection('my-docs');
+const db = new Database();
+const collection = db.collection('my-docs');
 
-collection.document('some-key')
-.then(doc => {
-    // the document exists
-    doc._key === 'some-key';
-    doc._id === 'my-docs/some-key';
-});
+try {
+  const doc = await collection.document('some-key');
+  // the document exists
+  assert.equal(doc._key, 'some-key');
+  assert.equal(doc._id, 'my-docs/some-key');
+} catch (err) {
+  // something went wrong or
+  // the document does not exist
+}
 
 // -- or --
 
-collection.document('my-docs/some-key')
-.then(doc => {
-    // the document exists
-    doc._key === 'some-key';
-    doc._id === 'my-docs/some-key';
-});
+try {
+  const doc = await collection.document('my-docs/some-key');
+  // the document exists
+  assert.equal(doc._key, 'some-key');
+  assert.equal(doc._id, 'my-docs/some-key');
+} catch (err) {
+  // something went wrong or
+  // the document does not exist
+}
 ```
 
 ### documentCollection.save
@@ -3040,33 +2827,25 @@ For more information on the *opts* object, see [the HTTP API documentation for w
 **Examples**
 
 ```js
-var db = require('arangojs')();
-var collection = db.collection('my-docs');
-var doc = {some: 'data'};
-collection.save(doc)
-.then(doc1 => {
-    doc1._key; // the document's key
-    doc1._id === ('my-docs/' + doc1._key);
-    collection.document(doc)
-    .then(doc2 => {
-        doc2._id === doc1._id;
-        doc2._rev === doc1._rev;
-        doc2.some === 'data';
-    });
-});
+const db = new Database();
+const collection = db.collection('my-docs');
+const data = {some: 'data'};
+const info = await collection.save(data);
+assert.equal(info._id, 'my-docs/' + info._key);
+const doc2 = await collection.document(info)
+assert.equal(doc2._id, info._id);
+assert.equal(doc2._rev, info._rev);
+assert.equal(doc2.some, data.some);
 
 // -- or --
 
-var db = require('arangojs')();
-var collection = db.collection('my-docs');
-var doc = {some: 'data'};
-var opts = {returnNew: true};
-collection.save(doc, opts)
-.then(doc1 => {
-    doc1._key; // the document's key
-    doc1._id === ('my-docs/' + doc1._key);
-    doc1.new.some === 'data';
-});
+const db = new Database();
+const collection = db.collection('my-docs');
+const data = {some: 'data'};
+const opts = {returnNew: true};
+const doc = await collection.save(data, opts)
+assert.equal(doc1._id, 'my-docs/' + doc1._key);
+assert.equal(doc1.new.some, data.some);
 ```
 
 ## EdgeCollection API
@@ -3088,24 +2867,20 @@ Retrieves the edge with the given *documentHandle* from the collection.
 **Examples**
 
 ```js
-var db = require('arangojs')();
-var collection = db.edgeCollection('edges');
+const db = new Database();
+const collection = db.edgeCollection('edges');
 
-collection.edge('some-key')
-.then(edge => {
-    // the edge exists
-    edge._key === 'some-key';
-    edge._id === 'edges/some-key';
-});
+const edge = await collection.edge('some-key');
+// the edge exists
+assert.equal(edge._key, 'some-key');
+assert.equal(edge._id, 'edges/some-key');
 
 // -- or --
 
-collection.edge('edges/some-key')
-.then(edge => {
-    // the edge exists
-    edge._key === 'some-key';
-    edge._id === 'edges/some-key';
-});
+const edge = await collection.edge('edges/some-key');
+// the edge exists
+assert.equal(edge._key, 'some-key');
+assert.equal(edge._id, 'edges/some-key');
 ```
 
 ### edgeCollection.save
@@ -3131,38 +2906,31 @@ Creates a new edge between the documents *fromId* and *toId* with the given *dat
 **Examples**
 
 ```js
-var db = require('arangojs')();
-var collection = db.edgeCollection('edges');
-var edge = {some: 'data'};
+const db = new Database();
+const collection = db.edgeCollection('edges');
+const data = {some: 'data'};
 
-collection.save(
-    edge,
-    'vertices/start-vertex',
-    'vertices/end-vertex'
-)
-.then(edge1 => {
-    edge1._key; // the edge's key
-    edge1._id === ('edges/' + edge1._key);
-    collection.edge(edge)
-    .then(edge2 => {
-        edge2._key === edge1._key;
-        edge2._rev = edge1._rev;
-        edge2.some === edge.some;
-        edge2._from === 'vertices/start-vertex';
-        edge2._to === 'vertices/end-vertex';
-    });
-});
+const info = await collection.save(
+  data,
+  'vertices/start-vertex',
+  'vertices/end-vertex'
+);
+assert.equal(info._id, 'edges/' + info._key);
+const edge = await collection.edge(edge)
+assert.equal(edge._key, info._key);
+assert.equal(edge._rev, info._rev);
+assert.equal(edge.some, data.some);
+assert.equal(edge._from, 'vertices/start-vertex');
+assert.equal(edge._to, 'vertices/end-vertex');
 
 // -- or --
 
-collection.save({
-    some: 'data',
-    _from: 'verticies/start-vertex',
-    _to: 'vertices/end-vertex'
-})
-.then(edge => {
-    // ...
-})
+const info = await collection.save({
+  some: 'data',
+  _from: 'verticies/start-vertex',
+  _to: 'vertices/end-vertex'
+});
+// ...
 ```
 
 ### edgeCollection.edges
@@ -3180,19 +2948,17 @@ Retrieves a list of all edges of the document with the given *documentHandle*.
 **Examples**
 
 ```js
-var db = require('arangojs')();
-var collection = db.edgeCollection('edges');
-collection.import([
-    ['_key', '_from', '_to'],
-    ['x', 'vertices/a', 'vertices/b'],
-    ['y', 'vertices/a', 'vertices/c'],
-    ['z', 'vertices/d', 'vertices/a']
+const db = new Database();
+const collection = db.edgeCollection('edges');
+await collection.import([
+  ['_key', '_from', '_to'],
+  ['x', 'vertices/a', 'vertices/b'],
+  ['y', 'vertices/a', 'vertices/c'],
+  ['z', 'vertices/d', 'vertices/a']
 ])
-.then(() => collection.edges('vertices/a'))
-.then(edges => {
-    edges.length === 3;
-    edges.map(function (edge) {return edge._key;}); // ['x', 'y', 'z']
-});
+const edges = await collection.edges('vertices/a');
+assert.equal(edges.length, 3);
+assert.deepEqual(edges.map(edge => edge._key), ['x', 'y', 'z']);
 ```
 
 ### edgeCollection.inEdges
@@ -3210,19 +2976,17 @@ Retrieves a list of all incoming edges of the document with the given *documentH
 **Examples**
 
 ```js
-var db = require('arangojs')();
-var collection = db.edgeCollection('edges');
-collection.import([
-    ['_key', '_from', '_to'],
-    ['x', 'vertices/a', 'vertices/b'],
-    ['y', 'vertices/a', 'vertices/c'],
-    ['z', 'vertices/d', 'vertices/a']
-])
-.then(() => collection.inEdges('vertices/a'))
-.then(edges => {
-    edges.length === 1;
-    edges[0]._key === 'z';
-});
+const db = new Database();
+const collection = db.edgeCollection('edges');
+await collection.import([
+  ['_key', '_from', '_to'],
+  ['x', 'vertices/a', 'vertices/b'],
+  ['y', 'vertices/a', 'vertices/c'],
+  ['z', 'vertices/d', 'vertices/a']
+]);
+const edges = await collection.inEdges('vertices/a');
+assert.equal(edges.length, 1);
+assert.equal(edges[0]._key, 'z');
 ```
 
 ### edgeCollection.outEdges
@@ -3240,19 +3004,17 @@ Retrieves a list of all outgoing edges of the document with the given *documentH
 **Examples**
 
 ```js
-var db = require('arangojs')();
-var collection = db.edgeCollection('edges');
-collection.import([
-    ['_key', '_from', '_to'],
-    ['x', 'vertices/a', 'vertices/b'],
-    ['y', 'vertices/a', 'vertices/c'],
-    ['z', 'vertices/d', 'vertices/a']
-])
-.then(() => collection.outEdges('vertices/a'))
-.then(edges => {
-    edges.length === 2;
-    edges.map(function (edge) {return edge._key;}); // ['x', 'y']
-});
+const db = new Database();
+const collection = db.edgeCollection('edges');
+await collection.import([
+  ['_key', '_from', '_to'],
+  ['x', 'vertices/a', 'vertices/b'],
+  ['y', 'vertices/a', 'vertices/c'],
+  ['z', 'vertices/d', 'vertices/a']
+]);
+const edges = await collection.outEdges('vertices/a');
+assert.equal(edges.length, 2);
+assert.deepEqual(edges.map(edge => edge._key), ['x', 'y']);
 ```
 
 ### edgeCollection.traversal
@@ -3276,22 +3038,20 @@ Performs a traversal starting from the given *startVertex* and following edges c
 **Examples**
 
 ```js
-var db = require('arangojs')();
-var collection = db.edgeCollection('edges');
-collection.import([
-    ['_key', '_from', '_to'],
-    ['x', 'vertices/a', 'vertices/b'],
-    ['y', 'vertices/b', 'vertices/c'],
-    ['z', 'vertices/c', 'vertices/d']
-])
-.then(() => collection.traversal('vertices/a', {
-    direction: 'outbound',
-    visitor: 'result.vertices.push(vertex._key);',
-    init: 'result.vertices = [];'
-}))
-.then(result => {
-    result.vertices; // ['a', 'b', 'c', 'd']
+const db = new Database();
+const collection = db.edgeCollection('edges');
+await collection.import([
+  ['_key', '_from', '_to'],
+  ['x', 'vertices/a', 'vertices/b'],
+  ['y', 'vertices/b', 'vertices/c'],
+  ['z', 'vertices/c', 'vertices/d']
+]);
+const result = await collection.traversal('vertices/a', {
+  direction: 'outbound',
+  visitor: 'result.vertices.push(vertex._key);',
+  init: 'result.vertices = [];'
 });
+assert.deepEqual(result.vertices, ['a', 'b', 'c', 'd']);
 ```
 
 ## Graph API
@@ -3307,12 +3067,10 @@ Retrieves general information about the graph.
 **Examples**
 
 ```js
-var db = require('arangojs')();
-var graph = db.graph('some-graph');
-graph.get()
-.then(data => {
-    // data contains general information about the graph
-});
+const db = new Database();
+const graph = db.graph('some-graph');
+const data = await graph.get();
+// data contains general information about the graph
 ```
 
 ### graph.create
@@ -3330,25 +3088,16 @@ Creates a graph with the given *properties* for this graph's name, then returns 
 **Examples**
 
 ```js
-var db = require('arangojs')();
-var graph = db.graph('some-graph');
-graph.create({
-    edgeDefinitions: [
-        {
-            collection: 'edges',
-            from: [
-                'start-vertices'
-            ],
-            to: [
-                'end-vertices'
-            ]
-        }
-    ]
-})
-.then(graph => {
-    // graph is a Graph instance
-    // for more information see the Graph API below
+const db = new Database();
+const graph = db.graph('some-graph');
+const info = await graph.create({
+  edgeDefinitions: [{
+    collection: 'edges',
+    from: ['start-vertices'],
+    to: ['end-vertices']
+  }]
 });
+// graph now exists
 ```
 
 ### graph.drop
@@ -3366,12 +3115,10 @@ Deletes the graph from the database.
 **Examples**
 
 ```js
-var db = require('arangojs')();
-var graph = db.graph('some-graph');
-graph.drop()
-.then(() => {
-    // the graph "some-graph" no longer exists
-});
+const db = new Database();
+const graph = db.graph('some-graph');
+await graph.drop();
+// the graph "some-graph" no longer exists
 ```
 
 ### Manipulating vertices
@@ -3391,10 +3138,10 @@ Returns a new [*GraphVertexCollection* instance](#graphvertexcollection-api) wit
 **Examples**
 
 ```js
-var db = require('arangojs')();
-var graph = db.graph('some-graph');
-var collection = graph.vertexCollection('vertices');
-collection.name === 'vertices';
+const db = new Database();
+const graph = db.graph('some-graph');
+const collection = graph.vertexCollection('vertices');
+assert.equal(collection.name, 'vertices');
 // collection is a GraphVertexCollection
 ```
 
@@ -3413,12 +3160,10 @@ Adds the collection with the given *collectionName* to the graph's vertex collec
 **Examples**
 
 ```js
-var db = require('arangojs')();
-var graph = db.graph('some-graph');
-graph.addVertexCollection('vertices')
-.then(() => {
-    // the collection "vertices" has been added to the graph
-});
+const db = new Database();
+const graph = db.graph('some-graph');
+await graph.addVertexCollection('vertices');
+// the collection "vertices" has been added to the graph
 ```
 
 #### graph.removeVertexCollection
@@ -3440,22 +3185,17 @@ Removes the vertex collection with the given *collectionName* from the graph.
 **Examples**
 
 ```js
-var db = require('arangojs')();
-var graph = db.graph('some-graph');
-
-graph.removeVertexCollection('vertices')
-.then(() => {
-    // collection "vertices" has been removed from the graph
-});
+const db = new Database();
+const graph = db.graph('some-graph');
+await graph.removeVertexCollection('vertices')
+// collection "vertices" has been removed from the graph
 
 // -- or --
 
-graph.removeVertexCollection('vertices', true)
-.then(() => {
-    // collection "vertices" has been removed from the graph
-    // the collection has also been dropped from the database
-    // this may have been a bad idea
-});
+await graph.removeVertexCollection('vertices', true)
+// collection "vertices" has been removed from the graph
+// the collection has also been dropped from the database
+// this may have been a bad idea
 ```
 
 ### Manipulating edges
@@ -3475,11 +3215,11 @@ Returns a new [*GraphEdgeCollection* instance](#graphedgecollection-api) with th
 **Examples**
 
 ```js
-var db = require('arangojs')();
+const db = new Database();
 // assuming the collections "edges" and "vertices" exist
-var graph = db.graph('some-graph');
-var collection = graph.edgeCollection('edges');
-collection.name === 'edges';
+const graph = db.graph('some-graph');
+const collection = graph.edgeCollection('edges');
+assert.equal(collection.name, 'edges');
 // collection is a GraphEdgeCollection
 ```
 
@@ -3498,17 +3238,15 @@ Adds the given edge definition *definition* to the graph.
 **Examples**
 
 ```js
-var db = require('arangojs')();
+const db = new Database();
 // assuming the collections "edges" and "vertices" exist
-var graph = db.graph('some-graph');
-graph.addEdgeDefinition({
-    collection: 'edges',
-    from: ['vertices'],
-    to: ['vertices']
-})
-.then(() => {
-    // the edge definition has been added to the graph
+const graph = db.graph('some-graph');
+await graph.addEdgeDefinition({
+  collection: 'edges',
+  from: ['vertices'],
+  to: ['vertices']
 });
+// the edge definition has been added to the graph
 ```
 
 #### graph.replaceEdgeDefinition
@@ -3530,17 +3268,15 @@ Replaces the edge definition for the edge collection named *collectionName* with
 **Examples**
 
 ```js
-var db = require('arangojs')();
+const db = new Database();
 // assuming the collections "edges", "vertices" and "more-vertices" exist
-var graph = db.graph('some-graph');
-graph.replaceEdgeDefinition('edges', {
-    collection: 'edges',
-    from: ['vertices'],
-    to: ['more-vertices']
-})
-.then(() => {
-    // the edge definition has been modified
+const graph = db.graph('some-graph');
+await graph.replaceEdgeDefinition('edges', {
+  collection: 'edges',
+  from: ['vertices'],
+  to: ['more-vertices']
 });
+// the edge definition has been modified
 ```
 
 #### graph.removeEdgeDefinition
@@ -3562,22 +3298,18 @@ Removes the edge definition with the given *definitionName* form the graph.
 **Examples**
 
 ```js
-var db = require('arangojs')();
-var graph = db.graph('some-graph');
+const db = new Database();
+const graph = db.graph('some-graph');
 
-graph.removeEdgeDefinition('edges')
-.then(() => {
-    // the edge definition has been removed
-});
+await graph.removeEdgeDefinition('edges')
+// the edge definition has been removed
 
 // -- or --
 
-graph.removeEdgeDefinition('edges', true)
-.then(() => {
-    // the edge definition has been removed
-    // and the edge collection "edges" has been dropped
-    // this may have been a bad idea
-});
+await graph.removeEdgeDefinition('edges', true)
+// the edge definition has been removed
+// and the edge collection "edges" has been dropped
+// this may have been a bad idea
 ```
 
 #### graph.traversal
@@ -3601,23 +3333,21 @@ Performs a traversal starting from the given *startVertex* and following edges c
 **Examples**
 
 ```js
-var db = require('arangojs')();
-var graph = db.graph('some-graph');
-var collection = graph.edgeCollection('edges');
-collection.import([
-    ['_key', '_from', '_to'],
-    ['x', 'vertices/a', 'vertices/b'],
-    ['y', 'vertices/b', 'vertices/c'],
-    ['z', 'vertices/c', 'vertices/d']
+const db = new Database();
+const graph = db.graph('some-graph');
+const collection = graph.edgeCollection('edges');
+await collection.import([
+  ['_key', '_from', '_to'],
+  ['x', 'vertices/a', 'vertices/b'],
+  ['y', 'vertices/b', 'vertices/c'],
+  ['z', 'vertices/c', 'vertices/d']
 ])
-.then(() => graph.traversal('vertices/a', {
-    direction: 'outbound',
-    visitor: 'result.vertices.push(vertex._key);',
-    init: 'result.vertices = [];'
-}))
-.then(result => {
-    result.vertices; // ['a', 'b', 'c', 'd']
+const result = await graph.traversal('vertices/a', {
+  direction: 'outbound',
+  visitor: 'result.vertices.push(vertex._key);',
+  init: 'result.vertices = [];'
 });
+assert.deepEqual(result.vertices, ['a', 'b', 'c', 'd']);
 ```
 
 ## GraphVertexCollection API
@@ -3639,20 +3369,16 @@ Deletes the vertex with the given *documentHandle* from the collection.
 **Examples**
 
 ```js
-var graph = db.graph('some-graph');
-var collection = graph.vertexCollection('vertices');
+const graph = db.graph('some-graph');
+const collection = graph.vertexCollection('vertices');
 
-collection.remove('some-key')
-.then(() => {
-    // document 'vertices/some-key' no longer exists
-});
+await collection.remove('some-key')
+// document 'vertices/some-key' no longer exists
 
 // -- or --
 
-collection.remove('vertices/some-key')
-.then(() => {
-    // document 'vertices/some-key' no longer exists
-});
+await collection.remove('vertices/some-key')
+// document 'vertices/some-key' no longer exists
 ```
 
 ### graphVertexCollection.vertex
@@ -3670,24 +3396,20 @@ Retrieves the vertex with the given *documentHandle* from the collection.
 **Examples**
 
 ```js
-var graph = db.graph('some-graph');
-var collection = graph.vertexCollection('vertices');
+const graph = db.graph('some-graph');
+const collection = graph.vertexCollection('vertices');
 
-collection.vertex('some-key')
-.then(doc => {
-    // the vertex exists
-    doc._key === 'some-key';
-    doc._id === 'vertices/some-key';
-});
+const doc = await collection.vertex('some-key');
+// the vertex exists
+assert.equal(doc._key, 'some-key');
+assert.equal(doc._id, 'vertices/some-key');
 
 // -- or --
 
-collection.vertex('vertices/some-key')
-.then(doc => {
-    // the vertex exists
-    doc._key === 'some-key';
-    doc._id === 'vertices/some-key';
-});
+const doc = await collection.vertex('vertices/some-key');
+// the vertex exists
+assert.equal(doc._key, 'some-key');
+assert.equal(doc._id, 'vertices/some-key');
 ```
 
 ### graphVertexCollection.save
@@ -3705,15 +3427,12 @@ Creates a new vertex with the given *data*.
 **Examples**
 
 ```js
-var db = require('arangojs')();
-var graph = db.graph('some-graph');
-var collection = graph.vertexCollection('vertices');
-collection.save({some: 'data'})
-.then(doc => {
-    doc._key; // the document's key
-    doc._id === ('vertices/' + doc._key);
-    doc.some === 'data';
-});
+const db = new Database();
+const graph = db.graph('some-graph');
+const collection = graph.vertexCollection('vertices');
+const doc = await collection.save({some: 'data'});
+assert.equal(doc._id, 'vertices/' + doc._key);
+assert.equal(doc.some, 'data');
 ```
 
 ## GraphEdgeCollection API
@@ -3735,20 +3454,16 @@ Deletes the edge with the given *documentHandle* from the collection.
 **Examples**
 
 ```js
-var graph = db.graph('some-graph');
-var collection = graph.edgeCollection('edges');
+const graph = db.graph('some-graph');
+const collection = graph.edgeCollection('edges');
 
-collection.remove('some-key')
-.then(() => {
-    // document 'edges/some-key' no longer exists
-});
+await collection.remove('some-key')
+// document 'edges/some-key' no longer exists
 
 // -- or --
 
-collection.remove('edges/some-key')
-.then(() => {
-    // document 'edges/some-key' no longer exists
-});
+await collection.remove('edges/some-key')
+// document 'edges/some-key' no longer exists
 ```
 
 ### graphEdgeCollection.edge
@@ -3766,24 +3481,20 @@ Retrieves the edge with the given *documentHandle* from the collection.
 **Examples**
 
 ```js
-var graph = db.graph('some-graph');
-var collection = graph.edgeCollection('edges');
+const graph = db.graph('some-graph');
+const collection = graph.edgeCollection('edges');
 
-collection.edge('some-key')
-.then(edge => {
-    // the edge exists
-    edge._key === 'some-key';
-    edge._id === 'edges/some-key';
-});
+const edge = await collection.edge('some-key');
+// the edge exists
+assert.equal(edge._key, 'some-key');
+assert.equal(edge._id, 'edges/some-key');
 
 // -- or --
 
-collection.edge('edges/some-key')
-.then(edge => {
-    // the edge exists
-    edge._key === 'some-key';
-    edge._id === 'edges/some-key';
-});
+const edge = await collection.edge('edges/some-key');
+// the edge exists
+assert.equal(edge._key, 'some-key');
+assert.equal(edge._id, 'edges/some-key');
 ```
 
 ### graphEdgeCollection.save
@@ -3809,21 +3520,18 @@ Creates a new edge between the vertices *fromId* and *toId* with the given *data
 **Examples**
 
 ```js
-var db = require('arangojs')();
-var graph = db.graph('some-graph');
-var collection = graph.edgeCollection('edges');
-collection.save(
-    {some: 'data'},
-    'vertices/start-vertex',
-    'vertices/end-vertex'
-)
-.then(edge => {
-    edge._key; // the edge's key
-    edge._id === ('edges/' + edge._key);
-    edge.some === 'data';
-    edge._from === 'vertices/start-vertex';
-    edge._to === 'vertices/end-vertex';
-});
+const db = new Database();
+const graph = db.graph('some-graph');
+const collection = graph.edgeCollection('edges');
+const edge = await collection.save(
+  {some: 'data'},
+  'vertices/start-vertex',
+  'vertices/end-vertex'
+);
+assert.equal(edge._id, 'edges/' + edge._key);
+assert.equal(edge.some, 'data');
+assert.equal(edge._from, 'vertices/start-vertex');
+assert.equal(edge._to, 'vertices/end-vertex');
 ```
 
 ### graphEdgeCollection.edges
@@ -3841,20 +3549,18 @@ Retrieves a list of all edges of the document with the given *documentHandle*.
 **Examples**
 
 ```js
-var db = require('arangojs')();
-var graph = db.graph('some-graph');
-var collection = graph.edgeCollection('edges');
-collection.import([
-    ['_key', '_from', '_to'],
-    ['x', 'vertices/a', 'vertices/b'],
-    ['y', 'vertices/a', 'vertices/c'],
-    ['z', 'vertices/d', 'vertices/a']
-])
-.then(() => collection.edges('vertices/a'))
-.then(edges => {
-    edges.length === 3;
-    edges.map(function (edge) {return edge._key;}); // ['x', 'y', 'z']
-});
+const db = new Database();
+const graph = db.graph('some-graph');
+const collection = graph.edgeCollection('edges');
+await collection.import([
+  ['_key', '_from', '_to'],
+  ['x', 'vertices/a', 'vertices/b'],
+  ['y', 'vertices/a', 'vertices/c'],
+  ['z', 'vertices/d', 'vertices/a']
+]);
+const edges = await collection.edges('vertices/a');
+assert.equal(edges.length, 3);
+assert.deepEqual(edges.map(edge => edge._key), ['x', 'y', 'z']);
 ```
 
 ### graphEdgeCollection.inEdges
@@ -3872,20 +3578,18 @@ Retrieves a list of all incoming edges of the document with the given *documentH
 **Examples**
 
 ```js
-var db = require('arangojs')();
-var graph = db.graph('some-graph');
-var collection = graph.edgeCollection('edges');
-collection.import([
-    ['_key', '_from', '_to'],
-    ['x', 'vertices/a', 'vertices/b'],
-    ['y', 'vertices/a', 'vertices/c'],
-    ['z', 'vertices/d', 'vertices/a']
-])
-.then(() => collection.inEdges('vertices/a'))
-.then(edges => {
-    edges.length === 1;
-    edges[0]._key === 'z';
-});
+const db = new Database();
+const graph = db.graph('some-graph');
+const collection = graph.edgeCollection('edges');
+await collection.import([
+  ['_key', '_from', '_to'],
+  ['x', 'vertices/a', 'vertices/b'],
+  ['y', 'vertices/a', 'vertices/c'],
+  ['z', 'vertices/d', 'vertices/a']
+]);
+const edges = await collection.inEdges('vertices/a');
+assert.equal(edges.length, 1);
+assert.equal(edges[0]._key, 'z');
 ```
 
 ### graphEdgeCollection.outEdges
@@ -3903,20 +3607,18 @@ Retrieves a list of all outgoing edges of the document with the given *documentH
 **Examples**
 
 ```js
-var db = require('arangojs')();
-var graph = db.graph('some-graph');
-var collection = graph.edgeCollection('edges');
-collection.import([
-    ['_key', '_from', '_to'],
-    ['x', 'vertices/a', 'vertices/b'],
-    ['y', 'vertices/a', 'vertices/c'],
-    ['z', 'vertices/d', 'vertices/a']
-])
-.then(() => collection.outEdges('vertices/a'))
-.then(edges => {
-    edges.length === 2;
-    edges.map(function (edge) {return edge._key;}); // ['x', 'y']
-});
+const db = new Database();
+const graph = db.graph('some-graph');
+const collection = graph.edgeCollection('edges');
+await collection.import([
+  ['_key', '_from', '_to'],
+  ['x', 'vertices/a', 'vertices/b'],
+  ['y', 'vertices/a', 'vertices/c'],
+  ['z', 'vertices/d', 'vertices/a']
+]);
+const edges = await collection.outEdges('vertices/a');
+assert.equal(edges.length, 2);
+assert.deepEqual(edges.map(edge => edge._key), ['x', 'y']);
 ```
 
 ### graphEdgeCollection.traversal
@@ -3940,23 +3642,21 @@ Performs a traversal starting from the given *startVertex* and following edges c
 **Examples**
 
 ```js
-var db = require('arangojs')();
-var graph = db.graph('some-graph');
-var collection = graph.edgeCollection('edges');
-collection.import([
-    ['_key', '_from', '_to'],
-    ['x', 'vertices/a', 'vertices/b'],
-    ['y', 'vertices/b', 'vertices/c'],
-    ['z', 'vertices/c', 'vertices/d']
-])
-.then(() => collection.traversal('vertices/a', {
-    direction: 'outbound',
-    visitor: 'result.vertices.push(vertex._key);',
-    init: 'result.vertices = [];'
-}))
-.then(result => {
-    result.vertices; // ['a', 'b', 'c', 'd']
+const db = new Database();
+const graph = db.graph('some-graph');
+const collection = graph.edgeCollection('edges');
+await collection.import([
+  ['_key', '_from', '_to'],
+  ['x', 'vertices/a', 'vertices/b'],
+  ['y', 'vertices/b', 'vertices/c'],
+  ['z', 'vertices/c', 'vertices/d']
+]);
+const result = await collection.traversal('vertices/a', {
+  direction: 'outbound',
+  visitor: 'result.vertices.push(vertex._key);',
+  init: 'result.vertices = [];'
 });
+assert.deepEqual(result.vertices, ['a', 'b', 'c', 'd']);
 ```
 
 # License
