@@ -852,9 +852,9 @@ const cursor = await db.query(aql`
 
 // Old-school JS with explicit bindVars:
 db.query(
-  'FOR u IN _users'
-  + ' FILTER u.authData.active == @active'
-  + ' RETURN u.user',
+  'FOR u IN _users ' +
+  'FILTER u.authData.active == @active ' +
+  'RETURN u.user',
   {active: true}
 ).then(function (cursor) {
   // cursor is a cursor for the query result
