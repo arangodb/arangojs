@@ -6,7 +6,7 @@ export default function toForm (fields, callback) {
       let value = fields[key]
       if (value === undefined) continue
       if (
-        !(value instanceof global.File) &&
+        !(value instanceof global.Blob) &&
         (typeof value === 'object' || typeof value === 'function')
       ) {
         value = JSON.stringify(value)
