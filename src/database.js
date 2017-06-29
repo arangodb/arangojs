@@ -509,11 +509,36 @@ export default class Database {
     return promise
   }
 
+  getServiceDocumentation (mount, cb) {
+    const {promise, callback} = this._connection.promisify(cb)
+    this._api.get(
+      '/foxx/swagger',
+      {mount},
+      (err, res) => err ? callback(err) : callback(null, res.body)
+    )
+    return promise
+  }
+
   downloadService (mount, cb) {
     const {promise, callback} = this._connection.promisify(cb)
     this._api.request(
       {method: 'POST', path: '/foxx/download', qs: {mount}, expectBinary: true},
       (err, res) => err ? callback(err) : callback(null, res.body)
+    )
+    return promise
+  }
+
+  commitLocalServiceState (replace, cb) {
+    if (typeof replace === 'function') {
+      cb = replace;
+      replace = undefined;
+    }
+    const {promise, callback} = this._connection.promisify(cb)
+    this._api.post(
+      '/foxx/commit',
+      undefined,
+      {replace},
+      (err, res) => err ? callback(err) : callback(null)
     )
     return promise
   }
