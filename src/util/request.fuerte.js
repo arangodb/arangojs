@@ -30,8 +30,6 @@ export default function (baseUrl, agentOptions) {
   console.log('JS -- string seen in request.fuerte.js ' + connectionString)
   const builder = new fuerte.ConnectionBuilder()
   builder.host = connectionString
-  let interval
-  // let counter = 0
 
   const idleConnections = new LinkedList()
   const activeConnections = new Set()
@@ -60,7 +58,7 @@ export default function (baseUrl, agentOptions) {
         drainQueue()
       })
     }
-    
+
     queue.push((conn, next) => {
       let callback = (err, res) => {
         callback = () => undefined
@@ -104,7 +102,7 @@ export default function (baseUrl, agentOptions) {
             statusCode = res.responseCode
             headers = res.header
             body = res.body
-            headers['content-type'] = '';
+            headers['content-type'] = ''
           } catch (e) {
             console.trace() // TODO remove this
             callback(e)
@@ -122,7 +120,7 @@ export default function (baseUrl, agentOptions) {
       conn.sendRequest(req, reqCallback)
     })
 
-    drainQueue()  
+    drainQueue()
   }
 
   const auth = baseUrlParts.auth
