@@ -1,13 +1,13 @@
 {
   "presets": [
-    "env",
-    "react",
-    "stage-0"
+    ["env", {
+      "targets": {
+        "browsers": ["last 2 versions", "ie >= 9"],
+        "node": 4
+      }
+    }]
   ],
   "plugins": [
-    "transform-class-properties",
-    "transform-decorators",
-    "transform-react-constant-elements",
-    "transform-react-inline-elements"
+    "transform-object-rest-spread"
   ]
 }
