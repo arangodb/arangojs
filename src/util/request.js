@@ -73,11 +73,15 @@ export default function (baseUrl, agentOptions, agent) {
         res
         .on('data', (chunk) => data.push(chunk))
         .on('end', () => {
-          res.body = Buffer.concat(data)
-          if (!expectBinary) {
-            res.body = res.body.toString('utf-8')
+          try {
+            res.body = Buffer.concat(data)
+            if (!expectBinary) {
+              res.body = res.body.toString('utf-8')
+            }
+            callback(null, res)
+          } catch (err) {
+            callback(err)
           }
-          callback(null, res)
         })
       })
       req.on('error', (err) => {
