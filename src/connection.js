@@ -3,11 +3,10 @@ import qs from 'querystring'
 import btoa from './util/btoa'
 import byteLength from './util/bytelength'
 import promisify from './util/promisify'
-import createRequest from './util/request'
+import createRequest, {isBrowser} from './util/request'
 import ArangoError from './error'
 import Route from './route'
 import retry from 'retry'
-import vpack from 'node-velocypack'
 
 const MIME_JSON = /\/(json|javascript)(\W|$)/
 // const MIME_VPACK = /\/(x-velocypack)(\W|$)/
@@ -94,7 +93,7 @@ export default class Connection {
       } else {
         // console.log('encode ###############');
         // console.log(typeof body, body);
-        body = vpack.encode(body)
+        // body = vpack.encode(body) vpack encoding now done in node-arangodb-cxx
         contentType = 'application/x-velocypack'
         // console.log(typeof body, body);
         // console.log('encode ###############');
@@ -112,9 +111,10 @@ export default class Connection {
     }
 
     if (this._baseUrl.protocol !== 'vst:') {
-      if (typeof window === 'undefined' && !opts.headers.hasOwnProperty('content-length')) {
+      if (!isBrowser && !opts.headers.hasOwnProperty('content-length')) {
+        // Can't override content-length in browser but ArangoDB needs it to be set
         if (this.config.useVpack) {
-          opts.headers['content-length'] = body ? byteLength(body, 'binary') : 0
+          // opts.headers['content-length'] = body ? byteLength(body, 'binary') : 0
         } else {
           opts.headers['content-length'] = body ? byteLength(body, 'utf-8') : 0
         }
@@ -130,7 +130,7 @@ export default class Connection {
     const url = this._buildUrl(opts)
     const doRequest = this._request
     const operation = retry.operation(this.retryOptions)
-    operation.attempt((currentAttempt) => {
+    operation.attempt(function (currentAttempt) {
       doRequest({
         url,
         headers: opts.headers,

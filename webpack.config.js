@@ -3,26 +3,29 @@ var resolve = require('path').resolve
 var webpack = require('webpack')
 
 module.exports = {
-  entry: resolve(__dirname, 'src/index.js'),
+  entry: resolve(__dirname, 'lib/index.js'),
   output: {
     path: __dirname,
     filename: 'arangojs.min.js',
-    libraryTarget: 'umd',
-    library: 'arangojs'
+    library: 'arangojs',
+    libraryTarget: 'umd'
   },
   module: {
-    loaders: [
-      {test: /\.js$/, loader: 'babel-loader'},
-      {test: /\.json$/, loader: 'json-loader'}
+    rules: [
+      {
+        test: /\.js$/,
+        loader: 'babel-loader',
+        include: /node_modules/,
+      }
     ]
   },
-  target: 'web',
   plugins: [
     new webpack.DefinePlugin({
-      'process.env': {NODE_ENV: '"production"'},
-      'Buffer': {byteLength: false}
+      'process.env': {NODE_ENV: '"production"'}
     }),
-    new webpack.optimize.OccurenceOrderPlugin(true),
-    new webpack.optimize.UglifyJsPlugin({output: {comments: false}})
+    new webpack.optimize.UglifyJsPlugin({
+      minimize: true,
+      output: {comments: false}
+    })
   ]
 }

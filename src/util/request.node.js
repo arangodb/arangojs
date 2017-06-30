@@ -24,6 +24,8 @@ function joinPath (a = '', b = '') {
   return path
 }
 
+export const isBrowser = false
+
 export default function (baseUrl, agentOptions, agent) {
   const baseUrlParts = parseUrl(baseUrl)
   const isTls = baseUrlParts.protocol === 'https:'
@@ -61,10 +63,10 @@ export default function (baseUrl, agentOptions, agent) {
     options.auth = baseUrlParts.auth
 
     queue.push((next) => {
-      let callback = (...args) => {
+      let callback = (err, res) => {
         callback = () => undefined
         next()
-        cb(...args)
+        cb(err, res)
       }
       const req = (isTls ? https : http).request(options, (res) => {
         const data = []

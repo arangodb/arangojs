@@ -283,7 +283,7 @@ class BaseCollection {
       this._api.put(
         '/simple/all-keys',
         {type, collection: this.name},
-        (err, res) => err ? callback(err) : callback(res.body.result)
+        (err, res) => err ? callback(err) : callback(null, res.body.result)
       )
     }
     return promise

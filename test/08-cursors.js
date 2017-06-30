@@ -1,22 +1,24 @@
 import {describe, it, before, beforeEach} from 'mocha'
+import {expect} from 'chai'
 import {Database} from '../src'
-
-import chai from 'chai'
-// fix linting errors with chai by converting assertions like true to function
-// call syntax
-import dirtyChai from 'dirty-chai'
-var expect = chai.expect
-chai.use(dirtyChai)
 
 const aqlQuery = 'FOR i In 0..10 RETURN i'
 const aqlResult = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+function sleep (ms) {
+  var date = Date.now()
+  var curDate = null
+  do {
+    curDate = Date.now()
+  } while (curDate - date < ms)
+}
 
 describe('Cursor API', () => {
   let db
   let cursor
   before(() => {
     db = new Database({
-      url: (process.env.TEST_ARANGODB_URL || 'vst://root:@localhost:8529'),
+      url: (process.env.TEST_ARANGODB_URL || 'http://root:@localhost:8529'),
       arangoVersion: Number(process.env.ARANGO_VERSION || 30000)
     })
   })
@@ -54,7 +56,7 @@ describe('Cursor API', () => {
   })
   describe('cursor.hasNext', () => {
     it('returns true if the Cursor has more results', (done) => {
-      expect(cursor.hasNext()).to.be.true()
+      expect(cursor.hasNext()).to.equal(true)
       cursor.next()
         .then((val) => {
           expect(val).to.be.a('number')
@@ -65,10 +67,92 @@ describe('Cursor API', () => {
     it('returns false if the Cursor is empty', (done) => {
       cursor.all()
         .then(() => {
-          expect(cursor.hasNext()).to.be.false()
+          expect(cursor.hasNext()).to.equal(false)
           done()
         })
         .catch(done)
+    })
+    it('returns true after first batch is consumed', (done) => {
+      db.query(aqlQuery, {}, {batchSize: 1})
+      .then((cursor) => {
+        expect(cursor._result.length).to.equal(1)
+        cursor.next()
+        expect(cursor._result.length).to.equal(0)
+        expect(cursor.hasNext()).to.equal(true)
+        done()
+      })
+      .catch(done)
+    })
+    it('returns false after last batch is consumed', (done) => {
+      db.query('FOR i In 0..1 RETURN i', {}, {batchSize: 1})
+      .then((cursor) => {
+        expect(cursor.hasNext()).to.equal(true)
+        expect(cursor._result.length).to.equal(1)
+        cursor.next().then((val) => {
+          expect(val).to.equal(0)
+          expect(cursor.hasNext()).to.equal(true)
+          expect(cursor._result.length).to.equal(0)
+          return cursor.next()
+        }).then((val) => {
+          expect(val).to.equal(1)
+          expect(cursor.hasNext()).to.equal(false)
+          expect(cursor._result.length).to.equal(0)
+          done()
+        })
+      })
+      .catch(done)
+    })
+    it('returns false after last result is consumed', (done) => {
+      db.query('FOR i In 0..1 RETURN i')
+      .then((cursor) => {
+        expect(cursor.hasNext()).to.equal(true)
+        expect(cursor._result.length).to.equal(2)
+        cursor.next().then((val) => {
+          expect(val).to.equal(0)
+          expect(cursor.hasNext()).to.equal(true)
+          expect(cursor._result.length).to.equal(1)
+          return cursor.next()
+        }).then((val) => {
+          expect(val).to.equal(1)
+          expect(cursor.hasNext()).to.equal(false)
+          expect(cursor._result.length).to.equal(0)
+          done()
+        })
+      })
+      .catch(done)
+    })
+    it.skip('returns 404 after timeout', (done) => {
+      db.query('FOR i In 0..1 RETURN i', {}, {batchSize: 1, ttl: 1})
+      .then((cursor) => {
+        expect(cursor.hasNext()).to.equal(true)
+        expect(cursor._result.length).to.equal(1)
+        cursor.next().then((val) => {
+          expect(val).to.equal(0)
+          expect(cursor.hasNext()).to.equal(true)
+          expect(cursor._result.length).to.equal(0)
+          sleep(3000)
+          return cursor.next()
+        }).catch((err) => {
+          expect(err.code).to.equal(404)
+          done()
+        })
+      })
+      .catch(done)
+    })
+    it('returns false after last result is consumed (with large amount of results)', (done) => {
+      const EXPECTED_LENGTH = 100000
+      const loadMore = function (cursor, totalLength) {
+        cursor.next().then(() => {
+          totalLength++
+          expect(cursor.hasNext()).to.equal(totalLength !== EXPECTED_LENGTH)
+          if (cursor.hasNext()) {
+            loadMore(cursor, totalLength)
+          } else {
+            done()
+          }
+        }).catch(done)
+      }
+      db.query(`FOR i In 1..${EXPECTED_LENGTH} RETURN i`).then((cursor) => loadMore(cursor, 0)).catch(done)
     })
   })
   describe('cursor.each', () => {
@@ -106,7 +190,7 @@ describe('Cursor API', () => {
       })
         .then((result) => {
           expect(results).to.eql(aqlResult)
-          expect(result).to.be.true()
+          expect(result).to.equal(true)
           done()
         })
         .catch(done)
@@ -119,7 +203,7 @@ describe('Cursor API', () => {
       })
         .then((result) => {
           expect(results).to.eql([0, 1, 2, 3, 4, 5])
-          expect(result).to.be.false()
+          expect(result).to.equal(false)
           done()
         })
         .catch(done)
@@ -135,7 +219,7 @@ describe('Cursor API', () => {
       })
         .then((result) => {
           expect(results).to.eql(aqlResult)
-          expect(result).to.be.false()
+          expect(result).to.equal(false)
           done()
         })
         .catch(done)
@@ -148,7 +232,7 @@ describe('Cursor API', () => {
       })
         .then((result) => {
           expect(results).to.eql([0, 1, 2, 3, 4, 5])
-          expect(result).to.be.true()
+          expect(result).to.equal(true)
           done()
         })
         .catch(done)

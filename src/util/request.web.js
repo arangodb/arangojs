@@ -22,6 +22,8 @@ function joinPath (a = '', b = '') {
   return path
 }
 
+export const isBrowser = true
+
 export default function (baseUrl, options) {
   if (!options) options = {}
   const baseUrlParts = parseUrl(baseUrl)
@@ -52,10 +54,10 @@ export default function (baseUrl, options) {
     }
 
     queue.push((next) => {
-      let callback = (...args) => {
+      let callback = (err, res) => {
         callback = () => undefined
         next()
-        cb(...args)
+        cb(err, res)
       }
       const req = xhr({
         responseType: expectBinary ? 'blob' : 'text',

@@ -1,20 +1,14 @@
 import {describe, it, before, after} from 'mocha'
+import {expect} from 'chai'
 import {aqlQuery, Database} from '../src'
 import Cursor from '../src/cursor'
-
-import chai from 'chai'
-// fix linting errors with chai by converting assertions like true to function
-// call syntax
-import dirtyChai from 'dirty-chai'
-var expect = chai.expect
-chai.use(dirtyChai)
 
 describe('AQL queries', () => {
   let name = `testdb_${Date.now()}`
   let db
   before((done) => {
     db = new Database({
-      url: (process.env.TEST_ARANGODB_URL || 'vst://root:@localhost:8529'),
+      url: (process.env.TEST_ARANGODB_URL || 'http://root:@localhost:8529'),
       arangoVersion: Number(process.env.ARANGO_VERSION || 30000)
     })
     db.createDatabase(name)
@@ -52,7 +46,7 @@ describe('AQL queries', () => {
       db.query('FOR x IN 1..10 RETURN x', undefined, {batchSize: 2, count: true})
         .then((cursor) => {
           expect(cursor.count).to.equal(10)
-          expect(cursor._hasMore).to.be.true()
+          expect(cursor._hasMore).to.equal(true)
           done()
         })
         .catch(done)
