@@ -87,7 +87,7 @@ export default function (baseUrl, agentOptions, agent) {
       if (body) {
         req.addBody(body)
         if (headers) {
-          headers["content-type"] = undefined;
+          headers['content-type'] = undefined
         }
       }
       if (search && search.length > 1) {
