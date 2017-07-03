@@ -8,7 +8,7 @@ describe('Arbitrary HTTP routes', () => {
   console.log('JS -- env var TEST_ARANGODB -- seen in test/07-routes.js: ' +
               "'" + process.env.TEST_ARANGODB_URL + "'")
   const db = new Database({
-    url: (process.env.TEST_ARANGODB_URL || 'vst://root:@localhost:8529'),
+    url: (process.env.TEST_ARANGODB_URL || 'http://root:@localhost:8529'),
     arangoVersion: Number(process.env.ARANGO_VERSION || 30000)
   })
   describe('database.route', () => {

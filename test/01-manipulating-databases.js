@@ -7,12 +7,10 @@ const range = (n) => Array.from(Array(n).keys())
 
 describe('Manipulating databases', () => {
   let db
-  let connectionUrl = (process.env.TEST_ARANGODB_URL || 'vst://root:@localhost:8529')
-  let version = Number(process.env.ARANGO_VERSION || 30000)
   beforeEach(() => {
     db = new Database({
-      url: connectionUrl,
-      arangoVersion: version
+      url: (process.env.TEST_ARANGODB_URL || 'http://root:@localhost:8529'),
+      arangoVersion: Number(process.env.ARANGO_VERSION || 30000)
     })
   })
   describe('database.useDatabase', () => {
@@ -96,13 +94,11 @@ describe('Manipulating databases', () => {
     })
     it('deletes the given database from the server', (done) => {
       db.dropDatabase(name)
-        .then(() => new Database({url: connectionUrl,
-          arangoVersion: version,
-          databaseName: name}).get())
+        .then(() => new Database({databaseName: name}).get())
         .then(
           () => Promise.reject(new Error('Should not succeed')),
           () => null
-        )
+      )
         .then(() => void done())
         .catch(done)
     })
