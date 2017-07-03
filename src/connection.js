@@ -9,7 +9,6 @@ import Route from './route'
 import retry from 'retry'
 
 const MIME_JSON = /\/(json|javascript)(\W|$)/
-// const MIME_VPACK = /\/(x-velocypack)(\W|$)/
 
 export default class Connection {
   constructor (config) {
@@ -91,12 +90,8 @@ export default class Connection {
           }
         }
       } else {
-        // console.log('encode ###############');
-        // console.log(typeof body, body);
-        // body = vpack.encode(body) vpack encoding now done in node-arangodb-cxx
+        // No conversion of body here, since it is done in node-arangodb-cxx (Request.addBody)
         contentType = 'application/x-velocypack'
-        // console.log(typeof body, body);
-        // console.log('encode ###############');
       }
     } else {
       body = opts.rawBody
