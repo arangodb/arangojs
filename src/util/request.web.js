@@ -23,6 +23,7 @@ function joinPath (a = '', b = '') {
 }
 
 export const isBrowser = true
+export const isFuerte = false
 
 export default function (baseUrl, options) {
   if (!options) options = {}

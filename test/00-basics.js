@@ -2,6 +2,7 @@ import {describe, it, before, after, beforeEach} from 'mocha'
 import {expect} from 'chai'
 import arangojs, {Database} from '../src'
 import Connection from '../src/connection'
+import {isFuerte} from '../src/util/request'
 import https from 'https'
 import http from 'http'
 
@@ -117,20 +118,24 @@ describe('Configuring the driver', () => {
       options = undefined
     })
     before(() => {
-      let Request = (ptcl) => (opts) => {
-        protocol = ptcl
-        options = opts
-        return {
-          on () {
-            return this
-          },
-          end () {
-            return this
+      if (isFuerte) {
+        this.skip()
+      } else {
+        let Request = (ptcl) => (opts) => {
+          protocol = ptcl
+          options = opts
+          return {
+            on () {
+              return this
+            },
+            end () {
+              return this
+            }
           }
         }
+        http.request = Request('http')
+        https.request = Request('https')
       }
-      http.request = Request('http')
-      https.request = Request('https')
     })
     after(() => {
       http.request = _httpRequest

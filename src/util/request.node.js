@@ -25,6 +25,7 @@ function joinPath (a = '', b = '') {
 }
 
 export const isBrowser = false
+export const isFuerte = false
 
 export default function (baseUrl, agentOptions, agent) {
   const baseUrlParts = parseUrl(baseUrl)

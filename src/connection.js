@@ -3,7 +3,7 @@ import qs from 'querystring'
 import btoa from './util/btoa'
 import byteLength from './util/bytelength'
 import promisify from './util/promisify'
-import createRequest, {isBrowser} from './util/request'
+import createRequest, {isBrowser, isFuerte} from './util/request'
 import ArangoError from './error'
 import Route from './route'
 import retry from 'retry'
@@ -28,9 +28,6 @@ export default class Connection {
       this.config.agent
     )
     this._baseUrl = url
-    if (this._baseUrl.protocol === 'vst:') {
-      this.config.useVpack = true
-    }
     this._request = request
     if (auth && !this.config.headers['authorization']) {
       this.config.headers['authorization'] = `Basic ${btoa(auth)}`
@@ -75,45 +72,30 @@ export default class Connection {
     let body = opts.body
 
     if (body) {
-      if (!this.config.useVpack) {
-        if (this._baseUrl.protocol !== 'vst:') {
-          if (typeof body === 'object') {
-            if (opts.ld) {
-              body = body.map((obj) => JSON.stringify(obj)).join('\r\n') + '\r\n'
-              contentType = 'application/x-ldjson'
-            } else {
-              body = JSON.stringify(body)
-              contentType = 'application/json'
-            }
+      if (!isFuerte) {
+        if (typeof body === 'object') {
+          if (opts.ld) {
+            body = body.map((obj) => JSON.stringify(obj)).join('\r\n') + '\r\n'
+            contentType = 'application/x-ldjson'
           } else {
-            body = String(body)
+            body = JSON.stringify(body)
+            contentType = 'application/json'
           }
+        } else {
+          body = String(body)
         }
-      } else {
-        // No conversion of body here, since it is done in node-arangodb-cxx (Request.addBody)
-        contentType = 'application/x-velocypack'
       }
     } else {
       body = opts.rawBody
     }
 
-    if (!opts.headers.hasOwnProperty('content-type')) {
+    if (!isFuerte && !opts.headers.hasOwnProperty('content-type')) {
       opts.headers['content-type'] = contentType
     }
 
-    if (!opts.headers.hasOwnProperty('accept') && this.config.useVpack) {
-      opts.headers['accept'] = contentType
-    }
-
-    if (this._baseUrl.protocol !== 'vst:') {
-      if (!isBrowser && !opts.headers.hasOwnProperty('content-length')) {
-        // Can't override content-length in browser but ArangoDB needs it to be set
-        if (this.config.useVpack) {
-          // opts.headers['content-length'] = body ? byteLength(body, 'binary') : 0
-        } else {
-          opts.headers['content-length'] = body ? byteLength(body, 'utf-8') : 0
-        }
-      }
+    if (!isBrowser && !isFuerte && !opts.headers.hasOwnProperty('content-length')) {
+      // Can't override content-length in browser but ArangoDB needs it to be set
+      opts.headers['content-length'] = body ? byteLength(body, 'utf-8') : 0
     }
 
     for (const key of Object.keys(this.config.headers)) {
@@ -133,12 +115,11 @@ export default class Connection {
         expectBinary,
         body
       }, (err, res) => {
-        if (err) console.error('FAILED', err)
         if (operation.retry(err)) return
         if (err) callback(err)
         else {
           const rawBody = res.body
-          if (res.headers['content-type'] && res.headers['content-type'].match(MIME_JSON)) {
+          if (!isFuerte && res.headers['content-type'].match(MIME_JSON)) {
             try {
               if (expectBinary) res.body = res.body.toString('utf-8')
               res.body = res.body ? JSON.parse(res.body) : undefined
@@ -148,13 +129,6 @@ export default class Connection {
               return callback(e)
             }
           }
-
-          // DEBUG
-          // if (res.headers['content-type'] && res.headers['content-type'].match(MIME_VPACK)) {
-          //   console.log("body should already be an object:")
-          //   console.log("@@@@@@@@@@@@@@@@@@@", res.body)
-          // }
-
           if (
             res.body &&
             res.body.error &&
@@ -184,7 +158,6 @@ export default class Connection {
 
 Connection.defaults = {
   url: 'http://localhost:8529',
-  useVpack: true,
   databaseName: '_system',
   arangoVersion: 30000,
   retryConnection: false

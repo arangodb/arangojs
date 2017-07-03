@@ -24,7 +24,7 @@ echo "Script-code after this point is expected to work"
 
 
 http='http://127.0.0.1:8529'
-vst='vst://127.0.0.1:8530'
+vst='vst://127.0.0.1:8529'
 
 #default to http
 arangodb_url=${1:-$http}

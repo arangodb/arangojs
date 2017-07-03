@@ -44,7 +44,7 @@ describe('Manipulating databases', () => {
           expect(info.name).to.equal(name)
           done()
         })
-        .catch(done)
+        .catch(() => { done })
     })
     it('adds the given users to the database')
   })

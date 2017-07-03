@@ -1,3 +1,5 @@
+import http from 'http'
+import https from 'https'
 import fuerte from 'fuerte'
 import {parse as parseQuery} from 'querystring'
 import {parse as parseUrl} from 'url'
@@ -24,12 +26,25 @@ function joinPath (a = '', b = '') {
   return path
 }
 
-export default function (baseUrl, agentOptions) {
+export const isBrowser = false
+export const isFuerte = true
+
+export default function (baseUrl, agentOptions, agent) {
   const baseUrlParts = parseUrl(baseUrl)
+  const isTls = (baseUrlParts.protocol === 'https:') || (baseUrlParts.protocol === 'vsts:')
   let connectionString = `${baseUrlParts.protocol}//${baseUrlParts.host}`
   console.log('JS -- string seen in request.fuerte.js ' + connectionString)
   const builder = new fuerte.ConnectionBuilder()
   builder.host = connectionString
+  // builder.userName = baseUrlParts.username
+  // builder.password = baseUrlParts.password
+  // console.log('baseUrl=' + baseUrl)
+  // console.log('baseUrlParts=' + inspect(baseUrlParts))
+
+  if (!agent) {
+    const Agent = (isTls ? https : http).Agent
+    agent = new Agent(agentOptions)
+  }
 
   const idleConnections = new LinkedList()
   const activeConnections = new Set()
@@ -43,9 +58,6 @@ export default function (baseUrl, agentOptions) {
     const search = url.search ? (
       baseUrlParts.search ? `${baseUrlParts.search}&${url.search.slice(1)}` : url.search
     ) : baseUrlParts.search
-    // const REQID = '#' + (++counter) + ' ' + method.toUpperCase() + ' ' + path
-
-    // console.log('JS -- before push request.fuerte.js ' + connectionString)
 
     function drainQueue () {
       if (!queue.length || activeConnections.size >= maxConnections) return
@@ -72,7 +84,12 @@ export default function (baseUrl, agentOptions) {
       if (!parts) return callback(new Error('Invalid path?!?'))
       req.database = parts[1]
       req.path = parts[2]
-      if (body) req.addBody(body)
+      if (body) {
+        req.addBody(body)
+        if (headers) {
+          headers["content-type"] = undefined;
+        }
+      }
       if (search && search.length > 1) {
         const qs = parseQuery(search.slice(1))
         Object.keys(qs).forEach((key) => {
