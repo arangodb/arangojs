@@ -1,8 +1,11 @@
-console.log('TODO fall back to node driver on failure')
-try {
-  module.exports = require('./request.fuerte')
-} catch (e) {
-  console.warn('Failed to load fuerte driver')
-  throw e
-  // module.exports = require('./request.node')
+if (process.env.ARANGOJS_AVOID_FUERTE_DRIVER) {
+  module.exports = require('./request.node')
+} else {
+  try {
+    // Try to use fuerte driver.
+    module.exports = require('./request.fuerte')
+  } catch (e) {
+    // Fallback to node driver.
+    module.exports = require('./request.node')
+  }
 }
