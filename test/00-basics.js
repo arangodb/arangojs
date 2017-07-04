@@ -117,7 +117,7 @@ describe('Configuring the driver', () => {
       protocol = undefined
       options = undefined
     })
-    before(function() {
+    before(function () {
       if (isFuerte) {
         this.skip()
       } else {
