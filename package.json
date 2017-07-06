@@ -55,7 +55,7 @@
   },
   "dependencies": {
     "es6-error": "^4.0.1",
-    "fuerte": "git+https://github.com/arangodb/node-arangodb-cxx#update",
+    "fuerte": "git+https://github.com/arangodb/node-arangodb-cxx",
     "http-errors": "^1.6.1",
     "linkedlist": "^1.0.1",
     "multi-part": "^2.0.0",
