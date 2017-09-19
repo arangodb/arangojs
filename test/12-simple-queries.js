@@ -137,7 +137,7 @@ describe('Simple queries', () => {
       collection.firstExample({group: 2})
         .then((doc) => {
           expect(doc).to.have.keys('_key', '_id', '_rev', 'value', 'group')
-          expect(doc._key).to.equal('c')
+          expect(doc._key).to.match(/^[cd]$/)
           expect(doc._id).to.equal(`${collection.name}/${doc._key}`)
           expect(doc.value).to.equal(3)
           expect(doc.group).to.equal(2)
