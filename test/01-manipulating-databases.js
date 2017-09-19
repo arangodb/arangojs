@@ -155,7 +155,7 @@ describe('Manipulating databases', () => {
     it('additionally truncates system collections if explicitly passed false', (done) => {
       db.truncate(false)
         .then(() => {
-          return Promise.all(nonSystemCollections.concat(systemCollections).map(
+          return Promise.all(nonSystemCollections.map(
             (name) => db.collection(name).document('example')
               .then(
                 (doc) => Promise.reject(new Error(`Expected document to be destroyed: ${doc._id}`)),
