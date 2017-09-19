@@ -606,7 +606,9 @@ Deletes **all documents in all collections** in the active database.
 
 * **excludeSystem**: `boolean` (Default: `true`)
 
-  Whether system collections should be excluded.
+  Whether system collections should be excluded. Note that this
+  option will be ignored because truncating system collections is not
+  supported anymore for some system collections.
 
 **Examples**
 
@@ -615,11 +617,6 @@ const db = new Database();
 
 await db.truncate();
 // all non-system collections in this database are now empty
-
-// -- or --
-
-await db.truncate(false);
-// I've made a huge mistake...
 ```
 
 ### Accessing collections

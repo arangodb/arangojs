@@ -142,11 +142,10 @@ export default class Database {
   truncate (excludeSystem, cb) {
     if (typeof excludeSystem === 'function') {
       cb = excludeSystem
-      excludeSystem = undefined
     }
     const {promise, callback} = this._connection.promisify(cb)
     this.listCollections(
-      excludeSystem,
+      true,
       (err, collections) => (
         err
         ? callback(err)
