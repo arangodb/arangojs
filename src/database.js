@@ -529,8 +529,8 @@ export default class Database {
 
   commitLocalServiceState (replace, cb) {
     if (typeof replace === 'function') {
-      cb = replace;
-      replace = undefined;
+      cb = replace
+      replace = undefined
     }
     const {promise, callback} = this._connection.promisify(cb)
     this._api.post(
