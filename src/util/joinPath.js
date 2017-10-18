@@ -1,3 +1,3 @@
-export default function joinPath (a = '', b = '') {
-  return require('path').join.apply(null, arguments).replace(/\\/g, '/')
-}
+import path from 'path'
+const posix = path.posix || path
+export default posix.join
