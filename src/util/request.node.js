@@ -2,27 +2,7 @@ import http from 'http'
 import https from 'https'
 import {parse as parseUrl} from 'url'
 import LinkedList from 'linkedlist'
-
-function joinPath (a = '', b = '') {
-  if (!a && !b) return ''
-  const leadingSlash = a.charAt(0) === '/'
-  const trailingSlash = b.charAt(b.length - 1) === '/'
-  const tokens = `${a}/${b}`.split('/').filter(Boolean)
-  for (let i = 0; i < tokens.length; i++) {
-    let token = tokens[i]
-    if (token === '..') {
-      tokens.splice(i - 1, 2)
-      i--
-    } else if (token === '.') {
-      tokens.splice(i, 1)
-      i--
-    }
-  }
-  let path = tokens.join('/')
-  if (leadingSlash) path = `/${path}`
-  if (trailingSlash) path = `${path}/`
-  return path
-}
+import joinPath from './joinPath'
 
 export const isBrowser = false
 
