@@ -1,13 +1,14 @@
-import all from './util/all'
-import btoa from './util/btoa'
-import toForm from './util/multipart'
-import Connection from './connection'
-import ArrayCursor from './cursor'
-import Graph from './graph'
 import constructCollection, {
   DocumentCollection,
   EdgeCollection
 } from './collection'
+
+import ArrayCursor from './cursor'
+import Connection from './connection'
+import Graph from './graph'
+import all from './util/all'
+import btoa from './util/btoa'
+import toForm from './util/multipart'
 
 export default class Database {
   constructor (config) {
@@ -373,65 +374,107 @@ export default class Database {
     return promise
   }
 
-  getServiceConfiguration (mount, cb) {
+  getServiceConfiguration (mount, minimal, cb) {
+    if (typeof minimal === 'function') {
+      cb = minimal
+      minimal = undefined
+    }
+    if (typeof minimal !== 'boolean') {
+      minimal = false;
+    }
     const {promise, callback} = this._connection.promisify(cb)
     this._api.get(
       '/foxx/configuration',
-      {mount},
+      {mount, minimal},
       (err, res) => err ? callback(err) : callback(null, res.body)
     )
     return promise
   }
 
-  updateServiceConfiguration (mount, cfg, cb) {
+  updateServiceConfiguration (mount, cfg, minimal, cb) {
+    if (typeof minimal === 'function') {
+      cb = minimal
+      minimal = undefined
+    }
+    if (typeof minimal !== 'boolean') {
+      minimal = false;
+    }
     const {promise, callback} = this._connection.promisify(cb)
     this._api.patch(
       '/foxx/configuration',
       cfg,
-      {mount},
+      {mount, minimal},
       (err, res) => err ? callback(err) : callback(null, res.body)
     )
     return promise
   }
 
-  replaceServiceConfiguration (mount, cfg, cb) {
+  replaceServiceConfiguration (mount, cfg, minimal, cb) {
+    if (typeof minimal === 'function') {
+      cb = minimal
+      minimal = undefined
+    }
+    if (typeof minimal !== 'boolean') {
+      minimal = false;
+    }
     const {promise, callback} = this._connection.promisify(cb)
     this._api.put(
       '/foxx/configuration',
       cfg,
-      {mount},
+      {mount, minimal},
       (err, res) => err ? callback(err) : callback(null, res.body)
     )
     return promise
   }
 
-  getServiceDependencies (mount, cb) {
+  getServiceDependencies (mount, minimal, cb) {
+    if (typeof minimal === 'function') {
+      cb = minimal
+      minimal = undefined
+    }
+    if (typeof minimal !== 'boolean') {
+      minimal = false;
+    }
     const {promise, callback} = this._connection.promisify(cb)
     this._api.get(
       '/foxx/dependencies',
-      {mount},
+      {mount, minimal},
       (err, res) => err ? callback(err) : callback(null, res.body)
     )
     return promise
   }
 
-  updateServiceDependencies (mount, cfg, cb) {
+  updateServiceDependencies (mount, cfg, minimal, cb) {
+    if (typeof minimal === 'function') {
+      cb = minimal
+      minimal = undefined
+    }
+    if (typeof minimal !== 'boolean') {
+      minimal = false;
+    }
     const {promise, callback} = this._connection.promisify(cb)
     this._api.patch(
       '/foxx/dependencies',
       cfg,
-      {mount},
+      {mount, minimal},
       (err, res) => err ? callback(err) : callback(null, res.body)
     )
     return promise
   }
 
-  replaceServiceDependencies (mount, cfg, cb) {
+  replaceServiceDependencies (mount, cfg, minimal, cb) {
+    if (typeof minimal === 'function') {
+      cb = minimal
+      minimal = undefined
+    }
+    if (typeof minimal !== 'boolean') {
+      minimal = false;
+    }
     const {promise, callback} = this._connection.promisify(cb)
     this._api.put(
       '/foxx/dependencies',
       cfg,
-      {mount},
+      {mount, minimal},
       (err, res) => err ? callback(err) : callback(null, res.body)
     )
     return promise
