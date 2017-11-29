@@ -2,7 +2,13 @@
 
 The official ArangoDB low-level JavaScript client.
 
-**Note:** if you are looking for the ArangoDB JavaScript API in [Foxx](https://foxx.arangodb.com) (or the `arangosh` interactive shell) please check the [ArangoDB documentation](https://docs.arangodb.com/3.1/Manual/Foxx/Modules.html#the-arangodb-module) instead; specifically the `db` object exported by the `@arangodb` module. The JavaScript driver is **only** meant to be used when accessing ArangoDB from **outside** the database.
+**Note:** if you are looking for the ArangoDB JavaScript API in
+[Foxx](https://foxx.arangodb.com) (or the `arangosh` interactive shell) please
+check the
+[ArangoDB documentation](https://docs.arangodb.com/3.1/Manual/Foxx/Modules.html#the-arangodb-module)
+instead; specifically the `db` object exported by the `@arangodb` module. The
+JavaScript driver is **only** meant to be used when accessing ArangoDB from
+**outside** the database.
 
 [![license - APACHE-2.0](https://img.shields.io/npm/l/arangojs.svg)](http://opensource.org/licenses/APACHE-2.0)
 [![Dependencies](https://img.shields.io/david/arangodb/arangojs.svg)](https://david-dm.org/arangodb/arangojs)
@@ -14,27 +20,44 @@ The official ArangoDB low-level JavaScript client.
 
 # Compatibility
 
-ArangoJS is compatible with ArangoDB 3.0 and later. **For using ArangoJS with 2.8 or earlier see the upgrade note below.** ArangoJS is tested against the two most-recent releases of ArangoDB 3 (currently 3.0 and 3.1) as well as the most recent version of 2.8 and the latest development version.
+ArangoJS is compatible with ArangoDB 3.0 and later. **For using ArangoJS with
+2.8 or earlier see the upgrade note below.** ArangoJS is tested against the two
+most-recent releases of ArangoDB 3 (currently 3.0 and 3.1) as well as the most
+recent version of 2.8 and the latest development version.
 
-The yarn/npm distribution of ArangoJS is compatible with Node.js versions 7 (latest), 6 (LTS) and 4 (Maintenance). Node.js version support follows [the official Node.js long-term support schedule](https://github.com/nodejs/LTS).
+The yarn/npm distribution of ArangoJS is compatible with Node.js versions 7
+(latest), 6 (LTS) and 4 (Maintenance). Node.js version support follows
+[the official Node.js long-term support schedule](https://github.com/nodejs/LTS).
 
 The bower distribution of ArangoJS is compatible with most modern browsers.
 
 Versions outside this range may be compatible but are not actively supported.
 
-**Upgrade note**: If you want to use arangojs with ArangoDB 2.8 or earlier remember to set the appropriate `arangoVersion` option (e.g. `20800` for version 2.8.0). The current default value is `30000` (indicating compatibility with version 3.0.0 and newer). **The driver will behave differently depending on this value when using APIs that have changed between these versions.**
+**Upgrade note**: If you want to use arangojs with ArangoDB 2.8 or earlier
+remember to set the appropriate `arangoVersion` option (e.g. `20800` for version
+2.8.0). The current default value is `30000` (indicating compatibility with
+version 3.0.0 and newer). **The driver will behave differently depending on this
+value when using APIs that have changed between these versions.**
 
 # Versions
 
-The version number of this driver does not correspond with supported ArangoDB versions!
+The version number of this driver does not correspond with supported ArangoDB
+versions!
 
 This driver uses semantic versioning:
 
-* A change in the bugfix version (e.g. X.Y.0 -> X.Y.1) indicates internal changes and should always be safe to upgrade.
-* A change in the minor version (e.g. X.1.Z -> X.2.0) indicates additions and backwards-compatible changes that should not affect your code.
-* A change in the major version (e.g. 1.Y.Z -> 2.0.0) indicates *breaking* changes that require changes in your code to upgrade.
+* A change in the bugfix version (e.g. X.Y.0 -> X.Y.1) indicates internal
+  changes and should always be safe to upgrade.
+* A change in the minor version (e.g. X.1.Z -> X.2.0) indicates additions and
+  backwards-compatible changes that should not affect your code.
+* A change in the major version (e.g. 1.Y.Z -> 2.0.0) indicates _breaking_
+  changes that require changes in your code to upgrade.
 
-If you are getting weird errors or functions seem to be missing, make sure you are using the latest version of the driver and following documentation written for a compatible version. If you are following a tutorial written for an older version of arangojs, you can install that version using the `<name>@<version>` syntax:
+If you are getting weird errors or functions seem to be missing, make sure you
+are using the latest version of the driver and following documentation written
+for a compatible version. If you are following a tutorial written for an older
+version of arangojs, you can install that version using the `<name>@<version>`
+syntax:
 
 ```sh
 # for version 4.x.x
@@ -43,7 +66,9 @@ yarn add arangojs@4
 npm install --save arangojs@4
 ```
 
-You can find the documentation for each version by clicking on the corresponding date on the left in [the list of version tags](https://github.com/arangodb/arangojs/tags).
+You can find the documentation for each version by clicking on the corresponding
+date on the left in
+[the list of version tags](https://github.com/arangodb/arangojs/tags).
 
 # Testing
 
@@ -55,7 +80,10 @@ yarn test
 npm test
 ```
 
-By default the tests will be run against a server listening on `http://root:@localhost:8529` (i.e. using username `root` with no password). To override this, you can set the environment variable `TEST_ARANGODB_URL` to something different:
+By default the tests will be run against a server listening on
+`http://root:@localhost:8529` (i.e. using username `root` with no password). To
+override this, you can set the environment variable `TEST_ARANGODB_URL` to
+something different:
 
 ```sh
 TEST_ARANGODB_URL=http://root:@myserver.local:8530 yarn test
@@ -145,20 +173,34 @@ const db = new Database({
 });
 ```
 
-For AQL please check out the [`aql` template tag](#aql) for writing parametrized AQL queries without making your code vulnerable to injection attacks.
+For AQL please check out the [`aql` template tag](#aql) for writing parametrized
+AQL queries without making your code vulnerable to injection attacks.
 
 # API
 
-All asynchronous functions take an optional Node-style callback (or "errback") as the last argument with the following arguments:
+All asynchronous functions take an optional Node-style callback (or "errback")
+as the last argument with the following arguments:
 
-* *err*: an *Error* object if an error occurred, or *null* if no error occurred.
-* *result*: the function's result (if applicable).
+* _err_: an _Error_ object if an error occurred, or _null_ if no error occurred.
+* _result_: the function's result (if applicable).
 
-For expected API errors, *err* will be an instance of *ArangoError* with an [*errorNum* as defined in the ArangoDB documentation](https://docs.arangodb.com/devel/Manual/Appendix/ErrorCodes.html). For any other error responses (4xx/5xx status code), *err* will be an instance of the apropriate [http-errors](https://github.com/jshttp/http-errors) error type. If the response indicates success but the response body could not be parsed, *err* will be a *SyntaxError*. In all of these cases the error object will additionally have a *response* property containing the server response object.
+For expected API errors, _err_ will be an instance of _ArangoError_ with an
+[_errorNum_ as defined in the ArangoDB documentation](https://docs.arangodb.com/devel/Manual/Appendix/ErrorCodes.html).
+For any other error responses (4xx/5xx status code), _err_ will be an instance
+of the apropriate [http-errors](https://github.com/jshttp/http-errors) error
+type. If the response indicates success but the response body could not be
+parsed, _err_ will be a _SyntaxError_. In all of these cases the error object
+will additionally have a _response_ property containing the server response
+object.
 
-If `Promise` is defined globally, asynchronous functions return a promise if no callback is provided.
+If `Promise` is defined globally, asynchronous functions return a promise if no
+callback is provided.
 
-If you want to use promises in environments that don't provide the global `Promise` constructor, use a promise polyfill like [es6-promise](https://www.npmjs.com/package/es6-promise) or inject a ES6-compatible promise implementation like [bluebird](https://www.npmjs.com/package/bluebird) into the global scope.
+If you want to use promises in environments that don't provide the global
+`Promise` constructor, use a promise polyfill like
+[es6-promise](https://www.npmjs.com/package/es6-promise) or inject a
+ES6-compatible promise implementation like
+[bluebird](https://www.npmjs.com/package/bluebird) into the global scope.
 
 **Examples**
 
@@ -189,7 +231,10 @@ db.createDatabase('mydb', function (err, info) {
 });
 ```
 
-**Note**: the examples in the remainder of this documentation use async/await and other modern language features like multi-line strings and template tags. When developing for an environment without support for these language features, just use node-style callbacks or promises instead as in the above example.
+**Note**: the examples in the remainder of this documentation use async/await
+and other modern language features like multi-line strings and template tags.
+When developing for an environment without support for these language features,
+just use node-style callbacks or promises instead as in the above example.
 
 ## Table of Contents
 
@@ -358,9 +403,9 @@ db.createDatabase('mydb', function (err, info) {
 
 `new Database([config]): Database`
 
-Creates a new *Database* instance.
+Creates a new _Database_ instance.
 
-If *config* is a string, it will be interpreted as *config.url*.
+If _config_ is a string, it will be interpreted as _config.url_.
 
 **Arguments**
 
@@ -372,18 +417,22 @@ If *config* is a string, it will be interpreted as *config.url*.
 
     Base URL of the ArangoDB server.
 
-    If you want to use ArangoDB with HTTP Basic authentication, you can provide the credentials as part of the URL, e.g. `http://user:pass@localhost:8529`. You can still override these credentials at any time using the *useBasicAuth* or *useBearerAuth* methods.
+    If you want to use ArangoDB with HTTP Basic authentication, you can provide
+    the credentials as part of the URL, e.g. `http://user:pass@localhost:8529`.
+    You can still override these credentials at any time using the
+    _useBasicAuth_ or _useBearerAuth_ methods.
 
-    The driver automatically uses HTTPS if you specify an HTTPS *url*.
+    The driver automatically uses HTTPS if you specify an HTTPS _url_.
 
-    If you need to support self-signed HTTPS certificates, you may have to add your certificates to the *agentOptions*, e.g.:
+    If you need to support self-signed HTTPS certificates, you may have to add
+    your certificates to the _agentOptions_, e.g.:
 
     ```js
     agentOptions: {
       ca: [
-        fs.readFileSync('.ssl/sub.class1.server.ca.pem'),
-        fs.readFileSync('.ssl/ca.pem')
-      ]
+        fs.readFileSync(".ssl/sub.class1.server.ca.pem"),
+        fs.readFileSync(".ssl/ca.pem")
+      ];
     }
     ```
 
@@ -391,7 +440,9 @@ If *config* is a string, it will be interpreted as *config.url*.
 
     Name of the active database.
 
-    If this option is explicitly set to `false`, the *url* is expected to contain the database path and the *useDatabase* method can not be used to switch databases.
+    If this option is explicitly set to `false`, the _url_ is expected to
+    contain the database path and the _useDatabase_ method can not be used to
+    switch databases.
 
   * **arangoVersion**: `number` (Default: `30000`)
 
@@ -401,24 +452,32 @@ If *config* is a string, it will be interpreted as *config.url*.
 
     An object with additional headers to send with every request.
 
-    Header names should always be lowercase. If an `"authorization"` header is provided,
-    any user credentials that are part of the *url* will be overridden.
+    Header names should always be lowercase. If an `"authorization"` header is
+    provided, any user credentials that are part of the _url_ will be
+    overridden.
 
   * **agent**: `Agent` (optional)
 
     An http Agent instance to use for connections.
 
-    By default a new [`http.Agent`](https://nodejs.org/api/http.html#http_new_agent_options) (or https.Agent) instance will be created using the *agentOptions*.
+    By default a new
+    [`http.Agent`](https://nodejs.org/api/http.html#http_new_agent_options) (or
+    https.Agent) instance will be created using the _agentOptions_.
 
     This option has no effect when using the browser version of arangojs.
 
   * **agentOptions**: `Object` (Default: see below)
 
-    An object with options for the agent. This will be ignored if *agent* is also provided.
+    An object with options for the agent. This will be ignored if _agent_ is
+    also provided.
 
     Default: `{maxSockets: 3, keepAlive: true, keepAliveMsecs: 1000}`.
 
-    In the browser version of arangojs this option can be used to pass additional options to the underlying calls of the [`xhr`](https://www.npmjs.com/package/xhr) module. The options `keepAlive` and `keepAliveMsecs` have no effect in the browser but `maxSockets` will still be used to limit the amount of parallel requests made by arangojs.
+    In the browser version of arangojs this option can be used to pass
+    additional options to the underlying calls of the
+    [`xhr`](https://www.npmjs.com/package/xhr) module. The options `keepAlive`
+    and `keepAliveMsecs` have no effect in the browser but `maxSockets` will
+    still be used to limit the amount of parallel requests made by arangojs.
 
   * **promise**: `Class` (optional)
 
@@ -434,13 +493,15 @@ If *config* is a string, it will be interpreted as *config.url*.
 
 ### Manipulating databases
 
-These functions implement the [HTTP API for manipulating databases](https://docs.arangodb.com/latest/HTTP/Database/index.html).
+These functions implement the
+[HTTP API for manipulating databases](https://docs.arangodb.com/latest/HTTP/Database/index.html).
 
 #### database.useDatabase
 
 `database.useDatabase(databaseName): this`
 
-Updates the *Database* instance and its connection string to use the given *databaseName*, then returns itself.
+Updates the _Database_ instance and its connection string to use the given
+_databaseName_, then returns itself.
 
 **Arguments**
 
@@ -452,7 +513,7 @@ Updates the *Database* instance and its connection string to use the given *data
 
 ```js
 const db = new Database();
-db.useDatabase('test');
+db.useDatabase("test");
 // The database instance now uses the database "test".
 ```
 
@@ -460,7 +521,8 @@ db.useDatabase('test');
 
 `database.useBasicAuth(username, password): this`
 
-Updates the *Database* instance's `authorization` header to use Basic authentication with the given *username* and *password*, then returns itself.
+Updates the _Database_ instance's `authorization` header to use Basic
+authentication with the given _username_ and _password_, then returns itself.
 
 **Arguments**
 
@@ -476,8 +538,8 @@ Updates the *Database* instance's `authorization` header to use Basic authentica
 
 ```js
 const db = new Database();
-db.useDatabase('test')
-db.useBasicAuth('admin', 'hunter2');
+db.useDatabase("test");
+db.useBasicAuth("admin", "hunter2");
 // The database instance now uses the database "test"
 // with the username "admin" and password "hunter2".
 ```
@@ -486,7 +548,8 @@ db.useBasicAuth('admin', 'hunter2');
 
 `database.useBearerAuth(token): this`
 
-Updates the *Database* instance's `authorization` header to use Bearer authentication with the given authentication token, then returns itself.
+Updates the _Database_ instance's `authorization` header to use Bearer
+authentication with the given authentication token, then returns itself.
 
 **Arguments**
 
@@ -498,7 +561,7 @@ Updates the *Database* instance's `authorization` header to use Bearer authentic
 
 ```js
 const db = new Database();
-db.useBearerAuth('keyboardcat');
+db.useBearerAuth("keyboardcat");
 // The database instance now uses Bearer authentication.
 ```
 
@@ -506,7 +569,7 @@ db.useBearerAuth('keyboardcat');
 
 `async database.createDatabase(databaseName, [users]): Object`
 
-Creates a new database with the given *databaseName*.
+Creates a new database with the given _databaseName_.
 
 **Arguments**
 
@@ -574,7 +637,8 @@ const names = await db.listDatabases();
 
 `async database.listUserDatabases(): Array<string>`
 
-Fetches all databases accessible to the active user from the server and returns an array of their names.
+Fetches all databases accessible to the active user from the server and returns
+an array of their names.
 
 **Examples**
 
@@ -588,7 +652,7 @@ const names = await db.listUserDatabases();
 
 `async database.dropDatabase(databaseName): Object`
 
-Deletes the database with the given *databaseName* from the server.
+Deletes the database with the given _databaseName_ from the server.
 
 ```js
 const db = new Database();
@@ -606,9 +670,9 @@ Deletes **all documents in all collections** in the active database.
 
 * **excludeSystem**: `boolean` (Default: `true`)
 
-  Whether system collections should be excluded. Note that this
-  option will be ignored because truncating system collections is not
-  supported anymore for some system collections.
+  Whether system collections should be excluded. Note that this option will be
+  ignored because truncating system collections is not supported anymore for
+  some system collections.
 
 **Examples**
 
@@ -621,13 +685,14 @@ await db.truncate();
 
 ### Accessing collections
 
-These functions implement the [HTTP API for accessing collections](https://docs.arangodb.com/latest/HTTP/Collection/Getting.html).
+These functions implement the
+[HTTP API for accessing collections](https://docs.arangodb.com/latest/HTTP/Collection/Getting.html).
 
 #### database.collection
 
 `database.collection(collectionName): DocumentCollection`
 
-Returns a *DocumentCollection* instance for the given collection name.
+Returns a _DocumentCollection_ instance for the given collection name.
 
 **Arguments**
 
@@ -639,14 +704,14 @@ Returns a *DocumentCollection* instance for the given collection name.
 
 ```js
 const db = new Database();
-const collection = db.collection('potatos');
+const collection = db.collection("potatos");
 ```
 
 #### database.edgeCollection
 
 `database.edgeCollection(collectionName): EdgeCollection`
 
-Returns an *EdgeCollection* instance for the given collection name.
+Returns an _EdgeCollection_ instance for the given collection name.
 
 **Arguments**
 
@@ -658,14 +723,15 @@ Returns an *EdgeCollection* instance for the given collection name.
 
 ```js
 const db = new Database();
-const collection = db.edgeCollection('potatos');
+const collection = db.edgeCollection("potatos");
 ```
 
 #### database.listCollections
 
 `async database.listCollections([excludeSystem]): Array<Object>`
 
-Fetches all collections from the database and returns an array of collection descriptions.
+Fetches all collections from the database and returns an array of collection
+descriptions.
 
 **Arguments**
 
@@ -693,7 +759,8 @@ const collections = await db.listCollections(false);
 
 `async database.collections([excludeSystem]): Array<Collection>`
 
-Fetches all collections from the database and returns an array of *DocumentCollection* and *EdgeCollection* instances for the collections.
+Fetches all collections from the database and returns an array of
+_DocumentCollection_ and _EdgeCollection_ instances for the collections.
 
 **Arguments**
 
@@ -721,13 +788,14 @@ const collections = await db.listCollections(false)
 
 ### Accessing graphs
 
-These functions implement the [HTTP API for accessing general graphs](https://docs.arangodb.com/latest/HTTP/Gharial/index.html).
+These functions implement the
+[HTTP API for accessing general graphs](https://docs.arangodb.com/latest/HTTP/Gharial/index.html).
 
 #### database.graph
 
 `database.graph(graphName): Graph`
 
-Returns a *Graph* instance representing the graph with the given graph name.
+Returns a _Graph_ instance representing the graph with the given graph name.
 
 #### database.listGraphs
 
@@ -747,7 +815,8 @@ const graphs = await db.listGraphs();
 
 `async database.graphs(): Array<Graph>`
 
-Fetches all graphs from the database and returns an array of *Graph* instances for the graphs.
+Fetches all graphs from the database and returns an array of _Graph_ instances
+for the graphs.
 
 **Examples**
 
@@ -759,11 +828,13 @@ const graphs = await db.graphs();
 
 ### Transactions
 
-This function implements the [HTTP API for transactions](https://docs.arangodb.com/latest/HTTP/Transaction/index.html).
+This function implements the
+[HTTP API for transactions](https://docs.arangodb.com/latest/HTTP/Transaction/index.html).
 
 #### database.transaction
 
-`async database.transaction(collections, action, [params,] [lockTimeout]): Object`
+`async database.transaction(collections, action, [params,] [lockTimeout]):
+Object`
 
 Performs a server-side transaction and returns its return value.
 
@@ -775,31 +846,41 @@ Performs a server-side transaction and returns its return value.
 
   * **read**: `Array<string>` (optional)
 
-    An array of names (or a single name) of collections that will be read from during the transaction.
+    An array of names (or a single name) of collections that will be read from
+    during the transaction.
 
   * **write**: `Array<string>` (optional)
 
-    An array of names (or a single name) of collections that will be written to or read from during the transaction.
+    An array of names (or a single name) of collections that will be written to
+    or read from during the transaction.
 
 * **action**: `string`
 
   A string evaluating to a JavaScript function to be executed on the server.
 
-  **Note**: For accessing the database from within ArangoDB, see [the documentation for the `@arangodb` module in ArangoDB](https://docs.arangodb.com/3.1/Manual/Appendix/JavaScriptModules/ArangoDB.html).
+  **Note**: For accessing the database from within ArangoDB, see
+  [the documentation for the `@arangodb` module in ArangoDB](https://docs.arangodb.com/3.1/Manual/Appendix/JavaScriptModules/ArangoDB.html).
 
 * **params**: `Object` (optional)
 
-  Available as variable `params` when the *action* function is being executed on server. Check the example below.
+  Available as variable `params` when the _action_ function is being executed on
+  server. Check the example below.
 
 * **lockTimeout**: `number` (optional)
 
-  Determines how long the database will wait while attemping to gain locks on collections used by the transaction before timing out.
+  Determines how long the database will wait while attemping to gain locks on
+  collections used by the transaction before timing out.
 
-If *collections* is an array or string, it will be treated as *collections.write*.
+If _collections_ is an array or string, it will be treated as
+_collections.write_.
 
-Please note that while *action* should be a string evaluating to a well-formed JavaScript function, it's not possible to pass in a JavaScript function directly because the function needs to be evaluated on the server and will be transmitted in plain text.
+Please note that while _action_ should be a string evaluating to a well-formed
+JavaScript function, it's not possible to pass in a JavaScript function directly
+because the function needs to be evaluated on the server and will be transmitted
+in plain text.
 
-For more information on transactions, see [the HTTP API documentation for transactions](https://docs.arangodb.com/latest/HTTP/Transaction/index.html).
+For more information on transactions, see
+[the HTTP API documentation for transactions](https://docs.arangodb.com/latest/HTTP/Transaction/index.html).
 
 **Examples**
 
@@ -825,7 +906,8 @@ const result = await db.transaction(
 
 ### Queries
 
-This function implements the [HTTP API for single roundtrip AQL queries](https://docs.arangodb.com/latest/HTTP/AqlQueryCursor/QueryResults.html).
+This function implements the
+[HTTP API for single roundtrip AQL queries](https://docs.arangodb.com/latest/HTTP/AqlQueryCursor/QueryResults.html).
 
 For collection-specific queries see [simple queries](#simple-queries).
 
@@ -833,13 +915,15 @@ For collection-specific queries see [simple queries](#simple-queries).
 
 `async database.query(query, [bindVars,] [opts]): Cursor`
 
-Performs a database query using the given *query* and *bindVars*, then returns a [new *Cursor* instance](#cursor-api) for the result list.
+Performs a database query using the given _query_ and _bindVars_, then returns a
+[new _Cursor_ instance](#cursor-api) for the result list.
 
 **Arguments**
 
 * **query**: `string`
 
-  An AQL query string or a [query builder](https://npmjs.org/package/aqb) instance.
+  An AQL query string or a [query builder](https://npmjs.org/package/aqb)
+  instance.
 
 * **bindVars**: `Object` (optional)
 
@@ -849,9 +933,11 @@ Performs a database query using the given *query* and *bindVars*, then returns a
 
   Additional options that will be passed to the query API.
 
-If *opts.count* is set to `true`, the cursor will have a *count* property set to the query result count.
+If _opts.count_ is set to `true`, the cursor will have a _count_ property set to
+the query result count.
 
-If *query* is an object with *query* and *bindVars* properties, those will be used as the values of the respective arguments instead.
+If _query_ is an object with _query_ and _bindVars_ properties, those will be
+used as the values of the respective arguments instead.
 
 **Examples**
 
@@ -884,15 +970,21 @@ db.query(
 
 `aql(strings, ...args): Object`
 
-Template string handler (aka template tag) for AQL queries. Converts a template string to an object that can be passed to `database.query` by converting arguments to bind variables.
+Template string handler (aka template tag) for AQL queries. Converts a template
+string to an object that can be passed to `database.query` by converting
+arguments to bind variables.
 
-**Note**: If you want to pass a collection name as a bind variable, you need to pass a *Collection* instance (e.g. what you get by passing the collection name to `db.collection`) instead. If you see the error `"array expected as operand to FOR loop"`, you're likely passing a collection name instead of a collection instance.
+**Note**: If you want to pass a collection name as a bind variable, you need to
+pass a _Collection_ instance (e.g. what you get by passing the collection name
+to `db.collection`) instead. If you see the error `"array expected as operand to
+FOR loop"`, you're likely passing a collection name instead of a collection
+instance.
 
 **Examples**
 
 ```js
-const userCollection = db.collection('_users');
-const role = 'admin';
+const userCollection = db.collection("_users");
+const role = "admin";
 
 const query = aql`
   FOR user IN ${userCollection}
@@ -902,14 +994,17 @@ const query = aql`
 
 // -- is equivalent to --
 const query = {
-  query: 'FOR user IN @@value0 FILTER user.role == @value1 RETURN user',
-  bindVars: {'@value0': userCollection.name, value1: role}
+  query: "FOR user IN @@value0 FILTER user.role == @value1 RETURN user",
+  bindVars: { "@value0": userCollection.name, value1: role }
 };
 ```
 
-Note how the aql template tag automatically handles collection references (`@@value0` instead of `@value0`) for us so you don't have to worry about counting at-symbols.
+Note how the aql template tag automatically handles collection references
+(`@@value0` instead of `@value0`) for us so you don't have to worry about
+counting at-symbols.
 
-Because the aql template tag creates actual bindVars instead of inlining values directly, it also avoids injection attacks via malicious parameters:
+Because the aql template tag creates actual bindVars instead of inlining values
+directly, it also avoids injection attacks via malicious parameters:
 
 ```js
 // malicious user input
@@ -934,7 +1029,8 @@ const query = aql`
 
 ### Managing AQL user functions
 
-These functions implement the [HTTP API for managing AQL user functions](https://docs.arangodb.com/latest/HTTP/AqlUserFunctions/index.html).
+These functions implement the
+[HTTP API for managing AQL user functions](https://docs.arangodb.com/latest/HTTP/AqlUserFunctions/index.html).
 
 #### database.listFunctions
 
@@ -954,7 +1050,8 @@ const functions = db.listFunctions();
 
 `async database.createFunction(name, code): Object`
 
-Creates an AQL user function with the given *name* and *code* if it does not already exist or replaces it if a function with the same name already existed.
+Creates an AQL user function with the given _name_ and _code_ if it does not
+already exist or replaces it if a function with the same name already existed.
 
 **Arguments**
 
@@ -964,7 +1061,8 @@ Creates an AQL user function with the given *name* and *code* if it does not alr
 
 * **code**: `string`
 
-  A string evaluating to a JavaScript function (not a JavaScript function object).
+  A string evaluating to a JavaScript function (not a JavaScript function
+  object).
 
 **Examples**
 
@@ -1001,7 +1099,8 @@ Deletes the AQL user function with the given name from the database.
 
 * **group**: `boolean` (Default: `false`)
 
-  If set to `true`, all functions with a name starting with *name* will be deleted; otherwise only the function with the exact name will be deleted.
+  If set to `true`, all functions with a name starting with _name_ will be
+  deleted; otherwise only the function with the exact name will be deleted.
 
 **Examples**
 
@@ -1099,7 +1198,8 @@ const info = await db.installService('/hello', source);
 
 `async database.replaceService(mount, source, [options]): Object`
 
-Replaces an existing service with a new service by completely removing the old service and installing a new service at the same mount point.
+Replaces an existing service with a new service by completely removing the old
+service and installing a new service at the same mount point.
 
 **Arguments**
 
@@ -1167,7 +1267,8 @@ const info = await db.replaceService('/hello', source);
 
 `async database.upgradeService(mount, source, [options]): Object`
 
-Replaces an existing service with a new service while retaining the old service's configuration and dependencies.
+Replaces an existing service with a new service while retaining the old
+service's configuration and dependencies.
 
 **Arguments**
 
@@ -1281,7 +1382,8 @@ const info = await db.getService('/my-service');
 
 `async database.getServiceConfiguration(mount, [minimal]): Object`
 
-Retrieves an object with information about the service's configuration options and their current values.
+Retrieves an object with information about the service's configuration options
+and their current values.
 
 **Arguments**
 
@@ -1302,7 +1404,8 @@ const config = await db.getServiceConfiguration('/my-service');
 
 #### database.replaceServiceConfiguration
 
-`async database.replaceServiceConfiguration(mount, configuration, [minimal]): Object`
+`async database.replaceServiceConfiguration(mount, configuration, [minimal]):
+Object`
 
 Replaces the configuration of the given service.
 
@@ -1320,8 +1423,8 @@ Replaces the configuration of the given service.
 
   Only return the current values and warnings (if any).
 
-  **Note:** when using ArangoDB 3.2.8 or older, enabling this option
-  avoids triggering a second request to the database.
+  **Note:** when using ArangoDB 3.2.8 or older, enabling this option avoids
+  triggering a second request to the database.
 
 **Examples**
 
@@ -1334,9 +1437,11 @@ const info = await db.replaceServiceConfiguration('/my-service', config);
 
 #### database.updateServiceConfiguration
 
-`async database.updateServiceConfiguration(mount, configuration, [minimal]): Object`
+`async database.updateServiceConfiguration(mount, configuration, [minimal]):
+Object`
 
-Updates the configuration of the given service my merging the new values into the existing ones.
+Updates the configuration of the given service my merging the new values into
+the existing ones.
 
 **Arguments**
 
@@ -1352,8 +1457,8 @@ Updates the configuration of the given service my merging the new values into th
 
   Only return the current values and warnings (if any).
 
-  **Note:** when using ArangoDB 3.2.8 or older, enabling this option
-  avoids triggering a second request to the database.
+  **Note:** when using ArangoDB 3.2.8 or older, enabling this option avoids
+  triggering a second request to the database.
 
 **Examples**
 
@@ -1368,7 +1473,8 @@ const info = await db.updateServiceConfiguration('/my-service', config);
 
 `async database.getServiceDependencies(mount, [minimal]): Object`
 
-Retrieves an object with information about the service's dependencies and their current mount points.
+Retrieves an object with information about the service's dependencies and their
+current mount points.
 
 **Arguments**
 
@@ -1389,7 +1495,8 @@ const deps = await db.getServiceDependencies('/my-service');
 
 #### database.replaceServiceDependencies
 
-`async database.replaceServiceDependencies(mount, dependencies, [minimal]): Object`
+`async database.replaceServiceDependencies(mount, dependencies, [minimal]):
+Object`
 
 Replaces the dependencies for the given service.
 
@@ -1407,8 +1514,8 @@ Replaces the dependencies for the given service.
 
   Only return the current values and warnings (if any).
 
-  **Note:** when using ArangoDB 3.2.8 or older, enabling this option
-  avoids triggering a second request to the database.
+  **Note:** when using ArangoDB 3.2.8 or older, enabling this option avoids
+  triggering a second request to the database.
 
 **Examples**
 
@@ -1421,9 +1528,11 @@ const info = await db.replaceServiceDependencies('/my-service', deps);
 
 #### database.updateServiceDependencies
 
-`async database.updateServiceDependencies(mount, dependencies, [minimal]): Object`
+`async database.updateServiceDependencies(mount, dependencies, [minimal]):
+Object`
 
-Updates the dependencies for the given service by merging the new values into the existing ones.
+Updates the dependencies for the given service by merging the new values into
+the existing ones.
 
 **Arguments**
 
@@ -1439,8 +1548,8 @@ Updates the dependencies for the given service by merging the new values into th
 
   Only return the current values and warnings (if any).
 
-  **Note:** when using ArangoDB 3.2.8 or older, enabling this option
-  avoids triggering a second request to the database.
+  **Note:** when using ArangoDB 3.2.8 or older, enabling this option avoids
+  triggering a second request to the database.
 
 **Examples**
 
@@ -1475,7 +1584,8 @@ const info = await db.enableServiceDevelopmentMode('/my-service');
 
 `async database.disableServiceDevelopmentMode(mount): Object`
 
-Disabled development mode for the given service and commits the service state to the database.
+Disabled development mode for the given service and commits the service state to
+the database.
 
 **Arguments**
 
@@ -1569,7 +1679,8 @@ Runs the tests of a given service and returns a formatted report.
 
   * **idiomatic**: `boolean` (Default: `false`)
 
-    Whether the results should be converted to the apropriate `string` representation:
+    Whether the results should be converted to the apropriate `string`
+    representation:
 
     * **xunit** reports will be formatted as XML documents
     * **tap** reports will be formatted as TAP streams
@@ -1630,8 +1741,8 @@ const readme = await db.getServiceReadme('/my-service');
 
 `async database.getServiceDocumentation(mount): Object`
 
-Retrieves a Swagger API description object for the service installed
-at the given mount point.
+Retrieves a Swagger API description object for the service installed at the
+given mount point.
 
 **Arguments**
 
@@ -1650,8 +1761,8 @@ const spec = await db.getServiceDocumentation('/my-service');
 
 `async database.commitLocalServiceState([replace]): void`
 
-Writes all locally available services to the database and updates
-any service bundles missing in the database.
+Writes all locally available services to the database and updates any service
+bundles missing in the database.
 
 **Arguments**
 
@@ -1659,8 +1770,8 @@ any service bundles missing in the database.
 
   Also commit outdated services.
 
-  This can be used to solve some consistency problems when service
-  bundles are missing in the database or were deleted manually.
+  This can be used to solve some consistency problems when service bundles are
+  missing in the database or were deleted manually.
 
 **Examples**
 
@@ -1674,14 +1785,14 @@ await db.commitLocalServiceState(true);
 // all service conflicts have been resolved in favor of this coordinator
 ```
 
-
 ### Arbitrary HTTP routes
 
 #### database.route
 
 `database.route([path,] [headers]): Route`
 
-Returns a new *Route* instance for the given path (relative to the database) that can be used to perform arbitrary HTTP requests.
+Returns a new _Route_ instance for the given path (relative to the database)
+that can be used to perform arbitrary HTTP requests.
 
 **Arguments**
 
@@ -1693,9 +1804,10 @@ Returns a new *Route* instance for the given path (relative to the database) tha
 
   Default headers that should be sent with each request to the route.
 
-If *path* is missing, the route will refer to the base URL of the database.
+If _path_ is missing, the route will refer to the base URL of the database.
 
-For more information on *Route* instances see the [*Route API* below](#route-api).
+For more information on _Route_ instances see the
+[_Route API_ below](#route-api).
 
 **Examples**
 
@@ -1713,7 +1825,10 @@ const response = await myFoxxService.post('users', {
 
 ## Cursor API
 
-*Cursor* instances provide an abstraction over the HTTP API's limitations. Unless a method explicitly exhausts the cursor, the driver will only fetch as many batches from the server as necessary. Like the server-side cursors, *Cursor* instances are incrementally depleted as they are read from.
+_Cursor_ instances provide an abstraction over the HTTP API's limitations.
+Unless a method explicitly exhausts the cursor, the driver will only fetch as
+many batches from the server as necessary. Like the server-side cursors,
+_Cursor_ instances are incrementally depleted as they are read from.
 
 ```js
 const db = new Database();
@@ -1728,13 +1843,15 @@ assert.equal(value, 1);
 
 `cursor.count: number`
 
-The total number of documents in the query result. This is only available if the `count` option was used.
+The total number of documents in the query result. This is only available if the
+`count` option was used.
 
 ### cursor.all
 
 `async cursor.all(): Array<Object>`
 
-Exhausts the cursor, then returns an array containing all values in the cursor's remaining result list.
+Exhausts the cursor, then returns an array containing all values in the cursor's
+remaining result list.
 
 **Examples**
 
@@ -1750,7 +1867,8 @@ assert.equal(cursor.hasNext(), false);
 
 `async cursor.next(): Object`
 
-Advances the cursor and returns the next value in the cursor's remaining result list. If the cursor has already been exhausted, returns `undefined` instead.
+Advances the cursor and returns the next value in the cursor's remaining result
+list. If the cursor has already been exhausted, returns `undefined` instead.
 
 **Examples**
 
@@ -1769,7 +1887,8 @@ assert.equal(val2, 2);
 
 `cursor.hasNext(): boolean`
 
-Returns `true` if the cursor has more values or `false` if the cursor has been exhausted.
+Returns `true` if the cursor has more values or `false` if the cursor has been
+exhausted.
 
 **Examples**
 
@@ -1782,17 +1901,20 @@ assert.equal(cursor.hasNext(), false);
 
 `async cursor.each(fn): any`
 
-Advances the cursor by applying the function *fn* to each value in the cursor's remaining result list until the cursor is exhausted or *fn* explicitly returns `false`.
+Advances the cursor by applying the function _fn_ to each value in the cursor's
+remaining result list until the cursor is exhausted or _fn_ explicitly returns
+`false`.
 
-Returns the last return value of *fn*.
+Returns the last return value of _fn_.
 
-Equivalent to *Array.prototype.forEach* (except async).
+Equivalent to _Array.prototype.forEach_ (except async).
 
 **Arguments**
 
 * **fn**: `Function`
 
-  A function that will be invoked for each value in the cursor's remaining result list until it explicitly returns `false` or the cursor is exhausted.
+  A function that will be invoked for each value in the cursor's remaining
+  result list until it explicitly returns `false` or the cursor is exhausted.
 
   The function receives the following arguments:
 
@@ -1829,17 +1951,22 @@ assert.equal(last, 'C');
 
 `async cursor.every(fn): boolean`
 
-Advances the cursor by applying the function *fn* to each value in the cursor's remaining result list until the cursor is exhausted or *fn* returns a value that evaluates to `false`.
+Advances the cursor by applying the function _fn_ to each value in the cursor's
+remaining result list until the cursor is exhausted or _fn_ returns a value that
+evaluates to `false`.
 
-Returns `false` if *fn* returned a value that evalutes to `false`, or `true` otherwise.
+Returns `false` if _fn_ returned a value that evalutes to `false`, or `true`
+otherwise.
 
-Equivalent to *Array.prototype.every* (except async).
+Equivalent to _Array.prototype.every_ (except async).
 
 **Arguments**
 
 * **fn**: `Function`
 
-  A function that will be invoked for each value in the cursor's remaining result list until it returns a value that evaluates to `false` or the cursor is exhausted.
+  A function that will be invoked for each value in the cursor's remaining
+  result list until it returns a value that evaluates to `false` or the cursor
+  is exhausted.
 
   The function receives the following arguments:
 
@@ -1871,11 +1998,14 @@ assert.equal(value, 4); // next value after 3
 
 `async cursor.some(fn): boolean`
 
-Advances the cursor by applying the function *fn* to each value in the cursor's remaining result list until the cursor is exhausted or *fn* returns a value that evaluates to `true`.
+Advances the cursor by applying the function _fn_ to each value in the cursor's
+remaining result list until the cursor is exhausted or _fn_ returns a value that
+evaluates to `true`.
 
-Returns `true` if *fn* returned a value that evalutes to `true`, or `false` otherwise.
+Returns `true` if _fn_ returned a value that evalutes to `true`, or `false`
+otherwise.
 
-Equivalent to *Array.prototype.some* (except async).
+Equivalent to _Array.prototype.some_ (except async).
 
 **Examples**
 
@@ -1895,19 +2025,22 @@ assert.equal(value, 3); // next value after 2
 
 `cursor.map(fn): Array<any>`
 
-Advances the cursor by applying the function *fn* to each value in the cursor's remaining result list until the cursor is exhausted.
+Advances the cursor by applying the function _fn_ to each value in the cursor's
+remaining result list until the cursor is exhausted.
 
-Returns an array of the return values of *fn*.
+Returns an array of the return values of _fn_.
 
-Equivalent to *Array.prototype.map* (except async).
+Equivalent to _Array.prototype.map_ (except async).
 
-**Note**: This creates an array of all return values. It is probably a bad idea to do this for very large query result sets.
+**Note**: This creates an array of all return values. It is probably a bad idea
+to do this for very large query result sets.
 
 **Arguments**
 
 * **fn**: `Function`
 
-  A function that will be invoked for each value in the cursor's remaining result list until the cursor is exhausted.
+  A function that will be invoked for each value in the cursor's remaining
+  result list until the cursor is exhausted.
 
   The function receives the following arguments:
 
@@ -1938,21 +2071,27 @@ assert.equal(cursor.hasNext(), false);
 
 `cursor.reduce(fn, [accu]): any`
 
-Exhausts the cursor by reducing the values in the cursor's remaining result list with the given function *fn*. If *accu* is not provided, the first value in the cursor's remaining result list will be used instead (the function will not be invoked for that value).
+Exhausts the cursor by reducing the values in the cursor's remaining result list
+with the given function _fn_. If _accu_ is not provided, the first value in the
+cursor's remaining result list will be used instead (the function will not be
+invoked for that value).
 
-Equivalent to *Array.prototype.reduce* (except async).
+Equivalent to _Array.prototype.reduce_ (except async).
 
 **Arguments**
 
 * **fn**: `Function`
 
-  A function that will be invoked for each value in the cursor's remaining result list until the cursor is exhausted.
+  A function that will be invoked for each value in the cursor's remaining
+  result list until the cursor is exhausted.
 
   The function receives the following arguments:
 
   * **accu**: `any`
 
-    The return value of the previous call to *fn*. If this is the first call, *accu* will be set to the *accu* value passed to *reduce* or the first value in the cursor's remaining result list.
+    The return value of the previous call to _fn_. If this is the first call,
+    _accu_ will be set to the _accu_ value passed to _reduce_ or the first value
+    in the cursor's remaining result list.
 
   * **value**: `any`
 
@@ -1982,18 +2121,19 @@ assert.equal(cursor.hasNext(), false);
 const result = await cursor.reduce(add);
 assert.equal(result, 1 + 2 + 3 + 4 + 5);
 assert.equal(cursor.hasNext(), false);
-
 ```
 
 ## Route API
 
-*Route* instances provide access for arbitrary HTTP requests. This allows easy access to Foxx services and other HTTP APIs not covered by the driver itself.
+_Route_ instances provide access for arbitrary HTTP requests. This allows easy
+access to Foxx services and other HTTP APIs not covered by the driver itself.
 
 ### route.route
 
 `route.route([path], [headers]): Route`
 
-Returns a new *Route* instance for the given path (relative to the current route) that can be used to perform arbitrary HTTP requests.
+Returns a new _Route_ instance for the given path (relative to the current
+route) that can be used to perform arbitrary HTTP requests.
 
 **Arguments**
 
@@ -2005,14 +2145,14 @@ Returns a new *Route* instance for the given path (relative to the current route
 
   Default headers that should be sent with each request to the route.
 
-If *path* is missing, the route will refer to the base URL of the database.
+If _path_ is missing, the route will refer to the base URL of the database.
 
 **Examples**
 
 ```js
 const db = new Database();
-const route = db.route('my-foxx-service');
-const users = route.route('users');
+const route = db.route("my-foxx-service");
+const users = route.route("users");
 // equivalent to db.route('my-foxx-service/users')
 ```
 
@@ -2026,12 +2166,13 @@ Performs a GET request to the given URL and returns the server response.
 
 * **path**: `string` (optional)
 
-  The route-relative URL for the request. If omitted, the request will be made to the base URL of the route.
+  The route-relative URL for the request. If omitted, the request will be made
+  to the base URL of the route.
 
 * **qs**: `string` (optional)
 
-  The query string for the request. If *qs* is an object, it will be translated to a query string.
-
+  The query string for the request. If _qs_ is an object, it will be translated
+  to a query string.
 
 **Examples**
 
@@ -2065,15 +2206,17 @@ Performs a POST request to the given URL and returns the server response.
 
 * **path**: `string` (optional)
 
-  The route-relative URL for the request. If omitted, the request will be made to the base URL of the route.
+  The route-relative URL for the request. If omitted, the request will be made
+  to the base URL of the route.
 
 * **body**: `string` (optional)
 
-  The response body. If *body* is an object, it will be encoded as JSON.
+  The response body. If _body_ is an object, it will be encoded as JSON.
 
 * **qs**: `string` (optional)
 
-  The query string for the request. If *qs* is an object, it will be translated to a query string.
+  The query string for the request. If _qs_ is an object, it will be translated
+  to a query string.
 
 **Examples**
 
@@ -2121,15 +2264,17 @@ Performs a PUT request to the given URL and returns the server response.
 
 * **path**: `string` (optional)
 
-  The route-relative URL for the request. If omitted, the request will be made to the base URL of the route.
+  The route-relative URL for the request. If omitted, the request will be made
+  to the base URL of the route.
 
 * **body**: `string` (optional)
 
-  The response body. If *body* is an object, it will be encoded as JSON.
+  The response body. If _body_ is an object, it will be encoded as JSON.
 
 * **qs**: `string` (optional)
 
-  The query string for the request. If *qs* is an object, it will be translated to a query string.
+  The query string for the request. If _qs_ is an object, it will be translated
+  to a query string.
 
 **Examples**
 
@@ -2177,15 +2322,17 @@ Performs a PATCH request to the given URL and returns the server response.
 
 * **path**: `string` (optional)
 
-  The route-relative URL for the request. If omitted, the request will be made to the base URL of the route.
+  The route-relative URL for the request. If omitted, the request will be made
+  to the base URL of the route.
 
 * **body**: `string` (optional)
 
-  The response body. If *body* is an object, it will be encoded as JSON.
+  The response body. If _body_ is an object, it will be encoded as JSON.
 
 * **qs**: `string` (optional)
 
-  The query string for the request. If *qs* is an object, it will be translated to a query string.
+  The query string for the request. If _qs_ is an object, it will be translated
+  to a query string.
 
 **Examples**
 
@@ -2231,11 +2378,13 @@ Performs a DELETE request to the given URL and returns the server response.
 
 * **path**: `string` (optional)
 
-  The route-relative URL for the request. If omitted, the request will be made to the base URL of the route.
+  The route-relative URL for the request. If omitted, the request will be made
+  to the base URL of the route.
 
 * **qs**: `string` (optional)
 
-  The query string for the request. If *qs* is an object, it will be translated to a query string.
+  The query string for the request. If _qs_ is an object, it will be translated
+  to a query string.
 
 **Examples**
 
@@ -2269,11 +2418,13 @@ Performs a HEAD request to the given URL and returns the server response.
 
 * **path**: `string` (optional)
 
-  The route-relative URL for the request. If omitted, the request will be made to the base URL of the route.
+  The route-relative URL for the request. If omitted, the request will be made
+  to the base URL of the route.
 
 * **qs**: `string` (optional)
 
-  The query string for the request. If *qs* is an object, it will be translated to a query string.
+  The query string for the request. If _qs_ is an object, it will be translated
+  to a query string.
 
 **Examples**
 
@@ -2299,19 +2450,22 @@ Performs an arbitrary request to the given URL and returns the server response.
 
   * **path**: `string` (optional)
 
-    The route-relative URL for the request. If omitted, the request will be made to the base URL of the route.
+    The route-relative URL for the request. If omitted, the request will be made
+    to the base URL of the route.
 
   * **absolutePath**: `boolean` (Default: `false`)
 
-    Whether the *path* is relative to the connection's base URL instead of the route.
+    Whether the _path_ is relative to the connection's base URL instead of the
+    route.
 
   * **body**: `string` (optional)
 
-    The response body. If *body* is an object, it will be encoded as JSON.
+    The response body. If _body_ is an object, it will be encoded as JSON.
 
   * **qs**: `string` (optional)
 
-    The query string for the request. If *qs* is an object, it will be translated to a query string.
+    The query string for the request. If _qs_ is an object, it will be
+    translated to a query string.
 
   * **headers**: `Object` (optional)
 
@@ -2339,13 +2493,21 @@ const response = await route.request({
 
 ## Collection API
 
-These functions implement the [HTTP API for manipulating collections](https://docs.arangodb.com/latest/HTTP/Collection/index.html).
+These functions implement the
+[HTTP API for manipulating collections](https://docs.arangodb.com/latest/HTTP/Collection/index.html).
 
-The *Collection API* is implemented by all *Collection* instances, regardless of their specific type. I.e. it represents a shared subset between instances of [*DocumentCollection*](#documentcollection-api), [*EdgeCollection*](#edgecollection-api), [*GraphVertexCollection*](#graphvertexcollection-api) and [*GraphEdgeCollection*](#graphedgecollection-api).
+The _Collection API_ is implemented by all _Collection_ instances, regardless of
+their specific type. I.e. it represents a shared subset between instances of
+[_DocumentCollection_](#documentcollection-api),
+[_EdgeCollection_](#edgecollection-api),
+[_GraphVertexCollection_](#graphvertexcollection-api) and
+[_GraphEdgeCollection_](#graphedgecollection-api).
 
 ### Getting information about the collection
 
-See [the HTTP API documentation](https://docs.arangodb.com/latest/HTTP/Collection/Getting.html) for details.
+See
+[the HTTP API documentation](https://docs.arangodb.com/latest/HTTP/Collection/Getting.html)
+for details.
 
 #### collection.get
 
@@ -2432,7 +2594,8 @@ Retrieves the collection checksum.
 
 * **opts**: `Object` (optional)
 
-  For information on the possible options see [the HTTP API for getting collection information](https://docs.arangodb.com/latest/HTTP/Collection/Getting.html).
+  For information on the possible options see
+  [the HTTP API for getting collection information](https://docs.arangodb.com/latest/HTTP/Collection/Getting.html).
 
 **Examples**
 
@@ -2445,19 +2608,22 @@ const data = await collection.checksum();
 
 ### Manipulating the collection
 
-These functions implement [the HTTP API for modifying collections](https://docs.arangodb.com/latest/HTTP/Collection/Modifying.html).
+These functions implement
+[the HTTP API for modifying collections](https://docs.arangodb.com/latest/HTTP/Collection/Modifying.html).
 
 #### collection.create
 
 `async collection.create([properties]): Object`
 
-Creates a collection with the given *properties* for this collection's name, then returns the server response.
+Creates a collection with the given _properties_ for this collection's name,
+then returns the server response.
 
 **Arguments**
 
 * **properties**: `Object` (optional)
 
-  For more information on the *properties* object, see [the HTTP API documentation for creating collections](https://docs.arangodb.com/latest/HTTP/Collection/Creating.html).
+  For more information on the _properties_ object, see
+  [the HTTP API documentation for creating collections](https://docs.arangodb.com/latest/HTTP/Collection/Creating.html).
 
 **Examples**
 
@@ -2486,7 +2652,8 @@ Tells the server to load the collection into memory.
 
 * **count**: `boolean` (Default: `true`)
 
-  If set to `false`, the return value will not include the number of documents in the collection (which may speed up the process).
+  If set to `false`, the return value will not include the number of documents
+  in the collection (which may speed up the process).
 
 **Examples**
 
@@ -2522,7 +2689,8 @@ Replaces the properties of the collection.
 
 * **properties**: `Object`
 
-  For information on the *properties* argument see [the HTTP API for modifying collections](https://docs.arangodb.com/latest/HTTP/Collection/Modifying.html).
+  For information on the _properties_ argument see
+  [the HTTP API for modifying collections](https://docs.arangodb.com/latest/HTTP/Collection/Modifying.html).
 
 **Examples**
 
@@ -2539,7 +2707,8 @@ assert.equal(result.waitForSync, true);
 
 `async collection.rename(name): Object`
 
-Renames the collection. The *Collection* instance will automatically update its name when the rename succeeds.
+Renames the collection. The _Collection_ instance will automatically update its
+name when the rename succeeds.
 
 **Examples**
 
@@ -2600,8 +2769,9 @@ Deletes the collection from the database.
 
     This parameter must be set to `true` when dropping a system collection.
 
-  For more information on the *properties* object, see [the HTTP API documentation for dropping collections](https://docs.arangodb.com/3/HTTP/Collection/Creating.html#drops-a-collection).
-**Examples**
+  For more information on the _properties_ object, see
+  [the HTTP API documentation for dropping collections](https://docs.arangodb.com/3/HTTP/Collection/Creating.html#drops-a-collection).
+  **Examples**
 
 ```js
 const db = new Database();
@@ -2612,7 +2782,8 @@ await collection.drop();
 
 ### Manipulating indexes
 
-These functions implement the [HTTP API for manipulating indexes](https://docs.arangodb.com/latest/HTTP/Indexes/index.html).
+These functions implement the
+[HTTP API for manipulating indexes](https://docs.arangodb.com/latest/HTTP/Indexes/index.html).
 
 #### collection.createIndex
 
@@ -2624,7 +2795,8 @@ Creates an arbitrary index on the collection.
 
 * **details**: `Object`
 
-  For information on the possible properties of the *details* object, see [the HTTP API for manipulating indexes](https://docs.arangodb.com/latest/HTTP/Indexes/WorkingWith.html).
+  For information on the possible properties of the _details_ object, see
+  [the HTTP API for manipulating indexes](https://docs.arangodb.com/latest/HTTP/Indexes/WorkingWith.html).
 
 **Examples**
 
@@ -2641,7 +2813,8 @@ const index = await collection.createIndex({type: 'cap', size: 20});
 
 Creates a cap constraint index on the collection.
 
-**Note**: This method is not available when using the driver with ArangoDB 3.0 and higher as cap constraints are no longer supported.
+**Note**: This method is not available when using the driver with ArangoDB 3.0
+and higher as cap constraints are no longer supported.
 
 **Arguments**
 
@@ -2657,9 +2830,10 @@ Creates a cap constraint index on the collection.
 
     The maximum size of active document data in the collection (in bytes).
 
-If *size* is a number, it will be interpreted as *size.size*.
+If _size_ is a number, it will be interpreted as _size.size_.
 
-For more information on the properties of the *size* object see [the HTTP API for creating cap constraints](https://docs.arangodb.com/latest/HTTP/Indexes/Cap.html).
+For more information on the properties of the _size_ object see
+[the HTTP API for creating cap constraints](https://docs.arangodb.com/latest/HTTP/Indexes/Cap.html).
 
 **Examples**
 
@@ -2688,13 +2862,16 @@ Creates a hash index on the collection.
 
 * **fields**: `Array<string>`
 
-  An array of names of document fields on which to create the index. If the value is a string, it will be wrapped in an array automatically.
+  An array of names of document fields on which to create the index. If the
+  value is a string, it will be wrapped in an array automatically.
 
 * **opts**: `Object` (optional)
 
-  Additional options for this index. If the value is a boolean, it will be interpreted as *opts.unique*.
+  Additional options for this index. If the value is a boolean, it will be
+  interpreted as _opts.unique_.
 
-For more information on hash indexes, see [the HTTP API for hash indexes](https://docs.arangodb.com/latest/HTTP/Indexes/Hash.html).
+For more information on hash indexes, see
+[the HTTP API for hash indexes](https://docs.arangodb.com/latest/HTTP/Indexes/Hash.html).
 
 **Examples**
 
@@ -2723,13 +2900,16 @@ Creates a skiplist index on the collection.
 
 * **fields**: `Array<string>`
 
-   An array of names of document fields on which to create the index. If the value is a string, it will be wrapped in an array automatically.
+  An array of names of document fields on which to create the index. If the
+  value is a string, it will be wrapped in an array automatically.
 
 * **opts**: `Object` (optional)
 
-  Additional options for this index. If the value is a boolean, it will be interpreted as *opts.unique*.
+  Additional options for this index. If the value is a boolean, it will be
+  interpreted as _opts.unique_.
 
-For more information on skiplist indexes, see [the HTTP API for skiplist indexes](https://docs.arangodb.com/latest/HTTP/Indexes/Skiplist.html).
+For more information on skiplist indexes, see
+[the HTTP API for skiplist indexes](https://docs.arangodb.com/latest/HTTP/Indexes/Skiplist.html).
 
 **Examples**
 
@@ -2758,13 +2938,16 @@ Creates a geo-spatial index on the collection.
 
 * **fields**: `Array<string>`
 
-  An array of names of document fields on which to create the index. Currently, geo indexes must cover exactly one field. If the value is a string, it will be wrapped in an array automatically.
+  An array of names of document fields on which to create the index. Currently,
+  geo indexes must cover exactly one field. If the value is a string, it will be
+  wrapped in an array automatically.
 
 * **opts**: `Object` (optional)
 
   An object containing additional properties of the index.
 
-For more information on the properties of the *opts* object see [the HTTP API for manipulating geo indexes](https://docs.arangodb.com/latest/HTTP/Indexes/Geo.html).
+For more information on the properties of the _opts_ object see
+[the HTTP API for manipulating geo indexes](https://docs.arangodb.com/latest/HTTP/Indexes/Geo.html).
 
 **Examples**
 
@@ -2793,13 +2976,17 @@ Creates a fulltext index on the collection.
 
 * **fields**: `Array<string>`
 
-  An array of names of document fields on which to create the index. Currently, fulltext indexes must cover exactly one field. If the value is a string, it will be wrapped in an array automatically.
+  An array of names of document fields on which to create the index. Currently,
+  fulltext indexes must cover exactly one field. If the value is a string, it
+  will be wrapped in an array automatically.
 
 * **minLength** (optional):
 
-  Minimum character length of words to index. Uses a server-specific default value if not specified.
+  Minimum character length of words to index. Uses a server-specific default
+  value if not specified.
 
-For more information on fulltext indexes, see [the HTTP API for fulltext indexes](https://docs.arangodb.com/latest/HTTP/Indexes/Fulltext.html).
+For more information on fulltext indexes, see
+[the HTTP API for fulltext indexes](https://docs.arangodb.com/latest/HTTP/Indexes/Fulltext.html).
 
 **Examples**
 
@@ -2822,10 +3009,10 @@ assert.deepEqual(index.fields, ['description']);
 
 `async collection.createPersistentIndex(fields, [opts]): Object`
 
-Creates a Persistent index on the collection.
-Persistent indexes are similarly in operation to skiplist indexes, only that these indexes are in disk as opposed to in memory.
-This reduces memory usage and DB startup time, with the trade-off being that it will always be orders of magnitude slower than in-memory indexes.
-
+Creates a Persistent index on the collection. Persistent indexes are similarly
+in operation to skiplist indexes, only that these indexes are in disk as opposed
+to in memory. This reduces memory usage and DB startup time, with the trade-off
+being that it will always be orders of magnitude slower than in-memory indexes.
 
 **Arguments**
 
@@ -2837,7 +3024,8 @@ This reduces memory usage and DB startup time, with the trade-off being that it 
 
   An object containing additional properties of the index.
 
-For more information on the properties of the *opts* object see [the HTTP API for manipulating Persistent indexes](https://docs.arangodb.com/latest/HTTP/Indexes/Persistent.html).
+For more information on the properties of the _opts_ object see
+[the HTTP API for manipulating Persistent indexes](https://docs.arangodb.com/latest/HTTP/Indexes/Persistent.html).
 
 **Examples**
 
@@ -2854,13 +3042,15 @@ assert.deepEqual(index.fields, ['name', 'email']);
 
 `async collection.index(indexHandle): Object`
 
-Fetches information about the index with the given *indexHandle* and returns it.
+Fetches information about the index with the given _indexHandle_ and returns it.
 
 **Arguments**
 
 * **indexHandle**: `string`
 
-  The handle of the index to look up. This can either be a fully-qualified identifier or the collection-specific key of the index. If the value is an object, its *id* property will be used instead.
+  The handle of the index to look up. This can either be a fully-qualified
+  identifier or the collection-specific key of the index. If the value is an
+  object, its _id_ property will be used instead.
 
 **Examples**
 
@@ -2900,13 +3090,15 @@ assert.equal(indexes.length, 1);
 
 `async collection.dropIndex(indexHandle): Object`
 
-Deletes the index with the given *indexHandle* from the collection.
+Deletes the index with the given _indexHandle_ from the collection.
 
 **Arguments**
 
 * **indexHandle**: `string`
 
-  The handle of the index to delete. This can either be a fully-qualified identifier or the collection-specific key of the index. If the value is an object, its *id* property will be used instead.
+  The handle of the index to delete. This can either be a fully-qualified
+  identifier or the collection-specific key of the index. If the value is an
+  object, its _id_ property will be used instead.
 
 **Examples**
 
@@ -2925,19 +3117,22 @@ await collection.dropIndex(index.id.split('/')[1]);
 
 ### Simple queries
 
-These functions implement the [HTTP API for simple queries](https://docs.arangodb.com/latest/HTTP/SimpleQuery/index.html).
+These functions implement the
+[HTTP API for simple queries](https://docs.arangodb.com/latest/HTTP/SimpleQuery/index.html).
 
 #### collection.all
 
 `async collection.all([opts]): Cursor`
 
-Performs a query to fetch all documents in the collection. Returns a [new *Cursor* instance](#cursor-api) for the query results.
+Performs a query to fetch all documents in the collection. Returns a
+[new _Cursor_ instance](#cursor-api) for the query results.
 
 **Arguments**
 
 * **opts**: `Object` (optional)
 
-  For information on the possible options see [the HTTP API for returning all documents](https://docs.arangodb.com/latest/HTTP/SimpleQuery/index.html#return-all-documents).
+  For information on the possible options see
+  [the HTTP API for returning all documents](https://docs.arangodb.com/latest/HTTP/SimpleQuery/index.html#return-all-documents).
 
 #### collection.any
 
@@ -2949,59 +3144,67 @@ Fetches a document from the collection at random.
 
 `async collection.first([opts]): Array<Object>`
 
-Performs a query to fetch the first documents in the collection. Returns an array of the matching documents.
+Performs a query to fetch the first documents in the collection. Returns an
+array of the matching documents.
 
-**Note**: This method is not available when using the driver with ArangoDB 3.0 and higher as the corresponding API method has been removed.
+**Note**: This method is not available when using the driver with ArangoDB 3.0
+and higher as the corresponding API method has been removed.
 
 **Arguments**
 
 * **opts**: `Object` (optional)
 
-  For information on the possible options see [the HTTP API for returning the first documents of a collection](https://docs.arangodb.com/latest/HTTP/SimpleQuery/index.html#find-documents-matching-an-example).
+  For information on the possible options see
+  [the HTTP API for returning the first documents of a collection](https://docs.arangodb.com/latest/HTTP/SimpleQuery/index.html#find-documents-matching-an-example).
 
-  If *opts* is a number it is treated as *opts.count*.
+  If _opts_ is a number it is treated as _opts.count_.
 
 #### collection.last
 
 `async collection.last([opts]): Array<Object>`
 
-Performs a query to fetch the last documents in the collection. Returns an array of the matching documents.
+Performs a query to fetch the last documents in the collection. Returns an array
+of the matching documents.
 
-**Note**: This method is not available when using the driver with ArangoDB 3.0 and higher as the corresponding API method has been removed.
+**Note**: This method is not available when using the driver with ArangoDB 3.0
+and higher as the corresponding API method has been removed.
 
 **Arguments**
 
 * **opts**: `Object` (optional)
 
-  For information on the possible options see [the HTTP API for returning the last documents of a collection](https://docs.arangodb.com/latest/HTTP/SimpleQuery/index.html#last-document-of-a-collection).
+  For information on the possible options see
+  [the HTTP API for returning the last documents of a collection](https://docs.arangodb.com/latest/HTTP/SimpleQuery/index.html#last-document-of-a-collection).
 
-  If *opts* is a number it is treated as *opts.count*.
+  If _opts_ is a number it is treated as _opts.count_.
 
 #### collection.byExample
 
 `async collection.byExample(example, [opts]): Cursor`
 
-Performs a query to fetch all documents in the collection matching the given *example*. Returns a [new *Cursor* instance](#cursor-api) for the query results.
+Performs a query to fetch all documents in the collection matching the given
+_example_. Returns a [new _Cursor_ instance](#cursor-api) for the query results.
 
 **Arguments**
 
-* **example**: *Object*
+* **example**: _Object_
 
   An object representing an example for documents to be matched against.
 
-* **opts**: *Object* (optional)
+* **opts**: _Object_ (optional)
 
-  For information on the possible options see [the HTTP API for fetching documents by example](https://docs.arangodb.com/latest/HTTP/SimpleQuery/index.html#find-documents-matching-an-example).
+  For information on the possible options see
+  [the HTTP API for fetching documents by example](https://docs.arangodb.com/latest/HTTP/SimpleQuery/index.html#find-documents-matching-an-example).
 
 #### collection.firstExample
 
 `async collection.firstExample(example): Object`
 
-Fetches the first document in the collection matching the given *example*.
+Fetches the first document in the collection matching the given _example_.
 
 **Arguments**
 
-* **example**: *Object*
+* **example**: _Object_
 
   An object representing an example for documents to be matched against.
 
@@ -3009,67 +3212,73 @@ Fetches the first document in the collection matching the given *example*.
 
 `async collection.removeByExample(example, [opts]): Object`
 
-Removes all documents in the collection matching the given *example*.
+Removes all documents in the collection matching the given _example_.
 
 **Arguments**
 
-* **example**: *Object*
+* **example**: _Object_
 
   An object representing an example for documents to be matched against.
 
-* **opts**: *Object* (optional)
+* **opts**: _Object_ (optional)
 
-  For information on the possible options see [the HTTP API for removing documents by example](https://docs.arangodb.com/latest/HTTP/SimpleQuery/index.html#remove-documents-by-example).
+  For information on the possible options see
+  [the HTTP API for removing documents by example](https://docs.arangodb.com/latest/HTTP/SimpleQuery/index.html#remove-documents-by-example).
 
 #### collection.replaceByExample
 
 `async collection.replaceByExample(example, newValue, [opts]): Object`
 
-Replaces all documents in the collection matching the given *example* with the given *newValue*.
+Replaces all documents in the collection matching the given _example_ with the
+given _newValue_.
 
 **Arguments**
 
-* **example**: *Object*
+* **example**: _Object_
 
   An object representing an example for documents to be matched against.
 
-* **newValue**: *Object*
+* **newValue**: _Object_
 
   The new value to replace matching documents with.
 
-* **opts**: *Object* (optional)
+* **opts**: _Object_ (optional)
 
-  For information on the possible options see [the HTTP API for replacing documents by example](https://docs.arangodb.com/latest/HTTP/SimpleQuery/index.html#replace-documents-by-example).
+  For information on the possible options see
+  [the HTTP API for replacing documents by example](https://docs.arangodb.com/latest/HTTP/SimpleQuery/index.html#replace-documents-by-example).
 
 #### collection.updateByExample
 
 `async collection.updateByExample(example, newValue, [opts]): Object`
 
-Updates (patches) all documents in the collection matching the given *example* with the given *newValue*.
+Updates (patches) all documents in the collection matching the given _example_
+with the given _newValue_.
 
 **Arguments**
 
-* **example**: *Object*
+* **example**: _Object_
 
   An object representing an example for documents to be matched against.
 
-* **newValue**: *Object*
+* **newValue**: _Object_
 
   The new value to update matching documents with.
 
-* **opts**: *Object* (optional)
+* **opts**: _Object_ (optional)
 
-  For information on the possible options see [the HTTP API for updating documents by example](https://docs.arangodb.com/latest/HTTP/SimpleQuery/index.html#update-documents-by-example).
+  For information on the possible options see
+  [the HTTP API for updating documents by example](https://docs.arangodb.com/latest/HTTP/SimpleQuery/index.html#update-documents-by-example).
 
 #### collection.lookupByKeys
 
 `async collection.lookupByKeys(keys): Array<Object>`
 
-Fetches the documents with the given *keys* from the collection. Returns an array of the matching documents.
+Fetches the documents with the given _keys_ from the collection. Returns an
+array of the matching documents.
 
 **Arguments**
 
-* **keys**: *Array*
+* **keys**: _Array_
 
   An array of document keys to look up.
 
@@ -3077,47 +3286,50 @@ Fetches the documents with the given *keys* from the collection. Returns an arra
 
 `async collection.removeByKeys(keys, [opts]): Object`
 
-Deletes the documents with the given *keys* from the collection.
+Deletes the documents with the given _keys_ from the collection.
 
 **Arguments**
 
-* **keys**: *Array*
+* **keys**: _Array_
 
   An array of document keys to delete.
 
-* **opts**: *Object* (optional)
+* **opts**: _Object_ (optional)
 
-  For information on the possible options see [the HTTP API for removing documents by keys](https://docs.arangodb.com/latest/HTTP/SimpleQuery/index.html#remove-documents-by-their-keys).
+  For information on the possible options see
+  [the HTTP API for removing documents by keys](https://docs.arangodb.com/latest/HTTP/SimpleQuery/index.html#remove-documents-by-their-keys).
 
 #### collection.fulltext
 
 `async collection.fulltext(fieldName, query, [opts]): Cursor`
 
-Performs a fulltext query in the given *fieldName* on the collection.
+Performs a fulltext query in the given _fieldName_ on the collection.
 
 **Arguments**
 
-* **fieldName**: *String*
+* **fieldName**: _String_
 
   Name of the field to search on documents in the collection.
 
-* **query**: *String*
+* **query**: _String_
 
   Fulltext query string to search for.
 
-* **opts**: *Object* (optional)
+* **opts**: _Object_ (optional)
 
-  For information on the possible options see [the HTTP API for fulltext queries](https://docs.arangodb.com/latest/HTTP/Indexes/Fulltext.html).
+  For information on the possible options see
+  [the HTTP API for fulltext queries](https://docs.arangodb.com/latest/HTTP/Indexes/Fulltext.html).
 
 ### Bulk importing documents
 
-This function implements the [HTTP API for bulk imports](https://docs.arangodb.com/latest/HTTP/BulkImports/index.html).
+This function implements the
+[HTTP API for bulk imports](https://docs.arangodb.com/latest/HTTP/BulkImports/index.html).
 
 #### collection.import
 
 `async collection.import(data, [opts]): Object`
 
-Bulk imports the given *data* into the collection.
+Bulk imports the given _data_ into the collection.
 
 **Arguments**
 
@@ -3144,8 +3356,8 @@ Bulk imports the given *data* into the collection.
   ]
   ```
 
-* **opts**: `Object` (optional)
-  If *opts* is set, it must be an object with any of the following properties:
+* **opts**: `Object` (optional) If _opts_ is set, it must be an object with any
+  of the following properties:
 
   * **waitForSync**: `boolean` (Default: `false`)
 
@@ -3153,15 +3365,21 @@ Bulk imports the given *data* into the collection.
 
   * **details**: `boolean` (Default: `false`)
 
-    Whether the response should contain additional details about documents that could not be imported.false*.
+    Whether the response should contain additional details about documents that
+    could not be imported.false\*.
 
   * **type**: `string` (Default: `"auto"`)
 
-    Indicates which format the data uses. Can be `"documents"`, `"array"` or `"auto"`.
+    Indicates which format the data uses. Can be `"documents"`, `"array"` or
+    `"auto"`.
 
-If *data* is a JavaScript array, it will be transmitted as a line-delimited JSON stream. If *opts.type* is set to `"array"`, it will be transmitted as regular JSON instead. If *data* is a string, it will be transmitted as it is without any processing.
+If _data_ is a JavaScript array, it will be transmitted as a line-delimited JSON
+stream. If _opts.type_ is set to `"array"`, it will be transmitted as regular
+JSON instead. If _data_ is a string, it will be transmitted as it is without any
+processing.
 
-For more information on the *opts* object, see [the HTTP API documentation for bulk imports](https://docs.arangodb.com/latest/HTTP/BulkImports/ImportingSelfContained.html).
+For more information on the _opts_ object, see
+[the HTTP API documentation for bulk imports](https://docs.arangodb.com/latest/HTTP/BulkImports/ImportingSelfContained.html).
 
 **Examples**
 
@@ -3205,21 +3423,26 @@ assert.equal(result.created, 4);
 
 ### Manipulating documents
 
-These functions implement the [HTTP API for manipulating documents](https://docs.arangodb.com/latest/HTTP/Document/index.html).
+These functions implement the
+[HTTP API for manipulating documents](https://docs.arangodb.com/latest/HTTP/Document/index.html).
 
 #### collection.replace
 
 `async collection.replace(documentHandle, newValue, [opts]): Object`
 
-Replaces the content of the document with the given *documentHandle* with the given *newValue* and returns an object containing the document's metadata.
+Replaces the content of the document with the given _documentHandle_ with the
+given _newValue_ and returns an object containing the document's metadata.
 
-**Note**: The *policy* option is not available when using the driver with ArangoDB 3.0 as it is redundant when specifying the *rev* option.
+**Note**: The _policy_ option is not available when using the driver with
+ArangoDB 3.0 as it is redundant when specifying the _rev_ option.
 
 **Arguments**
 
 * **documentHandle**: `string`
 
-  The handle of the document to replace. This can either be the `_id` or the `_key` of a document in the collection, or a document (i.e. an object with an `_id` or `_key` property).
+  The handle of the document to replace. This can either be the `_id` or the
+  `_key` of a document in the collection, or a document (i.e. an object with an
+  `_id` or `_key` property).
 
 * **newValue**: `Object`
 
@@ -3227,7 +3450,7 @@ Replaces the content of the document with the given *documentHandle* with the gi
 
 * **opts**: `Object` (optional)
 
-  If *opts* is set, it must be an object with any of the following properties:
+  If _opts_ is set, it must be an object with any of the following properties:
 
   * **waitForSync**: `boolean` (Default: `false`)
 
@@ -3241,12 +3464,16 @@ Replaces the content of the document with the given *documentHandle* with the gi
 
     Determines the behaviour when the revision is not matched:
 
-    * if *policy* is set to `"last"`, the document will be replaced regardless of the revision.
-    * if *policy* is set to `"error"` or not set, the replacement will fail with an error.
+    * if _policy_ is set to `"last"`, the document will be replaced regardless
+      of the revision.
+    * if _policy_ is set to `"error"` or not set, the replacement will fail with
+      an error.
 
-If a string is passed instead of an options object, it will be interpreted as the *rev* option.
+If a string is passed instead of an options object, it will be interpreted as
+the _rev_ option.
 
-For more information on the *opts* object, see [the HTTP API documentation for working with documents](https://docs.arangodb.com/latest/HTTP/Document/WorkingWithDocuments.html).
+For more information on the _opts_ object, see
+[the HTTP API documentation for working with documents](https://docs.arangodb.com/latest/HTTP/Document/WorkingWithDocuments.html).
 
 **Examples**
 
@@ -3269,15 +3496,20 @@ assert.equal(doc3.hello, undefined);
 
 `async collection.update(documentHandle, newValue, [opts]): Object`
 
-Updates (merges) the content of the document with the given *documentHandle* with the given *newValue* and returns an object containing the document's metadata.
+Updates (merges) the content of the document with the given _documentHandle_
+with the given _newValue_ and returns an object containing the document's
+metadata.
 
-**Note**: The *policy* option is not available when using the driver with ArangoDB 3.0 as it is redundant when specifying the *rev* option.
+**Note**: The _policy_ option is not available when using the driver with
+ArangoDB 3.0 as it is redundant when specifying the _rev_ option.
 
 **Arguments**
 
 * **documentHandle**: `string`
 
-  Handle of the document to update. This can be either the `_id` or the `_key` of a document in the collection, or a document (i.e. an object with an `_id` or `_key` property).
+  Handle of the document to update. This can be either the `_id` or the `_key`
+  of a document in the collection, or a document (i.e. an object with an `_id`
+  or `_key` property).
 
 * **newValue**: `Object`
 
@@ -3285,7 +3517,7 @@ Updates (merges) the content of the document with the given *documentHandle* wit
 
 * **opts**: `Object` (optional)
 
-  If *opts* is set, it must be an object with any of the following properties:
+  If _opts_ is set, it must be an object with any of the following properties:
 
   * **waitForSync**: `boolean` (Default: `false`)
 
@@ -3293,11 +3525,13 @@ Updates (merges) the content of the document with the given *documentHandle* wit
 
   * **keepNull**: `boolean` (Default: `true`)
 
-    If set to `false`, properties with a value of `null` indicate that a property should be deleted.
+    If set to `false`, properties with a value of `null` indicate that a
+    property should be deleted.
 
   * **mergeObjects**: `boolean` (Default: `true`)
 
-    If set to `false`, object properties that already exist in the old document will be overwritten rather than merged. This does not affect arrays.
+    If set to `false`, object properties that already exist in the old document
+    will be overwritten rather than merged. This does not affect arrays.
 
   * **rev**: `string` (optional)
 
@@ -3307,12 +3541,16 @@ Updates (merges) the content of the document with the given *documentHandle* wit
 
     Determines the behaviour when the revision is not matched:
 
-    * if *policy* is set to `"last"`, the document will be replaced regardless of the revision.
-    * if *policy* is set to `"error"` or not set, the replacement will fail with an error.
+    * if _policy_ is set to `"last"`, the document will be replaced regardless
+      of the revision.
+    * if _policy_ is set to `"error"` or not set, the replacement will fail with
+      an error.
 
-If a string is passed instead of an options object, it will be interpreted as the *rev* option.
+If a string is passed instead of an options object, it will be interpreted as
+the _rev_ option.
 
-For more information on the *opts* object, see [the HTTP API documentation for working with documents](https://docs.arangodb.com/latest/HTTP/Document/WorkingWithDocuments.html).
+For more information on the _opts_ object, see
+[the HTTP API documentation for working with documents](https://docs.arangodb.com/latest/HTTP/Document/WorkingWithDocuments.html).
 
 **Examples**
 
@@ -3330,23 +3568,27 @@ assert.equal(doc3._rev, doc2._rev);
 assert.equal(doc3.number, 2);
 assert.equal(doc3.hello, doc.hello);
 ```
+
 #### collection.bulkUpdate
 
 `async collection.bulkUpdate(documents, [opts]): Object`
 
-Updates (merges) the content of the documents with the given *documents* and returns an array containing the documents' metadata.
+Updates (merges) the content of the documents with the given _documents_ and
+returns an array containing the documents' metadata.
 
-**Note**: This method is new in 3.0 and is available when using the driver with ArangoDB 3.0 and higher.
+**Note**: This method is new in 3.0 and is available when using the driver with
+ArangoDB 3.0 and higher.
 
 **Arguments**
 
 * **documents**: `Array<Object>`
 
-  Documents to update. Each object must have either the `_id` or the `_key` property.
+  Documents to update. Each object must have either the `_id` or the `_key`
+  property.
 
 * **opts**: `Object` (optional)
 
-  If *opts* is set, it must be an object with any of the following properties:
+  If _opts_ is set, it must be an object with any of the following properties:
 
   * **waitForSync**: `boolean` (Default: `false`)
 
@@ -3354,25 +3596,33 @@ Updates (merges) the content of the documents with the given *documents* and ret
 
   * **keepNull**: `boolean` (Default: `true`)
 
-    If set to `false`, properties with a value of `null` indicate that a property should be deleted.
+    If set to `false`, properties with a value of `null` indicate that a
+    property should be deleted.
 
   * **mergeObjects**: `boolean` (Default: `true`)
 
-    If set to `false`, object properties that already exist in the old document will be overwritten rather than merged. This does not affect arrays.
+    If set to `false`, object properties that already exist in the old document
+    will be overwritten rather than merged. This does not affect arrays.
 
-  * **returnOld**:  `boolean` (Default: `false`)
+  * **returnOld**: `boolean` (Default: `false`)
 
-    If set to `false`, return additionally the complete previous revision of the changed documents under the attribute `old` in the result.
+    If set to `false`, return additionally the complete previous revision of the
+    changed documents under the attribute `old` in the result.
 
-  * **returnNew**:  `boolean` (Default: `false`)
+  * **returnNew**: `boolean` (Default: `false`)
 
-    If set to `false`, return additionally the complete new documents under the attribute `new` in the result.  
+    If set to `false`, return additionally the complete new documents under the
+    attribute `new` in the result.
 
   * **ignoreRevs**: `boolean` (Default: `true`)
 
-    By default, or if this is set to true, the _rev attributes in the given documents are ignored. If this is set to false, then any _rev attribute given in a body document is taken as a precondition. The document is only updated if the current revision is the one specified.
+    By default, or if this is set to true, the _rev attributes in the given
+    documents are ignored. If this is set to false, then any _rev attribute
+    given in a body document is taken as a precondition. The document is only
+    updated if the current revision is the one specified.
 
-For more information on the *opts* object, see [the HTTP API documentation for working with documents](https://docs.arangodb.com/latest/HTTP/Document/WorkingWithDocuments.html).
+For more information on the _opts_ object, see
+[the HTTP API documentation for working with documents](https://docs.arangodb.com/latest/HTTP/Document/WorkingWithDocuments.html).
 
 **Examples**
 
@@ -3393,19 +3643,22 @@ const result = await collection.bulkUpdate([
 
 `async collection.remove(documentHandle, [opts]): Object`
 
-Deletes the document with the given *documentHandle* from the collection.
+Deletes the document with the given _documentHandle_ from the collection.
 
-**Note**: The *policy* option is not available when using the driver with ArangoDB 3.0 as it is redundant when specifying the *rev* option.
+**Note**: The _policy_ option is not available when using the driver with
+ArangoDB 3.0 as it is redundant when specifying the _rev_ option.
 
 **Arguments**
 
 * **documentHandle**: `string`
 
-  The handle of the document to delete. This can be either the `_id` or the `_key` of a document in the collection, or a document (i.e. an object with an `_id` or `_key` property).
+  The handle of the document to delete. This can be either the `_id` or the
+  `_key` of a document in the collection, or a document (i.e. an object with an
+  `_id` or `_key` property).
 
 * **opts**: `Object` (optional)
 
-  If *opts* is set, it must be an object with any of the following properties:
+  If _opts_ is set, it must be an object with any of the following properties:
 
   * **waitForSync**: `boolean` (Default: `false`)
 
@@ -3419,12 +3672,16 @@ Deletes the document with the given *documentHandle* from the collection.
 
     Determines the behaviour when the revision is not matched:
 
-    * if *policy* is set to `"last"`, the document will be replaced regardless of the revision.
-    * if *policy* is set to `"error"` or not set, the replacement will fail with an error.
+    * if _policy_ is set to `"last"`, the document will be replaced regardless
+      of the revision.
+    * if _policy_ is set to `"error"` or not set, the replacement will fail with
+      an error.
 
-If a string is passed instead of an options object, it will be interpreted as the *rev* option.
+If a string is passed instead of an options object, it will be interpreted as
+the _rev_ option.
 
-For more information on the *opts* object, see [the HTTP API documentation for working with documents](https://docs.arangodb.com/latest/HTTP/Document/WorkingWithDocuments.html).
+For more information on the _opts_ object, see
+[the HTTP API documentation for working with documents](https://docs.arangodb.com/latest/HTTP/Document/WorkingWithDocuments.html).
 
 **Examples**
 
@@ -3453,25 +3710,31 @@ Retrieves a list of references for all documents in the collection.
 
   The format of the document references:
 
-  * if *type* is set to `"id"`, each reference will be the `_id` of the document.
-  * if *type* is set to `"key"`, each reference will be the `_key` of the document.
-  * if *type* is set to `"path"`, each reference will be the URI path of the document.
+  * if _type_ is set to `"id"`, each reference will be the `_id` of the
+    document.
+  * if _type_ is set to `"key"`, each reference will be the `_key` of the
+    document.
+  * if _type_ is set to `"path"`, each reference will be the URI path of the
+    document.
 
 ## DocumentCollection API
 
-The *DocumentCollection API* extends the [*Collection API* (see above)](#collection-api) with the following methods.
+The _DocumentCollection API_ extends the
+[_Collection API_ (see above)](#collection-api) with the following methods.
 
 ### documentCollection.document
 
 `async documentCollection.document(documentHandle): Object`
 
-Retrieves the document with the given *documentHandle* from the collection.
+Retrieves the document with the given _documentHandle_ from the collection.
 
 **Arguments**
 
 * **documentHandle**: `string`
 
-  The handle of the document to retrieve. This can be either the `_id` or the `_key` of a document in the collection, or a document (i.e. an object with an `_id` or `_key` property).
+  The handle of the document to retrieve. This can be either the `_id` or the
+  `_key` of a document in the collection, or a document (i.e. an object with an
+  `_id` or `_key` property).
 
 **Examples**
 
@@ -3506,7 +3769,8 @@ try {
 
 `async documentCollection.save(data, [opts]): Object`
 
-Creates a new document with the given *data* and returns an object containing the document's metadata.
+Creates a new document with the given _data_ and returns an object containing
+the document's metadata.
 
 **Arguments**
 
@@ -3516,23 +3780,28 @@ Creates a new document with the given *data* and returns an object containing th
 
 * **opts**: `Object` (optional)
 
-  If *opts* is set, it must be an object with any of the following properties:
+  If _opts_ is set, it must be an object with any of the following properties:
 
   * **waitForSync**: `boolean` (Default: `false`)
 
     Wait until document has been synced to disk.
 
-  * **returnNew**:  `boolean` (Default: `false`)
+  * **returnNew**: `boolean` (Default: `false`)
 
-    If set to `true`, return additionally the complete new documents under the attribute `new` in the result.
+    If set to `true`, return additionally the complete new documents under the
+    attribute `new` in the result.
 
-  * **silent**:  `boolean` (Default: `false`)
+  * **silent**: `boolean` (Default: `false`)
 
-    If set to true, an empty object will be returned as response. No meta-data will be returned for the created document. This option can be used to save some network traffic.
+    If set to true, an empty object will be returned as response. No meta-data
+    will be returned for the created document. This option can be used to save
+    some network traffic.
 
-If a boolean is passed instead of an options object, it will be interpreted as the *returnNew* option.
+If a boolean is passed instead of an options object, it will be interpreted as
+the _returnNew_ option.
 
-For more information on the *opts* object, see [the HTTP API documentation for working with documents](https://docs.arangodb.com/latest/HTTP/Document/WorkingWithDocuments.html).
+For more information on the _opts_ object, see
+[the HTTP API documentation for working with documents](https://docs.arangodb.com/latest/HTTP/Document/WorkingWithDocuments.html).
 
 **Examples**
 
@@ -3560,19 +3829,22 @@ assert.equal(doc1.new.some, data.some);
 
 ## EdgeCollection API
 
-The *EdgeCollection API* extends the [*Collection API* (see above)](#collection-api) with the following methods.
+The _EdgeCollection API_ extends the
+[_Collection API_ (see above)](#collection-api) with the following methods.
 
 ### edgeCollection.edge
 
 `async edgeCollection.edge(documentHandle): Object`
 
-Retrieves the edge with the given *documentHandle* from the collection.
+Retrieves the edge with the given _documentHandle_ from the collection.
 
 **Arguments**
 
 * **documentHandle**: `string`
 
-  The handle of the edge to retrieve. This can be either the `_id` or the `_key` of an edge in the collection, or an edge (i.e. an object with an `_id` or `_key` property).
+  The handle of the edge to retrieve. This can be either the `_id` or the `_key`
+  of an edge in the collection, or an edge (i.e. an object with an `_id` or
+  `_key` property).
 
 **Examples**
 
@@ -3597,21 +3869,27 @@ assert.equal(edge._id, 'edges/some-key');
 
 `async edgeCollection.save(data, [fromId, toId]): Object`
 
-Creates a new edge between the documents *fromId* and *toId* with the given *data* and returns an object containing the edge's metadata.
+Creates a new edge between the documents _fromId_ and _toId_ with the given
+_data_ and returns an object containing the edge's metadata.
 
 **Arguments**
 
 * **data**: `Object`
 
-  The data of the new edge. If *fromId* and *toId* are not specified, the *data* needs to contain the properties *_from* and *_to*.
+  The data of the new edge. If _fromId_ and _toId_ are not specified, the _data_
+  needs to contain the properties __from_ and __to_.
 
 * **fromId**: `string` (optional)
 
-  The handle of the start vertex of this edge. This can be either the `_id` of a document in the database, the `_key` of an edge in the collection, or a document (i.e. an object with an `_id` or `_key` property).
+  The handle of the start vertex of this edge. This can be either the `_id` of a
+  document in the database, the `_key` of an edge in the collection, or a
+  document (i.e. an object with an `_id` or `_key` property).
 
 * **toId**: `string` (optional)
 
-  The handle of the end vertex of this edge. This can be either the `_id` of a document in the database, the `_key` of an edge in the collection, or a document (i.e. an object with an `_id` or `_key` property).
+  The handle of the end vertex of this edge. This can be either the `_id` of a
+  document in the database, the `_key` of an edge in the collection, or a
+  document (i.e. an object with an `_id` or `_key` property).
 
 **Examples**
 
@@ -3647,13 +3925,15 @@ const info = await collection.save({
 
 `async edgeCollection.edges(documentHandle): Array<Object>`
 
-Retrieves a list of all edges of the document with the given *documentHandle*.
+Retrieves a list of all edges of the document with the given _documentHandle_.
 
 **Arguments**
 
 * **documentHandle**: `string`
 
-  The handle of the document to retrieve the edges of. This can be either the `_id` of a document in the database, the `_key` of an edge in the collection, or a document (i.e. an object with an `_id` or `_key` property).
+  The handle of the document to retrieve the edges of. This can be either the
+  `_id` of a document in the database, the `_key` of an edge in the collection,
+  or a document (i.e. an object with an `_id` or `_key` property).
 
 **Examples**
 
@@ -3675,13 +3955,16 @@ assert.deepEqual(edges.map(edge => edge._key), ['x', 'y', 'z']);
 
 `async edgeCollection.inEdges(documentHandle): Array<Object>`
 
-Retrieves a list of all incoming edges of the document with the given *documentHandle*.
+Retrieves a list of all incoming edges of the document with the given
+_documentHandle_.
 
 **Arguments**
 
 * **documentHandle**: `string`
 
-  The handle of the document to retrieve the edges of. This can be either the `_id` of a document in the database, the `_key` of an edge in the collection, or a document (i.e. an object with an `_id` or `_key` property).
+  The handle of the document to retrieve the edges of. This can be either the
+  `_id` of a document in the database, the `_key` of an edge in the collection,
+  or a document (i.e. an object with an `_id` or `_key` property).
 
 **Examples**
 
@@ -3703,13 +3986,16 @@ assert.equal(edges[0]._key, 'z');
 
 `async edgeCollection.outEdges(documentHandle): Array<Object>`
 
-Retrieves a list of all outgoing edges of the document with the given *documentHandle*.
+Retrieves a list of all outgoing edges of the document with the given
+_documentHandle_.
 
 **Arguments**
 
 * **documentHandle**: `string`
 
-  The handle of the document to retrieve the edges of. This can be either the `_id` of a document in the database, the `_key` of an edge in the collection, or a document (i.e. an object with an `_id` or `_key` property).
+  The handle of the document to retrieve the edges of. This can be either the
+  `_id` of a document in the database, the `_key` of an edge in the collection,
+  or a document (i.e. an object with an `_id` or `_key` property).
 
 **Examples**
 
@@ -3731,19 +4017,28 @@ assert.deepEqual(edges.map(edge => edge._key), ['x', 'y']);
 
 `async edgeCollection.traversal(startVertex, opts): Object`
 
-Performs a traversal starting from the given *startVertex* and following edges contained in this edge collection.
+Performs a traversal starting from the given _startVertex_ and following edges
+contained in this edge collection.
 
 **Arguments**
 
 * **startVertex**: `string`
 
-  The handle of the start vertex. This can be either the `_id` of a document in the database, the `_key` of an edge in the collection, or a document (i.e. an object with an `_id` or `_key` property).
+  The handle of the start vertex. This can be either the `_id` of a document in
+  the database, the `_key` of an edge in the collection, or a document (i.e. an
+  object with an `_id` or `_key` property).
 
 * **opts**: `Object`
 
-  See [the HTTP API documentation](https://docs.arangodb.com/latest/HTTP/Traversal/index.html) for details on the additional arguments.
+  See
+  [the HTTP API documentation](https://docs.arangodb.com/latest/HTTP/Traversal/index.html)
+  for details on the additional arguments.
 
-  Please note that while *opts.filter*, *opts.visitor*, *opts.init*, *opts.expander* and *opts.sort* should be strings evaluating to well-formed JavaScript code, it's not possible to pass in JavaScript functions directly because the code needs to be evaluated on the server and will be transmitted in plain text.
+  Please note that while _opts.filter_, _opts.visitor_, _opts.init_,
+  _opts.expander_ and _opts.sort_ should be strings evaluating to well-formed
+  JavaScript code, it's not possible to pass in JavaScript functions directly
+  because the code needs to be evaluated on the server and will be transmitted
+  in plain text.
 
 **Examples**
 
@@ -3766,7 +4061,8 @@ assert.deepEqual(result.vertices, ['a', 'b', 'c', 'd']);
 
 ## Graph API
 
-These functions implement the [HTTP API for manipulating graphs](https://docs.arangodb.com/latest/HTTP/Gharial/index.html).
+These functions implement the
+[HTTP API for manipulating graphs](https://docs.arangodb.com/latest/HTTP/Gharial/index.html).
 
 ### graph.get
 
@@ -3787,13 +4083,15 @@ const data = await graph.get();
 
 `async graph.create(properties): Object`
 
-Creates a graph with the given *properties* for this graph's name, then returns the server response.
+Creates a graph with the given _properties_ for this graph's name, then returns
+the server response.
 
 **Arguments**
 
 * **properties**: `Object`
 
-  For more information on the *properties* object, see [the HTTP API documentation for creating graphs](https://docs.arangodb.com/latest/HTTP/Gharial/Management.html).
+  For more information on the _properties_ object, see
+  [the HTTP API documentation for creating graphs](https://docs.arangodb.com/latest/HTTP/Gharial/Management.html).
 
 **Examples**
 
@@ -3820,7 +4118,8 @@ Deletes the graph from the database.
 
 * **dropCollections**: `boolean` (optional)
 
-  If set to `true`, the collections associated with the graph will also be deleted.
+  If set to `true`, the collections associated with the graph will also be
+  deleted.
 
 **Examples**
 
@@ -3837,7 +4136,8 @@ await graph.drop();
 
 `graph.vertexCollection(collectionName): GraphVertexCollection`
 
-Returns a new [*GraphVertexCollection* instance](#graphvertexcollection-api) with the given name for this graph.
+Returns a new [_GraphVertexCollection_ instance](#graphvertexcollection-api)
+with the given name for this graph.
 
 **Arguments**
 
@@ -3849,9 +4149,9 @@ Returns a new [*GraphVertexCollection* instance](#graphvertexcollection-api) wit
 
 ```js
 const db = new Database();
-const graph = db.graph('some-graph');
-const collection = graph.vertexCollection('vertices');
-assert.equal(collection.name, 'vertices');
+const graph = db.graph("some-graph");
+const collection = graph.vertexCollection("vertices");
+assert.equal(collection.name, "vertices");
 // collection is a GraphVertexCollection
 ```
 
@@ -3859,7 +4159,8 @@ assert.equal(collection.name, 'vertices');
 
 `async graph.addVertexCollection(collectionName): Object`
 
-Adds the collection with the given *collectionName* to the graph's vertex collections.
+Adds the collection with the given _collectionName_ to the graph's vertex
+collections.
 
 **Arguments**
 
@@ -3880,7 +4181,7 @@ await graph.addVertexCollection('vertices');
 
 `async graph.removeVertexCollection(collectionName, [dropCollection]): Object`
 
-Removes the vertex collection with the given *collectionName* from the graph.
+Removes the vertex collection with the given _collectionName_ from the graph.
 
 **Arguments**
 
@@ -3914,7 +4215,8 @@ await graph.removeVertexCollection('vertices', true)
 
 `graph.edgeCollection(collectionName): GraphEdgeCollection`
 
-Returns a new [*GraphEdgeCollection* instance](#graphedgecollection-api) with the given name bound to this graph.
+Returns a new [_GraphEdgeCollection_ instance](#graphedgecollection-api) with
+the given name bound to this graph.
 
 **Arguments**
 
@@ -3927,9 +4229,9 @@ Returns a new [*GraphEdgeCollection* instance](#graphedgecollection-api) with th
 ```js
 const db = new Database();
 // assuming the collections "edges" and "vertices" exist
-const graph = db.graph('some-graph');
-const collection = graph.edgeCollection('edges');
-assert.equal(collection.name, 'edges');
+const graph = db.graph("some-graph");
+const collection = graph.edgeCollection("edges");
+assert.equal(collection.name, "edges");
 // collection is a GraphEdgeCollection
 ```
 
@@ -3937,13 +4239,14 @@ assert.equal(collection.name, 'edges');
 
 `async graph.addEdgeDefinition(definition): Object`
 
-Adds the given edge definition *definition* to the graph.
+Adds the given edge definition _definition_ to the graph.
 
 **Arguments**
 
 * **definition**: `Object`
 
-  For more information on edge definitions see [the HTTP API for managing graphs](https://docs.arangodb.com/latest/HTTP/Gharial/Management.html).
+  For more information on edge definitions see
+  [the HTTP API for managing graphs](https://docs.arangodb.com/latest/HTTP/Gharial/Management.html).
 
 **Examples**
 
@@ -3963,7 +4266,8 @@ await graph.addEdgeDefinition({
 
 `async graph.replaceEdgeDefinition(collectionName, definition): Object`
 
-Replaces the edge definition for the edge collection named *collectionName* with the given *definition*.
+Replaces the edge definition for the edge collection named _collectionName_ with
+the given _definition_.
 
 **Arguments**
 
@@ -3973,7 +4277,8 @@ Replaces the edge definition for the edge collection named *collectionName* with
 
 * **definition**: `Object`
 
-  For more information on edge definitions see [the HTTP API for managing graphs](https://docs.arangodb.com/latest/HTTP/Gharial/Management.html).
+  For more information on edge definitions see
+  [the HTTP API for managing graphs](https://docs.arangodb.com/latest/HTTP/Gharial/Management.html).
 
 **Examples**
 
@@ -3993,7 +4298,7 @@ await graph.replaceEdgeDefinition('edges', {
 
 `async graph.removeEdgeDefinition(definitionName, [dropCollection]): Object`
 
-Removes the edge definition with the given *definitionName* form the graph.
+Removes the edge definition with the given _definitionName_ form the graph.
 
 **Arguments**
 
@@ -4003,7 +4308,8 @@ Removes the edge definition with the given *definitionName* form the graph.
 
 * **dropCollection**: `boolean` (optional)
 
-  If set to `true`, the edge collection associated with the definition will also be deleted from the database.
+  If set to `true`, the edge collection associated with the definition will also
+  be deleted from the database.
 
 **Examples**
 
@@ -4026,19 +4332,27 @@ await graph.removeEdgeDefinition('edges', true)
 
 `async graph.traversal(startVertex, opts): Object`
 
-Performs a traversal starting from the given *startVertex* and following edges contained in any of the edge collections of this graph.
+Performs a traversal starting from the given _startVertex_ and following edges
+contained in any of the edge collections of this graph.
 
 **Arguments**
 
 * **startVertex**: `string`
 
-  The handle of the start vertex. This can be either the `_id` of a document in the graph or a document (i.e. an object with an `_id` property).
+  The handle of the start vertex. This can be either the `_id` of a document in
+  the graph or a document (i.e. an object with an `_id` property).
 
 * **opts**: `Object`
 
-  See [the HTTP API documentation](https://docs.arangodb.com/latest/HTTP/Traversal/index.html) for details on the additional arguments.
+  See
+  [the HTTP API documentation](https://docs.arangodb.com/latest/HTTP/Traversal/index.html)
+  for details on the additional arguments.
 
-  Please note that while *opts.filter*, *opts.visitor*, *opts.init*, *opts.expander* and *opts.sort* should be strings evaluating to well-formed JavaScript functions, it's not possible to pass in JavaScript functions directly because the functions need to be evaluated on the server and will be transmitted in plain text.
+  Please note that while _opts.filter_, _opts.visitor_, _opts.init_,
+  _opts.expander_ and _opts.sort_ should be strings evaluating to well-formed
+  JavaScript functions, it's not possible to pass in JavaScript functions
+  directly because the functions need to be evaluated on the server and will be
+  transmitted in plain text.
 
 **Examples**
 
@@ -4062,19 +4376,22 @@ assert.deepEqual(result.vertices, ['a', 'b', 'c', 'd']);
 
 ## GraphVertexCollection API
 
-The *GraphVertexCollection API* extends the [*Collection API* (see above)](#collection-api) with the following methods.
+The _GraphVertexCollection API_ extends the
+[_Collection API_ (see above)](#collection-api) with the following methods.
 
 #### graphVertexCollection.remove
 
 `async graphVertexCollection.remove(documentHandle): Object`
 
-Deletes the vertex with the given *documentHandle* from the collection.
+Deletes the vertex with the given _documentHandle_ from the collection.
 
 **Arguments**
 
 * **documentHandle**: `string`
 
-  The handle of the vertex to retrieve. This can be either the `_id` or the `_key` of a vertex in the collection, or a vertex (i.e. an object with an `_id` or `_key` property).
+  The handle of the vertex to retrieve. This can be either the `_id` or the
+  `_key` of a vertex in the collection, or a vertex (i.e. an object with an
+  `_id` or `_key` property).
 
 **Examples**
 
@@ -4095,13 +4412,15 @@ await collection.remove('vertices/some-key')
 
 `async graphVertexCollection.vertex(documentHandle): Object`
 
-Retrieves the vertex with the given *documentHandle* from the collection.
+Retrieves the vertex with the given _documentHandle_ from the collection.
 
 **Arguments**
 
 * **documentHandle**: `string`
 
-  The handle of the vertex to retrieve. This can be either the `_id` or the `_key` of a vertex in the collection, or a vertex (i.e. an object with an `_id` or `_key` property).
+  The handle of the vertex to retrieve. This can be either the `_id` or the
+  `_key` of a vertex in the collection, or a vertex (i.e. an object with an
+  `_id` or `_key` property).
 
 **Examples**
 
@@ -4126,7 +4445,7 @@ assert.equal(doc._id, 'vertices/some-key');
 
 `async graphVertexCollection.save(data): Object`
 
-Creates a new vertex with the given *data*.
+Creates a new vertex with the given _data_.
 
 **Arguments**
 
@@ -4147,19 +4466,22 @@ assert.equal(doc.some, 'data');
 
 ## GraphEdgeCollection API
 
-The *GraphEdgeCollection API* extends the *Collection API* (see above) with the following methods.
+The _GraphEdgeCollection API_ extends the _Collection API_ (see above) with the
+following methods.
 
 #### graphEdgeCollection.remove
 
 `async graphEdgeCollection.remove(documentHandle): Object`
 
-Deletes the edge with the given *documentHandle* from the collection.
+Deletes the edge with the given _documentHandle_ from the collection.
 
 **Arguments**
 
 * **documentHandle**: `string`
 
-  The handle of the edge to retrieve. This can be either the `_id` or the `_key` of an edge in the collection, or an edge (i.e. an object with an `_id` or `_key` property).
+  The handle of the edge to retrieve. This can be either the `_id` or the `_key`
+  of an edge in the collection, or an edge (i.e. an object with an `_id` or
+  `_key` property).
 
 **Examples**
 
@@ -4180,13 +4502,15 @@ await collection.remove('edges/some-key')
 
 `async graphEdgeCollection.edge(documentHandle): Object`
 
-Retrieves the edge with the given *documentHandle* from the collection.
+Retrieves the edge with the given _documentHandle_ from the collection.
 
 **Arguments**
 
 * **documentHandle**: `string`
 
-  The handle of the edge to retrieve. This can be either the `_id` or the `_key` of an edge in the collection, or an edge (i.e. an object with an `_id` or `_key` property).
+  The handle of the edge to retrieve. This can be either the `_id` or the `_key`
+  of an edge in the collection, or an edge (i.e. an object with an `_id` or
+  `_key` property).
 
 **Examples**
 
@@ -4211,21 +4535,27 @@ assert.equal(edge._id, 'edges/some-key');
 
 `async graphEdgeCollection.save(data, [fromId, toId]): Object`
 
-Creates a new edge between the vertices *fromId* and *toId* with the given *data*.
+Creates a new edge between the vertices _fromId_ and _toId_ with the given
+_data_.
 
 **Arguments**
 
 * **data**: `Object`
 
-  The data of the new edge. If *fromId* and *toId* are not specified, the *data* needs to contain the properties *_from* and *_to*.
+  The data of the new edge. If _fromId_ and _toId_ are not specified, the _data_
+  needs to contain the properties __from_ and __to_.
 
 * **fromId**: `string` (optional)
 
-  The handle of the start vertex of this edge. This can be either the `_id` of a document in the database, the `_key` of an edge in the collection, or a document (i.e. an object with an `_id` or `_key` property).
+  The handle of the start vertex of this edge. This can be either the `_id` of a
+  document in the database, the `_key` of an edge in the collection, or a
+  document (i.e. an object with an `_id` or `_key` property).
 
 * **toId**: `string` (optional)
 
-  The handle of the end vertex of this edge. This can be either the `_id` of a document in the database, the `_key` of an edge in the collection, or a document (i.e. an object with an `_id` or `_key` property).
+  The handle of the end vertex of this edge. This can be either the `_id` of a
+  document in the database, the `_key` of an edge in the collection, or a
+  document (i.e. an object with an `_id` or `_key` property).
 
 **Examples**
 
@@ -4248,13 +4578,15 @@ assert.equal(edge._to, 'vertices/end-vertex');
 
 `async graphEdgeCollection.edges(documentHandle): Array<Object>`
 
-Retrieves a list of all edges of the document with the given *documentHandle*.
+Retrieves a list of all edges of the document with the given _documentHandle_.
 
 **Arguments**
 
 * **documentHandle**: `string`
 
-  The handle of the document to retrieve the edges of. This can be either the `_id` of a document in the database, the `_key` of an edge in the collection, or a document (i.e. an object with an `_id` or `_key` property).
+  The handle of the document to retrieve the edges of. This can be either the
+  `_id` of a document in the database, the `_key` of an edge in the collection,
+  or a document (i.e. an object with an `_id` or `_key` property).
 
 **Examples**
 
@@ -4277,13 +4609,16 @@ assert.deepEqual(edges.map(edge => edge._key), ['x', 'y', 'z']);
 
 `async graphEdgeCollection.inEdges(documentHandle): Array<Object>`
 
-Retrieves a list of all incoming edges of the document with the given *documentHandle*.
+Retrieves a list of all incoming edges of the document with the given
+_documentHandle_.
 
 **Arguments**
 
 * **documentHandle**: `string`
 
-  The handle of the document to retrieve the edges of. This can be either the `_id` of a document in the database, the `_key` of an edge in the collection, or a document (i.e. an object with an `_id` or `_key` property).
+  The handle of the document to retrieve the edges of. This can be either the
+  `_id` of a document in the database, the `_key` of an edge in the collection,
+  or a document (i.e. an object with an `_id` or `_key` property).
 
 **Examples**
 
@@ -4306,13 +4641,16 @@ assert.equal(edges[0]._key, 'z');
 
 `async graphEdgeCollection.outEdges(documentHandle): Array<Object>`
 
-Retrieves a list of all outgoing edges of the document with the given *documentHandle*.
+Retrieves a list of all outgoing edges of the document with the given
+_documentHandle_.
 
 **Arguments**
 
 * **documentHandle**: `string`
 
-  The handle of the document to retrieve the edges of. This can be either the `_id` of a document in the database, the `_key` of an edge in the collection, or a document (i.e. an object with an `_id` or `_key` property).
+  The handle of the document to retrieve the edges of. This can be either the
+  `_id` of a document in the database, the `_key` of an edge in the collection,
+  or a document (i.e. an object with an `_id` or `_key` property).
 
 **Examples**
 
@@ -4335,19 +4673,28 @@ assert.deepEqual(edges.map(edge => edge._key), ['x', 'y']);
 
 `async graphEdgeCollection.traversal(startVertex, opts): Object`
 
-Performs a traversal starting from the given *startVertex* and following edges contained in this edge collection.
+Performs a traversal starting from the given _startVertex_ and following edges
+contained in this edge collection.
 
 **Arguments**
 
 * **startVertex**: `string`
 
-  The handle of the start vertex. This can be either the `_id` of a document in the database, the `_key` of an edge in the collection, or a document (i.e. an object with an `_id` or `_key` property).
+  The handle of the start vertex. This can be either the `_id` of a document in
+  the database, the `_key` of an edge in the collection, or a document (i.e. an
+  object with an `_id` or `_key` property).
 
 * **opts**: `Object`
 
-  See [the HTTP API documentation](https://docs.arangodb.com/latest/HTTP/Traversal/index.html) for details on the additional arguments.
+  See
+  [the HTTP API documentation](https://docs.arangodb.com/latest/HTTP/Traversal/index.html)
+  for details on the additional arguments.
 
-  Please note that while *opts.filter*, *opts.visitor*, *opts.init*, *opts.expander* and *opts.sort* should be strings evaluating to well-formed JavaScript code, it's not possible to pass in JavaScript functions directly because the code needs to be evaluated on the server and will be transmitted in plain text.
+  Please note that while _opts.filter_, _opts.visitor_, _opts.init_,
+  _opts.expander_ and _opts.sort_ should be strings evaluating to well-formed
+  JavaScript code, it's not possible to pass in JavaScript functions directly
+  because the code needs to be evaluated on the server and will be transmitted
+  in plain text.
 
 **Examples**
 
@@ -4371,4 +4718,5 @@ assert.deepEqual(result.vertices, ['a', 'b', 'c', 'd']);
 
 # License
 
-The Apache License, Version 2.0. For more information, see the accompanying LICENSE file.
+The Apache License, Version 2.0. For more information, see the accompanying
+LICENSE file.
