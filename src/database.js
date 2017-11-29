@@ -386,7 +386,17 @@ export default class Database {
     this._api.get(
       '/foxx/configuration',
       {mount, minimal},
-      (err, res) => err ? callback(err) : callback(null, res.body)
+      (err, res) => {
+        if (err) return callback(err);
+        if (minimal) {
+          const values = {};
+          for (const key of Object.keys(res.body)) {
+            values[key] = res.body[key].current;
+          }
+          res.body = {values};
+        }
+        callback(null, res.body);
+      }
     )
     return promise
   }
@@ -404,7 +414,22 @@ export default class Database {
       '/foxx/configuration',
       cfg,
       {mount, minimal},
-      (err, res) => err ? callback(err) : callback(null, res.body)
+      (err, res) => {
+        if (err) return callback(err);
+        let body = res.body;
+        if (minimal || !body.values || !body.values.title) {
+          return callback(null, body);
+        }
+        this.getServiceConfiguration(mount, minimal, (err, res) => {
+          if (err) return callback(err)
+          if (body.warnings) {
+            for (const key of Object.keys(res)) {
+              res.body[key].warning = body.warnings[key];
+            }
+          }
+          callback(null, res.body);
+        });
+      }
     )
     return promise
   }
@@ -422,7 +447,22 @@ export default class Database {
       '/foxx/configuration',
       cfg,
       {mount, minimal},
-      (err, res) => err ? callback(err) : callback(null, res.body)
+      (err, res) => {
+        if (err) return callback(err);
+        let body = res.body;
+        if (minimal || !body.values || !body.values.title) {
+          return callback(null, body);
+        }
+        this.getServiceConfiguration(mount, minimal, (err, res) => {
+          if (err) return callback(err)
+          if (body.warnings) {
+            for (const key of Object.keys(res)) {
+              res.body[key].warning = body.warnings[key];
+            }
+          }
+          callback(null, res.body);
+        });
+      }
     )
     return promise
   }
@@ -439,7 +479,17 @@ export default class Database {
     this._api.get(
       '/foxx/dependencies',
       {mount, minimal},
-      (err, res) => err ? callback(err) : callback(null, res.body)
+      (err, res) => {
+        if (err) return callback(err);
+        if (minimal) {
+          const values = {};
+          for (const key of Object.keys(res.body)) {
+            values[key] = res.body[key].current;
+          }
+          res.body = {values};
+        }
+        callback(null, res.body);
+      }
     )
     return promise
   }
@@ -457,7 +507,22 @@ export default class Database {
       '/foxx/dependencies',
       cfg,
       {mount, minimal},
-      (err, res) => err ? callback(err) : callback(null, res.body)
+      (err, res) => {
+        if (err) return callback(err);
+        let body = res.body;
+        if (minimal || !body.values || !body.values.title) {
+          return callback(null, body);
+        }
+        this.getServiceDependencies(mount, minimal, (err, res) => {
+          if (err) return callback(err)
+          if (body.warnings) {
+            for (const key of Object.keys(res)) {
+              res.body[key].warning = body.warnings[key];
+            }
+          }
+          callback(null, res.body);
+        });
+      }
     )
     return promise
   }
@@ -475,7 +540,22 @@ export default class Database {
       '/foxx/dependencies',
       cfg,
       {mount, minimal},
-      (err, res) => err ? callback(err) : callback(null, res.body)
+      (err, res) => {
+        if (err) return callback(err);
+        let body = res.body;
+        if (minimal || !body.values || !body.values.title) {
+          return callback(null, body);
+        }
+        this.getServiceDependencies(mount, minimal, (err, res) => {
+          if (err) return callback(err)
+          if (body.warnings) {
+            for (const key of Object.keys(res)) {
+              res.body[key].warning = body.warnings[key];
+            }
+          }
+          callback(null, res.body);
+        });
+      }
     )
     return promise
   }
