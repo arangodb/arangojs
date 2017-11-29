@@ -1320,6 +1320,9 @@ Replaces the configuration of the given service.
 
   Only return the current values and warnings (if any).
 
+  **Note:** when using ArangoDB 3.2.8 or older, enabling this option
+  avoids triggering a second request to the database.
+
 **Examples**
 
 ```js
@@ -1348,6 +1351,9 @@ Updates the configuration of the given service my merging the new values into th
 * **minimal**: `boolean` (Default: `false`)
 
   Only return the current values and warnings (if any).
+
+  **Note:** when using ArangoDB 3.2.8 or older, enabling this option
+  avoids triggering a second request to the database.
 
 **Examples**
 
@@ -1401,6 +1407,9 @@ Replaces the dependencies for the given service.
 
   Only return the current values and warnings (if any).
 
+  **Note:** when using ArangoDB 3.2.8 or older, enabling this option
+  avoids triggering a second request to the database.
+
 **Examples**
 
 ```js
@@ -1429,6 +1438,9 @@ Updates the dependencies for the given service by merging the new values into th
 * **minimal**: `boolean` (Default: `false`)
 
   Only return the current values and warnings (if any).
+
+  **Note:** when using ArangoDB 3.2.8 or older, enabling this option
+  avoids triggering a second request to the database.
 
 **Examples**
 
