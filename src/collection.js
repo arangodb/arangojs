@@ -423,15 +423,15 @@ class BaseCollection {
     return promise
   }
 
-  removeByKeys (keys, opts, cb) {
-    if (typeof opts === 'function') {
-      cb = opts
-      opts = undefined
+  removeByKeys (keys, options, cb) {
+    if (typeof options === 'function') {
+      cb = options
+      options = undefined
     }
     const {promise, callback} = this._connection.promisify(cb)
     this._api.put(
       '/simple/remove-by-keys',
-      {...opts, keys, collection: this.name},
+      {options, keys, collection: this.name},
       (err, res) => err ? callback(err) : callback(null, res.body)
     )
     return promise
