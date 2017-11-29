@@ -1,13 +1,14 @@
-import all from './util/all'
-import btoa from './util/btoa'
-import toForm from './util/multipart'
-import Connection from './connection'
-import ArrayCursor from './cursor'
-import Graph from './graph'
 import constructCollection, {
   DocumentCollection,
   EdgeCollection
 } from './collection'
+
+import ArrayCursor from './cursor'
+import Connection from './connection'
+import Graph from './graph'
+import all from './util/all'
+import btoa from './util/btoa'
+import toForm from './util/multipart'
 
 export default class Database {
   constructor (config) {
@@ -373,66 +374,188 @@ export default class Database {
     return promise
   }
 
-  getServiceConfiguration (mount, cb) {
+  getServiceConfiguration (mount, minimal, cb) {
+    if (typeof minimal === 'function') {
+      cb = minimal
+      minimal = undefined
+    }
+    if (typeof minimal !== 'boolean') {
+      minimal = false;
+    }
     const {promise, callback} = this._connection.promisify(cb)
     this._api.get(
       '/foxx/configuration',
-      {mount},
-      (err, res) => err ? callback(err) : callback(null, res.body)
+      {mount, minimal},
+      (err, res) => {
+        if (err) return callback(err);
+        if (minimal) {
+          const values = {};
+          for (const key of Object.keys(res.body)) {
+            values[key] = res.body[key].current;
+          }
+          res.body = {values};
+        }
+        callback(null, res.body);
+      }
     )
     return promise
   }
 
-  updateServiceConfiguration (mount, cfg, cb) {
+  updateServiceConfiguration (mount, cfg, minimal, cb) {
+    if (typeof minimal === 'function') {
+      cb = minimal
+      minimal = undefined
+    }
+    if (typeof minimal !== 'boolean') {
+      minimal = false;
+    }
     const {promise, callback} = this._connection.promisify(cb)
     this._api.patch(
       '/foxx/configuration',
       cfg,
-      {mount},
-      (err, res) => err ? callback(err) : callback(null, res.body)
+      {mount, minimal},
+      (err, res) => {
+        if (err) return callback(err);
+        let body = res.body;
+        if (minimal || !body.values || !body.values.title) {
+          return callback(null, body);
+        }
+        this.getServiceConfiguration(mount, minimal, (err, res) => {
+          if (err) return callback(err)
+          if (body.warnings) {
+            for (const key of Object.keys(res)) {
+              res.body[key].warning = body.warnings[key];
+            }
+          }
+          callback(null, res.body);
+        });
+      }
     )
     return promise
   }
 
-  replaceServiceConfiguration (mount, cfg, cb) {
+  replaceServiceConfiguration (mount, cfg, minimal, cb) {
+    if (typeof minimal === 'function') {
+      cb = minimal
+      minimal = undefined
+    }
+    if (typeof minimal !== 'boolean') {
+      minimal = false;
+    }
     const {promise, callback} = this._connection.promisify(cb)
     this._api.put(
       '/foxx/configuration',
       cfg,
-      {mount},
-      (err, res) => err ? callback(err) : callback(null, res.body)
+      {mount, minimal},
+      (err, res) => {
+        if (err) return callback(err);
+        let body = res.body;
+        if (minimal || !body.values || !body.values.title) {
+          return callback(null, body);
+        }
+        this.getServiceConfiguration(mount, minimal, (err, res) => {
+          if (err) return callback(err)
+          if (body.warnings) {
+            for (const key of Object.keys(res)) {
+              res.body[key].warning = body.warnings[key];
+            }
+          }
+          callback(null, res.body);
+        });
+      }
     )
     return promise
   }
 
-  getServiceDependencies (mount, cb) {
+  getServiceDependencies (mount, minimal, cb) {
+    if (typeof minimal === 'function') {
+      cb = minimal
+      minimal = undefined
+    }
+    if (typeof minimal !== 'boolean') {
+      minimal = false;
+    }
     const {promise, callback} = this._connection.promisify(cb)
     this._api.get(
       '/foxx/dependencies',
-      {mount},
-      (err, res) => err ? callback(err) : callback(null, res.body)
+      {mount, minimal},
+      (err, res) => {
+        if (err) return callback(err);
+        if (minimal) {
+          const values = {};
+          for (const key of Object.keys(res.body)) {
+            values[key] = res.body[key].current;
+          }
+          res.body = {values};
+        }
+        callback(null, res.body);
+      }
     )
     return promise
   }
 
-  updateServiceDependencies (mount, cfg, cb) {
+  updateServiceDependencies (mount, cfg, minimal, cb) {
+    if (typeof minimal === 'function') {
+      cb = minimal
+      minimal = undefined
+    }
+    if (typeof minimal !== 'boolean') {
+      minimal = false;
+    }
     const {promise, callback} = this._connection.promisify(cb)
     this._api.patch(
       '/foxx/dependencies',
       cfg,
-      {mount},
-      (err, res) => err ? callback(err) : callback(null, res.body)
+      {mount, minimal},
+      (err, res) => {
+        if (err) return callback(err);
+        let body = res.body;
+        if (minimal || !body.values || !body.values.title) {
+          return callback(null, body);
+        }
+        this.getServiceDependencies(mount, minimal, (err, res) => {
+          if (err) return callback(err)
+          if (body.warnings) {
+            for (const key of Object.keys(res)) {
+              res.body[key].warning = body.warnings[key];
+            }
+          }
+          callback(null, res.body);
+        });
+      }
     )
     return promise
   }
 
-  replaceServiceDependencies (mount, cfg, cb) {
+  replaceServiceDependencies (mount, cfg, minimal, cb) {
+    if (typeof minimal === 'function') {
+      cb = minimal
+      minimal = undefined
+    }
+    if (typeof minimal !== 'boolean') {
+      minimal = false;
+    }
     const {promise, callback} = this._connection.promisify(cb)
     this._api.put(
       '/foxx/dependencies',
       cfg,
-      {mount},
-      (err, res) => err ? callback(err) : callback(null, res.body)
+      {mount, minimal},
+      (err, res) => {
+        if (err) return callback(err);
+        let body = res.body;
+        if (minimal || !body.values || !body.values.title) {
+          return callback(null, body);
+        }
+        this.getServiceDependencies(mount, minimal, (err, res) => {
+          if (err) return callback(err)
+          if (body.warnings) {
+            for (const key of Object.keys(res)) {
+              res.body[key].warning = body.warnings[key];
+            }
+          }
+          callback(null, res.body);
+        });
+      }
     )
     return promise
   }

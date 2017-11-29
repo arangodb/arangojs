@@ -1279,7 +1279,7 @@ const info = await db.getService('/my-service');
 
 #### database.getServiceConfiguration
 
-`async database.getServiceConfiguration(mount): Object`
+`async database.getServiceConfiguration(mount, [minimal]): Object`
 
 Retrieves an object with information about the service's configuration options and their current values.
 
@@ -1288,6 +1288,10 @@ Retrieves an object with information about the service's configuration options a
 * **mount**: `string`
 
   The service's mount point, relative to the database.
+
+* **minimal**: `boolean` (Default: `false`)
+
+  Only return the current values.
 
 **Examples**
 
@@ -1298,7 +1302,7 @@ const config = await db.getServiceConfiguration('/my-service');
 
 #### database.replaceServiceConfiguration
 
-`async database.replaceServiceConfiguration(mount, configuration): Object`
+`async database.replaceServiceConfiguration(mount, configuration, [minimal]): Object`
 
 Replaces the configuration of the given service.
 
@@ -1312,6 +1316,13 @@ Replaces the configuration of the given service.
 
   An object mapping configuration option names to values.
 
+* **minimal**: `boolean` (Default: `false`)
+
+  Only return the current values and warnings (if any).
+
+  **Note:** when using ArangoDB 3.2.8 or older, enabling this option
+  avoids triggering a second request to the database.
+
 **Examples**
 
 ```js
@@ -1323,7 +1334,7 @@ const info = await db.replaceServiceConfiguration('/my-service', config);
 
 #### database.updateServiceConfiguration
 
-`async database.updateServiceConfiguration(mount, configuration): Object`
+`async database.updateServiceConfiguration(mount, configuration, [minimal]): Object`
 
 Updates the configuration of the given service my merging the new values into the existing ones.
 
@@ -1337,6 +1348,13 @@ Updates the configuration of the given service my merging the new values into th
 
   An object mapping configuration option names to values.
 
+* **minimal**: `boolean` (Default: `false`)
+
+  Only return the current values and warnings (if any).
+
+  **Note:** when using ArangoDB 3.2.8 or older, enabling this option
+  avoids triggering a second request to the database.
+
 **Examples**
 
 ```js
@@ -1348,7 +1366,7 @@ const info = await db.updateServiceConfiguration('/my-service', config);
 
 #### database.getServiceDependencies
 
-`async database.getServiceDependencies(mount): Object`
+`async database.getServiceDependencies(mount, [minimal]): Object`
 
 Retrieves an object with information about the service's dependencies and their current mount points.
 
@@ -1357,6 +1375,10 @@ Retrieves an object with information about the service's dependencies and their 
 * **mount**: `string`
 
   The service's mount point, relative to the database.
+
+* **minimal**: `boolean` (Default: `false`)
+
+  Only return the current values and warnings (if any).
 
 **Examples**
 
@@ -1367,7 +1389,7 @@ const deps = await db.getServiceDependencies('/my-service');
 
 #### database.replaceServiceDependencies
 
-`async database.replaceServiceDependencies(mount, dependencies): Object`
+`async database.replaceServiceDependencies(mount, dependencies, [minimal]): Object`
 
 Replaces the dependencies for the given service.
 
@@ -1381,6 +1403,13 @@ Replaces the dependencies for the given service.
 
   An object mapping dependency aliases to mount points.
 
+* **minimal**: `boolean` (Default: `false`)
+
+  Only return the current values and warnings (if any).
+
+  **Note:** when using ArangoDB 3.2.8 or older, enabling this option
+  avoids triggering a second request to the database.
+
 **Examples**
 
 ```js
@@ -1392,7 +1421,7 @@ const info = await db.replaceServiceDependencies('/my-service', deps);
 
 #### database.updateServiceDependencies
 
-`async database.updateServiceDependencies(mount, dependencies): Object`
+`async database.updateServiceDependencies(mount, dependencies, [minimal]): Object`
 
 Updates the dependencies for the given service by merging the new values into the existing ones.
 
@@ -1405,6 +1434,13 @@ Updates the dependencies for the given service by merging the new values into th
 * **dependencies**: `Object`
 
   An object mapping dependency aliases to mount points.
+
+* **minimal**: `boolean` (Default: `false`)
+
+  Only return the current values and warnings (if any).
+
+  **Note:** when using ArangoDB 3.2.8 or older, enabling this option
+  avoids triggering a second request to the database.
 
 **Examples**
 
