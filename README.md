@@ -1042,7 +1042,7 @@ Fetches a list of all AQL user functions registered with the database.
 
 ```js
 const db = new Database();
-const functions = db.listFunctions();
+const functions = await db.listFunctions();
 // functions is a list of function descriptions
 ```
 
@@ -2023,7 +2023,7 @@ assert.equal(value, 3); // next value after 2
 
 ### cursor.map
 
-`cursor.map(fn): Array<any>`
+`async cursor.map(fn): Array<any>`
 
 Advances the cursor by applying the function _fn_ to each value in the cursor's
 remaining result list until the cursor is exhausted.
@@ -2069,7 +2069,7 @@ assert.equal(cursor.hasNext(), false);
 
 ### cursor.reduce
 
-`cursor.reduce(fn, [accu]): any`
+`async cursor.reduce(fn, [accu]): any`
 
 Exhausts the cursor by reducing the values in the cursor's remaining result list
 with the given function _fn_. If _accu_ is not provided, the first value in the
