@@ -6,26 +6,23 @@ import xhr from "xhr";
 
 export const isBrowser = true;
 
-export default function(baseUrl, options) {
-  if (!options) options = {};
-  const baseUrlParts = parseUrl(baseUrl);
-
-  const queue = [];
-  const maxTasks =
-    typeof options.maxSockets === "number" ? options.maxSockets * 2 : Infinity;
-  let activeTasks = 0;
-
-  function drainQueue() {
-    if (!queue.length || activeTasks >= maxTasks) return;
-    const task = queue.shift();
-    activeTasks += 1;
-    task(() => {
-      activeTasks -= 1;
-      drainQueue();
-    });
+function omit(obj, keys) {
+  const result = {};
+  for (const key of obj) {
+    if (keys.includes(key)) continue;
+    result[key] = obj[key];
   }
+  return result;
+}
 
-  function request({ method, url, headers, body, expectBinary }, cb) {
+export default function(baseUrl, agentOptions) {
+  const baseUrlParts = parseUrl(baseUrl);
+  const options = omit(agentOptions, [
+    "keepAlive",
+    "keepAliveMsecs",
+    "maxSockets"
+  ]);
+  return function request({ method, url, headers, body, expectBinary }, cb) {
     const urlParts = {
       ...baseUrlParts,
       pathname: url.pathname
@@ -40,7 +37,7 @@ export default function(baseUrl, options) {
         : baseUrlParts.search
     };
 
-    queue.push(next => {
+    return next => {
       let callback = (err, res) => {
         callback = () => undefined;
         next();
@@ -65,12 +62,6 @@ export default function(baseUrl, options) {
           }
         }
       );
-    });
-
-    drainQueue();
-  }
-
-  const auth = baseUrlParts.auth;
-  delete baseUrlParts.auth;
-  return { request, auth, url: baseUrlParts };
+    };
+  };
 }

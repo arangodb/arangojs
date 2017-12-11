@@ -1,41 +1,38 @@
 import createRequest, { isBrowser } from "./util/request";
 
 import ArangoError from "./error";
+import LinkedList from "linkedlist";
 import Route from "./route";
-import btoa from "./util/btoa";
 import byteLength from "./util/bytelength";
 import httperr from "http-errors";
 import promisify from "./util/promisify";
 import qs from "querystring";
-import retry from "retry";
 
 const MIME_JSON = /\/(json|javascript)(\W|$)/;
 
 export default class Connection {
   constructor(config) {
-    if (typeof config === "string") {
-      config = { url: config };
-    }
+    if (typeof config === "string") config = { url: config };
+    else if (Array.isArray(config)) config = { url: config };
     this.config = { ...Connection.defaults, ...config };
     this.config.agentOptions = {
       ...Connection.agentDefaults,
       ...this.config.agentOptions
     };
-    if (!this.config.headers) this.config.headers = {};
-    if (!this.config.headers["x-arango-version"]) {
-      this.config.headers["x-arango-version"] = this.config.arangoVersion;
-    }
+    this.config.headers = {
+      ["x-arango-version"]: this.config.arangoVersion,
+      ...this.config.headers
+    };
     this.arangoMajor = Math.floor(this.config.arangoVersion / 10000);
-    const { request, auth, url } = createRequest(
+    this._queue = new LinkedList();
+    this._activeTasks = 0;
+
+    const request = createRequest(
       this.config.url,
       this.config.agentOptions,
       this.config.agent
     );
-    this._baseUrl = url;
     this._request = request;
-    if (auth && !this.config.headers["authorization"]) {
-      this.config.headers["authorization"] = `Basic ${btoa(auth)}`;
-    }
     if (this.config.databaseName === false) {
       this._databasePath = "";
     } else {
@@ -48,6 +45,19 @@ export default class Connection {
       minTimeout: 5000,
       randomize: true
     };
+  }
+
+  _drainQueue() {
+    const maxConcurrent = this.config.agentOptions.keepAlive
+      ? this.config.agentOptions.maxSockets * 2
+      : this.config.agentOptions.maxSockets;
+    if (!this._queue.length || this._activeTasks >= maxConcurrent) return;
+    const task = this._queue.shift();
+    this._activeTasks += 1;
+    task(() => {
+      this._activeTasks -= 1;
+      this._drainQueue();
+    });
   }
 
   _buildUrl(opts) {
@@ -97,7 +107,9 @@ export default class Connection {
 
     if (!isBrowser && !opts.headers.hasOwnProperty("content-length")) {
       // Can't override content-length in browser but ArangoDB needs it to be set
-      opts.headers["content-length"] = body ? byteLength(body, "utf-8") : 0;
+      opts.headers["content-length"] = String(
+        body ? byteLength(body, "utf-8") : 0
+      );
     }
 
     for (const key of Object.keys(this.config.headers)) {
@@ -107,10 +119,8 @@ export default class Connection {
     }
 
     const url = this._buildUrl(opts);
-    const doRequest = this._request;
-    const operation = retry.operation(this.retryOptions);
-    operation.attempt(function(currentAttempt) {
-      doRequest(
+    this._queue.push(
+      this._request(
         {
           url,
           headers: opts.headers,
@@ -119,7 +129,6 @@ export default class Connection {
           body
         },
         (err, res) => {
-          if (operation.retry(err)) return;
           if (err) callback(err);
           else {
             const rawBody = res.body;
@@ -142,22 +151,10 @@ export default class Connection {
             ) {
               err = new ArangoError(res.body);
               err.response = res;
-              if (
-                currentAttempt === 1 &&
-                err.errorNum === 21 &&
-                operation.retry(err)
-              )
-                return;
               callback(err);
             } else if (res.statusCode >= 400) {
               err = httperr(res.statusCode);
               err.response = res;
-              if (
-                currentAttempt === 1 &&
-                res.statusCode === 500 &&
-                operation.retry(err)
-              )
-                return;
               callback(err);
             } else {
               if (expectBinary) res.body = rawBody;
@@ -165,8 +162,9 @@ export default class Connection {
             }
           }
         }
-      );
-    });
+      )
+    );
+    this._drainQueue();
     return promise;
   }
 }
@@ -178,8 +176,13 @@ Connection.defaults = {
   retryConnection: false
 };
 
-Connection.agentDefaults = {
-  maxSockets: 3,
-  keepAlive: true,
-  keepAliveMsecs: 1000
-};
+Connection.agentDefaults = isBrowser
+  ? {
+      maxSockets: 3,
+      keepAlive: false
+    }
+  : {
+      maxSockets: 3,
+      keepAlive: true,
+      keepAliveMsecs: 1000
+    };

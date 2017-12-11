@@ -81,14 +81,14 @@ npm test
 ```
 
 By default the tests will be run against a server listening on
-`http://root:@localhost:8529` (i.e. using username `root` with no password). To
+`http://localhost:8529` (using username `root` with no password). To
 override this, you can set the environment variable `TEST_ARANGODB_URL` to
 something different:
 
 ```sh
-TEST_ARANGODB_URL=http://root:@myserver.local:8530 yarn test
+TEST_ARANGODB_URL=http://myserver.local:8530 yarn test
 # - or -
-TEST_ARANGODB_URL=http://root:@myserver.local:8530 npm test
+TEST_ARANGODB_URL=http://myserver.local:8530 npm test
 ```
 
 # Install
@@ -144,30 +144,23 @@ db.query({
   }
 });
 
-// Using a complex connection string with authentication
-const host = process.env.ARANGODB_HOST;
-const port = process.env.ARANGODB_PORT;
-const database = process.env.ARANGODB_DB;
-const username = process.env.ARANGODB_USERNAME;
-const password = process.env.ARANGODB_PASSWORD;
+// Using different databases
 const db = new Database({
-  url: `http://${username}:${password}@${host}:${port}`,
-  databaseName: database
+  url: "http://localhost:8529",
+  databaseName: "pancakes"
 });
+db.useBasicAuth("root", "");
+// The database can be swapped at any time
+db.useDatabase("waffles");
+db.useBasicAuth("admin", "maplesyrup");
 
-// Or using a fully qualified URL containing the database path
+// Using ArangoDB behind a reverse proxy
 const db = new Database({
-  url: `http://${username}:${password}@${host}:${port}/_db/${database}`,
+  url: "http://myproxy.local:8000",
   databaseName: false // don't automatically append database path to URL
 });
 
-// Database name and credentials can be hot-swapped
-const db = new Database(`http://${host}:${port}`);
-db.useDatabase(database);
-db.useBasicAuth(username, password);
-// or: db.useBearerAuth(token);
-
-// Using ArangoDB 2.8 compatibility mode
+// Trigger ArangoDB 2.8 compatibility mode
 const db = new Database({
   arangoVersion: 20800
 });
@@ -413,16 +406,15 @@ If _config_ is a string, it will be interpreted as _config.url_.
 
   An object with the following properties:
 
-  * **url**: `string` (Default: `http://localhost:8529`)
+  * **url**: `string | Array<string>` (Default: `http://localhost:8529`)
 
-    Base URL of the ArangoDB server.
+    Base URL of the ArangoDB server or list of server URLs.
 
-    If you want to use ArangoDB with HTTP Basic authentication, you can provide
-    the credentials as part of the URL, e.g. `http://user:pass@localhost:8529`.
-    You can still override these credentials at any time using the
+    **Note**: As of arangojs 6.0.0 it is no longer possible to pass
+    the username or password from the URL.
+
+    If you want to use ArangoDB with authentication, see
     _useBasicAuth_ or _useBearerAuth_ methods.
-
-    The driver automatically uses HTTPS if you specify an HTTPS _url_.
 
     If you need to support self-signed HTTPS certificates, you may have to add
     your certificates to the _agentOptions_, e.g.:
@@ -436,25 +428,34 @@ If _config_ is a string, it will be interpreted as _config.url_.
     }
     ```
 
-  * **databaseName**: `string` (Default: `_system`)
+  * **databaseName**: `string | false` (Default: `_system`)
 
     Name of the active database.
 
     If this option is explicitly set to `false`, the _url_ is expected to
-    contain the database path and the _useDatabase_ method can not be used to
+    provide the database path and the _useDatabase_ method can not be used to
     switch databases.
 
   * **arangoVersion**: `number` (Default: `30000`)
 
-    Value of the `x-arango-version` header.
+    Value of the `x-arango-version` header. This should match the lowest
+    version of ArangoDB you expect to be using. The format is defined as
+    `XYYZZ` where `X` is the major version, `Y` is the two-digit minor version
+    and `Z` is the two-digit bugfix version.
+
+    **Example**: `30102` corresponds to version 3.1.2 of ArangoDB.
+
+    **Note**: The driver will behave differently when using different major
+    versions of ArangoDB to compensate for API changes. Some functions are
+    not available on every major version of ArangoDB as indicated in their
+    descriptions below (e.g. _collection.first_, _collection.bulkUpdate_).
 
   * **headers**: `Object` (optional)
 
     An object with additional headers to send with every request.
 
     Header names should always be lowercase. If an `"authorization"` header is
-    provided, any user credentials that are part of the _url_ will be
-    overridden.
+    provided, it will be overridden when using _useBasicAuth_ or _useBearerAuth_.
 
   * **agent**: `Agent` (optional)
 
@@ -472,24 +473,22 @@ If _config_ is a string, it will be interpreted as _config.url_.
     also provided.
 
     Default: `{maxSockets: 3, keepAlive: true, keepAliveMsecs: 1000}`.
+    Browser default: `{maxSockets: 3, keepAlive: false}`;
+
+    The option `maxSockets` can also be used to limit how many requests
+    arangojs will perform concurrently. The maximum number of requests is
+    equal to `maxSockets * 2` with `keepAlive: true` or
+    equal to `maxSockets` with `keepAlive: false`.
 
     In the browser version of arangojs this option can be used to pass
     additional options to the underlying calls of the
-    [`xhr`](https://www.npmjs.com/package/xhr) module. The options `keepAlive`
-    and `keepAliveMsecs` have no effect in the browser but `maxSockets` will
-    still be used to limit the amount of parallel requests made by arangojs.
+    [`xhr`](https://www.npmjs.com/package/xhr) module.
 
-  * **promise**: `Class` (optional)
+  * **promise**: `Class | false` (optional)
 
     The `Promise` implementation to use or `false` to disable promises entirely.
 
     By default the global `Promise` constructor will be used if available.
-
-  * **retryConnection**: `boolean` (Default: `false`)
-
-    Whether to automatically retry in case of a connection error.
-
-    Will retry forever if `true`.
 
 ### Manipulating databases
 
