@@ -1,7 +1,7 @@
-import {describe, it} from 'mocha'
+import { describe, it } from "mocha";
 
-describe('Transactions', () => {
-  describe('database.transaction', () => {
-    it('is missing tests')
-  })
-})
+describe("Transactions", () => {
+  describe("database.transaction", () => {
+    it("is missing tests");
+  });
+});

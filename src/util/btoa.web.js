@@ -1,1 +1,2 @@
-export default window.btoa
+/*eslint-env browser */
+export default window.btoa;

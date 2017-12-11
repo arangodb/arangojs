@@ -1,66 +1,76 @@
-import xhr from 'xhr'
-import {parse as parseUrl, format as formatUrl} from 'url'
-import joinPath from './joinPath'
+/*eslint-env browser */
+import { format as formatUrl, parse as parseUrl } from "url";
 
-export const isBrowser = true
+import joinPath from "./joinPath";
+import xhr from "xhr";
 
-export default function (baseUrl, options) {
-  if (!options) options = {}
-  const baseUrlParts = parseUrl(baseUrl)
+export const isBrowser = true;
 
-  const queue = []
-  const maxTasks = typeof options.maxSockets === 'number' ? options.maxSockets * 2 : Infinity
-  let activeTasks = 0
+export default function(baseUrl, options) {
+  if (!options) options = {};
+  const baseUrlParts = parseUrl(baseUrl);
 
-  function drainQueue () {
-    if (!queue.length || activeTasks >= maxTasks) return
-    const task = queue.shift()
-    activeTasks += 1
+  const queue = [];
+  const maxTasks =
+    typeof options.maxSockets === "number" ? options.maxSockets * 2 : Infinity;
+  let activeTasks = 0;
+
+  function drainQueue() {
+    if (!queue.length || activeTasks >= maxTasks) return;
+    const task = queue.shift();
+    activeTasks += 1;
     task(() => {
-      activeTasks -= 1
-      drainQueue()
-    })
+      activeTasks -= 1;
+      drainQueue();
+    });
   }
 
-  function request ({method, url, headers, body, expectBinary}, cb) {
+  function request({ method, url, headers, body, expectBinary }, cb) {
     const urlParts = {
       ...baseUrlParts,
-      pathname: url.pathname ? (
-        baseUrlParts.pathname ? joinPath(baseUrlParts.pathname, url.pathname) : url.pathname
-      ) : baseUrlParts.pathname,
-      search: url.search ? (
-        baseUrlParts.search ? `${baseUrlParts.search}&${url.search.slice(1)}` : url.search
-      ) : baseUrlParts.search
-    }
+      pathname: url.pathname
+        ? baseUrlParts.pathname
+          ? joinPath(baseUrlParts.pathname, url.pathname)
+          : url.pathname
+        : baseUrlParts.pathname,
+      search: url.search
+        ? baseUrlParts.search
+          ? `${baseUrlParts.search}&${url.search.slice(1)}`
+          : url.search
+        : baseUrlParts.search
+    };
 
-    queue.push((next) => {
+    queue.push(next => {
       let callback = (err, res) => {
-        callback = () => undefined
-        next()
-        cb(err, res)
-      }
-      const req = xhr({
-        responseType: expectBinary ? 'blob' : 'text',
-        ...options,
-        url: formatUrl(urlParts),
-        withCredentials: true,
-        useXDR: true,
-        body,
-        method,
-        headers
-      }, (err, res) => {
-        if (!err) callback(null, res)
-        else {
-          err.request = req
-          callback(err)
+        callback = () => undefined;
+        next();
+        cb(err, res);
+      };
+      const req = xhr(
+        {
+          responseType: expectBinary ? "blob" : "text",
+          ...options,
+          url: formatUrl(urlParts),
+          withCredentials: true,
+          useXDR: true,
+          body,
+          method,
+          headers
+        },
+        (err, res) => {
+          if (!err) callback(null, res);
+          else {
+            err.request = req;
+            callback(err);
+          }
         }
-      })
-    })
+      );
+    });
 
-    drainQueue()
+    drainQueue();
   }
 
-  const auth = baseUrlParts.auth
-  delete baseUrlParts.auth
-  return {request, auth, url: baseUrlParts}
+  const auth = baseUrlParts.auth;
+  delete baseUrlParts.auth;
+  return { request, auth, url: baseUrlParts };
 }
