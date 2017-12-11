@@ -1,781 +1,782 @@
-import ArrayCursor from './cursor'
+import ArrayCursor from "./cursor";
 
 export const types = {
   DOCUMENT_COLLECTION: 2,
   EDGE_COLLECTION: 3
-}
+};
 
 class BaseCollection {
-  constructor (connection, name) {
-    this.name = name
-    this._urlPrefix = `/collection/${name}/`
-    this._idPrefix = `${name}/`
-    this._connection = connection
-    this._api = this._connection.route('/_api')
+  constructor(connection, name) {
+    this.name = name;
+    this._urlPrefix = `/collection/${name}/`;
+    this._idPrefix = `${name}/`;
+    this._connection = connection;
+    this._api = this._connection.route("/_api");
     if (this._connection.arangoMajor >= 3) {
-      this.first = undefined
-      this.last = undefined
-      this.createCapConstraint = undefined
+      this.first = undefined;
+      this.last = undefined;
+      this.createCapConstraint = undefined;
     }
   }
 
-  _documentHandle (documentHandle) {
-    if (typeof documentHandle !== 'string') {
+  _documentHandle(documentHandle) {
+    if (typeof documentHandle !== "string") {
       if (documentHandle._id) {
-        return documentHandle._id
+        return documentHandle._id;
       }
       if (documentHandle._key) {
-        return this._idPrefix + documentHandle._key
+        return this._idPrefix + documentHandle._key;
       }
-      throw new Error('Document handle must be a document or string')
+      throw new Error("Document handle must be a document or string");
     }
-    if (documentHandle.indexOf('/') === -1) {
-      return this._idPrefix + documentHandle
+    if (documentHandle.indexOf("/") === -1) {
+      return this._idPrefix + documentHandle;
     }
-    return documentHandle
+    return documentHandle;
   }
 
-  _indexHandle (indexHandle) {
-    if (typeof indexHandle !== 'string') {
+  _indexHandle(indexHandle) {
+    if (typeof indexHandle !== "string") {
       if (indexHandle.id) {
-        return indexHandle.id
+        return indexHandle.id;
       }
-      throw new Error('Document handle must be a document or string')
+      throw new Error("Document handle must be a document or string");
     }
-    if (indexHandle.indexOf('/') === -1) {
-      return this._idPrefix + indexHandle
+    if (indexHandle.indexOf("/") === -1) {
+      return this._idPrefix + indexHandle;
     }
-    return indexHandle
+    return indexHandle;
   }
 
-  _get (path, opts, cb) {
-    if (typeof opts === 'function') {
-      cb = opts
-      opts = undefined
+  _get(path, opts, cb) {
+    if (typeof opts === "function") {
+      cb = opts;
+      opts = undefined;
     }
-    const {promise, callback} = this._connection.promisify(cb)
+    const { promise, callback } = this._connection.promisify(cb);
     this._api.get(
       this._urlPrefix + path,
       opts,
-      (err, res) => err ? callback(err) : callback(null, res.body)
-    )
-    return promise
+      (err, res) => (err ? callback(err) : callback(null, res.body))
+    );
+    return promise;
   }
 
-  _put (path, data, cb) {
-    const {promise, callback} = this._connection.promisify(cb)
+  _put(path, data, cb) {
+    const { promise, callback } = this._connection.promisify(cb);
     this._api.put(
       this._urlPrefix + path,
       data,
-      (err, res) => err ? callback(err) : callback(null, res.body)
-    )
-    return promise
+      (err, res) => (err ? callback(err) : callback(null, res.body))
+    );
+    return promise;
   }
 
-  get (cb) {
-    const {promise, callback} = this._connection.promisify(cb)
+  get(cb) {
+    const { promise, callback } = this._connection.promisify(cb);
     this._api.get(
       `/collection/${this.name}`,
-      (err, res) => err ? callback(err) : callback(null, res.body)
-    )
-    return promise
+      (err, res) => (err ? callback(err) : callback(null, res.body))
+    );
+    return promise;
   }
 
-  create (properties, cb) {
-    if (typeof properties === 'function') {
-      cb = properties
-      properties = undefined
+  create(properties, cb) {
+    if (typeof properties === "function") {
+      cb = properties;
+      properties = undefined;
     }
-    const {promise, callback} = this._connection.promisify(cb)
+    const { promise, callback } = this._connection.promisify(cb);
     this._api.post(
-      '/collection',
-      {...properties, name: this.name, type: this.type},
-      (err, res) => err ? callback(err) : callback(null, res.body)
-    )
-    return promise
+      "/collection",
+      { ...properties, name: this.name, type: this.type },
+      (err, res) => (err ? callback(err) : callback(null, res.body))
+    );
+    return promise;
   }
 
-  properties (cb) {
-    return this._get('properties', cb)
+  properties(cb) {
+    return this._get("properties", cb);
   }
 
-  count (cb) {
-    return this._get('count', cb)
+  count(cb) {
+    return this._get("count", cb);
   }
 
-  figures (cb) {
-    return this._get('figures', cb)
+  figures(cb) {
+    return this._get("figures", cb);
   }
 
-  revision (cb) {
-    return this._get('revision', cb)
+  revision(cb) {
+    return this._get("revision", cb);
   }
 
-  checksum (opts, cb) {
-    return this._get('checksum', opts, cb)
+  checksum(opts, cb) {
+    return this._get("checksum", opts, cb);
   }
 
-  load (count, cb) {
-    if (typeof count === 'function') {
-      cb = count
-      count = undefined
+  load(count, cb) {
+    if (typeof count === "function") {
+      cb = count;
+      count = undefined;
     }
-    return this._put('load', (
-      typeof count === 'boolean' ? {count: count} : undefined
-    ), cb)
+    return this._put(
+      "load",
+      typeof count === "boolean" ? { count: count } : undefined,
+      cb
+    );
   }
 
-  unload (cb) {
-    return this._put('unload', undefined, cb)
+  unload(cb) {
+    return this._put("unload", undefined, cb);
   }
 
-  setProperties (properties, cb) {
-    return this._put('properties', properties, cb)
+  setProperties(properties, cb) {
+    return this._put("properties", properties, cb);
   }
 
-  rename (name, cb) {
-    const {promise, callback} = this._connection.promisify(cb)
-    this._api.put(
-      this._urlPrefix + 'rename',
-      {name},
-      (err, res) => {
-        if (err) callback(err)
-        else {
-          this.name = name
-          this._idPrefix = `${name}/`
-          this._urlPrefix = `/collection/${name}/`
-          callback(null, res.body)
-        }
+  rename(name, cb) {
+    const { promise, callback } = this._connection.promisify(cb);
+    this._api.put(this._urlPrefix + "rename", { name }, (err, res) => {
+      if (err) callback(err);
+      else {
+        this.name = name;
+        this._idPrefix = `${name}/`;
+        this._urlPrefix = `/collection/${name}/`;
+        callback(null, res.body);
       }
-    )
-    return promise
+    });
+    return promise;
   }
 
-  rotate (cb) {
-    return this._put('rotate', undefined, cb)
+  rotate(cb) {
+    return this._put("rotate", undefined, cb);
   }
 
-  truncate (cb) {
-    return this._put('truncate', undefined, cb)
+  truncate(cb) {
+    return this._put("truncate", undefined, cb);
   }
 
-  drop (opts, cb) {
-    if (typeof opts === 'function') {
-      cb = opts
-      opts = undefined
+  drop(opts, cb) {
+    if (typeof opts === "function") {
+      cb = opts;
+      opts = undefined;
     }
-    const {promise, callback} = this._connection.promisify(cb)
+    const { promise, callback } = this._connection.promisify(cb);
     this._api.delete(
       `/collection/${this.name}`,
       opts,
-      (err, res) => err ? callback(err) : callback(null, res.body)
-    )
-    return promise
+      (err, res) => (err ? callback(err) : callback(null, res.body))
+    );
+    return promise;
   }
 
-  replace (documentHandle, newValue, opts, cb) {
-    if (typeof opts === 'function') {
-      cb = opts
-      opts = undefined
+  replace(documentHandle, newValue, opts, cb) {
+    if (typeof opts === "function") {
+      cb = opts;
+      opts = undefined;
     }
-    if (typeof opts === 'string') {
-      opts = {rev: opts}
+    if (typeof opts === "string") {
+      opts = { rev: opts };
     }
-    const {promise, callback} = this._connection.promisify(cb)
-    const rev = opts && opts.rev
-    const headers = (
+    const { promise, callback } = this._connection.promisify(cb);
+    const rev = opts && opts.rev;
+    const headers =
       rev && this._connection.arangoMajor >= 3
-      ? {'if-match': rev}
-      : undefined
-    )
+        ? { "if-match": rev }
+        : undefined;
     this._api.put(
       this._documentPath(documentHandle),
       newValue,
       opts,
       headers,
-      (err, res) => err ? callback(err) : callback(null, res.body)
-    )
-    return promise
+      (err, res) => (err ? callback(err) : callback(null, res.body))
+    );
+    return promise;
   }
 
-  update (documentHandle, newValue, opts, cb) {
-    if (typeof opts === 'function') {
-      cb = opts
-      opts = undefined
+  update(documentHandle, newValue, opts, cb) {
+    if (typeof opts === "function") {
+      cb = opts;
+      opts = undefined;
     }
-    if (typeof opts === 'string') {
-      opts = {rev: opts}
+    if (typeof opts === "string") {
+      opts = { rev: opts };
     }
-    const {promise, callback} = this._connection.promisify(cb)
-    const rev = opts && opts.rev
-    const headers = (
+    const { promise, callback } = this._connection.promisify(cb);
+    const rev = opts && opts.rev;
+    const headers =
       rev && this._connection.arangoMajor >= 3
-      ? {'if-match': rev}
-      : undefined
-    )
+        ? { "if-match": rev }
+        : undefined;
     this._api.patch(
       this._documentPath(documentHandle),
       newValue,
       opts,
       headers,
-      (err, res) => err ? callback(err) : callback(null, res.body)
-    )
-    return promise
+      (err, res) => (err ? callback(err) : callback(null, res.body))
+    );
+    return promise;
   }
 
-  bulkUpdate (newValues, opts, cb) {
-    if (typeof opts === 'function') {
-      cb = opts
-      opts = undefined
+  bulkUpdate(newValues, opts, cb) {
+    if (typeof opts === "function") {
+      cb = opts;
+      opts = undefined;
     }
-    if (typeof opts === 'string') {
-      opts = {rev: opts}
+    if (typeof opts === "string") {
+      opts = { rev: opts };
     }
-    const {promise, callback} = this._connection.promisify(cb)
+    const { promise, callback } = this._connection.promisify(cb);
 
     this._api.patch(
       `/document/${this.name}`,
       newValues,
       opts,
-      (err, res) => err ? callback(err) : callback(null, res.body)
-    )
-    return promise
+      (err, res) => (err ? callback(err) : callback(null, res.body))
+    );
+    return promise;
   }
 
-  remove (documentHandle, opts, cb) {
-    if (typeof opts === 'function') {
-      cb = opts
-      opts = undefined
+  remove(documentHandle, opts, cb) {
+    if (typeof opts === "function") {
+      cb = opts;
+      opts = undefined;
     }
-    if (typeof opts === 'string') {
-      opts = {rev: opts}
+    if (typeof opts === "string") {
+      opts = { rev: opts };
     }
-    const {promise, callback} = this._connection.promisify(cb)
-    const rev = opts && opts.rev
-    const headers = (
+    const { promise, callback } = this._connection.promisify(cb);
+    const rev = opts && opts.rev;
+    const headers =
       rev && this._connection.arangoMajor >= 3
-      ? {'if-match': rev}
-      : undefined
-    )
+        ? { "if-match": rev }
+        : undefined;
     this._api.delete(
       this._documentPath(documentHandle),
       opts,
       headers,
-      (err, res) => err ? callback(err) : callback(null, res.body)
-    )
-    return promise
+      (err, res) => (err ? callback(err) : callback(null, res.body))
+    );
+    return promise;
   }
 
-  list (type, cb) {
-    if (typeof type === 'function') {
-      cb = type
-      type = undefined
+  list(type, cb) {
+    if (typeof type === "function") {
+      cb = type;
+      type = undefined;
     }
-    if (!type) type = 'id'
-    const {promise, callback} = this._connection.promisify(cb)
+    if (!type) type = "id";
+    const { promise, callback } = this._connection.promisify(cb);
     if (this._connection.arangoMajor < 3) {
       this._api.get(
-        '/document',
-        {type, collection: this.name},
-        (err, res) => err ? callback(err) : callback(null, res.body.documents)
-      )
+        "/document",
+        { type, collection: this.name },
+        (err, res) => (err ? callback(err) : callback(null, res.body.documents))
+      );
     } else {
       this._api.put(
-        '/simple/all-keys',
-        {type, collection: this.name},
-        (err, res) => err ? callback(err) : callback(null, res.body.result)
-      )
+        "/simple/all-keys",
+        { type, collection: this.name },
+        (err, res) => (err ? callback(err) : callback(null, res.body.result))
+      );
     }
-    return promise
+    return promise;
   }
 
-  all (opts, cb) {
-    if (typeof opts === 'function') {
-      cb = opts
-      opts = undefined
+  all(opts, cb) {
+    if (typeof opts === "function") {
+      cb = opts;
+      opts = undefined;
     }
-    const {promise, callback} = this._connection.promisify(cb)
+    const { promise, callback } = this._connection.promisify(cb);
     this._api.put(
-      '/simple/all',
-      {...opts, collection: this.name},
-      (err, res) => err ? callback(err) : callback(null, new ArrayCursor(this._connection, res.body))
-    )
-    return promise
+      "/simple/all",
+      { ...opts, collection: this.name },
+      (err, res) =>
+        err
+          ? callback(err)
+          : callback(null, new ArrayCursor(this._connection, res.body))
+    );
+    return promise;
   }
 
-  any (cb) {
-    const {promise, callback} = this._connection.promisify(cb)
+  any(cb) {
+    const { promise, callback } = this._connection.promisify(cb);
     this._api.put(
-      '/simple/any',
-      {collection: this.name},
-      (err, res) => err ? callback(err) : callback(null, res.body.document)
-    )
-    return promise
+      "/simple/any",
+      { collection: this.name },
+      (err, res) => (err ? callback(err) : callback(null, res.body.document))
+    );
+    return promise;
   }
 
-  first (opts, cb) {
-    if (typeof opts === 'function') {
-      cb = opts
-      opts = undefined
+  first(opts, cb) {
+    if (typeof opts === "function") {
+      cb = opts;
+      opts = undefined;
     }
-    if (typeof opts === 'number') {
-      opts = {count: opts}
+    if (typeof opts === "number") {
+      opts = { count: opts };
     }
-    const {promise, callback} = this._connection.promisify(cb)
+    const { promise, callback } = this._connection.promisify(cb);
     this._api.put(
-      '/simple/first',
-      {...opts, collection: this.name},
-      (err, res) => err ? callback(err) : callback(null, res.body.result)
-    )
-    return promise
+      "/simple/first",
+      { ...opts, collection: this.name },
+      (err, res) => (err ? callback(err) : callback(null, res.body.result))
+    );
+    return promise;
   }
 
-  last (opts, cb) {
-    if (typeof opts === 'function') {
-      cb = opts
-      opts = undefined
+  last(opts, cb) {
+    if (typeof opts === "function") {
+      cb = opts;
+      opts = undefined;
     }
-    if (typeof opts === 'number') {
-      opts = {count: opts}
+    if (typeof opts === "number") {
+      opts = { count: opts };
     }
-    const {promise, callback} = this._connection.promisify(cb)
+    const { promise, callback } = this._connection.promisify(cb);
     this._api.put(
-      '/simple/last',
-      {...opts, collection: this.name},
-      (err, res) => err ? callback(err) : callback(null, res.body.result)
-    )
-    return promise
+      "/simple/last",
+      { ...opts, collection: this.name },
+      (err, res) => (err ? callback(err) : callback(null, res.body.result))
+    );
+    return promise;
   }
 
-  byExample (example, opts, cb) {
-    if (typeof opts === 'function') {
-      cb = opts
-      opts = undefined
+  byExample(example, opts, cb) {
+    if (typeof opts === "function") {
+      cb = opts;
+      opts = undefined;
     }
-    const {promise, callback} = this._connection.promisify(cb)
+    const { promise, callback } = this._connection.promisify(cb);
     this._api.put(
-      '/simple/by-example',
-      {...opts, example, collection: this.name},
-      (err, res) => err ? callback(err) : callback(null, new ArrayCursor(this._connection, res.body))
-    )
-    return promise
+      "/simple/by-example",
+      { ...opts, example, collection: this.name },
+      (err, res) =>
+        err
+          ? callback(err)
+          : callback(null, new ArrayCursor(this._connection, res.body))
+    );
+    return promise;
   }
 
-  firstExample (example, cb) {
-    const {promise, callback} = this._connection.promisify(cb)
+  firstExample(example, cb) {
+    const { promise, callback } = this._connection.promisify(cb);
     this._api.put(
-      '/simple/first-example',
-      {example, collection: this.name},
-      (err, res) => err ? callback(err) : callback(null, res.body.document)
-    )
-    return promise
+      "/simple/first-example",
+      { example, collection: this.name },
+      (err, res) => (err ? callback(err) : callback(null, res.body.document))
+    );
+    return promise;
   }
 
-  removeByExample (example, opts, cb) {
-    if (typeof opts === 'function') {
-      cb = opts
-      opts = undefined
+  removeByExample(example, opts, cb) {
+    if (typeof opts === "function") {
+      cb = opts;
+      opts = undefined;
     }
-    const {promise, callback} = this._connection.promisify(cb)
+    const { promise, callback } = this._connection.promisify(cb);
     this._api.put(
-      '/simple/remove-by-example',
-      {...opts, example, collection: this.name},
-      (err, res) => err ? callback(err) : callback(null, res.body)
-    )
-    return promise
+      "/simple/remove-by-example",
+      { ...opts, example, collection: this.name },
+      (err, res) => (err ? callback(err) : callback(null, res.body))
+    );
+    return promise;
   }
 
-  replaceByExample (example, newValue, opts, cb) {
-    if (typeof opts === 'function') {
-      cb = opts
-      opts = undefined
+  replaceByExample(example, newValue, opts, cb) {
+    if (typeof opts === "function") {
+      cb = opts;
+      opts = undefined;
     }
-    const {promise, callback} = this._connection.promisify(cb)
+    const { promise, callback } = this._connection.promisify(cb);
     this._api.put(
-      '/simple/replace-by-example',
-      {...opts, example, newValue, collection: this.name},
-      (err, res) => err ? callback(err) : callback(null, res.body)
-    )
-    return promise
+      "/simple/replace-by-example",
+      { ...opts, example, newValue, collection: this.name },
+      (err, res) => (err ? callback(err) : callback(null, res.body))
+    );
+    return promise;
   }
 
-  updateByExample (example, newValue, opts, cb) {
-    if (typeof opts === 'function') {
-      cb = opts
-      opts = undefined
+  updateByExample(example, newValue, opts, cb) {
+    if (typeof opts === "function") {
+      cb = opts;
+      opts = undefined;
     }
-    const {promise, callback} = this._connection.promisify(cb)
+    const { promise, callback } = this._connection.promisify(cb);
     this._api.put(
-      '/simple/update-by-example',
-      {...opts, example, newValue, collection: this.name},
-      (err, res) => err ? callback(err) : callback(null, res.body)
-    )
-    return promise
+      "/simple/update-by-example",
+      { ...opts, example, newValue, collection: this.name },
+      (err, res) => (err ? callback(err) : callback(null, res.body))
+    );
+    return promise;
   }
 
-  lookupByKeys (keys, cb) {
-    const {promise, callback} = this._connection.promisify(cb)
+  lookupByKeys(keys, cb) {
+    const { promise, callback } = this._connection.promisify(cb);
     this._api.put(
-      '/simple/lookup-by-keys',
-      {keys, collection: this.name},
-      (err, res) => err ? callback(err) : callback(null, res.body.documents)
-    )
-    return promise
+      "/simple/lookup-by-keys",
+      { keys, collection: this.name },
+      (err, res) => (err ? callback(err) : callback(null, res.body.documents))
+    );
+    return promise;
   }
 
-  removeByKeys (keys, options, cb) {
-    if (typeof options === 'function') {
-      cb = options
-      options = undefined
+  removeByKeys(keys, options, cb) {
+    if (typeof options === "function") {
+      cb = options;
+      options = undefined;
     }
-    const {promise, callback} = this._connection.promisify(cb)
+    const { promise, callback } = this._connection.promisify(cb);
     this._api.put(
-      '/simple/remove-by-keys',
-      {options, keys, collection: this.name},
-      (err, res) => err ? callback(err) : callback(null, res.body)
-    )
-    return promise
+      "/simple/remove-by-keys",
+      { options, keys, collection: this.name },
+      (err, res) => (err ? callback(err) : callback(null, res.body))
+    );
+    return promise;
   }
 
-  import (data, opts, cb) {
-    if (typeof opts === 'function') {
-      cb = opts
-      opts = undefined
+  import(data, opts, cb) {
+    if (typeof opts === "function") {
+      cb = opts;
+      opts = undefined;
     }
-    const {promise, callback} = this._connection.promisify(cb)
+    const { promise, callback } = this._connection.promisify(cb);
     this._api.request(
       {
-        method: 'POST',
-        path: '/import',
+        method: "POST",
+        path: "/import",
         body: data,
-        ld: Boolean(!opts || opts.type !== 'array'),
-        qs: {type: 'auto', ...opts, collection: this.name}
+        ld: Boolean(!opts || opts.type !== "array"),
+        qs: { type: "auto", ...opts, collection: this.name }
       },
-      (err, res) => err ? callback(err) : callback(null, res.body)
-    )
-    return promise
+      (err, res) => (err ? callback(err) : callback(null, res.body))
+    );
+    return promise;
   }
 
-  indexes (cb) {
-    const {promise, callback} = this._connection.promisify(cb)
+  indexes(cb) {
+    const { promise, callback } = this._connection.promisify(cb);
     this._api.get(
-      '/index',
-      {collection: this.name},
-      (err, res) => err ? callback(err) : callback(null, res.body.indexes)
-    )
-    return promise
+      "/index",
+      { collection: this.name },
+      (err, res) => (err ? callback(err) : callback(null, res.body.indexes))
+    );
+    return promise;
   }
 
-  index (indexHandle, cb) {
-    const {promise, callback} = this._connection.promisify(cb)
+  index(indexHandle, cb) {
+    const { promise, callback } = this._connection.promisify(cb);
     this._api.get(
       `/index/${this._indexHandle(indexHandle)}`,
-      (err, res) => err ? callback(err) : callback(null, res.body)
-    )
-    return promise
+      (err, res) => (err ? callback(err) : callback(null, res.body))
+    );
+    return promise;
   }
 
-  createIndex (details, cb) {
-    const {promise, callback} = this._connection.promisify(cb)
+  createIndex(details, cb) {
+    const { promise, callback } = this._connection.promisify(cb);
     this._api.post(
-      '/index',
+      "/index",
       details,
-      {collection: this.name},
-      (err, res) => err ? callback(err) : callback(null, res.body)
-    )
-    return promise
+      { collection: this.name },
+      (err, res) => (err ? callback(err) : callback(null, res.body))
+    );
+    return promise;
   }
 
-  dropIndex (indexHandle, cb) {
-    const {promise, callback} = this._connection.promisify(cb)
+  dropIndex(indexHandle, cb) {
+    const { promise, callback } = this._connection.promisify(cb);
     this._api.delete(
       `/index/${this._indexHandle(indexHandle)}`,
-      (err, res) => err ? callback(err) : callback(null, res.body)
-    )
-    return promise
+      (err, res) => (err ? callback(err) : callback(null, res.body))
+    );
+    return promise;
   }
 
-  createCapConstraint (size, cb) {
-    if (typeof size === 'number') {
-      size = {size: size}
+  createCapConstraint(size, cb) {
+    if (typeof size === "number") {
+      size = { size: size };
     }
-    const {promise, callback} = this._connection.promisify(cb)
+    const { promise, callback } = this._connection.promisify(cb);
     this._api.post(
-      '/index',
-      {...size, type: 'cap'},
-      {collection: this.name},
-      (err, res) => err ? callback(err) : callback(null, res.body)
-    )
-    return promise
+      "/index",
+      { ...size, type: "cap" },
+      { collection: this.name },
+      (err, res) => (err ? callback(err) : callback(null, res.body))
+    );
+    return promise;
   }
 
-  createHashIndex (fields, opts, cb) {
-    if (typeof opts === 'function') {
-      cb = opts
-      opts = undefined
+  createHashIndex(fields, opts, cb) {
+    if (typeof opts === "function") {
+      cb = opts;
+      opts = undefined;
     }
-    if (typeof fields === 'string') {
-      fields = [fields]
+    if (typeof fields === "string") {
+      fields = [fields];
     }
-    if (typeof opts === 'boolean') {
-      opts = {unique: opts}
+    if (typeof opts === "boolean") {
+      opts = { unique: opts };
     }
-    const {promise, callback} = this._connection.promisify(cb)
+    const { promise, callback } = this._connection.promisify(cb);
     this._api.post(
-      '/index',
-      {unique: false, ...opts, type: 'hash', fields: fields},
-      {collection: this.name},
-      (err, res) => err ? callback(err) : callback(null, res.body)
-    )
-    return promise
+      "/index",
+      { unique: false, ...opts, type: "hash", fields: fields },
+      { collection: this.name },
+      (err, res) => (err ? callback(err) : callback(null, res.body))
+    );
+    return promise;
   }
 
-  createSkipList (fields, opts, cb) {
-    if (typeof opts === 'function') {
-      cb = opts
-      opts = undefined
+  createSkipList(fields, opts, cb) {
+    if (typeof opts === "function") {
+      cb = opts;
+      opts = undefined;
     }
-    if (typeof fields === 'string') {
-      fields = [fields]
+    if (typeof fields === "string") {
+      fields = [fields];
     }
-    if (typeof opts === 'boolean') {
-      opts = {unique: opts}
+    if (typeof opts === "boolean") {
+      opts = { unique: opts };
     }
-    const {promise, callback} = this._connection.promisify(cb)
+    const { promise, callback } = this._connection.promisify(cb);
     this._api.post(
-      '/index',
-      {unique: false, ...opts, type: 'skiplist', fields: fields},
-      {collection: this.name},
-      (err, res) => err ? callback(err) : callback(null, res.body)
-    )
-    return promise
+      "/index",
+      { unique: false, ...opts, type: "skiplist", fields: fields },
+      { collection: this.name },
+      (err, res) => (err ? callback(err) : callback(null, res.body))
+    );
+    return promise;
   }
 
-  createPersistentIndex (fields, opts, cb) {
-    if (typeof opts === 'function') {
-      cb = opts
-      opts = undefined
+  createPersistentIndex(fields, opts, cb) {
+    if (typeof opts === "function") {
+      cb = opts;
+      opts = undefined;
     }
-    if (typeof fields === 'string') {
-      fields = [fields]
+    if (typeof fields === "string") {
+      fields = [fields];
     }
-    if (typeof opts === 'boolean') {
-      opts = {unique: opts}
+    if (typeof opts === "boolean") {
+      opts = { unique: opts };
     }
-    const {promise, callback} = this._connection.promisify(cb)
+    const { promise, callback } = this._connection.promisify(cb);
     this._api.post(
-      '/index',
-      {unique: false, ...opts, type: 'persistent', fields: fields},
-      {collection: this.name},
-      (err, res) => err ? callback(err) : callback(null, res.body)
-    )
-    return promise
+      "/index",
+      { unique: false, ...opts, type: "persistent", fields: fields },
+      { collection: this.name },
+      (err, res) => (err ? callback(err) : callback(null, res.body))
+    );
+    return promise;
   }
 
-  createGeoIndex (fields, opts, cb) {
-    if (typeof opts === 'function') {
-      cb = opts
-      opts = undefined
+  createGeoIndex(fields, opts, cb) {
+    if (typeof opts === "function") {
+      cb = opts;
+      opts = undefined;
     }
-    if (typeof fields === 'string') {
-      fields = [fields]
+    if (typeof fields === "string") {
+      fields = [fields];
     }
-    const {promise, callback} = this._connection.promisify(cb)
+    const { promise, callback } = this._connection.promisify(cb);
     this._api.post(
-      '/index',
-      {...opts, fields, type: 'geo'},
-      {collection: this.name},
-      (err, res) => err ? callback(err) : callback(null, res.body)
-    )
-    return promise
+      "/index",
+      { ...opts, fields, type: "geo" },
+      { collection: this.name },
+      (err, res) => (err ? callback(err) : callback(null, res.body))
+    );
+    return promise;
   }
 
-  createFulltextIndex (fields, minLength, cb) {
-    if (typeof minLength === 'function') {
-      cb = minLength
-      minLength = undefined
+  createFulltextIndex(fields, minLength, cb) {
+    if (typeof minLength === "function") {
+      cb = minLength;
+      minLength = undefined;
     }
-    if (typeof fields === 'string') {
-      fields = [fields]
+    if (typeof fields === "string") {
+      fields = [fields];
     }
-    if (minLength) minLength = Number(minLength)
-    const {promise, callback} = this._connection.promisify(cb)
+    if (minLength) minLength = Number(minLength);
+    const { promise, callback } = this._connection.promisify(cb);
     this._api.post(
-      '/index',
-      {fields, minLength, type: 'fulltext'},
-      {collection: this.name},
-      (err, res) => err ? callback(err) : callback(null, res.body)
-    )
-    return promise
+      "/index",
+      { fields, minLength, type: "fulltext" },
+      { collection: this.name },
+      (err, res) => (err ? callback(err) : callback(null, res.body))
+    );
+    return promise;
   }
 
-  fulltext (attribute, query, opts, cb) {
-    if (typeof opts === 'function') {
-      cb = opts
-      opts = undefined
+  fulltext(attribute, query, opts, cb) {
+    if (typeof opts === "function") {
+      cb = opts;
+      opts = undefined;
     }
-    if (!opts) opts = {}
-    if (opts.index) opts.index = this._indexHandle(opts.index)
-    const {promise, callback} = this._connection.promisify(cb)
+    if (!opts) opts = {};
+    if (opts.index) opts.index = this._indexHandle(opts.index);
+    const { promise, callback } = this._connection.promisify(cb);
     this._api.put(
-      '/simple/fulltext',
-      {...opts, attribute, query, collection: this.name},
-      (err, res) => err ? callback(err) : callback(null, new ArrayCursor(this._connection, res.body))
-    )
-    return promise
+      "/simple/fulltext",
+      { ...opts, attribute, query, collection: this.name },
+      (err, res) =>
+        err
+          ? callback(err)
+          : callback(null, new ArrayCursor(this._connection, res.body))
+    );
+    return promise;
   }
 }
 
-BaseCollection.prototype.isArangoCollection = true
+BaseCollection.prototype.isArangoCollection = true;
 
 class DocumentCollection extends BaseCollection {
-  constructor (...args) {
-    super(...args)
-    this.type = types.DOCUMENT_COLLECTION
+  constructor(...args) {
+    super(...args);
+    this.type = types.DOCUMENT_COLLECTION;
   }
 
-  _documentPath (documentHandle) {
-    return `/document/${this._documentHandle(documentHandle)}`
+  _documentPath(documentHandle) {
+    return `/document/${this._documentHandle(documentHandle)}`;
   }
 
-  document (documentHandle, cb) {
-    const {promise, callback} = this._connection.promisify(cb)
+  document(documentHandle, cb) {
+    const { promise, callback } = this._connection.promisify(cb);
     this._api.get(
       this._documentPath(documentHandle),
-      (err, res) => err ? callback(err) : callback(null, res.body)
-    )
-    return promise
+      (err, res) => (err ? callback(err) : callback(null, res.body))
+    );
+    return promise;
   }
 
-  save (data, opts, cb) {
-    if (typeof opts === 'function') {
-      cb = opts
-      opts = undefined
+  save(data, opts, cb) {
+    if (typeof opts === "function") {
+      cb = opts;
+      opts = undefined;
     }
-    if (typeof opts === 'boolean') {
-      opts = {returnNew: opts}
+    if (typeof opts === "boolean") {
+      opts = { returnNew: opts };
     }
-    const {promise, callback} = this._connection.promisify(cb)
+    const { promise, callback } = this._connection.promisify(cb);
 
     if (this._connection.arangoMajor >= 3) {
       this._api.post(
         `/document/${this.name}`,
         data,
         opts,
-        (err, res) => err ? callback(err) : callback(null, res.body)
-      )
+        (err, res) => (err ? callback(err) : callback(null, res.body))
+      );
     } else {
-      if (!opts) opts = {}
-      opts.collection = this.name
+      if (!opts) opts = {};
+      opts.collection = this.name;
 
       this._api.post(
         `/document`,
         data,
         opts,
-        (err, res) => err ? callback(err) : callback(null, res.body)
-      )
+        (err, res) => (err ? callback(err) : callback(null, res.body))
+      );
     }
-    return promise
+    return promise;
   }
 }
 
 class EdgeCollection extends BaseCollection {
-  constructor (...args) {
-    super(...args)
-    this.type = types.EDGE_COLLECTION
+  constructor(...args) {
+    super(...args);
+    this.type = types.EDGE_COLLECTION;
   }
 
-  _documentPath (documentHandle) {
+  _documentPath(documentHandle) {
     if (this._connection.arangoMajor < 3) {
-      return `edge/${this._documentHandle(documentHandle)}`
+      return `edge/${this._documentHandle(documentHandle)}`;
     }
-    return `document/${this._documentHandle(documentHandle)}`
+    return `document/${this._documentHandle(documentHandle)}`;
   }
 
-  edge (documentHandle, cb) {
-    const {promise, callback} = this._connection.promisify(cb)
+  edge(documentHandle, cb) {
+    const { promise, callback } = this._connection.promisify(cb);
     this._api.get(
       this._documentPath(documentHandle),
-      (err, res) => err ? callback(err) : callback(null, res.body)
-    )
-    return promise
+      (err, res) => (err ? callback(err) : callback(null, res.body))
+    );
+    return promise;
   }
 
-  save (data, fromId, toId, cb) {
-    if (typeof fromId === 'function') {
-      cb = fromId
-      fromId = undefined
+  save(data, fromId, toId, cb) {
+    if (typeof fromId === "function") {
+      cb = fromId;
+      fromId = undefined;
     } else if (fromId) {
-      data._from = this._documentHandle(fromId)
-      data._to = this._documentHandle(toId)
+      data._from = this._documentHandle(fromId);
+      data._to = this._documentHandle(toId);
     }
-    const {promise, callback} = this._connection.promisify(cb)
+    const { promise, callback } = this._connection.promisify(cb);
     if (this._connection.arangoMajor < 3) {
       this._api.post(
-        '/edge',
+        "/edge",
         data,
         {
           collection: this.name,
           from: data._from,
           to: data._to
         },
-        (err, res) => err ? callback(err) : callback(null, res.body)
-      )
+        (err, res) => (err ? callback(err) : callback(null, res.body))
+      );
     } else {
       this._api.post(
-        '/document',
+        "/document",
         data,
-        {collection: this.name},
-        (err, res) => err ? callback(err) : callback(null, res.body)
-      )
+        { collection: this.name },
+        (err, res) => (err ? callback(err) : callback(null, res.body))
+      );
     }
-    return promise
+    return promise;
   }
 
-  _edges (documentHandle, direction, cb) {
-    const {promise, callback} = this._connection.promisify(cb)
+  _edges(documentHandle, direction, cb) {
+    const { promise, callback } = this._connection.promisify(cb);
     this._api.get(
       `/edges/${this.name}`,
-      {direction, vertex: this._documentHandle(documentHandle)},
-      (err, res) => err ? callback(err) : callback(null, res.body.edges)
-    )
-    return promise
+      { direction, vertex: this._documentHandle(documentHandle) },
+      (err, res) => (err ? callback(err) : callback(null, res.body.edges))
+    );
+    return promise;
   }
 
-  edges (vertex, cb) {
-    return this._edges(vertex, undefined, cb)
+  edges(vertex, cb) {
+    return this._edges(vertex, undefined, cb);
   }
 
-  inEdges (vertex, cb) {
-    return this._edges(vertex, 'in', cb)
+  inEdges(vertex, cb) {
+    return this._edges(vertex, "in", cb);
   }
 
-  outEdges (vertex, cb) {
-    return this._edges(vertex, 'out', cb)
+  outEdges(vertex, cb) {
+    return this._edges(vertex, "out", cb);
   }
 
-  traversal (startVertex, opts, cb) {
-    if (typeof opts === 'function') {
-      cb = opts
-      opts = undefined
+  traversal(startVertex, opts, cb) {
+    if (typeof opts === "function") {
+      cb = opts;
+      opts = undefined;
     }
-    const {promise, callback} = this._connection.promisify(cb)
+    const { promise, callback } = this._connection.promisify(cb);
     this._api.post(
-      '/traversal',
-      {...opts, startVertex, edgeCollection: this.name},
-      (err, res) => err ? callback(err) : callback(null, res.body.result)
-    )
-    return promise
+      "/traversal",
+      { ...opts, startVertex, edgeCollection: this.name },
+      (err, res) => (err ? callback(err) : callback(null, res.body.result))
+    );
+    return promise;
   }
 }
 
-export default function construct (connection, body) {
-  const Collection = (
-    body.type === types.EDGE_COLLECTION
-    ? EdgeCollection
-    : DocumentCollection
-  )
-  return new Collection(connection, body.name)
+export default function construct(connection, body) {
+  const Collection =
+    body.type === types.EDGE_COLLECTION ? EdgeCollection : DocumentCollection;
+  return new Collection(connection, body.name);
 }
 
 export {
@@ -783,4 +784,4 @@ export {
   DocumentCollection,
   BaseCollection as _BaseCollection,
   types as _types
-}
+};

@@ -46,7 +46,7 @@
   "typings": "arangojs.d.ts",
   "scripts": {
     "test": "mocha --growl",
-    "lint": "standard --verbose src/**/*.js test/**/*.js | snazzy",
+    "lint": "eslint src/**/*.js test/**/*.js",
     "ci": "mocha",
     "preci": "npm install",
     "jenkins": "npm run ci -- --timeout 0 --reporter xunit-file",
@@ -54,6 +54,7 @@
     "prepublish": "npm run lint && npm run dist && node -e 'require(\"./\");'"
   },
   "dependencies": {
+    "babel-eslint": "^8.0.3",
     "es6-error": "^4.0.1",
     "http-errors": "^1.6.1",
     "linkedlist": "^1.0.1",
@@ -71,9 +72,11 @@
     "babel-preset-env": "^1.5.2",
     "chai": "^4.0.2",
     "core-js": "^2.4.1",
+    "eslint": "^4.13.0",
+    "eslint-config-prettier": "^2.9.0",
+    "eslint-plugin-prettier": "^2.3.1",
     "mocha": "3.4.2",
-    "snazzy": "7.0.0",
-    "standard": "10.0.2",
+    "prettier": "^1.9.1",
     "webpack": "^3.0.0",
     "xunit-file": "1.0.0"
   }

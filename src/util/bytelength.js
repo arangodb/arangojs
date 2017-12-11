@@ -1,1 +1,1 @@
-export default Buffer.byteLength
+export default Buffer.byteLength;
