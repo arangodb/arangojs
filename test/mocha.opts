@@ -1,3 +1,0 @@
---reporter spec
---require core-js/shim
---timeout 5000

@@ -124,7 +124,7 @@ export abstract class BaseCollection implements ArangoCollection {
     return this._get("revision");
   }
 
-  checksum(opts: any) {
+  checksum(opts?: any) {
     return this._get("checksum", opts);
   }
 
@@ -159,12 +159,12 @@ export abstract class BaseCollection implements ArangoCollection {
     return this._put("truncate", undefined);
   }
 
-  async drop(opts: any) {
+  async drop(opts?: any) {
     const res = await this._api.delete(`/collection/${this.name}`, opts);
     return res.body;
   }
 
-  async replace(documentHandle: DocumentHandle, newValue: any, opts: any) {
+  async replace(documentHandle: DocumentHandle, newValue: any, opts?: any) {
     const headers: { [key: string]: string } = {};
     if (typeof opts === "string") {
       opts = { rev: opts };
@@ -183,7 +183,7 @@ export abstract class BaseCollection implements ArangoCollection {
     return res.body;
   }
 
-  async update(documentHandle: DocumentHandle, newValue: any, opts: any) {
+  async update(documentHandle: DocumentHandle, newValue: any, opts?: any) {
     const headers: { [key: string]: string } = {};
     if (typeof opts === "string") {
       opts = { rev: opts };
@@ -202,7 +202,7 @@ export abstract class BaseCollection implements ArangoCollection {
     return res.body;
   }
 
-  async bulkUpdate(newValues: any, opts: any) {
+  async bulkUpdate(newValues: any, opts?: any) {
     const res = await this._api.patch(
       `/document/${this.name}`,
       newValues,
@@ -211,7 +211,7 @@ export abstract class BaseCollection implements ArangoCollection {
     return res.body;
   }
 
-  async remove(documentHandle: DocumentHandle, opts: any) {
+  async remove(documentHandle: DocumentHandle, opts?: any) {
     const headers: { [key: string]: string } = {};
     if (typeof opts === "string") {
       opts = { rev: opts };
@@ -245,7 +245,7 @@ export abstract class BaseCollection implements ArangoCollection {
     return res.body.result;
   }
 
-  async all(opts: any) {
+  async all(opts?: any) {
     const res = await this._api.put("/simple/all", {
       ...opts,
       collection: this.name
@@ -258,7 +258,7 @@ export abstract class BaseCollection implements ArangoCollection {
     return res.body.document;
   }
 
-  async first(opts: any) {
+  async first(opts?: any) {
     if (typeof opts === "number") {
       opts = { count: opts };
     }
@@ -269,7 +269,7 @@ export abstract class BaseCollection implements ArangoCollection {
     return res.body.result;
   }
 
-  async last(opts: any) {
+  async last(opts?: any) {
     if (typeof opts === "number") {
       opts = { count: opts };
     }
@@ -280,7 +280,7 @@ export abstract class BaseCollection implements ArangoCollection {
     return res.body.result;
   }
 
-  async byExample(example: any, opts: any) {
+  async byExample(example: any, opts?: any) {
     const res = await this._api.put("/simple/by-example", {
       ...opts,
       example,
@@ -297,7 +297,7 @@ export abstract class BaseCollection implements ArangoCollection {
     return res.body.document;
   }
 
-  async removeByExample(example: any, opts: any) {
+  async removeByExample(example: any, opts?: any) {
     const res = await this._api.put("/simple/remove-by-example", {
       ...opts,
       example,
@@ -306,7 +306,7 @@ export abstract class BaseCollection implements ArangoCollection {
     return res.body;
   }
 
-  async replaceByExample(example: any, newValue: any, opts: any) {
+  async replaceByExample(example: any, newValue: any, opts?: any) {
     const res = await this._api.put("/simple/replace-by-example", {
       ...opts,
       example,
@@ -316,7 +316,7 @@ export abstract class BaseCollection implements ArangoCollection {
     return res.body;
   }
 
-  async updateByExample(example: any, newValue: any, opts: any) {
+  async updateByExample(example: any, newValue: any, opts?: any) {
     const res = await this._api.put("/simple/update-by-example", {
       ...opts,
       example,
@@ -343,7 +343,7 @@ export abstract class BaseCollection implements ArangoCollection {
     return res.body;
   }
 
-  async import(data: any, opts: any) {
+  async import(data: any, opts?: any) {
     const res = await this._api.request({
       method: "POST",
       path: "/import",
@@ -378,7 +378,7 @@ export abstract class BaseCollection implements ArangoCollection {
     return res.body;
   }
 
-  async createCapConstraint(opts: any) {
+  async createCapConstraint(opts?: any) {
     if (typeof opts === "number") {
       opts = { size: opts };
     }
@@ -390,7 +390,7 @@ export abstract class BaseCollection implements ArangoCollection {
     return res.body;
   }
 
-  async createHashIndex(fields: string[] | string, opts: any) {
+  async createHashIndex(fields: string[] | string, opts?: any) {
     if (typeof fields === "string") {
       fields = [fields];
     }
@@ -405,7 +405,7 @@ export abstract class BaseCollection implements ArangoCollection {
     return res.body;
   }
 
-  async createSkipList(fields: string[] | string, opts: any) {
+  async createSkipList(fields: string[] | string, opts?: any) {
     if (typeof fields === "string") {
       fields = [fields];
     }
@@ -420,7 +420,7 @@ export abstract class BaseCollection implements ArangoCollection {
     return res.body;
   }
 
-  async createPersistentIndex(fields: string[] | string, opts: any) {
+  async createPersistentIndex(fields: string[] | string, opts?: any) {
     if (typeof fields === "string") {
       fields = [fields];
     }
@@ -435,7 +435,7 @@ export abstract class BaseCollection implements ArangoCollection {
     return res.body;
   }
 
-  async createGeoIndex(fields: string[] | string, opts: any) {
+  async createGeoIndex(fields: string[] | string, opts?: any) {
     if (typeof fields === "string") {
       fields = [fields];
     }
@@ -486,7 +486,7 @@ export class DocumentCollection extends BaseCollection {
     return res.body;
   }
 
-  async save(data: any, opts: any) {
+  async save(data: any, opts?: any) {
     if (typeof opts === "boolean") {
       opts = { returnNew: opts };
     }
@@ -569,7 +569,7 @@ export class EdgeCollection extends BaseCollection {
     return this._edges(vertex, "out");
   }
 
-  async traversal(startVertex: DocumentHandle, opts: any) {
+  async traversal(startVertex: DocumentHandle, opts?: any) {
     const res = await this._api.post("/traversal", {
       ...opts,
       startVertex,

@@ -1,5 +1,3 @@
-import { describe, it } from "mocha";
-
 describe("GraphVertexCollection API", () => {
   describe("graphVertexCollection.remove", () => {
     it("is missing tests");

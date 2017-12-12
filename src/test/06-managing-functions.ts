@@ -1,5 +1,3 @@
-import { describe, it } from "mocha";
-
 describe("Managing functions", () => {
   describe("database.listFunctions", () => {
     it("is missing tests");

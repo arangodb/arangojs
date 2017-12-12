@@ -1,10 +1,10 @@
-import { after, before, beforeEach, describe, it } from "mocha";
-import arangojs, { Database } from "../src";
+import * as http from "http";
+import * as https from "https";
 
-import { Connection } from "../src/connection";
+import arangojs, { Database } from "..";
+
+import { Connection } from "../connection";
 import { expect } from "chai";
-import http from "http";
-import https from "https";
 
 describe("Creating a Database", () => {
   describe("using the factory", () => {
@@ -13,7 +13,10 @@ describe("Creating a Database", () => {
       expect(db).to.be.an.instanceof(Database);
     });
     it("passes any configs to the connection", () => {
-      expect(db._connection.config).to.have.a.property("potato", "potato");
+      expect((db as any)._connection.config).to.have.property(
+        "potato",
+        "potato"
+      );
     });
   });
   describe("using the constructor", () => {
@@ -22,7 +25,10 @@ describe("Creating a Database", () => {
       expect(db).to.be.an.instanceof(Database);
     });
     it("passes any configs to the connection", () => {
-      expect(db._connection.config).to.have.a.property("banana", "banana");
+      expect((db as any)._connection.config).to.have.property(
+        "banana",
+        "banana"
+      );
     });
   });
 });
@@ -43,10 +49,10 @@ describe("Configuring the driver", () => {
           "x-two": "2"
         }
       });
-      conn._requests = [
-        ({ headers }) => {
-          expect(headers).to.have.a.property("x-one", "1");
-          expect(headers).to.have.a.property("x-two", "2");
+      (conn as any)._requests = [
+        ({ headers }: any) => {
+          expect(headers).to.have.property("x-one", "1");
+          expect(headers).to.have.property("x-two", "2");
           done();
         }
       ];
@@ -56,9 +62,9 @@ describe("Configuring the driver", () => {
   describe("with an arangoVersion", () => {
     it("sets the x-arango-version header", done => {
       const conn = new Connection({ arangoVersion: 99999 });
-      conn._requests = [
-        ({ headers }) => {
-          expect(headers).to.have.a.property("x-arango-version", 99999);
+      (conn as any)._requests = [
+        ({ headers }: any) => {
+          expect(headers).to.have.property("x-arango-version", 99999);
           done();
         }
       ];
@@ -69,9 +75,9 @@ describe("Configuring the driver", () => {
         arangoVersion: 99999,
         headers: { "x-arango-version": 66666 }
       });
-      conn._requests = [
-        ({ headers }) => {
-          expect(headers).to.have.a.property("x-arango-version", 66666);
+      (conn as any)._requests = [
+        ({ headers }: any) => {
+          expect(headers).to.have.property("x-arango-version", 66666);
           done();
         }
       ];
@@ -81,28 +87,28 @@ describe("Configuring the driver", () => {
   describe("with agentOptions", () => {
     const _httpAgent = http.Agent;
     const _httpsAgent = https.Agent;
-    let protocol;
-    let options;
+    let protocol: any;
+    let options: any;
     beforeEach(() => {
       protocol = undefined;
       options = undefined;
     });
     before(() => {
-      let Agent = ptcl => opts => {
+      let Agent = (ptcl: any) => (opts: any) => {
         protocol = ptcl;
         options = opts;
         return () => null;
       };
-      http.Agent = Agent("http");
-      https.Agent = Agent("https");
+      (http as any).Agent = Agent("http");
+      (https as any).Agent = Agent("https");
     });
     after(() => {
-      http.Agent = _httpAgent;
-      https.Agent = _httpsAgent;
+      (http as any).Agent = _httpAgent;
+      (https as any).Agent = _httpsAgent;
     });
     it("passes the agentOptions to the agent", () => {
       new Connection({ agentOptions: { hello: "world" } }); // eslint-disable-line no-new
-      expect(options).to.have.a.property("hello", "world");
+      expect(options).to.have.property("hello", "world");
     });
     it("uses the built-in agent for the protocol", () => {
       // default: http
@@ -117,14 +123,14 @@ describe("Configuring the driver", () => {
   describe("with agent", () => {
     const _httpRequest = http.request;
     const _httpsRequest = https.request;
-    let protocol;
-    let options;
+    let protocol: any;
+    let options: any;
     beforeEach(() => {
       protocol = undefined;
       options = undefined;
     });
     before(() => {
-      let Request = ptcl => opts => {
+      let Request = (ptcl: any) => (opts: any) => {
         protocol = ptcl;
         options = opts;
         return {
@@ -136,27 +142,27 @@ describe("Configuring the driver", () => {
           }
         };
       };
-      http.request = Request("http");
-      https.request = Request("https");
+      (http as any).request = Request("http");
+      (https as any).request = Request("https");
     });
     after(() => {
-      http.request = _httpRequest;
-      https.request = _httpsRequest;
+      (http as any).request = _httpRequest;
+      (https as any).request = _httpsRequest;
     });
     it("passes the agent to the request function", () => {
       let agent = 1;
       let conn;
       conn = new Connection({ agent }); // default: http
       conn.request({ headers: {} });
-      expect(options).to.have.a.property("agent", agent);
+      expect(options).to.have.property("agent", agent);
       agent++;
       conn = new Connection({ agent, url: "https://localhost:8529" });
       conn.request({ headers: {} });
-      expect(options).to.have.a.property("agent", agent);
+      expect(options).to.have.property("agent", agent);
       agent++;
       conn = new Connection({ agent, url: "http://localhost:8529" });
       conn.request({ headers: {} });
-      expect(options).to.have.a.property("agent", agent);
+      expect(options).to.have.property("agent", agent);
     });
     it("uses the request function for the protocol", () => {
       const agent = 1;

@@ -1,7 +1,5 @@
-import { describe, it } from "mocha";
-
 import { expect } from "chai";
-import { joinPath } from "../src/util/joinPath";
+import { joinPath } from "../util/joinPath";
 
 describe("Join Path", () => {
   it("joinPath 1", () => {

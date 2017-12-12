@@ -1,13 +1,11 @@
-import { afterEach, beforeEach, describe, it } from "mocha";
-
-import { ArangoError } from "../src/error";
-import { Database } from "../src";
+import { ArangoError } from "../error";
+import { Database } from "..";
 import { expect } from "chai";
 
-const range = n => Array.from(Array(n).keys());
+const range = (n: number): number[] => Array.from(Array(n).keys());
 
 describe("Manipulating databases", () => {
-  let db;
+  let db: Database;
   beforeEach(() => {
     db = new Database({
       url: process.env.TEST_ARANGODB_URL || "http://root:@localhost:8529",
@@ -19,7 +17,10 @@ describe("Manipulating databases", () => {
       const name = "example";
       expect(db.name).to.equal("_system"); // default
       db.useDatabase(name);
-      expect(db._connection.config).to.have.a.property("databaseName", name);
+      expect((db as any)._connection.config).to.have.property(
+        "databaseName",
+        name
+      );
       expect(db.name).to.equal(name);
     });
     it("returns itself", () => {

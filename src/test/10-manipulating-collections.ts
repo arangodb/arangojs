@@ -1,5 +1,3 @@
-import { describe, it } from "mocha";
-
 describe("Manipulating collections", () => {
   describe("collection.create", () => {
     it("is missing tests");

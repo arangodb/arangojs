@@ -1,5 +1,3 @@
-import { describe, it } from "mocha";
-
 describe("EdgeCollection API", () => {
   describe("edgeCollection.edge", () => {
     it("is missing tests");

@@ -1,13 +1,13 @@
-import { after, afterEach, before, beforeEach, describe, it } from "mocha";
+import { Graph, GraphVertexCollection } from "../graph";
 
-import { ArangoError } from "../src/error";
-import { Database } from "../src";
-import { GraphVertexCollection } from "../src/graph";
+import { ArangoError } from "../error";
+import { BaseCollection } from "../collection";
+import { Database } from "..";
 import { expect } from "chai";
 
-const range = n => Array.from(Array(n).keys());
+const range = (n: number): number[] => Array.from(Array(n).keys());
 
-function createCollections(db) {
+function createCollections(db: Database) {
   let vertexCollectionNames = range(2).map(i => `vc_${Date.now()}_${i}`);
   let edgeCollectionNames = range(2).map(i => `ec_${Date.now()}_${i}`);
   return Promise.all([
@@ -16,7 +16,11 @@ function createCollections(db) {
   ]).then(() => [vertexCollectionNames, edgeCollectionNames]);
 }
 
-function createGraph(graph, vertexCollectionNames, edgeCollectionNames) {
+function createGraph(
+  graph: Graph,
+  vertexCollectionNames: string[],
+  edgeCollectionNames: string[]
+) {
   return graph.create({
     edgeDefinitions: edgeCollectionNames.map(name => ({
       collection: name,
@@ -27,10 +31,10 @@ function createGraph(graph, vertexCollectionNames, edgeCollectionNames) {
 }
 
 describe("Manipulating graph vertices", () => {
-  let db;
+  let db: Database;
   let name = `testdb_${Date.now()}`;
-  let graph;
-  let collectionNames;
+  let graph: Graph;
+  let collectionNames: string[];
   before(done => {
     db = new Database({
       url: process.env.TEST_ARANGODB_URL || "http://root:@localhost:8529",
@@ -56,7 +60,7 @@ describe("Manipulating graph vertices", () => {
     createCollections(db)
       .then(names => {
         collectionNames = names.reduce((a, b) => a.concat(b));
-        return createGraph(graph, ...names);
+        return createGraph(graph, names[0], names[1]);
       })
       .then(() => void done())
       .catch(done);
@@ -76,12 +80,12 @@ describe("Manipulating graph vertices", () => {
       let collection = graph.vertexCollection(name);
       expect(collection).to.be.an.instanceof(GraphVertexCollection);
       expect(collection)
-        .to.have.a.property("name")
+        .to.have.property("name")
         .that.equals(name);
     });
   });
   describe("graph.addVertexCollection", () => {
-    let vertexCollection;
+    let vertexCollection: BaseCollection;
     beforeEach(done => {
       vertexCollection = db.collection(`xc_${Date.now()}`);
       vertexCollection
@@ -106,7 +110,7 @@ describe("Manipulating graph vertices", () => {
     });
   });
   describe("graph.removeVertexCollection", () => {
-    let vertexCollection;
+    let vertexCollection: BaseCollection;
     beforeEach(done => {
       vertexCollection = db.collection(`xc_${Date.now()}`);
       vertexCollection

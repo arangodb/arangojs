@@ -48,7 +48,7 @@ export class Database {
     return this._connection.config.databaseName;
   }
 
-  route(path: string, headers?: Object) {
+  route(path?: string, headers?: Object) {
     return this._connection.route(path, headers);
   }
 

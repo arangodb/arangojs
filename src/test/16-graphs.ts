@@ -1,11 +1,10 @@
-import { after, afterEach, before, beforeEach, describe, it } from "mocha";
-
-import { Database } from "../src";
+import { Database } from "..";
+import { Graph } from "../graph";
 import { expect } from "chai";
 
-const range = n => Array.from(Array(n).keys());
+const range = (n: number): number[] => Array.from(Array(n).keys());
 
-function createCollections(db) {
+function createCollections(db: Database) {
   let vertexCollectionNames = range(2).map(i => `vc_${Date.now()}_${i}`);
   let edgeCollectionNames = range(2).map(i => `ec_${Date.now()}_${i}`);
   return Promise.all([
@@ -14,7 +13,11 @@ function createCollections(db) {
   ]).then(() => [vertexCollectionNames, edgeCollectionNames]);
 }
 
-function createGraph(graph, vertexCollectionNames, edgeCollectionNames) {
+function createGraph(
+  graph: Graph,
+  vertexCollectionNames: string[],
+  edgeCollectionNames: string[]
+) {
   return graph.create({
     edgeDefinitions: edgeCollectionNames.map(name => ({
       collection: name,
@@ -25,7 +28,7 @@ function createGraph(graph, vertexCollectionNames, edgeCollectionNames) {
 }
 
 describe("Graph API", () => {
-  let db;
+  let db: Database;
   let name = `testdb_${Date.now()}`;
   before(done => {
     db = new Database({
@@ -48,14 +51,14 @@ describe("Graph API", () => {
       .catch(done);
   });
   describe("graph.get", () => {
-    let graph;
-    let collectionNames;
+    let graph: Graph;
+    let collectionNames: string[];
     before(done => {
       graph = db.graph(`g_${Date.now()}`);
       createCollections(db)
         .then(names => {
           collectionNames = names.reduce((a, b) => a.concat(b));
-          return createGraph(graph, ...names);
+          return createGraph(graph, names[0], names[1]);
         })
         .then(() => void done())
         .catch(done);
@@ -73,15 +76,15 @@ describe("Graph API", () => {
       graph
         .get()
         .then(data => {
-          expect(data).to.have.a.property("name", graph.name);
+          expect(data).to.have.property("name", graph.name);
           done();
         })
         .catch(done);
     });
   });
   describe("graph.create", () => {
-    let edgeCollectionNames;
-    let vertexCollectionNames;
+    let edgeCollectionNames: string[];
+    let vertexCollectionNames: string[];
     before(done => {
       createCollections(db)
         .then(names => {
@@ -111,22 +114,22 @@ describe("Graph API", () => {
         })
         .then(() => graph.get())
         .then(data => {
-          expect(data).to.have.a.property("name", graph.name);
+          expect(data).to.have.property("name", graph.name);
           done();
         })
         .catch(done);
     });
   });
   describe("graph.drop", () => {
-    let graph;
-    let edgeCollectionNames;
-    let vertexCollectionNames;
+    let graph: Graph;
+    let edgeCollectionNames: string[];
+    let vertexCollectionNames: string[];
     beforeEach(done => {
       graph = db.graph(`g_${Date.now()}`);
       createCollections(db)
         .then(names => {
           [vertexCollectionNames, edgeCollectionNames] = names;
-          return createGraph(graph, ...names);
+          return createGraph(graph, names[0], names[1]);
         })
         .then(() => void done())
         .catch(done);
@@ -156,7 +159,7 @@ describe("Graph API", () => {
         )
         .then(() => db.listCollections())
         .then(collections => {
-          expect(collections.map(c => c.name)).to.include.members([
+          expect(collections.map((c: any) => c.name)).to.include.members([
             ...edgeCollectionNames,
             ...vertexCollectionNames
           ]);
@@ -177,7 +180,7 @@ describe("Graph API", () => {
         )
         .then(() => db.listCollections())
         .then(collections => {
-          expect(collections.map(c => c.name)).not.to.include.members([
+          expect(collections.map((c: any) => c.name)).not.to.include.members([
             ...edgeCollectionNames,
             ...vertexCollectionNames
           ]);

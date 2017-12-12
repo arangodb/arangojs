@@ -1,5 +1,3 @@
-import { describe, it } from "mocha";
-
 describe("Managing indexes", () => {
   describe("collection.createIndex", () => {
     it("is missing tests");

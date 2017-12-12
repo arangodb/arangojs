@@ -1,7 +1,5 @@
-import { describe, it } from "mocha";
-
-import { Database } from "../src";
-import { Route } from "../src/route";
+import { Database } from "..";
+import { Route } from "../route";
 import { expect } from "chai";
 
 describe("Arbitrary HTTP routes", () => {
@@ -17,11 +15,11 @@ describe("Arbitrary HTTP routes", () => {
     it("creates a route for the given path", () => {
       let path = "/hi";
       let route = db.route(path);
-      expect(route._path).to.equal(path);
+      expect((route as any)._path).to.equal(path);
     });
     it("passes the given headers to the new route", () => {
       let route = db.route("/hello", { "x-magic": "awesome" });
-      expect(route._headers).to.have.a.property("x-magic", "awesome");
+      expect((route as any)._headers).to.have.property("x-magic", "awesome");
     });
   });
 });

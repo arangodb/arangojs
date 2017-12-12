@@ -105,7 +105,7 @@ export class Graph {
 
   async get() {
     const res = await this._gharial.get();
-    return res.body.body;
+    return res.body;
   }
 
   async create(properties: any) {
@@ -113,7 +113,7 @@ export class Graph {
       ...properties,
       name: this.name
     });
-    return res.body.body;
+    return res.body;
   }
 
   async drop(dropCollections: boolean = false) {
@@ -129,7 +129,7 @@ export class Graph {
     const res = await this._gharial.post("/vertex", {
       collection: collectionName
     });
-    return res.body.body;
+    return res.body;
   }
 
   async removeVertexCollection(
@@ -139,7 +139,7 @@ export class Graph {
     const res = await this._gharial.delete(`/vertex/${collectionName}`, {
       dropCollection
     });
-    return res.body.body;
+    return res.body;
   }
 
   edgeCollection(collectionName: string) {
@@ -148,12 +148,12 @@ export class Graph {
 
   async addEdgeDefinition(definition: any) {
     const res = await this._gharial.post("/edge", definition);
-    return res.body.body;
+    return res.body;
   }
 
   async replaceEdgeDefinition(definitionName: string, definition: any) {
     const res = await this._gharial.put(`/edge/${definitionName}`, definition);
-    return res.body.body;
+    return res.body;
   }
 
   async removeEdgeDefinition(
@@ -163,7 +163,7 @@ export class Graph {
     const res = await this._gharial.delete(`edge/${definitionName}`, {
       dropCollection
     });
-    return res.body.body;
+    return res.body;
   }
 
   async traversal(startVertex: DocumentHandle, opts: any) {

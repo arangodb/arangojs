@@ -1,18 +1,17 @@
-import { after, afterEach, before, beforeEach, describe, it } from "mocha";
-
-import { ArrayCursor } from "../src/cursor";
-import { Database } from "../src";
+import { ArrayCursor } from "../cursor";
+import { Database } from "..";
+import { DocumentCollection } from "../collection";
 import { expect } from "chai";
 
-const range = n => Array.from(Array(n).keys());
-const alpha = i => String.fromCharCode("a".charCodeAt(0) + i);
+const range = (n: number): number[] => Array.from(Array(n).keys());
+const alpha = (i: number): string => String.fromCharCode("a".charCodeAt(0) + i);
 const ARANGO_VERSION = Number(process.env.ARANGO_VERSION || 30000);
 const describe2x = ARANGO_VERSION < 30000 ? describe : describe.skip;
 
 describe("Simple queries", () => {
   let name = `testdb_${Date.now()}`;
-  let db;
-  let collection;
+  let db: Database;
+  let collection: DocumentCollection;
   before(done => {
     db = new Database({
       url: process.env.TEST_ARANGODB_URL || "http://root:@localhost:8529",
@@ -71,17 +70,17 @@ describe("Simple queries", () => {
         })
         .then(arr => {
           expect(arr).to.have.length(10);
-          arr.forEach(doc => {
+          arr.forEach((doc: any) => {
             expect(doc).to.have.keys("_key", "_id", "_rev", "value", "group");
             expect(doc._id).to.equal(`${collection.name}/${doc._key}`);
             expect(doc.group).to.equal(Math.floor((doc.value - 1) / 2) + 1);
           });
-          expect(arr.map(d => d.value).sort()).to.eql(
+          expect(arr.map((d: any) => d.value).sort()).to.eql(
             range(10)
               .map(i => i + 1)
               .sort()
           );
-          expect(arr.map(d => d._key).sort()).to.eql(
+          expect(arr.map((d: any) => d._key).sort()).to.eql(
             range(10)
               .map(alpha)
               .sort()
@@ -146,13 +145,13 @@ describe("Simple queries", () => {
         })
         .then(arr => {
           expect(arr).to.have.length(2);
-          arr.forEach(doc => {
+          arr.forEach((doc: any) => {
             expect(doc).to.have.keys("_key", "_id", "_rev", "value", "group");
             expect(doc._id).to.equal(`${collection.name}/${doc._key}`);
             expect(doc.group).to.equal(2);
           });
-          expect(arr.map(d => d._key).sort()).to.eql(["c", "d"]);
-          expect(arr.map(d => d.value).sort()).to.eql([3, 4]);
+          expect(arr.map((d: any) => d._key).sort()).to.eql(["c", "d"]);
+          expect(arr.map((d: any) => d.value).sort()).to.eql([3, 4]);
           done();
         })
         .catch(done);
@@ -188,12 +187,12 @@ describe("Simple queries", () => {
           .lookupByKeys(["b", "c", "d"])
           .then(arr => {
             expect(arr).to.have.length(3);
-            arr.forEach(doc => {
+            arr.forEach((doc: any) => {
               expect(doc).to.have.keys("_key", "_id", "_rev", "value", "group");
               expect(doc._id).to.equal(`${collection.name}/${doc._key}`);
               expect(doc.group).to.equal(Math.floor((doc.value - 1) / 2) + 1);
             });
-            expect(arr.map(d => d._key)).to.eql(["b", "c", "d"]);
+            expect(arr.map((d: any) => d._key)).to.eql(["b", "c", "d"]);
             done();
           })
           .catch(done);

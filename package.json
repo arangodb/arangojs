@@ -37,15 +37,26 @@
     "./lib/util/multipart.js": "./lib/util/multipart.web.js",
     "./lib/util/request.js": "./lib/util/request.web.js"
   },
-  "files": ["lib/", "package.json", "arangojs.d.ts", "README.md", "LICENSE"],
+  "files": [
+    "lib/*.js",
+    "lib/*.d.ts",
+    "lib/util/*.js",
+    "lib/util/*.d.ts",
+    "package.json",
+    "README.md",
+    "LICENSE"
+  ],
   "typings": "arangojs.d.ts",
   "scripts": {
-    "test": "ts-mocha --growl",
+    "test":
+      "mocha --growl --reporter spec --require source-map-support/register --require core-js/shim --timeout 5000 lib/test",
+    "pretest": "npm run dist",
     "lint": "eslint src/**/*.js test/**/*.js",
-    "ci": "mocha",
+    "ci":
+      "mocha --reporter spec --require source-map-support/register --require core-js/shim --timeout 5000 lib/test",
     "preci": "npm install",
     "jenkins": "npm run ci -- --timeout 0 --reporter xunit-file",
-    "dist": "tsc src && webpack",
+    "dist": "tsc -p .",
     "prepublish": "npm run lint && npm run dist && node -e 'require(\"./\");'"
   },
   "dependencies": {
@@ -58,6 +69,8 @@
     "xhr": "^2.3.1"
   },
   "devDependencies": {
+    "@types/chai": "^4.0.10",
+    "@types/mocha": "^2.2.44",
     "@types/node": "^8.0.58",
     "babel-cli": "^6.24.1",
     "babel-core": "^6.25.0",
@@ -72,6 +85,7 @@
     "eslint-plugin-prettier": "^2.3.1",
     "mocha": "3.4.2",
     "prettier": "^1.9.1",
+    "source-map-support": "^0.5.0",
     "ts-mocha": "^1.0.3",
     "typescript": "^2.6.2",
     "webpack": "^3.0.0",

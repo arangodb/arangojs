@@ -1,5 +1,3 @@
-import { describe, it } from "mocha";
-
 describe("Collection metadata", () => {
   describe("collection.get", () => {
     it("is missing tests");

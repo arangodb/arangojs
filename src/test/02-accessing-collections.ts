@@ -1,14 +1,13 @@
-import { DocumentCollection, EdgeCollection } from "../src/collection";
-import { after, before, describe, it } from "mocha";
+import { DocumentCollection, EdgeCollection } from "../collection";
 
-import { Database } from "../src";
+import { Database } from "..";
 import { expect } from "chai";
 
-const range = n => Array.from(Array(n).keys());
+const range = (n: number): number[] => Array.from(Array(n).keys());
 
 describe("Accessing collections", () => {
   let name = `testdb_${Date.now()}`;
-  let db;
+  let db: Database;
   before(done => {
     db = new Database({
       url: process.env.TEST_ARANGODB_URL || "http://root:@localhost:8529",
@@ -35,7 +34,7 @@ describe("Accessing collections", () => {
       let collection = db.collection(name);
       expect(collection).to.be.an.instanceof(DocumentCollection);
       expect(collection)
-        .to.have.a.property("name")
+        .to.have.property("name")
         .that.equals(name);
     });
   });
@@ -45,7 +44,7 @@ describe("Accessing collections", () => {
       let collection = db.edgeCollection(name);
       expect(collection).to.be.an.instanceof(EdgeCollection);
       expect(collection)
-        .to.have.a.property("name")
+        .to.have.property("name")
         .that.equals(name);
     });
   });
@@ -77,7 +76,7 @@ describe("Accessing collections", () => {
         .listCollections()
         .then(collections => {
           expect(collections.length).to.equal(nonSystemCollectionNames.length);
-          expect(collections.map(c => c.name)).to.include.all.members(
+          expect(collections.map((c: any) => c.name).sort()).to.eql(
             nonSystemCollectionNames
           );
           done();
@@ -88,11 +87,11 @@ describe("Accessing collections", () => {
       db
         .listCollections(false)
         .then(collections => {
-          let allCollectionNames = nonSystemCollectionNames.concat(
-            systemCollectionNames
-          );
+          let allCollectionNames = nonSystemCollectionNames
+            .concat(systemCollectionNames)
+            .sort();
           expect(collections.length).to.be.at.least(allCollectionNames.length);
-          expect(collections.map(c => c.name)).to.include.all.members(
+          expect(collections.map((c: any) => c.name).sort()).to.eql(
             allCollectionNames
           );
           done();
@@ -130,20 +129,20 @@ describe("Accessing collections", () => {
       db
         .collections()
         .then(collections => {
-          let documentCollections = collections.filter(
-            c => c instanceof DocumentCollection
-          );
-          let edgeCollections = collections.filter(
-            c => c instanceof EdgeCollection
-          );
+          let documentCollections = collections
+            .filter((c: any) => c instanceof DocumentCollection)
+            .sort();
+          let edgeCollections = collections
+            .filter((c: any) => c instanceof EdgeCollection)
+            .sort();
           expect(documentCollections.length).to.equal(
             documentCollectionNames.length
           );
-          expect(documentCollections.map(c => c.name)).to.include.all.members(
+          expect(documentCollections.map((c: any) => c.name).sort()).to.eql(
             documentCollectionNames
           );
           expect(edgeCollections.length).to.equal(edgeCollectionNames.length);
-          expect(edgeCollections.map(c => c.name)).to.include.all.members(
+          expect(edgeCollections.map((c: any) => c.name).sort()).to.eql(
             edgeCollectionNames
           );
           done();
@@ -155,24 +154,24 @@ describe("Accessing collections", () => {
         .collections(false)
         .then(collections => {
           let documentCollections = collections.filter(
-            c => c instanceof DocumentCollection
+            (c: any) => c instanceof DocumentCollection
           );
           let edgeCollections = collections.filter(
-            c => c instanceof EdgeCollection
+            (c: any) => c instanceof EdgeCollection
           );
-          let allDocumentCollectionNames = documentCollectionNames.concat(
-            systemCollectionNames
-          );
+          let allDocumentCollectionNames = documentCollectionNames
+            .concat(systemCollectionNames)
+            .sort();
           expect(documentCollections.length).to.be.at.least(
             allDocumentCollectionNames.length
           );
-          expect(documentCollections.map(c => c.name)).to.include.all.members(
+          expect(documentCollections.map((c: any) => c.name).sort()).to.eql(
             allDocumentCollectionNames
           );
           expect(edgeCollections.length).to.be.at.least(
             edgeCollectionNames.length
           );
-          expect(edgeCollections.map(c => c.name)).to.include.all.members(
+          expect(edgeCollections.map((c: any) => c.name).sort()).to.eql(
             edgeCollectionNames
           );
           done();

@@ -48,7 +48,7 @@ export class Connection {
   private _activeTasks: number;
   private _requests: RequestFunction[];
 
-  constructor(config: string | string[] | any) {
+  constructor(config: string | string[] | any = {}) {
     if (typeof config === "string") config = { url: config };
     else if (Array.isArray(config)) config = { url: config };
     this.config = { ...Connection.defaults, ...config };
@@ -108,7 +108,7 @@ export class Connection {
     return search ? { pathname, search } : { pathname };
   }
 
-  route(path: string, headers?: Object) {
+  route(path?: string, headers?: Object) {
     return new Route(this, path, headers);
   }
 

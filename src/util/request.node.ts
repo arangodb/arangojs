@@ -42,8 +42,8 @@ export function createRequest(
   const baseUrlParts = parseUrl(baseUrl);
   const isTls = baseUrlParts.protocol === "https:";
   if (!agent) {
-    const Agent = isTls ? HttpsAgent : HttpAgent;
-    agent = new Agent(agentOptions);
+    if (isTls) agent = new HttpsAgent(agentOptions);
+    else agent = new HttpAgent(agentOptions);
   }
   return function request(
     { method, url, headers, body, expectBinary = false }: RequestOptions,

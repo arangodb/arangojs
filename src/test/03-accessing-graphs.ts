@@ -1,14 +1,12 @@
-import { after, before, describe, it } from "mocha";
-
-import { Database } from "../src";
-import { Graph } from "../src/graph";
+import { Database } from "..";
+import { Graph } from "../graph";
 import { expect } from "chai";
 
-const range = n => Array.from(Array(n).keys());
+const range = (n: number): number[] => Array.from(Array(n).keys());
 
 describe("Accessing graphs", () => {
   let name = `testdb_${Date.now()}`;
-  let db;
+  let db: Database;
   before(done => {
     db = new Database({
       url: process.env.TEST_ARANGODB_URL || "http://root:@localhost:8529",
@@ -35,7 +33,7 @@ describe("Accessing graphs", () => {
       let graph = db.graph(name);
       expect(graph).to.be.an.instanceof(Graph);
       expect(graph)
-        .to.have.a.property("name")
+        .to.have.property("name")
         .that.equals(name);
     });
   });
@@ -81,7 +79,7 @@ describe("Accessing graphs", () => {
         .listGraphs()
         .then(graphs => {
           expect(graphs.length).to.equal(graphNames.length);
-          expect(graphs.map(g => g._key)).to.include.all.members(graphNames);
+          expect(graphs.map((g: any) => g._key).sort()).to.eql(graphNames);
           done();
         })
         .catch(done);
@@ -129,8 +127,10 @@ describe("Accessing graphs", () => {
         .graphs()
         .then(graphs => {
           expect(graphs.length).to.equal(graphNames.length);
-          expect(graphs.map(g => g.name)).to.include.all.members(graphNames);
-          graphs.forEach(graph => expect(graph).to.be.an.instanceof(Graph));
+          expect(graphs.map((g: any) => g.name).sort()).to.eql(graphNames);
+          graphs.forEach((graph: any) =>
+            expect(graph).to.be.an.instanceof(Graph)
+          );
           done();
         })
         .catch(done);

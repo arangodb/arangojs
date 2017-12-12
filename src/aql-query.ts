@@ -15,7 +15,7 @@ export function isAqlLiteral(literal: any): literal is AqlLiteral {
   return Boolean(literal && typeof literal.toAQL === "function");
 }
 
-export function aql(strings: string[], ...args: any[]): AqlQuery {
+export function aql(strings: TemplateStringsArray, ...args: any[]): AqlQuery {
   const bindVars: AqlQuery["bindVars"] = {};
   const bindVals = [];
   let query = strings[0];

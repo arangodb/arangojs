@@ -1,6 +1,5 @@
-import { after, afterEach, before, beforeEach, describe, it } from "mocha";
-
-import { Database } from "../src";
+import { Database } from "..";
+import { DocumentCollection } from "../collection";
 import { expect } from "chai";
 
 const ARANGO_VERSION = Number(process.env.ARANGO_VERSION || 30000);
@@ -8,8 +7,8 @@ const it3x = ARANGO_VERSION >= 30000 ? it : it.skip;
 
 describe("DocumentCollection API", () => {
   let name = `testdb_${Date.now()}`;
-  let db;
-  let collection;
+  let db: Database;
+  let collection: DocumentCollection;
   before(done => {
     db = new Database({
       url: process.env.TEST_ARANGODB_URL || "http://root:@localhost:8529",
@@ -54,13 +53,13 @@ describe("DocumentCollection API", () => {
         .then(meta => {
           expect(meta).to.be.an("object");
           expect(meta)
-            .to.have.a.property("_id")
+            .to.have.property("_id")
             .that.is.a("string");
           expect(meta)
-            .to.have.a.property("_rev")
+            .to.have.property("_rev")
             .that.is.a("string");
           expect(meta)
-            .to.have.a.property("_key")
+            .to.have.property("_key")
             .that.is.a("string");
           return collection.document(meta._id).then(doc => {
             expect(doc).to.have.keys("_key", "_id", "_rev", "foo");
@@ -80,13 +79,13 @@ describe("DocumentCollection API", () => {
         .then(meta => {
           expect(meta).to.be.an("object");
           expect(meta)
-            .to.have.a.property("_id")
+            .to.have.property("_id")
             .that.is.a("string");
           expect(meta)
-            .to.have.a.property("_rev")
+            .to.have.property("_rev")
             .that.is.a("string");
           expect(meta)
-            .to.have.a.property("_key")
+            .to.have.property("_key")
             .that.equals(data._key);
           return collection.document(meta._id).then(doc => {
             expect(doc).to.have.keys("_key", "_id", "_rev", "potato");
@@ -107,23 +106,23 @@ describe("DocumentCollection API", () => {
         .then(meta => {
           expect(meta).to.be.an("object");
           expect(meta)
-            .to.have.a.property("_id")
+            .to.have.property("_id")
             .that.is.a("string");
           expect(meta)
-            .to.have.a.property("_rev")
+            .to.have.property("_rev")
             .that.is.a("string");
           expect(meta)
-            .to.have.a.property("_key")
+            .to.have.property("_key")
             .that.is.a("string");
           expect(meta.new).to.be.an("object");
           expect(meta.new)
-            .to.have.a.property("_id")
+            .to.have.property("_id")
             .that.is.a("string");
           expect(meta.new)
-            .to.have.a.property("_rev")
+            .to.have.property("_rev")
             .that.is.a("string");
           expect(meta.new)
-            .to.have.a.property("_key")
+            .to.have.property("_key")
             .that.is.a("string");
           expect(meta.new.potato).to.equal(data.potato);
         })
@@ -138,23 +137,23 @@ describe("DocumentCollection API", () => {
         .then(meta => {
           expect(meta).to.be.an("object");
           expect(meta)
-            .to.have.a.property("_id")
+            .to.have.property("_id")
             .that.is.a("string");
           expect(meta)
-            .to.have.a.property("_rev")
+            .to.have.property("_rev")
             .that.is.a("string");
           expect(meta)
-            .to.have.a.property("_key")
+            .to.have.property("_key")
             .that.is.a("string");
           expect(meta.new).to.be.an("object");
           expect(meta.new)
-            .to.have.a.property("_id")
+            .to.have.property("_id")
             .that.is.a("string");
           expect(meta.new)
-            .to.have.a.property("_rev")
+            .to.have.property("_rev")
             .that.is.a("string");
           expect(meta.new)
-            .to.have.a.property("_key")
+            .to.have.property("_key")
             .that.is.a("string");
           expect(meta.new.potato).to.equal(data.potato);
         })
@@ -170,13 +169,13 @@ describe("DocumentCollection API", () => {
         .then(meta => {
           delete meta.error;
           Object.assign(doc, meta);
-          return collection.replace(doc, { sup: "dawg" });
+          return collection.replace(doc as any, { sup: "dawg" });
         })
-        .then(() => collection.document(doc._key))
+        .then(() => collection.document((doc as any)._key))
         .then(data => {
-          expect(data).not.to.have.a.property("potato");
+          expect(data).not.to.have.property("potato");
           expect(data)
-            .to.have.a.property("sup")
+            .to.have.property("sup")
             .that.equals("dawg");
           done();
         })
@@ -191,18 +190,18 @@ describe("DocumentCollection API", () => {
         .then(meta => {
           delete meta.error;
           Object.assign(doc, meta);
-          return collection.update(doc, { sup: "dawg", empty: null });
+          return collection.update(doc as any, { sup: "dawg", empty: null });
         })
-        .then(() => collection.document(doc._key))
+        .then(() => collection.document((doc as any)._key))
         .then(data => {
           expect(data)
-            .to.have.a.property("potato")
+            .to.have.property("potato")
             .that.equals(doc.potato);
           expect(data)
-            .to.have.a.property("sup")
+            .to.have.property("sup")
             .that.equals("dawg");
           expect(data)
-            .to.have.a.property("empty")
+            .to.have.property("empty")
             .that.equals(null);
           done();
         })
@@ -216,20 +215,20 @@ describe("DocumentCollection API", () => {
           delete meta.error;
           Object.assign(doc, meta);
           return collection.update(
-            doc,
+            doc as any,
             { sup: "dawg", empty: null },
             { keepNull: false }
           );
         })
-        .then(() => collection.document(doc._key))
+        .then(() => collection.document((doc as any)._key))
         .then(data => {
           expect(data)
-            .to.have.a.property("potato")
+            .to.have.property("potato")
             .that.equals(doc.potato);
           expect(data)
-            .to.have.a.property("sup")
+            .to.have.property("sup")
             .that.equals("dawg");
-          expect(data).not.to.have.a.property("empty");
+          expect(data).not.to.have.property("empty");
           done();
         })
         .catch(done);

@@ -1,12 +1,11 @@
-import { Database, aqlQuery } from "../src";
-import { after, before, describe, it } from "mocha";
+import { Database, aql } from "..";
 
-import { ArrayCursor } from "../src/cursor";
+import { ArrayCursor } from "../cursor";
 import { expect } from "chai";
 
 describe("AQL queries", () => {
   let name = `testdb_${Date.now()}`;
-  let db;
+  let db: Database;
   before(done => {
     db = new Database({
       url: process.env.TEST_ARANGODB_URL || "http://root:@localhost:8529",
@@ -55,7 +54,7 @@ describe("AQL queries", () => {
         })
         .then(cursor => {
           expect(cursor.count).to.equal(10);
-          expect(cursor._hasMore).to.equal(true);
+          expect((cursor as any)._hasMore).to.equal(true);
           done();
         })
         .catch(done);
@@ -72,7 +71,7 @@ describe("AQL queries", () => {
     });
     it("supports query objects", done => {
       db
-        .query({ query: "RETURN 1337" })
+        .query({ query: "RETURN 1337", bindVars: {} })
         .then(cursor => cursor.next())
         .then(value => {
           expect(value).to.equal(1337);
@@ -91,21 +90,21 @@ describe("AQL queries", () => {
         .catch(done);
     });
     it("supports compact queries with options", done => {
-      let aql = {
+      let query: any = {
         query: "FOR x IN RANGE(1, @max) RETURN x",
         bindVars: { max: 10 }
       };
       db
-        .query(aql, { batchSize: 2, count: true })
+        .query(query, { batchSize: 2, count: true })
         .then(cursor => {
           expect(cursor.count).to.equal(10);
-          expect(cursor._hasMore).to.equal(true);
+          expect((cursor as any)._hasMore).to.equal(true);
           done();
         })
         .catch(done);
     });
   });
-  describe("aqlQuery", () => {
+  describe("aql", () => {
     it("correctly handles simple parameters", () => {
       let values = [
         0,
@@ -120,7 +119,7 @@ describe("AQL queries", () => {
         [1, 2, 3],
         { a: "b" }
       ];
-      let aql = aqlQuery`
+      let query = aql`
         A ${values[0]} B ${values[1]} C ${values[2]} D ${values[3]} E ${
         values[4]
       } F ${values[5]}
@@ -128,11 +127,11 @@ describe("AQL queries", () => {
         values[10]
       } EOF
       `;
-      expect(aql.query).to.equal(`
+      expect(query.query).to.equal(`
         A @value0 B @value1 C @value2 D @value3 E @value4 F @value5
         G @value6 H @value7 I @value8 J @value9 K @value10 EOF
       `);
-      let bindVarNames = Object.keys(aql.bindVars).sort(
+      let bindVarNames = Object.keys(query.bindVars).sort(
         (a, b) => (+a.substr(5) > +b.substr(5) ? 1 : -1)
       );
       expect(bindVarNames).to.eql([
@@ -148,27 +147,25 @@ describe("AQL queries", () => {
         "value9",
         "value10"
       ]);
-      expect(bindVarNames.map(k => aql.bindVars[k])).to.eql(values);
+      expect(bindVarNames.map(k => query.bindVars[k])).to.eql(values);
     });
     it("correctly handles arangojs collection parameters", () => {
       let collection = db.collection("potato");
-      let aql = aqlQuery`${collection}`;
-      expect(aql.query).to.equal("@@value0");
-      expect(Object.keys(aql.bindVars)).to.eql(["@value0"]);
-      expect(aql.bindVars["@value0"]).to.equal("potato");
+      let query = aql`${collection}`;
+      expect(query.query).to.equal("@@value0");
+      expect(Object.keys(query.bindVars)).to.eql(["@value0"]);
+      expect(query.bindVars["@value0"]).to.equal("potato");
     });
     it("correctly handles ArangoDB collection parameters", () => {
       class ArangoCollection {
-        constructor() {
-          this.name = "tomato";
-        }
+        isArangoCollection = true;
+        name = "tomato";
       }
-      ArangoCollection.prototype.isArangoCollection = true;
       let collection = new ArangoCollection();
-      let aql = aqlQuery`${collection}`;
-      expect(aql.query).to.equal("@@value0");
-      expect(Object.keys(aql.bindVars)).to.eql(["@value0"]);
-      expect(aql.bindVars["@value0"]).to.equal("tomato");
+      let query = aql`${collection}`;
+      expect(query.query).to.equal("@@value0");
+      expect(Object.keys(query.bindVars)).to.eql(["@value0"]);
+      expect(query.bindVars["@value0"]).to.equal("tomato");
     });
   });
 });
