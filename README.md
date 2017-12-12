@@ -13,6 +13,7 @@ JavaScript driver is **only** meant to be used when accessing ArangoDB from
 [![license - APACHE-2.0](https://img.shields.io/npm/l/arangojs.svg)](http://opensource.org/licenses/APACHE-2.0)
 [![Dependencies](https://img.shields.io/david/arangodb/arangojs.svg)](https://david-dm.org/arangodb/arangojs)
 [![Build status](https://img.shields.io/travis/arangodb/arangojs.svg)](https://travis-ci.org/arangodb/arangojs)
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Farangodb%2Farangojs.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Farangodb%2Farangojs?ref=badge_shield)
 
 [![NPM status](https://nodei.co/npm/arangojs.png?downloads=true&stars=true)](https://npmjs.org/package/arangojs)
 
@@ -4720,3 +4721,6 @@ assert.deepEqual(result.vertices, ['a', 'b', 'c', 'd']);
 
 The Apache License, Version 2.0. For more information, see the accompanying
 LICENSE file.
+
+
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Farangodb%2Farangojs.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Farangodb%2Farangojs?ref=badge_large)
