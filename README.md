@@ -22,14 +22,17 @@ JavaScript driver is **only** meant to be used when accessing ArangoDB from
 
 ArangoJS is compatible with ArangoDB 3.0 and later. **For using ArangoJS with
 2.8 or earlier see the upgrade note below.** ArangoJS is tested against the two
-most-recent releases of ArangoDB 3 (currently 3.0 and 3.1) as well as the most
+most-recent releases of ArangoDB 3 (currently 3.2 and 3.3) as well as the most
 recent version of 2.8 and the latest development version.
 
-The yarn/npm distribution of ArangoJS is compatible with Node.js versions 7
-(latest), 6 (LTS) and 4 (Maintenance). Node.js version support follows
+The yarn/npm distribution of ArangoJS is compatible with Node.js versions 9.x
+(latest), 8.x (LTS) and 6.x (LTS). Node.js version support follows
 [the official Node.js long-term support schedule](https://github.com/nodejs/LTS).
 
-The bower distribution of ArangoJS is compatible with most modern browsers.
+<!--
+The included browser build is compatible with Internet Explorer 11 and recent
+versions of all modern browsers (Edge, Chrome, Firefox and Safari).
+-->
 
 Versions outside this range may be compatible but are not actively supported.
 
@@ -39,10 +42,15 @@ remember to set the appropriate `arangoVersion` option (e.g. `20800` for version
 version 3.0.0 and newer). **The driver will behave differently depending on this
 value when using APIs that have changed between these versions.**
 
+**Upgrade note for 6.0.0**: All asynchronous functions now return promises and
+support for node-style callbacks has been removed. If you are using a version of
+Node.js older than Node.js 6.x LTS ("Boron") make sure you replace the native
+`Promise` implementation with a substitute like [bluebird](https://github.com/petkaantonov/bluebird)
+to avoid a known memory leak in older versions of the V8 JavaScript engine.
+
 # Versions
 
-The version number of this driver does not correspond with supported ArangoDB
-versions!
+The version number of this driver does not indicate supported ArangoDB versions!
 
 This driver uses semantic versioning:
 
@@ -93,14 +101,12 @@ TEST_ARANGODB_URL=http://myserver.local:8530 npm test
 
 # Install
 
-## With Yarn, NPM or Bower
+## With Yarn or NPM
 
 ```sh
 yarn add arangojs
 # - or -
 npm install --save arangojs
-# - or -
-bower install arangojs
 ```
 
 ## From source
@@ -111,6 +117,27 @@ cd arangojs
 npm install
 npm run dist
 ```
+
+<!--
+## For browsers
+
+The precompiled browser build is included in the NPM release:
+
+```js
+var arangojs = require('arangojs/lib/web');
+```
+
+You can also use [unpkg](https://unpkg.com) during development:
+
+```html
+< !-- note the path includes the version number (e.g. 6.0.0) -- >
+<script src="https://unpkg.com/arangojs@6.0.0/lib/web.js"></script>
+```
+
+If you are targetting browsers older than Internet Explorer 11 you
+may want to use [babel](https://babeljs.io) with a [polyfill](https://babeljs.io/docs/usage/polyfill)
+to provide missing functionality needed to use arangojs.
+-->
 
 # Basic usage example
 
@@ -134,14 +161,12 @@ var now = Date.now();
 db.query({
   query: 'RETURN @arg0',
   bindVars: {arg0: now}
-}, function (err, cursor) {
-  if (err) {
+}).then(function (cursor) {
+  return cursor.next().then(function (result) {
     // ...
-  } else {
-    cursor.next(function (err, result) {
-      // ...
-    })
-  }
+  });
+}).catch(function (err) {
+  // ...
 });
 
 // Using different databases
@@ -171,29 +196,17 @@ AQL queries without making your code vulnerable to injection attacks.
 
 # API
 
-All asynchronous functions take an optional Node-style callback (or "errback")
-as the last argument with the following arguments:
-
-* _err_: an _Error_ object if an error occurred, or _null_ if no error occurred.
-* _result_: the function's result (if applicable).
-
-For expected API errors, _err_ will be an instance of _ArangoError_ with an
+If arangojs encounters an API error, it will throw an _ArangoError_ with an
 [_errorNum_ as defined in the ArangoDB documentation](https://docs.arangodb.com/devel/Manual/Appendix/ErrorCodes.html).
-For any other error responses (4xx/5xx status code), _err_ will be an instance
-of the apropriate [http-errors](https://github.com/jshttp/http-errors) error
-type. If the response indicates success but the response body could not be
-parsed, _err_ will be a _SyntaxError_. In all of these cases the error object
-will additionally have a _response_ property containing the server response
-object.
 
-If `Promise` is defined globally, asynchronous functions return a promise if no
-callback is provided.
+For any other error responses (4xx/5xx status code), it will throw an
+_HttpError_ error with the status code indicated by the _code_ property.
 
-If you want to use promises in environments that don't provide the global
-`Promise` constructor, use a promise polyfill like
-[es6-promise](https://www.npmjs.com/package/es6-promise) or inject a
-ES6-compatible promise implementation like
-[bluebird](https://www.npmjs.com/package/bluebird) into the global scope.
+If the server response did not indicate an error but the response body could
+not be parsed, a _SyntaxError_ may be thrown instead.
+
+In all of these cases the error object will additionally have a _response_
+property containing the server response object.
 
 **Examples**
 
@@ -214,20 +227,12 @@ db.createDatabase('mydb')
   },
   err => console.error(err.stack)
 );
-
-// Node-style callbacks
-db.createDatabase('mydb', function (err, info) {
-  if (err) console.error(err.stack);
-  else {
-    // database created
-  }
-});
 ```
 
 **Note**: the examples in the remainder of this documentation use async/await
 and other modern language features like multi-line strings and template tags.
 When developing for an environment without support for these language features,
-just use node-style callbacks or promises instead as in the above example.
+just use promises instead as in the above example.
 
 ## Table of Contents
 
@@ -483,12 +488,6 @@ If _config_ is a string, it will be interpreted as _config.url_.
     In the browser version of arangojs this option can be used to pass
     additional options to the underlying calls of the
     [`xhr`](https://www.npmjs.com/package/xhr) module.
-
-  * **promise**: `Class | false` (optional)
-
-    The `Promise` implementation to use or `false` to disable promises entirely.
-
-    By default the global `Promise` constructor will be used if available.
 
 ### Manipulating databases
 
