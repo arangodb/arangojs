@@ -1,8 +1,8 @@
 import { Database } from "./database";
 import { aql } from "./aql-query";
 
-module.exports = function arangojs(...args) {
-  return new Database(...args);
+module.exports = function arangojs(config: any) {
+  return new Database(config);
 };
 
 module.exports.Database = Database;

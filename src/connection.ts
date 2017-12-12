@@ -47,7 +47,6 @@ export class Connection {
   private _queue: Task[];
   private _activeTasks: number;
   private _requests: RequestFunction[];
-  private _databasePath: string;
 
   constructor(config: string | string[] | any) {
     if (typeof config === "string") config = { url: config };
@@ -71,14 +70,15 @@ export class Connection {
     this._requests = this.config.url.map((url: string) =>
       createRequest(url, this.config.agentOptions, this.config.agent)
     );
-    if (this.config.databaseName === false) {
-      this._databasePath = "";
-    } else {
-      this._databasePath = `/_db/${this.config.databaseName}`;
-    }
   }
 
-  _drainQueue() {
+  private get _databasePath() {
+    return this.config.databaseName === false
+      ? ""
+      : `/_db/${this.config.databaseName}`;
+  }
+
+  private _drainQueue() {
     const maxConcurrent = this.config.agentOptions.keepAlive
       ? this.config.agentOptions.maxSockets * 2
       : this.config.agentOptions.maxSockets;

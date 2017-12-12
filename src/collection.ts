@@ -20,8 +20,19 @@ export type IndexHandle =
       id?: string;
     };
 
-export abstract class BaseCollection {
-  isArangoCollection = true;
+export function isArangoCollection(
+  collection: any
+): collection is ArangoCollection {
+  return Boolean(collection && collection.isArangoCollection);
+}
+
+export interface ArangoCollection {
+  isArangoCollection: true;
+  name: string;
+}
+
+export abstract class BaseCollection implements ArangoCollection {
+  isArangoCollection: true = true;
   name: string;
   type: number;
   protected _urlPrefix: string;
@@ -568,7 +579,7 @@ export class EdgeCollection extends BaseCollection {
   }
 }
 
-export function construct(connection: Connection, data: any) {
+export function constructCollection(connection: Connection, data: any) {
   const Collection =
     data.type === Types.EDGE_COLLECTION ? EdgeCollection : DocumentCollection;
   return new Collection(connection, data.name);

@@ -3,6 +3,18 @@ export type AqlQuery = {
   bindVars: { [key: string]: any };
 };
 
+export type AqlLiteral = {
+  toAQL: () => string;
+};
+
+export function isAqlQuery(query: any): query is AqlQuery {
+  return Boolean(query && query.query && query.bindVars);
+}
+
+export function isAqlLiteral(literal: any): literal is AqlLiteral {
+  return Boolean(literal && typeof literal.toAQL === "function");
+}
+
 export function aql(strings: string[], ...args: any[]): AqlQuery {
   const bindVars: AqlQuery["bindVars"] = {};
   const bindVals = [];
