@@ -1,7 +1,6 @@
 import createRequest, { isBrowser } from "./util/request";
 
 import ArangoError from "./error";
-import LinkedList from "linkedlist";
 import Route from "./route";
 import byteLength from "./util/bytelength";
 import httperr from "http-errors";
@@ -24,7 +23,7 @@ export default class Connection {
       ...this.config.headers
     };
     this.arangoMajor = Math.floor(this.config.arangoVersion / 10000);
-    this._queue = new LinkedList();
+    this._queue = [];
     this._activeTasks = 0;
 
     const request = createRequest(
