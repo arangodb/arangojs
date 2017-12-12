@@ -32,7 +32,7 @@ describe("Configuring the driver", () => {
     it("sets the url", () => {
       const url = "https://example.com:9000";
       const conn = new Connection(url);
-      expect(conn.config).to.have.a.property("url", url);
+      expect(conn.config.url).to.eql([url]);
     });
   });
   describe("with headers", () => {
@@ -43,21 +43,25 @@ describe("Configuring the driver", () => {
           "x-two": "2"
         }
       });
-      conn._request = ({ headers }) => {
-        expect(headers).to.have.a.property("x-one", "1");
-        expect(headers).to.have.a.property("x-two", "2");
-        done();
-      };
+      conn._requests = [
+        ({ headers }) => {
+          expect(headers).to.have.a.property("x-one", "1");
+          expect(headers).to.have.a.property("x-two", "2");
+          done();
+        }
+      ];
       conn.request({ headers: {} });
     });
   });
   describe("with an arangoVersion", () => {
     it("sets the x-arango-version header", done => {
       const conn = new Connection({ arangoVersion: 99999 });
-      conn._request = ({ headers }) => {
-        expect(headers).to.have.a.property("x-arango-version", 99999);
-        done();
-      };
+      conn._requests = [
+        ({ headers }) => {
+          expect(headers).to.have.a.property("x-arango-version", 99999);
+          done();
+        }
+      ];
       conn.request({ headers: {} });
     });
     it("does not overwrite explicit headers", done => {
@@ -65,10 +69,12 @@ describe("Configuring the driver", () => {
         arangoVersion: 99999,
         headers: { "x-arango-version": 66666 }
       });
-      conn._request = ({ headers }) => {
-        expect(headers).to.have.a.property("x-arango-version", 66666);
-        done();
-      };
+      conn._requests = [
+        ({ headers }) => {
+          expect(headers).to.have.a.property("x-arango-version", 66666);
+          done();
+        }
+      ];
       conn.request({ headers: {} });
     });
   });

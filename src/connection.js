@@ -22,16 +22,16 @@ export default class Connection {
       ["x-arango-version"]: this.config.arangoVersion,
       ...this.config.headers
     };
+    if (!Array.isArray(this.config.url)) {
+      this.config.url = [this.config.url];
+    }
     this.arangoMajor = Math.floor(this.config.arangoVersion / 10000);
     this._queue = [];
     this._activeTasks = 0;
 
-    const request = createRequest(
-      this.config.url,
-      this.config.agentOptions,
-      this.config.agent
+    this._requests = this.config.url.map(url =>
+      createRequest(url, this.config.agentOptions, this.config.agent)
     );
-    this._request = request;
     if (this.config.databaseName === false) {
       this._databasePath = "";
     } else {
@@ -53,9 +53,10 @@ export default class Connection {
     if (!this._queue.length || this._activeTasks >= maxConcurrent) return;
     const task = this._queue.shift();
     this._activeTasks += 1;
-    task(() => {
+    task.do(this._requests[0], "whatever", (err, res) => {
       this._activeTasks -= 1;
       this._drainQueue();
+      task.callback(err, res);
     });
   }
 
@@ -118,51 +119,59 @@ export default class Connection {
     }
 
     const url = this._buildUrl(opts);
-    this._queue.push(
-      this._request(
-        {
-          url,
-          headers: opts.headers,
-          method: opts.method,
-          expectBinary,
-          body
-        },
-        (err, res) => {
-          if (err) callback(err);
-          else {
-            const rawBody = res.body;
-            if (res.headers["content-type"].match(MIME_JSON)) {
-              try {
-                if (expectBinary) res.body = res.body.toString("utf-8");
-                res.body = res.body ? JSON.parse(res.body) : undefined;
-              } catch (e) {
-                res.body = rawBody;
-                e.response = res;
-                return callback(e);
-              }
-            }
-            if (
-              res.body &&
-              res.body.error &&
-              res.body.hasOwnProperty("code") &&
-              res.body.hasOwnProperty("errorMessage") &&
-              res.body.hasOwnProperty("errorNum")
-            ) {
-              err = new ArangoError(res.body);
-              err.response = res;
-              callback(err);
-            } else if (res.statusCode >= 400) {
-              err = httperr(res.statusCode);
-              err.response = res;
+    this._queue.push({
+      callback,
+      host: opts.host,
+      do: (request, host, callback) =>
+        request(
+          {
+            url,
+            headers: opts.headers,
+            method: opts.method,
+            expectBinary,
+            body
+          },
+          (err, res) => {
+            if (err) {
+              err.host = host;
               callback(err);
             } else {
-              if (expectBinary) res.body = rawBody;
-              callback(null, res);
+              res.host = host;
+              const rawBody = res.body;
+              if (res.headers["content-type"].match(MIME_JSON)) {
+                try {
+                  if (expectBinary) res.body = res.body.toString("utf-8");
+                  res.body = res.body ? JSON.parse(res.body) : undefined;
+                } catch (e) {
+                  res.body = rawBody;
+                  e.response = res;
+                  return callback(e);
+                }
+              }
+              if (
+                res.body &&
+                res.body.error &&
+                res.body.hasOwnProperty("code") &&
+                res.body.hasOwnProperty("errorMessage") &&
+                res.body.hasOwnProperty("errorNum")
+              ) {
+                err = new ArangoError(res.body);
+                err.response = res;
+                err.host = host;
+                callback(err);
+              } else if (res.statusCode >= 400) {
+                err = httperr(res.statusCode);
+                err.response = res;
+                err.host = host;
+                callback(err);
+              } else {
+                if (expectBinary) res.body = rawBody;
+                callback(null, res);
+              }
             }
           }
-        }
-      )
-    );
+        )
+    });
     this._drainQueue();
     return promise;
   }
