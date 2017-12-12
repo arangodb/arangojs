@@ -691,7 +691,7 @@ export default class Database {
     );
     return promise;
   }
-}
+
 getCurrentlyRunningQueries(cb) {
     const { promise, callback } = this._connection.promisify(cb);
     this._api.get(
@@ -707,4 +707,6 @@ dropRuningQuery(id, cb) {
         (err, res) => (err ? callback(err) : callback(null, res.body))
     );
     return promise;
+}
+
 }
