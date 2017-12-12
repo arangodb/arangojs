@@ -1,5 +1,10 @@
-export default function aql(strings, ...args) {
-  const bindVars = {};
+export type AqlQuery = {
+  query: string;
+  bindVars: { [key: string]: any };
+};
+
+export default function aql(strings: string[], ...args: any[]): AqlQuery {
+  const bindVars: AqlQuery["bindVars"] = {};
   const bindVals = [];
   let query = strings[0];
   for (let i = 0; i < args.length; i++) {

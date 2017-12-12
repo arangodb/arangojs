@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, it } from "mocha";
 
-import ArangoError from "../src/error";
+import { ArangoError } from "../src/error";
 import { Database } from "../src";
 import { expect } from "chai";
 

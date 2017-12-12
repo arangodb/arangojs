@@ -1,13 +1,19 @@
-/*eslint-env browser */
-export default function toForm(fields, callback) {
+import { Fields, MultipartRequest } from "./multipart";
+
+import { Errback } from "./types";
+
+export default function toForm(
+  fields: Fields,
+  callback: Errback<MultipartRequest>
+) {
   let form;
   try {
-    form = new global.FormData();
+    form = new FormData();
     for (const key of Object.keys(fields)) {
       let value = fields[key];
       if (value === undefined) continue;
       if (
-        !(value instanceof global.Blob) &&
+        !(value instanceof Blob) &&
         (typeof value === "object" || typeof value === "function")
       ) {
         value = JSON.stringify(value);

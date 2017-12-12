@@ -1,28 +1,37 @@
+import {
+  ArangojsError,
+  ArangojsResponse,
+  RequestOptions
+} from "./request.node";
 /*eslint-env browser */
 import { format as formatUrl, parse as parseUrl } from "url";
 
+import { Errback } from "./types";
 import joinPath from "./joinPath";
 import xhr from "xhr";
 
 export const isBrowser = true;
 
-function omit(obj, keys) {
-  const result = {};
-  for (const key of obj) {
-    if (keys.includes(key)) continue;
-    result[key] = obj[key];
+function omit<T>(obj: T, keys: (keyof T)[]): T {
+  const result = {} as T;
+  for (const key of Object.keys(obj)) {
+    if (keys.includes(key as keyof T)) continue;
+    result[key as keyof T] = obj[key as keyof T];
   }
   return result;
 }
 
-export default function(baseUrl, agentOptions) {
+export default function(baseUrl: string, agentOptions: any) {
   const baseUrlParts = parseUrl(baseUrl);
   const options = omit(agentOptions, [
     "keepAlive",
     "keepAliveMsecs",
     "maxSockets"
   ]);
-  return function request({ method, url, headers, body, expectBinary }, cb) {
+  return function request(
+    { method, url, headers, body, expectBinary }: RequestOptions,
+    cb: Errback<ArangojsResponse>
+  ) {
     const urlParts = {
       ...baseUrlParts,
       pathname: url.pathname
@@ -37,8 +46,8 @@ export default function(baseUrl, agentOptions) {
         : baseUrlParts.search
     };
 
-    return next => {
-      let callback = (err, res) => {
+    return (next: Function) => {
+      let callback: Errback<ArangojsResponse> = (err, res) => {
         callback = () => undefined;
         next();
         cb(err, res);
@@ -57,8 +66,9 @@ export default function(baseUrl, agentOptions) {
         (err, res) => {
           if (!err) callback(null, res);
           else {
-            err.request = req;
-            callback(err);
+            const error = err as ArangojsError;
+            error.request = req;
+            callback(error);
           }
         }
       );
