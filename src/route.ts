@@ -1,7 +1,7 @@
 import { ArangojsResponse } from "./util/request";
-import Connection from "./connection";
+import { Connection } from "./connection";
 
-export default class Route {
+export class Route {
   private _connection: Connection;
   private _path: string;
   private _headers: Object;

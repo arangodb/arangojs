@@ -2,7 +2,7 @@ import { Errback } from "./types";
 
 export type StepFn<T> = (cb: Errback<T>) => void;
 
-export default function all<T>(arr: StepFn<T>[], callback: Errback<T[]>): void {
+export function all<T>(arr: StepFn<T>[], callback: Errback<T[]>): void {
   const result: T[] = [];
   let pending = arr.length;
   let called = false;

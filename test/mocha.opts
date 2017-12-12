@@ -1,4 +1,3 @@
---compilers js:babel-core/register
 --reporter spec
 --require core-js/shim
 --timeout 5000

@@ -3,14 +3,14 @@ import constructCollection, {
   EdgeCollection
 } from "./collection";
 
-import ArrayCursor from "./cursor";
-import Connection from "./connection";
-import Graph from "./graph";
-import all from "./util/all";
-import btoa from "./util/btoa";
-import toForm from "./util/multipart";
+import { ArrayCursor } from "./cursor";
+import { Connection } from "./connection";
+import { Graph } from "./graph";
+import { all } from "./util/all";
+import { btoa } from "./util/btoa";
+import { toForm } from "./util/multipart";
 
-export default class Database {
+export class Database {
   constructor(config) {
     this._connection = new Connection(config);
     this._api = this._connection.route("/_api");

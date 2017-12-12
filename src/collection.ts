@@ -1,6 +1,6 @@
-import ArrayCursor from "./cursor";
-import Connection from "./connection";
-import Route from "./route";
+import { ArrayCursor } from "./cursor";
+import { Connection } from "./connection";
+import { Route } from "./route";
 
 export enum Types {
   DOCUMENT_COLLECTION = 2,
@@ -568,7 +568,7 @@ export class EdgeCollection extends BaseCollection {
   }
 }
 
-export default function construct(connection: Connection, data: any) {
+export function construct(connection: Connection, data: any) {
   const Collection =
     data.type === Types.EDGE_COLLECTION ? EdgeCollection : DocumentCollection;
   return new Collection(connection, data.name);

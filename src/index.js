@@ -1,6 +1,9 @@
-import Database from "./database";
-import aqlQuery from "./aql-query";
+import { Database } from "./database";
+import { aql } from "./aql-query";
 
-module.exports = (...args) => new Database(...args);
+module.exports = function arangojs(...args) {
+  return new Database(...args);
+};
+
 module.exports.Database = Database;
-module.exports.aqlQuery = module.exports.aql = aqlQuery;
+module.exports.aql = aql;

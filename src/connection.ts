@@ -1,14 +1,15 @@
 import { ArangoError, HttpError } from "./error";
-import createRequest, {
+import {
   ArangojsResponse,
   RequestFunction,
+  createRequest,
   isBrowser
 } from "./util/request";
 
 import { Errback } from "./util/types";
-import Route from "./route";
-import byteLength from "./util/bytelength";
-import qs from "querystring";
+import { Route } from "./route";
+import { byteLength } from "./util/bytelength";
+import { stringify as querystringify } from "querystring";
 
 const MIME_JSON = /\/(json|javascript)(\W|$)/;
 
@@ -23,7 +24,7 @@ type Task = {
   ) => void;
 };
 
-export default class Connection {
+export class Connection {
   static defaults = {
     url: "http://localhost:8529",
     databaseName: "_system",
@@ -102,7 +103,7 @@ export default class Connection {
     if (opts.path) pathname += opts.path;
     if (opts.qs) {
       if (typeof opts.qs === "string") search = `?${opts.qs}`;
-      else search = `?${qs.stringify(opts.qs)}`;
+      else search = `?${querystringify(opts.qs)}`;
     }
     return search ? { pathname, search } : { pathname };
   }

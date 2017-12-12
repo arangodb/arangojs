@@ -40,12 +40,12 @@
   "files": ["lib/", "package.json", "arangojs.d.ts", "README.md", "LICENSE"],
   "typings": "arangojs.d.ts",
   "scripts": {
-    "test": "mocha --growl",
+    "test": "ts-mocha --growl",
     "lint": "eslint src/**/*.js test/**/*.js",
     "ci": "mocha",
     "preci": "npm install",
     "jenkins": "npm run ci -- --timeout 0 --reporter xunit-file",
-    "dist": "tsc && webpack",
+    "dist": "tsc src && webpack",
     "prepublish": "npm run lint && npm run dist && node -e 'require(\"./\");'"
   },
   "dependencies": {

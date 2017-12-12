@@ -2,10 +2,7 @@ import { Fields, MultipartRequest } from "./multipart";
 
 import { Errback } from "./types";
 
-export default function toForm(
-  fields: Fields,
-  callback: Errback<MultipartRequest>
-) {
+export function toForm(fields: Fields, callback: Errback<MultipartRequest>) {
   let form;
   try {
     form = new FormData();

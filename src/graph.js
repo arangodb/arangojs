@@ -1,6 +1,6 @@
 import { BaseCollection, EdgeCollection, Types } from "./collection";
 
-class GraphVertexCollection extends BaseCollection {
+export class GraphVertexCollection extends BaseCollection {
   type = Types.DOCUMENT_COLLECTION;
 
   constructor(connection, name, graph) {
@@ -42,7 +42,7 @@ class GraphVertexCollection extends BaseCollection {
   }
 }
 
-class GraphEdgeCollection extends EdgeCollection {
+export class GraphEdgeCollection extends EdgeCollection {
   constructor(connection, name, graph) {
     super(connection, name);
     this.type = Types.EDGE_COLLECTION;
@@ -86,7 +86,7 @@ class GraphEdgeCollection extends EdgeCollection {
   }
 }
 
-export default class Graph {
+export class Graph {
   constructor(connection, name) {
     this.name = name;
     this._connection = connection;
@@ -212,8 +212,3 @@ export default class Graph {
     return promise;
   }
 }
-
-export {
-  GraphVertexCollection as VertexCollection,
-  GraphEdgeCollection as EdgeCollection
-};

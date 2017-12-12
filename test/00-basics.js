@@ -1,7 +1,7 @@
 import { after, before, beforeEach, describe, it } from "mocha";
 import arangojs, { Database } from "../src";
 
-import Connection from "../src/connection";
+import { Connection } from "../src/connection";
 import { expect } from "chai";
 import http from "http";
 import https from "https";

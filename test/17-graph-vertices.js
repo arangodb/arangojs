@@ -2,7 +2,7 @@ import { after, afterEach, before, beforeEach, describe, it } from "mocha";
 
 import { ArangoError } from "../src/error";
 import { Database } from "../src";
-import { VertexCollection } from "../src/graph";
+import { GraphVertexCollection } from "../src/graph";
 import { expect } from "chai";
 
 const range = n => Array.from(Array(n).keys());
@@ -71,10 +71,10 @@ describe("Manipulating graph vertices", () => {
       .catch(done);
   });
   describe("graph.vertexCollection", () => {
-    it("returns a VertexCollection instance for the collection", () => {
+    it("returns a GraphVertexCollection instance for the collection", () => {
       let name = "potato";
       let collection = graph.vertexCollection(name);
-      expect(collection).to.be.an.instanceof(VertexCollection);
+      expect(collection).to.be.an.instanceof(GraphVertexCollection);
       expect(collection)
         .to.have.a.property("name")
         .that.equals(name);

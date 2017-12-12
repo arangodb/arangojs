@@ -3,11 +3,10 @@ import {
   ArangojsResponse,
   RequestOptions
 } from "./request.node";
-/*eslint-env browser */
 import { format as formatUrl, parse as parseUrl } from "url";
 
 import { Errback } from "./types";
-import joinPath from "./joinPath";
+import { joinPath } from "./joinPath";
 import xhr from "xhr";
 
 export const isBrowser = true;
@@ -21,7 +20,7 @@ function omit<T>(obj: T, keys: (keyof T)[]): T {
   return result;
 }
 
-export default function(baseUrl: string, agentOptions: any) {
+export function createRequest(baseUrl: string, agentOptions: any) {
   const baseUrlParts = parseUrl(baseUrl);
   const options = omit(agentOptions, [
     "keepAlive",

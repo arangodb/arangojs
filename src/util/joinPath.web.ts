@@ -1,1 +1,1 @@
-export { join as default } from "path";
+export { join as joinPath } from "path";

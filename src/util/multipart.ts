@@ -11,10 +11,7 @@ export type MultipartRequest = {
   body: Buffer | FormData;
 };
 
-export default function toForm(
-  fields: Fields,
-  callback: Errback<MultipartRequest>
-) {
+export function toForm(fields: Fields, callback: Errback<MultipartRequest>) {
   let called = false;
   try {
     const form = new Multipart();

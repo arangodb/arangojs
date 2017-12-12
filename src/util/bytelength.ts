@@ -1,1 +1,1 @@
-export default Buffer.byteLength;
+export const byteLength = Buffer.byteLength;

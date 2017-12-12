@@ -8,7 +8,7 @@ import { Agent as HttpsAgent, request as httpsRequest } from "https";
 import { Url, parse as parseUrl } from "url";
 
 import { Errback } from "./types";
-import joinPath from "./joinPath";
+import { joinPath } from "./joinPath";
 
 export type ArangojsResponse = IncomingMessage & {
   body?: any;
@@ -34,7 +34,7 @@ export type RequestFunction = (
 
 export const isBrowser = false;
 
-export default function(
+export function createRequest(
   baseUrl: string,
   agentOptions: any,
   agent: any

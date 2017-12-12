@@ -1,2 +1,1 @@
-/*eslint-env browser */
-module.exports = require("utf8-length");
+export { default as byteLength } from "utf8-length";

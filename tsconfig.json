@@ -1,42 +1,30 @@
 {
   "compilerOptions": {
-    "target": "es5",
-    "module": "commonjs",
-    "lib": ["dom", "es2015", "es2016", "es2017"],
-    "allowJs": true,
-    "checkJs": true,
-    "declaration": true,
-    "sourceMap": true,
-    "outDir": "./lib/",
-    "rootDir": "./src/",
-    "removeComments": false,
-    "noEmit": false,
-    "importHelpers": false,
-    "downlevelIteration": true,
-
-    /* Strict Type-Checking Options */
-    "strict": true,
-    "noImplicitAny": true,
-    "strictNullChecks": true,
-    "strictFunctionTypes": true,
-    "noImplicitThis": true,
-    "alwaysStrict": true,
-
-    /* Additional Checks */
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true,
-
-    /* Module Resolution Options */
-    "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
-
-    /* Source Map Options */
+    "alwaysStrict": true,
+    "declaration": true,
+    "downlevelIteration": true,
+    "importHelpers": false,
     "inlineSourceMap": true,
     "inlineSources": true,
-
+    "lib": ["dom", "es2015", "es2016", "es2017"],
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "noEmit": false,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "outDir": "./lib/",
     "preserveConstEnums": true,
-    "skipLibCheck": true
+    "removeComments": false,
+    "rootDir": "./src/",
+    "skipLibCheck": true,
+    "strict": true,
+    "strictFunctionTypes": true,
+    "strictNullChecks": true,
+    "target": "es2015"
   }
 }

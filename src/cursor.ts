@@ -1,7 +1,7 @@
-import Connection from "./connection";
-import Route from "./route";
+import { Connection } from "./connection";
+import { Route } from "./route";
 
-export default class ArrayCursor {
+export class ArrayCursor {
   extra: any;
   count: number;
 

@@ -3,7 +3,7 @@ export type AqlQuery = {
   bindVars: { [key: string]: any };
 };
 
-export default function aql(strings: string[], ...args: any[]): AqlQuery {
+export function aql(strings: string[], ...args: any[]): AqlQuery {
   const bindVars: AqlQuery["bindVars"] = {};
   const bindVals = [];
   let query = strings[0];

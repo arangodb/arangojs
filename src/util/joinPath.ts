@@ -1,2 +1,2 @@
 import { posix } from "path";
-export default posix.join;
+export const joinPath = posix.join;
