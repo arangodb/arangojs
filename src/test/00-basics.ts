@@ -94,11 +94,12 @@ describe("Configuring the driver", () => {
       options = undefined;
     });
     before(() => {
-      let Agent = (ptcl: any) => (opts: any) => {
-        protocol = ptcl;
-        options = opts;
-        return () => null;
-      };
+      let Agent = (ptcl: any) =>
+        function(opts: any) {
+          protocol = ptcl;
+          options = opts;
+          return () => null;
+        };
       (http as any).Agent = Agent("http");
       (https as any).Agent = Agent("https");
     });
