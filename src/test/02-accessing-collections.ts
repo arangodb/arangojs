@@ -8,6 +8,7 @@ const range = (n: number): number[] => Array.from(Array(n).keys());
 describe("Accessing collections", () => {
   let name = `testdb_${Date.now()}`;
   let db: Database;
+  let builtinSystemCollections: string[];
   before(done => {
     db = new Database({
       url: process.env.TEST_ARANGODB_URL || "http://root:@localhost:8529",
@@ -17,6 +18,10 @@ describe("Accessing collections", () => {
       .createDatabase(name)
       .then(() => {
         db.useDatabase(name);
+        return db.listCollections(false);
+      })
+      .then(collections => {
+        builtinSystemCollections = collections.map((c: any) => c.name);
         done();
       })
       .catch(done);
@@ -89,6 +94,7 @@ describe("Accessing collections", () => {
         .then(collections => {
           let allCollectionNames = nonSystemCollectionNames
             .concat(systemCollectionNames)
+            .concat(builtinSystemCollections)
             .sort();
           expect(collections.length).to.be.at.least(allCollectionNames.length);
           expect(collections.map((c: any) => c.name).sort()).to.eql(
@@ -161,6 +167,7 @@ describe("Accessing collections", () => {
           );
           let allDocumentCollectionNames = documentCollectionNames
             .concat(systemCollectionNames)
+            .concat(builtinSystemCollections)
             .sort();
           expect(documentCollections.length).to.be.at.least(
             allDocumentCollectionNames.length

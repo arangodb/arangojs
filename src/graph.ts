@@ -29,19 +29,19 @@ export class GraphVertexCollection extends BaseCollection {
     const res = await this._gharial.delete(
       `/${this._documentHandle(documentHandle)}`
     );
-    return res.body;
+    return res.body.graph;
   }
 
   async vertex(documentHandle: DocumentHandle) {
     const res = await this._gharial.get(
       `/${this._documentHandle(documentHandle)}`
     );
-    return res.body;
+    return res.body.graph;
   }
 
   async save(data: any) {
     const res = await this._gharial.post(this.name, data);
-    return res.body;
+    return res.body.graph;
   }
 }
 
@@ -63,14 +63,14 @@ export class GraphEdgeCollection extends EdgeCollection {
     const res = await this._gharial.delete(
       `/${this._documentHandle(documentHandle)}`
     );
-    return res.body;
+    return res.body.graph;
   }
 
   async edge(documentHandle: DocumentHandle) {
     const res = await this._gharial.get(
       `/${this._documentHandle(documentHandle)}`
     );
-    return res.body;
+    return res.body.graph;
   }
 
   async save(data: any): Promise<any>;
@@ -85,7 +85,7 @@ export class GraphEdgeCollection extends EdgeCollection {
       data._to = this._documentHandle(toId!);
     }
     const res = await this._gharial.post(this.name, data);
-    return res.body;
+    return res.body.graph;
   }
 }
 
@@ -113,12 +113,12 @@ export class Graph {
       ...properties,
       name: this.name
     });
-    return res.body;
+    return res.body.graph;
   }
 
   async drop(dropCollections: boolean = false) {
     const res = await this._gharial.delete({ dropCollections });
-    return res.body;
+    return res.body.graph;
   }
 
   vertexCollection(collectionName: string) {
@@ -129,7 +129,7 @@ export class Graph {
     const res = await this._gharial.post("/vertex", {
       collection: collectionName
     });
-    return res.body;
+    return res.body.graph;
   }
 
   async removeVertexCollection(
@@ -139,7 +139,7 @@ export class Graph {
     const res = await this._gharial.delete(`/vertex/${collectionName}`, {
       dropCollection
     });
-    return res.body;
+    return res.body.graph;
   }
 
   edgeCollection(collectionName: string) {
@@ -148,12 +148,12 @@ export class Graph {
 
   async addEdgeDefinition(definition: any) {
     const res = await this._gharial.post("/edge", definition);
-    return res.body;
+    return res.body.graph;
   }
 
   async replaceEdgeDefinition(definitionName: string, definition: any) {
     const res = await this._gharial.put(`/edge/${definitionName}`, definition);
-    return res.body;
+    return res.body.graph;
   }
 
   async removeEdgeDefinition(
@@ -163,7 +163,7 @@ export class Graph {
     const res = await this._gharial.delete(`edge/${definitionName}`, {
       dropCollection
     });
-    return res.body;
+    return res.body.graph;
   }
 
   async traversal(startVertex: DocumentHandle, opts: any) {
