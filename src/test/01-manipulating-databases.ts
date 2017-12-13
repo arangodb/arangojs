@@ -3,13 +3,14 @@ import { Database } from "..";
 import { expect } from "chai";
 
 const range = (n: number): number[] => Array.from(Array(n).keys());
+const ARANGO_VERSION = Number(process.env.ARANGO_VERSION || 30000);
 
 describe("Manipulating databases", () => {
   let db: Database;
   beforeEach(() => {
     db = new Database({
       url: process.env.TEST_ARANGODB_URL || "http://root:@localhost:8529",
-      arangoVersion: Number(process.env.ARANGO_VERSION || 30000)
+      arangoVersion: ARANGO_VERSION
     });
   });
   describe("database.useDatabase", () => {
@@ -168,27 +169,31 @@ describe("Manipulating databases", () => {
         .then(() => void done())
         .catch(done);
     });
-    it("additionally truncates system collections if explicitly passed false", done => {
-      db
-        .truncate(false)
-        .then(() => {
-          return Promise.all(
-            nonSystemCollections.map(name =>
-              db
-                .collection(name)
-                .document("example")
-                .then(
-                  doc =>
-                    Promise.reject(
-                      new Error(`Expected document to be destroyed: ${doc._id}`)
-                    ),
-                  err => expect(err).to.be.an.instanceof(ArangoError)
-                )
-            )
-          );
-        })
-        .then(() => void done())
-        .catch(done);
-    });
+    if (ARANGO_VERSION < 30000) {
+      it("additionally truncates system collections if explicitly passed false", done => {
+        db
+          .truncate(false)
+          .then(() => {
+            return Promise.all(
+              nonSystemCollections.map(name =>
+                db
+                  .collection(name)
+                  .document("example")
+                  .then(
+                    doc =>
+                      Promise.reject(
+                        new Error(
+                          `Expected document to be destroyed: ${doc._id}`
+                        )
+                      ),
+                    err => expect(err).to.be.an.instanceof(ArangoError)
+                  )
+              )
+            );
+          })
+          .then(() => void done())
+          .catch(done);
+      });
+    }
   });
 });

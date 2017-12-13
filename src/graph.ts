@@ -105,7 +105,7 @@ export class Graph {
 
   async get() {
     const res = await this._gharial.get();
-    return res.body;
+    return res.body.graph;
   }
 
   async create(properties: any) {

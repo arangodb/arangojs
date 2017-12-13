@@ -164,7 +164,7 @@ export abstract class BaseCollection implements ArangoCollection {
     return res.body;
   }
 
-  async replace(documentHandle: DocumentHandle, newValue: any, opts?: any) {
+  async replace(documentHandle: DocumentHandle, newValue: any, opts: any = {}) {
     const headers: { [key: string]: string } = {};
     if (typeof opts === "string") {
       opts = { rev: opts };
@@ -183,7 +183,7 @@ export abstract class BaseCollection implements ArangoCollection {
     return res.body;
   }
 
-  async update(documentHandle: DocumentHandle, newValue: any, opts?: any) {
+  async update(documentHandle: DocumentHandle, newValue: any, opts: any = {}) {
     const headers: { [key: string]: string } = {};
     if (typeof opts === "string") {
       opts = { rev: opts };
@@ -211,7 +211,7 @@ export abstract class BaseCollection implements ArangoCollection {
     return res.body;
   }
 
-  async remove(documentHandle: DocumentHandle, opts?: any) {
+  async remove(documentHandle: DocumentHandle, opts: any = {}) {
     const headers: { [key: string]: string } = {};
     if (typeof opts === "string") {
       opts = { rev: opts };
