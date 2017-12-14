@@ -52,6 +52,20 @@ export class Database {
     return this._connection.route(path, headers);
   }
 
+  async acquireHostList() {
+    const res = await this._api.request({
+      host: this._connection.getActiveHost(),
+      path: "/_api/cluster/endpoints"
+    });
+    const urls = res.body.endpoints.map((endpoint: any) => {
+      const url: string = endpoint.endpoint;
+      if (url.startsWith("tcp:")) return url.replace(/^tcp:/, "http:");
+      if (url.startsWith("ssl:")) return url.replace(/^ssl:/, "https:");
+      return url;
+    });
+    this._connection.addToHostList(urls);
+  }
+
   // Database manipulation
 
   useDatabase(databaseName: string) {

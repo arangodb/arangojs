@@ -71,7 +71,8 @@ export class Connection {
   private _useFailOver: boolean;
   private _maxTasks: number;
   private _queue: Task[] = [];
-  private _hosts: RequestFunction[];
+  private _hosts: RequestFunction[] = [];
+  private _urls: string[] = [];
   private _activeHost: number;
 
   constructor(config: Config = {}) {
@@ -103,7 +104,13 @@ export class Connection {
     const urls = config.url
       ? Array.isArray(config.url) ? config.url : [config.url]
       : ["http://localhost:8529"];
-    this._setHostList(urls);
+    this.addToHostList(urls);
+
+    if (this._loadBalancingStrategy === "ONE_RANDOM") {
+      this._activeHost = Math.floor(Math.random() * this._hosts.length);
+    } else {
+      this._activeHost = 0;
+    }
   }
 
   private get _databasePath() {
@@ -151,15 +158,14 @@ export class Connection {
     return search ? { pathname, search } : { pathname };
   }
 
-  private _setHostList(urls: string[]) {
-    this._hosts = urls.map((url: string) =>
-      createRequest(url, this._agentOptions, this._agent)
+  addToHostList(urls: string[]) {
+    const newUrls = urls.filter(url => !this._urls.includes(url));
+    this._urls.push(...newUrls);
+    this._hosts.push(
+      ...newUrls.map((url: string) =>
+        createRequest(url, this._agentOptions, this._agent)
+      )
     );
-    if (this._loadBalancingStrategy === "ONE_RANDOM") {
-      this._activeHost = Math.floor(Math.random() * this._hosts.length);
-    } else {
-      this._activeHost = 0;
-    }
   }
 
   get arangoMajor() {
@@ -168,6 +174,10 @@ export class Connection {
 
   getDatabaseName() {
     return this._databaseName;
+  }
+
+  getActiveHost() {
+    return this._activeHost;
   }
 
   setDatabaseName(databaseName: string) {
