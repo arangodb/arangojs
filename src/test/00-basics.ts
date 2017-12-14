@@ -8,25 +8,25 @@ import { expect } from "chai";
 
 describe("Creating a Database", () => {
   describe("using the factory", () => {
-    const db = arangojs({ potato: "potato" });
+    const db = arangojs({ databaseName: "potato" });
     it("returns a Database instance", () => {
       expect(db).to.be.an.instanceof(Database);
     });
     it("passes any configs to the connection", () => {
-      expect((db as any)._connection.config).to.have.property(
-        "potato",
+      expect((db as any)._connection).to.have.property(
+        "_databaseName",
         "potato"
       );
     });
   });
   describe("using the constructor", () => {
-    const db = new Database({ banana: "banana" });
+    const db = new Database({ databaseName: "banana" });
     it("returns a Database instance", () => {
       expect(db).to.be.an.instanceof(Database);
     });
     it("passes any configs to the connection", () => {
-      expect((db as any)._connection.config).to.have.property(
-        "banana",
+      expect((db as any)._connection).to.have.property(
+        "_databaseName",
         "banana"
       );
     });
@@ -38,7 +38,7 @@ describe("Configuring the driver", () => {
     it("sets the url", () => {
       const url = "https://example.com:9000";
       const conn = new Connection(url);
-      expect(conn.config.url).to.eql([url]);
+      expect((conn as any)._url).to.eql([url]);
     });
   });
   describe("with headers", () => {
@@ -64,20 +64,7 @@ describe("Configuring the driver", () => {
       const conn = new Connection({ arangoVersion: 99999 });
       (conn as any)._requests = [
         ({ headers }: any) => {
-          expect(headers).to.have.property("x-arango-version", 99999);
-          done();
-        }
-      ];
-      conn.request({ headers: {} });
-    });
-    it("does not overwrite explicit headers", done => {
-      const conn = new Connection({
-        arangoVersion: 99999,
-        headers: { "x-arango-version": 66666 }
-      });
-      (conn as any)._requests = [
-        ({ headers }: any) => {
-          expect(headers).to.have.property("x-arango-version", 66666);
+          expect(headers).to.have.property("x-arango-version", "99999");
           done();
         }
       ];
@@ -151,22 +138,22 @@ describe("Configuring the driver", () => {
       (https as any).request = _httpsRequest;
     });
     it("passes the agent to the request function", () => {
-      let agent = 1;
+      let agent = function() {};
       let conn;
       conn = new Connection({ agent }); // default: http
       conn.request({ headers: {} });
       expect(options).to.have.property("agent", agent);
-      agent++;
+      agent = function() {};
       conn = new Connection({ agent, url: "https://localhost:8529" });
       conn.request({ headers: {} });
       expect(options).to.have.property("agent", agent);
-      agent++;
+      agent = function() {};
       conn = new Connection({ agent, url: "http://localhost:8529" });
       conn.request({ headers: {} });
       expect(options).to.have.property("agent", agent);
     });
     it("uses the request function for the protocol", () => {
-      const agent = 1;
+      const agent = function() {};
       let conn;
       conn = new Connection({ agent }); // default: http
       conn.request({ headers: {} });

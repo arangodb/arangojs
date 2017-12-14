@@ -53,9 +53,9 @@ export abstract class BaseCollection implements ArangoCollection {
     }
   }
 
-  abstract _documentPath(documentHandle: DocumentHandle): string;
+  protected abstract _documentPath(documentHandle: DocumentHandle): string;
 
-  _documentHandle(documentHandle: DocumentHandle) {
+  protected _documentHandle(documentHandle: DocumentHandle) {
     if (typeof documentHandle !== "string") {
       if (documentHandle._id) {
         return documentHandle._id;
@@ -71,7 +71,7 @@ export abstract class BaseCollection implements ArangoCollection {
     return documentHandle;
   }
 
-  _indexHandle(indexHandle: IndexHandle) {
+  protected _indexHandle(indexHandle: IndexHandle) {
     if (typeof indexHandle !== "string") {
       if (indexHandle.id) {
         return indexHandle.id;
@@ -477,7 +477,7 @@ export class DocumentCollection extends BaseCollection {
     super(connection, name);
   }
 
-  _documentPath(documentHandle: DocumentHandle) {
+  protected _documentPath(documentHandle: DocumentHandle) {
     return `/document/${this._documentHandle(documentHandle)}`;
   }
 
@@ -511,7 +511,7 @@ export class EdgeCollection extends BaseCollection {
     super(connection, name);
   }
 
-  _documentPath(documentHandle: DocumentHandle) {
+  protected _documentPath(documentHandle: DocumentHandle) {
     if (this._connection.arangoMajor < 3) {
       return `edge/${this._documentHandle(documentHandle)}`;
     }

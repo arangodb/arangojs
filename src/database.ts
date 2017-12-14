@@ -6,9 +6,9 @@ import {
   constructCollection,
   isArangoCollection
 } from "./collection";
+import { Config, Connection } from "./connection";
 
 import { ArrayCursor } from "./cursor";
-import { Connection } from "./connection";
 import { Graph } from "./graph";
 import { Route } from "./route";
 import { btoa } from "./util/btoa";
@@ -39,13 +39,13 @@ export class Database {
   private _api: Route;
   private _connection: Connection;
 
-  constructor(config: any) {
+  constructor(config?: Config) {
     this._connection = new Connection(config);
     this._api = this._connection.route("/_api");
   }
 
-  get name() {
-    return this._connection.config.databaseName;
+  get name(): string | null {
+    return this._connection.getDatabaseName() || null;
   }
 
   route(path?: string, headers?: Object) {
@@ -55,22 +55,20 @@ export class Database {
   // Database manipulation
 
   useDatabase(databaseName: string) {
-    if (this._connection.config.databaseName === false) {
-      throw new Error("Can not change database from absolute URL");
-    }
-    this._connection.config.databaseName = databaseName;
+    this._connection.setDatabaseName(databaseName);
     return this;
   }
 
   useBearerAuth(token: string) {
-    this._connection.config.headers["authorization"] = `Bearer ${token}`;
+    this._connection.setHeader("authorization", `Bearer ${token}`);
     return this;
   }
 
   useBasicAuth(username: string = "root", password: string = "") {
-    this._connection.config.headers["authorization"] = `Basic ${btoa(
-      `${username}:${password}`
-    )}`;
+    this._connection.setHeader(
+      "authorization",
+      `Basic ${btoa(`${username}:${password}`)}`
+    );
     return this;
   }
 

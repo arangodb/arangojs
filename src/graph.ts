@@ -21,7 +21,7 @@ export class GraphVertexCollection extends BaseCollection {
     this._gharial = this._api.route(`/gharial/${this.graph.name}/vertex`);
   }
 
-  _documentPath(documentHandle: DocumentHandle) {
+  protected _documentPath(documentHandle: DocumentHandle) {
     return `/document/${this._documentHandle(documentHandle)}`;
   }
 

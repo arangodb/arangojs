@@ -18,10 +18,7 @@ describe("Manipulating databases", () => {
       const name = "example";
       expect(db.name).to.equal("_system"); // default
       db.useDatabase(name);
-      expect((db as any)._connection.config).to.have.property(
-        "databaseName",
-        name
-      );
+      expect((db as any)._connection).to.have.property("_databaseName", name);
       expect(db.name).to.equal(name);
     });
     it("returns itself", () => {

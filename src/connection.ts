@@ -13,6 +13,8 @@ import { stringify as querystringify } from "querystring";
 
 const MIME_JSON = /\/(json|javascript)(\W|$)/;
 
+export type LoadBalancingStrategy = "NONE" | "ROUND_ROBIN" | "ONE_RANDOM";
+
 type Task = {
   host?: string;
   resolve: Function;
@@ -24,65 +26,69 @@ type Task = {
   ) => void;
 };
 
+export type Config =
+  | string
+  | string[]
+  | Partial<{
+      url: string | string[];
+      databaseName: string | false;
+      arangoVersion: number;
+      loadBalancingStrategy: LoadBalancingStrategy;
+      agent: Function;
+      agentOptions: { [key: string]: any };
+      headers: { [key: string]: string };
+    }>;
+
 export class Connection {
-  static defaults = {
-    url: "http://localhost:8529",
-    databaseName: "_system",
-    arangoVersion: 30000
-  };
-
-  static agentDefaults = isBrowser
-    ? {
-        maxSockets: 3,
-        keepAlive: false
-      }
-    : {
-        maxSockets: 3,
-        keepAlive: true,
-        keepAliveMsecs: 1000
-      };
-
-  config: any;
-  arangoMajor: number;
-  private _queue: Task[];
-  private _activeTasks: number;
+  private _activeTasks: number = 0;
+  private _arangoVersion: number = 30000;
+  private _databaseName: string | false = "_system";
+  private _headers: { [key: string]: string };
+  _loadBalancingStrategy: LoadBalancingStrategy;
+  private _maxTasks: number;
+  private _queue: Task[] = [];
   private _requests: RequestFunction[];
+  private _url: string[] = ["http://localhost:8529"];
 
-  constructor(config: string | string[] | any = {}) {
+  constructor(config: Config = {}) {
     if (typeof config === "string") config = { url: config };
     else if (Array.isArray(config)) config = { url: config };
-    this.config = { ...Connection.defaults, ...config };
-    this.config.agentOptions = {
-      ...Connection.agentDefaults,
-      ...this.config.agentOptions
-    };
-    this.config.headers = {
-      ["x-arango-version"]: this.config.arangoVersion,
-      ...this.config.headers
-    };
-    if (!Array.isArray(this.config.url)) {
-      this.config.url = [this.config.url];
-    }
-    this.arangoMajor = Math.floor(this.config.arangoVersion / 10000);
-    this._queue = [];
-    this._activeTasks = 0;
 
-    this._requests = this.config.url.map((url: string) =>
-      createRequest(url, this.config.agentOptions, this.config.agent)
+    if (config.arangoVersion !== undefined) {
+      this._arangoVersion = config.arangoVersion;
+    }
+    if (config.databaseName !== undefined) {
+      this._databaseName = config.databaseName;
+    }
+    this._headers = { ...config.headers };
+    this._loadBalancingStrategy = config.loadBalancingStrategy || "NONE";
+    if (config.url) {
+      this._url = Array.isArray(config.url) ? config.url : [config.url];
+    }
+    const agentOptions = isBrowser
+      ? { ...config.agentOptions! }
+      : {
+          maxSockets: 3,
+          keepAlive: true,
+          keepAliveMsecs: 1000,
+          ...config.agentOptions
+        };
+
+    this._maxTasks = agentOptions.maxSockets || 3;
+    if (agentOptions.keepAlive) this._maxTasks *= 2;
+
+    const agent: Function | undefined = config.agent;
+    this._requests = this._url.map((url: string) =>
+      createRequest(url, agentOptions, agent)
     );
   }
 
   private get _databasePath() {
-    return this.config.databaseName === false
-      ? ""
-      : `/_db/${this.config.databaseName}`;
+    return this._databaseName === false ? "" : `/_db/${this._databaseName}`;
   }
 
   private _drainQueue() {
-    const maxConcurrent = this.config.agentOptions.keepAlive
-      ? this.config.agentOptions.maxSockets * 2
-      : this.config.agentOptions.maxSockets;
-    if (!this._queue.length || this._activeTasks >= maxConcurrent) return;
+    if (!this._queue.length || this._activeTasks >= this._maxTasks) return;
     const task = this._queue.shift()!;
     this._activeTasks += 1;
     task.run(this._requests[0], "whatever", (err, result) => {
@@ -93,7 +99,7 @@ export class Connection {
     });
   }
 
-  _buildUrl(opts: any) {
+  private _buildUrl(opts: any) {
     let pathname = "";
     let search;
     if (!opts.absolutePath) {
@@ -106,6 +112,25 @@ export class Connection {
       else search = `?${querystringify(opts.qs)}`;
     }
     return search ? { pathname, search } : { pathname };
+  }
+
+  get arangoMajor() {
+    return Math.floor(this._arangoVersion / 10000);
+  }
+
+  getDatabaseName() {
+    return this._databaseName;
+  }
+
+  setDatabaseName(databaseName: string) {
+    if (this._databaseName === false) {
+      throw new Error("Can not change database from absolute URL");
+    }
+    this._databaseName = databaseName;
+  }
+
+  setHeader(key: string, value: string) {
+    this._headers[key] = value;
   }
 
   route(path?: string, headers?: Object) {
@@ -145,9 +170,13 @@ export class Connection {
       );
     }
 
-    for (const key of Object.keys(this.config.headers)) {
+    if (!opts.headers.hasOwnProperty("x-arango-version")) {
+      opts.headers["x-arango-version"] = String(this._arangoVersion);
+    }
+
+    for (const key of Object.keys(this._headers)) {
       if (!opts.headers.hasOwnProperty(key)) {
-        opts.headers[key] = this.config.headers[key];
+        opts.headers[key] = this._headers[key];
       }
     }
 
