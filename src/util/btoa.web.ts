@@ -1,1 +1,3 @@
-export const btoa = window.btoa;
+export function btoa(str: string) {
+  return window.btoa(str);
+}

@@ -29,10 +29,8 @@ The yarn/npm distribution of ArangoJS is compatible with Node.js versions 9.x
 (latest), 8.x (LTS) and 6.x (LTS). Node.js version support follows
 [the official Node.js long-term support schedule](https://github.com/nodejs/LTS).
 
-<!--
 The included browser build is compatible with Internet Explorer 11 and recent
 versions of all modern browsers (Edge, Chrome, Firefox and Safari).
--->
 
 Versions outside this range may be compatible but are not actively supported.
 
@@ -118,13 +116,12 @@ npm install
 npm run dist
 ```
 
-<!--
 ## For browsers
 
 The precompiled browser build is included in the NPM release:
 
 ```js
-var arangojs = require('arangojs/lib/web');
+var arangojs = require('arangojs/lib/browser');
 ```
 
 You can also use [unpkg](https://unpkg.com) during development:
@@ -137,7 +134,6 @@ You can also use [unpkg](https://unpkg.com) during development:
 If you are targetting browsers older than Internet Explorer 11 you
 may want to use [babel](https://babeljs.io) with a [polyfill](https://babeljs.io/docs/usage/polyfill)
 to provide missing functionality needed to use arangojs.
--->
 
 # Basic usage example
 
