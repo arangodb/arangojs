@@ -348,7 +348,7 @@ export abstract class BaseCollection implements ArangoCollection {
       method: "POST",
       path: "/import",
       body: data,
-      ld: Boolean(!opts || opts.type !== "array"),
+      isJsonStream: Boolean(!opts || opts.type !== "array"),
       qs: { type: "auto", ...opts, collection: this.name }
     });
     return res.body;

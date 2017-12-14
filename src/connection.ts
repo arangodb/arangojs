@@ -15,6 +15,27 @@ const MIME_JSON = /\/(json|javascript)(\W|$)/;
 
 export type LoadBalancingStrategy = "NONE" | "ROUND_ROBIN" | "ONE_RANDOM";
 
+type UrlInfo = {
+  absolutePath?: boolean;
+  basePath?: string;
+  path?: string;
+  qs?: string | { [key: string]: any };
+};
+
+export type RequestOptions = {
+  host?: string;
+  method?: string;
+  body?: any;
+  expectBinary?: boolean;
+  isBinary?: boolean;
+  isJsonStream?: boolean;
+  headers?: { [key: string]: string };
+  absolutePath?: boolean;
+  basePath?: string;
+  path?: string;
+  qs?: string | { [key: string]: any };
+};
+
 type Task = {
   host?: string;
   resolve: Function;
@@ -99,17 +120,17 @@ export class Connection {
     });
   }
 
-  private _buildUrl(opts: any) {
+  private _buildUrl({ absolutePath = false, basePath, path, qs }: UrlInfo) {
     let pathname = "";
     let search;
-    if (!opts.absolutePath) {
+    if (!absolutePath) {
       pathname = this._databasePath;
-      if (opts.basePath) pathname += opts.basePath;
+      if (basePath) pathname += basePath;
     }
-    if (opts.path) pathname += opts.path;
-    if (opts.qs) {
-      if (typeof opts.qs === "string") search = `?${opts.qs}`;
-      else search = `?${querystringify(opts.qs)}`;
+    if (path) pathname += path;
+    if (qs) {
+      if (typeof qs === "string") search = `?${qs}`;
+      else search = `?${querystringify(qs)}`;
     }
     return search ? { pathname, search } : { pathname };
   }
@@ -137,14 +158,22 @@ export class Connection {
     return new Route(this, path, headers);
   }
 
-  request(opts: any) {
-    const expectBinary = opts.expectBinary || false;
+  request({
+    host,
+    method = "GET",
+    body,
+    expectBinary = false,
+    isBinary = false,
+    isJsonStream = false,
+    headers,
+    ...urlInfo
+  }: RequestOptions) {
     let contentType = "text/plain";
-    let body = opts.body;
-
-    if (body) {
+    if (isBinary) {
+      contentType = "application/octet-stream";
+    } else if (body) {
       if (typeof body === "object") {
-        if (opts.ld) {
+        if (isJsonStream) {
           body =
             body.map((obj: any) => JSON.stringify(obj)).join("\r\n") + "\r\n";
           contentType = "application/x-ldjson";
@@ -155,43 +184,32 @@ export class Connection {
       } else {
         body = String(body);
       }
-    } else {
-      body = opts.rawBody;
     }
 
-    if (!opts.headers.hasOwnProperty("content-type")) {
-      opts.headers["content-type"] = contentType;
-    }
+    const extraHeaders: { [key: string]: string } = {
+      ...this._headers,
+      "content-type": contentType,
+      "x-arango-version": String(this._arangoVersion)
+    };
 
-    if (!isBrowser && !opts.headers.hasOwnProperty("content-length")) {
-      // Can't override content-length in browser but ArangoDB needs it to be set
-      opts.headers["content-length"] = String(
+    if (!isBrowser) {
+      // Node doesn't set content-length but ArangoDB needs it
+      extraHeaders["content-length"] = String(
         body ? byteLength(body, "utf-8") : 0
       );
     }
 
-    if (!opts.headers.hasOwnProperty("x-arango-version")) {
-      opts.headers["x-arango-version"] = String(this._arangoVersion);
-    }
-
-    for (const key of Object.keys(this._headers)) {
-      if (!opts.headers.hasOwnProperty(key)) {
-        opts.headers[key] = this._headers[key];
-      }
-    }
-
-    const url = this._buildUrl(opts);
     return new Promise<ArangojsResponse>((resolve, reject) => {
       this._queue.push({
         resolve,
         reject,
-        host: opts.host,
+        host,
         run: (request, host, next) =>
           request(
             {
-              url,
-              headers: opts.headers,
-              method: opts.method,
+              url: this._buildUrl(urlInfo),
+              headers: { ...extraHeaders, ...headers },
+              method,
               expectBinary,
               body
             },

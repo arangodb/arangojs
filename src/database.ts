@@ -263,7 +263,8 @@ export class Database {
     const res = await this._api.request({
       method: "POST",
       path: "/foxx",
-      rawBody: req.body,
+      body: req.body,
+      isBinary: true,
       qs: { ...qs, mount },
       headers: req.headers
     });
@@ -280,7 +281,8 @@ export class Database {
     const res = await this._api.request({
       method: "PATCH",
       path: "/foxx/service",
-      rawBody: req.body,
+      body: req.body,
+      isBinary: true,
       qs: { ...qs, mount },
       headers: req.headers
     });
@@ -297,7 +299,8 @@ export class Database {
     const res = await this._api.request({
       method: "PUT",
       path: "/foxx/service",
-      rawBody: req.body,
+      body: req.body,
+      isBinary: true,
       qs: { ...qs, mount },
       headers: req.headers
     });
