@@ -10,9 +10,9 @@ export class ArrayCursor {
   private _result: any;
   private _hasMore: boolean;
   private _id: string;
-  private _host?: string;
+  private _host?: number;
 
-  constructor(connection: Connection, body: any, host?: string) {
+  constructor(connection: Connection, body: any, host?: number) {
     this.extra = body.extra;
     this._connection = connection;
     this._api = this._connection.route("/_api");

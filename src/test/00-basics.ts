@@ -34,7 +34,7 @@ describe("Creating a Database", () => {
 });
 
 describe("Configuring the driver", () => {
-  describe("with a string", () => {
+  describe.skip("with a string", () => {
     it("sets the url", () => {
       const url = "https://example.com:9000";
       const conn = new Connection(url);
@@ -49,7 +49,7 @@ describe("Configuring the driver", () => {
           "x-two": "2"
         }
       });
-      (conn as any)._requests = [
+      (conn as any)._hosts = [
         ({ headers }: any) => {
           expect(headers).to.have.property("x-one", "1");
           expect(headers).to.have.property("x-two", "2");
@@ -62,7 +62,7 @@ describe("Configuring the driver", () => {
   describe("with an arangoVersion", () => {
     it("sets the x-arango-version header", done => {
       const conn = new Connection({ arangoVersion: 99999 });
-      (conn as any)._requests = [
+      (conn as any)._hosts = [
         ({ headers }: any) => {
           expect(headers).to.have.property("x-arango-version", "99999");
           done();

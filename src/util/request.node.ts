@@ -12,7 +12,7 @@ import { joinPath } from "./joinPath";
 
 export type ArangojsResponse = IncomingMessage & {
   body?: any;
-  host?: string;
+  host?: number;
 };
 
 export type ArangojsError = Error & {

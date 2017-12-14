@@ -23,7 +23,7 @@ type UrlInfo = {
 };
 
 export type RequestOptions = {
-  host?: string;
+  host?: number;
   method?: string;
   body?: any;
   expectBinary?: boolean;
@@ -37,12 +37,12 @@ export type RequestOptions = {
 };
 
 type Task = {
-  host?: string;
+  host?: number;
   resolve: Function;
   reject: Function;
   run: (
     request: RequestFunction,
-    host: string | undefined,
+    host: number | undefined,
     callback: Errback<any>
   ) => void;
 };
@@ -62,14 +62,17 @@ export type Config =
 
 export class Connection {
   private _activeTasks: number = 0;
+  private _agent?: Function;
+  private _agentOptions: { [key: string]: any };
   private _arangoVersion: number = 30000;
   private _databaseName: string | false = "_system";
   private _headers: { [key: string]: string };
-  _loadBalancingStrategy: LoadBalancingStrategy;
+  private _loadBalancingStrategy: LoadBalancingStrategy;
+  private _useFailOver: boolean;
   private _maxTasks: number;
   private _queue: Task[] = [];
-  private _requests: RequestFunction[];
-  private _url: string[] = ["http://localhost:8529"];
+  private _hosts: RequestFunction[];
+  private _activeHost: number;
 
   constructor(config: Config = {}) {
     if (typeof config === "string") config = { url: config };
@@ -81,12 +84,8 @@ export class Connection {
     if (config.databaseName !== undefined) {
       this._databaseName = config.databaseName;
     }
-    this._headers = { ...config.headers };
-    this._loadBalancingStrategy = config.loadBalancingStrategy || "NONE";
-    if (config.url) {
-      this._url = Array.isArray(config.url) ? config.url : [config.url];
-    }
-    const agentOptions = isBrowser
+    this._agent = config.agent;
+    this._agentOptions = isBrowser
       ? { ...config.agentOptions! }
       : {
           maxSockets: 3,
@@ -94,14 +93,17 @@ export class Connection {
           keepAliveMsecs: 1000,
           ...config.agentOptions
         };
+    this._maxTasks = this._agentOptions.maxSockets || 3;
+    if (this._agentOptions.keepAlive) this._maxTasks *= 2;
 
-    this._maxTasks = agentOptions.maxSockets || 3;
-    if (agentOptions.keepAlive) this._maxTasks *= 2;
+    this._headers = { ...config.headers };
+    this._loadBalancingStrategy = config.loadBalancingStrategy || "NONE";
+    this._useFailOver = this._loadBalancingStrategy !== "ROUND_ROBIN";
 
-    const agent: Function | undefined = config.agent;
-    this._requests = this._url.map((url: string) =>
-      createRequest(url, agentOptions, agent)
-    );
+    const urls = config.url
+      ? Array.isArray(config.url) ? config.url : [config.url]
+      : ["http://localhost:8529"];
+    this._setHostList(urls);
   }
 
   private get _databasePath() {
@@ -111,9 +113,23 @@ export class Connection {
   private _drainQueue() {
     if (!this._queue.length || this._activeTasks >= this._maxTasks) return;
     const task = this._queue.shift()!;
+    let host = this._activeHost;
+    if (task.host !== undefined) {
+      host = task.host;
+    } else if (this._loadBalancingStrategy === "ROUND_ROBIN") {
+      this._activeHost = (this._activeHost + 1) % this._hosts.length;
+    }
     this._activeTasks += 1;
-    task.run(this._requests[0], "whatever", (err, result) => {
+    task.run(this._hosts[host], host, (err, result) => {
       this._activeTasks -= 1;
+      if (
+        err &&
+        this._hosts.length > 1 &&
+        this._activeHost === host &&
+        this._useFailOver
+      ) {
+        this._activeHost = (this._activeHost + 1) % this._hosts.length;
+      }
       if (err) task.reject(err);
       else task.resolve(result);
       this._drainQueue();
@@ -133,6 +149,17 @@ export class Connection {
       else search = `?${querystringify(qs)}`;
     }
     return search ? { pathname, search } : { pathname };
+  }
+
+  private _setHostList(urls: string[]) {
+    this._hosts = urls.map((url: string) =>
+      createRequest(url, this._agentOptions, this._agent)
+    );
+    if (this._loadBalancingStrategy === "ONE_RANDOM") {
+      this._activeHost = Math.floor(Math.random() * this._hosts.length);
+    } else {
+      this._activeHost = 0;
+    }
   }
 
   get arangoMajor() {
