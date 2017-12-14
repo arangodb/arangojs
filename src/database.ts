@@ -42,6 +42,7 @@ export class Database {
   constructor(config?: Config) {
     this._connection = new Connection(config);
     this._api = this._connection.route("/_api");
+    this.useBasicAuth();
   }
 
   get name(): string | null {

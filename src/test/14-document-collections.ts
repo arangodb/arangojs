@@ -11,7 +11,7 @@ describe("DocumentCollection API", () => {
   let collection: DocumentCollection;
   before(done => {
     db = new Database({
-      url: process.env.TEST_ARANGODB_URL || "http://root:@localhost:8529",
+      url: process.env.TEST_ARANGODB_URL || "http://localhost:8529",
       arangoVersion: ARANGO_VERSION
     });
     db
