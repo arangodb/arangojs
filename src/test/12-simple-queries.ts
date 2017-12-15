@@ -1,5 +1,5 @@
 import { ArrayCursor } from "../cursor";
-import { Database } from "..";
+import { Database } from "../arangojs";
 import { DocumentCollection } from "../collection";
 import { expect } from "chai";
 

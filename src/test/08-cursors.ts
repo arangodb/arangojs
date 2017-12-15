@@ -1,5 +1,5 @@
 import { ArrayCursor } from "../cursor";
-import { Database } from "..";
+import { Database } from "../arangojs";
 import { expect } from "chai";
 
 const aqlQuery = "FOR i In 0..10 RETURN i";

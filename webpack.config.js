@@ -3,11 +3,14 @@ var resolve = require("path").resolve;
 var webpack = require("webpack");
 
 module.exports = {
-  entry: ["regenerator-runtime/runtime", resolve(__dirname, "src/index.ts")],
+  entry: [
+    "regenerator-runtime/runtime",
+    resolve(__dirname, "src/index.cjs.js")
+  ],
   devtool: "source-map",
   output: {
     path: resolve(__dirname, "lib"),
-    filename: "browser.js",
+    filename: "web.js",
     library: "arangojs",
     libraryTarget: "umd"
   },
@@ -23,7 +26,7 @@ module.exports = {
               "babel-preset-env",
               {
                 target: {
-                  browsers: ["last 2 versions", "ie >= 11"]
+                  browsers: ["> 2%", "ie 11"]
                 }
               }
             ]
@@ -37,7 +40,10 @@ module.exports = {
       {
         test: /\.ts/,
         loader: "ts-loader",
-        options: { transpileOnly: true }
+        options: {
+          transpileOnly: true,
+          compilerOptions: { target: "esnext" }
+        }
       }
     ]
   },
@@ -49,6 +55,7 @@ module.exports = {
       "process.env": { NODE_ENV: '"production"' }
     }),
     new webpack.optimize.UglifyJsPlugin({
+      sourceMap: true,
       minimize: true,
       output: { comments: false }
     })

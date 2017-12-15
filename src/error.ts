@@ -1,4 +1,4 @@
-// import ExtendableError from "es6-error";
+import ExtendableError from "./util/error";
 
 const messages: { [key: string]: string } = {
   400: "Bad Request",
@@ -54,7 +54,7 @@ const nativeErrorKeys = [
   "number"
 ] as (keyof Error)[];
 
-export class ArangoError extends Error {
+export class ArangoError extends ExtendableError {
   name = "ArangoError";
   isArangoError = true;
   errorNum: number;
@@ -74,7 +74,7 @@ export class ArangoError extends Error {
   }
 }
 
-export class HttpError extends Error {
+export class HttpError extends ExtendableError {
   name = "HttpError";
   code: number;
   response: any;

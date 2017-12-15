@@ -7,7 +7,7 @@ import { format as formatUrl, parse as parseUrl } from "url";
 
 import { Errback } from "./types";
 import { joinPath } from "./joinPath";
-import xhr from "xhr";
+import xhr from "./xhr";
 
 export const isBrowser = true;
 
@@ -45,32 +45,29 @@ export function createRequest(baseUrl: string, agentOptions: any) {
         : baseUrlParts.search
     };
 
-    return (next: Function) => {
-      let callback: Errback<ArangojsResponse> = (err, res) => {
-        callback = () => undefined;
-        next();
-        cb(err, res);
-      };
-      const req = xhr(
-        {
-          responseType: expectBinary ? "blob" : "text",
-          ...options,
-          url: formatUrl(urlParts),
-          withCredentials: true,
-          useXDR: true,
-          body,
-          method,
-          headers
-        },
-        (err, res) => {
-          if (!err) callback(null, res);
-          else {
-            const error = err as ArangojsError;
-            error.request = req;
-            callback(error);
-          }
-        }
-      );
+    let callback: Errback<ArangojsResponse> = (err, res) => {
+      callback = () => undefined;
+      cb(err, res);
     };
+    const req = xhr(
+      {
+        responseType: expectBinary ? "blob" : "text",
+        ...options,
+        url: formatUrl(urlParts),
+        withCredentials: true,
+        useXDR: true,
+        body,
+        method,
+        headers
+      },
+      (err: Error | null, res?: any) => {
+        if (!err) callback(null, res as ArangojsResponse);
+        else {
+          const error = err as ArangojsError;
+          error.request = req;
+          callback(error);
+        }
+      }
+    );
   };
 }

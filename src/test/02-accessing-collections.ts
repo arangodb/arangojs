@@ -1,6 +1,6 @@
 import { DocumentCollection, EdgeCollection } from "../collection";
 
-import { Database } from "..";
+import { Database } from "../arangojs";
 import { expect } from "chai";
 
 const range = (n: number): number[] => Array.from(Array(n).keys());

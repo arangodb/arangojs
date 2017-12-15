@@ -1,4 +1,4 @@
-import { Database } from "..";
+import { Database } from "../arangojs";
 import { Graph } from "../graph";
 import { expect } from "chai";
 

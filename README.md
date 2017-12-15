@@ -107,6 +107,11 @@ yarn add arangojs
 npm install --save arangojs
 ```
 
+## With Bower
+
+Starting with arangojs 6.0.0 Bower is no longer supported and the browser
+build is now included in the NPM release (see below).
+
 ## From source
 
 ```sh
@@ -118,10 +123,19 @@ npm run dist
 
 ## For browsers
 
-The precompiled browser build is included in the NPM release:
+For production use arangojs can be installed with Yarn or NPM like any
+other dependency. Just use arangojs like you would in your server code:
 
 ```js
-var arangojs = require('arangojs/lib/browser');
+import { Database } from 'arangojs';
+// -- or --
+var arangojs = require('arangojs');
+```
+
+Additionally the NPM release comes with a precompiled browser build:
+
+```js
+var arangojs = require('arangojs/lib/web');
 ```
 
 You can also use [unpkg](https://unpkg.com) during development:
@@ -129,11 +143,26 @@ You can also use [unpkg](https://unpkg.com) during development:
 ```html
 < !-- note the path includes the version number (e.g. 6.0.0) -- >
 <script src="https://unpkg.com/arangojs@6.0.0/lib/web.js"></script>
+<script>
+var db = new arangojs.Database();
+db.listCollections().then(function (collections) {
+  alert("Your collections: " + collections.map(function (collection) {
+    return collection.name;
+  }).join(", "));
+});
+</script>
 ```
 
 If you are targetting browsers older than Internet Explorer 11 you
 may want to use [babel](https://babeljs.io) with a [polyfill](https://babeljs.io/docs/usage/polyfill)
 to provide missing functionality needed to use arangojs.
+
+When loading the browser build with a script tag make sure to load the polyfill first:
+
+```html
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/6.26.0/polyfill.js"></script>
+<script src="https://unpkg.com/arangojs@6.0.0/lib/web.js"></script>
+```
 
 # Basic usage example
 

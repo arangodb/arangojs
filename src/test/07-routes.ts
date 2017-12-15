@@ -1,4 +1,4 @@
-import { Database } from "..";
+import { Database } from "../arangojs";
 import { Route } from "../route";
 import { expect } from "chai";
 

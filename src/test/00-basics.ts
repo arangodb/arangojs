@@ -1,7 +1,7 @@
 import * as http from "http";
 import * as https from "https";
 
-import arangojs, { Database } from "..";
+import arangojs, { Database } from "../arangojs";
 
 import { Connection } from "../connection";
 import { expect } from "chai";

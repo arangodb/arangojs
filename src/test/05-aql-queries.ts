@@ -1,4 +1,4 @@
-import { Database, aql } from "..";
+import { Database, aql } from "../arangojs";
 
 import { ArrayCursor } from "../cursor";
 import { expect } from "chai";
