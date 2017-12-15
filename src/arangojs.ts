@@ -1,7 +1,8 @@
+import { Config } from "./connection";
 import { Database } from "./database";
 import { aql } from "./aql-query";
 
-export default function arangojs(config: any) {
+export default function arangojs(config: Config) {
   return new Database(config);
 }
 
