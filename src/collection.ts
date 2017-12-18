@@ -84,13 +84,13 @@ export abstract class BaseCollection implements ArangoCollection {
     return indexHandle;
   }
 
-  async _get(path: string, opts?: any) {
-    const res = await this._api.get(this._urlPrefix + path, opts);
+  async _get(path: string, qs?: any) {
+    const res = await this._api.get(this._urlPrefix + path, qs);
     return res.body;
   }
 
-  async _put(path: string, data: any) {
-    const res = await this._api.put(this._urlPrefix + path, data);
+  async _put(path: string, body: any) {
+    const res = await this._api.put(this._urlPrefix + path, body);
     return res.body;
   }
 

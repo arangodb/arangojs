@@ -55,7 +55,6 @@ export class Database {
 
   async acquireHostList() {
     const res = await this._api.request({
-      host: this._connection.getActiveHost(),
       path: "/_api/cluster/endpoints"
     });
     const urls = res.body.endpoints.map((endpoint: any) => {

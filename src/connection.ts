@@ -6,7 +6,6 @@ import {
   isBrowser
 } from "./util/request";
 
-import { Errback } from "./util/types";
 import { Route } from "./route";
 import { byteLength } from "./util/bytelength";
 import { stringify as querystringify } from "querystring";
@@ -40,11 +39,13 @@ type Task = {
   host?: number;
   resolve: Function;
   reject: Function;
-  run: (
-    request: RequestFunction,
-    host: number | undefined,
-    callback: Errback<any>
-  ) => void;
+  options: {
+    method: string;
+    expectBinary: boolean;
+    url: { pathname: string; search?: string };
+    headers: { [key: string]: string };
+    body: any;
+  };
 };
 
 export type Config =
@@ -117,7 +118,7 @@ export class Connection {
     return this._databaseName === false ? "" : `/_db/${this._databaseName}`;
   }
 
-  private _drainQueue() {
+  private _runQueue() {
     if (!this._queue.length || this._activeTasks >= this._maxTasks) return;
     const task = this._queue.shift()!;
     let host = this._activeHost;
@@ -127,19 +128,23 @@ export class Connection {
       this._activeHost = (this._activeHost + 1) % this._hosts.length;
     }
     this._activeTasks += 1;
-    task.run(this._hosts[host], host, (err, result) => {
+    this._hosts[host](task.options, (err, res) => {
       this._activeTasks -= 1;
-      if (
-        err &&
-        this._hosts.length > 1 &&
-        this._activeHost === host &&
-        this._useFailOver
-      ) {
-        this._activeHost = (this._activeHost + 1) % this._hosts.length;
+      if (err) {
+        if (
+          this._hosts.length > 1 &&
+          this._activeHost === host &&
+          this._useFailOver
+        ) {
+          this._activeHost = (this._activeHost + 1) % this._hosts.length;
+        }
+        task.reject(err);
+      } else {
+        const response = res!;
+        response.host = host;
+        task.resolve(response);
       }
-      if (err) task.reject(err);
-      else task.resolve(result);
-      this._drainQueue();
+      this._runQueue();
     });
   }
 
@@ -238,66 +243,56 @@ export class Connection {
 
     return new Promise<ArangojsResponse>((resolve, reject) => {
       this._queue.push({
-        resolve,
-        reject,
         host,
-        run: (request, host, next) =>
-          request(
-            {
-              url: this._buildUrl(urlInfo),
-              headers: { ...extraHeaders, ...headers },
-              method,
-              expectBinary,
-              body
-            },
-            (err, res): void => {
-              if (err) {
-                next(err);
+        options: {
+          url: this._buildUrl(urlInfo),
+          headers: { ...extraHeaders, ...headers },
+          method,
+          expectBinary,
+          body
+        },
+        reject,
+        resolve: (res: ArangojsResponse) => {
+          const contentType = res.headers["content-type"];
+          let parsedBody: any = {};
+          if (contentType && contentType.match(MIME_JSON)) {
+            try {
+              if (!res.body) {
+                parsedBody = "";
+              }
+              if (expectBinary) {
+                parsedBody = (res.body as Buffer).toString("utf-8");
               } else {
-                const response = res!;
-                response.host = host;
-                const contentType = response.headers["content-type"];
-                let parsedBody: any = {};
-                if (contentType && contentType.match(MIME_JSON)) {
-                  try {
-                    if (!response.body) {
-                      parsedBody = "";
-                    }
-                    if (expectBinary) {
-                      parsedBody = (response.body as Buffer).toString("utf-8");
-                    } else {
-                      parsedBody = response.body as string;
-                    }
-                    parsedBody = JSON.parse(parsedBody);
-                  } catch (e) {
-                    if (!expectBinary) {
-                      e.response = response;
-                      next(e);
-                      return;
-                    }
-                  }
-                }
-                if (
-                  parsedBody &&
-                  parsedBody.hasOwnProperty("error") &&
-                  parsedBody.hasOwnProperty("code") &&
-                  parsedBody.hasOwnProperty("errorMessage") &&
-                  parsedBody.hasOwnProperty("errorNum")
-                ) {
-                  response.body = parsedBody;
-                  next(new ArangoError(response));
-                } else if (response.statusCode && response.statusCode >= 400) {
-                  response.body = parsedBody;
-                  next(new HttpError(response));
-                } else {
-                  if (!expectBinary) response.body = parsedBody;
-                  next(null, response);
-                }
+                parsedBody = res.body as string;
+              }
+              parsedBody = JSON.parse(parsedBody);
+            } catch (e) {
+              if (!expectBinary) {
+                e.response = res;
+                reject(e);
+                return;
               }
             }
-          )
+          }
+          if (
+            parsedBody &&
+            parsedBody.hasOwnProperty("error") &&
+            parsedBody.hasOwnProperty("code") &&
+            parsedBody.hasOwnProperty("errorMessage") &&
+            parsedBody.hasOwnProperty("errorNum")
+          ) {
+            res.body = parsedBody;
+            reject(new ArangoError(res));
+          } else if (res.statusCode && res.statusCode >= 400) {
+            res.body = parsedBody;
+            reject(new HttpError(res));
+          } else {
+            if (!expectBinary) res.body = parsedBody;
+            resolve(res);
+          }
+        }
       });
-      this._drainQueue();
+      this._runQueue();
     });
   }
 }

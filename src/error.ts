@@ -1,6 +1,7 @@
 import ExtendableError from "./util/error";
 
 const messages: { [key: string]: string } = {
+  0: "Network Error",
   400: "Bad Request",
   401: "Unauthorized",
   402: "Payment Required",
