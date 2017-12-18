@@ -11,7 +11,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 * Removed `retryConnection` config.
 
-  TODO
+  It is not possible to reliably determine whether retrying a request
+  is safe or not at the driver level. If you need automatic retry, you
+  should implement your own logic, e.g. using the
+  [retry](https://yarnpkg.com/en/package/retry) package.
 
 * Removed `promise` config.
 
@@ -56,5 +59,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   * Precompiled browser build lives at `lib/web.js`
 
 * Added support for load balancing and failover.
+
+  See API documentation for details.
+
+* Added `acquireHostList` method.
 
   See API documentation for details.

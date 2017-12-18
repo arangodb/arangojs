@@ -60,10 +60,12 @@ export class ArangoError extends ExtendableError {
   isArangoError = true;
   errorNum: number;
   code: number;
+  statusCode: number;
   response: any;
   constructor(response: any) {
     super();
     this.response = response;
+    this.statusCode = response.statusCode;
     this.message = response.body.errorMessage;
     this.errorNum = response.body.errorNum;
     this.code = response.body.code;
@@ -77,14 +79,15 @@ export class ArangoError extends ExtendableError {
 
 export class HttpError extends ExtendableError {
   name = "HttpError";
-  code: number;
   response: any;
+  code: number;
+  statusCode: number;
   constructor(response: any) {
     super();
-    const statusCode = response.statusCode || 500;
     this.response = response;
-    this.message = messages[statusCode] || messages[500];
-    this.code = statusCode;
+    this.statusCode = response.statusCode || 500;
+    this.message = messages[this.statusCode] || messages[500];
+    this.code = this.statusCode;
     const err = new Error(this.message);
     err.name = this.name;
     for (const key of nativeErrorKeys) {

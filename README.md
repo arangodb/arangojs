@@ -222,16 +222,18 @@ AQL queries without making your code vulnerable to injection attacks.
 # API
 
 If arangojs encounters an API error, it will throw an _ArangoError_ with an
-[_errorNum_ as defined in the ArangoDB documentation](https://docs.arangodb.com/devel/Manual/Appendix/ErrorCodes.html).
+[_errorNum_ as defined in the ArangoDB documentation](https://docs.arangodb.com/devel/Manual/Appendix/ErrorCodes.html) as well as a _code_ and _statusCode_ property indicating the intended and actual HTTP status code of the response.
 
 For any other error responses (4xx/5xx status code), it will throw an
-_HttpError_ error with the status code indicated by the _code_ property.
+_HttpError_ error with the status code indicated by the _code_ and _statusCode_ properties.
 
 If the server response did not indicate an error but the response body could
 not be parsed, a _SyntaxError_ may be thrown instead.
 
 In all of these cases the error object will additionally have a _response_
 property containing the server response object.
+
+If the request failed at a network level or the connection was closed without receiving a response, the underlying error will be thrown instead.
 
 **Examples**
 
@@ -514,10 +516,31 @@ If _config_ is a string, it will be interpreted as _config.url_.
     additional options to the underlying calls of the
     [`xhr`](https://www.npmjs.com/package/xhr) module.
 
+  * **loadBalancingStrategy**: `string` (Default: `"NONE"`)
+
+    Determines the behaviour when multiple URLs are provided:
+
+    * `NONE`: No load balancing. All requests will be handled by the first
+      URL in the list until a network error is encountered. On network error,
+      arangojs will advance to using the next URL in the list.
+
+    * `ONE_RANDOM`: Randomly picks one URL from the list initially, then
+      behaves like `NONE`.
+
+    * `ROUND_ROBIN`: Every sequential request uses the next URL in the list.
+
 ### Manipulating databases
 
 These functions implement the
 [HTTP API for manipulating databases](https://docs.arangodb.com/latest/HTTP/Database/index.html).
+
+### database.acquireHostList
+
+`async database.acquireHostList(): this`
+
+Updates the URL list by requesting a list of all coordinators in the cluster and adding any endpoints not initially specified in the _url_ configuration.
+
+For long-running processes communicating with an ArangoDB cluster it is recommended to run this method repeatedly (e.g. once per hour) to make sure new coordinators are picked up correctly and can be used for fail-over or load balancing.
 
 #### database.useDatabase
 
