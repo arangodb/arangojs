@@ -65,3 +65,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * Added `acquireHostList` method.
 
   See API documentation for details.
+
+* Added support for leader/follower failover.
+
+  Connections to a follower responding with an endpoint redirect
+  will now be transparently redirected to the indicated leader.
