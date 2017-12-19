@@ -57,12 +57,9 @@ export class Database {
     const res = await this._api.request({
       path: "/_api/cluster/endpoints"
     });
-    const urls = res.body.endpoints.map((endpoint: any) => {
-      const url: string = endpoint.endpoint;
-      if (url.startsWith("tcp:")) return url.replace(/^tcp:/, "http:");
-      if (url.startsWith("ssl:")) return url.replace(/^ssl:/, "https:");
-      return url;
-    });
+    const urls: string[] = res.body.endpoints.map(
+      (endpoint: any) => endpoint.endpoint
+    );
     this._connection.addToHostList(urls);
   }
 

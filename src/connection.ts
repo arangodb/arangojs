@@ -11,6 +11,7 @@ import { byteLength } from "./util/bytelength";
 import { stringify as querystringify } from "querystring";
 
 const MIME_JSON = /\/(json|javascript)(\W|$)/;
+const LEADER_ENDPOINT_HEADER = "x-arango-endpoint";
 
 export type LoadBalancingStrategy = "NONE" | "ROUND_ROBIN" | "ONE_RANDOM";
 
@@ -141,8 +142,21 @@ export class Connection {
         task.reject(err);
       } else {
         const response = res!;
-        response.host = host;
-        task.resolve(response);
+        if (
+          response.statusCode === 503 &&
+          response.headers[LEADER_ENDPOINT_HEADER]
+        ) {
+          const url = response.headers[LEADER_ENDPOINT_HEADER]!;
+          const [index] = this.addToHostList(url);
+          task.host = index;
+          if (this._activeHost === host) {
+            this._activeHost = index;
+          }
+          this._queue.push(task);
+        } else {
+          response.host = host;
+          task.resolve(response);
+        }
       }
       this._runQueue();
     });
@@ -163,14 +177,24 @@ export class Connection {
     return search ? { pathname, search } : { pathname };
   }
 
-  addToHostList(urls: string[]) {
-    const newUrls = urls.filter(url => !this._urls.includes(url));
+  private _sanitizeEndpointUrl(url: string): string {
+    if (url.startsWith("tcp:")) return url.replace(/^tcp:/, "http:");
+    if (url.startsWith("ssl:")) return url.replace(/^ssl:/, "https:");
+    return url;
+  }
+
+  addToHostList(urls: string | string[]): number[] {
+    const cleanUrls = (Array.isArray(urls) ? urls : [urls]).map(url =>
+      this._sanitizeEndpointUrl(url)
+    );
+    const newUrls = cleanUrls.filter(url => !this._urls.includes(url));
     this._urls.push(...newUrls);
     this._hosts.push(
       ...newUrls.map((url: string) =>
         createRequest(url, this._agentOptions, this._agent)
       )
     );
+    return cleanUrls.map(url => this._urls.indexOf(url));
   }
 
   get arangoMajor() {
