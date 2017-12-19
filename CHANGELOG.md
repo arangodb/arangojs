@@ -49,6 +49,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   The generated typings are now included in the NPM release and should
   be more reliable than the community maintained typings included with
   earlier versions of arangojs.
+  See also [#480](https://github.com/arangodb/arangojs/issues/480).
 
 ### Added
 
@@ -70,3 +71,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
   Connections to a follower responding with an endpoint redirect
   will now be transparently redirected to the indicated leader.
+
+### Fixed
+
+* Fixed [#354](https://github.com/arangodb/arangojs/issues/354)
+
+  Graph methods now only return the relevant part of the response body.
