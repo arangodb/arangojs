@@ -218,14 +218,14 @@ export class Graph {
     return res.body.graph;
   }
 
-  async create(properties: any = {}, waitForSync?: boolean) {
+  async create(properties: any = {}, opts?: { waitForSync?: boolean }) {
     const res = await this._api.post(
       "/gharial",
       {
         ...properties,
         name: this.name
       },
-      { waitForSync }
+      opts
     );
     return res.body.graph;
   }
