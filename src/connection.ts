@@ -187,7 +187,7 @@ export class Connection {
     const cleanUrls = (Array.isArray(urls) ? urls : [urls]).map(url =>
       this._sanitizeEndpointUrl(url)
     );
-    const newUrls = cleanUrls.filter(url => !this._urls.includes(url));
+    const newUrls = cleanUrls.filter(url => this._urls.indexOf(url) === -1);
     this._urls.push(...newUrls);
     this._hosts.push(
       ...newUrls.map((url: string) =>
