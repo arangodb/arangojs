@@ -819,14 +819,14 @@ _DocumentCollection_ and _EdgeCollection_ instances for the collections.
 ```js
 const db = new Database();
 
-const collections = await db.listCollections()
+const collections = await db.collections()
 // collections is an array of DocumentCollection
 // and EdgeCollection instances
 // not including system collections
 
 // -- or --
 
-const collections = await db.listCollections(false)
+const collections = await db.collections(false)
 // collections is an array of DocumentCollection
 // and EdgeCollection instances
 // including system collections
@@ -4199,6 +4199,62 @@ const graph = db.graph("some-graph");
 const collection = graph.vertexCollection("vertices");
 assert.equal(collection.name, "vertices");
 // collection is a GraphVertexCollection
+```
+
+#### graph.listVertexCollections
+
+`async graph.listVertexCollections([excludeOrphans]): Array<Object>`
+
+Fetches all vertex collections from the graph and returns an array of collection descriptions.
+
+**Arguments**
+
+* **excludeOrphans**: `boolean` (Default: `false`)
+
+  Whether orphan collections should be excluded.
+
+**Examples**
+
+```js
+const graph = db.graph('some-graph');
+
+const collections = await graph.listVertexCollections();
+// collections is an array of collection descriptions
+// including orphan collections
+
+// -- or --
+
+const collections = await graph.listVertexCollections(true);
+// collections is an array of collection descriptions
+// not including orphan collections
+```
+
+#### graph.vertexCollections
+
+`async graph.vertexCollections([excludeOrphans]): Array<Collection>`
+
+Fetches all vertex collections from the database and returns an array of _GraphVertexCollection_ instances for the collections.
+
+**Arguments**
+
+* **excludeOrphans**: `boolean` (Default: `false`)
+
+  Whether orphan collections should be excluded.
+
+**Examples**
+
+```js
+const graph = db.graph('some-graph');
+
+const collections = await graph.vertexCollections()
+// collections is an array of GraphVertexCollection
+// instances including orphan collections
+
+// -- or --
+
+const collections = await graph.vertexCollections(true)
+// collections is an array of GraphVertexCollection
+// instances not including orphan collections
 ```
 
 #### graph.addVertexCollection
