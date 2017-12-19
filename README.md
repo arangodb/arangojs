@@ -22,14 +22,15 @@ JavaScript driver is **only** meant to be used when accessing ArangoDB from
 
 ArangoJS is compatible with ArangoDB 3.0 and later. **For using ArangoJS with
 2.8 or earlier see the upgrade note below.** ArangoJS is tested against the two
-most-recent releases of ArangoDB 3 (currently 3.0 and 3.1) as well as the most
+most-recent releases of ArangoDB 3 (currently 3.2 and 3.3) as well as the most
 recent version of 2.8 and the latest development version.
 
-The yarn/npm distribution of ArangoJS is compatible with Node.js versions 7
-(latest), 6 (LTS) and 4 (Maintenance). Node.js version support follows
+The yarn/npm distribution of ArangoJS is compatible with Node.js versions 9.x
+(latest), 8.x (LTS) and 6.x (LTS). Node.js version support follows
 [the official Node.js long-term support schedule](https://github.com/nodejs/LTS).
 
-The bower distribution of ArangoJS is compatible with most modern browsers.
+The included browser build is compatible with Internet Explorer 11 and recent
+versions of all modern browsers (Edge, Chrome, Firefox and Safari).
 
 Versions outside this range may be compatible but are not actively supported.
 
@@ -39,10 +40,15 @@ remember to set the appropriate `arangoVersion` option (e.g. `20800` for version
 version 3.0.0 and newer). **The driver will behave differently depending on this
 value when using APIs that have changed between these versions.**
 
+**Upgrade note for 6.0.0**: All asynchronous functions now return promises and
+support for node-style callbacks has been removed. If you are using a version of
+Node.js older than Node.js 6.x LTS ("Boron") make sure you replace the native
+`Promise` implementation with a substitute like [bluebird](https://github.com/petkaantonov/bluebird)
+to avoid a known memory leak in older versions of the V8 JavaScript engine.
+
 # Versions
 
-The version number of this driver does not correspond with supported ArangoDB
-versions!
+The version number of this driver does not indicate supported ArangoDB versions!
 
 This driver uses semantic versioning:
 
@@ -81,27 +87,30 @@ npm test
 ```
 
 By default the tests will be run against a server listening on
-`http://root:@localhost:8529` (i.e. using username `root` with no password). To
+`http://localhost:8529` (using username `root` with no password). To
 override this, you can set the environment variable `TEST_ARANGODB_URL` to
 something different:
 
 ```sh
-TEST_ARANGODB_URL=http://root:@myserver.local:8530 yarn test
+TEST_ARANGODB_URL=http://myserver.local:8530 yarn test
 # - or -
-TEST_ARANGODB_URL=http://root:@myserver.local:8530 npm test
+TEST_ARANGODB_URL=http://myserver.local:8530 npm test
 ```
 
 # Install
 
-## With Yarn, NPM or Bower
+## With Yarn or NPM
 
 ```sh
 yarn add arangojs
 # - or -
 npm install --save arangojs
-# - or -
-bower install arangojs
 ```
+
+## With Bower
+
+Starting with arangojs 6.0.0 Bower is no longer supported and the browser
+build is now included in the NPM release (see below).
 
 ## From source
 
@@ -110,6 +119,49 @@ git clone https://github.com/arangodb/arangojs.git
 cd arangojs
 npm install
 npm run dist
+```
+
+## For browsers
+
+For production use arangojs can be installed with Yarn or NPM like any
+other dependency. Just use arangojs like you would in your server code:
+
+```js
+import { Database } from 'arangojs';
+// -- or --
+var arangojs = require('arangojs');
+```
+
+Additionally the NPM release comes with a precompiled browser build:
+
+```js
+var arangojs = require('arangojs/lib/web');
+```
+
+You can also use [unpkg](https://unpkg.com) during development:
+
+```html
+< !-- note the path includes the version number (e.g. 6.0.0) -- >
+<script src="https://unpkg.com/arangojs@6.0.0/lib/web.js"></script>
+<script>
+var db = new arangojs.Database();
+db.listCollections().then(function (collections) {
+  alert("Your collections: " + collections.map(function (collection) {
+    return collection.name;
+  }).join(", "));
+});
+</script>
+```
+
+If you are targetting browsers older than Internet Explorer 11 you
+may want to use [babel](https://babeljs.io) with a [polyfill](https://babeljs.io/docs/usage/polyfill)
+to provide missing functionality needed to use arangojs.
+
+When loading the browser build with a script tag make sure to load the polyfill first:
+
+```html
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/6.26.0/polyfill.js"></script>
+<script src="https://unpkg.com/arangojs@6.0.0/lib/web.js"></script>
 ```
 
 # Basic usage example
@@ -134,40 +186,31 @@ var now = Date.now();
 db.query({
   query: 'RETURN @arg0',
   bindVars: {arg0: now}
-}, function (err, cursor) {
-  if (err) {
+}).then(function (cursor) {
+  return cursor.next().then(function (result) {
     // ...
-  } else {
-    cursor.next(function (err, result) {
-      // ...
-    })
-  }
+  });
+}).catch(function (err) {
+  // ...
 });
 
-// Using a complex connection string with authentication
-const host = process.env.ARANGODB_HOST;
-const port = process.env.ARANGODB_PORT;
-const database = process.env.ARANGODB_DB;
-const username = process.env.ARANGODB_USERNAME;
-const password = process.env.ARANGODB_PASSWORD;
+// Using different databases
 const db = new Database({
-  url: `http://${username}:${password}@${host}:${port}`,
-  databaseName: database
+  url: "http://localhost:8529",
+  databaseName: "pancakes"
 });
+db.useBasicAuth("root", "");
+// The database can be swapped at any time
+db.useDatabase("waffles");
+db.useBasicAuth("admin", "maplesyrup");
 
-// Or using a fully qualified URL containing the database path
+// Using ArangoDB behind a reverse proxy
 const db = new Database({
-  url: `http://${username}:${password}@${host}:${port}/_db/${database}`,
+  url: "http://myproxy.local:8000",
   databaseName: false // don't automatically append database path to URL
 });
 
-// Database name and credentials can be hot-swapped
-const db = new Database(`http://${host}:${port}`);
-db.useDatabase(database);
-db.useBasicAuth(username, password);
-// or: db.useBearerAuth(token);
-
-// Using ArangoDB 2.8 compatibility mode
+// Trigger ArangoDB 2.8 compatibility mode
 const db = new Database({
   arangoVersion: 20800
 });
@@ -178,29 +221,19 @@ AQL queries without making your code vulnerable to injection attacks.
 
 # API
 
-All asynchronous functions take an optional Node-style callback (or "errback")
-as the last argument with the following arguments:
+If arangojs encounters an API error, it will throw an _ArangoError_ with an
+[_errorNum_ as defined in the ArangoDB documentation](https://docs.arangodb.com/devel/Manual/Appendix/ErrorCodes.html) as well as a _code_ and _statusCode_ property indicating the intended and actual HTTP status code of the response.
 
-* _err_: an _Error_ object if an error occurred, or _null_ if no error occurred.
-* _result_: the function's result (if applicable).
+For any other error responses (4xx/5xx status code), it will throw an
+_HttpError_ error with the status code indicated by the _code_ and _statusCode_ properties.
 
-For expected API errors, _err_ will be an instance of _ArangoError_ with an
-[_errorNum_ as defined in the ArangoDB documentation](https://docs.arangodb.com/devel/Manual/Appendix/ErrorCodes.html).
-For any other error responses (4xx/5xx status code), _err_ will be an instance
-of the apropriate [http-errors](https://github.com/jshttp/http-errors) error
-type. If the response indicates success but the response body could not be
-parsed, _err_ will be a _SyntaxError_. In all of these cases the error object
-will additionally have a _response_ property containing the server response
-object.
+If the server response did not indicate an error but the response body could
+not be parsed, a _SyntaxError_ may be thrown instead.
 
-If `Promise` is defined globally, asynchronous functions return a promise if no
-callback is provided.
+In all of these cases the error object will additionally have a _response_
+property containing the server response object.
 
-If you want to use promises in environments that don't provide the global
-`Promise` constructor, use a promise polyfill like
-[es6-promise](https://www.npmjs.com/package/es6-promise) or inject a
-ES6-compatible promise implementation like
-[bluebird](https://www.npmjs.com/package/bluebird) into the global scope.
+If the request failed at a network level or the connection was closed without receiving a response, the underlying error will be thrown instead.
 
 **Examples**
 
@@ -221,20 +254,12 @@ db.createDatabase('mydb')
   },
   err => console.error(err.stack)
 );
-
-// Node-style callbacks
-db.createDatabase('mydb', function (err, info) {
-  if (err) console.error(err.stack);
-  else {
-    // database created
-  }
-});
 ```
 
 **Note**: the examples in the remainder of this documentation use async/await
 and other modern language features like multi-line strings and template tags.
 When developing for an environment without support for these language features,
-just use node-style callbacks or promises instead as in the above example.
+just use promises instead as in the above example.
 
 ## Table of Contents
 
@@ -413,16 +438,15 @@ If _config_ is a string, it will be interpreted as _config.url_.
 
   An object with the following properties:
 
-  * **url**: `string` (Default: `http://localhost:8529`)
+  * **url**: `string | Array<string>` (Default: `http://localhost:8529`)
 
-    Base URL of the ArangoDB server.
+    Base URL of the ArangoDB server or list of server URLs.
 
-    If you want to use ArangoDB with HTTP Basic authentication, you can provide
-    the credentials as part of the URL, e.g. `http://user:pass@localhost:8529`.
-    You can still override these credentials at any time using the
+    **Note**: As of arangojs 6.0.0 it is no longer possible to pass
+    the username or password from the URL.
+
+    If you want to use ArangoDB with authentication, see
     _useBasicAuth_ or _useBearerAuth_ methods.
-
-    The driver automatically uses HTTPS if you specify an HTTPS _url_.
 
     If you need to support self-signed HTTPS certificates, you may have to add
     your certificates to the _agentOptions_, e.g.:
@@ -436,25 +460,34 @@ If _config_ is a string, it will be interpreted as _config.url_.
     }
     ```
 
-  * **databaseName**: `string` (Default: `_system`)
+  * **databaseName**: `string | false` (Default: `_system`)
 
     Name of the active database.
 
     If this option is explicitly set to `false`, the _url_ is expected to
-    contain the database path and the _useDatabase_ method can not be used to
+    provide the database path and the _useDatabase_ method can not be used to
     switch databases.
 
   * **arangoVersion**: `number` (Default: `30000`)
 
-    Value of the `x-arango-version` header.
+    Value of the `x-arango-version` header. This should match the lowest
+    version of ArangoDB you expect to be using. The format is defined as
+    `XYYZZ` where `X` is the major version, `Y` is the two-digit minor version
+    and `Z` is the two-digit bugfix version.
+
+    **Example**: `30102` corresponds to version 3.1.2 of ArangoDB.
+
+    **Note**: The driver will behave differently when using different major
+    versions of ArangoDB to compensate for API changes. Some functions are
+    not available on every major version of ArangoDB as indicated in their
+    descriptions below (e.g. _collection.first_, _collection.bulkUpdate_).
 
   * **headers**: `Object` (optional)
 
     An object with additional headers to send with every request.
 
     Header names should always be lowercase. If an `"authorization"` header is
-    provided, any user credentials that are part of the _url_ will be
-    overridden.
+    provided, it will be overridden when using _useBasicAuth_ or _useBearerAuth_.
 
   * **agent**: `Agent` (optional)
 
@@ -472,29 +505,42 @@ If _config_ is a string, it will be interpreted as _config.url_.
     also provided.
 
     Default: `{maxSockets: 3, keepAlive: true, keepAliveMsecs: 1000}`.
+    Browser default: `{maxSockets: 3, keepAlive: false}`;
+
+    The option `maxSockets` can also be used to limit how many requests
+    arangojs will perform concurrently. The maximum number of requests is
+    equal to `maxSockets * 2` with `keepAlive: true` or
+    equal to `maxSockets` with `keepAlive: false`.
 
     In the browser version of arangojs this option can be used to pass
     additional options to the underlying calls of the
-    [`xhr`](https://www.npmjs.com/package/xhr) module. The options `keepAlive`
-    and `keepAliveMsecs` have no effect in the browser but `maxSockets` will
-    still be used to limit the amount of parallel requests made by arangojs.
+    [`xhr`](https://www.npmjs.com/package/xhr) module.
 
-  * **promise**: `Class` (optional)
+  * **loadBalancingStrategy**: `string` (Default: `"NONE"`)
 
-    The `Promise` implementation to use or `false` to disable promises entirely.
+    Determines the behaviour when multiple URLs are provided:
 
-    By default the global `Promise` constructor will be used if available.
+    * `NONE`: No load balancing. All requests will be handled by the first
+      URL in the list until a network error is encountered. On network error,
+      arangojs will advance to using the next URL in the list.
 
-  * **retryConnection**: `boolean` (Default: `false`)
+    * `ONE_RANDOM`: Randomly picks one URL from the list initially, then
+      behaves like `NONE`.
 
-    Whether to automatically retry in case of a connection error.
-
-    Will retry forever if `true`.
+    * `ROUND_ROBIN`: Every sequential request uses the next URL in the list.
 
 ### Manipulating databases
 
 These functions implement the
 [HTTP API for manipulating databases](https://docs.arangodb.com/latest/HTTP/Database/index.html).
+
+#### database.acquireHostList
+
+`async database.acquireHostList(): this`
+
+Updates the URL list by requesting a list of all coordinators in the cluster and adding any endpoints not initially specified in the _url_ configuration.
+
+For long-running processes communicating with an ArangoDB cluster it is recommended to run this method repeatedly (e.g. once per hour) to make sure new coordinators are picked up correctly and can be used for fail-over or load balancing.
 
 #### database.useDatabase
 

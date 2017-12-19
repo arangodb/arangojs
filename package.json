@@ -1,6 +1,6 @@
 {
   "name": "arangojs",
-  "version": "5.8.0",
+  "version": "6.0.0-alpha.3",
   "license": "Apache-2.0",
   "description": "The official ArangoDB JavaScript driver.",
   "homepage": "https://github.com/arangodb/arangojs",
@@ -29,54 +29,72 @@
     "http",
     "rest"
   ],
-  "main": "lib/index.js",
+  "main": "lib/cjs/index.js",
+  "module": "lib/esm/index.js",
+  "typings": "lib/esm/arangojs.d.ts",
   "browser": {
-    "./lib/util/btoa.js": "./lib/util/btoa.web.js",
-    "./lib/util/bytelength.js": "./lib/util/bytelength.web.js",
-    "./lib/util/multipart.js": "./lib/util/multipart.web.js",
-    "./lib/util/request.js": "./lib/util/request.web.js"
+    "./lib/cjs/util/btoa.js": "./lib/cjs/util/btoa.web.js",
+    "./lib/cjs/util/bytelength.js": "./lib/cjs/util/bytelength.web.js",
+    "./lib/cjs/util/joinPath.js": "./lib/cjs/util/joinPath.web.js",
+    "./lib/cjs/util/multipart.js": "./lib/cjs/util/multipart.web.js",
+    "./lib/cjs/util/request.js": "./lib/cjs/util/request.web.js",
+    "./lib/esm/util/btoa.js": "./lib/esm/util/btoa.web.js",
+    "./lib/esm/util/bytelength.js": "./lib/esm/util/bytelength.web.js",
+    "./lib/esm/util/joinPath.js": "./lib/esm/util/joinPath.web.js",
+    "./lib/esm/util/multipart.js": "./lib/esm/util/multipart.web.js",
+    "./lib/esm/util/request.js": "./lib/esm/util/request.web.js"
   },
   "files": [
-    "lib/",
-    "package.json",
-    "arangojs.d.ts",
-    "README.md",
-    "LICENSE"
+    "lib/web.*",
+    "lib/cjs/*.*",
+    "lib/esm/*.*",
+    "lib/cjs/util/*.*",
+    "lib/esm/util/*.*"
   ],
-  "typings": "arangojs.d.ts",
   "scripts": {
-    "test": "mocha --growl",
-    "lint": "eslint src/**/*.js test/**/*.js",
-    "ci": "mocha",
+    "test":
+      "mocha --growl --reporter spec --require source-map-support/register --require core-js/shim --timeout 10000 lib/cjs/test",
+    "pretest": "rm -r lib/cjs ; npm run dist:cjs",
+    "ci":
+      "mocha --reporter spec --require source-map-support/register --require core-js/shim --timeout 10000 lib/cjs/test",
     "preci": "npm install",
     "jenkins": "npm run ci -- --timeout 0 --reporter xunit-file",
-    "dist": "babel --compact false -d lib src && webpack",
-    "prepublish": "npm run lint && npm run dist && node -e 'require(\"./\");'"
+    "dist:cjs":
+      "tsc -p . --outDir ./lib/cjs/ --module commonjs && cp src/index.cjs.js lib/cjs/index.js",
+    "dist:esm":
+      "tsc -p . --outDir ./lib/esm/ --module es2015 && cp src/index.esm.js lib/esm/index.js",
+    "dist:web": "webpack",
+    "dist": "rm -r lib ; npm-run-all --parallel dist:*",
+    "prepublish": "npm run dist && node -e 'require(\".\");'"
   },
   "dependencies": {
-    "babel-eslint": "^8.0.3",
     "es6-error": "^4.0.1",
-    "http-errors": "^1.6.1",
-    "linkedlist": "^1.0.1",
     "multi-part": "^2.0.0",
-    "retry": "^0.10.0",
     "utf8-length": "^0.0.1",
-    "xhr": "^2.3.1"
+    "xhr": "^2.4.1"
   },
   "devDependencies": {
-    "babel-cli": "^6.24.1",
-    "babel-core": "^6.25.0",
-    "babel-env": "^2.4.1",
-    "babel-loader": "^7.1.0",
-    "babel-plugin-transform-object-rest-spread": "^6.23.0",
-    "babel-preset-env": "^1.5.2",
+    "@types/chai": "^4.0.10",
+    "@types/mocha": "^2.2.44",
+    "@types/node": "^8.0.58",
+    "babel-core": "^6.26.0",
+    "babel-eslint": "^8.0.3",
+    "babel-loader": "^7.1.2",
+    "babel-plugin-transform-class-properties": "^6.24.1",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
     "chai": "^4.0.2",
     "core-js": "^2.4.1",
     "eslint": "^4.13.0",
     "eslint-config-prettier": "^2.9.0",
     "eslint-plugin-prettier": "^2.3.1",
     "mocha": "3.4.2",
+    "npm-run-all": "^4.1.2",
     "prettier": "^1.9.1",
+    "regenerator-runtime": "^0.11.1",
+    "source-map-support": "^0.5.0",
+    "ts-loader": "^3.2.0",
+    "typescript": "^2.6.2",
     "webpack": "^3.0.0",
     "xunit-file": "1.0.0"
   }
