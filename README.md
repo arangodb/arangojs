@@ -534,7 +534,7 @@ If _config_ is a string, it will be interpreted as _config.url_.
 These functions implement the
 [HTTP API for manipulating databases](https://docs.arangodb.com/latest/HTTP/Database/index.html).
 
-### database.acquireHostList
+#### database.acquireHostList
 
 `async database.acquireHostList(): this`
 
