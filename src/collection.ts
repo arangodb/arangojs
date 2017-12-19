@@ -84,12 +84,12 @@ export abstract class BaseCollection implements ArangoCollection {
     return indexHandle;
   }
 
-  async _get(path: string, qs?: any) {
+  protected async _get(path: string, qs?: any) {
     const res = await this._api.get(this._urlPrefix + path, qs);
     return res.body;
   }
 
-  async _put(path: string, body: any) {
+  protected async _put(path: string, body: any) {
     const res = await this._api.put(this._urlPrefix + path, body);
     return res.body;
   }
@@ -549,7 +549,7 @@ export class EdgeCollection extends BaseCollection {
     return res.body;
   }
 
-  async _edges(documentHandle: DocumentHandle, direction: any) {
+  protected async _edges(documentHandle: DocumentHandle, direction: any) {
     const res = await this._api.get(`/edges/${this.name}`, {
       direction,
       vertex: this._documentHandle(documentHandle)

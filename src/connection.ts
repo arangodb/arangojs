@@ -281,13 +281,10 @@ export class Connection {
           let parsedBody: any = {};
           if (contentType && contentType.match(MIME_JSON)) {
             try {
-              if (!res.body) {
-                parsedBody = "";
-              }
-              if (expectBinary) {
+              if (res.body && expectBinary) {
                 parsedBody = (res.body as Buffer).toString("utf-8");
               } else {
-                parsedBody = res.body as string;
+                parsedBody = (res.body as string) || "";
               }
               parsedBody = JSON.parse(parsedBody);
             } catch (e) {

@@ -418,7 +418,7 @@ export class Database {
 
   async replaceServiceDependencies(
     mount: string,
-    cfg: any,
+    cfg: { [key: string]: string },
     minimal: boolean = false
   ) {
     const res = await this._api.put("/foxx/dependencies", cfg, {

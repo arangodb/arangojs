@@ -23,13 +23,13 @@ export class ArrayCursor {
     this.count = body.count;
   }
 
-  async _drain(): Promise<ArrayCursor> {
+  private async _drain(): Promise<ArrayCursor> {
     await this._more();
     if (!this._hasMore) return this;
     return this._drain();
   }
 
-  async _more() {
+  private async _more() {
     if (!this._hasMore) return;
     else {
       const res = await this._api.request({
