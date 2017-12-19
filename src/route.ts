@@ -68,10 +68,10 @@ export class Route {
   }
 
   delete(): Promise<ArangojsResponse>;
-  delete(qs?: Object): Promise<ArangojsResponse>;
-  delete(qs?: Object, headers?: Object): Promise<ArangojsResponse>;
   delete(path?: string): Promise<ArangojsResponse>;
   delete(path?: string, qs?: Object): Promise<ArangojsResponse>;
+  delete(qs?: Object): Promise<ArangojsResponse>;
+  delete(qs?: Object, headers?: Object): Promise<ArangojsResponse>;
   delete(
     path?: string,
     qs?: Object,
@@ -82,32 +82,32 @@ export class Route {
   }
 
   get(): Promise<ArangojsResponse>;
-  get(qs?: Object): Promise<ArangojsResponse>;
-  get(qs?: Object, headers?: Object): Promise<ArangojsResponse>;
   get(path?: string): Promise<ArangojsResponse>;
   get(path?: string, qs?: Object): Promise<ArangojsResponse>;
   get(path?: string, qs?: Object, headers?: Object): Promise<ArangojsResponse>;
+  get(qs?: Object): Promise<ArangojsResponse>;
+  get(qs?: Object, headers?: Object): Promise<ArangojsResponse>;
   get(...args: any[]): Promise<ArangojsResponse> {
     return this._request1("GET", ...args);
   }
 
   head(): Promise<ArangojsResponse>;
-  head(qs?: Object): Promise<ArangojsResponse>;
-  head(qs?: Object, headers?: Object): Promise<ArangojsResponse>;
   head(path?: string): Promise<ArangojsResponse>;
   head(path?: string, qs?: Object): Promise<ArangojsResponse>;
   head(path?: string, qs?: Object, headers?: Object): Promise<ArangojsResponse>;
+  head(qs?: Object): Promise<ArangojsResponse>;
+  head(qs?: Object, headers?: Object): Promise<ArangojsResponse>;
   head(...args: any[]): Promise<ArangojsResponse> {
     return this._request1("HEAD", ...args);
   }
 
   patch(): Promise<ArangojsResponse>;
-  patch(body?: any): Promise<ArangojsResponse>;
-  patch(body?: any, qs?: Object): Promise<ArangojsResponse>;
-  patch(body?: any, qs?: Object, headers?: Object): Promise<ArangojsResponse>;
   patch(path?: string): Promise<ArangojsResponse>;
   patch(path?: string, body?: any): Promise<ArangojsResponse>;
   patch(path?: string, body?: any, qs?: Object): Promise<ArangojsResponse>;
+  patch(body?: any): Promise<ArangojsResponse>;
+  patch(body?: any, qs?: Object): Promise<ArangojsResponse>;
+  patch(body?: any, qs?: Object, headers?: Object): Promise<ArangojsResponse>;
   patch(
     path?: string,
     body?: any,
@@ -119,12 +119,12 @@ export class Route {
   }
 
   post(): Promise<ArangojsResponse>;
-  post(body?: any): Promise<ArangojsResponse>;
-  post(body?: any, qs?: Object): Promise<ArangojsResponse>;
-  post(body?: any, qs?: Object, headers?: Object): Promise<ArangojsResponse>;
   post(path?: string): Promise<ArangojsResponse>;
   post(path?: string, body?: any): Promise<ArangojsResponse>;
   post(path?: string, body?: any, qs?: Object): Promise<ArangojsResponse>;
+  post(body?: any): Promise<ArangojsResponse>;
+  post(body?: any, qs?: Object): Promise<ArangojsResponse>;
+  post(body?: any, qs?: Object, headers?: Object): Promise<ArangojsResponse>;
   post(
     path?: string,
     body?: any,
@@ -136,12 +136,12 @@ export class Route {
   }
 
   put(): Promise<ArangojsResponse>;
-  put(body?: any): Promise<ArangojsResponse>;
-  put(body?: any, qs?: Object): Promise<ArangojsResponse>;
-  put(body?: any, qs?: Object, headers?: Object): Promise<ArangojsResponse>;
   put(path?: string): Promise<ArangojsResponse>;
   put(path?: string, body?: any): Promise<ArangojsResponse>;
   put(path?: string, body?: any, qs?: Object): Promise<ArangojsResponse>;
+  put(body?: any): Promise<ArangojsResponse>;
+  put(body?: any, qs?: Object): Promise<ArangojsResponse>;
+  put(body?: any, qs?: Object, headers?: Object): Promise<ArangojsResponse>;
   put(
     path?: string,
     body?: any,
