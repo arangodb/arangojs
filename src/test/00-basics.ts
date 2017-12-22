@@ -8,27 +8,21 @@ import { expect } from "chai";
 
 describe("Creating a Database", () => {
   describe("using the factory", () => {
-    const db = arangojs({ databaseName: "potato" });
+    const db = arangojs({ arangoVersion: 54321 });
     it("returns a Database instance", () => {
       expect(db).to.be.an.instanceof(Database);
     });
     it("passes any configs to the connection", () => {
-      expect((db as any)._connection).to.have.property(
-        "_databaseName",
-        "potato"
-      );
+      expect((db as any)._connection).to.have.property("_arangoVersion", 54321);
     });
   });
   describe("using the constructor", () => {
-    const db = new Database({ databaseName: "banana" });
+    const db = new Database({ arangoVersion: 43210 });
     it("returns a Database instance", () => {
       expect(db).to.be.an.instanceof(Database);
     });
     it("passes any configs to the connection", () => {
-      expect((db as any)._connection).to.have.property(
-        "_databaseName",
-        "banana"
-      );
+      expect((db as any)._connection).to.have.property("_arangoVersion", 43210);
     });
   });
 });

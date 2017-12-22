@@ -54,6 +54,9 @@ export class Database {
   }
 
   async acquireHostList() {
+    if (!this._connection.getDatabaseName()) {
+      throw new Error("Cannot acquire host list with absolute URL");
+    }
     const res = await this._api.request({
       path: "/_api/cluster/endpoints"
     });

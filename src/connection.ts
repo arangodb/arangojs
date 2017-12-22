@@ -54,7 +54,7 @@ export type Config =
   | string[]
   | Partial<{
       url: string | string[];
-      databaseName: string | false;
+      isAbsolute: boolean;
       arangoVersion: number;
       loadBalancingStrategy: LoadBalancingStrategy;
       agent: Function;
@@ -84,8 +84,8 @@ export class Connection {
     if (config.arangoVersion !== undefined) {
       this._arangoVersion = config.arangoVersion;
     }
-    if (config.databaseName !== undefined) {
-      this._databaseName = config.databaseName;
+    if (config.isAbsolute) {
+      this._databaseName = false;
     }
     this._agent = config.agent;
     this._agentOptions = isBrowser

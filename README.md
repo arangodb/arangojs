@@ -196,9 +196,9 @@ db.query({
 
 // Using different databases
 const db = new Database({
-  url: "http://localhost:8529",
-  databaseName: "pancakes"
+  url: "http://localhost:8529"
 });
+db.useDatabase("pancakes);
 db.useBasicAuth("root", "");
 // The database can be swapped at any time
 db.useDatabase("waffles");
@@ -207,7 +207,7 @@ db.useBasicAuth("admin", "maplesyrup");
 // Using ArangoDB behind a reverse proxy
 const db = new Database({
   url: "http://myproxy.local:8000",
-  databaseName: false // don't automatically append database path to URL
+  isAbsolute: true // don't automatically append database path to URL
 });
 
 // Trigger ArangoDB 2.8 compatibility mode
@@ -460,13 +460,12 @@ If _config_ is a string, it will be interpreted as _config.url_.
     }
     ```
 
-  * **databaseName**: `string | false` (Default: `_system`)
+  * **isAbsolute**: `boolean` (Default: `false`)
 
-    Name of the active database.
-
-    If this option is explicitly set to `false`, the _url_ is expected to
-    provide the database path and the _useDatabase_ method can not be used to
-    switch databases.
+    If this option is explicitly set to `true`, the _url_ will be treated as the
+    absolute database path. This is an escape hatch to allow using arangojs with
+    database APIs exposed with a reverse proxy and makes it impossible to switch
+    databases with _useDatabase_ or using _acquireHostList_.
 
   * **arangoVersion**: `number` (Default: `30000`)
 
@@ -542,12 +541,16 @@ Updates the URL list by requesting a list of all coordinators in the cluster and
 
 For long-running processes communicating with an ArangoDB cluster it is recommended to run this method repeatedly (e.g. once per hour) to make sure new coordinators are picked up correctly and can be used for fail-over or load balancing.
 
+**Note**: This method can not be used when the arangojs instance was created with `isAbsolute: true`.
+
 #### database.useDatabase
 
 `database.useDatabase(databaseName): this`
 
 Updates the _Database_ instance and its connection string to use the given
 _databaseName_, then returns itself.
+
+**Note**: This method can not be used when the arangojs instance was created with `isAbsolute: true`.
 
 **Arguments**
 

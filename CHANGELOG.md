@@ -39,6 +39,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
   The behaviour depends on the load balancing strategy (see API docs).
 
+* The `databaseName` config has been replaced with `isAbsolute`.
+
+  If you previously used `databaseName: false`, the same behaviour can now
+  be achived using `isAbsolute: true`. If you want to use a specific
+  database you can still switch databases with `db.useDatabase` at any time.
+
 * Browser: maximum number of parallel connections behaves differently.
 
   As keep-alive does not work reliably in the browser, the maximum number

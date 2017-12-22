@@ -101,7 +101,7 @@ describe("Manipulating databases", () => {
     it("deletes the given database from the server", done => {
       db
         .dropDatabase(name)
-        .then(() => new Database({ databaseName: name }).get())
+        .then(() => new Database().useDatabase(name).get())
         .then(() => Promise.reject(new Error("Should not succeed")), () => null)
         .then(() => void done())
         .catch(done);
