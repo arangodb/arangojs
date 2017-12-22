@@ -76,7 +76,7 @@ export abstract class BaseCollection implements ArangoCollection {
       if (indexHandle.id) {
         return indexHandle.id;
       }
-      throw new Error("Document handle must be a document or string");
+      throw new Error("Index handle must be a index or string");
     }
     if (indexHandle.indexOf("/") === -1) {
       return this._idPrefix + indexHandle;
