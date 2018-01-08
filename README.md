@@ -198,7 +198,7 @@ db.query({
 const db = new Database({
   url: "http://localhost:8529"
 });
-db.useDatabase("pancakes);
+db.useDatabase("pancakes");
 db.useBasicAuth("root", "");
 // The database can be swapped at any time
 db.useDatabase("waffles");
