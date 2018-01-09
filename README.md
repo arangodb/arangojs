@@ -980,10 +980,13 @@ Performs a database query using the given _query_ and _bindVars_, then returns a
 
 * **opts**: `Object` (optional)
 
-  Additional options that will be passed to the query API.
+  Additional parameter object that will be passed to the query API.
+  Possible keys are _count_ and _options_ (explained below)
 
 If _opts.count_ is set to `true`, the cursor will have a _count_ property set to
 the query result count.
+Possible key options in _opts.options_ include: _failOnWarning_, _cache_, profile or _skipInaccessibleCollections_.
+For a complete list of query settings please reference the [arangodb.com documentation](https://docs.arangodb.com/3.3/AQL/Invocation/WithArangosh.html#setting-options).
 
 If _query_ is an object with _query_ and _bindVars_ properties, those will be
 used as the values of the respective arguments instead.
