@@ -52,15 +52,19 @@
     "lib/esm/util/*.*"
   ],
   "scripts": {
-    "test": "mocha --growl --reporter spec --require source-map-support/register --require core-js/shim --timeout 10000 lib/cjs/test",
-    "pretest": "rm -r lib/cjs ; npm run dist:cjs",
-    "ci": "mocha --reporter spec --require source-map-support/register --require core-js/shim --timeout 10000 lib/cjs/test",
+    "test":
+      "mocha --growl --reporter spec --require source-map-support/register --require core-js/shim --timeout 10000 lib/cjs/test",
+    "pretest": "rimraf lib/cjs ; npm run dist:cjs",
+    "ci":
+      "mocha --reporter spec --require source-map-support/register --require core-js/shim --timeout 10000 lib/cjs/test",
     "preci": "npm install",
     "jenkins": "npm run ci -- --timeout 0 --reporter xunit-file",
-    "dist:cjs": "tsc -p . --outDir ./lib/cjs/ --module commonjs && cp src/index.cjs.js lib/cjs/index.js",
-    "dist:esm": "tsc -p . --outDir ./lib/esm/ --module es2015 && cp src/index.esm.js lib/esm/index.js",
+    "dist:cjs":
+      "tsc -p . --outDir ./lib/cjs/ --module commonjs && cp src/index.cjs.js lib/cjs/index.js",
+    "dist:esm":
+      "tsc -p . --outDir ./lib/esm/ --module es2015 && cp src/index.esm.js lib/esm/index.js",
     "dist:web": "webpack",
-    "dist": "rm -r lib ; npm-run-all --parallel dist:*",
+    "dist": "rimraf lib ; npm-run-all --parallel dist:*",
     "prepublish": "npm run dist && node -e 'require(\".\");'"
   },
   "dependencies": {
@@ -88,6 +92,7 @@
     "npm-run-all": "^4.1.2",
     "prettier": "^1.9.1",
     "regenerator-runtime": "^0.11.1",
+    "rimraf": "^2.6.2",
     "source-map-support": "^0.5.0",
     "ts-loader": "^3.2.0",
     "typescript": "^2.6.2",
