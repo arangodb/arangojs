@@ -52,13 +52,17 @@
     "lib/esm/util/*.*"
   ],
   "scripts": {
-    "test": "mocha --growl --reporter spec --require source-map-support/register --require core-js/shim --timeout 10000 lib/cjs/test",
+    "test":
+      "mocha --growl --reporter spec --require source-map-support/register --require core-js/shim --timeout 10000 lib/cjs/test",
     "pretest": "rimraf lib/cjs ; npm run dist:cjs",
-    "ci": "mocha --reporter spec --require source-map-support/register --require core-js/shim --timeout 10000 lib/cjs/test",
+    "ci":
+      "mocha --reporter spec --require source-map-support/register --require core-js/shim --timeout 10000 lib/cjs/test",
     "preci": "npm install",
     "jenkins": "npm run ci -- --timeout 0 --reporter xunit-file",
-    "dist:cjs": "tsc -p . --outDir ./lib/cjs/ --module commonjs && cp src/index.cjs.js lib/cjs/index.js",
-    "dist:esm": "tsc -p . --outDir ./lib/esm/ --module es2015 && cp src/index.esm.js lib/esm/index.js",
+    "dist:cjs":
+      "tsc -p . --outDir ./lib/cjs/ --module commonjs && cpy src/index.cjs.js lib/cjs/index.js",
+    "dist:esm":
+      "tsc -p . --outDir ./lib/esm/ --module es2015 && cpy src/index.esm.js lib/esm/index.js",
     "dist:web": "webpack",
     "dist": "rimraf lib ; npm-run-all --parallel dist:*",
     "prepublish": "npm run dist && node -e 'require(\".\");'"
@@ -81,6 +85,7 @@
     "babel-preset-env": "^1.6.1",
     "chai": "^4.0.2",
     "core-js": "^2.4.1",
+    "cpy-cli": "^1.0.1",
     "eslint": "^4.13.0",
     "eslint-config-prettier": "^2.9.0",
     "eslint-plugin-prettier": "^2.3.1",
