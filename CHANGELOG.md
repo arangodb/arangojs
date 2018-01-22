@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [6.0.1] - 2018-01-22
+
+* Fixed some imports broken during the TypeScript rewrite
+
+  If you were previously seeing errors involving a `default` property,
+  this should make those go away.
+
 ## [6.0.0] - 2018-01-11
 
 ### Removed

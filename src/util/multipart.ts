@@ -1,5 +1,12 @@
-import Multipart from "multi-part";
 import { Readable } from "stream";
+
+declare class MultiPart {
+  append(key: string, value: Readable | Buffer | string): void;
+  getBoundary(): string;
+  getStream(): Readable;
+}
+
+const Multipart = require("multi-part") as typeof MultiPart;
 
 export type Fields = {
   [key: string]: any;

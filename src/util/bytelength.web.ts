@@ -1,1 +1,3 @@
-export { default as byteLength } from "utf8-length";
+export const byteLength = require("utf8-length") as (
+  string: string | Buffer
+) => number;
