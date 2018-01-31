@@ -60,9 +60,9 @@
     "preci": "npm install",
     "jenkins": "npm run ci -- --timeout 0 --reporter xunit-file",
     "dist:cjs":
-      "tsc -p . --outDir ./lib/cjs/ --module commonjs && cpy src/index.cjs.js lib/cjs/index.js",
+      "tsc -p . --outDir ./lib/cjs/ --module commonjs && cpy src/index.cjs.js --rename=index.js lib/cjs/",
     "dist:esm":
-      "tsc -p . --outDir ./lib/esm/ --module es2015 && cpy src/index.esm.js lib/esm/index.js",
+      "tsc -p . --outDir ./lib/esm/ --module es2015 && cpy src/index.esm.js --rename=index.js lib/esm/",
     "dist:web": "webpack",
     "dist": "rimraf lib ; npm-run-all --parallel dist:*",
     "prepublish": "npm run dist && node -e 'require(\".\");'"
