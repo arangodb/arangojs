@@ -321,7 +321,7 @@ export class Database {
     return res.body;
   }
 
-  async uninstallService(mount: string, opts: any): Promise<void> {
+  async uninstallService(mount: string, opts: any = {}): Promise<void> {
     await this._api.delete("/foxx/service", { ...opts, mount });
   }
 
