@@ -54,18 +54,18 @@
   "scripts": {
     "test":
       "mocha --growl --reporter spec --require source-map-support/register --require core-js/shim --timeout 10000 lib/cjs/test",
-    "pretest": "rimraf lib/cjs ; npm run dist:cjs",
+    "pretest": "yarn dist",
     "ci":
       "mocha --reporter spec --require source-map-support/register --require core-js/shim --timeout 10000 lib/cjs/test",
-    "preci": "npm install",
-    "jenkins": "npm run ci -- --timeout 0 --reporter xunit-file",
+    "preci": "yarn install",
+    "jenkins": "yarn ci -- --timeout 0 --reporter xunit-file",
     "dist:cjs":
       "tsc -p . --outDir ./lib/cjs/ --module commonjs && cpy src/index.cjs.js --rename=index.js lib/cjs/",
     "dist:esm":
       "tsc -p . --outDir ./lib/esm/ --module es2015 && cpy src/index.esm.js --rename=index.js lib/esm/",
     "dist:web": "webpack",
-    "dist": "rimraf lib ; npm-run-all --parallel dist:*",
-    "prepublish": "npm run dist && node -e 'require(\".\");'"
+    "dist": "rimraf lib && npm-run-all --parallel dist:*",
+    "prepublish": "yarn dist && node -e 'require(\".\");'"
   },
   "dependencies": {
     "es6-error": "^4.0.1",
