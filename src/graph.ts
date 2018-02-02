@@ -114,7 +114,7 @@ export class GraphEdgeCollection extends EdgeCollection {
     const res = await this._gharial.get(
       `/${this._documentHandle(documentHandle)}`
     );
-    return res.body.graph;
+    return res.body.edge;
   }
 
   async save(data: any, opts?: { waitForSync?: boolean }): Promise<any>;
