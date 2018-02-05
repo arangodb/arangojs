@@ -124,5 +124,410 @@ describe.only("Foxx service", () => {
         path.resolve(localAppsPath, "minimal-working-service.zip")
       )
     );
+    const resp = await db.getServiceConfiguration(mount);
+    expect(resp).to.eql({});
+  });
+
+  it("empty minimal configuration should be available", async () => {
+    await db.installService(
+      mount,
+      fs.readFileSync(
+        path.resolve(localAppsPath, "minimal-working-service.zip")
+      )
+    );
+    const resp = await db.getServiceConfiguration(mount, true);
+    expect(resp).to.eql({ values: {} });
+  });
+
+  it("configuration should be available", async () => {
+    await db.installService(
+      mount,
+      fs.readFileSync(path.resolve(localAppsPath, "with-configuration.zip"))
+    );
+    const resp = await db.getServiceConfiguration(mount);
+    expect(resp).to.have.property("test1");
+    expect(resp.test1).to.not.have.property("current");
+    expect(resp).to.have.property("test2");
+    expect(resp.test2).to.not.have.property("current");
+  });
+
+  it("configuration should be available after update", async () => {
+    await db.installService(
+      mount,
+      fs.readFileSync(path.resolve(localAppsPath, "with-configuration.zip"))
+    );
+    const updateResp = await db.updateServiceConfiguration(mount, {
+      test1: "test"
+    });
+    expect(updateResp).to.have.property("test1");
+    expect(updateResp.test1).to.have.property("current", "test");
+    expect(updateResp).to.have.property("test2");
+    expect(updateResp.test2).to.not.have.property("current");
+    expect(updateResp).to.not.have.property("warnings");
+    const resp = await db.getServiceConfiguration(mount);
+    expect(resp).to.have.property("test1");
+    expect(resp.test1).to.have.property("current", "test");
+    expect(resp).to.have.property("test2");
+    expect(resp.test2).to.not.have.property("current");
+    expect(resp).to.not.have.property("warnings");
+  });
+
+  it("minimal configuration should be available after update", async () => {
+    await db.installService(
+      mount,
+      fs.readFileSync(path.resolve(localAppsPath, "with-configuration.zip"))
+    );
+    const updateResp = await db.updateServiceConfiguration(
+      mount,
+      {
+        test1: "test"
+      },
+      true
+    );
+    expect(updateResp).to.have.property("values");
+    expect(updateResp.values).to.have.property("test1", "test");
+    expect(updateResp.values).to.not.have.property("test2");
+    expect(updateResp).to.not.have.property("warnings");
+    const resp = await db.getServiceConfiguration(mount, true);
+    expect(resp).to.have.property("values");
+    expect(resp.values).to.have.property("test1", "test");
+    expect(resp.values).to.not.have.property("test2");
+    expect(resp).to.not.have.property("warnings");
+  });
+
+  it("configuration should be available after replace", async () => {
+    await db.installService(
+      mount,
+      fs.readFileSync(path.resolve(localAppsPath, "with-configuration.zip"))
+    );
+    const replaceResp = await db.replaceServiceConfiguration(mount, {
+      test1: "test"
+    });
+    expect(replaceResp).to.have.property("test1");
+    expect(replaceResp.test1).to.have.property("current", "test");
+    expect(replaceResp).to.have.property("test2");
+    expect(replaceResp.test2).to.not.have.property("current");
+    expect(replaceResp).to.not.have.property("warnings");
+    const resp = await db.getServiceConfiguration(mount);
+    expect(resp).to.have.property("test1");
+    expect(resp.test1).to.have.property("current", "test");
+    expect(resp).to.have.property("test2");
+    expect(resp.test2).to.not.have.property("current");
+    expect(resp).to.not.have.property("warnings");
+  });
+
+  it("minimal configuration should be available after replace", async () => {
+    await db.installService(
+      mount,
+      fs.readFileSync(path.resolve(localAppsPath, "with-configuration.zip"))
+    );
+    const replaceResp = await db.replaceServiceConfiguration(
+      mount,
+      {
+        test1: "test"
+      },
+      true
+    );
+    expect(replaceResp).to.have.property("values");
+    expect(replaceResp.values).to.have.property("test1", "test");
+    expect(replaceResp.values).to.not.have.property("test2");
+    expect(replaceResp).to.have.property("warnings");
+    expect(replaceResp.warnings).to.have.property("test2", "is required");
+    const resp = await db.getServiceConfiguration(mount, true);
+    expect(resp).to.have.property("values");
+    expect(resp.values).to.have.property("test1", "test");
+    expect(resp.values).to.not.have.property("test2");
+    expect(resp).to.not.have.property("warnings");
+  });
+
+  it("configuration should be merged after update", async () => {
+    await db.installService(
+      mount,
+      fs.readFileSync(path.resolve(localAppsPath, "with-configuration.zip"))
+    );
+    await db.replaceServiceConfiguration(mount, { test2: "test2" });
+    await db.updateServiceConfiguration(mount, { test1: "test1" });
+    const resp = await db.getServiceConfiguration(mount);
+    expect(resp).to.have.property("test1");
+    expect(resp.test1).to.have.property("current", "test1");
+    expect(resp).to.have.property("test2");
+    expect(resp.test2).to.have.property("current", "test2");
+  });
+
+  it("configuration should be overwritten after replace", async () => {
+    await db.installService(
+      mount,
+      fs.readFileSync(path.resolve(localAppsPath, "with-configuration.zip"))
+    );
+    await db.updateServiceConfiguration(mount, { test2: "test2" });
+    await db.replaceServiceConfiguration(mount, { test1: "test" });
+    const resp = await db.getServiceConfiguration(mount);
+    expect(resp).to.have.property("test1");
+    expect(resp.test1).to.have.property("current", "test");
+    expect(resp).to.have.property("test2");
+    expect(resp.test2).to.not.have.property("current");
+  });
+
+  it("empty dependencies should be available", async () => {
+    await db.installService(
+      mount,
+      fs.readFileSync(
+        path.resolve(localAppsPath, "minimal-working-service.zip")
+      )
+    );
+    const resp = await db.getServiceDependencies(mount);
+    expect(resp).to.eql({});
+  });
+
+  it("minimal empty dependencies should be available", async () => {
+    await db.installService(
+      mount,
+      fs.readFileSync(
+        path.resolve(localAppsPath, "minimal-working-service.zip")
+      )
+    );
+    const resp = await db.getServiceDependencies(mount, true);
+    expect(resp).to.eql({ values: {} });
+  });
+
+  it("dependencies should be available", async () => {
+    await db.installService(
+      mount,
+      fs.readFileSync(path.resolve(localAppsPath, "with-dependencies.zip"))
+    );
+    const resp = await db.getServiceDependencies(mount);
+    expect(resp).to.have.property("test1");
+    expect(resp.test1).to.not.have.property("current");
+    expect(resp).to.have.property("test2");
+    expect(resp.test2).to.not.have.property("current");
+  });
+
+  it("minimal dependencies should be available", async () => {
+    await db.installService(
+      mount,
+      fs.readFileSync(path.resolve(localAppsPath, "with-dependencies.zip"))
+    );
+    const resp = await db.getServiceDependencies(mount, true);
+    expect(resp).to.eql({ values: {} });
+  });
+
+  it("dependencies should be available after updater", async () => {
+    await db.installService(
+      mount,
+      fs.readFileSync(path.resolve(localAppsPath, "with-dependencies.zip"))
+    );
+    const updateResp = await db.updateServiceDependencies(mount, {
+      test1: "/test"
+    });
+    expect(updateResp).to.have.property("test1");
+    expect(updateResp.test1).to.have.property("current", "/test");
+    expect(updateResp).to.have.property("test2");
+    expect(updateResp.test2).to.not.have.property("current");
+    expect(updateResp).to.not.have.property("warnings");
+    const resp = await db.getServiceDependencies(mount);
+    expect(resp).to.have.property("test1");
+    expect(resp.test1).to.have.property("current", "/test");
+    expect(resp).to.have.property("test2");
+    expect(resp.test2).to.not.have.property("current");
+    expect(resp).to.not.have.property("warnings");
+  });
+
+  it("minimal dependencies should be available after updater", async () => {
+    await db.installService(
+      mount,
+      fs.readFileSync(path.resolve(localAppsPath, "with-dependencies.zip"))
+    );
+    const updateResp = await db.updateServiceDependencies(
+      mount,
+      {
+        test1: "/test"
+      },
+      true
+    );
+    expect(updateResp).to.have.property("values");
+    expect(updateResp.values).to.have.property("test1", "/test");
+    expect(updateResp.values).to.not.have.property("test2");
+    expect(updateResp).to.not.have.property("warnings");
+    const resp = await db.getServiceDependencies(mount, true);
+    expect(resp).to.have.property("values");
+    expect(resp.values).to.have.property("test1", "/test");
+    expect(resp.values).to.not.have.property("test2");
+    expect(resp).to.not.have.property("warnings");
+  });
+
+  it("dependencies should be available after replace", async () => {
+    await db.installService(
+      mount,
+      fs.readFileSync(path.resolve(localAppsPath, "with-dependencies.zip"))
+    );
+    const replaceResp = await db.replaceServiceDependencies(mount, {
+      test1: "/test"
+    });
+    expect(replaceResp).to.have.property("test1");
+    expect(replaceResp.test1).to.have.property("current", "/test");
+    expect(replaceResp).to.have.property("test2");
+    expect(replaceResp.test2).to.not.have.property("current");
+    expect(replaceResp).to.not.have.property("warnings");
+    const resp = await db.getServiceDependencies(mount);
+    expect(resp).to.have.property("test1");
+    expect(resp.test1).to.have.property("current", "/test");
+    expect(resp).to.have.property("test2");
+    expect(resp.test2).to.not.have.property("current");
+    expect(resp).to.not.have.property("warnings");
+  });
+
+  it("minimal dependencies should be available after replace", async () => {
+    await db.installService(
+      mount,
+      fs.readFileSync(path.resolve(localAppsPath, "with-dependencies.zip"))
+    );
+    const replaceResp = await db.replaceServiceDependencies(
+      mount,
+      {
+        test1: "/test"
+      },
+      true
+    );
+    expect(replaceResp).to.have.property("values");
+    expect(replaceResp.values).to.have.property("test1", "/test");
+    expect(replaceResp.values).to.not.have.property("test2");
+    expect(replaceResp).to.have.property("warnings");
+    expect(replaceResp.warnings).to.have.property("test2", "is required");
+    const resp = await db.getServiceDependencies(mount, true);
+    expect(resp).to.have.property("values");
+    expect(resp.values).to.have.property("test1", "/test");
+    expect(resp.values).to.not.have.property("test2");
+    expect(resp).to.not.have.property("warnings");
+  });
+
+  it("dependencies should be merged after update", async () => {
+    await db.installService(
+      mount,
+      fs.readFileSync(path.resolve(localAppsPath, "with-dependencies.zip"))
+    );
+    await db.replaceServiceDependencies(mount, { test2: "/test2" });
+    const updateResp = await db.updateServiceDependencies(mount, {
+      test1: "/test1"
+    });
+    expect(updateResp).to.have.property("test1");
+    expect(updateResp.test1).to.have.property("current", "/test1");
+    expect(updateResp).to.have.property("test2");
+    expect(updateResp.test2).to.have.property("current", "/test2");
+    expect(updateResp).to.not.have.property("warnings");
+    const resp = await db.getServiceDependencies(mount);
+    expect(resp).to.have.property("test1");
+    expect(resp.test1).to.have.property("current", "/test1");
+    expect(resp).to.have.property("test2");
+    expect(resp.test2).to.have.property("current", "/test2");
+    expect(resp).to.not.have.property("warnings");
+  });
+
+  it("dependencies should be overwritten after replace", async () => {
+    await db.installService(
+      mount,
+      fs.readFileSync(path.resolve(localAppsPath, "with-dependencies.zip"))
+    );
+    await db.updateServiceDependencies(mount, { test2: "/test2" });
+    const replaceResp = await db.replaceServiceDependencies(mount, {
+      test1: "/test1"
+    });
+    expect(replaceResp).to.have.property("test1");
+    expect(replaceResp.test1).to.have.property("current", "/test1");
+    expect(replaceResp).to.have.property("test2");
+    expect(replaceResp.test2).to.not.have.property("current");
+    expect(replaceResp).to.not.have.property("warnings");
+    const resp = await db.getServiceDependencies(mount);
+    expect(resp).to.have.property("test1");
+    expect(resp.test1).to.have.property("current", "/test1");
+    expect(resp).to.have.property("test2");
+    expect(resp.test2).to.not.have.property("current");
+    expect(resp).to.not.have.property("warnings");
+  });
+
+  it("should be downloadable", async () => {
+    await db.installService(
+      mount,
+      fs.readFileSync(
+        path.resolve(localAppsPath, "minimal-working-service.zip")
+      )
+    );
+    const resp = await db.downloadService(mount);
+    expect(resp).to.be.instanceof(Buffer);
+  });
+
+  it("list should allow excluding system services", async () => {
+    await db.installService(
+      mount,
+      fs.readFileSync(
+        path.resolve(localAppsPath, "minimal-working-service.zip")
+      )
+    );
+    const services = await db.listServices();
+    expect(services).to.be.instanceOf(Array);
+    expect(services.length).to.greaterThan(0);
+  });
+
+  it("should be contained in service list", async () => {
+    await db.installService(
+      mount,
+      fs.readFileSync(
+        path.resolve(localAppsPath, "minimal-working-service.zip")
+      )
+    );
+    const services = await db.listServices();
+    const service = services.find((service: any) => service.mount === mount);
+    expect(service).to.have.property("name", "minimal-working-manifest");
+    expect(service).to.have.property("version", "0.0.0");
+    expect(service).to.have.property("provides");
+    expect(service.provides).to.eql({});
+    expect(service).to.have.property("development", false);
+    expect(service).to.have.property("legacy", false);
+  });
+
+  it("informations should be returned", async () => {
+    await db.installService(
+      mount,
+      fs.readFileSync(
+        path.resolve(localAppsPath, "minimal-working-service.zip")
+      )
+    );
+    const service = await db.getService(mount);
+    expect(service).to.have.property("mount", mount);
+    expect(service).to.have.property("name", "minimal-working-manifest");
+    expect(service).to.have.property("version", "0.0.0");
+    expect(service).to.have.property("development", false);
+    expect(service).to.have.property("legacy", false);
+    expect(service).to.have.property("manifest");
+    expect(service.manifest).to.be.an("object");
+    expect(service).to.have.property("options");
+    expect(service.options).to.be.an("object");
+    expect(service).to.have.property("checksum");
+    expect(service.checksum).to.be.a("string");
+  });
+
+  it("list of scripts should be available", async () => {
+    await db.installService(
+      mount,
+      fs.readFileSync(
+        path.resolve(localAppsPath, "minimal-working-setup-teardown.zip")
+      )
+    );
+    const scripts = await db.listServiceScripts(mount);
+    expect(scripts).to.have.property("setup", "Setup");
+    expect(scripts).to.have.property("teardown", "Teardown");
+  });
+
+  it("script should be available", async () => {
+    await db.installService(
+      mount,
+      fs.readFileSync(
+        path.resolve(localAppsPath, "minimal-working-setup-teardown.zip")
+      )
+    );
+    const col = `${mount}_setup_teardown`.replace(/\//, "").replace(/-/g, "_");
+    expect(await db.collection(col)).to.be.instanceOf(Object);
+    await db.runServiceScript(mount, "teardown", {});
+    // TODO flush cache?
+    //expect(await db.collection(col)).to.equal(null);
   });
 });
