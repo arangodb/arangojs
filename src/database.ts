@@ -333,10 +333,7 @@ export class Database {
   async getServiceConfiguration(mount: string, minimal: boolean = false) {
     const res = await this._api.get("/foxx/configuration", { mount, minimal });
     if (!minimal) return res.body;
-    const values: any = {};
-    for (const key of Object.keys(res.body)) {
-      values[key] = res.body[key].current;
-    }
+    const values: any = res.body;
     return { values };
   }
 
@@ -389,10 +386,7 @@ export class Database {
   async getServiceDependencies(mount: string, minimal: boolean = false) {
     const res = await this._api.get("/foxx/dependencies", { mount, minimal });
     if (!minimal) return res.body;
-    const values: any = {};
-    for (const key of Object.keys(res.body)) {
-      values[key] = res.body[key].current;
-    }
+    const values: any = res.body;
     return { values };
   }
 
