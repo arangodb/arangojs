@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Removed
+
+* Removed ES modules build
+
+  This should solve compatibility problems with `es6-error`. The cjs
+  build now should also work with emulated ES module imports.
+
 ### Changed
 
 * Use `cpy-cli` for build process

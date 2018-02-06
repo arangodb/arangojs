@@ -30,27 +30,15 @@
     "rest"
   ],
   "main": "lib/cjs/index.js",
-  "module": "lib/esm/index.js",
-  "typings": "lib/esm/arangojs.d.ts",
+  "typings": "lib/cjs/arangojs.d.ts",
   "browser": {
     "./lib/cjs/util/btoa.js": "./lib/cjs/util/btoa.web.js",
     "./lib/cjs/util/bytelength.js": "./lib/cjs/util/bytelength.web.js",
     "./lib/cjs/util/joinPath.js": "./lib/cjs/util/joinPath.web.js",
     "./lib/cjs/util/multipart.js": "./lib/cjs/util/multipart.web.js",
-    "./lib/cjs/util/request.js": "./lib/cjs/util/request.web.js",
-    "./lib/esm/util/btoa.js": "./lib/esm/util/btoa.web.js",
-    "./lib/esm/util/bytelength.js": "./lib/esm/util/bytelength.web.js",
-    "./lib/esm/util/joinPath.js": "./lib/esm/util/joinPath.web.js",
-    "./lib/esm/util/multipart.js": "./lib/esm/util/multipart.web.js",
-    "./lib/esm/util/request.js": "./lib/esm/util/request.web.js"
+    "./lib/cjs/util/request.js": "./lib/cjs/util/request.web.js"
   },
-  "files": [
-    "lib/web.*",
-    "lib/cjs/*.*",
-    "lib/esm/*.*",
-    "lib/cjs/util/*.*",
-    "lib/esm/util/*.*"
-  ],
+  "files": ["lib/web.*", "lib/cjs/*.*", "lib/cjs/util/*.*"],
   "scripts": {
     "test":
       "mocha --growl --reporter spec --require source-map-support/register --require core-js/shim --timeout 10000 lib/cjs/test",
@@ -59,10 +47,7 @@
       "mocha --reporter spec --require source-map-support/register --require core-js/shim --timeout 10000 lib/cjs/test",
     "preci": "yarn install",
     "jenkins": "yarn ci -- --timeout 0 --reporter xunit-file",
-    "dist:cjs":
-      "tsc -p . --outDir ./lib/cjs/ --module commonjs && cpy src/index.cjs.js --rename=index.js lib/cjs/",
-    "dist:esm":
-      "tsc -p . --outDir ./lib/esm/ --module es2015 && cpy src/index.esm.js --rename=index.js lib/esm/",
+    "dist:cjs": "tsc -p . --outDir ./lib/cjs/ && cpy src/index.js lib/cjs/",
     "dist:web": "webpack",
     "dist": "rimraf lib && npm-run-all --parallel dist:*",
     "prepublish": "yarn dist && node -e 'require(\".\");'"

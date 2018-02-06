@@ -3,10 +3,7 @@ var resolve = require("path").resolve;
 var webpack = require("webpack");
 
 module.exports = {
-  entry: [
-    "regenerator-runtime/runtime",
-    resolve(__dirname, "src/index.cjs.js")
-  ],
+  entry: ["regenerator-runtime/runtime", resolve(__dirname, "src/index.js")],
   devtool: "source-map",
   output: {
     path: resolve(__dirname, "lib"),
