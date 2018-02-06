@@ -1,6 +1,7 @@
 import * as fs from "fs";
 import * as path from "path";
 
+import { ArangoError } from "../error";
 import { Database } from "../arangojs";
 import { expect } from "chai";
 
@@ -525,9 +526,196 @@ describe.only("Foxx service", () => {
       )
     );
     const col = `${mount}_setup_teardown`.replace(/\//, "").replace(/-/g, "_");
-    expect(await db.collection(col)).to.be.instanceOf(Object);
+    expect(await db.collection(col).get()).to.be.instanceOf(Object);
     await db.runServiceScript(mount, "teardown", {});
-    // TODO flush cache?
-    //expect(await db.collection(col)).to.equal(null);
+    try {
+      await db.collection(col).get();
+      expect(true).to.equals(false);
+    } catch (e) {
+      expect(e).to.be.instanceOf(ArangoError);
+      expect(e.errorNum).to.equal(1203);
+    }
   });
+
+  it("non-existing script should not be available", async () => {
+    await db.installService(
+      mount,
+      fs.readFileSync(path.resolve(localAppsPath, "echo-script.zip"))
+    );
+    try {
+      await db.runServiceScript(mount, "no", {});
+    } catch (e) {
+      expect(e).to.be.instanceOf(ArangoError);
+      expect(e.code).to.equal(400);
+      expect(e.errorNum).to.equal(3016);
+    }
+  });
+
+  it("should pass argv to script and return exports", async () => {
+    await db.installService(
+      mount,
+      fs.readFileSync(path.resolve(localAppsPath, "echo-script.zip"))
+    );
+    const argv = { hello: "world" };
+    const resp = await db.runServiceScript(mount, "echo", argv);
+    expect(resp).to.eql([argv]);
+  });
+
+  it("should treat array script argv like any other script argv", async () => {
+    await db.installService(
+      mount,
+      fs.readFileSync(path.resolve(localAppsPath, "echo-script.zip"))
+    );
+    const argv = ["yes", "please"];
+    const resp = await db.runServiceScript(mount, "echo", argv);
+    expect(resp).to.eql([argv]);
+  });
+
+  it("set devmode should enable devmode", async () => {
+    await db.installService(
+      mount,
+      fs.readFileSync(
+        path.resolve(localAppsPath, "minimal-working-service.zip")
+      )
+    );
+    const resp = await db.getService(mount);
+    expect(resp.development).to.equal(false);
+    const devResp = await db.enableServiceDevelopmentMode(mount);
+    expect(devResp.development).to.equal(true);
+    const respAfter = await db.getService(mount);
+    expect(respAfter.development).to.equal(true);
+  });
+
+  it("clear devmode should disable devmode", async () => {
+    await db.installService(
+      mount,
+      fs.readFileSync(
+        path.resolve(localAppsPath, "minimal-working-service.zip")
+      ),
+      { development: true }
+    );
+    const resp = await db.getService(mount);
+    expect(resp.development).to.equal(true);
+    const devResp = await db.disableServiceDevelopmentMode(mount);
+    expect(devResp.development).to.equal(false);
+    const respAfter = await db.getService(mount);
+    expect(respAfter.development).to.equal(false);
+  });
+
+  it("tests should run", async () => {
+    await db.installService(
+      mount,
+      fs.readFileSync(path.resolve(localAppsPath, "with-tests.zip"))
+    );
+    const resp = await db.runServiceTests(mount, {});
+    expect(resp).to.have.property("stats");
+    expect(resp).to.have.property("tests");
+    expect(resp).to.have.property("pending");
+    expect(resp).to.have.property("failures");
+    expect(resp).to.have.property("passes");
+  });
+
+  const routes = [
+    {
+      desc: "getService",
+      method: async (mount: string) => await db.getService(mount)
+    },
+    {
+      desc: "getServiceConfiguration",
+      method: async (mount: string) => await db.getServiceConfiguration(mount)
+    },
+    {
+      desc: "getServiceDependencies",
+      method: async (mount: string) => await db.getServiceDependencies(mount)
+    },
+    {
+      desc: "listServiceScripts",
+      method: async (mount: string) => await db.listServiceScripts(mount)
+    },
+    {
+      desc: "upgradeService",
+      method: async (mount: string) => await db.upgradeService(mount, {})
+    },
+    {
+      desc: "updateServiceConfiguration",
+      method: async (mount: string) =>
+        await db.updateServiceConfiguration(mount, {})
+    },
+    {
+      desc: "updateServiceDependencies",
+      method: async (mount: string) =>
+        await db.updateServiceDependencies(mount, {})
+    },
+    {
+      desc: "replaceService",
+      method: async (mount: string) => await db.replaceService(mount, {})
+    },
+    {
+      desc: "replaceServiceConfiguration",
+      method: async (mount: string) =>
+        await db.replaceServiceConfiguration(mount, {})
+    },
+    {
+      desc: "replaceServiceDependencies",
+      method: async (mount: string) =>
+        await db.replaceServiceDependencies(mount, {})
+    },
+    {
+      desc: "runServiceScript",
+      method: async (mount: string) =>
+        await db.runServiceScript(mount, "xxx", {})
+    },
+    {
+      desc: "runServiceTests",
+      method: async (mount: string) => await db.runServiceTests(mount, {})
+    },
+    {
+      desc: "uninstallService",
+      method: async (mount: string) => await db.uninstallService(mount)
+    },
+    {
+      desc: "downloadService",
+      method: async (mount: string) => await db.downloadService(mount)
+    },
+    {
+      desc: "enableServiceDevelopmentMode",
+      method: async (mount: string) =>
+        await db.enableServiceDevelopmentMode(mount)
+    },
+    {
+      desc: "disableServiceDevelopmentMode",
+      method: async (mount: string) =>
+        await db.disableServiceDevelopmentMode(mount)
+    },
+    {
+      desc: "getServiceDocumentation",
+      method: async (mount: string) => await db.getServiceDocumentation(mount)
+    },
+    {
+      desc: "getServiceReadme",
+      method: async (mount: string) => await db.getServiceReadme(mount)
+    }
+  ];
+
+  for (const r of routes) {
+    it(`should return 400 when mount is omitted for ${r.desc}`, async () => {
+      try {
+        await r.method(mount);
+        expect(true).to.equals(false);
+      } catch (e) {
+        expect(e).to.be.instanceOf(ArangoError);
+        expect(e.code).to.equal(400);
+      }
+    });
+
+    it(`should return 400 when mount is invalid for ${r.desc}`, async () => {
+      try {
+        await r.method(`/dev/null`);
+        expect(true).to.equals(false);
+      } catch (e) {
+        expect(e).to.be.instanceOf(ArangoError);
+        expect(e.code).to.equal(400);
+      }
+    });
+  }
 });
