@@ -530,7 +530,7 @@ describe.only("Foxx service", () => {
     await db.runServiceScript(mount, "teardown", {});
     try {
       await db.collection(col).get();
-      expect(true).to.equals(false);
+      expect.fail();
     } catch (e) {
       expect(e).to.be.instanceOf(ArangoError);
       expect(e.errorNum).to.equal(1203);
@@ -701,7 +701,7 @@ describe.only("Foxx service", () => {
     it(`should return 400 when mount is omitted for ${r.desc}`, async () => {
       try {
         await r.method(mount);
-        expect(true).to.equals(false);
+        expect.fail();
       } catch (e) {
         expect(e).to.be.instanceOf(ArangoError);
         expect(e.code).to.equal(400);
@@ -711,7 +711,7 @@ describe.only("Foxx service", () => {
     it(`should return 400 when mount is invalid for ${r.desc}`, async () => {
       try {
         await r.method(`/dev/null`);
-        expect(true).to.equals(false);
+        expect.fail();
       } catch (e) {
         expect(e).to.be.instanceOf(ArangoError);
         expect(e.code).to.equal(400);
