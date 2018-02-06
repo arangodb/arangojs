@@ -36,6 +36,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 * Fixed `db.repalceServiceDependencies(mount, cfg, minimal)` non-minimal representation
 
+* Fixed handling of non-json repsonses
+
 ### Changed
 
 * Use `rimraf` for build process
