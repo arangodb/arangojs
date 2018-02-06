@@ -12,7 +12,7 @@ const localAppsPath = path.resolve(".", "fixtures");
 const mount = "/foxx-crud-test";
 const serviceServiceMount = "/foxx-crud-test-download";
 
-describe.only("Foxx service", () => {
+describe("Foxx service", () => {
   const db = new Database({
     url: ARANGO_URL,
     arangoVersion: ARANGO_VERSION
