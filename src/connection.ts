@@ -300,6 +300,8 @@ export class Connection {
           }
         } else if (res.body && !expectBinary) {
           parsedBody = res.body.toString("utf-8");
+        } else {
+          parsedBody = res.body;
         }
         if (
           parsedBody &&
