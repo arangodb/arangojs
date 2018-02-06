@@ -378,7 +378,11 @@ export class Database {
       minimal
     });
     const result = res.body;
-    if (minimal || !result.values || !result.values.title) {
+    if (
+      minimal ||
+      !result.values ||
+      !Object.values(result.values).every(value => value.title)
+    ) {
       return result;
     }
     const res2 = await this.getServiceConfiguration(mount, minimal);
@@ -439,7 +443,11 @@ export class Database {
       minimal
     });
     const result = res.body;
-    if (minimal || !result.values || !result.values.title) {
+    if (
+      minimal ||
+      !result.values ||
+      !Object.values(result.values).every(value => value.title)
+    ) {
       return result;
     }
     const res2 = await this.getServiceDependencies(mount, minimal);
