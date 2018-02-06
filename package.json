@@ -29,16 +29,17 @@
     "http",
     "rest"
   ],
-  "main": "lib/cjs/index.js",
+  "main": "lib/index.js",
   "typings": "lib/cjs/arangojs.d.ts",
   "browser": {
+    "./lib/index.js": "./lib/cjs/index.js",
     "./lib/cjs/util/btoa.js": "./lib/cjs/util/btoa.web.js",
     "./lib/cjs/util/bytelength.js": "./lib/cjs/util/bytelength.web.js",
     "./lib/cjs/util/joinPath.js": "./lib/cjs/util/joinPath.web.js",
     "./lib/cjs/util/multipart.js": "./lib/cjs/util/multipart.web.js",
     "./lib/cjs/util/request.js": "./lib/cjs/util/request.web.js"
   },
-  "files": ["lib/web.*", "lib/cjs/*.*", "lib/cjs/util/*.*"],
+  "files": ["lib/*.*", "lib/cjs/*.*", "lib/cjs/util/*.*"],
   "scripts": {
     "test":
       "mocha --growl --reporter spec --require source-map-support/register --require core-js/shim --timeout 10000 lib/cjs/test",
@@ -48,8 +49,11 @@
     "preci": "yarn install",
     "jenkins": "yarn ci -- --timeout 0 --reporter xunit-file",
     "dist:cjs": "tsc -p . --outDir ./lib/cjs/ && cpy src/index.js lib/cjs/",
+    "dist:async":
+      "tsc -p . --outDir ./lib/async/ --target es2017 && cpy src/index.js lib/async/",
     "dist:web": "webpack",
-    "dist": "rimraf lib && npm-run-all --parallel dist:*",
+    "dist":
+      "rimraf lib && npm-run-all --parallel dist:* && cpy src/index.all.js --rename index.js lib/",
     "prepublish": "yarn dist && node -e 'require(\".\");'"
   },
   "dependencies": {
