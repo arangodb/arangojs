@@ -28,7 +28,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 * Fixed `db.getServiceDependencies(mount, minimal)` minimal representation
 
-## [6.0.1] - 2018-01-22
+* Fixed `db.updateServiceConfiguration(mount, cfg, minimal)` non-minimal representation
+
+* Fixed `db.repalceServiceConfiguration(mount, cfg, minimal)` non-minimal representation
+
+* Fixed `db.updateServiceDependencies(mount, cfg, minimal)` non-minimal representation
+
+* Fixed `db.repalceServiceDependencies(mount, cfg, minimal)` non-minimal representation
 
 ### Changed
 
