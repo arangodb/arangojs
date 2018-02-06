@@ -50,7 +50,7 @@ describe("Configuring the driver", () => {
           done();
         }
       ];
-      conn.request({ headers: {} });
+      conn.request({ headers: {} }, () => {});
     });
   });
   describe("with an arangoVersion", () => {
@@ -62,7 +62,7 @@ describe("Configuring the driver", () => {
           done();
         }
       ];
-      conn.request({ headers: {} });
+      conn.request({ headers: {} }, () => {});
     });
   });
   describe("with agentOptions", () => {
@@ -135,28 +135,28 @@ describe("Configuring the driver", () => {
       let agent = function() {};
       let conn;
       conn = new Connection({ agent }); // default: http
-      conn.request({ headers: {} });
+      conn.request({ headers: {} }, () => {});
       expect(options).to.have.property("agent", agent);
       agent = function() {};
       conn = new Connection({ agent, url: "https://localhost:8529" });
-      conn.request({ headers: {} });
+      conn.request({ headers: {} }, () => {});
       expect(options).to.have.property("agent", agent);
       agent = function() {};
       conn = new Connection({ agent, url: "http://localhost:8529" });
-      conn.request({ headers: {} });
+      conn.request({ headers: {} }, () => {});
       expect(options).to.have.property("agent", agent);
     });
     it("uses the request function for the protocol", () => {
       const agent = function() {};
       let conn;
       conn = new Connection({ agent }); // default: http
-      conn.request({ headers: {} });
+      conn.request({ headers: {} }, () => {});
       expect(protocol).to.equal("http");
       conn = new Connection({ agent, url: "https://localhost:8529" });
-      conn.request({ headers: {} });
+      conn.request({ headers: {} }, () => {});
       expect(protocol).to.equal("https");
       conn = new Connection({ agent, url: "http://localhost:8529" });
-      conn.request({ headers: {} });
+      conn.request({ headers: {} }, () => {});
       expect(protocol).to.equal("http");
     });
   });

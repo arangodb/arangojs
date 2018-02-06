@@ -6,6 +6,7 @@ import {
   isBrowser
 } from "./util/request";
 
+import { Errback } from "./util/types";
 import { Route } from "./route";
 import { byteLength } from "./util/bytelength";
 import { stringify as querystringify } from "querystring";
@@ -224,16 +225,19 @@ export class Connection {
     return new Route(this, path, headers);
   }
 
-  request({
-    host,
-    method = "GET",
-    body,
-    expectBinary = false,
-    isBinary = false,
-    isJsonStream = false,
-    headers,
-    ...urlInfo
-  }: RequestOptions) {
+  request(
+    {
+      host,
+      method = "GET",
+      body,
+      expectBinary = false,
+      isBinary = false,
+      isJsonStream = false,
+      headers,
+      ...urlInfo
+    }: RequestOptions,
+    cb: Errback<ArangojsResponse>
+  ) {
     let contentType = "text/plain";
     if (isBinary) {
       contentType = "application/octet-stream";
@@ -265,55 +269,53 @@ export class Connection {
       );
     }
 
-    return new Promise<ArangojsResponse>((resolve, reject) => {
-      this._queue.push({
-        host,
-        options: {
-          url: this._buildUrl(urlInfo),
-          headers: { ...extraHeaders, ...headers },
-          method,
-          expectBinary,
-          body
-        },
-        reject,
-        resolve: (res: ArangojsResponse) => {
-          const contentType = res.headers["content-type"];
-          let parsedBody: any = {};
-          if (contentType && contentType.match(MIME_JSON)) {
-            try {
-              if (res.body && expectBinary) {
-                parsedBody = (res.body as Buffer).toString("utf-8");
-              } else {
-                parsedBody = (res.body as string) || "";
-              }
-              parsedBody = JSON.parse(parsedBody);
-            } catch (e) {
-              if (!expectBinary) {
-                e.response = res;
-                reject(e);
-                return;
-              }
+    this._queue.push({
+      host,
+      options: {
+        url: this._buildUrl(urlInfo),
+        headers: { ...extraHeaders, ...headers },
+        method,
+        expectBinary,
+        body
+      },
+      reject: (err: Error) => cb(err),
+      resolve: (res: ArangojsResponse) => {
+        const contentType = res.headers["content-type"];
+        let parsedBody: any = {};
+        if (contentType && contentType.match(MIME_JSON)) {
+          try {
+            if (res.body && expectBinary) {
+              parsedBody = (res.body as Buffer).toString("utf-8");
+            } else {
+              parsedBody = (res.body as string) || "";
+            }
+            parsedBody = JSON.parse(parsedBody);
+          } catch (e) {
+            if (!expectBinary) {
+              e.response = res;
+              cb(e);
+              return;
             }
           }
-          if (
-            parsedBody &&
-            parsedBody.hasOwnProperty("error") &&
-            parsedBody.hasOwnProperty("code") &&
-            parsedBody.hasOwnProperty("errorMessage") &&
-            parsedBody.hasOwnProperty("errorNum")
-          ) {
-            res.body = parsedBody;
-            reject(new ArangoError(res));
-          } else if (res.statusCode && res.statusCode >= 400) {
-            res.body = parsedBody;
-            reject(new HttpError(res));
-          } else {
-            if (!expectBinary) res.body = parsedBody;
-            resolve(res);
-          }
         }
-      });
-      this._runQueue();
+        if (
+          parsedBody &&
+          parsedBody.hasOwnProperty("error") &&
+          parsedBody.hasOwnProperty("code") &&
+          parsedBody.hasOwnProperty("errorMessage") &&
+          parsedBody.hasOwnProperty("errorNum")
+        ) {
+          res.body = parsedBody;
+          cb(new ArangoError(res));
+        } else if (res.statusCode && res.statusCode >= 400) {
+          res.body = parsedBody;
+          cb(new HttpError(res));
+        } else {
+          if (!expectBinary) res.body = parsedBody;
+          cb(null, res);
+        }
+      }
     });
+    this._runQueue();
   }
 }

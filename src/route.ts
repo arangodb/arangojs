@@ -30,7 +30,12 @@ export class Route {
     opts.basePath = this._path;
     opts.headers = { ...this._headers, ...headers };
     opts.method = method ? method.toUpperCase() : "GET";
-    return this._connection.request(opts);
+    return new Promise<ArangojsResponse>((resolve, reject) =>
+      this._connection.request(opts, (err, result) => {
+        if (err) reject(err);
+        else resolve(result);
+      })
+    );
   }
 
   private _request1(method: string, ...args: any[]) {
