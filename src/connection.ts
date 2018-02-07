@@ -283,10 +283,10 @@ export class Connection {
       reject: (err: Error) => cb(err),
       resolve: (res: ArangojsResponse) => {
         const contentType = res.headers["content-type"];
-        let parsedBody: any = {};
-        if (contentType && contentType.match(MIME_JSON)) {
+        let parsedBody: any = undefined;
+        if (res.body.length && contentType && contentType.match(MIME_JSON)) {
           try {
-            parsedBody = res.body || "";
+            parsedBody = res.body;
             parsedBody = JSON.parse(parsedBody);
           } catch (e) {
             if (!expectBinary) {
@@ -300,6 +300,8 @@ export class Connection {
           }
         } else if (res.body && !expectBinary) {
           parsedBody = res.body.toString("utf-8");
+        } else {
+          parsedBody = res.body;
         }
         if (
           parsedBody &&

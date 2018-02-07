@@ -20,7 +20,31 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
   Should help with cross-platform compatibility.
 
+### Fixed
+
+* Fixed `db.uninstallService(mount, opts)` opts default value
+
+* Fixed `db.getServiceConfiguration(mount, minimal)` minimal representation
+
+* Fixed `db.getServiceDependencies(mount, minimal)` minimal representation
+
+* Fixed `db.updateServiceConfiguration(mount, cfg, minimal)` non-minimal representation
+
+* Fixed `db.replaceServiceConfiguration(mount, cfg, minimal)` non-minimal representation
+
+* Fixed `db.updateServiceDependencies(mount, cfg, minimal)` non-minimal representation
+
+* Fixed `db.replaceServiceDependencies(mount, cfg, minimal)` non-minimal representation
+
+* Fixed handling of non-json responses
+
 ## [6.0.1] - 2018-01-22
+
+### Changed
+
+* Use `rimraf` for build process
+
+  Should help with cross-platform compatibility.
 
 ### Fixed
 
@@ -28,12 +52,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
   If you were previously seeing errors involving a `default` property,
   this should make those go away.
-
-### Changed
-
-* Use `rimraf` for build process
-
-  Should help with cross-platform compatibility.
 
 ## [6.0.0] - 2018-01-11
 

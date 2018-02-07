@@ -321,7 +321,7 @@ export class Database {
     return res.body;
   }
 
-  async uninstallService(mount: string, opts: any): Promise<void> {
+  async uninstallService(mount: string, opts: any = {}): Promise<void> {
     await this._api.delete("/foxx/service", { ...opts, mount });
   }
 
@@ -332,12 +332,13 @@ export class Database {
 
   async getServiceConfiguration(mount: string, minimal: boolean = false) {
     const res = await this._api.get("/foxx/configuration", { mount, minimal });
-    if (!minimal) return res.body;
+    if (!minimal || !Object.values(res.body).every(value => value.title))
+      return res.body;
     const values: any = {};
     for (const key of Object.keys(res.body)) {
       values[key] = res.body[key].current;
     }
-    return { values };
+    return values;
   }
 
   async updateServiceConfiguration(
@@ -350,7 +351,11 @@ export class Database {
       minimal
     });
     const result = res.body;
-    if (minimal || !result.values || !result.values.title) {
+    if (
+      minimal ||
+      !result.values ||
+      !Object.values(result.values).every(value => value.title)
+    ) {
       return result;
     }
     const res2 = await this.getServiceConfiguration(mount, minimal);
@@ -373,7 +378,11 @@ export class Database {
       minimal
     });
     const result = res.body;
-    if (minimal || !result.values || !result.values.title) {
+    if (
+      minimal ||
+      !result.values ||
+      !Object.values(result.values).every(value => value.title)
+    ) {
       return result;
     }
     const res2 = await this.getServiceConfiguration(mount, minimal);
@@ -388,12 +397,13 @@ export class Database {
 
   async getServiceDependencies(mount: string, minimal: boolean = false) {
     const res = await this._api.get("/foxx/dependencies", { mount, minimal });
-    if (!minimal) return res.body;
+    if (!minimal || !Object.values(res.body).every(value => value.title))
+      return res.body;
     const values: any = {};
     for (const key of Object.keys(res.body)) {
       values[key] = res.body[key].current;
     }
-    return { values };
+    return values;
   }
 
   async updateServiceDependencies(
@@ -406,7 +416,11 @@ export class Database {
       minimal
     });
     const result = res.body;
-    if (minimal || !result.values || !result.values.title) {
+    if (
+      minimal ||
+      !result.values ||
+      !Object.values(result.values).every(value => value.title)
+    ) {
       return result;
     }
     const res2 = await this.getServiceDependencies(mount, minimal);
@@ -429,7 +443,11 @@ export class Database {
       minimal
     });
     const result = res.body;
-    if (minimal || !result.values || !result.values.title) {
+    if (
+      minimal ||
+      !result.values ||
+      !Object.values(result.values).every(value => value.title)
+    ) {
       return result;
     }
     const res2 = await this.getServiceDependencies(mount, minimal);
