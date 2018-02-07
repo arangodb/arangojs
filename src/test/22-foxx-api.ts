@@ -757,92 +757,61 @@ describe("Foxx service", () => {
     expect(resp.paths["/"]).to.have.property("get");
   });
 
-  const routes = [
-    {
-      desc: "getService",
-      method: async (mount: string) => await db.getService(mount)
-    },
-    {
-      desc: "getServiceConfiguration",
-      method: async (mount: string) => await db.getServiceConfiguration(mount)
-    },
-    {
-      desc: "getServiceDependencies",
-      method: async (mount: string) => await db.getServiceDependencies(mount)
-    },
-    {
-      desc: "listServiceScripts",
-      method: async (mount: string) => await db.listServiceScripts(mount)
-    },
-    {
-      desc: "upgradeService",
-      method: async (mount: string) => await db.upgradeService(mount, {})
-    },
-    {
-      desc: "updateServiceConfiguration",
-      method: async (mount: string) =>
-        await db.updateServiceConfiguration(mount, {})
-    },
-    {
-      desc: "updateServiceDependencies",
-      method: async (mount: string) =>
-        await db.updateServiceDependencies(mount, {})
-    },
-    {
-      desc: "replaceService",
-      method: async (mount: string) => await db.replaceService(mount, {})
-    },
-    {
-      desc: "replaceServiceConfiguration",
-      method: async (mount: string) =>
-        await db.replaceServiceConfiguration(mount, {})
-    },
-    {
-      desc: "replaceServiceDependencies",
-      method: async (mount: string) =>
-        await db.replaceServiceDependencies(mount, {})
-    },
-    {
-      desc: "runServiceScript",
-      method: async (mount: string) =>
-        await db.runServiceScript(mount, "xxx", {})
-    },
-    {
-      desc: "runServiceTests",
-      method: async (mount: string) => await db.runServiceTests(mount, {})
-    },
-    {
-      desc: "uninstallService",
-      method: async (mount: string) => await db.uninstallService(mount)
-    },
-    {
-      desc: "downloadService",
-      method: async (mount: string) => await db.downloadService(mount)
-    },
-    {
-      desc: "enableServiceDevelopmentMode",
-      method: async (mount: string) =>
-        await db.enableServiceDevelopmentMode(mount)
-    },
-    {
-      desc: "disableServiceDevelopmentMode",
-      method: async (mount: string) =>
-        await db.disableServiceDevelopmentMode(mount)
-    },
-    {
-      desc: "getServiceDocumentation",
-      method: async (mount: string) => await db.getServiceDocumentation(mount)
-    },
-    {
-      desc: "getServiceReadme",
-      method: async (mount: string) => await db.getServiceReadme(mount)
-    }
+  const routes: [string, Function][] = [
+    ["getService", (mount: string) => db.getService(mount)],
+    [
+      "getServiceConfiguration",
+      (mount: string) => db.getServiceConfiguration(mount)
+    ],
+    [
+      "getServiceDependencies",
+      (mount: string) => db.getServiceDependencies(mount)
+    ],
+    ["listServiceScripts", (mount: string) => db.listServiceScripts(mount)],
+    ["upgradeService", (mount: string) => db.upgradeService(mount, {})],
+    [
+      "updateServiceConfiguration",
+      (mount: string) => db.updateServiceConfiguration(mount, {})
+    ],
+    [
+      "updateServiceDependencies",
+      (mount: string) => db.updateServiceDependencies(mount, {})
+    ],
+    ["replaceService", (mount: string) => db.replaceService(mount, {})],
+    [
+      "replaceServiceConfiguration",
+      (mount: string) => db.replaceServiceConfiguration(mount, {})
+    ],
+    [
+      "replaceServiceDependencies",
+      (mount: string) => db.replaceServiceDependencies(mount, {})
+    ],
+    [
+      "runServiceScript",
+      (mount: string) => db.runServiceScript(mount, "xxx", {})
+    ],
+    ["runServiceTests", (mount: string) => db.runServiceTests(mount, {})],
+    ["uninstallService", (mount: string) => db.uninstallService(mount)],
+    ["downloadService", (mount: string) => db.downloadService(mount)],
+    [
+      "enableServiceDevelopmentMode",
+      (mount: string) => db.enableServiceDevelopmentMode(mount)
+    ],
+    [
+      "disableServiceDevelopmentMode",
+      (mount: string) => db.disableServiceDevelopmentMode(mount)
+    ],
+    [
+      "getServiceDocumentation",
+      (mount: string) => db.getServiceDocumentation(mount)
+    ],
+    ["getServiceReadme", (mount: string) => db.getServiceReadme(mount)]
   ];
 
-  for (const r of routes) {
-    it(`should return 400 when mount is omitted for ${r.desc}`, async () => {
+  for (const [desc, method] of routes) {
+    it(`should return 400 when mount is omitted for ${desc}`, async () => {
       try {
-        await r.method(mount);
+        await method(mount);
         expect.fail();
       } catch (e) {
         expect(e).to.be.instanceOf(ArangoError);
@@ -850,9 +819,9 @@ describe("Foxx service", () => {
       }
     });
 
-    it(`should return 400 when mount is invalid for ${r.desc}`, async () => {
+    it(`should return 400 when mount is invalid for ${desc}`, async () => {
       try {
-        await r.method(`/dev/null`);
+        await method(`/dev/null`);
         expect.fail();
       } catch (e) {
         expect(e).to.be.instanceOf(ArangoError);
