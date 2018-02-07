@@ -286,19 +286,20 @@ export class Connection {
         let parsedBody: any = {};
         if (contentType && contentType.match(MIME_JSON)) {
           try {
-            if (res.body && expectBinary) {
-              parsedBody = (res.body as Buffer).toString("utf-8");
-            } else {
-              parsedBody = (res.body as string) || "";
-            }
+            parsedBody = res.body || "";
             parsedBody = JSON.parse(parsedBody);
           } catch (e) {
             if (!expectBinary) {
+              if (typeof parsedBody !== "string") {
+                parsedBody = res.body.toString("utf-8");
+              }
               e.response = res;
               cb(e);
               return;
             }
           }
+        } else if (res.body && !expectBinary) {
+          parsedBody = res.body.toString("utf-8");
         }
         if (
           parsedBody &&

@@ -46,8 +46,8 @@ export function createRequest(
     else agent = new HttpAgent(agentOptions);
   }
   return function request(
-    { method, url, headers, body, expectBinary = false }: RequestOptions,
-    cb: Errback<ArangojsResponse>
+    { method, url, headers, body }: RequestOptions,
+    callback: Errback<ArangojsResponse>
   ) {
     let path = baseUrlParts.pathname
       ? url.pathname
@@ -64,10 +64,7 @@ export function createRequest(
     options.hostname = baseUrlParts.hostname;
     options.port = baseUrlParts.port;
     options.auth = baseUrlParts.auth;
-    let callback: Errback<IncomingMessage> = (err, res) => {
-      callback = () => undefined;
-      cb(err, res);
-    };
+    let called = false;
     const req = (isTls ? httpsRequest : httpRequest)(
       options,
       (res: IncomingMessage) => {
@@ -76,9 +73,8 @@ export function createRequest(
         res.on("end", () => {
           const result = res as ArangojsResponse;
           result.body = Buffer.concat(data);
-          if (!expectBinary) {
-            result.body = result.body.toString("utf-8");
-          }
+          if (called) return;
+          called = true;
           callback(null, result);
         });
       }
@@ -86,7 +82,9 @@ export function createRequest(
     req.on("error", err => {
       const error = err as ArangojsError;
       error.request = req;
-      callback(error);
+      if (called) return;
+      called = true;
+      callback(err);
     });
     if (body) req.write(body);
     req.end();
