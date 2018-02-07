@@ -734,7 +734,7 @@ describe("Foxx service", () => {
       )
     );
     const resp = await db.getServiceReadme(mount);
-    expect(resp).to.equal(undefined);
+    expect(resp).to.equal("");
   });
 
   it("should provide a swagger description", async () => {
