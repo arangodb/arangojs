@@ -284,9 +284,9 @@ export class Connection {
       resolve: (res: ArangojsResponse) => {
         const contentType = res.headers["content-type"];
         let parsedBody: any = undefined;
-        if (contentType && contentType.match(MIME_JSON)) {
+        if (res.body.length && contentType && contentType.match(MIME_JSON)) {
           try {
-            parsedBody = res.body || "";
+            parsedBody = res.body;
             parsedBody = JSON.parse(parsedBody);
           } catch (e) {
             if (!expectBinary) {
