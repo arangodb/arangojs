@@ -39,25 +39,26 @@
     "./lib/cjs/util/multipart.js": "./lib/cjs/util/multipart.web.js",
     "./lib/cjs/util/request.js": "./lib/cjs/util/request.web.js"
   },
-  "files": ["lib/*.*", "lib/cjs/*.*", "lib/cjs/util/*.*"],
+  "files": [
+    "lib/*.*",
+    "lib/cjs/*.*",
+    "lib/cjs/util/*.*"
+  ],
   "scripts": {
-    "test":
-      "mocha --growl --reporter spec --require source-map-support/register --require core-js/shim --timeout 10000 lib/cjs/test",
+    "test": "mocha --growl --reporter spec --require source-map-support/register --require core-js/shim --timeout 10000 lib/cjs/test",
     "pretest": "yarn dist",
-    "ci":
-      "mocha --reporter spec --require source-map-support/register --require core-js/shim --timeout 10000 lib/cjs/test",
+    "ci": "mocha --reporter spec --require source-map-support/register --require core-js/shim --timeout 10000 lib/cjs/test",
     "preci": "yarn install",
     "jenkins": "yarn ci -- --timeout 0 --reporter xunit-file",
     "dist:cjs": "tsc -p . --outDir ./lib/cjs/ && cpy src/index.js lib/cjs/",
-    "dist:async":
-      "tsc -p . --outDir ./lib/async/ --target es2017 && cpy src/index.js lib/async/",
+    "dist:async": "tsc -p . --outDir ./lib/async/ --target es2017 && cpy src/index.js lib/async/",
     "dist:web": "webpack",
-    "dist":
-      "rimraf lib && npm-run-all --parallel dist:* && cpy src/index.all.js --rename index.js lib/",
+    "dist": "rimraf lib && npm-run-all --parallel dist:* && cpy src/index.all.js --rename index.js lib/",
     "prepublish": "yarn dist && node -e 'require(\".\");'"
   },
   "dependencies": {
     "es6-error": "^4.0.1",
+    "linkedlist": "^1.0.1",
     "multi-part": "^2.0.0",
     "utf8-length": "^0.0.1",
     "xhr": "^2.4.1"
