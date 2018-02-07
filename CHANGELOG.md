@@ -30,11 +30,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 * Fixed `db.updateServiceConfiguration(mount, cfg, minimal)` non-minimal representation
 
-* Fixed `db.repalceServiceConfiguration(mount, cfg, minimal)` non-minimal representation
+* Fixed `db.replaceServiceConfiguration(mount, cfg, minimal)` non-minimal representation
 
 * Fixed `db.updateServiceDependencies(mount, cfg, minimal)` non-minimal representation
 
-* Fixed `db.repalceServiceDependencies(mount, cfg, minimal)` non-minimal representation
+* Fixed `db.replaceServiceDependencies(mount, cfg, minimal)` non-minimal representation
 
 * Fixed handling of non-json repsonses
 
