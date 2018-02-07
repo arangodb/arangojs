@@ -36,7 +36,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 * Fixed `db.replaceServiceDependencies(mount, cfg, minimal)` non-minimal representation
 
-* Fixed handling of non-json repsonses
+* Fixed handling of non-json responses
+
+## [6.0.1] - 2018-01-22
 
 ### Changed
 
