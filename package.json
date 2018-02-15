@@ -41,6 +41,8 @@
   },
   "files": [
     "lib/*.*",
+    "lib/async/*.*",
+    "lib/async/util/*.*",
     "lib/cjs/*.*",
     "lib/cjs/util/*.*"
   ],
