@@ -34,7 +34,7 @@ export interface ArangoCollection {
 export abstract class BaseCollection implements ArangoCollection {
   isArangoCollection: true = true;
   name: string;
-  type: number;
+  abstract type: number;
   protected _urlPrefix: string;
   protected _idPrefix: string;
   protected _connection: Connection;
