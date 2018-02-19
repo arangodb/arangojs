@@ -882,7 +882,7 @@ This function implements the
 
 #### database.transaction
 
-`async database.transaction(collections, action, [params,] [lockTimeout]):
+`async database.transaction(collections, action, [params, [options]]):
 Object`
 
 Performs a server-side transaction and returns its return value.
@@ -915,11 +915,9 @@ Performs a server-side transaction and returns its return value.
   Available as variable `params` when the _action_ function is being executed on
   server. Check the example below.
 
-* **options**: `Object|number` (optional)
-  
-  For backwards compatability, the options object can either be a `number` denoting
-  a `lockTimeout` or an options option containing the following properties, as per the 
-  [the HTTP API documentation for transactions](https://docs.arangodb.com/latest/HTTP/Transaction/index.html):
+* **options**: `Object` (optional)
+
+  An object with any of the following properties:
 
   * **lockTimeout**: `number` (optional)
 

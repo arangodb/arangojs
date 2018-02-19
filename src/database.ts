@@ -182,34 +182,37 @@ export class Database {
   async transaction(
     collections: CollectionName | CollectionName[] | TransactionCollections,
     action: string,
-    params?: any
+    params?: Object
   ): Promise<any>;
   async transaction(
     collections: CollectionName | CollectionName[] | TransactionCollections,
     action: string,
-    params?: any,
-    options?: TrOptions
+    params?: Object,
+    options?: TransactionOptions
   ): Promise<any>;
   async transaction(
     collections: CollectionName | CollectionName[] | TransactionCollections,
     action: string,
-    params?: any,
-    options?: TrOptions
+    lockTimeout?: number
+  ): Promise<any>;
+  async transaction(
+    collections: CollectionName | CollectionName[] | TransactionCollections,
+    action: string,
+    params?: Object,
+    lockTimeout?: number
+  ): Promise<any>;
+  async transaction(
+    collections: CollectionName | CollectionName[] | TransactionCollections,
+    action: string,
+    params?: Object | number,
+    options?: TransactionOptions | number
   ): Promise<any> {
     if (typeof params === "number") {
-      options = { lockTimeout: params };
-      params = undefined;
-    }
-    if (
-      typeof params === "object"
-      && (params.waitForSync
-      || params.lockTimeout
-      || params.maxTransactionSize
-      || params.intermediateCommitCount
-      || params.intermediateCommitSize)
-    ) {
       options = params;
       params = undefined;
+    }
+    if (typeof options === "number") {
+      options = { lockTimeout: options };
     }
     if (typeof collections === "string") {
       collections = { write: [collections] };
@@ -234,7 +237,7 @@ export class Database {
       collections,
       action,
       params,
-      ...(options as TransactionOptions)
+      ...options
     });
     return res.body.result;
   }
