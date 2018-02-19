@@ -30,14 +30,12 @@ export type TransactionCollections = {
 export type TrCols = CollectionName | CollectionName[] | TransactionCollections;
 
 export type TransactionOptions = {
-  lockTimeout?: number,
-  maxTransactionSize?: number,
-  intermediateCommitCount?: number,
-  intermediateCommitSize?: number,
-  waitForSync?: boolean
+  lockTimeout?: number;
+  maxTransactionSize?: number;
+  intermediateCommitCount?: number;
+  intermediateCommitSize?: number;
+  waitForSync?: boolean;
 };
-
-export type TrOptions = number | TransactionOptions;
 
 export type ServiceOptions = {
   [key: string]: any;
@@ -353,7 +351,7 @@ export class Database {
 
   async getServiceConfiguration(mount: string, minimal: boolean = false) {
     const res = await this._api.get("/foxx/configuration", { mount, minimal });
-    if (!minimal || !Object.values(res.body).every(value => value.title))
+    if (!minimal || !Object.values(res.body).every((value: any) => value.title))
       return res.body;
     const values: any = {};
     for (const key of Object.keys(res.body)) {
@@ -375,7 +373,7 @@ export class Database {
     if (
       minimal ||
       !result.values ||
-      !Object.values(result.values).every(value => value.title)
+      !Object.values(result.values).every((value: any) => value.title)
     ) {
       return result;
     }
@@ -402,7 +400,7 @@ export class Database {
     if (
       minimal ||
       !result.values ||
-      !Object.values(result.values).every(value => value.title)
+      !Object.values(result.values).every((value: any) => value.title)
     ) {
       return result;
     }
@@ -418,7 +416,7 @@ export class Database {
 
   async getServiceDependencies(mount: string, minimal: boolean = false) {
     const res = await this._api.get("/foxx/dependencies", { mount, minimal });
-    if (!minimal || !Object.values(res.body).every(value => value.title))
+    if (!minimal || !Object.values(res.body).every((value: any) => value.title))
       return res.body;
     const values: any = {};
     for (const key of Object.keys(res.body)) {
@@ -440,7 +438,7 @@ export class Database {
     if (
       minimal ||
       !result.values ||
-      !Object.values(result.values).every(value => value.title)
+      !Object.values(result.values).every((value: any) => value.title)
     ) {
       return result;
     }
@@ -467,7 +465,7 @@ export class Database {
     if (
       minimal ||
       !result.values ||
-      !Object.values(result.values).every(value => value.title)
+      !Object.values(result.values).every((value: any) => value.title)
     ) {
       return result;
     }
