@@ -915,10 +915,34 @@ Performs a server-side transaction and returns its return value.
   Available as variable `params` when the _action_ function is being executed on
   server. Check the example below.
 
-* **lockTimeout**: `number` (optional)
+* **options**: `Object|number` (optional)
+  
+  For backwards compatability, the options object can either be a `number` denoting
+  a `lockTimeout` or an options option containing the following properties, as per the 
+  [the HTTP API documentation for transactions](https://docs.arangodb.com/latest/HTTP/Transaction/index.html):
 
-  Determines how long the database will wait while attemping to gain locks on
-  collections used by the transaction before timing out.
+  * **lockTimeout**: `number` (optional)
+
+    Determines how long the database will wait while attemping to gain locks on
+    collections used by the transaction before timing out.
+
+  * **waitForSync**: `boolean` (optional)
+
+    Determines whether to force the transaction to write all data to disk before returning.
+
+  * **maxTransactionSize**: `number` (optional)
+
+    Determines the transaction size limit in bytes. Honored by the RocksDB storage engine only.
+
+  * **intermediateCommitCount**: `number` (optional)
+
+    Determines the maximum number of operations after which an intermediate commit is
+    performed automatically. Honored by the RocksDB storage engine only.
+
+  * **intermediateCommitSize**: `number` (optional)
+
+    Determine the maximum total size of operations after which an intermediate commit is
+    performed automatically. Honored by the RocksDB storage engine only.
 
 If _collections_ is an array or string, it will be treated as
 _collections.write_.

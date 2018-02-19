@@ -29,6 +29,16 @@ export type TransactionCollections = {
 };
 export type TrCols = CollectionName | CollectionName[] | TransactionCollections;
 
+export type TransactionOptions = {
+  lockTimeout?: number,
+  maxTransactionSize?: number,
+  intermediateCommitCount?: number,
+  intermediateCommitSize?: number,
+  waitForSync?: boolean
+};
+
+export type TrOptions = number | TransactionOptions;
+
 export type ServiceOptions = {
   [key: string]: any;
   configuration?: { [key: string]: any };
@@ -180,16 +190,27 @@ export class Database {
     collections: CollectionName | CollectionName[] | TransactionCollections,
     action: string,
     params?: any,
-    lockTimeout?: number
+    options?: TrOptions
   ): Promise<any>;
   async transaction(
     collections: CollectionName | CollectionName[] | TransactionCollections,
     action: string,
     params?: any,
-    lockTimeout?: number
+    options?: TrOptions
   ): Promise<any> {
     if (typeof params === "number") {
-      lockTimeout = params;
+      options = { lockTimeout: params };
+      params = undefined;
+    }
+    if (
+      typeof params === "object"
+      && (params.waitForSync
+      || params.lockTimeout
+      || params.maxTransactionSize
+      || params.intermediateCommitCount
+      || params.intermediateCommitSize)
+    ) {
+      options = params;
       params = undefined;
     }
     if (typeof collections === "string") {
@@ -215,7 +236,7 @@ export class Database {
       collections,
       action,
       params,
-      lockTimeout
+      ...(options as TransactionOptions)
     });
     return res.body.result;
   }
