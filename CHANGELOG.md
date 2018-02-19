@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Changed
+
+* Extended `db.transaction` arguments (@f5io in #494)
+
+  It's now possible to pass additional transaction options.
+
 ## [6.1.0] - 2018-02-12
 
 ### Removed
