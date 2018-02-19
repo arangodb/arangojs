@@ -811,7 +811,7 @@ describe("Foxx service", () => {
   for (const [desc, method] of routes) {
     it(`should return 400 when mount is omitted for ${desc}`, async () => {
       try {
-        await method(mount);
+        await method();
         expect.fail();
       } catch (e) {
         expect(e).to.be.instanceOf(ArangoError);
