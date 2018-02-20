@@ -13,6 +13,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
   It's now possible to pass additional transaction options.
 
+### Fixed
+
+* Fixed `db.acquireHostList` request path (@jcambass in #504)
+
 ## [6.1.0] - 2018-02-12
 
 ### Removed
