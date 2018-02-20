@@ -17,6 +17,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 * Fixed `db.acquireHostList` request path ([@jcambass](https://github.com/jcambass) in [#504](https://github.com/arangodb/arangojs/pull/504))
 
+* Fixed a typo ([@lodestone](https://github.com/lodestone) in [#506](https://github.com/arangodb/arangojs/pull/506))
+
 ## [6.1.0] - 2018-02-12
 
 ### Removed
