@@ -9,13 +9,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed
 
-* Extended `db.transaction` arguments (@f5io in #494)
+* Extended `db.transaction` arguments ([@f5io](https://github.com/f5io) in [#494](https://github.com/arangodb/arangojs/pull/494))
 
   It's now possible to pass additional transaction options.
 
 ### Fixed
 
-* Fixed `db.acquireHostList` request path (@jcambass in #504)
+* Fixed `db.acquireHostList` request path ([@jcambass](https://github.com/jcambass) in [#504](https://github.com/arangodb/arangojs/pull/504))
 
 ## [6.1.0] - 2018-02-12
 
