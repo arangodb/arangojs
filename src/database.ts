@@ -66,7 +66,7 @@ export class Database {
       throw new Error("Cannot acquire host list with absolute URL");
     }
     const res = await this._api.request({
-      path: "/_api/cluster/endpoints"
+      path: "/cluster/endpoints"
     });
     const urls: string[] = res.body.endpoints.map(
       (endpoint: any) => endpoint.endpoint
