@@ -2029,7 +2029,7 @@ Advances the cursor by applying the function _fn_ to each value in the cursor's
 remaining result list until the cursor is exhausted or _fn_ returns a value that
 evaluates to `false`.
 
-Returns `false` if _fn_ returned a value that evalutes to `false`, or `true`
+Returns `false` if _fn_ returned a value that evaluates to `false`, or `true`
 otherwise.
 
 Equivalent to _Array.prototype.every_ (except async).
