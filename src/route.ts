@@ -25,7 +25,7 @@ export class Route {
 
   request({ method, path, headers = {}, ...opts }: any) {
     if (!path) opts.path = "";
-    else if (this._path && path.charAt(0) !== "/") opts.spath = `/${path}`;
+    else if (this._path && path.charAt(0) !== "/") opts.path = `/${path}`;
     else opts.path = path;
     opts.basePath = this._path;
     opts.headers = { ...this._headers, ...headers };
