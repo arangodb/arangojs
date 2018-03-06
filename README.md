@@ -3554,16 +3554,16 @@ For more information on the _opts_ object, see
 ```js
 const db = new Database();
 const collection = db.collection('some-collection');
-const doc = {number: 1, hello: 'world'};
-const doc1 = await collection.save(doc);
-const doc2 = await collection.replace(doc1, {number: 2});
-assert.equal(doc2._id, doc1._id);
-assert.notEqual(doc2._rev, doc1._rev);
-const doc3 = await collection.document(doc1);
-assert.equal(doc3._id, doc1._id);
-assert.equal(doc3._rev, doc2._rev);
-assert.equal(doc3.number, 2);
-assert.equal(doc3.hello, undefined);
+const data = {number: 1, hello: 'world'};
+const info1 = await collection.save(data);
+const info2 = await collection.replace(info1, {number: 2});
+assert.equal(info2._id, info1._id);
+assert.notEqual(info2._rev, info1._rev);
+const doc = await collection.document(info1);
+assert.equal(doc._id, info1._id);
+assert.equal(doc._rev, info2._rev);
+assert.equal(doc.number, 2);
+assert.equal(doc.hello, undefined);
 ```
 
 #### collection.update
