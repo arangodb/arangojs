@@ -44,12 +44,10 @@ export type ServiceOptions = {
 };
 
 export class Database {
-  private _api: Route;
   private _connection: Connection;
 
   constructor(config?: Config) {
     this._connection = new Connection(config);
-    this._api = this._connection.route("/_api");
     this.useBasicAuth();
   }
 
@@ -57,19 +55,17 @@ export class Database {
     return this._connection.getDatabaseName() || null;
   }
 
-  route(path?: string, headers?: Object) {
-    return this._connection.route(path, headers);
+  route(path?: string, headers?: Object): Route {
+    return new Route(this._connection, path, headers);
   }
 
   async acquireHostList() {
     if (!this._connection.getDatabaseName()) {
       throw new Error("Cannot acquire host list with absolute URL");
     }
-    const res = await this._api.request({
-      path: "/cluster/endpoints"
-    });
-    const urls: string[] = res.body.endpoints.map(
-      (endpoint: any) => endpoint.endpoint
+    const urls: string[] = await this._connection.request(
+      { path: "/_api/cluster/endpoints" },
+      res => res.body.endpoints.map((endpoint: any) => endpoint.endpoint)
     );
     this._connection.addToHostList(urls);
   }
@@ -94,32 +90,46 @@ export class Database {
     return this;
   }
 
-  async get() {
-    const res = await this._api.get("/database/current");
-    return res.body.result;
+  get() {
+    return this._connection.request(
+      { path: "/_api/database/current" },
+      res => res.body.result
+    );
   }
 
-  async createDatabase(databaseName: string, users?: string[]) {
-    const res = await this._api.post("/database", {
-      users,
-      name: databaseName
-    });
-    return res.body;
+  createDatabase(databaseName: string, users?: string[]) {
+    return this._connection.request(
+      {
+        method: "POST",
+        path: "/_api/database",
+        body: { users, name: databaseName }
+      },
+      res => res.body
+    );
   }
 
-  async listDatabases() {
-    const res = await this._api.get("/database");
-    return res.body.result;
+  listDatabases() {
+    return this._connection.request(
+      { path: "/_api/database" },
+      res => res.body.result
+    );
   }
 
-  async listUserDatabases() {
-    const res = await this._api.get("/database/user");
-    return res.body.result;
+  listUserDatabases() {
+    return this._connection.request(
+      { path: "/_api/database/user" },
+      res => res.body.result
+    );
   }
 
-  async dropDatabase(databaseName: string) {
-    const res = await this._api.delete(`/database/${databaseName}`);
-    return res.body;
+  dropDatabase(databaseName: string) {
+    return this._connection.request(
+      {
+        method: "DELETE",
+        path: `/_api/database/${databaseName}`
+      },
+      res => res.body
+    );
   }
 
   // Collection manipulation
@@ -132,12 +142,17 @@ export class Database {
     return new EdgeCollection(this._connection, collectionName);
   }
 
-  async listCollections(excludeSystem: boolean = true) {
-    const res = await this._api.get("/collection", { excludeSystem });
-    if (this._connection.arangoMajor <= 2) {
-      return res.body.collections;
-    }
-    return res.body.result;
+  listCollections(excludeSystem: boolean = true) {
+    return this._connection.request(
+      {
+        path: "/_api/collection",
+        qs: { excludeSystem }
+      },
+      res =>
+        this._connection.arangoMajor <= 2
+          ? res.body.collections
+          : res.body.result
+    );
   }
 
   async collections(excludeSystem: boolean = true) {
@@ -150,10 +165,15 @@ export class Database {
   async truncate(excludeSystem: boolean = true) {
     const collections = await this.listCollections(excludeSystem);
     return await Promise.all(
-      collections.map(async (data: any) => {
-        const res = await this._api.put(`/collection/${data.name}/truncate`);
-        return res.body;
-      })
+      collections.map((data: any) =>
+        this._connection.request(
+          {
+            method: "PUT",
+            path: `/_api/collection/${data.name}/truncate`
+          },
+          res => res.body
+        )
+      )
     );
   }
 
@@ -163,9 +183,11 @@ export class Database {
     return new Graph(this._connection, graphName);
   }
 
-  async listGraphs() {
-    const res = await this._api.get("/gharial");
-    return res.body.graphs;
+  listGraphs() {
+    return this._connection.request(
+      { path: "/_api/gharial" },
+      res => res.body.graphs
+    );
   }
 
   async graphs() {
@@ -175,33 +197,33 @@ export class Database {
 
   // Queries
 
-  async transaction(
+  transaction(
     collections: CollectionName | CollectionName[] | TransactionCollections,
     action: string
   ): Promise<any>;
-  async transaction(
+  transaction(
     collections: CollectionName | CollectionName[] | TransactionCollections,
     action: string,
     params?: Object
   ): Promise<any>;
-  async transaction(
+  transaction(
     collections: CollectionName | CollectionName[] | TransactionCollections,
     action: string,
     params?: Object,
     options?: TransactionOptions
   ): Promise<any>;
-  async transaction(
+  transaction(
     collections: CollectionName | CollectionName[] | TransactionCollections,
     action: string,
     lockTimeout?: number
   ): Promise<any>;
-  async transaction(
+  transaction(
     collections: CollectionName | CollectionName[] | TransactionCollections,
     action: string,
     params?: Object,
     lockTimeout?: number
   ): Promise<any>;
-  async transaction(
+  transaction(
     collections: CollectionName | CollectionName[] | TransactionCollections,
     action: string,
     params?: Object | number,
@@ -233,23 +255,29 @@ export class Database {
         } else collections.write = collections.write.map(colToString);
       }
     }
-    const res = await this._api.post("/transaction", {
-      collections,
-      action,
-      params,
-      ...options
-    });
-    return res.body.result;
+    return this._connection.request(
+      {
+        method: "POST",
+        path: "/_api/transaction",
+        body: {
+          collections,
+          action,
+          params,
+          ...options
+        }
+      },
+      res => res.body.result
+    );
   }
 
-  async query(query: string | AqlQuery | AqlLiteral): Promise<ArrayCursor>;
-  async query(query: AqlQuery, opts?: any): Promise<ArrayCursor>;
-  async query(
+  query(query: string | AqlQuery | AqlLiteral): Promise<ArrayCursor>;
+  query(query: AqlQuery, opts?: any): Promise<ArrayCursor>;
+  query(
     query: string | AqlLiteral,
     bindVars?: any,
     opts?: any
   ): Promise<ArrayCursor>;
-  async query(
+  query(
     query: string | AqlQuery | AqlLiteral,
     bindVars?: any,
     opts?: any
@@ -261,32 +289,51 @@ export class Database {
     } else if (isAqlLiteral(query)) {
       query = query.toAQL();
     }
-    const res = await this._api.post("/cursor", { ...opts, query, bindVars });
-    return new ArrayCursor(this._connection, res.body, res.host);
+    return this._connection.request(
+      {
+        method: "POST",
+        path: "/_api/cursor",
+        body: { ...opts, query, bindVars }
+      },
+      res => new ArrayCursor(this._connection, res.body, res.host)
+    );
   }
 
   // Function management
 
-  async listFunctions() {
-    const res = await this._api.get("/aqlfunction");
-    return res.body;
+  listFunctions() {
+    return this._connection.request(
+      { path: "/_api/aqlfunction" },
+      res => res.body
+    );
   }
 
-  async createFunction(name: string, code: string) {
-    const res = await this._api.post("/aqlfunction", { name, code });
-    return res.body;
+  createFunction(name: string, code: string) {
+    return this._connection.request(
+      {
+        method: "POST",
+        path: "/_api/aqlfunction",
+        body: { name, code }
+      },
+      res => res.body
+    );
   }
 
-  async dropFunction(name: string, group: boolean = false) {
-    const res = await this._api.delete(`/aqlfunction/${name}`, { group });
-    return res.body;
+  dropFunction(name: string, group: boolean = false) {
+    return this._connection.request(
+      {
+        method: "DELETE",
+        path: `/_api/aqlfunction/${name}`,
+        body: { group }
+      },
+      res => res.body
+    );
   }
 
   // Service management
 
-  async listServices() {
-    const res = await this._api.get("/foxx");
-    return res.body;
+  listServices() {
+    return this._connection.request({ path: "/_api/foxx" }, res => res.body);
   }
 
   async installService(mount: string, source: any, opts: ServiceOptions = {}) {
@@ -296,15 +343,16 @@ export class Database {
       dependencies,
       source
     });
-    const res = await this._api.request({
-      method: "POST",
-      path: "/foxx",
-      body: req.body,
-      isBinary: true,
-      qs: { ...qs, mount },
-      headers: req.headers
-    });
-    return res.body;
+    return await this._connection.request(
+      {
+        ...req,
+        method: "POST",
+        path: "/_api/foxx",
+        isBinary: true,
+        qs: { ...qs, mount }
+      },
+      res => res.body
+    );
   }
 
   async upgradeService(mount: string, source: any, opts: ServiceOptions = {}) {
@@ -314,15 +362,16 @@ export class Database {
       dependencies,
       source
     });
-    const res = await this._api.request({
-      method: "PATCH",
-      path: "/foxx/service",
-      body: req.body,
-      isBinary: true,
-      qs: { ...qs, mount },
-      headers: req.headers
-    });
-    return res.body;
+    return await this._connection.request(
+      {
+        ...req,
+        method: "PATCH",
+        path: "/_api/foxx/service",
+        isBinary: true,
+        qs: { ...qs, mount }
+      },
+      res => res.body
+    );
   }
 
   async replaceService(mount: string, source: any, opts: ServiceOptions = {}) {
@@ -332,33 +381,52 @@ export class Database {
       dependencies,
       source
     });
-    const res = await this._api.request({
-      method: "PUT",
-      path: "/foxx/service",
-      body: req.body,
-      isBinary: true,
-      qs: { ...qs, mount },
-      headers: req.headers
-    });
-    return res.body;
+    return await this._connection.request(
+      {
+        ...req,
+        method: "PUT",
+        path: "/_api/foxx/service",
+        isBinary: true,
+        qs: { ...qs, mount }
+      },
+      res => res.body
+    );
   }
 
-  async uninstallService(mount: string, opts: any = {}): Promise<void> {
-    await this._api.delete("/foxx/service", { ...opts, mount });
+  uninstallService(mount: string, opts: any = {}): Promise<void> {
+    return this._connection.request(
+      {
+        method: "DELETE",
+        path: "/_api/foxx/service",
+        qs: { ...opts, mount }
+      },
+      () => undefined
+    );
   }
 
-  async getService(mount: string) {
-    const res = await this._api.get("/foxx/service", { mount });
-    return res.body;
+  getService(mount: string) {
+    return this._connection.request(
+      {
+        path: "/_api/foxx/service",
+        qs: { mount }
+      },
+      res => res.body
+    );
   }
 
   async getServiceConfiguration(mount: string, minimal: boolean = false) {
-    const res = await this._api.get("/foxx/configuration", { mount, minimal });
-    if (!minimal || !Object.values(res.body).every((value: any) => value.title))
-      return res.body;
+    const result = await this._connection.request(
+      {
+        path: "/_api/foxx/configuration",
+        qs: { mount, minimal }
+      },
+      res => res.body
+    );
+    if (!minimal || !Object.values(result).every((value: any) => value.title))
+      return result;
     const values: any = {};
-    for (const key of Object.keys(res.body)) {
-      values[key] = res.body[key].current;
+    for (const key of Object.keys(result)) {
+      values[key] = result[key].current;
     }
     return values;
   }
@@ -368,11 +436,15 @@ export class Database {
     cfg: any,
     minimal: boolean = false
   ) {
-    const res = await this._api.patch("/foxx/configuration", cfg, {
-      mount,
-      minimal
-    });
-    const result = res.body;
+    const result = await this._connection.request(
+      {
+        method: "PATCH",
+        path: "/_api/foxx/configuration",
+        body: cfg,
+        qs: { mount, minimal }
+      },
+      res => res.body
+    );
     if (
       minimal ||
       !result.values ||
@@ -380,8 +452,7 @@ export class Database {
     ) {
       return result;
     }
-    const res2 = await this.getServiceConfiguration(mount, minimal);
-    const result2 = res2.body;
+    const result2 = await this.getServiceConfiguration(mount, minimal);
     if (result.warnings) {
       for (const key of Object.keys(result2)) {
         result2[key].warning = result.warnings[key];
@@ -395,11 +466,15 @@ export class Database {
     cfg: any,
     minimal: boolean = false
   ) {
-    const res = await this._api.put("/foxx/configuration", cfg, {
-      mount,
-      minimal
-    });
-    const result = res.body;
+    const result = await this._connection.request(
+      {
+        method: "PUT",
+        path: "/_api/foxx/configuration",
+        body: cfg,
+        qs: { mount, minimal }
+      },
+      res => res.body
+    );
     if (
       minimal ||
       !result.values ||
@@ -407,8 +482,7 @@ export class Database {
     ) {
       return result;
     }
-    const res2 = await this.getServiceConfiguration(mount, minimal);
-    const result2 = res2.body;
+    const result2 = await this.getServiceConfiguration(mount, minimal);
     if (result.warnings) {
       for (const key of Object.keys(result2)) {
         result2[key].warning = result.warnings[key];
@@ -418,12 +492,18 @@ export class Database {
   }
 
   async getServiceDependencies(mount: string, minimal: boolean = false) {
-    const res = await this._api.get("/foxx/dependencies", { mount, minimal });
-    if (!minimal || !Object.values(res.body).every((value: any) => value.title))
-      return res.body;
+    const result = await this._connection.request(
+      {
+        path: "/_api/foxx/dependencies",
+        qs: { mount, minimal }
+      },
+      res => res.body
+    );
+    if (!minimal || !Object.values(result).every((value: any) => value.title))
+      return result;
     const values: any = {};
-    for (const key of Object.keys(res.body)) {
-      values[key] = res.body[key].current;
+    for (const key of Object.keys(result)) {
+      values[key] = result[key].current;
     }
     return values;
   }
@@ -433,11 +513,15 @@ export class Database {
     cfg: any,
     minimal: boolean = false
   ) {
-    const res = await this._api.patch("/foxx/dependencies", cfg, {
-      mount,
-      minimal
-    });
-    const result = res.body;
+    const result = await this._connection.request(
+      {
+        method: "PATCH",
+        path: "/_api/foxx/dependencies",
+        body: cfg,
+        qs: { mount, minimal }
+      },
+      res => res.body
+    );
     if (
       minimal ||
       !result.values ||
@@ -445,8 +529,7 @@ export class Database {
     ) {
       return result;
     }
-    const res2 = await this.getServiceDependencies(mount, minimal);
-    const result2 = res2.body;
+    const result2 = await this.getServiceDependencies(mount, minimal);
     if (result.warnings) {
       for (const key of Object.keys(result2)) {
         result2[key].warning = result.warnings[key];
@@ -460,11 +543,15 @@ export class Database {
     cfg: { [key: string]: string },
     minimal: boolean = false
   ) {
-    const res = await this._api.put("/foxx/dependencies", cfg, {
-      mount,
-      minimal
-    });
-    const result = res.body;
+    const result = await this._connection.request(
+      {
+        method: "PUT",
+        path: "/_api/foxx/dependencies",
+        body: cfg,
+        qs: { mount, minimal }
+      },
+      res => res.body
+    );
     if (
       minimal ||
       !result.values ||
@@ -472,8 +559,7 @@ export class Database {
     ) {
       return result;
     }
-    const res2 = await this.getServiceDependencies(mount, minimal);
-    const result2 = res2.body;
+    const result2 = await this.getServiceDependencies(mount, minimal);
     if (result.warnings) {
       for (const key of Object.keys(result2)) {
         result2[key].warning = result.warnings[key];
@@ -482,55 +568,104 @@ export class Database {
     return result2;
   }
 
-  async enableServiceDevelopmentMode(mount: string) {
-    const res = await this._api.post("/foxx/development", undefined, { mount });
-    return res.body;
+  enableServiceDevelopmentMode(mount: string) {
+    return this._connection.request(
+      {
+        method: "POST",
+        path: "/_api/foxx/development",
+        qs: { mount }
+      },
+      res => res.body
+    );
   }
 
-  async disableServiceDevelopmentMode(mount: string) {
-    const res = await this._api.delete("/foxx/development", { mount });
-    return res.body;
+  disableServiceDevelopmentMode(mount: string) {
+    return this._connection.request(
+      {
+        method: "DELETE",
+        path: "/_api/foxx/development",
+        qs: { mount }
+      },
+      res => res.body
+    );
   }
 
-  async listServiceScripts(mount: string) {
-    const res = await this._api.get("/foxx/scripts", { mount });
-    return res.body;
+  listServiceScripts(mount: string) {
+    return this._connection.request(
+      {
+        path: "/_api/foxx/scripts",
+        qs: { mount }
+      },
+      res => res.body
+    );
   }
 
-  async runServiceScript(mount: string, name: string, args: any): Promise<any> {
-    const res = await this._api.post(`/foxx/scripts/${name}`, args, { mount });
-    return res.body;
+  runServiceScript(mount: string, name: string, args: any): Promise<any> {
+    return this._connection.request(
+      {
+        method: "POST",
+        path: `/_api/foxx/scripts/${name}`,
+        body: args,
+        qs: { mount }
+      },
+      res => res.body
+    );
   }
 
-  async runServiceTests(mount: string, opts: any): Promise<any> {
-    const res = await this._api.post("/foxx/tests", undefined, {
-      ...opts,
-      mount
-    });
-    return res.body;
+  runServiceTests(mount: string, opts: any): Promise<any> {
+    return this._connection.request(
+      {
+        method: "POST",
+        path: "/_api/foxx/tests",
+        qs: {
+          ...opts,
+          mount
+        }
+      },
+      res => res.body
+    );
   }
 
-  async getServiceReadme(mount: string): Promise<string | undefined> {
-    const res = await this._api.get("/foxx/readme", { mount });
-    return res.body;
+  getServiceReadme(mount: string): Promise<string | undefined> {
+    return this._connection.request(
+      {
+        path: "/_api/foxx/readme",
+        qs: { mount }
+      },
+      res => res.body
+    );
   }
 
-  async getServiceDocumentation(mount: string): Promise<any> {
-    const res = await this._api.get("/foxx/swagger", { mount });
-    return res.body;
+  getServiceDocumentation(mount: string): Promise<any> {
+    return this._connection.request(
+      {
+        path: "/_api/foxx/swagger",
+        qs: { mount }
+      },
+      res => res.body
+    );
   }
 
-  async downloadService(mount: string): Promise<Buffer | Blob> {
-    const res = await this._api.request({
-      method: "POST",
-      path: "/foxx/download",
-      qs: { mount },
-      expectBinary: true
-    });
-    return res.body;
+  downloadService(mount: string): Promise<Buffer | Blob> {
+    return this._connection.request(
+      {
+        method: "POST",
+        path: "/_api/foxx/download",
+        qs: { mount },
+        expectBinary: true
+      },
+      res => res.body
+    );
   }
 
-  async commitLocalServiceState(replace: boolean = false): Promise<void> {
-    await this._api.post("/foxx/commit", undefined, { replace });
+  commitLocalServiceState(replace: boolean = false): Promise<void> {
+    return this._connection.request(
+      {
+        method: "POST",
+        path: "/_api/foxx/commit",
+        qs: { replace }
+      },
+      () => undefined
+    );
   }
 }

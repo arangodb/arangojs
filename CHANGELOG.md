@@ -13,6 +13,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
   This is a necessary step to integrate arangojs with the Drivers book in the official ArangoDB documentation.
 
+* Replaced internal use of async functions with callbacks
+
+  This removes some unnecessary layers of indirection, which should increase overall performance.
+
 ## [6.2.0] - 2018-03-06
 
 ### Changed

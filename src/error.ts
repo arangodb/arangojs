@@ -72,7 +72,7 @@ export class ArangoError extends ExtendableError {
     const err = new Error(this.message);
     err.name = this.name;
     for (const key of nativeErrorKeys) {
-      if (err[key]) this[key as keyof this] = err[key];
+      if (err[key]) this[key] = err[key];
     }
   }
 }
@@ -91,7 +91,7 @@ export class HttpError extends ExtendableError {
     const err = new Error(this.message);
     err.name = this.name;
     for (const key of nativeErrorKeys) {
-      if (err[key]) this[key as keyof this] = err[key];
+      if (err[key]) this[key] = err[key];
     }
   }
 }

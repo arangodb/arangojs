@@ -1,12 +1,10 @@
 import { Connection } from "./connection";
-import { Route } from "./route";
 
 export class ArrayCursor {
   extra: any;
   count: number;
 
   private _connection: Connection;
-  private _api: Route;
   private _result: any;
   private _hasMore: boolean;
   private _id: string;
@@ -15,7 +13,6 @@ export class ArrayCursor {
   constructor(connection: Connection, body: any, host?: number) {
     this.extra = body.extra;
     this._connection = connection;
-    this._api = this._connection.route("/_api");
     this._result = body.result;
     this._hasMore = Boolean(body.hasMore);
     this._id = body.id;
@@ -32,9 +29,9 @@ export class ArrayCursor {
   private async _more() {
     if (!this._hasMore) return;
     else {
-      const res = await this._api.request({
+      const res = await this._connection.request({
         method: "PUT",
-        path: `/cursor/${this._id}`,
+        path: `/_api/cursor/${this._id}`,
         host: this._host
       });
       this._result.push(...res.body.result);
