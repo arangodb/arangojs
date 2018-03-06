@@ -1,6 +1,5 @@
 import { ArrayCursor } from "./cursor";
 import { Connection } from "./connection";
-import { Route } from "./route";
 
 export enum Types {
   DOCUMENT_COLLECTION = 2,
@@ -38,14 +37,12 @@ export abstract class BaseCollection implements ArangoCollection {
   protected _urlPrefix: string;
   protected _idPrefix: string;
   protected _connection: Connection;
-  protected _api: Route;
 
   constructor(connection: Connection, name: string) {
     this.name = name;
     this._urlPrefix = `/collection/${this.name}/`;
     this._idPrefix = `${this.name}/`;
     this._connection = connection;
-    this._api = this._connection.route("/_api");
     if (this._connection.arangoMajor >= 3) {
       this.first = undefined!;
       this.last = undefined!;
@@ -84,28 +81,44 @@ export abstract class BaseCollection implements ArangoCollection {
     return indexHandle;
   }
 
-  protected async _get(path: string, qs?: any) {
-    const res = await this._api.get(this._urlPrefix + path, qs);
-    return res.body;
+  protected _get(path: string, qs?: any) {
+    return this._connection.request(
+      { path: `/_api/${this._urlPrefix}${path}`, qs },
+      res => res.body
+    );
   }
 
-  protected async _put(path: string, body: any) {
-    const res = await this._api.put(this._urlPrefix + path, body);
-    return res.body;
+  protected _put(path: string, body: any) {
+    return this._connection.request(
+      {
+        method: "PUT",
+        path: `/_api/${this._urlPrefix}${path}`,
+        body
+      },
+      res => res.body
+    );
   }
 
-  async get() {
-    const res = await this._api.get(`/collection/${this.name}`);
-    return res.body;
+  get() {
+    return this._connection.request(
+      { path: `/_api/collection/${this.name}` },
+      res => res.body
+    );
   }
 
-  async create(properties?: any) {
-    const res = await this._api.post("/collection", {
-      ...properties,
-      name: this.name,
-      type: this.type
-    });
-    return res.body;
+  create(properties?: any) {
+    return this._connection.request(
+      {
+        method: "POST",
+        path: "/_api/collection",
+        body: {
+          ...properties,
+          name: this.name,
+          type: this.type
+        }
+      },
+      res => res.body
+    );
   }
 
   properties() {
@@ -144,11 +157,18 @@ export abstract class BaseCollection implements ArangoCollection {
   }
 
   async rename(name: string) {
-    const res = await this._api.put(this._urlPrefix + "rename", { name });
+    const result = await this._connection.request(
+      {
+        method: "PUT",
+        path: `/_api/${this._urlPrefix}rename`,
+        body: { name }
+      },
+      res => res.body
+    );
     this.name = name;
     this._idPrefix = `${name}/`;
     this._urlPrefix = `/collection/${name}/`;
-    return res.body;
+    return result;
   }
 
   rotate() {
@@ -159,12 +179,18 @@ export abstract class BaseCollection implements ArangoCollection {
     return this._put("truncate", undefined);
   }
 
-  async drop(opts?: any) {
-    const res = await this._api.delete(`/collection/${this.name}`, opts);
-    return res.body;
+  drop(opts?: any) {
+    return this._connection.request(
+      {
+        method: "DELETE",
+        path: `/_api/collection/${this.name}`,
+        qs: opts
+      },
+      res => res.body
+    );
   }
 
-  async replace(documentHandle: DocumentHandle, newValue: any, opts: any = {}) {
+  replace(documentHandle: DocumentHandle, newValue: any, opts: any = {}) {
     const headers: { [key: string]: string } = {};
     if (typeof opts === "string") {
       opts = { rev: opts };
@@ -174,16 +200,19 @@ export abstract class BaseCollection implements ArangoCollection {
       ({ rev, ...opts } = opts);
       headers["if-match"] = rev;
     }
-    const res = await this._api.put(
-      this._documentPath(documentHandle),
-      newValue,
-      opts,
-      headers
+    return this._connection.request(
+      {
+        method: "PUT",
+        path: `/_api/${this._documentPath(documentHandle)}`,
+        body: newValue,
+        qs: opts,
+        headers
+      },
+      res => res.body
     );
-    return res.body;
   }
 
-  async update(documentHandle: DocumentHandle, newValue: any, opts: any = {}) {
+  update(documentHandle: DocumentHandle, newValue: any, opts: any = {}) {
     const headers: { [key: string]: string } = {};
     if (typeof opts === "string") {
       opts = { rev: opts };
@@ -193,25 +222,31 @@ export abstract class BaseCollection implements ArangoCollection {
       ({ rev, ...opts } = opts);
       headers["if-match"] = rev;
     }
-    const res = await this._api.patch(
-      this._documentPath(documentHandle),
-      newValue,
-      opts,
-      headers
+    this._connection.request(
+      {
+        method: "PATCH",
+        path: `/_api/${this._documentPath(documentHandle)}`,
+        body: newValue,
+        qs: opts,
+        headers
+      },
+      res => res.body
     );
-    return res.body;
   }
 
-  async bulkUpdate(newValues: any, opts?: any) {
-    const res = await this._api.patch(
-      `/document/${this.name}`,
-      newValues,
-      opts
+  bulkUpdate(newValues: any, opts?: any) {
+    return this._connection.request(
+      {
+        method: "PATCH",
+        path: `/_api/document/${this.name}`,
+        body: newValues,
+        qs: opts
+      },
+      res => res.body
     );
-    return res.body;
   }
 
-  async remove(documentHandle: DocumentHandle, opts: any = {}) {
+  remove(documentHandle: DocumentHandle, opts: any = {}) {
     const headers: { [key: string]: string } = {};
     if (typeof opts === "string") {
       opts = { rev: opts };
@@ -221,253 +256,368 @@ export abstract class BaseCollection implements ArangoCollection {
       ({ rev, ...opts } = opts);
       headers["if-match"] = rev;
     }
-    const res = await this._api.delete(
-      this._documentPath(documentHandle),
-      opts,
-      headers
+    return this._connection.request(
+      {
+        method: "DELETE",
+        path: `/_api/${this._documentPath(documentHandle)}`,
+        qs: opts,
+        headers
+      },
+      res => res.body
     );
-    return res.body;
   }
 
-  async list(type: string = "id") {
+  list(type: string = "id") {
     if (this._connection.arangoMajor <= 2) {
-      const res = await this._api.get("/document", {
-        type,
-        collection: this.name
-      });
-      return res.body.documents;
+      return this._connection.request(
+        {
+          path: "/_api/document",
+          qs: { type, collection: this.name }
+        },
+        res => res.body.documents
+      );
     }
 
-    const res = await this._api.put("/simple/all-keys", {
-      type,
-      collection: this.name
-    });
-    return res.body.result;
-  }
-
-  async all(opts?: any) {
-    const res = await this._api.put("/simple/all", {
-      ...opts,
-      collection: this.name
-    });
-    return new ArrayCursor(this._connection, res.body, res.host);
-  }
-
-  async any() {
-    const res = await this._api.put("/simple/any", { collection: this.name });
-    return res.body.document;
-  }
-
-  async first(opts?: any) {
-    if (typeof opts === "number") {
-      opts = { count: opts };
-    }
-    const res = await this._api.put("/simple/first", {
-      ...opts,
-      collection: this.name
-    });
-    return res.body.result;
-  }
-
-  async last(opts?: any) {
-    if (typeof opts === "number") {
-      opts = { count: opts };
-    }
-    const res = await this._api.put("/simple/last", {
-      ...opts,
-      collection: this.name
-    });
-    return res.body.result;
-  }
-
-  async byExample(example: any, opts?: any) {
-    const res = await this._api.put("/simple/by-example", {
-      ...opts,
-      example,
-      collection: this.name
-    });
-    return new ArrayCursor(this._connection, res.body, res.host);
-  }
-
-  async firstExample(example: any) {
-    const res = await this._api.put("/simple/first-example", {
-      example,
-      collection: this.name
-    });
-    return res.body.document;
-  }
-
-  async removeByExample(example: any, opts?: any) {
-    const res = await this._api.put("/simple/remove-by-example", {
-      ...opts,
-      example,
-      collection: this.name
-    });
-    return res.body;
-  }
-
-  async replaceByExample(example: any, newValue: any, opts?: any) {
-    const res = await this._api.put("/simple/replace-by-example", {
-      ...opts,
-      example,
-      newValue,
-      collection: this.name
-    });
-    return res.body;
-  }
-
-  async updateByExample(example: any, newValue: any, opts?: any) {
-    const res = await this._api.put("/simple/update-by-example", {
-      ...opts,
-      example,
-      newValue,
-      collection: this.name
-    });
-    return res.body;
-  }
-
-  async lookupByKeys(keys: string[]) {
-    const res = await this._api.put("/simple/lookup-by-keys", {
-      keys,
-      collection: this.name
-    });
-    return res.body.documents;
-  }
-
-  async removeByKeys(keys: string[], options: any) {
-    const res = await this._api.put("/simple/remove-by-keys", {
-      options,
-      keys,
-      collection: this.name
-    });
-    return res.body;
-  }
-
-  async import(data: any, opts?: any) {
-    const res = await this._api.request({
-      method: "POST",
-      path: "/import",
-      body: data,
-      isJsonStream: Boolean(!opts || opts.type !== "array"),
-      qs: { type: "auto", ...opts, collection: this.name }
-    });
-    return res.body;
-  }
-
-  async indexes() {
-    const res = await this._api.get("/index", { collection: this.name });
-    return res.body.indexes;
-  }
-
-  async index(indexHandle: IndexHandle) {
-    const res = await this._api.get(`/index/${this._indexHandle(indexHandle)}`);
-    return res.body;
-  }
-
-  async createIndex(details: any) {
-    const res = await this._api.post("/index", details, {
-      collection: this.name
-    });
-    return res.body;
-  }
-
-  async dropIndex(indexHandle: IndexHandle) {
-    const res = await this._api.delete(
-      `/index/${this._indexHandle(indexHandle)}`
+    return this._connection.request(
+      {
+        method: "PUT",
+        path: "/_api/simple/all-keys",
+        body: { type, collection: this.name }
+      },
+      res => res.body.result
     );
-    return res.body;
   }
 
-  async createCapConstraint(opts?: any) {
+  all(opts?: any) {
+    return this._connection.request(
+      {
+        method: "PUT",
+        path: "/_api/simple/all",
+        body: {
+          ...opts,
+          collection: this.name
+        }
+      },
+      res => new ArrayCursor(this._connection, res.body, res.host)
+    );
+  }
+
+  any() {
+    return this._connection.request(
+      {
+        method: "PUT",
+        path: "/_api/simple/any",
+        body: { collection: this.name }
+      },
+      res => res.body.document
+    );
+  }
+
+  first(opts?: any) {
+    if (typeof opts === "number") {
+      opts = { count: opts };
+    }
+    return this._connection.request(
+      {
+        method: "PUT",
+        path: "/_api/simple/first",
+        body: {
+          ...opts,
+          collection: this.name
+        }
+      },
+      res => res.body.result
+    );
+  }
+
+  last(opts?: any) {
+    if (typeof opts === "number") {
+      opts = { count: opts };
+    }
+    return this._connection.request(
+      {
+        method: "PUT",
+        path: "/_api/simple/last",
+        body: {
+          ...opts,
+          collection: this.name
+        }
+      },
+      res => res.body.result
+    );
+  }
+
+  byExample(example: any, opts?: any) {
+    return this._connection.request(
+      {
+        method: "PUT",
+        path: "/_api/simple/by-example",
+        body: {
+          ...opts,
+          example,
+          collection: this.name
+        }
+      },
+      res => new ArrayCursor(this._connection, res.body, res.host)
+    );
+  }
+
+  firstExample(example: any) {
+    return this._connection.request(
+      {
+        method: "PUT",
+        path: "/_api/simple/first-example",
+        body: {
+          example,
+          collection: this.name
+        }
+      },
+      res => res.body.document
+    );
+  }
+
+  removeByExample(example: any, opts?: any) {
+    return this._connection.request(
+      {
+        method: "PUT",
+        path: "/_api/simple/remove-by-example",
+        body: {
+          ...opts,
+          example,
+          collection: this.name
+        }
+      },
+      res => res.body
+    );
+  }
+
+  replaceByExample(example: any, newValue: any, opts?: any) {
+    this._connection.request(
+      {
+        method: "PUT",
+        path: "/_api/simple/replace-by-example",
+        body: {
+          ...opts,
+          example,
+          newValue,
+          collection: this.name
+        }
+      },
+      res => res.body
+    );
+  }
+
+  updateByExample(example: any, newValue: any, opts?: any) {
+    this._connection.request(
+      {
+        method: "PUT",
+        path: "/_api/simple/update-by-example",
+        body: {
+          ...opts,
+          example,
+          newValue,
+          collection: this.name
+        }
+      },
+      res => res.body
+    );
+  }
+
+  lookupByKeys(keys: string[]) {
+    return this._connection.request(
+      {
+        method: "PUT",
+        path: "/_api/simple/lookup-by-keys",
+        body: {
+          keys,
+          collection: this.name
+        }
+      },
+      res => res.body.documents
+    );
+  }
+
+  removeByKeys(keys: string[], options: any) {
+    this._connection.request(
+      {
+        method: "PUT",
+        path: "/_api/simple/remove-by-keys",
+        body: {
+          options,
+          keys,
+          collection: this.name
+        }
+      },
+      res => res.body
+    );
+  }
+
+  import(data: any, opts?: any) {
+    return this._connection.request(
+      {
+        method: "POST",
+        path: "/_api/import",
+        body: data,
+        isJsonStream: Boolean(!opts || opts.type !== "array"),
+        qs: { type: "auto", ...opts, collection: this.name }
+      },
+      res => res.body
+    );
+  }
+
+  indexes() {
+    return this._connection.request(
+      {
+        path: "/_api/index",
+        qs: { collection: this.name }
+      },
+      res => res.body.indexes
+    );
+  }
+
+  index(indexHandle: IndexHandle) {
+    return this._connection.request(
+      { path: `/_api/index/${this._indexHandle(indexHandle)}` },
+      res => res.body
+    );
+  }
+
+  createIndex(details: any) {
+    return this._connection.request(
+      {
+        method: "POST",
+        path: "/_api/index",
+        body: details,
+        qs: { collection: this.name }
+      },
+      res => res.body
+    );
+  }
+
+  dropIndex(indexHandle: IndexHandle) {
+    return this._connection.request(
+      {
+        method: "DELETE",
+        path: `/_api/index/${this._indexHandle(indexHandle)}`
+      },
+      res => res.body
+    );
+  }
+
+  createCapConstraint(opts?: any) {
     if (typeof opts === "number") {
       opts = { size: opts };
     }
-    const res = await this._api.post(
-      "/index",
-      { ...opts, type: "cap" },
-      { collection: this.name }
+    return this._connection.request(
+      {
+        method: "POST",
+        path: "/_api/index",
+        body: { ...opts, type: "cap" },
+        qs: { collection: this.name }
+      },
+      res => res.body
     );
-    return res.body;
   }
 
-  async createHashIndex(fields: string[] | string, opts?: any) {
+  createHashIndex(fields: string[] | string, opts?: any) {
     if (typeof fields === "string") {
       fields = [fields];
     }
     if (typeof opts === "boolean") {
       opts = { unique: opts };
     }
-    const res = await this._api.post(
-      "/index",
-      { unique: false, ...opts, type: "hash", fields: fields },
-      { collection: this.name }
+    return this._connection.request(
+      {
+        method: "POST",
+        path: "/_api/index",
+        body: { unique: false, ...opts, type: "hash", fields: fields },
+        qs: { collection: this.name }
+      },
+      res => res.body
     );
-    return res.body;
   }
 
-  async createSkipList(fields: string[] | string, opts?: any) {
+  createSkipList(fields: string[] | string, opts?: any) {
     if (typeof fields === "string") {
       fields = [fields];
     }
     if (typeof opts === "boolean") {
       opts = { unique: opts };
     }
-    const res = await this._api.post(
-      "/index",
-      { unique: false, ...opts, type: "skiplist", fields: fields },
-      { collection: this.name }
+    return this._connection.request(
+      {
+        method: "POST",
+        path: "/_api/index",
+        body: { unique: false, ...opts, type: "skiplist", fields: fields },
+        qs: { collection: this.name }
+      },
+      res => res.body
     );
-    return res.body;
   }
 
-  async createPersistentIndex(fields: string[] | string, opts?: any) {
+  createPersistentIndex(fields: string[] | string, opts?: any) {
     if (typeof fields === "string") {
       fields = [fields];
     }
     if (typeof opts === "boolean") {
       opts = { unique: opts };
     }
-    const res = await this._api.post(
-      "/index",
-      { unique: false, ...opts, type: "persistent", fields: fields },
-      { collection: this.name }
+    return this._connection.request(
+      {
+        method: "POST",
+        path: "/_api/index",
+        body: { unique: false, ...opts, type: "persistent", fields: fields },
+        qs: { collection: this.name }
+      },
+      res => res.body
     );
-    return res.body;
   }
 
-  async createGeoIndex(fields: string[] | string, opts?: any) {
+  createGeoIndex(fields: string[] | string, opts?: any) {
     if (typeof fields === "string") {
       fields = [fields];
     }
-    const res = await this._api.post(
-      "/index",
-      { ...opts, fields, type: "geo" },
-      { collection: this.name }
+    return this._connection.request(
+      {
+        method: "POST",
+        path: "/_api/index",
+        body: { ...opts, fields, type: "geo" },
+        qs: { collection: this.name }
+      },
+      res => res.body
     );
-    return res.body;
   }
 
-  async createFulltextIndex(fields: string[] | string, minLength?: number) {
+  createFulltextIndex(fields: string[] | string, minLength?: number) {
     if (typeof fields === "string") {
       fields = [fields];
     }
-    const res = await this._api.post(
-      "/index",
-      { fields, minLength, type: "fulltext" },
-      { collection: this.name }
+    return this._connection.request(
+      {
+        method: "POST",
+        path: "/_api/index",
+        body: { fields, minLength, type: "fulltext" },
+        qs: { collection: this.name }
+      },
+      res => res.body
     );
-    return res.body;
   }
 
-  async fulltext(attribute: any, query: any, opts: any = {}) {
+  fulltext(attribute: any, query: any, opts: any = {}) {
     if (opts.index) opts.index = this._indexHandle(opts.index);
-    const res = await this._api.put("/simple/fulltext", {
-      ...opts,
-      attribute,
-      query,
-      collection: this.name
-    });
-    return new ArrayCursor(this._connection, res.body, res.host);
+    return this._connection.request(
+      {
+        method: "PUT",
+        path: "/_api/simple/fulltext",
+        body: {
+          ...opts,
+          attribute,
+          query,
+          collection: this.name
+        }
+      },
+      res => new ArrayCursor(this._connection, res.body, res.host)
+    );
   }
 }
 
@@ -481,26 +631,42 @@ export class DocumentCollection extends BaseCollection {
     return `/document/${this._documentHandle(documentHandle)}`;
   }
 
-  async document(documentHandle: DocumentHandle) {
-    const res = await this._api.get(this._documentPath(documentHandle));
-    return res.body;
+  document(documentHandle: DocumentHandle) {
+    return this._connection.request(
+      { path: `/_api/${this._documentPath(documentHandle)}` },
+      res => res.body
+    );
   }
 
-  async save(data: any, opts?: any) {
+  save(data: any, opts?: any) {
     if (typeof opts === "boolean") {
       opts = { returnNew: opts };
     }
 
     if (this._connection.arangoMajor <= 2) {
-      const res = await this._api.post(`/document`, data, {
-        ...opts,
-        collection: this.name
-      });
-      return res.body;
+      return this._connection.request(
+        {
+          method: "POST",
+          path: "/_api/document",
+          body: data,
+          qs: {
+            ...opts,
+            collection: this.name
+          }
+        },
+        res => res.body
+      );
     }
 
-    const res = await this._api.post(`/document/${this.name}`, data, opts);
-    return res.body;
+    return this._connection.request(
+      {
+        method: "POST",
+        path: `/_api/document/${this.name}`,
+        body: data,
+        qs: opts
+      },
+      res => res.body
+    );
   }
 }
 
@@ -518,43 +684,58 @@ export class EdgeCollection extends BaseCollection {
     return `document/${this._documentHandle(documentHandle)}`;
   }
 
-  async edge(documentHandle: DocumentHandle) {
-    const res = await this._api.get(this._documentPath(documentHandle));
-    return res.body;
+  edge(documentHandle: DocumentHandle) {
+    return this._connection.request(
+      { path: `/_api/${this._documentPath(documentHandle)}` },
+      res => res.body
+    );
   }
 
-  async save(data: any): Promise<any>;
-  async save(
-    data: any,
-    fromId: DocumentHandle,
-    toId: DocumentHandle
-  ): Promise<any>;
-  async save(data: any, fromId?: DocumentHandle, toId?: DocumentHandle) {
+  save(data: any): Promise<any>;
+  save(data: any, fromId: DocumentHandle, toId: DocumentHandle): Promise<any>;
+  save(data: any, fromId?: DocumentHandle, toId?: DocumentHandle) {
     if (fromId !== undefined) {
       data._from = this._documentHandle(fromId);
       data._to = this._documentHandle(toId!);
     }
     if (this._connection.arangoMajor <= 2) {
-      const res = await this._api.post("/edge", data, {
-        collection: this.name,
-        from: data._from,
-        to: data._to
-      });
-      return res.body;
+      return this._connection.request(
+        {
+          method: "POST",
+          path: "/_api/edge",
+          body: data,
+          qs: {
+            collection: this.name,
+            from: data._from,
+            to: data._to
+          }
+        },
+        res => res.body
+      );
     }
 
-    const res = await this._api.post("/document", data, {
-      collection: this.name
-    });
-    return res.body;
+    return this._connection.request(
+      {
+        method: "POST",
+        path: "/_api/document",
+        body: data,
+        qs: { collection: this.name }
+      },
+      res => res.body
+    );
   }
 
-  protected async _edges(documentHandle: DocumentHandle, direction: any) {
-    const res = await this._api.get(`/edges/${this.name}`, {
-      direction,
-      vertex: this._documentHandle(documentHandle)
-    });
-    return res.body.edges;
+  protected _edges(documentHandle: DocumentHandle, direction: any) {
+    return this._connection.request(
+      {
+        path: `/_api/edges/${this.name}`,
+        qs: {
+          direction,
+          vertex: this._documentHandle(documentHandle)
+        }
+      },
+      res => res.body.edges
+    );
   }
 
   edges(vertex: DocumentHandle) {
@@ -569,13 +750,19 @@ export class EdgeCollection extends BaseCollection {
     return this._edges(vertex, "out");
   }
 
-  async traversal(startVertex: DocumentHandle, opts?: any) {
-    const res = await this._api.post("/traversal", {
-      ...opts,
-      startVertex,
-      edgeCollection: this.name
-    });
-    return res.body.result;
+  traversal(startVertex: DocumentHandle, opts?: any) {
+    return this._connection.request(
+      {
+        method: "POST",
+        path: "/_api/traversal",
+        body: {
+          ...opts,
+          startVertex,
+          edgeCollection: this.name
+        }
+      },
+      res => res.body.result
+    );
   }
 }
 
