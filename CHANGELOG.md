@@ -21,6 +21,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 * Fixed `graphEdgeCollection.edge` return value ([@Hunter21007](https://github.com/Hunter21007) in [#501](https://github.com/arangodb/arangojs/pull/501))
 
+* Fixed graph API sending incorrect requests resulting in HTTP 400 errors ([@casdevs](https://github.com/casdevs) in [#513](https://github.com/arangodb/arangojs/pull/513))
+
 ## [6.1.0] - 2018-02-12
 
 ### Removed
