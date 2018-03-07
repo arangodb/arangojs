@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Changed
+
+* Moved most documentation out of the README.
+
+  This is a necessary step to integrate arangojs with the Drivers book in the official ArangoDB documentation.
+
 ## [6.2.0] - 2018-03-06
 
 ### Changed
