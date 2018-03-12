@@ -3,7 +3,10 @@ import { Database, aql } from "../arangojs";
 import { ArrayCursor } from "../cursor";
 import { expect } from "chai";
 
-describe("AQL queries", () => {
+describe("AQL queries", function() {
+  // create database takes 11s in a standard cluster
+  this.timeout(20000);
+
   let name = `testdb_${Date.now()}`;
   let db: Database;
   before(done => {

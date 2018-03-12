@@ -30,7 +30,10 @@ function createGraph(
   });
 }
 
-describe("Manipulating graph vertices", () => {
+describe("Manipulating graph vertices", function() {
+  // create database takes 11s in a standard cluster
+  this.timeout(20000);
+
   let db: Database;
   let name = `testdb_${Date.now()}`;
   let graph: Graph;

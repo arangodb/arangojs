@@ -4,7 +4,10 @@ import { expect } from "chai";
 
 const range = (n: number): number[] => Array.from(Array(n).keys());
 
-describe("Accessing graphs", () => {
+describe("Accessing graphs", function() {
+  // create database takes 11s in a standard cluster
+  this.timeout(20000);
+
   let name = `testdb_${Date.now()}`;
   let db: Database;
   before(done => {

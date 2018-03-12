@@ -6,7 +6,10 @@ import { expect } from "chai";
 const ARANGO_VERSION = Number(process.env.ARANGO_VERSION || 30000);
 const describe34 = ARANGO_VERSION >= 30400 ? describe : describe.skip;
 
-describe34("AQL queries", () => {
+describe34("AQL Stream queries", function() {
+  // create database takes 11s in a standard cluster
+  this.timeout(20000);
+
   let name = `testdb_${Date.now()}`;
   let db: Database;
   before(done => {

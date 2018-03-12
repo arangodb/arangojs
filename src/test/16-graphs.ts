@@ -27,7 +27,10 @@ function createGraph(
   });
 }
 
-describe("Graph API", () => {
+describe("Graph API", function() {
+  // create database takes 11s in a standard cluster
+  this.timeout(20000);
+
   let db: Database;
   let name = `testdb_${Date.now()}`;
   before(done => {
