@@ -193,7 +193,4 @@ describe("Simple queries", function() {
       });
     });
   }
-  describe("collection.removeByKeys", () => {
-    it("is missing tests");
-  });
 });
