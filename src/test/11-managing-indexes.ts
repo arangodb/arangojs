@@ -136,53 +136,53 @@ describe("Managing indexes", () => {
   });
   describe("collection.index", () => {
     it("should return information about a index", done => {
-      collection.createHashIndex(["test"]).then(info => {
-        collection
-          .index(info.id)
-          .then(index => {
+      collection
+        .createHashIndex(["test"])
+        .then(info => {
+          collection.index(info.id).then(index => {
             expect(index).to.have.property("id", info.id);
             expect(index).to.have.property("type", info.type);
-          })
-          .then(() => done())
-          .catch(done);
-      });
+          });
+        })
+        .then(() => done())
+        .catch(done);
     });
   });
   describe("collection.indexes", () => {
     it("should return a list of indexes", done => {
-      collection.createHashIndex(["test"]).then(index => {
-        collection
-          .indexes()
-          .then(indexes => {
+      collection
+        .createHashIndex(["test"])
+        .then(index => {
+          collection.indexes().then(indexes => {
             expect(indexes).to.be.instanceof(Array);
             expect(indexes).to.not.be.empty;
             expect(
               indexes.filter((i: any) => i.id === index.id).length
             ).to.equal(1);
-          })
-          .then(() => done())
-          .catch(done);
-      });
+          });
+        })
+        .then(() => done())
+        .catch(done);
     });
   });
   describe("collection.dropIndex", () => {
     it("should drop existing index", done => {
-      collection.createHashIndex(["test"]).then(info => {
-        collection.dropIndex(info.id).then(index => {
-          expect(index).to.have.property("id", info.id);
-          collection
-            .indexes()
-            .then(indexes => {
+      collection
+        .createHashIndex(["test"])
+        .then(info => {
+          collection.dropIndex(info.id).then(index => {
+            expect(index).to.have.property("id", info.id);
+            collection.indexes().then(indexes => {
               expect(indexes).to.be.instanceof(Array);
               expect(indexes).to.not.be.empty;
               expect(
                 indexes.filter((i: any) => i.id === index.id).length
               ).to.equal(0);
-            })
-            .then(() => done())
-            .catch(done);
-        });
-      });
+            });
+          });
+        })
+        .then(() => done())
+        .catch(done);
     });
   });
 });

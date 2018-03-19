@@ -39,10 +39,10 @@ describe("Managing functions", () => {
     it("should include before created function", done => {
       const name = "myfunctions::temperature::celsiustofahrenheit";
       const code = "function (celsius) { return celsius * 1.8 + 32; }";
-      db.createFunction(name, code).then(() => {
-        db
-          .listFunctions()
-          .then(info => {
+      db
+        .createFunction(name, code)
+        .then(() => {
+          db.listFunctions().then(info => {
             expect(info).to.have.property("result");
             expect(info.result).to.be.instanceof(Array);
             expect(info.result.length).to.equal(1);
@@ -51,10 +51,10 @@ describe("Managing functions", () => {
               code,
               isDeterministic: false
             });
-          })
-          .then(() => done())
-          .catch(done);
-      });
+          });
+        })
+        .then(() => done())
+        .catch(done);
     });
   });
   describe("database.createFunction", () => {
@@ -83,14 +83,12 @@ describe("Managing functions", () => {
           "function (celsius) { return celsius * 1.8 + 32; }"
         )
         .then(() => {
-          db
-            .dropFunction(name)
-            .then(info => {
-              expect(info).to.have.property("deletedCount", 1);
-            })
-            .then(() => done())
-            .catch(done);
-        });
+          db.dropFunction(name).then(info => {
+            expect(info).to.have.property("deletedCount", 1);
+          });
+        })
+        .then(() => done())
+        .catch(done);
     });
   });
 });

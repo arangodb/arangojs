@@ -49,35 +49,39 @@ describe("Manipulating collections", () => {
   describe("collection.create", () => {
     it("creates a new document collection", done => {
       const collection = db.collection(`document-collection-${Date.now()}`);
-      collection.create().then(() => {
-        db
-          .collection(collection.name)
-          .get()
-          .then(info => {
-            expect(info).to.have.property("name", collection.name);
-            expect(info).to.have.property("isSystem", false);
-            expect(info).to.have.property("status", 3); // loaded
-            expect(info).to.have.property("type", 2); // document collection
-          })
-          .then(() => void done())
-          .catch(done);
-      });
+      collection
+        .create()
+        .then(() => {
+          db
+            .collection(collection.name)
+            .get()
+            .then(info => {
+              expect(info).to.have.property("name", collection.name);
+              expect(info).to.have.property("isSystem", false);
+              expect(info).to.have.property("status", 3); // loaded
+              expect(info).to.have.property("type", 2); // document collection
+            });
+        })
+        .then(() => void done())
+        .catch(done);
     });
     it("creates a new edge collection", done => {
       const collection = db.edgeCollection(`edge-collection-${Date.now()}`);
-      collection.create().then(() => {
-        db
-          .collection(collection.name)
-          .get()
-          .then(info => {
-            expect(info).to.have.property("name", collection.name);
-            expect(info).to.have.property("isSystem", false);
-            expect(info).to.have.property("status", 3); // loaded
-            expect(info).to.have.property("type", 3); // edge collection
-          })
-          .then(() => void done())
-          .catch(done);
-      });
+      collection
+        .create()
+        .then(() => {
+          db
+            .collection(collection.name)
+            .get()
+            .then(info => {
+              expect(info).to.have.property("name", collection.name);
+              expect(info).to.have.property("isSystem", false);
+              expect(info).to.have.property("status", 3); // loaded
+              expect(info).to.have.property("type", 3); // edge collection
+            });
+        })
+        .then(() => void done())
+        .catch(done);
     });
   });
   describe("collection.load", () => {
@@ -131,16 +135,16 @@ describe("Manipulating collections", () => {
   describe("collection.truncate", () => {
     it("should truncate a non-empty collection", done => {
       collection.save({}).then(() => {
-        collection.truncate().then(() => {
-          collection
-            .count()
-            .then(info => {
+        collection
+          .truncate()
+          .then(() => {
+            collection.count().then(info => {
               expect(info).to.have.property("name", collection.name);
               expect(info).to.have.property("count", 0);
-            })
-            .then(() => void done())
-            .catch(done);
-        });
+            });
+          })
+          .then(() => void done())
+          .catch(done);
       });
     });
     it("should allow truncating a empty collection", done => {
