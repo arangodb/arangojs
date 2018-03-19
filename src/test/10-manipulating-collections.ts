@@ -4,7 +4,7 @@ import { expect } from "chai";
 
 const ARANGO_VERSION = Number(process.env.ARANGO_VERSION || 30000);
 
-describe.only("Manipulating collections", () => {
+describe("Manipulating collections", () => {
   let name = `testdb_${Date.now()}`;
   let db: Database;
   let collection: DocumentCollection;
