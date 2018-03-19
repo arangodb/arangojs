@@ -46,7 +46,30 @@ describe("DocumentCollection API", function() {
       .catch(done);
   });
   describe("documentCollection.document", () => {
-    it("is missing tests");
+    let data = { foo: "bar" };
+    let meta: any;
+    beforeEach(done => {
+      collection
+        .save(data)
+        .then(result => {
+          meta = result;
+          done();
+        })
+        .catch(done);
+    });
+    it("returns a document in the collection", done => {
+      collection
+        .document(meta._id)
+        .then(doc => {
+          expect(doc).to.have.keys("_key", "_id", "_rev", "foo");
+          expect(doc._id).to.equal(meta._id);
+          expect(doc._key).to.equal(meta._key);
+          expect(doc._rev).to.equal(meta._rev);
+          expect(doc.foo).to.equal(data.foo);
+        })
+        .then(() => void done())
+        .catch(done);
+    });
   });
   describe("documentCollection.save", () => {
     it("creates a document in the collection", done => {
@@ -255,8 +278,5 @@ describe("DocumentCollection API", function() {
         )
         .catch(done);
     });
-  });
-  describe("documentCollection.list", () => {
-    it("is missing tests");
   });
 });
