@@ -198,7 +198,7 @@ const db = new Database({
 });
 ```
 
-For AQL please check out the [`aql` template tag](#aql) for writing parametrized
+For AQL please check out the [`aql` template tag](../Reference/README.md#aql) for writing parametrized
 AQL queries without making your code vulnerable to injection attacks.
 
 ## Error responses
