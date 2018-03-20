@@ -102,7 +102,8 @@ describe("Manipulating collections", () => {
         .unload()
         .then(info => {
           expect(info).to.have.property("name", collection.name);
-          expect(info).to.have.property("status", 2); // unloaded
+          expect(info).to.have.property("status");
+          expect(info.status === 2 || info.status === 4).to.be.true; // unloaded
         })
         .then(() => void done())
         .catch(done);
