@@ -42,7 +42,7 @@ describe("Managing functions", () => {
       db
         .createFunction(name, code)
         .then(() => {
-          db.listFunctions().then(info => {
+          return db.listFunctions().then(info => {
             expect(info).to.have.property("result");
             expect(info.result).to.be.instanceof(Array);
             expect(info.result.length).to.equal(1);
@@ -83,7 +83,7 @@ describe("Managing functions", () => {
           "function (celsius) { return celsius * 1.8 + 32; }"
         )
         .then(() => {
-          db.dropFunction(name).then(info => {
+          return db.dropFunction(name).then(info => {
             expect(info).to.have.property("deletedCount", 1);
           });
         })

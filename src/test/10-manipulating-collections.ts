@@ -52,7 +52,7 @@ describe("Manipulating collections", () => {
       collection
         .create()
         .then(() => {
-          db
+          return db
             .collection(collection.name)
             .get()
             .then(info => {
@@ -70,7 +70,7 @@ describe("Manipulating collections", () => {
       collection
         .create()
         .then(() => {
-          db
+          return db
             .collection(collection.name)
             .get()
             .then(info => {
@@ -135,7 +135,7 @@ describe("Manipulating collections", () => {
   describe("collection.truncate", () => {
     it("should truncate a non-empty collection", done => {
       collection.save({}).then(() => {
-        collection
+        return collection
           .truncate()
           .then(() => {
             collection.count().then(info => {
@@ -149,7 +149,7 @@ describe("Manipulating collections", () => {
     });
     it("should allow truncating a empty collection", done => {
       collection.truncate().then(() => {
-        collection
+        return collection
           .count()
           .then(info => {
             expect(info).to.have.property("name", collection.name);
@@ -163,7 +163,7 @@ describe("Manipulating collections", () => {
   describe("collection.drop", () => {
     it("should drop a collection", done => {
       collection.drop().then(() => {
-        collection
+        return collection
           .get()
           .then(done)
           .catch(err => {

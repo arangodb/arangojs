@@ -15,7 +15,7 @@ describe("Bulk imports", () => {
     db.createDatabase(dbName).then(() => {
       db.useDatabase(dbName);
       collection = db.collection(collectionName);
-      collection
+      return collection
         .create()
         .then(() => void done())
         .catch(done);

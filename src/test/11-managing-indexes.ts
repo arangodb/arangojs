@@ -139,7 +139,7 @@ describe("Managing indexes", () => {
       collection
         .createHashIndex(["test"])
         .then(info => {
-          collection.index(info.id).then(index => {
+          return collection.index(info.id).then(index => {
             expect(index).to.have.property("id", info.id);
             expect(index).to.have.property("type", info.type);
           });
@@ -153,7 +153,7 @@ describe("Managing indexes", () => {
       collection
         .createHashIndex(["test"])
         .then(index => {
-          collection.indexes().then(indexes => {
+          return collection.indexes().then(indexes => {
             expect(indexes).to.be.instanceof(Array);
             expect(indexes).to.not.be.empty;
             expect(
@@ -170,9 +170,9 @@ describe("Managing indexes", () => {
       collection
         .createHashIndex(["test"])
         .then(info => {
-          collection.dropIndex(info.id).then(index => {
+          return collection.dropIndex(info.id).then(index => {
             expect(index).to.have.property("id", info.id);
-            collection.indexes().then(indexes => {
+            return collection.indexes().then(indexes => {
               expect(indexes).to.be.instanceof(Array);
               expect(indexes).to.not.be.empty;
               expect(

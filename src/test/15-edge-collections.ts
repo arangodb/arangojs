@@ -68,7 +68,7 @@ describe("EdgeCollection API", () => {
     });
   });
   describe("edgeCollection.save", () => {
-    it("creates a document in the collection", done => {
+    it("creates an edge in the collection", done => {
       let data = { _from: "d/1", _to: "d/2" };
       collection
         .save(data)
@@ -190,9 +190,7 @@ describe("EdgeCollection API", () => {
         .then(() => collection.edge((doc as any)._key))
         .then(data => {
           expect(data).not.to.have.property("potato");
-          expect(data)
-            .to.have.property("sup")
-            .that.equals("dawg");
+          expect(data).to.have.property("sup", "dawg");
           done();
         })
         .catch(done);
@@ -210,15 +208,9 @@ describe("EdgeCollection API", () => {
         })
         .then(() => collection.edge((doc as any)._key))
         .then(data => {
-          expect(data)
-            .to.have.property("potato")
-            .that.equals(doc.potato);
-          expect(data)
-            .to.have.property("sup")
-            .that.equals("dawg");
-          expect(data)
-            .to.have.property("empty")
-            .that.equals(null);
+          expect(data).to.have.property("potato", doc.potato);
+          expect(data).to.have.property("sup", "dawg");
+          expect(data).to.have.property("empty", null);
           done();
         })
         .catch(done);
@@ -238,12 +230,8 @@ describe("EdgeCollection API", () => {
         })
         .then(() => collection.edge((doc as any)._key))
         .then(data => {
-          expect(data)
-            .to.have.property("potato")
-            .that.equals(doc.potato);
-          expect(data)
-            .to.have.property("sup")
-            .that.equals("dawg");
+          expect(data).to.have.property("potato", doc.potato);
+          expect(data).to.have.property("sup", "dawg");
           expect(data).not.to.have.property("empty");
           done();
         })
