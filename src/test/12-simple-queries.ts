@@ -174,15 +174,6 @@ describe("Simple queries", function() {
         .catch(done);
     });
   });
-  describe("collection.removeByExample", () => {
-    it("is missing tests");
-  });
-  describe("collection.replaceByExample", () => {
-    it("is missing tests");
-  });
-  describe("collection.updateByExample", () => {
-    it("is missing tests");
-  });
   if (ARANGO_VERSION >= 20600) {
     describe2x("collection.lookupByKeys", () => {
       it("returns the documents with the given keys", done => {
@@ -202,7 +193,4 @@ describe("Simple queries", function() {
       });
     });
   }
-  describe("collection.removeByKeys", () => {
-    it("is missing tests");
-  });
 });
