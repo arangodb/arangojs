@@ -6,8 +6,6 @@ import {
   isBrowser
 } from "./util/request";
 
-import { Errback } from "./util/types";
-import { Route } from "./route";
 import { byteLength } from "./util/bytelength";
 import { stringify as querystringify } from "querystring";
 
@@ -223,11 +221,7 @@ export class Connection {
     this._headers[key] = value;
   }
 
-  route(path?: string, headers?: Object) {
-    return new Route(this, path, headers);
-  }
-
-  request(
+  request<T = ArangojsResponse>(
     {
       host,
       method = "GET",
@@ -238,89 +232,91 @@ export class Connection {
       headers,
       ...urlInfo
     }: RequestOptions,
-    cb: Errback<ArangojsResponse>
-  ) {
-    let contentType = "text/plain";
-    if (isBinary) {
-      contentType = "application/octet-stream";
-    } else if (body) {
-      if (typeof body === "object") {
-        if (isJsonStream) {
-          body =
-            body.map((obj: any) => JSON.stringify(obj)).join("\r\n") + "\r\n";
-          contentType = "application/x-ldjson";
-        } else {
-          body = JSON.stringify(body);
-          contentType = "application/json";
-        }
-      } else {
-        body = String(body);
-      }
-    }
-
-    const extraHeaders: { [key: string]: string } = {
-      ...this._headers,
-      "content-type": contentType,
-      "x-arango-version": String(this._arangoVersion)
-    };
-
-    if (!isBrowser) {
-      // Node doesn't set content-length but ArangoDB needs it
-      extraHeaders["content-length"] = String(
-        body ? byteLength(body, "utf-8") : 0
-      );
-    }
-
-    this._queue.push({
-      host,
-      options: {
-        url: this._buildUrl(urlInfo),
-        headers: { ...extraHeaders, ...headers },
-        method,
-        expectBinary,
-        body
-      },
-      reject: (err: Error) => cb(err),
-      resolve: (res: ArangojsResponse) => {
-        const contentType = res.headers["content-type"];
-        let parsedBody: any = undefined;
-        if (res.body.length && contentType && contentType.match(MIME_JSON)) {
-          try {
-            parsedBody = res.body;
-            parsedBody = JSON.parse(parsedBody);
-          } catch (e) {
-            if (!expectBinary) {
-              if (typeof parsedBody !== "string") {
-                parsedBody = res.body.toString("utf-8");
-              }
-              e.response = res;
-              cb(e);
-              return;
-            }
+    getter?: (res: ArangojsResponse) => T
+  ): Promise<T> {
+    return new Promise((resolve, reject) => {
+      let contentType = "text/plain";
+      if (isBinary) {
+        contentType = "application/octet-stream";
+      } else if (body) {
+        if (typeof body === "object") {
+          if (isJsonStream) {
+            body =
+              body.map((obj: any) => JSON.stringify(obj)).join("\r\n") + "\r\n";
+            contentType = "application/x-ldjson";
+          } else {
+            body = JSON.stringify(body);
+            contentType = "application/json";
           }
-        } else if (res.body && !expectBinary) {
-          parsedBody = res.body.toString("utf-8");
         } else {
-          parsedBody = res.body;
-        }
-        if (
-          parsedBody &&
-          parsedBody.hasOwnProperty("error") &&
-          parsedBody.hasOwnProperty("code") &&
-          parsedBody.hasOwnProperty("errorMessage") &&
-          parsedBody.hasOwnProperty("errorNum")
-        ) {
-          res.body = parsedBody;
-          cb(new ArangoError(res));
-        } else if (res.statusCode && res.statusCode >= 400) {
-          res.body = parsedBody;
-          cb(new HttpError(res));
-        } else {
-          if (!expectBinary) res.body = parsedBody;
-          cb(null, res);
+          body = String(body);
         }
       }
+
+      const extraHeaders: { [key: string]: string } = {
+        ...this._headers,
+        "content-type": contentType,
+        "x-arango-version": String(this._arangoVersion)
+      };
+
+      if (!isBrowser) {
+        // Node doesn't set content-length but ArangoDB needs it
+        extraHeaders["content-length"] = String(
+          body ? byteLength(body, "utf-8") : 0
+        );
+      }
+
+      this._queue.push({
+        host,
+        options: {
+          url: this._buildUrl(urlInfo),
+          headers: { ...extraHeaders, ...headers },
+          method,
+          expectBinary,
+          body
+        },
+        reject,
+        resolve: (res: ArangojsResponse) => {
+          const contentType = res.headers["content-type"];
+          let parsedBody: any = undefined;
+          if (res.body.length && contentType && contentType.match(MIME_JSON)) {
+            try {
+              parsedBody = res.body;
+              parsedBody = JSON.parse(parsedBody);
+            } catch (e) {
+              if (!expectBinary) {
+                if (typeof parsedBody !== "string") {
+                  parsedBody = res.body.toString("utf-8");
+                }
+                e.response = res;
+                reject(e);
+                return;
+              }
+            }
+          } else if (res.body && !expectBinary) {
+            parsedBody = res.body.toString("utf-8");
+          } else {
+            parsedBody = res.body;
+          }
+          if (
+            parsedBody &&
+            parsedBody.hasOwnProperty("error") &&
+            parsedBody.hasOwnProperty("code") &&
+            parsedBody.hasOwnProperty("errorMessage") &&
+            parsedBody.hasOwnProperty("errorNum")
+          ) {
+            res.body = parsedBody;
+            reject(new ArangoError(res));
+          } else if (res.statusCode && res.statusCode >= 400) {
+            res.body = parsedBody;
+            reject(new HttpError(res));
+          } else {
+            if (!expectBinary) res.body = parsedBody;
+            resolve(getter ? getter(res) : (res as any));
+          }
+        }
+      });
+      this._runQueue();
     });
-    this._runQueue();
   }
 }

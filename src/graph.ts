@@ -8,38 +8,45 @@ import {
 } from "./collection";
 
 import { Connection } from "./connection";
-import { Route } from "./route";
 
 export class GraphVertexCollection extends BaseCollection {
   type = Types.DOCUMENT_COLLECTION;
 
   graph: Graph;
 
-  private _gharial: Route;
-
   constructor(connection: Connection, name: string, graph: Graph) {
     super(connection, name);
     this.graph = graph;
-    this._gharial = this._api.route(`/gharial/${this.graph.name}/vertex`);
   }
 
   protected _documentPath(documentHandle: DocumentHandle) {
     return `/document/${this._documentHandle(documentHandle)}`;
   }
 
-  async vertex(documentHandle: DocumentHandle) {
-    const res = await this._gharial.get(
-      `/${this._documentHandle(documentHandle)}`
+  vertex(documentHandle: DocumentHandle) {
+    return this._connection.request(
+      {
+        path: `/_api/gharial/${this.graph.name}/vertex/${this._documentHandle(
+          documentHandle
+        )}`
+      },
+      res => res.body.vertex
     );
-    return res.body.vertex;
   }
 
-  async save(data: any, opts?: { waitForSync?: boolean }) {
-    const res = await this._gharial.post(this.name, data, opts);
-    return res.body.vertex;
+  save(data: any, opts?: { waitForSync?: boolean }) {
+    return this._connection.request(
+      {
+        method: "POST",
+        path: `/_api/gharial/${this.graph.name}/vertex/${this.name}`,
+        body: data,
+        qs: opts
+      },
+      res => res.body.vertex
+    );
   }
 
-  async replace(documentHandle: DocumentHandle, newValue: any, opts: any = {}) {
+  replace(documentHandle: DocumentHandle, newValue: any, opts: any = {}) {
     const headers: { [key: string]: string } = {};
     if (typeof opts === "string") {
       opts = { rev: opts };
@@ -49,16 +56,21 @@ export class GraphVertexCollection extends BaseCollection {
       ({ rev, ...opts } = opts);
       headers["if-match"] = rev;
     }
-    const res = await this._gharial.put(
-      `/${this._documentHandle(documentHandle)}`,
-      newValue,
-      opts,
-      headers
+    return this._connection.request(
+      {
+        method: "PUT",
+        path: `/_api/gharial/${this.graph.name}/vertex/${this._documentHandle(
+          documentHandle
+        )}`,
+        body: newValue,
+        qs: opts,
+        headers
+      },
+      res => res.body.vertex
     );
-    return res.body.vertex;
   }
 
-  async update(documentHandle: DocumentHandle, newValue: any, opts: any = {}) {
+  update(documentHandle: DocumentHandle, newValue: any, opts: any = {}) {
     const headers: { [key: string]: string } = {};
     if (typeof opts === "string") {
       opts = { rev: opts };
@@ -68,16 +80,21 @@ export class GraphVertexCollection extends BaseCollection {
       ({ rev, ...opts } = opts);
       headers["if-match"] = rev;
     }
-    const res = await this._gharial.patch(
-      `/${this._documentHandle(documentHandle)}`,
-      newValue,
-      opts,
-      headers
+    return this._connection.request(
+      {
+        method: "PATCH",
+        path: `/_api/gharial/${this.graph.name}/vertex/${this._documentHandle(
+          documentHandle
+        )}`,
+        body: newValue,
+        qs: opts,
+        headers
+      },
+      res => res.body.vertex
     );
-    return res.body.vertex;
   }
 
-  async remove(documentHandle: DocumentHandle, opts: any = {}) {
+  remove(documentHandle: DocumentHandle, opts: any = {}) {
     const headers: { [key: string]: string } = {};
     if (typeof opts === "string") {
       opts = { rev: opts };
@@ -87,12 +104,17 @@ export class GraphVertexCollection extends BaseCollection {
       ({ rev, ...opts } = opts);
       headers["if-match"] = rev;
     }
-    const res = await this._gharial.delete(
-      `/${this._documentHandle(documentHandle)}`,
-      opts,
-      headers
+    return this._connection.request(
+      {
+        method: "DELETE",
+        path: `/_api/gharial/${this.graph.name}/vertex/${this._documentHandle(
+          documentHandle
+        )}`,
+        qs: opts,
+        headers
+      },
+      res => res.body.removed
     );
-    return res.body.removed;
   }
 }
 
@@ -101,30 +123,31 @@ export class GraphEdgeCollection extends EdgeCollection {
 
   graph: Graph;
 
-  private _gharial: Route;
-
   constructor(connection: Connection, name: string, graph: Graph) {
     super(connection, name);
     this.type = Types.EDGE_COLLECTION;
     this.graph = graph;
-    this._gharial = this._api.route(`/gharial/${this.graph.name}/edge`);
   }
 
-  async edge(documentHandle: DocumentHandle) {
-    const res = await this._gharial.get(
-      `/${this._documentHandle(documentHandle)}`
+  edge(documentHandle: DocumentHandle) {
+    return this._connection.request(
+      {
+        path: `/_api/gharial/${this.graph.name}/edge/${this._documentHandle(
+          documentHandle
+        )}`
+      },
+      res => res.body.edge
     );
-    return res.body.edge;
   }
 
-  async save(data: any, opts?: { waitForSync?: boolean }): Promise<any>;
-  async save(
+  save(data: any, opts?: { waitForSync?: boolean }): Promise<any>;
+  save(
     data: any,
     fromId: DocumentHandle,
     toId: DocumentHandle,
     opts?: { waitForSync?: boolean }
   ): Promise<any>;
-  async save(
+  save(
     data: any,
     fromId?: DocumentHandle | any,
     toId?: DocumentHandle,
@@ -138,11 +161,18 @@ export class GraphEdgeCollection extends EdgeCollection {
         opts = fromId;
       }
     }
-    const res = await this._gharial.post(this.name, data, opts);
-    return res.body.edge;
+    return this._connection.request(
+      {
+        method: "POST",
+        path: `/_api/gharial/${this.graph.name}/edge/${this.name}`,
+        body: data,
+        qs: opts
+      },
+      res => res.body.edge
+    );
   }
 
-  async replace(documentHandle: DocumentHandle, newValue: any, opts: any = {}) {
+  replace(documentHandle: DocumentHandle, newValue: any, opts: any = {}) {
     const headers: { [key: string]: string } = {};
     if (typeof opts === "string") {
       opts = { rev: opts };
@@ -152,16 +182,21 @@ export class GraphEdgeCollection extends EdgeCollection {
       ({ rev, ...opts } = opts);
       headers["if-match"] = rev;
     }
-    const res = await this._gharial.put(
-      `/${this._documentHandle(documentHandle)}`,
-      newValue,
-      opts,
-      headers
+    return this._connection.request(
+      {
+        method: "PUT",
+        path: `/_api/gharial/${this.graph.name}/edge/${this._documentHandle(
+          documentHandle
+        )}`,
+        body: newValue,
+        qs: opts,
+        headers
+      },
+      res => res.body.edge
     );
-    return res.body.edge;
   }
 
-  async update(documentHandle: DocumentHandle, newValue: any, opts: any = {}) {
+  update(documentHandle: DocumentHandle, newValue: any, opts: any = {}) {
     const headers: { [key: string]: string } = {};
     if (typeof opts === "string") {
       opts = { rev: opts };
@@ -171,16 +206,21 @@ export class GraphEdgeCollection extends EdgeCollection {
       ({ rev, ...opts } = opts);
       headers["if-match"] = rev;
     }
-    const res = await this._gharial.patch(
-      `/${this._documentHandle(documentHandle)}`,
-      newValue,
-      opts,
-      headers
+    return this._connection.request(
+      {
+        method: "PATCH",
+        path: `/_api/gharial/${this.graph.name}/edge/${this._documentHandle(
+          documentHandle
+        )}`,
+        body: newValue,
+        qs: opts,
+        headers
+      },
+      res => res.body.edge
     );
-    return res.body.edge;
   }
 
-  async remove(documentHandle: DocumentHandle, opts: any = {}) {
+  remove(documentHandle: DocumentHandle, opts: any = {}) {
     const headers: { [key: string]: string } = {};
     if (typeof opts === "string") {
       opts = { rev: opts };
@@ -190,12 +230,17 @@ export class GraphEdgeCollection extends EdgeCollection {
       ({ rev, ...opts } = opts);
       headers["if-match"] = rev;
     }
-    const res = await this._gharial.delete(
-      `/${this._documentHandle(documentHandle)}`,
-      opts,
-      headers
+    return this._connection.request(
+      {
+        method: "DELETE",
+        path: `/_api/gharial/${this.graph.name}/edge/${this._documentHandle(
+          documentHandle
+        )}`,
+        qs: opts,
+        headers
+      },
+      res => res.body.removed
     );
-    return res.body.removed;
   }
 }
 
@@ -203,45 +248,54 @@ export class Graph {
   name: string;
 
   private _connection: Connection;
-  private _api: Route;
-  private _gharial: Route;
 
   constructor(connection: Connection, name: string) {
     this.name = name;
     this._connection = connection;
-    this._api = this._connection.route("/_api");
-    this._gharial = this._api.route(`/gharial/${this.name}`);
   }
 
-  async get() {
-    const res = await this._gharial.get();
-    return res.body.graph;
-  }
-
-  async create(properties: any = {}, opts?: { waitForSync?: boolean }) {
-    const res = await this._api.post(
-      "/gharial",
-      {
-        ...properties,
-        name: this.name
-      },
-      opts
+  get() {
+    return this._connection.request(
+      { path: `/_api/gharial/${this.name}` },
+      res => res.body.graph
     );
-    return res.body.graph;
   }
 
-  async drop(dropCollections: boolean = false) {
-    const res = await this._gharial.delete({ dropCollections });
-    return res.body.removed;
+  create(properties: any = {}, opts?: { waitForSync?: boolean }) {
+    return this._connection.request(
+      {
+        method: "POST",
+        path: "/_api/gharial",
+        body: {
+          ...properties,
+          name: this.name
+        },
+        qs: opts
+      },
+      res => res.body.graph
+    );
+  }
+
+  drop(dropCollections: boolean = false) {
+    return this._connection.request(
+      {
+        method: "DELETE",
+        path: `/_api/gharial/${this.name}`,
+        qs: { dropCollections }
+      },
+      res => res.body.removed
+    );
   }
 
   vertexCollection(collectionName: string) {
     return new GraphVertexCollection(this._connection, collectionName, this);
   }
 
-  async listVertexCollections(opts?: { excludeOrphans?: boolean }) {
-    const res = await this._gharial.get("/vertex", opts);
-    return res.body.collections;
+  listVertexCollections(opts?: { excludeOrphans?: boolean }) {
+    return this._connection.request(
+      { path: `/_api/gharial/${this.name}/vertex`, qs: opts },
+      res => res.body.collections
+    );
   }
 
   async vertexCollections(opts?: { excludeOrphans?: boolean }) {
@@ -251,36 +305,48 @@ export class Graph {
     );
   }
 
-  async addVertexCollection(collection: string | ArangoCollection) {
+  addVertexCollection(collection: string | ArangoCollection) {
     if (isArangoCollection(collection)) {
       collection = collection.name;
     }
-    const res = await this._gharial.post("/vertex", {
-      collection
-    });
-    return res.body.graph;
+    return this._connection.request(
+      {
+        method: "POST",
+        path: `/_api/gharial/${this.name}/vertex`,
+        body: { collection }
+      },
+      res => res.body.graph
+    );
   }
 
-  async removeVertexCollection(
+  removeVertexCollection(
     collection: string | ArangoCollection,
     dropCollection: boolean = false
   ) {
     if (isArangoCollection(collection)) {
       collection = collection.name;
     }
-    const res = await this._gharial.delete(`/vertex/${collection}`, {
-      dropCollection
-    });
-    return res.body.graph;
+    return this._connection.request(
+      {
+        method: "DELETE",
+        path: `/_api/gharial/${this.name}/vertex/${collection}`,
+        qs: {
+          dropCollection
+        }
+      },
+      res => res.body.graph
+    );
   }
 
   edgeCollection(collectionName: string) {
     return new GraphEdgeCollection(this._connection, collectionName, this);
   }
 
-  async listEdgeCollections() {
-    const res = await this._gharial.get("/edge");
-    return res.body.collections;
+  listEdgeCollections() {
+    return this._connection.request(
+      { path: `/_api/gharial/${this.name}/edge` },
+      res => res.body.collections
+    );
   }
 
   async edgeCollections() {
@@ -290,32 +356,56 @@ export class Graph {
     );
   }
 
-  async addEdgeDefinition(definition: any) {
-    const res = await this._gharial.post("/edge", definition);
-    return res.body.graph;
+  addEdgeDefinition(definition: any) {
+    return this._connection.request(
+      {
+        method: "POST",
+        path: `/_api/gharial/${this.name}/edge`,
+        body: definition
+      },
+      res => res.body.graph
+    );
   }
 
-  async replaceEdgeDefinition(definitionName: string, definition: any) {
-    const res = await this._gharial.put(`/edge/${definitionName}`, definition);
-    return res.body.graph;
+  replaceEdgeDefinition(definitionName: string, definition: any) {
+    return this._connection.request(
+      {
+        method: "PUT",
+        path: `/_api/gharial/${this.name}/edge/${definitionName}`,
+        body: definition
+      },
+      res => res.body.graph
+    );
   }
 
-  async removeEdgeDefinition(
+  removeEdgeDefinition(
     definitionName: string,
     dropCollection: boolean = false
   ) {
-    const res = await this._gharial.delete(`edge/${definitionName}`, {
-      dropCollection
-    });
-    return res.body.graph;
+    return this._connection.request(
+      {
+        method: "DELETE",
+        path: `/_api/gharial/${this.name}/edge/${definitionName}`,
+        qs: {
+          dropCollection
+        }
+      },
+      res => res.body.graph
+    );
   }
 
-  async traversal(startVertex: DocumentHandle, opts: any) {
-    const res = await this._api.post("/traversal", {
-      ...opts,
-      startVertex,
-      graphName: this.name
-    });
-    return res.body.result;
+  traversal(startVertex: DocumentHandle, opts: any) {
+    return this._connection.request(
+      {
+        method: "POST",
+        path: `/_api/traversal`,
+        body: {
+          ...opts,
+          startVertex,
+          graphName: this.name
+        }
+      },
+      res => res.body.result
+    );
   }
 }
