@@ -398,7 +398,7 @@ export class Graph {
     return this._connection.request(
       {
         method: "POST",
-        path: `/_api/gharial/${this.name}/traversal`,
+        path: `/_api/traversal`,
         body: {
           ...opts,
           startVertex,
