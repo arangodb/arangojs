@@ -25,7 +25,7 @@ describe("Arbitrary HTTP routes", () => {
   });
 });
 
-describe.only("Route API", () => {
+describe("Route API", () => {
   const name = `testdb_${Date.now()}`;
   let db: Database;
   let collection: DocumentCollection;
