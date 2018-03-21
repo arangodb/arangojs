@@ -222,7 +222,7 @@ export abstract class BaseCollection implements ArangoCollection {
       ({ rev, ...opts } = opts);
       headers["if-match"] = rev;
     }
-    this._connection.request(
+    return this._connection.request(
       {
         method: "PATCH",
         path: `/_api/${this._documentPath(documentHandle)}`,
@@ -408,7 +408,7 @@ export abstract class BaseCollection implements ArangoCollection {
   }
 
   updateByExample(example: any, newValue: any, opts?: any) {
-    this._connection.request(
+    return this._connection.request(
       {
         method: "PUT",
         path: "/_api/simple/update-by-example",
