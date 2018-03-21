@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Fixed
+
+* Replaced `Object.values` use to improve Node version compatibility
+
+  This allows using arangojs in Node.js 6 LTS without a polyfill.
+
 ## [6.2.1] - 2018-03-21
 
 ### Changed

@@ -422,7 +422,10 @@ export class Database {
       },
       res => res.body
     );
-    if (!minimal || !Object.values(result).every((value: any) => value.title))
+    if (
+      !minimal ||
+      !Object.keys(result).every((key: string) => result[key].title)
+    )
       return result;
     const values: any = {};
     for (const key of Object.keys(result)) {
@@ -448,7 +451,9 @@ export class Database {
     if (
       minimal ||
       !result.values ||
-      !Object.values(result.values).every((value: any) => value.title)
+      !Object.keys(result.values).every(
+        (key: string) => result.values[key].title
+      )
     ) {
       return result;
     }
@@ -478,7 +483,9 @@ export class Database {
     if (
       minimal ||
       !result.values ||
-      !Object.values(result.values).every((value: any) => value.title)
+      !Object.keys(result.values).every(
+        (key: string) => result.values[key].title
+      )
     ) {
       return result;
     }
@@ -499,7 +506,10 @@ export class Database {
       },
       res => res.body
     );
-    if (!minimal || !Object.values(result).every((value: any) => value.title))
+    if (
+      !minimal ||
+      !Object.keys(result).every((key: string) => result[key].title)
+    )
       return result;
     const values: any = {};
     for (const key of Object.keys(result)) {
@@ -525,7 +535,9 @@ export class Database {
     if (
       minimal ||
       !result.values ||
-      !Object.values(result.values).every((value: any) => value.title)
+      !Object.keys(result.values).every(
+        (key: string) => result.values[key].title
+      )
     ) {
       return result;
     }
@@ -555,7 +567,9 @@ export class Database {
     if (
       minimal ||
       !result.values ||
-      !Object.values(result.values).every((value: any) => value.title)
+      !Object.keys(result.values).every(
+        (key: string) => result.values[key].title
+      )
     ) {
       return result;
     }
