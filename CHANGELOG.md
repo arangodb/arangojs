@@ -9,13 +9,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed
 
-* Moved most documentation out of the README.
+* Moved most documentation out of the README ([#123](https://github.com/arangodb/arangojs/issues/123))
 
   This is a necessary step to integrate arangojs with the Drivers book in the official ArangoDB documentation.
 
 * Replaced internal use of async functions with callbacks
 
   This removes some unnecessary layers of indirection, which should increase overall performance.
+
+### Fixed
+
+* Increased test coverage ([#34](https://github.com/arangodb/arangojs/issues/34)).
 
 ## [6.2.0] - 2018-03-06
 
