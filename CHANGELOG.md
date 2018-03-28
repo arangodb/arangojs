@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Fixed
+
+* Fixed `collection.update(documentHandle, newValue, opts)` missing return value
+
 ## [6.2.2] - 2018-03-21
 
 ### Fixed
