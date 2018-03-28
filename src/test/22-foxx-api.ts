@@ -7,6 +7,8 @@ import { expect } from "chai";
 
 const ARANGO_VERSION = Number(process.env.ARANGO_VERSION || 30000);
 const ARANGO_URL = process.env.TEST_ARANGODB_URL || "http://localhost:8529";
+const ARANGO_URL_SELF_REACHABLE =
+  process.env.TEST_ARANGODB_URL_SELF_REACHABLE || ARANGO_URL;
 
 const localAppsPath = path.resolve(".", "fixtures");
 const mount = "/foxx-crud-test";
@@ -68,16 +70,18 @@ describe("Foxx service", () => {
     },
     {
       name: "remoteJsFile",
-      source: (arangoPaths: any) => arangoPaths.remote.js
+      source: (arangoPaths: any) =>
+        arangoPaths.remote.js.replace(ARANGO_URL, ARANGO_URL_SELF_REACHABLE)
     },
     {
       name: "remoteZipFile",
-      source: (arangoPaths: any) => arangoPaths.remote.zip
+      source: (arangoPaths: any) =>
+        arangoPaths.remote.zip.replace(ARANGO_URL, ARANGO_URL_SELF_REACHABLE)
     }
   ];
 
   for (const c of cases) {
-    it(`installed via ${c.name} should be available`, async () => {
+    it.only(`installed via ${c.name} should be available`, async () => {
       await db.installService(mount, c.source(arangoPaths));
       const resp = await db.route(mount).get();
       expect(resp.body).to.eql({ hello: "world" });
