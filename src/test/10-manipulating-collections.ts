@@ -121,13 +121,17 @@ describe("Manipulating collections", () => {
         .catch(done);
     });
   });
-  describe("collection.rename", () => {
+  describe.only("collection.rename", () => {
     it("should rename a collection", done => {
-      const name = `rename-collection-${Date.now()}`;
-      collection
-        .rename(name)
-        .then(info => {
-          expect(info).to.have.property("name", name);
+      db
+        .route("/_admin/server/role")
+        .get()
+        .then(res => {
+          if (res.body.role !== "SINGLE") return;
+          const name = `rename-collection-${Date.now()}`;
+          return collection.rename(name).then(info => {
+            expect(info).to.have.property("name", name);
+          });
         })
         .then(() => void done())
         .catch(done);
