@@ -81,7 +81,7 @@ describe("Foxx service", () => {
   ];
 
   for (const c of cases) {
-    it.only(`installed via ${c.name} should be available`, async () => {
+    it(`installed via ${c.name} should be available`, async () => {
       await db.installService(mount, c.source(arangoPaths));
       const resp = await db.route(mount).get();
       expect(resp.body).to.eql({ hello: "world" });
