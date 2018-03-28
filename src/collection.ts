@@ -392,7 +392,7 @@ export abstract class BaseCollection implements ArangoCollection {
   }
 
   replaceByExample(example: any, newValue: any, opts?: any) {
-    this._connection.request(
+    return this._connection.request(
       {
         method: "PUT",
         path: "/_api/simple/replace-by-example",
@@ -408,7 +408,7 @@ export abstract class BaseCollection implements ArangoCollection {
   }
 
   updateByExample(example: any, newValue: any, opts?: any) {
-    this._connection.request(
+    return this._connection.request(
       {
         method: "PUT",
         path: "/_api/simple/update-by-example",
@@ -438,7 +438,7 @@ export abstract class BaseCollection implements ArangoCollection {
   }
 
   removeByKeys(keys: string[], options: any) {
-    this._connection.request(
+    return this._connection.request(
       {
         method: "PUT",
         path: "/_api/simple/remove-by-keys",

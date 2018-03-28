@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Fixed
 
 * Fixed `collection.update(documentHandle, newValue, opts)` missing return value
+* Fixed `collection.removeByKeys(keys, options)` missing return value
+* Fixed `collection.replaceByExample(example, newValue, opts)` missing return value
+* Fixed `collection.updateByExample(example, newValue, opts)` missing return value
 
 ## [6.2.2] - 2018-03-21
 
