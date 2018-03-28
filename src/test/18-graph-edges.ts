@@ -2,7 +2,10 @@ import { Database } from "../arangojs";
 import { Graph } from "../graph";
 import { expect } from "chai";
 
-describe("Manipulating graph edges", () => {
+describe("Manipulating graph edges", function() {
+  // create database takes 11s in a standard cluster
+  this.timeout(20000);
+
   const dbName = `testdb_${Date.now()}`;
   let db: Database;
   const graphName = `testgraph_${Date.now()}`;

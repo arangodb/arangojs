@@ -2,7 +2,10 @@ import { Database } from "../arangojs";
 import { EdgeCollection } from "../collection";
 import { expect } from "chai";
 
-describe("EdgeCollection API", () => {
+describe("EdgeCollection API", function() {
+  // create database takes 11s in a standard cluster
+  this.timeout(20000);
+
   let name = `testdb_${Date.now()}`;
   let db: Database;
   let collection: EdgeCollection;
