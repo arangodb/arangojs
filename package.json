@@ -56,7 +56,7 @@
     "dist:async": "tsc -p . --outDir ./lib/async/ --target es2017 && cpy src/index.js lib/async/",
     "dist:web": "webpack",
     "dist": "rimraf lib && npm-run-all --parallel dist:* && cpy src/index.all.js --rename index.js lib/",
-    "prepublish": "yarn dist && node -e 'require(\".\");'"
+    "prepare": "yarn dist && node -e 'require(\".\");'"
   },
   "dependencies": {
     "es6-error": "^4.0.1",
