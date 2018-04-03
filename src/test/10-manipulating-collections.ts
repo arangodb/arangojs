@@ -124,7 +124,7 @@ describe("Manipulating collections", function() {
         .catch(done);
     });
   });
-  describe.only("collection.rename", () => {
+  describe("collection.rename", () => {
     it("should rename a collection", done => {
       db
         .route("/_admin/server/role")
