@@ -61,8 +61,10 @@ export function createRequest(baseUrl: string, agentOptions: any) {
         headers
       },
       (err: Error | null, res?: any) => {
-        if (!err) callback(null, res as ArangojsResponse);
-        else {
+        if (!err) {
+          if (!res.body) res.body = "";
+          callback(null, res as ArangojsResponse);
+        } else {
           const error = err as ArangojsError;
           error.request = req;
           callback(error);

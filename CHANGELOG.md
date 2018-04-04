@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Fixed
+
+* Ensure `res.body` is an empty string instead of null in the browser version
+
 ## [6.2.3] - 2018-04-03
 
 ### Fixed
