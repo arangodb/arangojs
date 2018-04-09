@@ -54,6 +54,16 @@ describe("AQL queries", function() {
           done();
         });
     });
+    it("throws an exception on error (async await)", async () => {
+      try {
+        await db.query("FOR i IN no RETURN i");
+        expect.fail();
+      } catch (err) {
+        expect(err).is.instanceof(ArangoError);
+        expect(err).to.have.property("statusCode", 404);
+        expect(err).to.have.property("errorNum", 1203);
+      }
+    });
     it("supports bindVars", done => {
       db
         .query("RETURN @x", { x: 5 })
