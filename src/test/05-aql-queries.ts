@@ -1,5 +1,6 @@
 import { Database, aql } from "../arangojs";
 
+import { ArangoError } from "../error";
 import { ArrayCursor } from "../cursor";
 import { expect } from "chai";
 
@@ -38,6 +39,20 @@ describe("AQL queries", function() {
           done();
         })
         .catch(done);
+    });
+    it("throws an exception on error", done => {
+      db
+        .query("FOR i IN no RETURN i")
+        .then(() => {
+          expect.fail();
+          done();
+        })
+        .catch(err => {
+          expect(err).is.instanceof(ArangoError);
+          expect(err).to.have.property("statusCode", 404);
+          expect(err).to.have.property("errorNum", 1203);
+          done();
+        });
     });
     it("supports bindVars", done => {
       db
