@@ -1,6 +1,9 @@
 import { Database } from "../arangojs";
 import { expect } from "chai";
 
+const ARANGO_VERSION = Number(process.env.ARANGO_VERSION || 30000);
+const it34 = ARANGO_VERSION >= 34000 ? it : it.skip;
+
 describe("Managing functions", function() {
   // create database takes 11s in a standard cluster
   this.timeout(20000);
@@ -28,7 +31,7 @@ describe("Managing functions", function() {
       .catch(done);
   });
   describe("database.listFunctions", () => {
-    it("should be empty per default", done => {
+    it34("should be empty per default", done => {
       db
         .listFunctions()
         .then(info => {
@@ -39,7 +42,7 @@ describe("Managing functions", function() {
         .then(() => done())
         .catch(done);
     });
-    it("should include before created function", done => {
+    it34("should include before created function", done => {
       const name = "myfunctions::temperature::celsiustofahrenheit";
       const code = "function (celsius) { return celsius * 1.8 + 32; }";
       db
@@ -87,7 +90,8 @@ describe("Managing functions", function() {
         )
         .then(() => {
           return db.dropFunction(name).then(info => {
-            expect(info).to.have.property("deletedCount", 1);
+            if (ARANGO_VERSION >= 34000)
+              expect(info).to.have.property("deletedCount", 1);
           });
         })
         .then(() => done())
