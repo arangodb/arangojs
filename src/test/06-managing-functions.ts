@@ -2,7 +2,7 @@ import { Database } from "../arangojs";
 import { expect } from "chai";
 
 const ARANGO_VERSION = Number(process.env.ARANGO_VERSION || 30000);
-const it34 = ARANGO_VERSION >= 34000 ? it : it.skip;
+const it34 = ARANGO_VERSION >= 30400 ? it : it.skip;
 
 describe("Managing functions", function() {
   // create database takes 11s in a standard cluster
@@ -90,7 +90,7 @@ describe("Managing functions", function() {
         )
         .then(() => {
           return db.dropFunction(name).then(info => {
-            if (ARANGO_VERSION >= 34000)
+            if (ARANGO_VERSION >= 30400)
               expect(info).to.have.property("deletedCount", 1);
           });
         })
