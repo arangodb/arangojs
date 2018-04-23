@@ -67,12 +67,12 @@ describe("Managing functions", function() {
     it("should create a function", done => {
       db
         .createFunction(
-          "myfunctions::temperature::celsiustofahrenheit",
+          "myfunctions::temperature::celsiustofahrenheit2",
           "function (celsius) { return celsius * 1.8 + 32; }"
         )
         .then(info => {
           expect(info).to.eql({
-            code: 200,
+            code: 201,
             error: false
           });
         })
