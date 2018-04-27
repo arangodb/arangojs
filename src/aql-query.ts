@@ -41,3 +41,5 @@ export function aql(strings: TemplateStringsArray, ...args: any[]): AqlQuery {
   }
   return { query, bindVars };
 }
+
+aql.literal = (value: any) => ({toAQL () {return value;}});
