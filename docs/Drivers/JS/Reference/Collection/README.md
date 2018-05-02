@@ -5,10 +5,10 @@ These functions implement the
 
 The _Collection API_ is implemented by all _Collection_ instances, regardless of
 their specific type. I.e. it represents a shared subset between instances of
-[_DocumentCollection_](../DocumentCollection.md),
-[_EdgeCollection_](../EdgeCollection.md),
-[_GraphVertexCollection_](../GraphVertexCollection.md) and
-[_GraphEdgeCollection_](../GraphEdgeCollection.md).
+[_DocumentCollection_](DocumentCollection.md),
+[_EdgeCollection_](EdgeCollection.md),
+[_GraphVertexCollection_](../Graph/VertexCollection.md) and
+[_GraphEdgeCollection_](../Graph/EdgeCollection.md).
 
 ## Getting information about the collection
 

@@ -1,7 +1,7 @@
 # GraphEdgeCollection API
 
-The _GraphEdgeCollection API_ extends the _Collection API_ with the
-following methods.
+The _GraphEdgeCollection API_ extends the
+[_Collection API_](../Collection/README.md) with the following methods.
 
 ## graphEdgeCollection.remove
 

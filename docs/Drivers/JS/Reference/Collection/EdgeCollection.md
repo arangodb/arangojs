@@ -1,7 +1,7 @@
 # EdgeCollection API
 
 The _EdgeCollection API_ extends the
-[_Collection API_](Collection/README.md) with the following methods.
+[_Collection API_](README.md) with the following methods.
 
 ## edgeCollection.edge
 

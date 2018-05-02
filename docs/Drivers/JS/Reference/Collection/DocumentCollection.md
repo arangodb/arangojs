@@ -1,7 +1,7 @@
 # DocumentCollection API
 
 The _DocumentCollection API_ extends the
-[_Collection API_](Collection/README.md) with the following methods.
+[_Collection API_](README.md) with the following methods.
 
 ## documentCollection.document
 
