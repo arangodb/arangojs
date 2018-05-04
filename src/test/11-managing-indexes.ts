@@ -2,6 +2,8 @@ import { Database } from "../arangojs";
 import { DocumentCollection } from "../collection";
 import { expect } from "chai";
 
+const ARANGO_VERSION = Number(process.env.ARANGO_VERSION || 30000);
+
 describe("Managing indexes", function() {
   // create database takes 11s in a standard cluster
   this.timeout(20000);
@@ -13,7 +15,7 @@ describe("Managing indexes", function() {
   before(done => {
     db = new Database({
       url: process.env.TEST_ARANGODB_URL || "http://localhost:8529",
-      arangoVersion: Number(process.env.ARANGO_VERSION || 30000)
+      arangoVersion: ARANGO_VERSION
     });
     db.createDatabase(dbName).then(() => {
       db.useDatabase(dbName);
@@ -100,7 +102,10 @@ describe("Managing indexes", function() {
         .createGeoIndex(["value"])
         .then(info => {
           expect(info).to.have.property("id");
-          expect(info).to.have.property("type", "geo1");
+          expect(info).to.have.property(
+            "type",
+            ARANGO_VERSION >= 30400 ? "geo" : "geo1"
+          );
           expect(info).to.have.property("fields");
           expect(info.fields).to.eql(["value"]);
           expect(info).to.have.property("isNewlyCreated", true);
@@ -113,7 +118,10 @@ describe("Managing indexes", function() {
         .createGeoIndex(["value1", "value2"])
         .then(info => {
           expect(info).to.have.property("id");
-          expect(info).to.have.property("type", "geo2");
+          expect(info).to.have.property(
+            "type",
+            ARANGO_VERSION >= 30400 ? "geo" : "geo2"
+          );
           expect(info).to.have.property("fields");
           expect(info.fields).to.eql(["value1", "value2"]);
           expect(info).to.have.property("isNewlyCreated", true);
