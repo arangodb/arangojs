@@ -38,7 +38,7 @@ and higher as the corresponding API method has been removed.
 * **opts**: `Object` (optional)
 
   For information on the possible options see
-  [the HTTP API for returning the first documents of a collection](https://docs.arangodb.com/latest/HTTP/SimpleQuery/index.html#find-documents-matching-an-example).
+  [the HTTP API for returning the first document of a collection](https://docs.arangodb.com/2.8/HttpSimpleQuery/#first-document-of-a-collection).
 
   If _opts_ is a number it is treated as _opts.count_.
 
@@ -57,7 +57,7 @@ and higher as the corresponding API method has been removed.
 * **opts**: `Object` (optional)
 
   For information on the possible options see
-  [the HTTP API for returning the last documents of a collection](https://docs.arangodb.com/latest/HTTP/SimpleQuery/index.html#last-document-of-a-collection).
+  [the HTTP API for returning the last document of a collection](https://docs.arangodb.com/2.8/HttpSimpleQuery/#last-document-of-a-collection).
 
   If _opts_ is a number it is treated as _opts.count_.
 
