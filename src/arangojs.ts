@@ -8,3 +8,6 @@ export default function arangojs(config: Config) {
 
 Object.assign(arangojs, { Database, aql });
 export { Database, aql };
+
+export { DocumentCollection, EdgeCollection } from './collection';
+export { Graph } from './graph';
