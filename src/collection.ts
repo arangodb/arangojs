@@ -1,5 +1,6 @@
-import { ArrayCursor } from "./cursor";
 import { Connection } from "./connection";
+import { ArrayCursor } from "./cursor";
+import { ArangoError } from "./error";
 
 export enum Types {
   DOCUMENT_COLLECTION = 2,
@@ -104,6 +105,15 @@ export abstract class BaseCollection implements ArangoCollection {
       { path: `/_api/collection/${this.name}` },
       res => res.body
     );
+  }
+
+  exists(): Promise<boolean> {
+    return this._connection
+      .request({ path: `/_api/collection/${this.name}` }, () => true)
+      .catch((e: ArangoError) => {
+        if (e.errorNum !== 1203) throw e;
+        return false;
+      });
   }
 
   create(properties?: any) {
