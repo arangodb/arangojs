@@ -52,8 +52,8 @@
     "ci": "mocha --reporter spec --require source-map-support/register --timeout 10000 lib/cjs/test",
     "preci": "yarn install",
     "jenkins": "yarn ci -- --timeout 0 --reporter xunit-file",
-    "dist:cjs": "tsc -p . --outDir ./lib/cjs/ && cpy src/index.js lib/cjs/",
-    "dist:async": "tsc -p . --outDir ./lib/async/ --target es2017 && cpy src/index.js lib/async/",
+    "dist:cjs": "tsc -p . --outDir ./lib/cjs/ --declarationMap true && cpy src/index.js lib/cjs/",
+    "dist:async": "tsc -p . --outDir ./lib/async/ --target es2018 --declarationMap true && cpy src/index.js lib/async/",
     "dist:web": "webpack",
     "dist": "rimraf lib && npm-run-all --parallel dist:* && cpy src/index.all.js --rename index.js lib/",
     "prepare": "yarn dist && node -e 'require(\".\");'"
@@ -68,7 +68,7 @@
   "devDependencies": {
     "@types/chai": "^4.0.10",
     "@types/mocha": "^2.2.44",
-    "@types/node": "^8.0.58",
+    "@types/node": "^10.0.8",
     "babel-core": "^6.26.0",
     "babel-eslint": "^8.0.3",
     "babel-loader": "^7.1.2",
