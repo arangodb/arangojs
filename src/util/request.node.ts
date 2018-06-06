@@ -1,14 +1,13 @@
 import {
-  ClientRequest,
   Agent as HttpAgent,
+  ClientRequest,
   IncomingMessage,
   request as httpRequest
 } from "http";
 import { Agent as HttpsAgent, request as httpsRequest } from "https";
 import { Url, parse as parseUrl } from "url";
-
-import { Errback } from "./types";
 import { joinPath } from "./joinPath";
+import { Errback } from "./types";
 
 export type ArangojsResponse = IncomingMessage & {
   body?: any;
@@ -65,28 +64,34 @@ export function createRequest(
     options.port = baseUrlParts.port;
     options.auth = baseUrlParts.auth;
     let called = false;
-    const req = (isTls ? httpsRequest : httpRequest)(
-      options,
-      (res: IncomingMessage) => {
-        const data: Buffer[] = [];
-        res.on("data", chunk => data.push(chunk as Buffer));
-        res.on("end", () => {
-          const result = res as ArangojsResponse;
-          result.body = Buffer.concat(data);
-          if (called) return;
-          called = true;
-          callback(null, result);
-        });
-      }
-    );
-    req.on("error", err => {
-      const error = err as ArangojsError;
-      error.request = req;
+    try {
+      const req = (isTls ? httpsRequest : httpRequest)(
+        options,
+        (res: IncomingMessage) => {
+          const data: Buffer[] = [];
+          res.on("data", chunk => data.push(chunk as Buffer));
+          res.on("end", () => {
+            const result = res as ArangojsResponse;
+            result.body = Buffer.concat(data);
+            if (called) return;
+            called = true;
+            callback(null, result);
+          });
+        }
+      );
+      req.on("error", err => {
+        const error = err as ArangojsError;
+        error.request = req;
+        if (called) return;
+        called = true;
+        callback(err);
+      });
+      if (body) req.write(body);
+      req.end();
+    } catch (e) {
       if (called) return;
       called = true;
-      callback(err);
-    });
-    if (body) req.write(body);
-    req.end();
+      callback(e);
+    }
   };
 }
