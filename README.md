@@ -67,7 +67,7 @@ db
 
 ## Documentation
 
-[Latest Documentation on GitHub](https://github.com/arangodb/arangojs/blob/master/docs/Drivers/JS/README.md)
+[Latest Documentation](https://docs.arangodb.com/devel/Drivers/JS/)
 
 ## License
 
