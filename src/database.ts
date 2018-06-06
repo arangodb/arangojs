@@ -692,4 +692,18 @@ export class Database {
       res => res.body
     );
   }
+
+  login(username: string, password: string): Promise<string> {
+    return this._connection.request(
+      {
+        method: "POST",
+        path: "/_open/auth",
+        body: { username, password }
+      },
+      res => {
+        this.useBearerAuth(res.body.jwt);
+        return res.body.jwt;
+      }
+    );
+  }
 }
