@@ -682,4 +682,14 @@ export class Database {
       () => undefined
     );
   }
+
+  version(): Promise<any> {
+    return this._connection.request(
+      {
+        method: "GET",
+        path: "/_api/version"
+      },
+      res => res.body
+    );
+  }
 }
