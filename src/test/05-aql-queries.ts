@@ -1,8 +1,7 @@
-import { Database, aql } from "../arangojs";
-
-import { ArangoError } from "../error";
-import { ArrayCursor } from "../cursor";
 import { expect } from "chai";
+import { aql, Database } from "../arangojs";
+import { ArrayCursor } from "../cursor";
+import { ArangoError } from "../error";
 
 describe("AQL queries", function() {
   // create database takes 11s in a standard cluster
@@ -134,7 +133,7 @@ describe("AQL queries", function() {
   });
   describe("aql", () => {
     it("correctly handles simple parameters", () => {
-      let values = [
+      let values: any[] = [
         0,
         42,
         -1,
@@ -190,7 +189,7 @@ describe("AQL queries", function() {
         name = "tomato";
       }
       let collection = new ArangoCollection();
-      let query = aql`${collection}`;
+      let query = aql`${collection as any}`;
       expect(query.query).to.equal("@@value0");
       expect(Object.keys(query.bindVars)).to.eql(["@value0"]);
       expect(query.bindVars["@value0"]).to.equal("tomato");
