@@ -16,6 +16,21 @@ See
 [the HTTP API documentation](https://docs.arangodb.com/latest/HTTP/Collection/Getting.html)
 for details.
 
+## collection.exists
+
+`async collection.exists(): boolean`
+
+Checks whether the collection exists.
+
+**Examples**
+
+```js
+const db = new Database();
+const collection = db.collection('some-collection');
+const result = await collection.exists();
+// result indicates whether the collection exists
+```
+
 ### collection.get
 
 `async collection.get(): Object`
@@ -99,7 +114,7 @@ Retrieves the collection checksum.
 
 **Arguments**
 
-* **opts**: `Object` (optional)
+- **opts**: `Object` (optional)
 
   For information on the possible options see
   [the HTTP API for getting collection information](https://docs.arangodb.com/latest/HTTP/Collection/Getting.html).

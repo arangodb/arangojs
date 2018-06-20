@@ -1,6 +1,5 @@
 import { Connection } from "./connection";
 import { ArrayCursor } from "./cursor";
-import { ArangoError } from "./error";
 
 export enum Types {
   DOCUMENT_COLLECTION = 2,
@@ -31,6 +30,7 @@ export interface ArangoCollection {
   name: string;
 }
 
+const COLLECTION_NOT_FOUND = 1203;
 export abstract class BaseCollection implements ArangoCollection {
   isArangoCollection: true = true;
   name: string;
@@ -108,12 +108,15 @@ export abstract class BaseCollection implements ArangoCollection {
   }
 
   exists(): Promise<boolean> {
-    return this._connection
-      .request({ path: `/_api/collection/${this.name}` }, () => true)
-      .catch((e: ArangoError) => {
-        if (e.errorNum !== 1203) throw e;
+    return this.get().then(
+      () => true,
+      err => {
+        if (err.errorNum !== COLLECTION_NOT_FOUND) {
+          throw err;
+        }
         return false;
-      });
+      }
+    );
   }
 
   create(properties?: any) {

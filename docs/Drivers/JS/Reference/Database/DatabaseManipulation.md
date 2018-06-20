@@ -166,6 +166,20 @@ const info = await db.createDatabase('mydb', [{username: 'root'}]);
 // the database has been created
 ```
 
+## database.exists
+
+`async database.exists(): boolean`
+
+Checks whether the database exists.
+
+**Examples**
+
+```js
+const db = new Database();
+const result = await db.exists();
+// result indicates whether the database exists
+```
+
 ## database.get
 
 `async database.get(): Object`

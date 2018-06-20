@@ -3,10 +3,9 @@ import {
   BaseCollection,
   DocumentHandle,
   EdgeCollection,
-  Types,
-  isArangoCollection
+  isArangoCollection,
+  Types
 } from "./collection";
-
 import { Connection } from "./connection";
 
 export class GraphVertexCollection extends BaseCollection {
@@ -244,6 +243,7 @@ export class GraphEdgeCollection extends EdgeCollection {
   }
 }
 
+const GRAPH_NOT_FOUND = 1924;
 export class Graph {
   name: string;
 
@@ -258,6 +258,18 @@ export class Graph {
     return this._connection.request(
       { path: `/_api/gharial/${this.name}` },
       res => res.body.graph
+    );
+  }
+
+  exists(): Promise<boolean> {
+    return this.get().then(
+      () => true,
+      err => {
+        if (err.errorNum !== GRAPH_NOT_FOUND) {
+          throw err;
+        }
+        return false;
+      }
     );
   }
 

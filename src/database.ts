@@ -1,12 +1,17 @@
 import { AqlLiteral, AqlQuery, isAqlLiteral, isAqlQuery } from "./aql-query";
-import { ArangoCollection, constructCollection, DocumentCollection, EdgeCollection, isArangoCollection } from "./collection";
+import {
+  ArangoCollection,
+  constructCollection,
+  DocumentCollection,
+  EdgeCollection,
+  isArangoCollection
+} from "./collection";
 import { Config, Connection } from "./connection";
 import { ArrayCursor } from "./cursor";
 import { Graph } from "./graph";
 import { Route } from "./route";
 import { btoa } from "./util/btoa";
 import { toForm } from "./util/multipart";
-
 
 function colToString(collection: string | ArangoCollection): string {
   if (isArangoCollection(collection)) {
@@ -37,6 +42,7 @@ export type ServiceOptions = {
   dependencies?: { [key: string]: any };
 };
 
+const DATABASE_NOT_FOUND = 1228;
 export class Database {
   private _connection: Connection;
 
@@ -88,6 +94,18 @@ export class Database {
     return this._connection.request(
       { path: "/_api/database/current" },
       res => res.body.result
+    );
+  }
+
+  exists(): Promise<boolean> {
+    return this.get().then(
+      () => true,
+      err => {
+        if (err.errorNum !== DATABASE_NOT_FOUND) {
+          throw err;
+        }
+        return false;
+      }
     );
   }
 
@@ -687,7 +705,7 @@ export class Database {
     );
   }
 
-  login(username: string = 'root', password: string = ''): Promise<string> {
+  login(username: string = "root", password: string = ""): Promise<string> {
     return this._connection.request(
       {
         method: "POST",
