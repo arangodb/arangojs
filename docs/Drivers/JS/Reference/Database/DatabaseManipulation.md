@@ -24,7 +24,7 @@ _databaseName_, then returns itself.
 
 **Arguments**
 
-* **databaseName**: `string`
+- **databaseName**: `string`
 
   The name of the database to use.
 
@@ -38,18 +38,18 @@ db.useDatabase("test");
 
 ## database.useBasicAuth
 
-`database.useBasicAuth(username, password): this`
+`database.useBasicAuth([username, [password]]): this`
 
 Updates the _Database_ instance's `authorization` header to use Basic
 authentication with the given _username_ and _password_, then returns itself.
 
 **Arguments**
 
-* **username**: `string` (Default: `"root"`)
+- **username**: `string` (Default: `"root"`)
 
   The username to authenticate with.
 
-* **password**: `string` (Default: `""`)
+- **password**: `string` (Default: `""`)
 
   The password to authenticate with.
 
@@ -72,7 +72,7 @@ authentication with the given authentication token, then returns itself.
 
 **Arguments**
 
-* **token**: `string`
+- **token**: `string`
 
   The token to authenticate with.
 
@@ -84,6 +84,48 @@ db.useBearerAuth("keyboardcat");
 // The database instance now uses Bearer authentication.
 ```
 
+## database.login
+
+`async database.login([username, [password]]): this`
+
+Validates the given database credentials and exchanges them for an
+authentication token, then uses the authentication token for future
+requests.
+
+**Arguments**
+
+- **username**: `string` (Default: `"root"`)
+
+  The username to authenticate with.
+
+- **password**: `string` (Default: `""`)
+
+  The password to authenticate with.
+
+**Examples**
+
+```js
+const db = new Database();
+db.useDatabase("test");
+await db.login("admin", "hunter2");
+// The database instance now uses the database "test"
+// with an authentication token for the "admin" user.
+```
+
+## database.version
+
+`async database.version(): Object`
+
+Fetches the ArangoDB version information for the active database from the server.
+
+**Examples**
+
+```js
+const db = new Database();
+const version = await db.version();
+// the version object contains the ArangoDB version information.
+```
+
 ## database.createDatabase
 
 `async database.createDatabase(databaseName, [users]): Object`
@@ -92,27 +134,27 @@ Creates a new database with the given _databaseName_.
 
 **Arguments**
 
-* **databaseName**: `string`
+- **databaseName**: `string`
 
   Name of the database to create.
 
-* **users**: `Array<Object>` (optional)
+- **users**: `Array<Object>` (optional)
 
   If specified, the array must contain objects with the following properties:
 
-  * **username**: `string`
+  - **username**: `string`
 
     The username of the user to create for the database.
 
-  * **passwd**: `string` (Default: empty)
+  - **passwd**: `string` (Default: empty)
 
     The password of the user.
 
-  * **active**: `boolean` (Default: `true`)
+  - **active**: `boolean` (Default: `true`)
 
     Whether the user is active.
 
-  * **extra**: `Object` (optional)
+  - **extra**: `Object` (optional)
 
     An object containing additional user data.
 
@@ -187,7 +229,7 @@ Deletes **all documents in all collections** in the active database.
 
 **Arguments**
 
-* **excludeSystem**: `boolean` (Default: `true`)
+- **excludeSystem**: `boolean` (Default: `true`)
 
   Whether system collections should be excluded. Note that this option will be
   ignored because truncating system collections is not supported anymore for

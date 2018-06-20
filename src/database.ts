@@ -1,18 +1,12 @@
 import { AqlLiteral, AqlQuery, isAqlLiteral, isAqlQuery } from "./aql-query";
-import {
-  ArangoCollection,
-  DocumentCollection,
-  EdgeCollection,
-  constructCollection,
-  isArangoCollection
-} from "./collection";
+import { ArangoCollection, constructCollection, DocumentCollection, EdgeCollection, isArangoCollection } from "./collection";
 import { Config, Connection } from "./connection";
-
 import { ArrayCursor } from "./cursor";
 import { Graph } from "./graph";
 import { Route } from "./route";
 import { btoa } from "./util/btoa";
 import { toForm } from "./util/multipart";
+
 
 function colToString(collection: string | ArangoCollection): string {
   if (isArangoCollection(collection)) {
@@ -693,7 +687,7 @@ export class Database {
     );
   }
 
-  login(username: string, password: string): Promise<string> {
+  login(username: string = 'root', password: string = ''): Promise<string> {
     return this._connection.request(
       {
         method: "POST",
