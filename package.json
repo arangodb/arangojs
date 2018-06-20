@@ -67,7 +67,7 @@
   },
   "devDependencies": {
     "@types/chai": "^4.0.10",
-    "@types/mocha": "^2.2.44",
+    "@types/mocha": "^5.2.1",
     "@types/node": "^10.0.8",
     "babel-core": "^6.26.0",
     "babel-eslint": "^8.0.3",
@@ -76,11 +76,11 @@
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-preset-env": "^1.6.1",
     "chai": "^4.0.2",
-    "cpy-cli": "^1.0.1",
+    "cpy-cli": "^2.0.0",
     "eslint": "^4.13.0",
     "eslint-config-prettier": "^2.9.0",
     "eslint-plugin-prettier": "^2.3.1",
-    "mocha": "3.4.2",
+    "mocha": "^5.2.0",
     "npm-run-all": "^4.1.2",
     "prettier": "^1.9.1",
     "regenerator-runtime": "^0.11.1",
@@ -89,6 +89,6 @@
     "ts-loader": "^3.2.0",
     "typescript": "^2.6.2",
     "webpack": "^3.0.0",
-    "xunit-file": "1.0.0"
+    "xunit-file": "^1.0.0"
   }
 }
