@@ -86,11 +86,11 @@ db.useBearerAuth("keyboardcat");
 
 ## database.login
 
-`async database.login([username, [password]]): this`
+`async database.login([username, [password]]): string`
 
 Validates the given database credentials and exchanges them for an
 authentication token, then uses the authentication token for future
-requests.
+requests and returns it.
 
 **Arguments**
 
