@@ -1,5 +1,5 @@
-import { Database } from "../arangojs";
 import { expect } from "chai";
+import { Database } from "../arangojs";
 
 const ARANGO_VERSION = Number(process.env.ARANGO_VERSION || 30000);
 const it34 = ARANGO_VERSION >= 30400 ? it : it.skip;
@@ -71,10 +71,8 @@ describe("Managing functions", function() {
           "function (celsius) { return celsius * 1.8 + 32; }"
         )
         .then(info => {
-          expect(info).to.eql({
-            code: 201,
-            error: false
-          });
+          expect(info).to.have.property("code", 201);
+          expect(info).to.have.property("error", false);
         })
         .then(() => done())
         .catch(done);
