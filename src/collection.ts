@@ -634,6 +634,14 @@ export abstract class BaseCollection implements ArangoCollection {
   }
 }
 
+export interface DocumentSaveOptions {
+  waitForSync?: boolean;
+  returnNew?: boolean;
+  returnOld?: boolean;
+  overwrite?: boolean;
+  silent?: boolean;
+}
+
 export class DocumentCollection extends BaseCollection {
   type = Types.DOCUMENT_COLLECTION;
   constructor(connection: Connection, name: string) {
@@ -651,7 +659,7 @@ export class DocumentCollection extends BaseCollection {
     );
   }
 
-  save(data: any, opts?: any) {
+  save(data: any, opts?: DocumentSaveOptions | boolean) {
     if (typeof opts === "boolean") {
       opts = { returnNew: opts };
     }
@@ -704,12 +712,27 @@ export class EdgeCollection extends BaseCollection {
     );
   }
 
-  save(data: any): Promise<any>;
-  save(data: any, fromId: DocumentHandle, toId: DocumentHandle): Promise<any>;
-  save(data: any, fromId?: DocumentHandle, toId?: DocumentHandle) {
-    if (fromId !== undefined) {
-      data._from = this._documentHandle(fromId);
+  save(data: any, opts?: DocumentSaveOptions | boolean): Promise<any>;
+  save(
+    data: any,
+    fromId: DocumentHandle,
+    toId: DocumentHandle,
+    opts?: DocumentSaveOptions | boolean
+  ): Promise<any>;
+  save(
+    data: any,
+    fromIdOrOpts?: DocumentHandle | DocumentSaveOptions | boolean,
+    toId?: DocumentHandle,
+    opts?: DocumentSaveOptions | boolean
+  ) {
+    if (toId !== undefined) {
+      data._from = this._documentHandle(fromIdOrOpts as DocumentHandle);
       data._to = this._documentHandle(toId!);
+    } else if (fromIdOrOpts !== undefined) {
+      opts = fromIdOrOpts as DocumentSaveOptions | boolean;
+    }
+    if (typeof opts === "boolean") {
+      opts = { returnNew: opts };
     }
     if (this._connection.arangoMajor <= 2) {
       return this._connection.request(
@@ -718,6 +741,7 @@ export class EdgeCollection extends BaseCollection {
           path: "/_api/edge",
           body: data,
           qs: {
+            ...opts,
             collection: this.name,
             from: data._from,
             to: data._to

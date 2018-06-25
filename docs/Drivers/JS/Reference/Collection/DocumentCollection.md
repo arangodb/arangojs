@@ -72,11 +72,22 @@ the document's metadata.
     If set to `true`, return additionally the complete new documents under the
     attribute `new` in the result.
 
+  * **returnOld**: `boolean` (Default: `false)
+
+    If set to `true`, return additionally the complete old documents under the
+    attribute `old` in the result.
+
   * **silent**: `boolean` (Default: `false`)
 
     If set to true, an empty object will be returned as response. No meta-data
     will be returned for the created document. This option can be used to save
     some network traffic.
+
+  * **overwrite**: `boolean` (Default: `false`)
+
+    If set to true, the insert becomes a replace-insert. If a document with the
+    same _key already exists the new document is not rejected with unique
+    constraint violated but will replace the old document.
 
 If a boolean is passed instead of an options object, it will be interpreted as
 the _returnNew_ option.
