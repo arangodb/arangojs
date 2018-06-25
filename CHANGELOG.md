@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Added
+
+- Added type `DocumentSaveOptions` for `opts` in `DocumentCollection#save`
+
+- Added param `opts` of type `DocumentSaveOptions` in `EdgeCollection#save`
+
 ## [6.3.0] - 2018-06-20
 
 ### Added
