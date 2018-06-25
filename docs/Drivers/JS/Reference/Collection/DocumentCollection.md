@@ -72,7 +72,7 @@ the document's metadata.
     If set to `true`, return additionally the complete new documents under the
     attribute `new` in the result.
 
-  * **returnOld**: `boolean` (Default: `false)
+  * **returnOld**: `boolean` (Default: `false`)
 
     If set to `true`, return additionally the complete old documents under the
     attribute `old` in the result.
