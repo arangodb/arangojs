@@ -48,7 +48,7 @@ _data_ and returns an object containing the edge's metadata.
 * **data**: `Object`
 
   The data of the new edge. If _fromId_ and _toId_ are not specified, the _data_
-  needs to contain the properties __from_ and __to_.
+  needs to contain the properties `_from` and `_to`.
 
 * **fromId**: `string` (optional)
 
@@ -75,7 +75,7 @@ _data_ and returns an object containing the edge's metadata.
     If set to `true`, return additionally the complete new documents under the
     attribute `new` in the result.
 
-  * **returnOld**: `boolean` (Default: `false)
+  * **returnOld**: `boolean` (Default: `false`)
 
     If set to `true`, return additionally the complete old documents under the
     attribute `old` in the result.
