@@ -314,7 +314,7 @@ and higher as cap constraints are no longer supported.
 If _size_ is a number, it will be interpreted as _size.size_.
 
 For more information on the properties of the _size_ object see
-[the HTTP API for creating cap constraints](https://docs.arangodb.com/latest/HTTP/Indexes/Cap.html).
+[the HTTP API for creating cap constraints](https://docs.arangodb.com/2.8/HTTP/Indexes/Cap.html).
 
 **Examples**
 
