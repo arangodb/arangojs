@@ -1,12 +1,12 @@
+import { expect } from "chai";
 import { Database } from "../arangojs";
 import { DocumentCollection } from "../collection";
 import { Route } from "../route";
-import { expect } from "chai";
 
 describe("Arbitrary HTTP routes", () => {
   const db = new Database({
     url: process.env.TEST_ARANGODB_URL || "http://localhost:8529",
-    arangoVersion: Number(process.env.ARANGO_VERSION || 30000)
+    arangoVersion: Number(process.env.ARANGO_VERSION || 30400)
   });
   describe("database.route", () => {
     it("returns a Route instance", () => {
@@ -32,33 +32,26 @@ describe("Route API", function() {
   const name = `testdb_${Date.now()}`;
   let db: Database;
   let collection: DocumentCollection;
-  before(done => {
+  before(async () => {
     db = new Database({
       url: process.env.TEST_ARANGODB_URL || "http://localhost:8529",
-      arangoVersion: Number(process.env.ARANGO_VERSION || 30000)
+      arangoVersion: Number(process.env.ARANGO_VERSION || 30400)
     });
-    db
-      .createDatabase(name)
-      .then(() => {
-        db.useDatabase(name);
-        collection = db.collection(`c_${Date.now()}`);
-        return collection.create();
-      })
-      .then(() => done())
-      .catch(done);
+    await db.createDatabase(name);
+    db.useDatabase(name);
+    collection = db.collection(`c_${Date.now()}`);
+    await collection.create();
   });
-  after(done => {
-    db.useDatabase("_system");
-    db
-      .dropDatabase(name)
-      .then(() => done())
-      .catch(done);
+  after(async () => {
+    try {
+      db.useDatabase("_system");
+      await db.dropDatabase(name);
+    } finally {
+      db.close();
+    }
   });
-  beforeEach(done => {
-    collection
-      .truncate()
-      .then(() => done())
-      .catch(done);
+  beforeEach(async () => {
+    await collection.truncate();
   });
   describe("route.route", () => {
     it("should concat path", () => {
@@ -68,8 +61,7 @@ describe("Route API", function() {
   });
   describe("route.get", () => {
     it("should be executed using the route path", done => {
-      db
-        .route("/_api/version")
+      db.route("/_api/version")
         .get()
         .then(res => {
           expect(res).to.have.property("body");
@@ -81,8 +73,7 @@ describe("Route API", function() {
         .catch(done);
     });
     it("should concat path to route path", done => {
-      db
-        .route("/_api")
+      db.route("/_api")
         .get("/version")
         .then(res => {
           expect(res).to.have.property("body");
@@ -94,8 +85,7 @@ describe("Route API", function() {
         .catch(done);
     });
     it("should passes query parameters", done => {
-      db
-        .route("/_api")
+      db.route("/_api")
         .get("/version", { details: true })
         .then(res => {
           expect(res).to.have.property("body");
@@ -110,8 +100,7 @@ describe("Route API", function() {
   });
   describe("route.post", () => {
     it("should passes body", done => {
-      db
-        .route(`/_api/document/${collection.name}`)
+      db.route(`/_api/document/${collection.name}`)
         .post({ foo: "bar" })
         .then(res => {
           expect(res).to.have.property("body");
@@ -135,8 +124,7 @@ describe("Route API", function() {
         .catch(done);
     });
     it("should passes body", done => {
-      db
-        .route(`/_api/document/${documentHandle}`)
+      db.route(`/_api/document/${documentHandle}`)
         .put({ hello: "world" })
         .then(res => {
           expect(res).to.have.property("body");
@@ -160,8 +148,7 @@ describe("Route API", function() {
         .catch(done);
     });
     it("should passes body", done => {
-      db
-        .route(`/_api/document/${documentHandle}`)
+      db.route(`/_api/document/${documentHandle}`)
         .patch({ hello: "world" })
         .then(res => {
           expect(res).to.have.property("body");
@@ -185,8 +172,7 @@ describe("Route API", function() {
         .catch(done);
     });
     it("should be executed using the route path", done => {
-      db
-        .route(`/_api/document/${documentHandle}`)
+      db.route(`/_api/document/${documentHandle}`)
         .delete()
         .then(res => {
           expect(res).to.have.property("body");
@@ -210,8 +196,7 @@ describe("Route API", function() {
         .catch(done);
     });
     it("should be executed using the route path", done => {
-      db
-        .route(`/_api/document/${documentHandle}`)
+      db.route(`/_api/document/${documentHandle}`)
         .head()
         .then(res => {
           expect(res).to.have.property("statusCode", 200);
@@ -222,8 +207,7 @@ describe("Route API", function() {
   });
   describe("route.request", () => {
     it("should be executed using the route path", done => {
-      db
-        .route("/_api/version")
+      db.route("/_api/version")
         .request("get")
         .then(res => {
           expect(res).to.have.property("body");

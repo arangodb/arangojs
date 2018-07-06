@@ -1,11 +1,11 @@
-import { ArrayCursor } from "../cursor";
+import { expect } from "chai";
 import { Database } from "../arangojs";
 import { DocumentCollection } from "../collection";
-import { expect } from "chai";
+import { ArrayCursor } from "../cursor";
 
 const range = (n: number): number[] => Array.from(Array(n).keys());
 const alpha = (i: number): string => String.fromCharCode("a".charCodeAt(0) + i);
-const ARANGO_VERSION = Number(process.env.ARANGO_VERSION || 30000);
+const ARANGO_VERSION = Number(process.env.ARANGO_VERSION || 30400);
 const describe2x = ARANGO_VERSION < 30000 ? describe : describe.skip;
 
 describe("Simple queries", function() {
@@ -15,25 +15,21 @@ describe("Simple queries", function() {
   let name = `testdb_${Date.now()}`;
   let db: Database;
   let collection: DocumentCollection;
-  before(done => {
+  before(async () => {
     db = new Database({
       url: process.env.TEST_ARANGODB_URL || "http://localhost:8529",
       arangoVersion: ARANGO_VERSION
     });
-    db
-      .createDatabase(name)
-      .then(() => {
-        db.useDatabase(name);
-        done();
-      })
-      .catch(done);
+    await db.createDatabase(name);
+    db.useDatabase(name);
   });
-  after(done => {
-    db.useDatabase("_system");
-    db
-      .dropDatabase(name)
-      .then(() => void done())
-      .catch(done);
+  after(async () => {
+    try {
+      db.useDatabase("_system");
+      await db.dropDatabase(name);
+    } finally {
+      db.close();
+    }
   });
   beforeEach(done => {
     collection = db.collection(`c_${Date.now()}`);

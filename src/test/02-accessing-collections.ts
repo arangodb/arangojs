@@ -1,7 +1,6 @@
-import { DocumentCollection, EdgeCollection } from "../collection";
-
-import { Database } from "../arangojs";
 import { expect } from "chai";
+import { Database } from "../arangojs";
+import { DocumentCollection, EdgeCollection } from "../collection";
 
 const range = (n: number): number[] => Array.from(Array(n).keys());
 
@@ -12,29 +11,23 @@ describe("Accessing collections", function() {
   let name = `testdb_${Date.now()}`;
   let db: Database;
   let builtinSystemCollections: string[];
-  before(done => {
+  before(async () => {
     db = new Database({
       url: process.env.TEST_ARANGODB_URL || "http://localhost:8529",
-      arangoVersion: Number(process.env.ARANGO_VERSION || 30000)
+      arangoVersion: Number(process.env.ARANGO_VERSION || 30400)
     });
-    db
-      .createDatabase(name)
-      .then(() => {
-        db.useDatabase(name);
-        return db.listCollections(false);
-      })
-      .then(collections => {
-        builtinSystemCollections = collections.map((c: any) => c.name);
-        done();
-      })
-      .catch(done);
+    await db.createDatabase(name);
+    db.useDatabase(name);
+    const collections = await db.listCollections(false);
+    builtinSystemCollections = collections.map((c: any) => c.name);
   });
-  after(done => {
-    db.useDatabase("_system");
-    db
-      .dropDatabase(name)
-      .then(() => void done())
-      .catch(done);
+  after(async () => {
+    try {
+      db.useDatabase("_system");
+      await db.dropDatabase(name);
+    } finally {
+      db.close();
+    }
   });
   describe("database.collection", () => {
     it("returns a DocumentCollection instance for the collection", () => {
@@ -80,8 +73,7 @@ describe("Accessing collections", function() {
         .catch(done);
     });
     it("fetches information about all non-system collections", done => {
-      db
-        .listCollections()
+      db.listCollections()
         .then(collections => {
           expect(collections.length).to.equal(nonSystemCollectionNames.length);
           expect(collections.map((c: any) => c.name).sort()).to.eql(
@@ -92,8 +84,7 @@ describe("Accessing collections", function() {
         .catch(done);
     });
     it("includes system collections if explicitly passed false", done => {
-      db
-        .listCollections(false)
+      db.listCollections(false)
         .then(collections => {
           let allCollectionNames = nonSystemCollectionNames
             .concat(systemCollectionNames)
@@ -135,8 +126,7 @@ describe("Accessing collections", function() {
         .catch(done);
     });
     it("creates DocumentCollection and EdgeCollection instances", done => {
-      db
-        .collections()
+      db.collections()
         .then(collections => {
           let documentCollections = collections
             .filter((c: any) => c instanceof DocumentCollection)
@@ -159,8 +149,7 @@ describe("Accessing collections", function() {
         .catch(done);
     });
     it("includes system collections if explicitly passed false", done => {
-      db
-        .collections(false)
+      db.collections(false)
         .then(collections => {
           let documentCollections = collections.filter(
             (c: any) => c instanceof DocumentCollection

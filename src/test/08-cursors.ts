@@ -1,6 +1,6 @@
-import { ArrayCursor } from "../cursor";
-import { Database } from "../arangojs";
 import { expect } from "chai";
+import { Database } from "../arangojs";
+import { ArrayCursor } from "../cursor";
 
 const aqlQuery = "FOR i In 0..10 RETURN i";
 const aqlResult = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
@@ -19,17 +19,14 @@ describe("Cursor API", () => {
   before(() => {
     db = new Database({
       url: process.env.TEST_ARANGODB_URL || "http://localhost:8529",
-      arangoVersion: Number(process.env.ARANGO_VERSION || 30000)
+      arangoVersion: Number(process.env.ARANGO_VERSION || 30400)
     });
   });
-  beforeEach(done => {
-    db
-      .query(aqlQuery)
-      .then(c => {
-        cursor = c;
-        done();
-      })
-      .catch(done);
+  after(() => {
+    db.close();
+  });
+  beforeEach(async () => {
+    cursor = await db.query(aqlQuery);
   });
   describe("cursor.all", () => {
     it("returns an Array of all results", done => {
@@ -78,8 +75,7 @@ describe("Cursor API", () => {
         .catch(done);
     });
     it("returns true after first batch is consumed", done => {
-      db
-        .query(aqlQuery, {}, { batchSize: 1 })
+      db.query(aqlQuery, {}, { batchSize: 1 })
         .then(cursor => {
           expect((cursor as any)._result.length).to.equal(1);
           cursor.next();
@@ -90,8 +86,7 @@ describe("Cursor API", () => {
         .catch(done);
     });
     it("returns false after last batch is consumed", done => {
-      db
-        .query("FOR i In 0..1 RETURN i", {}, { batchSize: 1 })
+      db.query("FOR i In 0..1 RETURN i", {}, { batchSize: 1 })
         .then(cursor => {
           expect(cursor.hasNext()).to.equal(true);
           expect((cursor as any)._result.length).to.equal(1);
@@ -113,8 +108,7 @@ describe("Cursor API", () => {
         .catch(done);
     });
     it("returns false after last result is consumed", done => {
-      db
-        .query("FOR i In 0..1 RETURN i")
+      db.query("FOR i In 0..1 RETURN i")
         .then(cursor => {
           expect(cursor.hasNext()).to.equal(true);
           expect((cursor as any)._result.length).to.equal(2);
@@ -136,8 +130,7 @@ describe("Cursor API", () => {
         .catch(done);
     });
     it.skip("returns 404 after timeout", done => {
-      db
-        .query("FOR i In 0..1 RETURN i", {}, { batchSize: 1, ttl: 1 })
+      db.query("FOR i In 0..1 RETURN i", {}, { batchSize: 1, ttl: 1 })
         .then(cursor => {
           expect(cursor.hasNext()).to.equal(true);
           expect((cursor as any)._result.length).to.equal(1);
@@ -173,8 +166,7 @@ describe("Cursor API", () => {
           })
           .catch(done);
       };
-      db
-        .query(`FOR i In 1..${EXPECTED_LENGTH} RETURN i`)
+      db.query(`FOR i In 1..${EXPECTED_LENGTH} RETURN i`)
         .then(cursor => loadMore(cursor, 0))
         .catch(done);
     });

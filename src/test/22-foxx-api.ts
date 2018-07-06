@@ -5,7 +5,7 @@ import { ArangoError } from "../error";
 import { Database } from "../arangojs";
 import { expect } from "chai";
 
-const ARANGO_VERSION = Number(process.env.ARANGO_VERSION || 30000);
+const ARANGO_VERSION = Number(process.env.ARANGO_VERSION || 30400);
 const ARANGO_URL = process.env.TEST_ARANGODB_URL || "http://localhost:8529";
 const ARANGO_URL_SELF_REACHABLE =
   process.env.TEST_ARANGODB_URL_SELF_REACHABLE || ARANGO_URL;
@@ -15,13 +15,13 @@ const mount = "/foxx-crud-test";
 const serviceServiceMount = "/foxx-crud-test-download";
 
 describe("Foxx service", () => {
-  const db = new Database({
-    url: ARANGO_URL,
-    arangoVersion: ARANGO_VERSION
-  });
-
+  let db: Database;
   let arangoPaths: any;
   before(async () => {
+    db = new Database({
+      url: ARANGO_URL,
+      arangoVersion: ARANGO_VERSION
+    });
     await db.installService(
       serviceServiceMount,
       fs.readFileSync(path.resolve("fixtures", "service-service-service.zip"))
@@ -33,6 +33,7 @@ describe("Foxx service", () => {
     try {
       await db.uninstallService(serviceServiceMount, { force: true });
     } catch (e) {}
+    db.close();
   });
 
   afterEach(async () => {

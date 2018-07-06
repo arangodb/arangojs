@@ -1,6 +1,6 @@
+import { expect } from "chai";
 import { Database } from "../arangojs";
 import { GraphEdgeCollection } from "../graph";
-import { expect } from "chai";
 
 describe("GraphEdgeCollection API", function() {
   // create database takes 11s in a standard cluster
@@ -9,46 +9,41 @@ describe("GraphEdgeCollection API", function() {
   const dbName = `testdb_${Date.now()}`;
   let db: Database;
   let edge: GraphEdgeCollection;
-  before(done => {
+  before(async () => {
     db = new Database({
       url: process.env.TEST_ARANGODB_URL || "http://localhost:8529",
-      arangoVersion: Number(process.env.ARANGO_VERSION || 30000)
+      arangoVersion: Number(process.env.ARANGO_VERSION || 30400)
     });
-    db.createDatabase(dbName).then(() => {
-      db.useDatabase(dbName);
-      const graph = db.graph(`testgraph_${Date.now()}`);
-      return graph
-        .create({
-          edgeDefinitions: [
-            {
-              collection: "knows",
-              from: ["person"],
-              to: ["person"]
-            }
-          ]
-        })
-        .then(() => {
-          edge = graph.edgeCollection("knows");
-          return graph
-            .vertexCollection("person")
-            .import([
-              { _key: "Alice" },
-              { _key: "Bob" },
-              { _key: "Charlie" },
-              { _key: "Dave" },
-              { _key: "Eve" }
-            ]);
-        })
-        .then(() => void done())
-        .catch(done);
+    await db.createDatabase(dbName);
+    db.useDatabase(dbName);
+    const graph = db.graph(`testgraph_${Date.now()}`);
+    await graph.create({
+      edgeDefinitions: [
+        {
+          collection: "knows",
+          from: ["person"],
+          to: ["person"]
+        }
+      ]
     });
+    edge = graph.edgeCollection("knows");
+    await graph
+      .vertexCollection("person")
+      .import([
+        { _key: "Alice" },
+        { _key: "Bob" },
+        { _key: "Charlie" },
+        { _key: "Dave" },
+        { _key: "Eve" }
+      ]);
   });
-  after(done => {
-    db.useDatabase("_system");
-    db
-      .dropDatabase(dbName)
-      .then(() => void done())
-      .catch(done);
+  after(async () => {
+    try {
+      db.useDatabase("_system");
+      await db.dropDatabase(dbName);
+    } finally {
+      db.close();
+    }
   });
   beforeEach(done => {
     edge

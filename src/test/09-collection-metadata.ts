@@ -1,6 +1,6 @@
+import { expect } from "chai";
 import { Database } from "../arangojs";
 import { DocumentCollection } from "../collection";
-import { expect } from "chai";
 
 describe("Collection metadata", function() {
   // create database takes 11s in a standard cluster
@@ -10,26 +10,19 @@ describe("Collection metadata", function() {
   let dbName = `testdb_${Date.now()}`;
   let collection: DocumentCollection;
   let collectionName = `collection-${Date.now()}`;
-  before(done => {
+  before(async () => {
     db = new Database({
       url: process.env.TEST_ARANGODB_URL || "http://localhost:8529",
-      arangoVersion: Number(process.env.ARANGO_VERSION || 30000)
+      arangoVersion: Number(process.env.ARANGO_VERSION || 30400)
     });
-    db.createDatabase(dbName).then(() => {
-      db.useDatabase(dbName);
-      collection = db.collection(collectionName);
-      collection
-        .create()
-        .then(() => void done())
-        .catch(done);
-    });
+    await db.createDatabase(dbName);
+    db.useDatabase(dbName);
+    collection = db.collection(collectionName);
+    await collection.create();
   });
-  after(done => {
+  after(async () => {
     db.useDatabase("_system");
-    db
-      .dropDatabase(dbName)
-      .then(() => void done())
-      .catch(done);
+    await db.dropDatabase(dbName);
   });
   describe("collection.get", () => {
     it("should return information about a collection", done => {
@@ -45,8 +38,7 @@ describe("Collection metadata", function() {
         .catch(done);
     });
     it("should throw if collection does not exists", done => {
-      db
-        .collection("no")
+      db.collection("no")
         .get()
         .then(done)
         .catch(err => {

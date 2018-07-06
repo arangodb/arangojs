@@ -1,6 +1,6 @@
+import { expect } from "chai";
 import { Database } from "../arangojs";
 import { Graph } from "../graph";
-import { expect } from "chai";
 
 const range = (n: number): number[] => Array.from(Array(n).keys());
 
@@ -10,25 +10,21 @@ describe("Accessing graphs", function() {
 
   let name = `testdb_${Date.now()}`;
   let db: Database;
-  before(done => {
+  before(async () => {
     db = new Database({
       url: process.env.TEST_ARANGODB_URL || "http://localhost:8529",
-      arangoVersion: Number(process.env.ARANGO_VERSION || 30000)
+      arangoVersion: Number(process.env.ARANGO_VERSION || 30400)
     });
-    db
-      .createDatabase(name)
-      .then(() => {
-        db.useDatabase(name);
-        done();
-      })
-      .catch(done);
+    await db.createDatabase(name);
+    db.useDatabase(name);
   });
-  after(done => {
-    db.useDatabase("_system");
-    db
-      .dropDatabase(name)
-      .then(() => void done())
-      .catch(done);
+  after(async () => {
+    try {
+      db.useDatabase("_system");
+      await db.dropDatabase(name);
+    } finally {
+      db.close();
+    }
   });
   describe("database.graph", () => {
     it("returns a Graph instance", () => {
@@ -78,8 +74,7 @@ describe("Accessing graphs", function() {
         .catch(done);
     });
     it("fetches information about all graphs", done => {
-      db
-        .listGraphs()
+      db.listGraphs()
         .then(graphs => {
           expect(graphs.length).to.equal(graphNames.length);
           expect(graphs.map((g: any) => g._key).sort()).to.eql(graphNames);
@@ -126,8 +121,7 @@ describe("Accessing graphs", function() {
         .catch(done);
     });
     it("creates Graph instances", done => {
-      db
-        .graphs()
+      db.graphs()
         .then(graphs => {
           expect(graphs.length).to.equal(graphNames.length);
           expect(graphs.map((g: any) => g.name).sort()).to.eql(graphNames);

@@ -1,8 +1,8 @@
+import { expect } from "chai";
 import { Database } from "../arangojs";
 import { DocumentCollection } from "../collection";
-import { expect } from "chai";
 
-const ARANGO_VERSION = Number(process.env.ARANGO_VERSION || 30000);
+const ARANGO_VERSION = Number(process.env.ARANGO_VERSION || 30400);
 
 describe("Manipulating collections", function() {
   // create database takes 11s in a standard cluster
@@ -11,25 +11,21 @@ describe("Manipulating collections", function() {
   let name = `testdb_${Date.now()}`;
   let db: Database;
   let collection: DocumentCollection;
-  before(done => {
+  before(async () => {
     db = new Database({
       url: process.env.TEST_ARANGODB_URL || "http://localhost:8529",
       arangoVersion: ARANGO_VERSION
     });
-    db
-      .createDatabase(name)
-      .then(() => {
-        db.useDatabase(name);
-        done();
-      })
-      .catch(done);
+    await db.createDatabase(name);
+    db.useDatabase(name);
   });
-  after(done => {
-    db.useDatabase("_system");
-    db
-      .dropDatabase(name)
-      .then(() => void done())
-      .catch(done);
+  after(async () => {
+    try {
+      db.useDatabase("_system");
+      await db.dropDatabase(name);
+    } finally {
+      db.close();
+    }
   });
   beforeEach(done => {
     collection = db.collection(`collection-${Date.now()}`);
@@ -126,8 +122,7 @@ describe("Manipulating collections", function() {
   });
   describe("collection.rename", () => {
     it("should rename a collection", done => {
-      db
-        .route("/_admin/server/role")
+      db.route("/_admin/server/role")
         .get()
         .then(res => {
           if (res.body.role !== "SINGLE") return;

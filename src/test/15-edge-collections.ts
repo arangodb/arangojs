@@ -1,6 +1,6 @@
+import { expect } from "chai";
 import { Database } from "../arangojs";
 import { EdgeCollection } from "../collection";
-import { expect } from "chai";
 
 describe("EdgeCollection API", function() {
   // create database takes 11s in a standard cluster
@@ -9,25 +9,21 @@ describe("EdgeCollection API", function() {
   let name = `testdb_${Date.now()}`;
   let db: Database;
   let collection: EdgeCollection;
-  before(done => {
+  before(async () => {
     db = new Database({
       url: process.env.TEST_ARANGODB_URL || "http://localhost:8529",
-      arangoVersion: Number(process.env.ARANGO_VERSION || 30000)
+      arangoVersion: Number(process.env.ARANGO_VERSION || 30400)
     });
-    db
-      .createDatabase(name)
-      .then(() => {
-        db.useDatabase(name);
-        done();
-      })
-      .catch(done);
+    await db.createDatabase(name);
+    db.useDatabase(name);
   });
-  after(done => {
-    db.useDatabase("_system");
-    db
-      .dropDatabase(name)
-      .then(() => void done())
-      .catch(done);
+  after(async () => {
+    try {
+      db.useDatabase("_system");
+      await db.dropDatabase(name);
+    } finally {
+      db.close();
+    }
   });
   beforeEach(done => {
     collection = db.edgeCollection(`c_${Date.now()}`);

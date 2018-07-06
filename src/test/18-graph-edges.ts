@@ -1,6 +1,6 @@
+import { expect } from "chai";
 import { Database } from "../arangojs";
 import { Graph } from "../graph";
-import { expect } from "chai";
 
 describe("Manipulating graph edges", function() {
   // create database takes 11s in a standard cluster
@@ -10,25 +10,21 @@ describe("Manipulating graph edges", function() {
   let db: Database;
   const graphName = `testgraph_${Date.now()}`;
   let graph: Graph;
-  before(done => {
+  before(async () => {
     db = new Database({
       url: process.env.TEST_ARANGODB_URL || "http://localhost:8529",
-      arangoVersion: Number(process.env.ARANGO_VERSION || 30000)
+      arangoVersion: Number(process.env.ARANGO_VERSION || 30400)
     });
-    db
-      .createDatabase(dbName)
-      .then(() => {
-        db.useDatabase(dbName);
-        done();
-      })
-      .catch(done);
+    await db.createDatabase(dbName);
+    db.useDatabase(dbName);
   });
-  after(done => {
-    db.useDatabase("_system");
-    db
-      .dropDatabase(dbName)
-      .then(() => void done())
-      .catch(done);
+  after(async () => {
+    try {
+      db.useDatabase("_system");
+      await db.dropDatabase(dbName);
+    } finally {
+      db.close();
+    }
   });
   beforeEach(done => {
     graph = db.graph(graphName);

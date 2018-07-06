@@ -9,30 +9,25 @@ describe("AQL queries", function() {
 
   let name = `testdb_${Date.now()}`;
   let db: Database;
-  before(done => {
+  before(async () => {
     db = new Database({
       url: process.env.TEST_ARANGODB_URL || "http://localhost:8529",
-      arangoVersion: Number(process.env.ARANGO_VERSION || 30000)
+      arangoVersion: Number(process.env.ARANGO_VERSION || 30400)
     });
-    db
-      .createDatabase(name)
-      .then(() => {
-        db.useDatabase(name);
-        done();
-      })
-      .catch(done);
+    await db.createDatabase(name);
+    db.useDatabase(name);
   });
-  after(done => {
-    db.useDatabase("_system");
-    db
-      .dropDatabase(name)
-      .then(() => void done())
-      .catch(done);
+  after(async () => {
+    try {
+      db.useDatabase("_system");
+      await db.dropDatabase(name);
+    } finally {
+      db.close();
+    }
   });
   describe("database.query", () => {
     it("returns a cursor for the query result", done => {
-      db
-        .query("RETURN 23")
+      db.query("RETURN 23")
         .then(cursor => {
           expect(cursor).to.be.an.instanceof(ArrayCursor);
           done();
@@ -40,8 +35,7 @@ describe("AQL queries", function() {
         .catch(done);
     });
     it("throws an exception on error", done => {
-      db
-        .query("FOR i IN no RETURN i")
+      db.query("FOR i IN no RETURN i")
         .then(() => {
           expect.fail();
           done();
@@ -64,8 +58,7 @@ describe("AQL queries", function() {
       }
     });
     it("supports bindVars", done => {
-      db
-        .query("RETURN @x", { x: 5 })
+      db.query("RETURN @x", { x: 5 })
         .then(cursor => cursor.next())
         .then(value => {
           expect(value).to.equal(5);
@@ -74,11 +67,10 @@ describe("AQL queries", function() {
         .catch(done);
     });
     it("supports options", done => {
-      db
-        .query("FOR x IN 1..10 RETURN x", undefined, {
-          batchSize: 2,
-          count: true
-        })
+      db.query("FOR x IN 1..10 RETURN x", undefined, {
+        batchSize: 2,
+        count: true
+      })
         .then(cursor => {
           expect(cursor.count).to.equal(10);
           expect((cursor as any)._hasMore).to.equal(true);
@@ -87,8 +79,7 @@ describe("AQL queries", function() {
         .catch(done);
     });
     it("supports AQB queries", done => {
-      db
-        .query({ toAQL: () => "RETURN 42" })
+      db.query({ toAQL: () => "RETURN 42" })
         .then(cursor => cursor.next())
         .then(value => {
           expect(value).to.equal(42);
@@ -97,8 +88,7 @@ describe("AQL queries", function() {
         .catch(done);
     });
     it("supports query objects", done => {
-      db
-        .query({ query: "RETURN 1337", bindVars: {} })
+      db.query({ query: "RETURN 1337", bindVars: {} })
         .then(cursor => cursor.next())
         .then(value => {
           expect(value).to.equal(1337);
@@ -107,8 +97,7 @@ describe("AQL queries", function() {
         .catch(done);
     });
     it("supports compact queries", done => {
-      db
-        .query({ query: "RETURN @potato", bindVars: { potato: "tomato" } })
+      db.query({ query: "RETURN @potato", bindVars: { potato: "tomato" } })
         .then(cursor => cursor.next())
         .then(value => {
           expect(value).to.equal("tomato");
@@ -121,8 +110,7 @@ describe("AQL queries", function() {
         query: "FOR x IN RANGE(1, @max) RETURN x",
         bindVars: { max: 10 }
       };
-      db
-        .query(query, { batchSize: 2, count: true })
+      db.query(query, { batchSize: 2, count: true })
         .then(cursor => {
           expect(cursor.count).to.equal(10);
           expect((cursor as any)._hasMore).to.equal(true);

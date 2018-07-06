@@ -1,9 +1,8 @@
-import { Graph, GraphVertexCollection } from "../graph";
-
-import { ArangoError } from "../error";
-import { BaseCollection } from "../collection";
-import { Database } from "../arangojs";
 import { expect } from "chai";
+import { Database } from "../arangojs";
+import { BaseCollection } from "../collection";
+import { ArangoError } from "../error";
+import { Graph, GraphVertexCollection } from "../graph";
 
 const range = (n: number): number[] => Array.from(Array(n).keys());
 
@@ -38,25 +37,21 @@ describe("Manipulating graph vertices", function() {
   let name = `testdb_${Date.now()}`;
   let graph: Graph;
   let collectionNames: string[];
-  before(done => {
+  before(async () => {
     db = new Database({
       url: process.env.TEST_ARANGODB_URL || "http://localhost:8529",
-      arangoVersion: Number(process.env.ARANGO_VERSION || 30000)
+      arangoVersion: Number(process.env.ARANGO_VERSION || 30400)
     });
-    db
-      .createDatabase(name)
-      .then(() => {
-        db.useDatabase(name);
-        done();
-      })
-      .catch(done);
+    await db.createDatabase(name);
+    db.useDatabase(name);
   });
-  after(done => {
-    db.useDatabase("_system");
-    db
-      .dropDatabase(name)
-      .then(() => void done())
-      .catch(done);
+  after(async () => {
+    try {
+      db.useDatabase("_system");
+      await db.dropDatabase(name);
+    } finally {
+      db.close();
+    }
   });
   beforeEach(done => {
     graph = db.graph(`g_${Date.now()}`);

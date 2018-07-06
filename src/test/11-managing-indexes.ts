@@ -1,8 +1,10 @@
+import { expect } from "chai";
 import { Database } from "../arangojs";
 import { DocumentCollection } from "../collection";
-import { expect } from "chai";
 
-const ARANGO_VERSION = Number(process.env.ARANGO_VERSION || 30000);
+const ARANGO_VERSION = Number(process.env.ARANGO_VERSION || 30400);
+const itPre34 = ARANGO_VERSION < 30400 ? it : it.skip;
+const it34 = ARANGO_VERSION >= 30400 ? it : it.skip;
 
 describe("Managing indexes", function() {
   // create database takes 11s in a standard cluster
@@ -12,26 +14,23 @@ describe("Managing indexes", function() {
   let dbName = `testdb_${Date.now()}`;
   let collection: DocumentCollection;
   let collectionName = `collection-${Date.now()}`;
-  before(done => {
+  before(async () => {
     db = new Database({
       url: process.env.TEST_ARANGODB_URL || "http://localhost:8529",
       arangoVersion: ARANGO_VERSION
     });
-    db.createDatabase(dbName).then(() => {
-      db.useDatabase(dbName);
-      collection = db.collection(collectionName);
-      collection
-        .create()
-        .then(() => void done())
-        .catch(done);
-    });
+    await db.createDatabase(dbName);
+    db.useDatabase(dbName);
+    collection = db.collection(collectionName);
+    await collection.create();
   });
-  after(done => {
-    db.useDatabase("_system");
-    db
-      .dropDatabase(dbName)
-      .then(() => void done())
-      .catch(done);
+  after(async () => {
+    try {
+      db.useDatabase("_system");
+      await db.dropDatabase(dbName);
+    } finally {
+      db.close();
+    }
   });
   describe("collection.createIndex", () => {
     it("should create a index of given type", done => {
@@ -97,15 +96,12 @@ describe("Managing indexes", function() {
     });
   });
   describe("collection.createGeoIndex", () => {
-    it("should create a geo1 index", done => {
+    itPre34("should create a geo1 index for one field", done => {
       collection
         .createGeoIndex(["value"])
         .then(info => {
           expect(info).to.have.property("id");
-          expect(info).to.have.property(
-            "type",
-            ARANGO_VERSION >= 30400 ? "geo" : "geo1"
-          );
+          expect(info).to.have.property("type", "geo1");
           expect(info).to.have.property("fields");
           expect(info.fields).to.eql(["value"]);
           expect(info).to.have.property("isNewlyCreated", true);
@@ -113,15 +109,38 @@ describe("Managing indexes", function() {
         .then(() => done())
         .catch(done);
     });
-    it("should create a geo2 index", done => {
+    itPre34("should create a geo2 index for two fields", done => {
       collection
         .createGeoIndex(["value1", "value2"])
         .then(info => {
           expect(info).to.have.property("id");
-          expect(info).to.have.property(
-            "type",
-            ARANGO_VERSION >= 30400 ? "geo" : "geo2"
-          );
+          expect(info).to.have.property("type", "geo2");
+          expect(info).to.have.property("fields");
+          expect(info.fields).to.eql(["value1", "value2"]);
+          expect(info).to.have.property("isNewlyCreated", true);
+        })
+        .then(() => done())
+        .catch(done);
+    });
+    it34("should create a geo index for one field", done => {
+      collection
+        .createGeoIndex(["value"])
+        .then(info => {
+          expect(info).to.have.property("id");
+          expect(info).to.have.property("type", "geo");
+          expect(info).to.have.property("fields");
+          expect(info.fields).to.eql(["value"]);
+          expect(info).to.have.property("isNewlyCreated", true);
+        })
+        .then(() => done())
+        .catch(done);
+    });
+    it34("should create a geo index for two fields", done => {
+      collection
+        .createGeoIndex(["value1", "value2"])
+        .then(info => {
+          expect(info).to.have.property("id");
+          expect(info).to.have.property("type", "geo");
           expect(info).to.have.property("fields");
           expect(info.fields).to.eql(["value1", "value2"]);
           expect(info).to.have.property("isNewlyCreated", true);

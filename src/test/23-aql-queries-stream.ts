@@ -1,9 +1,8 @@
-import { Database, aql } from "../arangojs";
-
-import { ArrayCursor } from "../cursor";
 import { expect } from "chai";
+import { aql, Database } from "../arangojs";
+import { ArrayCursor } from "../cursor";
 
-const ARANGO_VERSION = Number(process.env.ARANGO_VERSION || 30000);
+const ARANGO_VERSION = Number(process.env.ARANGO_VERSION || 30400);
 const describe34 = ARANGO_VERSION >= 30400 ? describe : describe.skip;
 
 describe34("AQL Stream queries", function() {
@@ -12,30 +11,25 @@ describe34("AQL Stream queries", function() {
 
   let name = `testdb_${Date.now()}`;
   let db: Database;
-  before(done => {
+  before(async () => {
     db = new Database({
       url: process.env.TEST_ARANGODB_URL || "http://localhost:8529",
       arangoVersion: Number(process.env.ARANGO_VERSION || 30400)
     });
-    db
-      .createDatabase(name)
-      .then(() => {
-        db.useDatabase(name);
-        done();
-      })
-      .catch(done);
+    await db.createDatabase(name);
+    db.useDatabase(name);
   });
-  after(done => {
-    db.useDatabase("_system");
-    db
-      .dropDatabase(name)
-      .then(() => void done())
-      .catch(done);
+  after(async () => {
+    try {
+      db.useDatabase("_system");
+      await db.dropDatabase(name);
+    } finally {
+      db.close();
+    }
   });
   describe("database.query", () => {
     it("returns a cursor for the query result", done => {
-      db
-        .query("RETURN 23", {}, { options: { stream: true } })
+      db.query("RETURN 23", {}, { options: { stream: true } })
         .then(cursor => {
           expect(cursor).to.be.an.instanceof(ArrayCursor);
           done();
@@ -43,8 +37,7 @@ describe34("AQL Stream queries", function() {
         .catch(done);
     });
     it("supports bindVars", done => {
-      db
-        .query("RETURN @x", { x: 5 }, { options: { stream: true } })
+      db.query("RETURN @x", { x: 5 }, { options: { stream: true } })
         .then(cursor => cursor.next())
         .then(value => {
           expect(value).to.equal(5);
@@ -53,12 +46,11 @@ describe34("AQL Stream queries", function() {
         .catch(done);
     });
     it("supports options", done => {
-      db
-        .query("FOR x IN 1..10 RETURN x", undefined, {
-          batchSize: 2,
-          count: true, // should be ignored
-          options: { stream: true }
-        })
+      db.query("FOR x IN 1..10 RETURN x", undefined, {
+        batchSize: 2,
+        count: true, // should be ignored
+        options: { stream: true }
+      })
         .then(cursor => {
           expect(cursor.count).to.equal(undefined);
           expect((cursor as any)._hasMore).to.equal(true);
@@ -71,8 +63,7 @@ describe34("AQL Stream queries", function() {
         query: "FOR x IN RANGE(1, @max) RETURN x",
         bindVars: { max: 10 }
       };
-      db
-        .query(query, { batchSize: 2, count: true, options: { stream: true } })
+      db.query(query, { batchSize: 2, count: true, options: { stream: true } })
         .then(cursor => {
           expect(cursor.count).to.equal(undefined); // count will be ignored
           expect((cursor as any)._hasMore).to.equal(true);

@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import { Database } from "../arangojs";
 
-const ARANGO_VERSION = Number(process.env.ARANGO_VERSION || 30000);
+const ARANGO_VERSION = Number(process.env.ARANGO_VERSION || 30400);
 const it34 = ARANGO_VERSION >= 30400 ? it : it.skip;
 
 describe("Managing functions", function() {
@@ -10,30 +10,25 @@ describe("Managing functions", function() {
 
   let name = `testdb_${Date.now()}`;
   let db: Database;
-  before(done => {
+  before(async () => {
     db = new Database({
       url: process.env.TEST_ARANGODB_URL || "http://localhost:8529",
-      arangoVersion: Number(process.env.ARANGO_VERSION || 30000)
+      arangoVersion: Number(process.env.ARANGO_VERSION || 30400)
     });
-    db
-      .createDatabase(name)
-      .then(() => {
-        db.useDatabase(name);
-        done();
-      })
-      .catch(done);
+    await db.createDatabase(name);
+    db.useDatabase(name);
   });
-  after(done => {
-    db.useDatabase("_system");
-    db
-      .dropDatabase(name)
-      .then(() => void done())
-      .catch(done);
+  after(async () => {
+    try {
+      db.useDatabase("_system");
+      await db.dropDatabase(name);
+    } finally {
+      db.close();
+    }
   });
   describe("database.listFunctions", () => {
     it34("should be empty per default", done => {
-      db
-        .listFunctions()
+      db.listFunctions()
         .then(info => {
           expect(info).to.have.property("result");
           expect(info.result).to.be.instanceof(Array);
@@ -45,8 +40,7 @@ describe("Managing functions", function() {
     it34("should include before created function", done => {
       const name = "myfunctions::temperature::celsiustofahrenheit";
       const code = "function (celsius) { return celsius * 1.8 + 32; }";
-      db
-        .createFunction(name, code)
+      db.createFunction(name, code)
         .then(() => {
           return db.listFunctions().then(info => {
             expect(info).to.have.property("result");
@@ -65,11 +59,10 @@ describe("Managing functions", function() {
   });
   describe("database.createFunction", () => {
     it("should create a function", done => {
-      db
-        .createFunction(
-          "myfunctions::temperature::celsiustofahrenheit2",
-          "function (celsius) { return celsius * 1.8 + 32; }"
-        )
+      db.createFunction(
+        "myfunctions::temperature::celsiustofahrenheit2",
+        "function (celsius) { return celsius * 1.8 + 32; }"
+      )
         .then(info => {
           expect(info).to.have.property("code", 201);
           expect(info).to.have.property("error", false);
@@ -81,11 +74,10 @@ describe("Managing functions", function() {
   describe("database.dropFunction", () => {
     it("should drop a existing function", done => {
       const name = "myfunctions::temperature::celsiustofahrenheit";
-      db
-        .createFunction(
-          name,
-          "function (celsius) { return celsius * 1.8 + 32; }"
-        )
+      db.createFunction(
+        name,
+        "function (celsius) { return celsius * 1.8 + 32; }"
+      )
         .then(() => {
           return db.dropFunction(name).then(info => {
             if (ARANGO_VERSION >= 30400)
