@@ -4,12 +4,12 @@ import {
   DocumentHandle,
   EdgeCollection,
   isArangoCollection,
-  Types
+  CollectionType
 } from "./collection";
 import { Connection } from "./connection";
 
 export class GraphVertexCollection extends BaseCollection {
-  type = Types.DOCUMENT_COLLECTION;
+  type = CollectionType.DOCUMENT_COLLECTION;
 
   graph: Graph;
 
@@ -118,13 +118,13 @@ export class GraphVertexCollection extends BaseCollection {
 }
 
 export class GraphEdgeCollection extends EdgeCollection {
-  type = Types.EDGE_COLLECTION;
+  type = CollectionType.EDGE_COLLECTION;
 
   graph: Graph;
 
   constructor(connection: Connection, name: string, graph: Graph) {
     super(connection, name);
-    this.type = Types.EDGE_COLLECTION;
+    this.type = CollectionType.EDGE_COLLECTION;
     this.graph = graph;
   }
 

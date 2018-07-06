@@ -1,7 +1,7 @@
 import { Connection } from "./connection";
 import { ArrayCursor } from "./cursor";
 
-export enum Types {
+export enum CollectionType {
   DOCUMENT_COLLECTION = 2,
   EDGE_COLLECTION = 3
 }
@@ -643,7 +643,7 @@ export interface DocumentSaveOptions {
 }
 
 export class DocumentCollection extends BaseCollection {
-  type = Types.DOCUMENT_COLLECTION;
+  type = CollectionType.DOCUMENT_COLLECTION;
   constructor(connection: Connection, name: string) {
     super(connection, name);
   }
@@ -692,7 +692,7 @@ export class DocumentCollection extends BaseCollection {
 }
 
 export class EdgeCollection extends BaseCollection {
-  type = Types.EDGE_COLLECTION;
+  type = CollectionType.EDGE_COLLECTION;
 
   constructor(connection: Connection, name: string) {
     super(connection, name);
@@ -805,6 +805,8 @@ export class EdgeCollection extends BaseCollection {
 
 export function constructCollection(connection: Connection, data: any) {
   const Collection =
-    data.type === Types.EDGE_COLLECTION ? EdgeCollection : DocumentCollection;
+    data.type === CollectionType.EDGE_COLLECTION
+      ? EdgeCollection
+      : DocumentCollection;
   return new Collection(connection, data.name);
 }
