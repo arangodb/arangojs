@@ -70,6 +70,10 @@ export class Database {
     this._connection.addToHostList(urls);
   }
 
+  close () {
+    this._connection.close();
+  }
+
   // Database manipulation
 
   useDatabase(databaseName: string) {

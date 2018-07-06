@@ -1,10 +1,8 @@
+import { expect } from "chai";
 import * as http from "http";
 import * as https from "https";
-
 import arangojs, { Database } from "../arangojs";
-
 import { Connection } from "../connection";
-import { expect } from "chai";
 
 describe("Creating a Database", () => {
   describe("using the factory", () => {
@@ -132,22 +130,22 @@ describe("Configuring the driver", () => {
       (https as any).request = _httpsRequest;
     });
     it("passes the agent to the request function", () => {
-      let agent = function() {};
+      let agent = Symbol("agent");
       let conn;
       conn = new Connection({ agent }); // default: http
       conn.request({ headers: {} }, () => {});
       expect(options).to.have.property("agent", agent);
-      agent = function() {};
+      agent = Symbol("agent");
       conn = new Connection({ agent, url: "https://localhost:8529" });
       conn.request({ headers: {} }, () => {});
       expect(options).to.have.property("agent", agent);
-      agent = function() {};
+      agent = Symbol("agent");
       conn = new Connection({ agent, url: "http://localhost:8529" });
       conn.request({ headers: {} }, () => {});
       expect(options).to.have.property("agent", agent);
     });
     it("uses the request function for the protocol", () => {
-      const agent = function() {};
+      const agent = Symbol("agent");
       let conn;
       conn = new Connection({ agent }); // default: http
       conn.request({ headers: {} }, () => {});
@@ -158,6 +156,18 @@ describe("Configuring the driver", () => {
       conn = new Connection({ agent, url: "http://localhost:8529" });
       conn.request({ headers: {} }, () => {});
       expect(protocol).to.equal("http");
+    });
+    it("calls Agent#destroy when the connection is closed", () => {
+      const agent = {
+        _destroyed: false,
+        destroy() {
+          this._destroyed = true;
+        }
+      };
+      const conn = new Connection({ agent });
+      expect(agent._destroyed).to.equal(false);
+      conn.close();
+      expect(agent._destroyed).to.equal(true);
     });
   });
 });

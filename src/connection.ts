@@ -1,13 +1,12 @@
+import { stringify as querystringify } from "querystring";
 import { ArangoError, HttpError } from "./error";
+import { byteLength } from "./util/bytelength";
 import {
   ArangojsResponse,
-  RequestFunction,
   createRequest,
-  isBrowser
+  isBrowser,
+  RequestFunction
 } from "./util/request";
-
-import { byteLength } from "./util/bytelength";
-import { stringify as querystringify } from "querystring";
 
 const LinkedList = require("linkedlist/lib/linkedlist") as typeof Array;
 
@@ -58,14 +57,14 @@ export type Config =
       isAbsolute: boolean;
       arangoVersion: number;
       loadBalancingStrategy: LoadBalancingStrategy;
-      agent: Function;
+      agent: any;
       agentOptions: { [key: string]: any };
       headers: { [key: string]: string };
     }>;
 
 export class Connection {
   private _activeTasks: number = 0;
-  private _agent?: Function;
+  private _agent?: any;
   private _agentOptions: { [key: string]: any };
   private _arangoVersion: number = 30000;
   private _databaseName: string | false = "_system";
@@ -105,7 +104,9 @@ export class Connection {
     this._useFailOver = this._loadBalancingStrategy !== "ROUND_ROBIN";
 
     const urls = config.url
-      ? Array.isArray(config.url) ? config.url : [config.url]
+      ? Array.isArray(config.url)
+        ? config.url
+        : [config.url]
       : ["http://localhost:8529"];
     this.addToHostList(urls);
 
@@ -219,6 +220,12 @@ export class Connection {
 
   setHeader(key: string, value: string) {
     this._headers[key] = value;
+  }
+
+  close() {
+    for (const host of this._hosts) {
+      if (host.close) host.close();
+    }
   }
 
   request<T = ArangojsResponse>(

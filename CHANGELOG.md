@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 
+- Added `database.close` method
+
 - Added `opts` parameter to `EdgeCollection#save`
 
 ## [6.3.0] - 2018-06-20
