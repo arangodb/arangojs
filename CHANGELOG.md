@@ -7,11 +7,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Changed
+
+- Added TypeScript validation for `opts` in `DocumentCollection#save`
+
 ### Added
 
-- Added type `DocumentSaveOptions` for `opts` in `DocumentCollection#save`
-
-- Added param `opts` of type `DocumentSaveOptions` in `EdgeCollection#save`
+- Added `opts` parameter to `EdgeCollection#save`
 
 ## [6.3.0] - 2018-06-20
 
