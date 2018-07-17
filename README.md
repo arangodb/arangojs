@@ -8,8 +8,6 @@ The official ArangoDB low-level JavaScript client.
 
 [![NPM status](https://nodei.co/npm/arangojs.png?downloads=true&stars=true)](https://npmjs.org/package/arangojs)
 
-[![js-standard-style](https://cdn.rawgit.com/feross/standard/master/badge.svg)](https://github.com/feross/standard)
-
 ## Install
 
 ### With Yarn or NPM
