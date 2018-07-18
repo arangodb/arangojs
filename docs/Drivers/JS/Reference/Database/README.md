@@ -122,8 +122,8 @@ If _config_ is a string, it will be interpreted as _config.url_.
       the initial failed request).
 
     - any other number: the request is retried until a server can be reached
-      the request has been tried a total of `maxRetries` number of times
-      (including the initial failed request).
+      the request has been retried a total of `maxRetries` number of times
+      (not including the initial failed request).
 
     When working with a single server without leader/follower failover, the
     retries (if any) will be made to the same server.
