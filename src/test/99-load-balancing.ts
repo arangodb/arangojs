@@ -6,8 +6,16 @@ import { Database } from "../arangojs";
 const sleep = (timeout: number) =>
   new Promise(resolve => setTimeout(resolve, timeout));
 
-const ARANGO_PATH = process.env.TEST_ARANGODB_PATH;
-const describeIm = ARANGO_PATH ? describe.only : describe.skip;
+let ARANGO_PATH: string;
+let ARANGO_RUNNER: "local" | "docker";
+if (process.env.RESILIENCE_ARANGO_BASEPATH) {
+  ARANGO_PATH = process.env.RESILIENCE_ARANGO_BASEPATH;
+  ARANGO_RUNNER = "local";
+} else if (process.env.RESILIENCE_DOCKER_IMAGE) {
+  ARANGO_PATH = process.env.RESILIENCE_DOCKER_IMAGE;
+  ARANGO_RUNNER = "docker";
+}
+const describeIm = ARANGO_PATH! ? describe.only : describe.skip;
 
 describeIm("Single-server active failover", function() {
   this.timeout(Infinity);
@@ -16,7 +24,7 @@ describeIm("Single-server active failover", function() {
   let leader: Instance;
   let db: Database;
   beforeEach(async () => {
-    im = new InstanceManager(ARANGO_PATH, "local");
+    im = new InstanceManager(ARANGO_PATH, ARANGO_RUNNER);
     await im.startAgency();
     await im.startSingleServer("arangojs", 2);
     await im.waitForAllInstances();
@@ -81,7 +89,7 @@ describeIm("Cluster round robin", function() {
   let im: InstanceManager;
   let db: Database;
   beforeEach(async () => {
-    im = new InstanceManager(ARANGO_PATH, "local");
+    im = new InstanceManager(ARANGO_PATH, ARANGO_RUNNER);
     const endpoint = await im.startCluster(1, NUM_COORDINATORS, 2);
     db = new Database({
       url: endpoint,
