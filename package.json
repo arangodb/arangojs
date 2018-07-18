@@ -47,7 +47,7 @@
     "lib/cjs/util/*.*"
   ],
   "scripts": {
-    "test": "mocha --growl --reporter spec --require source-map-support/register --timeout 10000 lib/cjs/test",
+    "test": "mocha --growl --reporter spec --require source-map-support/register --timeout 10000 lib/async/test",
     "pretest": "yarn dist",
     "ci": "mocha --reporter spec --require source-map-support/register --timeout 10000 lib/cjs/test",
     "preci": "yarn install",
@@ -69,6 +69,7 @@
     "@types/chai": "^4.0.10",
     "@types/mocha": "^5.2.1",
     "@types/node": "^10.0.8",
+    "arangodb-instance-manager": "^0.1.1",
     "babel-core": "^6.26.0",
     "babel-eslint": "^8.0.3",
     "babel-loader": "^7.1.2",
