@@ -47,9 +47,7 @@ describeIm("Single-server active failover", function() {
     await im.kill(leader);
     await im.asyncReplicationLeaderSelected(uuid as any);
     await sleep(3000);
-    try {
-      await db.version(); // cycle
-    } catch (e) {}
+    await db.version(); // cycle
 
     const newLeaderId = await getServerId();
     expect(newLeaderId).not.to.be.empty;
@@ -130,11 +128,9 @@ describeIm("Cluster round robin", function() {
 
     const secondRun = new Set<string>();
     for (let i = 0; i < NUM_COORDINATORS; i++) {
-      try {
-        const serverId = await getServerId();
-        expect(serverId).not.to.be.empty;
-        secondRun.add(serverId!);
-      } catch (e) {}
+      const serverId = await getServerId();
+      expect(serverId).not.to.be.empty;
+      secondRun.add(serverId!);
     }
     expect(firstRun.size - secondRun.size).to.equal(1);
   });
@@ -152,20 +148,16 @@ describeIm("Cluster round robin", function() {
     await im.shutdown(instance);
     expect(instance.status).not.to.equal("RUNNING");
     for (let i = 0; i < NUM_COORDINATORS; i++) {
-      try {
-        await getServerId();
-      } catch (e) {}
+      await getServerId();
     }
     await im.restart(instance);
     expect(instance.status).to.equal("RUNNING");
 
     const secondRun = new Set<string>();
     for (let i = 0; i < NUM_COORDINATORS; i++) {
-      try {
-        const serverId = await getServerId();
-        expect(serverId).not.to.be.empty;
-        secondRun.add(serverId!);
-      } catch (e) {}
+      const serverId = await getServerId();
+      expect(serverId).not.to.be.empty;
+      secondRun.add(serverId!);
     }
     expect(firstRun.size).to.equal(secondRun.size);
   });
