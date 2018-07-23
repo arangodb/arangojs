@@ -12,6 +12,7 @@ import { Graph } from "./graph";
 import { Route } from "./route";
 import { btoa } from "./util/btoa";
 import { toForm } from "./util/multipart";
+import { ArangoSearchView, ArangoView, constructView, ViewType } from "./view";
 
 function colToString(collection: string | ArangoCollection): string {
   if (isArangoCollection(collection)) {
@@ -41,6 +42,12 @@ export type ServiceOptions = {
   configuration?: { [key: string]: any };
   dependencies?: { [key: string]: any };
 };
+
+export interface ViewDescription {
+  id: string;
+  name: string;
+  type: ViewType;
+}
 
 const DATABASE_NOT_FOUND = 1228;
 export class Database {
@@ -193,6 +200,24 @@ export class Database {
         )
       )
     );
+  }
+
+  // Views
+
+  arangoSearchView(viewName: string): ArangoSearchView {
+    return new ArangoSearchView(this._connection, viewName);
+  }
+
+  listViews(): Promise<ViewDescription[]> {
+    return this._connection.request(
+      { path: "/_api/view" },
+      res => res.body.result
+    );
+  }
+
+  async views(): Promise<ArangoView[]> {
+    const views = await this.listViews();
+    return views.map((data: any) => constructView(this._connection, data));
   }
 
   // Graph manipulation
