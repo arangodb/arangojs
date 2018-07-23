@@ -19,14 +19,14 @@ function colToString(collection: string | ArangoCollection): string {
   } else return String(collection);
 }
 
-export type CollectionName =
+export type TransactionCollections =
   | string
-  | { isArangoCollection: true; name: string };
-export type TransactionCollections = {
-  write?: CollectionName | CollectionName[];
-  read?: CollectionName | CollectionName[];
-};
-export type TrCols = CollectionName | CollectionName[] | TransactionCollections;
+  | ArangoCollection
+  | (string | ArangoCollection)[]
+  | {
+      write?: string | ArangoCollection | (string | ArangoCollection)[];
+      read?: string | ArangoCollection | (string | ArangoCollection)[];
+    };
 
 export type TransactionOptions = {
   lockTimeout?: number;
@@ -59,7 +59,7 @@ export class Database {
     return new Route(this._connection, path, headers);
   }
 
-  async acquireHostList() {
+  async acquireHostList(): Promise<void> {
     if (!this._connection.getDatabaseName()) {
       throw new Error("Cannot acquire host list with absolute URL");
     }
@@ -70,23 +70,23 @@ export class Database {
     this._connection.addToHostList(urls);
   }
 
-  close () {
+  close(): void {
     this._connection.close();
   }
 
   // Database manipulation
 
-  useDatabase(databaseName: string) {
+  useDatabase(databaseName: string): this {
     this._connection.setDatabaseName(databaseName);
     return this;
   }
 
-  useBearerAuth(token: string) {
+  useBearerAuth(token: string): this {
     this._connection.setHeader("authorization", `Bearer ${token}`);
     return this;
   }
 
-  useBasicAuth(username: string = "root", password: string = "") {
+  useBasicAuth(username: string = "root", password: string = ""): this {
     this._connection.setHeader(
       "authorization",
       `Basic ${btoa(`${username}:${password}`)}`
@@ -150,11 +150,11 @@ export class Database {
 
   // Collection manipulation
 
-  collection(collectionName: string) {
+  collection(collectionName: string): DocumentCollection {
     return new DocumentCollection(this._connection, collectionName);
   }
 
-  edgeCollection(collectionName: string) {
+  edgeCollection(collectionName: string): EdgeCollection {
     return new EdgeCollection(this._connection, collectionName);
   }
 
@@ -171,7 +171,9 @@ export class Database {
     );
   }
 
-  async collections(excludeSystem: boolean = true) {
+  async collections(
+    excludeSystem: boolean = true
+  ): Promise<ArangoCollection[]> {
     const collections = await this.listCollections(excludeSystem);
     return collections.map((data: any) =>
       constructCollection(this._connection, data)
@@ -195,7 +197,7 @@ export class Database {
 
   // Graph manipulation
 
-  graph(graphName: string) {
+  graph(graphName: string): Graph {
     return new Graph(this._connection, graphName);
   }
 
@@ -206,7 +208,7 @@ export class Database {
     );
   }
 
-  async graphs() {
+  async graphs(): Promise<Graph[]> {
     const graphs = await this.listGraphs();
     return graphs.map((data: any) => this.graph(data._key));
   }
@@ -214,33 +216,33 @@ export class Database {
   // Queries
 
   transaction(
-    collections: CollectionName | CollectionName[] | TransactionCollections,
+    collections: TransactionCollections,
     action: string
   ): Promise<any>;
   transaction(
-    collections: CollectionName | CollectionName[] | TransactionCollections,
+    collections: TransactionCollections,
     action: string,
     params?: Object
   ): Promise<any>;
   transaction(
-    collections: CollectionName | CollectionName[] | TransactionCollections,
+    collections: TransactionCollections,
     action: string,
     params?: Object,
     options?: TransactionOptions
   ): Promise<any>;
   transaction(
-    collections: CollectionName | CollectionName[] | TransactionCollections,
+    collections: TransactionCollections,
     action: string,
     lockTimeout?: number
   ): Promise<any>;
   transaction(
-    collections: CollectionName | CollectionName[] | TransactionCollections,
+    collections: TransactionCollections,
     action: string,
     params?: Object,
     lockTimeout?: number
   ): Promise<any>;
   transaction(
-    collections: CollectionName | CollectionName[] | TransactionCollections,
+    collections: TransactionCollections,
     action: string,
     params?: Object | number,
     options?: TransactionOptions | number
