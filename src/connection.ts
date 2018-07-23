@@ -15,6 +15,21 @@ const LEADER_ENDPOINT_HEADER = "x-arango-endpoint";
 
 export type LoadBalancingStrategy = "NONE" | "ROUND_ROBIN" | "ONE_RANDOM";
 
+interface SystemError extends Error {
+  code: string;
+  errno: number | string;
+  syscall: string;
+}
+
+function isSystemError(err: Error): err is SystemError {
+  return (
+    Object.getPrototypeOf(err) === Error.prototype &&
+    err.hasOwnProperty("code") &&
+    err.hasOwnProperty("errno") &&
+    err.hasOwnProperty("syscall")
+  );
+}
+
 type UrlInfo = {
   absolutePath?: boolean;
   basePath?: string;
@@ -40,6 +55,7 @@ type Task = {
   host?: number;
   resolve: Function;
   reject: Function;
+  retries: number;
   options: {
     method: string;
     expectBinary: boolean;
@@ -57,6 +73,7 @@ export type Config =
       isAbsolute: boolean;
       arangoVersion: number;
       loadBalancingStrategy: LoadBalancingStrategy;
+      maxRetries: false | number;
       agent: any;
       agentOptions: { [key: string]: any };
       headers: { [key: string]: string };
@@ -71,6 +88,8 @@ export class Connection {
   private _headers: { [key: string]: string };
   private _loadBalancingStrategy: LoadBalancingStrategy;
   private _useFailOver: boolean;
+  private _shouldRetry: boolean;
+  private _maxRetries: number;
   private _maxTasks: number;
   private _queue: Task[] = new LinkedList();
   private _hosts: RequestFunction[] = [];
@@ -102,6 +121,13 @@ export class Connection {
     this._headers = { ...config.headers };
     this._loadBalancingStrategy = config.loadBalancingStrategy || "NONE";
     this._useFailOver = this._loadBalancingStrategy !== "ROUND_ROBIN";
+    if (config.maxRetries === false) {
+      this._shouldRetry = false;
+      this._maxRetries = 0;
+    } else {
+      this._shouldRetry = true;
+      this._maxRetries = config.maxRetries || 0;
+    }
 
     const urls = config.url
       ? Array.isArray(config.url)
@@ -141,7 +167,20 @@ export class Connection {
         ) {
           this._activeHost = (this._activeHost + 1) % this._hosts.length;
         }
-        task.reject(err);
+        if (
+          !task.host &&
+          this._shouldRetry &&
+          task.retries < (this._maxRetries || this._hosts.length - 1) &&
+          isSystemError(err) &&
+          err.syscall === "connect" &&
+          err.code === "ECONNREFUSED"
+        ) {
+          task.retries += 1;
+          this._queue.push(task);
+        } else {
+          console.error(require("util").inspect(err));
+          task.reject(err);
+        }
       } else {
         const response = res!;
         if (
@@ -274,6 +313,7 @@ export class Connection {
       }
 
       this._queue.push({
+        retries: 0,
         host,
         options: {
           url: this._buildUrl(urlInfo),

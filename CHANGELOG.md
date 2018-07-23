@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unpublished]
 
+### Changed
+
+- Requests that fail because a server can not be reached are now automatically
+  retried if other servers are available
+
+  This behavior can be controlled using the `maxRetries` option.
+
+### Added
+
+- Added `maxRetries` option to configuration to control retry behavior
+
 ## [6.4.0] - 2018-07-06
 
 ### Changed
