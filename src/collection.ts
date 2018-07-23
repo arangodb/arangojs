@@ -34,14 +34,12 @@ const COLLECTION_NOT_FOUND = 1203;
 export abstract class BaseCollection implements ArangoCollection {
   isArangoCollection: true = true;
   name: string;
-  abstract type: number;
-  protected _urlPrefix: string;
+  abstract type: CollectionType;
   protected _idPrefix: string;
   protected _connection: Connection;
 
   constructor(connection: Connection, name: string) {
     this.name = name;
-    this._urlPrefix = `/collection/${this.name}/`;
     this._idPrefix = `${this.name}/`;
     this._connection = connection;
     if (this._connection.arangoMajor >= 3) {
@@ -84,7 +82,7 @@ export abstract class BaseCollection implements ArangoCollection {
 
   protected _get(path: string, qs?: any) {
     return this._connection.request(
-      { path: `/_api/${this._urlPrefix}${path}`, qs },
+      { path: `/_api/collection/${this.name}/${path}`, qs },
       res => res.body
     );
   }
@@ -93,7 +91,7 @@ export abstract class BaseCollection implements ArangoCollection {
     return this._connection.request(
       {
         method: "PUT",
-        path: `/_api/${this._urlPrefix}${path}`,
+        path: `/_api/collection/${this.name}/${path}`,
         body
       },
       res => res.body
@@ -173,14 +171,13 @@ export abstract class BaseCollection implements ArangoCollection {
     const result = await this._connection.request(
       {
         method: "PUT",
-        path: `/_api/${this._urlPrefix}rename`,
+        path: `/_api/collection/${this.name}/rename`,
         body: { name }
       },
       res => res.body
     );
     this.name = name;
     this._idPrefix = `${name}/`;
-    this._urlPrefix = `/collection/${name}/`;
     return result;
   }
 
