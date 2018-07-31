@@ -1,4 +1,5 @@
 import { Connection } from "./connection";
+import { Patch } from "./util/types";
 
 export enum ViewType {
   ARANGOSEARCH_VIEW = "arangosearch"
@@ -7,6 +8,48 @@ export enum ViewType {
 export interface ArangoView {
   isArangoView: true;
   name: string;
+}
+
+export interface ArangoViewResponse {
+  name: string;
+  id: string;
+  type: ViewType;
+}
+
+interface ArangoSearchConsolidate {
+  threshold: number;
+  segmentThreshold: number;
+}
+
+interface ArangoSearchCollectionLink {
+  analyzers?: string[];
+  fields?: { [key: string]: ArangoSearchCollectionLink | undefined };
+  includeAllFields?: boolean;
+  trackListPositions?: boolean;
+  storeValues?: "none" | "id";
+}
+
+export interface ArangoSearchProperties {
+  locale: string;
+  commit: {
+    consolidate: {
+      count?: ArangoSearchConsolidate;
+      bytes?: ArangoSearchConsolidate;
+      bytes_accum?: ArangoSearchConsolidate;
+      fill?: ArangoSearchConsolidate;
+    };
+    commitIntervalMsec?: number;
+    cleanupIntervalStep?: number;
+  };
+  links: {
+    [key: string]: ArangoSearchCollectionLink | undefined;
+  };
+}
+
+export interface ArangoSearchPropertiesResponse
+  extends ArangoSearchProperties,
+    ArangoViewResponse {
+  type: ViewType.ARANGOSEARCH_VIEW;
 }
 
 const VIEW_NOT_FOUND = 1203;
@@ -21,7 +64,7 @@ export abstract class BaseView implements ArangoView {
     this._connection = connection;
   }
 
-  get() {
+  get(): Promise<ArangoViewResponse> {
     return this._connection.request(
       { path: `/_api/view/${this.name}` },
       res => res.body
@@ -37,50 +80,6 @@ export abstract class BaseView implements ArangoView {
         }
         return false;
       }
-    );
-  }
-
-  create(properties: any = {}) {
-    return this._connection.request(
-      {
-        method: "POST",
-        path: "/_api/view",
-        body: {
-          properties,
-          name: this.name,
-          type: this.type
-        }
-      },
-      res => res.body
-    );
-  }
-
-  properties() {
-    return this._connection.request(
-      { path: `/_api/view/${this.name}/properties` },
-      res => res.body
-    );
-  }
-
-  setProperties(properties: any = {}) {
-    return this._connection.request(
-      {
-        method: "PATCH",
-        path: `/_api/view/${this.name}/properties`,
-        body: properties
-      },
-      res => res.body
-    );
-  }
-
-  replaceProperties(properties: any = {}) {
-    return this._connection.request(
-      {
-        method: "PUT",
-        path: `/_api/view/${this.name}/properties`,
-        body: properties
-      },
-      res => res.body
     );
   }
 
@@ -110,6 +109,56 @@ export abstract class BaseView implements ArangoView {
 
 export class ArangoSearchView extends BaseView {
   type = ViewType.ARANGOSEARCH_VIEW;
+
+  create(
+    properties: Patch<ArangoSearchProperties> = {}
+  ): Promise<ArangoSearchPropertiesResponse> {
+    return this._connection.request(
+      {
+        method: "POST",
+        path: "/_api/view",
+        body: {
+          properties,
+          name: this.name,
+          type: this.type
+        }
+      },
+      res => res.body
+    );
+  }
+
+  properties(): Promise<ArangoSearchPropertiesResponse> {
+    return this._connection.request(
+      { path: `/_api/view/${this.name}/properties` },
+      res => res.body
+    );
+  }
+
+  setProperties(
+    properties: Patch<ArangoSearchProperties> = {}
+  ): Promise<ArangoSearchPropertiesResponse> {
+    return this._connection.request(
+      {
+        method: "PATCH",
+        path: `/_api/view/${this.name}/properties`,
+        body: properties
+      },
+      res => res.body
+    );
+  }
+
+  replaceProperties(
+    properties: Patch<ArangoSearchProperties> = {}
+  ): Promise<ArangoSearchPropertiesResponse> {
+    return this._connection.request(
+      {
+        method: "PUT",
+        path: `/_api/view/${this.name}/properties`,
+        body: properties
+      },
+      res => res.body
+    );
+  }
 }
 
 export function constructView(connection: Connection, data: any): ArangoView {
