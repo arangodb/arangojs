@@ -178,7 +178,6 @@ export class Connection {
           task.retries += 1;
           this._queue.push(task);
         } else {
-          console.error(require("util").inspect(err));
           task.reject(err);
         }
       } else {
