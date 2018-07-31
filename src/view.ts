@@ -1,5 +1,4 @@
 import { Connection } from "./connection";
-import { Patch } from "./util/types";
 
 export enum ViewType {
   ARANGOSEARCH_VIEW = "arangosearch"
@@ -50,6 +49,25 @@ export interface ArangoSearchPropertiesResponse
   extends ArangoSearchProperties,
     ArangoViewResponse {
   type: ViewType.ARANGOSEARCH_VIEW;
+}
+
+export interface ArangoSearchPropertiesOptions {
+  locale?: string;
+  commit?: {
+    consolidate?:
+      | "none"
+      | {
+          count?: Partial<ArangoSearchConsolidate>;
+          bytes?: Partial<ArangoSearchConsolidate>;
+          bytes_accum?: Partial<ArangoSearchConsolidate>;
+          fill?: Partial<ArangoSearchConsolidate>;
+        };
+    commitIntervalMsec?: number;
+    cleanupIntervalStep?: number;
+  };
+  links?: {
+    [key: string]: ArangoSearchCollectionLink | undefined;
+  };
 }
 
 const VIEW_NOT_FOUND = 1203;
@@ -111,7 +129,7 @@ export class ArangoSearchView extends BaseView {
   type = ViewType.ARANGOSEARCH_VIEW;
 
   create(
-    properties: Patch<ArangoSearchProperties> = {}
+    properties: ArangoSearchPropertiesOptions = {}
   ): Promise<ArangoSearchPropertiesResponse> {
     return this._connection.request(
       {
@@ -135,7 +153,7 @@ export class ArangoSearchView extends BaseView {
   }
 
   setProperties(
-    properties: Patch<ArangoSearchProperties> = {}
+    properties: ArangoSearchPropertiesOptions = {}
   ): Promise<ArangoSearchPropertiesResponse> {
     return this._connection.request(
       {
@@ -148,7 +166,7 @@ export class ArangoSearchView extends BaseView {
   }
 
   replaceProperties(
-    properties: Patch<ArangoSearchProperties> = {}
+    properties: ArangoSearchPropertiesOptions = {}
   ): Promise<ArangoSearchPropertiesResponse> {
     return this._connection.request(
       {
