@@ -8,6 +8,7 @@ import {
 } from "./collection";
 import { Config, Connection } from "./connection";
 import { ArrayCursor } from "./cursor";
+import { isArangoError } from "./error";
 import { Graph } from "./graph";
 import { Route } from "./route";
 import { btoa } from "./util/btoa";
@@ -112,10 +113,10 @@ export class Database {
     return this.get().then(
       () => true,
       err => {
-        if (err.errorNum !== DATABASE_NOT_FOUND) {
-          throw err;
+        if (isArangoError(err) && err.errorNum === DATABASE_NOT_FOUND) {
+          return false;
         }
-        return false;
+        throw err;
       }
     );
   }

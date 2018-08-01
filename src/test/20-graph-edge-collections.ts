@@ -8,7 +8,7 @@ describe("GraphEdgeCollection API", function() {
 
   const dbName = `testdb_${Date.now()}`;
   let db: Database;
-  let edge: GraphEdgeCollection;
+  let collection: GraphEdgeCollection;
   before(async () => {
     db = new Database({
       url: process.env.TEST_ARANGODB_URL || "http://localhost:8529",
@@ -26,7 +26,7 @@ describe("GraphEdgeCollection API", function() {
         }
       ]
     });
-    edge = graph.edgeCollection("knows");
+    collection = graph.edgeCollection("knows");
     await graph
       .vertexCollection("person")
       .import([
@@ -46,7 +46,7 @@ describe("GraphEdgeCollection API", function() {
     }
   });
   beforeEach(done => {
-    edge
+    collection
       .truncate()
       .then(() => done())
       .catch(done);
@@ -55,7 +55,7 @@ describe("GraphEdgeCollection API", function() {
     let data = { _from: "person/Bob", _to: "person/Alice" };
     let meta: any;
     beforeEach(done => {
-      edge
+      collection
         .save(data)
         .then(result => {
           meta = result;
@@ -64,7 +64,7 @@ describe("GraphEdgeCollection API", function() {
         .catch(done);
     });
     it("returns an edge in the collection", done => {
-      edge
+      collection
         .edge(meta._id)
         .then(doc => {
           expect(doc).to.have.keys("_key", "_id", "_rev", "_from", "_to");
@@ -77,11 +77,15 @@ describe("GraphEdgeCollection API", function() {
         .then(() => void done())
         .catch(done);
     });
+    it("does not throw on not found when graceful", async () => {
+      const doc = await collection.edge("does-not-exist", true);
+      expect(doc).to.equal(null);
+    });
   });
   describe("edgeCollection.save", () => {
     it("creates an edge in the collection", done => {
       let data = { _from: "person/Bob", _to: "person/Alice" };
-      edge
+      collection
         .save(data)
         .then(meta => {
           expect(meta).to.be.an("object");
@@ -94,7 +98,7 @@ describe("GraphEdgeCollection API", function() {
           expect(meta)
             .to.have.property("_key")
             .that.is.a("string");
-          return edge.edge(meta._id).then(doc => {
+          return collection.edge(meta._id).then(doc => {
             expect(doc).to.have.keys("_key", "_id", "_rev", "_from", "_to");
             expect(doc._id).to.equal(meta._id);
             expect(doc._key).to.equal(meta._key);
@@ -108,7 +112,7 @@ describe("GraphEdgeCollection API", function() {
     });
     it("uses the given _key if provided", done => {
       let data = { _key: "banana", _from: "person/Bob", _to: "person/Alice" };
-      edge
+      collection
         .save(data)
         .then(meta => {
           expect(meta).to.be.an("object");
@@ -121,7 +125,7 @@ describe("GraphEdgeCollection API", function() {
           expect(meta)
             .to.have.property("_key")
             .that.equals(data._key);
-          return edge.edge(meta._id).then(doc => {
+          return collection.edge(meta._id).then(doc => {
             expect(doc).to.have.keys("_key", "_id", "_rev", "_from", "_to");
             expect(doc._id).to.equal(meta._id);
             expect(doc._rev).to.equal(meta._rev);
@@ -136,7 +140,7 @@ describe("GraphEdgeCollection API", function() {
   });
   describe("edgeCollection.traversal", () => {
     beforeEach(done => {
-      edge
+      collection
         .import([
           { _from: "person/Alice", _to: "person/Bob" },
           { _from: "person/Bob", _to: "person/Charlie" },
@@ -148,7 +152,7 @@ describe("GraphEdgeCollection API", function() {
         .catch(done);
     });
     it("executes traversal", done => {
-      edge
+      collection
         .traversal("person/Alice", { direction: "outbound" })
         .then((result: any) => {
           expect(result).to.have.property("visited");
@@ -177,18 +181,18 @@ describe("GraphEdgeCollection API", function() {
         _from: "person/Bob",
         _to: "person/Alice"
       };
-      edge
+      collection
         .save(doc)
         .then(meta => {
           delete meta.error;
           Object.assign(doc, meta);
-          return edge.replace(doc as any, {
+          return collection.replace(doc as any, {
             sup: "dawg",
             _from: "person/Bob",
             _to: "person/Alice"
           });
         })
-        .then(() => edge.edge((doc as any)._key))
+        .then(() => collection.edge((doc as any)._key))
         .then(data => {
           expect(data).not.to.have.property("potato");
           expect(data).to.have.property("sup", "dawg");
@@ -205,14 +209,14 @@ describe("GraphEdgeCollection API", function() {
         _from: "person/Bob",
         _to: "person/Alice"
       };
-      edge
+      collection
         .save(doc)
         .then(meta => {
           delete meta.error;
           Object.assign(doc, meta);
-          return edge.update(doc as any, { sup: "dawg", empty: null });
+          return collection.update(doc as any, { sup: "dawg", empty: null });
         })
-        .then(() => edge.edge((doc as any)._key))
+        .then(() => collection.edge((doc as any)._key))
         .then(data => {
           expect(data).to.have.property("potato", doc.potato);
           expect(data).to.have.property("sup", "dawg");
@@ -228,18 +232,18 @@ describe("GraphEdgeCollection API", function() {
         _from: "person/Bob",
         _to: "person/Alice"
       };
-      edge
+      collection
         .save(doc)
         .then(meta => {
           delete meta.error;
           Object.assign(doc, meta);
-          return edge.update(
+          return collection.update(
             doc as any,
             { sup: "dawg", empty: null },
             { keepNull: false }
           );
         })
-        .then(() => edge.edge((doc as any)._key))
+        .then(() => collection.edge((doc as any)._key))
         .then(data => {
           expect(data).to.have.property("potato", doc.potato);
           expect(data).to.have.property("sup", "dawg");
@@ -252,15 +256,15 @@ describe("GraphEdgeCollection API", function() {
   describe("edgeCollection.remove", () => {
     let key = `d_${Date.now()}`;
     beforeEach(done => {
-      edge
+      collection
         .save({ _key: key, _from: "person/Bob", _to: "person/Alice" })
         .then(() => void done())
         .catch(done);
     });
     it("deletes the given edge", done => {
-      edge
+      collection
         .remove(key)
-        .then(() => edge.edge(key))
+        .then(() => collection.edge(key))
         .then(
           () => Promise.reject(new Error("Should not succeed")),
           () => void done()

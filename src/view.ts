@@ -1,4 +1,5 @@
 import { Connection } from "./connection";
+import { isArangoError } from "./error";
 
 export enum ViewType {
   ARANGOSEARCH_VIEW = "arangosearch"
@@ -93,10 +94,10 @@ export abstract class BaseView implements ArangoView {
     return this.get().then(
       () => true,
       err => {
-        if (err.errorNum !== VIEW_NOT_FOUND) {
-          throw err;
+        if (isArangoError(err) && err.errorNum === VIEW_NOT_FOUND) {
+          return false;
         }
-        return false;
+        throw err;
       }
     );
   }

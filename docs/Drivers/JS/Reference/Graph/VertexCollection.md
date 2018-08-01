@@ -11,7 +11,7 @@ Deletes the vertex with the given _documentHandle_ from the collection.
 
 **Arguments**
 
-* **documentHandle**: `string`
+- **documentHandle**: `string`
 
   The handle of the vertex to retrieve. This can be either the `_id` or the
   `_key` of a vertex in the collection, or a vertex (i.e. an object with an
@@ -34,17 +34,22 @@ await collection.remove('vertices/some-key')
 
 ## graphVertexCollection.vertex
 
-`async graphVertexCollection.vertex(documentHandle): Object`
+`async graphVertexCollection.vertex(documentHandle, [graceful]): Object`
 
 Retrieves the vertex with the given _documentHandle_ from the collection.
 
 **Arguments**
 
-* **documentHandle**: `string`
+- **documentHandle**: `string`
 
   The handle of the vertex to retrieve. This can be either the `_id` or the
   `_key` of a vertex in the collection, or a vertex (i.e. an object with an
   `_id` or `_key` property).
+
+- **graceful**: `boolean` (Default: `false`)
+
+  If set to `true`, the method will return `null` instead of throwing an error
+  if the vertex does not exist.
 
 **Examples**
 
@@ -63,6 +68,13 @@ const doc = await collection.vertex('vertices/some-key');
 // the vertex exists
 assert.equal(doc._key, 'some-key');
 assert.equal(doc._id, 'vertices/some-key');
+
+// -- or --
+
+const doc = await collection.vertex('some-key', true);
+if (doc === null) {
+  // the vertex does not exist
+}
 ```
 
 ## graphVertexCollection.save
@@ -73,7 +85,7 @@ Creates a new vertex with the given _data_.
 
 **Arguments**
 
-* **data**: `Object`
+- **data**: `Object`
 
   The data of the vertex.
 

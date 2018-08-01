@@ -1,5 +1,6 @@
 import { Connection } from "./connection";
 import { ArrayCursor } from "./cursor";
+import { isArangoError } from "./error";
 
 export enum CollectionType {
   DOCUMENT_COLLECTION = 2,
@@ -30,7 +31,8 @@ export interface ArangoCollection {
   name: string;
 }
 
-const COLLECTION_NOT_FOUND = 1203;
+export const DOCUMENT_NOT_FOUND = 1202;
+export const COLLECTION_NOT_FOUND = 1203;
 export abstract class BaseCollection implements ArangoCollection {
   isArangoCollection: true = true;
   name: string;
@@ -109,10 +111,10 @@ export abstract class BaseCollection implements ArangoCollection {
     return this.get().then(
       () => true,
       err => {
-        if (err.errorNum !== COLLECTION_NOT_FOUND) {
-          throw err;
+        if (isArangoError(err) && err.errorNum === COLLECTION_NOT_FOUND) {
+          return false;
         }
-        return false;
+        throw err;
       }
     );
   }
@@ -649,11 +651,21 @@ export class DocumentCollection extends BaseCollection {
     return `/document/${this._documentHandle(documentHandle)}`;
   }
 
-  document(documentHandle: DocumentHandle) {
-    return this._connection.request(
+  document(
+    documentHandle: DocumentHandle,
+    graceful: boolean = false
+  ): Promise<any> {
+    const result = this._connection.request(
       { path: `/_api/${this._documentPath(documentHandle)}` },
       res => res.body
     );
+    if (!graceful) return result;
+    return result.catch(err => {
+      if (isArangoError(err) && err.errorNum === DOCUMENT_NOT_FOUND) {
+        return null;
+      }
+      throw err;
+    });
   }
 
   save(data: any, opts?: DocumentSaveOptions | boolean) {
@@ -702,11 +714,21 @@ export class EdgeCollection extends BaseCollection {
     return `document/${this._documentHandle(documentHandle)}`;
   }
 
-  edge(documentHandle: DocumentHandle) {
-    return this._connection.request(
+  edge(
+    documentHandle: DocumentHandle,
+    graceful: boolean = false
+  ): Promise<any> {
+    const result = this._connection.request(
       { path: `/_api/${this._documentPath(documentHandle)}` },
       res => res.body
     );
+    if (!graceful) return result;
+    return result.catch(err => {
+      if (isArangoError(err) && err.errorNum === DOCUMENT_NOT_FOUND) {
+        return null;
+      }
+      throw err;
+    });
   }
 
   save(data: any, opts?: DocumentSaveOptions | boolean): Promise<any>;

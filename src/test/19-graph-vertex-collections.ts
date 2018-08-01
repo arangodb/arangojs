@@ -67,6 +67,10 @@ describe("GraphVertexCollection API", function() {
         .then(() => void done())
         .catch(done);
     });
+    it("does not throw on not found when graceful", async () => {
+      const doc = await collection.vertex("does-not-exist", true);
+      expect(doc).to.equal(null);
+    });
   });
   describe("graphVertexCollection.save", () => {
     it("creates a vertex in the collection", done => {

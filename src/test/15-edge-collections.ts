@@ -65,6 +65,10 @@ describe("EdgeCollection API", function() {
         .then(() => void done())
         .catch(done);
     });
+    it("does not throw on not found when graceful", async () => {
+      const doc = await collection.edge("does-not-exist", true);
+      expect(doc).to.equal(null);
+    });
   });
   describe("edgeCollection.save", () => {
     it("creates an edge in the collection", done => {

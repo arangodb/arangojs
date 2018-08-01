@@ -66,6 +66,10 @@ describe("DocumentCollection API", function() {
         .then(() => void done())
         .catch(done);
     });
+    it("does not throw on not found when graceful", async () => {
+      const doc = await collection.document("does-not-exist", true);
+      expect(doc).to.equal(null);
+    });
   });
   describe("documentCollection.save", () => {
     it("creates a document in the collection", done => {
