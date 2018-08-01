@@ -19,7 +19,7 @@ If _config_ is a string, it will be interpreted as _config.url_.
     Base URL of the ArangoDB server or list of server URLs.
 
     When working with a cluster or a single server with leader/follower failover,
-    [the method `db.acquireHostList`](DatabaseManipulation.md#databaseacquireHostList)
+    [the method `db.acquireHostList`](DatabaseManipulation.md#databaseacquirehostlist)
     can be used to automatically pick up additional coordinators/followers at
     any point.
 
