@@ -44,27 +44,16 @@ describe("DocumentCollection API", function() {
   describe("documentCollection.document", () => {
     let data = { foo: "bar" };
     let meta: any;
-    beforeEach(done => {
-      collection
-        .save(data)
-        .then(result => {
-          meta = result;
-          done();
-        })
-        .catch(done);
+    beforeEach(async () => {
+      meta = await collection.save(data);
     });
-    it("returns a document in the collection", done => {
-      collection
-        .document(meta._id)
-        .then(doc => {
-          expect(doc).to.have.keys("_key", "_id", "_rev", "foo");
-          expect(doc._id).to.equal(meta._id);
-          expect(doc._key).to.equal(meta._key);
-          expect(doc._rev).to.equal(meta._rev);
-          expect(doc.foo).to.equal(data.foo);
-        })
-        .then(() => void done())
-        .catch(done);
+    it("returns a document in the collection", async () => {
+      const doc = await collection.document(meta._id);
+      expect(doc).to.have.keys("_key", "_id", "_rev", "foo");
+      expect(doc._id).to.equal(meta._id);
+      expect(doc._key).to.equal(meta._key);
+      expect(doc._rev).to.equal(meta._rev);
+      expect(doc.foo).to.equal(data.foo);
     });
     it("does not throw on not found when graceful", async () => {
       const doc = await collection.document("does-not-exist", true);

@@ -202,6 +202,23 @@ export abstract class BaseCollection implements ArangoCollection {
     );
   }
 
+  document(
+    documentHandle: DocumentHandle,
+    graceful: boolean = false
+  ): Promise<any> {
+    const result = this._connection.request(
+      { path: `/_api/${this._documentPath(documentHandle)}` },
+      res => res.body
+    );
+    if (!graceful) return result;
+    return result.catch(err => {
+      if (isArangoError(err) && err.errorNum === DOCUMENT_NOT_FOUND) {
+        return null;
+      }
+      throw err;
+    });
+  }
+
   replace(documentHandle: DocumentHandle, newValue: any, opts: any = {}) {
     const headers: { [key: string]: string } = {};
     if (typeof opts === "string") {
@@ -651,23 +668,6 @@ export class DocumentCollection extends BaseCollection {
     return `/document/${this._documentHandle(documentHandle)}`;
   }
 
-  document(
-    documentHandle: DocumentHandle,
-    graceful: boolean = false
-  ): Promise<any> {
-    const result = this._connection.request(
-      { path: `/_api/${this._documentPath(documentHandle)}` },
-      res => res.body
-    );
-    if (!graceful) return result;
-    return result.catch(err => {
-      if (isArangoError(err) && err.errorNum === DOCUMENT_NOT_FOUND) {
-        return null;
-      }
-      throw err;
-    });
-  }
-
   save(data: any, opts?: DocumentSaveOptions | boolean) {
     if (typeof opts === "boolean") {
       opts = { returnNew: opts };
@@ -718,17 +718,7 @@ export class EdgeCollection extends BaseCollection {
     documentHandle: DocumentHandle,
     graceful: boolean = false
   ): Promise<any> {
-    const result = this._connection.request(
-      { path: `/_api/${this._documentPath(documentHandle)}` },
-      res => res.body
-    );
-    if (!graceful) return result;
-    return result.catch(err => {
-      if (isArangoError(err) && err.errorNum === DOCUMENT_NOT_FOUND) {
-        return null;
-      }
-      throw err;
-    });
+    return this.document(documentHandle, graceful);
   }
 
   save(data: any, opts?: DocumentSaveOptions | boolean): Promise<any>;

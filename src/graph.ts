@@ -24,7 +24,7 @@ export class GraphVertexCollection extends BaseCollection {
     return `/document/${this._documentHandle(documentHandle)}`;
   }
 
-  vertex(
+  document(
     documentHandle: DocumentHandle,
     graceful: boolean = false
   ): Promise<any> {
@@ -43,6 +43,13 @@ export class GraphVertexCollection extends BaseCollection {
       }
       throw err;
     });
+  }
+
+  vertex(
+    documentHandle: DocumentHandle,
+    graceful: boolean = false
+  ): Promise<any> {
+    return this.document(documentHandle, graceful);
   }
 
   save(data: any, opts?: { waitForSync?: boolean }) {
@@ -140,7 +147,7 @@ export class GraphEdgeCollection extends EdgeCollection {
     this.graph = graph;
   }
 
-  edge(
+  document(
     documentHandle: DocumentHandle,
     graceful: boolean = false
   ): Promise<any> {

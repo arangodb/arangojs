@@ -32,9 +32,11 @@ await collection.remove('vertices/some-key')
 // document 'vertices/some-key' no longer exists
 ```
 
-## graphVertexCollection.vertex
+## graphVertexCollection.document
 
-`async graphVertexCollection.vertex(documentHandle, [graceful]): Object`
+`async graphVertexCollection.document(documentHandle, [graceful]): Object`
+
+Alias: `graphVertexCollection.vertex`.
 
 Retrieves the vertex with the given _documentHandle_ from the collection.
 
@@ -57,14 +59,14 @@ Retrieves the vertex with the given _documentHandle_ from the collection.
 const graph = db.graph('some-graph');
 const collection = graph.vertexCollection('vertices');
 
-const doc = await collection.vertex('some-key');
+const doc = await collection.document('some-key');
 // the vertex exists
 assert.equal(doc._key, 'some-key');
 assert.equal(doc._id, 'vertices/some-key');
 
 // -- or --
 
-const doc = await collection.vertex('vertices/some-key');
+const doc = await collection.document('vertices/some-key');
 // the vertex exists
 assert.equal(doc._key, 'some-key');
 assert.equal(doc._id, 'vertices/some-key');

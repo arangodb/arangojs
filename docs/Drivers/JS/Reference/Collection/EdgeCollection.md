@@ -3,9 +3,11 @@
 The _EdgeCollection API_ extends the
 [_Collection API_](README.md) with the following methods.
 
-## edgeCollection.edge
+## edgeCollection.document
 
-`async edgeCollection.edge(documentHandle, [graceful]): Object`
+`async edgeCollection.document(documentHandle, [graceful]): Object`
+
+Alias: `edgeCollection.edge`.
 
 Retrieves the edge with the given _documentHandle_ from the collection.
 
@@ -28,21 +30,21 @@ Retrieves the edge with the given _documentHandle_ from the collection.
 const db = new Database();
 const collection = db.edgeCollection('edges');
 
-const edge = await collection.edge('some-key');
+const edge = await collection.document('some-key');
 // the edge exists
 assert.equal(edge._key, 'some-key');
 assert.equal(edge._id, 'edges/some-key');
 
 // -- or --
 
-const edge = await collection.edge('edges/some-key');
+const edge = await collection.document('edges/some-key');
 // the edge exists
 assert.equal(edge._key, 'some-key');
 assert.equal(edge._id, 'edges/some-key');
 
 // -- or --
 
-const edge = await collection.edge('some-key', true);
+const edge = await collection.document('some-key', true);
 if (edge === null) {
   // the edge does not exist
 }
