@@ -32,6 +32,32 @@ await collection.remove('edges/some-key')
 // document 'edges/some-key' no longer exists
 ```
 
+## graphEdgeCollection.documentExists
+
+`async graphEdgeCollection.documentExists(documentHandle): boolean`
+
+Checks whether the edge with the given _documentHandle_ exists.
+
+**Arguments**
+
+- **documentHandle**: `string`
+
+  The handle of the edge to retrieve. This can be either the `_id` or the
+  `_key` of a edge in the collection, or an edge (i.e. an object with an
+  `_id` or `_key` property).
+
+**Examples**
+
+```js
+const graph = db.graph('some-graph');
+const collection = graph.edgeCollection('edges');
+
+const exists = await collection.documentExists('some-key');
+if (exists === false) {
+  // the edge does not exist
+}
+```
+
 ## graphEdgeCollection.document
 
 `async graphEdgeCollection.document(documentHandle, [graceful]): Object`

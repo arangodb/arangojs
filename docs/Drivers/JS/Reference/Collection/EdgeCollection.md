@@ -50,6 +50,32 @@ if (edge === null) {
 }
 ```
 
+## edgeCollection.documentExists
+
+`async edgeCollection.documentExists(documentHandle): boolean`
+
+Checks whether the edge with the given _documentHandle_ exists.
+
+**Arguments**
+
+- **documentHandle**: `string`
+
+  The handle of the edge to retrieve. This can be either the `_id` or the
+  `_key` of a edge in the collection, or an edge (i.e. an object with an
+  `_id` or `_key` property).
+
+**Examples**
+
+```js
+const db = new Database();
+const collection = db.edgeCollection('my-docs');
+
+const exists = await collection.documentExists('some-key');
+if (exists === false) {
+  // the edge does not exist
+}
+```
+
 ## edgeCollection.save
 
 `async edgeCollection.save(data, [fromId, toId]): Object`

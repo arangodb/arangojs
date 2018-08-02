@@ -60,6 +60,27 @@ describe("DocumentCollection API", function() {
       expect(doc).to.equal(null);
     });
   });
+  describe("documentCollection.documentExists", () => {
+    let data = { foo: "bar" };
+    let meta: any;
+    beforeEach(async () => {
+      meta = await collection.save(data);
+    });
+    it("returns true if the document exists", async () => {
+      const exists = await collection.documentExists(meta._id);
+      expect(exists).to.equal(true);
+    });
+    it("returns false if the document does not exist", async () => {
+      const exists = await collection.documentExists("does-not-exist");
+      expect(exists).to.equal(false);
+    });
+    it("returns false if the collection does not exist", async () => {
+      const exists = await db
+        .collection("does-not-exist")
+        .documentExists("lol");
+      expect(exists).to.equal(false);
+    });
+  });
   describe("documentCollection.save", () => {
     it("creates a document in the collection", done => {
       let data = { foo: "bar" };

@@ -204,6 +204,23 @@ export abstract class BaseCollection implements ArangoCollection {
     );
   }
 
+  documentExists(documentHandle: DocumentHandle): Promise<boolean> {
+    return this._connection
+      .request(
+        {
+          method: "HEAD",
+          path: `/_api/${this._documentPath(documentHandle)}`
+        },
+        () => true
+      )
+      .catch(err => {
+        if (err.statusCode === 404) {
+          return false;
+        }
+        throw err;
+      });
+  }
+
   document(
     documentHandle: DocumentHandle,
     graceful: boolean = false

@@ -58,6 +58,32 @@ if (doc === null) {
 }
 ```
 
+## documentCollection.documentExists
+
+`async documentCollection.documentExists(documentHandle): boolean`
+
+Checks whether the document with the given _documentHandle_ exists.
+
+**Arguments**
+
+- **documentHandle**: `string`
+
+  The handle of the document to retrieve. This can be either the `_id` or the
+  `_key` of a document in the collection, or a document (i.e. an object with an
+  `_id` or `_key` property).
+
+**Examples**
+
+```js
+const db = new Database();
+const collection = db.collection('my-docs');
+
+const exists = await collection.documentExists('some-key');
+if (exists === false) {
+  // the document does not exist
+}
+```
+
 ## documentCollection.save
 
 `async documentCollection.save(data, [opts]): Object`

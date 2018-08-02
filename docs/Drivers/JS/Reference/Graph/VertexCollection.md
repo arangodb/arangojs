@@ -32,6 +32,32 @@ await collection.remove('vertices/some-key')
 // document 'vertices/some-key' no longer exists
 ```
 
+## graphVertexCollection.documentExists
+
+`async graphVertexCollection.documentExists(documentHandle): boolean`
+
+Checks whether the vertex with the given _documentHandle_ exists.
+
+**Arguments**
+
+- **documentHandle**: `string`
+
+  The handle of the vertex to retrieve. This can be either the `_id` or the
+  `_key` of a vertex in the collection, or a vertex (i.e. an object with an
+  `_id` or `_key` property).
+
+**Examples**
+
+```js
+const graph = db.graph('some-graph');
+const collection = graph.vertexCollection('vertices');
+
+const exists = await collection.documentExists('some-key');
+if (exists === false) {
+  // the vertex does not exist
+}
+```
+
 ## graphVertexCollection.document
 
 `async graphVertexCollection.document(documentHandle, [graceful]): Object`

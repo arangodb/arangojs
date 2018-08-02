@@ -30,6 +30,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - Added `maxRetries` option to configuration to control retry behavior
 
+- Added `collection.documentExists` method
+
 - Added `graceful` option to `collection.document`
 
 ## [6.4.0] - 2018-07-06
