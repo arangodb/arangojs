@@ -51,7 +51,9 @@ export abstract class BaseCollection implements ArangoCollection {
     }
   }
 
-  protected abstract _documentPath(documentHandle: DocumentHandle): string;
+  protected _documentPath(documentHandle: DocumentHandle) {
+    return `/document/${this._documentHandle(documentHandle)}`;
+  }
 
   protected _documentHandle(documentHandle: DocumentHandle) {
     if (typeof documentHandle !== "string") {
@@ -662,10 +664,6 @@ export class DocumentCollection extends BaseCollection {
   type = CollectionType.DOCUMENT_COLLECTION;
   constructor(connection: Connection, name: string) {
     super(connection, name);
-  }
-
-  protected _documentPath(documentHandle: DocumentHandle) {
-    return `/document/${this._documentHandle(documentHandle)}`;
   }
 
   save(data: any, opts?: DocumentSaveOptions | boolean) {

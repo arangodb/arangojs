@@ -20,10 +20,6 @@ export class GraphVertexCollection extends BaseCollection {
     this.graph = graph;
   }
 
-  protected _documentPath(documentHandle: DocumentHandle) {
-    return `/document/${this._documentHandle(documentHandle)}`;
-  }
-
   document(
     documentHandle: DocumentHandle,
     graceful: boolean = false
