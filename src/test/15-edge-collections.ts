@@ -42,28 +42,56 @@ describe("EdgeCollection API", function() {
   describe("edgeCollection.edge", () => {
     let data = { _from: "d/1", _to: "d/2" };
     let meta: any;
-    beforeEach(done => {
-      collection
-        .save(data)
-        .then(result => {
-          meta = result;
-          done();
-        })
-        .catch(done);
+    beforeEach(async () => {
+      meta = await collection.save(data);
     });
-    it("returns an edge in the collection", done => {
-      collection
-        .edge(meta._id)
-        .then(doc => {
-          expect(doc).to.have.keys("_key", "_id", "_rev", "_from", "_to");
-          expect(doc._id).to.equal(meta._id);
-          expect(doc._key).to.equal(meta._key);
-          expect(doc._rev).to.equal(meta._rev);
-          expect(doc._from).to.equal(data._from);
-          expect(doc._to).to.equal(data._to);
-        })
-        .then(() => void done())
-        .catch(done);
+    it("returns an edge in the collection", async () => {
+      const doc = await collection.edge(meta._id);
+      expect(doc).to.have.keys("_key", "_id", "_rev", "_from", "_to");
+      expect(doc._id).to.equal(meta._id);
+      expect(doc._key).to.equal(meta._key);
+      expect(doc._rev).to.equal(meta._rev);
+      expect(doc._from).to.equal(data._from);
+      expect(doc._to).to.equal(data._to);
+    });
+    it("does not throw on not found when graceful", async () => {
+      const doc = await collection.edge("does-not-exist", true);
+      expect(doc).to.equal(null);
+    });
+  });
+  describe("edgeCollection.document", () => {
+    let data = { _from: "d/1", _to: "d/2" };
+    let meta: any;
+    beforeEach(async () => {
+      meta = await collection.save(data);
+    });
+    it("returns an edge in the collection", async () => {
+      const doc = await collection.document(meta._id);
+      expect(doc).to.have.keys("_key", "_id", "_rev", "_from", "_to");
+      expect(doc._id).to.equal(meta._id);
+      expect(doc._key).to.equal(meta._key);
+      expect(doc._rev).to.equal(meta._rev);
+      expect(doc._from).to.equal(data._from);
+      expect(doc._to).to.equal(data._to);
+    });
+    it("does not throw on not found when graceful", async () => {
+      const doc = await collection.document("does-not-exist", true);
+      expect(doc).to.equal(null);
+    });
+  });
+  describe("edgeCollection.documentExists", () => {
+    let data = { _from: "d/1", _to: "d/2" };
+    let meta: any;
+    beforeEach(async () => {
+      meta = await collection.save(data);
+    });
+    it("returns true if the edge exists", async () => {
+      const exists = await collection.documentExists(meta._id);
+      expect(exists).to.equal(true);
+    });
+    it("returns false if the edge does not exist", async () => {
+      const exists = await collection.documentExists("does-not-exist");
+      expect(exists).to.equal(false);
     });
   });
   describe("edgeCollection.save", () => {

@@ -14,9 +14,25 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
   This behavior can be controlled using the `maxRetries` option.
 
+- Renamed `EdgeCollection#edge` to `EdgeCollection#document`
+
+  `EdgeCollection#edge` is now an alias for the `document` method.
+
+- Renamed `GraphEdgeCollection#edge` to `GraphEdgeCollection#document`
+
+  `GraphEdgeCollection#edge` is now an alias for the `document` method.
+
+- Renamed `GraphVertexCollection#vertex` to `GraphVertexCollection#document`
+
+  `GraphVertexCollection#vertex` is now an alias for the `document` method.
+
 ### Added
 
 - Added `maxRetries` option to configuration to control retry behavior
+
+- Added `collection.documentExists` method
+
+- Added `graceful` option to `collection.document`
 
 ## [6.4.0] - 2018-07-06
 

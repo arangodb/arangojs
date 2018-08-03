@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import { Database } from "../arangojs";
-import { DocumentCollection } from "../collection";
+import { COLLECTION_NOT_FOUND, DocumentCollection } from "../collection";
 
 describe("Collection metadata", function() {
   // create database takes 11s in a standard cluster
@@ -25,26 +25,31 @@ describe("Collection metadata", function() {
     await db.dropDatabase(dbName);
   });
   describe("collection.get", () => {
-    it("should return information about a collection", done => {
-      collection
-        .get()
-        .then(info => {
-          expect(info).to.have.property("name", collectionName);
-          expect(info).to.have.property("isSystem", false);
-          expect(info).to.have.property("status", 3); // loaded
-          expect(info).to.have.property("type", 2); // document collection
-        })
-        .then(() => done())
-        .catch(done);
+    it("should return information about a collection", async () => {
+      const info = await collection.get();
+      expect(info).to.have.property("name", collectionName);
+      expect(info).to.have.property("isSystem", false);
+      expect(info).to.have.property("status", 3); // loaded
+      expect(info).to.have.property("type", 2); // document collection
     });
-    it("should throw if collection does not exists", done => {
-      db.collection("no")
-        .get()
-        .then(done)
-        .catch(err => {
-          expect(err).to.have.property("errorNum", 1203);
-          done();
-        });
+    it("should throw if collection does not exist", async () => {
+      try {
+        await db.collection("no").get();
+      } catch (e) {
+        expect(e).to.have.property("errorNum", COLLECTION_NOT_FOUND);
+        return;
+      }
+      expect.fail("should throw");
+    });
+  });
+  describe("collection.exists", () => {
+    it("should return true if collection exists", async () => {
+      const exists = await collection.exists();
+      expect(exists).to.equal(true);
+    });
+    it("should return false if collection does not exist", async () => {
+      const exists = await db.collection("no").exists();
+      expect(exists).to.equal(false);
     });
   });
   describe("collection.properties", () => {

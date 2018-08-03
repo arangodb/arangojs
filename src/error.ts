@@ -55,6 +55,10 @@ const nativeErrorKeys = [
   "number"
 ] as (keyof Error)[];
 
+export function isArangoError(err: any): err is ArangoError {
+  return Boolean(err && err.isArangoError);
+}
+
 export class ArangoError extends ExtendableError {
   name = "ArangoError";
   isArangoError = true;

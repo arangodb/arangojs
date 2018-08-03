@@ -1,12 +1,14 @@
 import {
   ArangoCollection,
   BaseCollection,
+  CollectionType,
   DocumentHandle,
+  DOCUMENT_NOT_FOUND,
   EdgeCollection,
-  isArangoCollection,
-  CollectionType
+  isArangoCollection
 } from "./collection";
 import { Connection } from "./connection";
+import { isArangoError } from "./error";
 
 export class GraphVertexCollection extends BaseCollection {
   type = CollectionType.DOCUMENT_COLLECTION;
@@ -18,12 +20,11 @@ export class GraphVertexCollection extends BaseCollection {
     this.graph = graph;
   }
 
-  protected _documentPath(documentHandle: DocumentHandle) {
-    return `/document/${this._documentHandle(documentHandle)}`;
-  }
-
-  vertex(documentHandle: DocumentHandle) {
-    return this._connection.request(
+  document(
+    documentHandle: DocumentHandle,
+    graceful: boolean = false
+  ): Promise<any> {
+    const result = this._connection.request(
       {
         path: `/_api/gharial/${this.graph.name}/vertex/${this._documentHandle(
           documentHandle
@@ -31,6 +32,20 @@ export class GraphVertexCollection extends BaseCollection {
       },
       res => res.body.vertex
     );
+    if (!graceful) return result;
+    return result.catch(err => {
+      if (isArangoError(err) && err.errorNum === DOCUMENT_NOT_FOUND) {
+        return null;
+      }
+      throw err;
+    });
+  }
+
+  vertex(
+    documentHandle: DocumentHandle,
+    graceful: boolean = false
+  ): Promise<any> {
+    return this.document(documentHandle, graceful);
   }
 
   save(data: any, opts?: { waitForSync?: boolean }) {
@@ -128,8 +143,11 @@ export class GraphEdgeCollection extends EdgeCollection {
     this.graph = graph;
   }
 
-  edge(documentHandle: DocumentHandle) {
-    return this._connection.request(
+  document(
+    documentHandle: DocumentHandle,
+    graceful: boolean = false
+  ): Promise<any> {
+    const result = this._connection.request(
       {
         path: `/_api/gharial/${this.graph.name}/edge/${this._documentHandle(
           documentHandle
@@ -137,6 +155,13 @@ export class GraphEdgeCollection extends EdgeCollection {
       },
       res => res.body.edge
     );
+    if (!graceful) return result;
+    return result.catch(err => {
+      if (isArangoError(err) && err.errorNum === DOCUMENT_NOT_FOUND) {
+        return null;
+      }
+      throw err;
+    });
   }
 
   save(data: any, opts?: { waitForSync?: boolean }): Promise<any>;
@@ -265,10 +290,10 @@ export class Graph {
     return this.get().then(
       () => true,
       err => {
-        if (err.errorNum !== GRAPH_NOT_FOUND) {
-          throw err;
+        if (isArangoError(err) && err.errorNum === GRAPH_NOT_FOUND) {
+          return false;
         }
-        return false;
+        throw err;
       }
     );
   }

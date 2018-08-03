@@ -44,27 +44,41 @@ describe("DocumentCollection API", function() {
   describe("documentCollection.document", () => {
     let data = { foo: "bar" };
     let meta: any;
-    beforeEach(done => {
-      collection
-        .save(data)
-        .then(result => {
-          meta = result;
-          done();
-        })
-        .catch(done);
+    beforeEach(async () => {
+      meta = await collection.save(data);
     });
-    it("returns a document in the collection", done => {
-      collection
-        .document(meta._id)
-        .then(doc => {
-          expect(doc).to.have.keys("_key", "_id", "_rev", "foo");
-          expect(doc._id).to.equal(meta._id);
-          expect(doc._key).to.equal(meta._key);
-          expect(doc._rev).to.equal(meta._rev);
-          expect(doc.foo).to.equal(data.foo);
-        })
-        .then(() => void done())
-        .catch(done);
+    it("returns a document in the collection", async () => {
+      const doc = await collection.document(meta._id);
+      expect(doc).to.have.keys("_key", "_id", "_rev", "foo");
+      expect(doc._id).to.equal(meta._id);
+      expect(doc._key).to.equal(meta._key);
+      expect(doc._rev).to.equal(meta._rev);
+      expect(doc.foo).to.equal(data.foo);
+    });
+    it("does not throw on not found when graceful", async () => {
+      const doc = await collection.document("does-not-exist", true);
+      expect(doc).to.equal(null);
+    });
+  });
+  describe("documentCollection.documentExists", () => {
+    let data = { foo: "bar" };
+    let meta: any;
+    beforeEach(async () => {
+      meta = await collection.save(data);
+    });
+    it("returns true if the document exists", async () => {
+      const exists = await collection.documentExists(meta._id);
+      expect(exists).to.equal(true);
+    });
+    it("returns false if the document does not exist", async () => {
+      const exists = await collection.documentExists("does-not-exist");
+      expect(exists).to.equal(false);
+    });
+    it("returns false if the collection does not exist", async () => {
+      const exists = await db
+        .collection("does-not-exist")
+        .documentExists("lol");
+      expect(exists).to.equal(false);
     });
   });
   describe("documentCollection.save", () => {
