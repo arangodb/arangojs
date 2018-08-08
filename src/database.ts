@@ -50,6 +50,13 @@ export interface ViewDescription {
   type: ViewType;
 }
 
+export interface CreateDatabaseUser {
+  username: string
+  passwd?: string
+  active?: boolean
+  extra?: {[key: string]: any}
+}
+
 const DATABASE_NOT_FOUND = 1228;
 export class Database {
   private _connection: Connection;
@@ -121,7 +128,7 @@ export class Database {
     );
   }
 
-  createDatabase(databaseName: string, users?: string[]) {
+  createDatabase(databaseName: string, users?: CreateDatabaseUser[]): Promise<any> {
     return this._connection.request(
       {
         method: "POST",
