@@ -780,7 +780,10 @@ export class EdgeCollection extends BaseCollection {
         method: "POST",
         path: "/_api/document",
         body: data,
-        qs: { collection: this.name }
+        qs: {
+          ...opts,
+          collection: this.name
+        }
       },
       res => res.body
     );

@@ -95,59 +95,167 @@ describe("EdgeCollection API", function() {
     });
   });
   describe("edgeCollection.save", () => {
-    it("creates an edge in the collection", done => {
-      let data = { _from: "d/1", _to: "d/2" };
-      collection
-        .save(data)
-        .then(meta => {
-          expect(meta).to.be.an("object");
-          expect(meta)
-            .to.have.property("_id")
-            .that.is.a("string");
-          expect(meta)
-            .to.have.property("_rev")
-            .that.is.a("string");
-          expect(meta)
-            .to.have.property("_key")
-            .that.is.a("string");
-          return collection.edge(meta._id).then(doc => {
-            expect(doc).to.have.keys("_key", "_id", "_rev", "_from", "_to");
-            expect(doc._id).to.equal(meta._id);
-            expect(doc._key).to.equal(meta._key);
-            expect(doc._rev).to.equal(meta._rev);
-            expect(doc._from).to.equal(data._from);
-            expect(doc._to).to.equal(data._to);
-          });
-        })
-        .then(() => void done())
-        .catch(done);
+    it("creates an edge in the collection", async () => {
+      const data = { chicken: "chicken", _from: "d/1", _to: "d/2" };
+      const meta = await collection.save(data);
+      expect(meta).to.be.an("object");
+      expect(meta)
+        .to.have.property("_id")
+        .that.is.a("string");
+      expect(meta)
+        .to.have.property("_rev")
+        .that.is.a("string");
+      expect(meta)
+        .to.have.property("_key")
+        .that.is.a("string");
+      const doc = await collection.edge(meta._id);
+      expect(doc).to.have.keys(
+        "chicken",
+        "_key",
+        "_id",
+        "_rev",
+        "_from",
+        "_to"
+      );
+      expect(doc._id).to.equal(meta._id);
+      expect(doc._key).to.equal(meta._key);
+      expect(doc._rev).to.equal(meta._rev);
+      expect(doc._from).to.equal(data._from);
+      expect(doc._to).to.equal(data._to);
+      expect(doc.chicken).to.equal(data.chicken);
     });
-    it("uses the given _key if provided", done => {
-      let data = { _key: "banana", _from: "d/1", _to: "d/2" };
-      collection
-        .save(data)
-        .then(meta => {
-          expect(meta).to.be.an("object");
-          expect(meta)
-            .to.have.property("_id")
-            .that.is.a("string");
-          expect(meta)
-            .to.have.property("_rev")
-            .that.is.a("string");
-          expect(meta)
-            .to.have.property("_key")
-            .that.equals(data._key);
-          return collection.edge(meta._id).then(doc => {
-            expect(doc).to.have.keys("_key", "_id", "_rev", "_from", "_to");
-            expect(doc._id).to.equal(meta._id);
-            expect(doc._rev).to.equal(meta._rev);
-            expect(doc._key).to.equal(data._key);
-            expect(doc._from).to.equal(data._from);
-            expect(doc._to).to.equal(data._to);
-          });
-        })
-        .then(() => void done())
-        .catch(done);
+    it("uses the given _key if provided", async () => {
+      const data = {
+        chicken: "chicken",
+        _key: "banana",
+        _from: "d/1",
+        _to: "d/2"
+      };
+      const meta = await collection.save(data);
+      expect(meta).to.be.an("object");
+      expect(meta)
+        .to.have.property("_id")
+        .that.is.a("string");
+      expect(meta)
+        .to.have.property("_rev")
+        .that.is.a("string");
+      expect(meta)
+        .to.have.property("_key")
+        .that.equals(data._key);
+      const doc = await collection.edge(meta._id);
+      expect(doc).to.have.keys(
+        "chicken",
+        "_key",
+        "_id",
+        "_rev",
+        "_from",
+        "_to"
+      );
+      expect(doc._id).to.equal(meta._id);
+      expect(doc._rev).to.equal(meta._rev);
+      expect(doc._key).to.equal(data._key);
+      expect(doc._from).to.equal(data._from);
+      expect(doc._to).to.equal(data._to);
+      expect(doc.chicken).to.equal(data.chicken);
+    });
+    it("takes _from and _to as positional arguments", async () => {
+      const data = { chicken: "chicken" };
+      const from = "d/1";
+      const to = "d/2";
+      const meta = await collection.save(data, from, to);
+      expect(meta).to.be.an("object");
+      expect(meta)
+        .to.have.property("_id")
+        .that.is.a("string");
+      expect(meta)
+        .to.have.property("_rev")
+        .that.is.a("string");
+      expect(meta)
+        .to.have.property("_key")
+        .that.is.a("string");
+      const doc = await collection.edge(meta._id);
+      expect(doc).to.have.keys(
+        "chicken",
+        "_key",
+        "_id",
+        "_rev",
+        "_from",
+        "_to"
+      );
+      expect(doc.chicken).to.equal(data.chicken);
+      expect(doc._id).to.equal(meta._id);
+      expect(doc._key).to.equal(meta._key);
+      expect(doc._rev).to.equal(meta._rev);
+      expect(doc._from).to.equal(from);
+      expect(doc._to).to.equal(to);
+    });
+    it("takes an options object", async () => {
+      const data = { chicken: "chicken", _from: "d/1", _to: "d/2" };
+      const meta = await collection.save(data, { returnNew: true });
+      expect(meta).to.be.an("object");
+      expect(meta)
+        .to.have.property("_id")
+        .that.is.a("string");
+      expect(meta)
+        .to.have.property("_rev")
+        .that.is.a("string");
+      expect(meta)
+        .to.have.property("_key")
+        .that.is.a("string");
+      expect(meta)
+        .to.have.property("new")
+        .that.is.an("object");
+      expect(meta.new).to.have.property("chicken", data.chicken);
+      const doc = await collection.edge(meta._id);
+      expect(doc).to.have.keys(
+        "chicken",
+        "_key",
+        "_id",
+        "_rev",
+        "_from",
+        "_to"
+      );
+      expect(doc.chicken).to.equal(data.chicken);
+      expect(doc._id).to.equal(meta._id);
+      expect(doc._key).to.equal(meta._key);
+      expect(doc._rev).to.equal(meta._rev);
+      expect(doc._from).to.equal(data._from);
+      expect(doc._to).to.equal(data._to);
+    });
+    it("takes an options object with positional _from and _to", async () => {
+      const data = { chicken: "chicken" };
+      const from = "d/1";
+      const to = "d/2";
+      const meta = await collection.save(data, from, to, { returnNew: true });
+      expect(meta).to.be.an("object");
+      expect(meta)
+        .to.have.property("_id")
+        .that.is.a("string");
+      expect(meta)
+        .to.have.property("_rev")
+        .that.is.a("string");
+      expect(meta)
+        .to.have.property("_key")
+        .that.is.a("string");
+      expect(meta)
+        .to.have.property("new")
+        .that.is.an("object");
+      expect(meta.new).to.have.property("chicken", data.chicken);
+      const doc = await collection.edge(meta._id);
+      expect(doc).to.have.keys(
+        "chicken",
+        "_key",
+        "_id",
+        "_rev",
+        "_from",
+        "_to"
+      );
+      expect(doc.chicken).to.equal(data.chicken);
+      expect(doc._id).to.equal(meta._id);
+      expect(doc._key).to.equal(meta._key);
+      expect(doc._rev).to.equal(meta._rev);
+      expect(doc._from).to.equal(from);
+      expect(doc._to).to.equal(to);
     });
   });
   describe("edgeCollection.traversal", () => {
