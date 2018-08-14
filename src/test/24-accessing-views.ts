@@ -3,8 +3,10 @@ import { Database } from "../arangojs";
 import { ArangoSearchView } from "../view";
 
 const range = (n: number): number[] => Array.from(Array(n).keys());
+const ARANGO_VERSION = Number(process.env.ARANGO_VERSION || 30400);
+const describe34 = ARANGO_VERSION >= 30400 ? describe : describe.skip;
 
-describe("Accessing views", function() {
+describe34("Accessing views", function() {
   // create database takes 11s in a standard cluster
   this.timeout(20000);
 

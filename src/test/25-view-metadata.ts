@@ -2,7 +2,10 @@ import { expect } from "chai";
 import { Database } from "../arangojs";
 import { ArangoSearchView } from "../view";
 
-describe("View metadata", function() {
+const ARANGO_VERSION = Number(process.env.ARANGO_VERSION || 30400);
+const describe34 = ARANGO_VERSION >= 30400 ? describe : describe.skip;
+
+describe34("View metadata", function() {
   // create database takes 11s in a standard cluster
   this.timeout(20000);
 
