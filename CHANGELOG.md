@@ -15,6 +15,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   implemented in the ArangoDB 3.4 release candidate. Please note that this API
   is still subject to change and may indeed still change until the 3.4.0 GA release.
 
+- Updated TypeScript to version 3
+
+  This may result in type signatures that are incompatible with TypeScript 2
+  being added in future releases (including patch releases).
+
 ## [6.6.0] - 2018-08-28
 
 ### Changed
