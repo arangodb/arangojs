@@ -42,7 +42,6 @@ export type RequestOptions = {
   body?: any;
   expectBinary?: boolean;
   isBinary?: boolean;
-  isJsonStream?: boolean;
   headers?: { [key: string]: string };
   absolutePath?: boolean;
   basePath?: string;
@@ -272,7 +271,6 @@ export class Connection {
       body,
       expectBinary = false,
       isBinary = false,
-      isJsonStream = false,
       headers,
       ...urlInfo
     }: RequestOptions,
@@ -284,14 +282,8 @@ export class Connection {
         contentType = "application/octet-stream";
       } else if (body) {
         if (typeof body === "object") {
-          if (isJsonStream) {
-            body =
-              body.map((obj: any) => JSON.stringify(obj)).join("\r\n") + "\r\n";
-            contentType = "application/x-ldjson";
-          } else {
-            body = JSON.stringify(body);
-            contentType = "application/json";
-          }
+          body = JSON.stringify(body);
+          contentType = "application/json";
         } else {
           body = String(body);
         }

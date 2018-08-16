@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Changed
+
+- Reimplemented `collection.import`
+
+  The previous implementation was broken. The new implementation should be backwards-compatible
+  in cases where it previously wasn't broken but is more flexible and also handles buffers.
+
 ### Fixed
 
 - Added missing dependency on `@types/node` ([#567](https://github.com/arangodb/arangojs/issues/567))

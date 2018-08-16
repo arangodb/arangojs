@@ -20,6 +20,27 @@ export type IndexHandle =
       id?: string;
     };
 
+export interface ImportOptions {
+  type?: null | "auto" | "documents" | "array";
+  fromPrefix?: string;
+  toPrefix?: string;
+  overwrite?: boolean;
+  waitForSync?: boolean;
+  onDuplicate?: "error" | "update" | "replace" | "ignore";
+  complete?: boolean;
+  details?: boolean;
+}
+
+export interface ImportResult {
+  error: false;
+  created: number;
+  errors: number;
+  empty: number;
+  updated: number;
+  ignored: number;
+  details?: string[];
+}
+
 export function isArangoCollection(
   collection: any
 ): collection is ArangoCollection {
@@ -500,14 +521,24 @@ export abstract class BaseCollection implements ArangoCollection {
     );
   }
 
-  import(data: any, opts?: any) {
+  import(
+    data: Buffer | Blob | string | any[],
+    { type = "auto", ...opts }: ImportOptions = {}
+  ): Promise<ImportResult> {
+    if (Array.isArray(data)) {
+      data = data.map(line => JSON.stringify(line)).join("\r\n") + "\r\n";
+    }
     return this._connection.request(
       {
         method: "POST",
         path: "/_api/import",
         body: data,
-        isJsonStream: Boolean(!opts || opts.type !== "array"),
-        qs: { type: "auto", ...opts, collection: this.name }
+        isBinary: true,
+        qs: {
+          type: type === null ? undefined : type,
+          ...opts,
+          collection: this.name
+        }
       },
       res => res.body
     );
