@@ -60,6 +60,9 @@ export function createRequest(
           : url.search
         : baseUrlParts.search;
       if (search) path += search;
+      if (typeof body === "string" && !headers["content-length"]) {
+        headers["content-length"] = String(Buffer.byteLength(body));
+      }
       const options: any = { path, method, headers, agent };
       options.hostname = baseUrlParts.hostname;
       options.port = baseUrlParts.port;

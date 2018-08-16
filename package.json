@@ -62,7 +62,6 @@
     "es6-error": "^4.0.1",
     "linkedlist": "^1.0.1",
     "multi-part": "^2.0.0",
-    "utf8-length": "^0.0.1",
     "xhr": "^2.4.1"
   },
   "devDependencies": {

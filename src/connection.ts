@@ -1,6 +1,5 @@
 import { stringify as querystringify } from "querystring";
 import { ArangoError, HttpError } from "./error";
-import { byteLength } from "./util/bytelength";
 import {
   ArangojsResponse,
   createRequest,
@@ -303,13 +302,6 @@ export class Connection {
         "content-type": contentType,
         "x-arango-version": String(this._arangoVersion)
       };
-
-      if (!isBrowser) {
-        // Node doesn't set content-length but ArangoDB needs it
-        extraHeaders["content-length"] = String(
-          body ? byteLength(body, "utf-8") : 0
-        );
-      }
 
       this._queue.push({
         retries: 0,
