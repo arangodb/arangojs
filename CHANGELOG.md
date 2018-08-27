@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Fixed
+
+- Added missing dependency on `@types/node` ([#567](https://github.com/arangodb/arangojs/issues/567))
+
+  This should solve TypeScript errors when the dependency was not already added.
+
 ## [6.5.1] - 2018-08-15
 
 ### Fixed

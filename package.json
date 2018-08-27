@@ -59,6 +59,7 @@
     "prepare": "yarn dist && node -e 'require(\".\");'"
   },
   "dependencies": {
+    "@types/node": "*",
     "es6-error": "^4.0.1",
     "linkedlist": "^1.0.1",
     "multi-part": "^2.0.0",
@@ -67,7 +68,8 @@
   "devDependencies": {
     "@types/chai": "^4.0.10",
     "@types/mocha": "^5.2.1",
-    "@types/node": "^10.0.8",
+    "@types/request": "^2.47.1",
+    "@types/request-promise": "^4.1.42",
     "arangodb-instance-manager": "^0.1.1",
     "babel-core": "^6.26.0",
     "babel-eslint": "^8.0.3",

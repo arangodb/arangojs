@@ -21,7 +21,6 @@
     "preserveConstEnums": true,
     "removeComments": false,
     "rootDir": "./src/",
-    "skipLibCheck": true,
     "strict": true,
     "strictFunctionTypes": true,
     "strictNullChecks": true,
