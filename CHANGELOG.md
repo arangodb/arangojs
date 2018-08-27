@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## [Unreleased]
 
 ### Changed
 
@@ -299,3 +299,18 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Fixed [#354](https://github.com/arangodb/arangojs/issues/354)
 
   Graph methods now only return the relevant part of the response body.
+
+[Unreleased]: https://github.com/arangodb/arangojs/compare/v6.6.0...HEAD
+[6.6.0]: https://github.com/arangodb/arangojs/compare/v6.5.1...v6.6.0
+[6.5.1]: https://github.com/arangodb/arangojs/compare/v6.5.0...v6.5.1
+[6.5.0]: https://github.com/arangodb/arangojs/compare/v6.4.0...v6.5.0
+[6.4.0]: https://github.com/arangodb/arangojs/compare/v6.3.0...v6.4.0
+[6.3.0]: https://github.com/arangodb/arangojs/compare/v6.2.4...v6.3.0
+[6.2.4]: https://github.com/arangodb/arangojs/compare/v6.2.3...v6.2.4
+[6.2.3]: https://github.com/arangodb/arangojs/compare/v6.2.2...v6.2.3
+[6.2.2]: https://github.com/arangodb/arangojs/compare/v6.2.1...v6.2.2
+[6.2.1]: https://github.com/arangodb/arangojs/compare/v6.2.0...v6.2.1
+[6.2.0]: https://github.com/arangodb/arangojs/compare/v6.1.0...v6.2.0
+[6.1.0]: https://github.com/arangodb/arangojs/compare/v6.0.1...v6.1.0
+[6.0.1]: https://github.com/arangodb/arangojs/compare/v6.0.0...v6.0.1
+[6.0.0]: https://github.com/arangodb/arangojs/compare/v5.8.0...v6.0.0
