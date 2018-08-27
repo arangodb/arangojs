@@ -68,7 +68,6 @@
   "devDependencies": {
     "@types/chai": "^4.0.10",
     "@types/mocha": "^5.2.1",
-    "@types/request": "^2.47.1",
     "@types/request-promise": "^4.1.42",
     "arangodb-instance-manager": "^0.1.1",
     "babel-core": "^6.26.0",
