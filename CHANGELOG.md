@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+### Changed
+
+- Changed experimental Views API
+
+  This release updates the experimental support for the Views API to the version
+  implemented in the ArangoDB 3.4 release candidate. Please note that this API
+  is still subject to change and may indeed still change until the 3.4.0 GA release.
+
 ## [6.6.0] - 2018-08-28
 
 ### Changed

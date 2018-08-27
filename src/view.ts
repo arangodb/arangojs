@@ -16,58 +16,49 @@ export interface ArangoViewResponse {
   type: ViewType;
 }
 
-interface ArangoSearchConsolidate {
-  threshold: number;
-  segmentThreshold: number;
-}
+type ArangoSearchViewConsolidationType =
+  | "bytes"
+  | "bytes_accum"
+  | "count"
+  | "fill";
 
-interface ArangoSearchCollectionLink {
+interface ArangoSearchViewCollectionLink {
   analyzers?: string[];
-  fields?: { [key: string]: ArangoSearchCollectionLink | undefined };
+  fields?: { [key: string]: ArangoSearchViewCollectionLink | undefined };
   includeAllFields?: boolean;
   trackListPositions?: boolean;
   storeValues?: "none" | "id";
 }
 
-export interface ArangoSearchProperties {
-  locale: string;
-  commit: {
-    consolidate: {
-      count?: ArangoSearchConsolidate;
-      bytes?: ArangoSearchConsolidate;
-      bytes_accum?: ArangoSearchConsolidate;
-      fill?: ArangoSearchConsolidate;
-    };
-    commitIntervalMsec?: number;
-    cleanupIntervalStep?: number;
+export interface ArangoSearchViewProperties {
+  cleanupIntervalStep: number;
+  consolidationIntervalMsec: number;
+  consolidationPolicy: {
+    type: ArangoSearchViewConsolidationType;
+    segmentThreshold: number;
+    threshold: number;
   };
   links: {
-    [key: string]: ArangoSearchCollectionLink | undefined;
+    [key: string]: ArangoSearchViewCollectionLink | undefined;
   };
 }
 
-export interface ArangoSearchPropertiesResponse
-  extends ArangoSearchProperties,
-    ArangoViewResponse {
+export interface ArangoSearchViewPropertiesResponse
+  extends ArangoViewResponse,
+    ArangoSearchViewProperties {
   type: ViewType.ARANGOSEARCH_VIEW;
 }
 
-export interface ArangoSearchPropertiesOptions {
-  locale?: string;
-  commit?: {
-    consolidate?:
-      | "none"
-      | {
-          count?: Partial<ArangoSearchConsolidate>;
-          bytes?: Partial<ArangoSearchConsolidate>;
-          bytes_accum?: Partial<ArangoSearchConsolidate>;
-          fill?: Partial<ArangoSearchConsolidate>;
-        };
-    commitIntervalMsec?: number;
-    cleanupIntervalStep?: number;
+export interface ArangoSearchViewPropertiesOptions {
+  cleanupIntervalStep?: number;
+  consolidationIntervalMsec?: number;
+  consolidationPolicy?: {
+    type?: ArangoSearchViewConsolidationType;
+    segmentThreshold?: number;
+    threshold?: number;
   };
   links?: {
-    [key: string]: ArangoSearchCollectionLink | undefined;
+    [key: string]: ArangoSearchViewCollectionLink | undefined;
   };
 }
 
@@ -130,8 +121,8 @@ export class ArangoSearchView extends BaseView {
   type = ViewType.ARANGOSEARCH_VIEW;
 
   create(
-    properties: ArangoSearchPropertiesOptions = {}
-  ): Promise<ArangoSearchPropertiesResponse> {
+    properties: ArangoSearchViewPropertiesOptions = {}
+  ): Promise<ArangoSearchViewPropertiesResponse> {
     return this._connection.request(
       {
         method: "POST",
@@ -146,7 +137,7 @@ export class ArangoSearchView extends BaseView {
     );
   }
 
-  properties(): Promise<ArangoSearchPropertiesResponse> {
+  properties(): Promise<ArangoSearchViewPropertiesResponse> {
     return this._connection.request(
       { path: `/_api/view/${this.name}/properties` },
       res => res.body
@@ -154,8 +145,8 @@ export class ArangoSearchView extends BaseView {
   }
 
   setProperties(
-    properties: ArangoSearchPropertiesOptions = {}
-  ): Promise<ArangoSearchPropertiesResponse> {
+    properties: ArangoSearchViewPropertiesOptions = {}
+  ): Promise<ArangoSearchViewPropertiesResponse> {
     return this._connection.request(
       {
         method: "PATCH",
@@ -167,8 +158,8 @@ export class ArangoSearchView extends BaseView {
   }
 
   replaceProperties(
-    properties: ArangoSearchPropertiesOptions = {}
-  ): Promise<ArangoSearchPropertiesResponse> {
+    properties: ArangoSearchViewPropertiesOptions = {}
+  ): Promise<ArangoSearchViewPropertiesResponse> {
     return this._connection.request(
       {
         method: "PUT",

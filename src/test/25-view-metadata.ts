@@ -31,7 +31,9 @@ describe34("View metadata", function() {
     it("should return information about a view", async () => {
       const info = await view.get();
       expect(info).to.have.property("name", viewName);
+      expect(info).to.have.property("id");
       expect(info).to.have.property("type", "arangosearch");
+      console.log(info);
     });
     it("should throw if view does not exists", async () => {
       try {
@@ -47,9 +49,17 @@ describe34("View metadata", function() {
     it("should return properties of a view", async () => {
       const properties = await view.properties();
       expect(properties).to.have.property("name", viewName);
-      expect(properties).to.have.property("locale", "C");
+      expect(properties).to.have.property("id");
+      expect(properties).to.have.property("type", "arangosearch");
       expect(properties).to.have.property("links");
-      expect(properties).to.have.property("commit");
+      expect(properties).to.have.property("cleanupIntervalStep");
+      expect(properties).to.have.property("consolidationPolicy");
+      expect(properties).to.have.property("consolidationIntervalMsec");
+      expect(properties.consolidationPolicy).to.have.property("type");
+      expect(properties.consolidationPolicy).to.have.property(
+        "segmentThreshold"
+      );
+      expect(properties.consolidationPolicy).to.have.property("threshold");
     });
   });
 });

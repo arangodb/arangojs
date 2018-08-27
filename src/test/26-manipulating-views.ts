@@ -52,15 +52,16 @@ describe34("Manipulating views", function() {
   describe("view.setProperties", () => {
     it("should change properties", async () => {
       const properties = await view.setProperties({
-        commit: { consolidate: { count: { segmentThreshold: 123 } } }
+        consolidationPolicy: {
+          type: "count",
+          segmentThreshold: 123
+        }
       });
       expect(properties).to.have.property("name", view.name);
-      expect(properties).to.have.property("locale", "C");
       expect(properties).to.have.property("links");
-      expect(properties).to.have.property("commit");
-      expect(properties.commit).to.have.property("consolidate");
-      expect(properties.commit.consolidate).to.have.property("count");
-      expect(properties.commit.consolidate.count).to.have.property(
+      expect(properties).to.have.property("consolidationPolicy");
+      expect(properties.consolidationPolicy).to.have.property("type", "count");
+      expect(properties.consolidationPolicy).to.have.property(
         "segmentThreshold",
         123
       );
@@ -69,39 +70,32 @@ describe34("Manipulating views", function() {
   describe("view.replaceProperties", () => {
     it("should change properties", async () => {
       const initial = await view.properties();
-      expect(initial.commit.consolidate.bytes).to.have.property(
-        "segmentThreshold"
-      );
+      expect(initial.consolidationPolicy).to.have.property("segmentThreshold");
       const oldProps = await view.replaceProperties({
-        commit: {
-          consolidate: {
-            count: { segmentThreshold: 123 },
-            bytes: { segmentThreshold: 234 }
-          }
+        consolidationPolicy: {
+          type: "bytes",
+          segmentThreshold: 123
         }
       });
-      expect(oldProps.commit.consolidate.count).to.have.property(
+      expect(oldProps.consolidationPolicy).to.have.property(
         "segmentThreshold",
         123
       );
-      expect(oldProps.commit.consolidate.bytes).to.have.property(
-        "segmentThreshold",
-        234
-      );
+      expect(oldProps.consolidationPolicy).to.have.property("type", "bytes");
       const properties = await view.replaceProperties({
-        commit: { consolidate: { count: { segmentThreshold: 567 } } }
+        consolidationPolicy: {
+          type: "fill",
+          segmentThreshold: 456
+        }
       });
       expect(properties).to.have.property("name", view.name);
-      expect(properties).to.have.property("locale", "C");
       expect(properties).to.have.property("links");
-      expect(properties).to.have.property("commit");
-      expect(properties.commit).to.have.property("consolidate");
-      expect(properties.commit.consolidate).to.have.property("count");
-      expect(properties.commit.consolidate.count).to.have.property(
+      expect(properties).to.have.property("consolidationPolicy");
+      expect(properties.consolidationPolicy).to.have.property("type", "fill");
+      expect(properties.consolidationPolicy).to.have.property(
         "segmentThreshold",
-        567
+        456
       );
-      expect(properties.commit.consolidate).not.to.have.property("bytes");
     });
   });
   describe("view.rename", () => {
