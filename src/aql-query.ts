@@ -14,12 +14,15 @@ export interface AqlLiteral {
 }
 
 export type AqlValue =
+  | ArangoCollection
+  | GeneratedAqlQuery
+  | AqlLiteral
   | string
   | number
   | boolean
-  | ArangoCollection
-  | GeneratedAqlQuery
-  | AqlLiteral;
+  | null
+  | undefined
+  | object;
 
 export function isAqlQuery(query: any): query is AqlQuery {
   return Boolean(query && query.query && query.bindVars);
@@ -62,6 +65,10 @@ export function aql(
         strings.splice(i, 2, strings[i] + rawValue.query + strings[i + 1]);
       }
       i -= 1;
+      continue;
+    }
+    if (rawValue === undefined) {
+      query += strings[i + 1];
       continue;
     }
     if (isAqlLiteral(rawValue)) {

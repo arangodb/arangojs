@@ -100,12 +100,11 @@ describe("AQL queries", function() {
   describe("aql", () => {
     const db = new Database();
     it("supports simple parameters", () => {
-      const values: any[] = [
+      const values = [
         0,
         42,
         -1,
         null,
-        undefined,
         true,
         false,
         "",
@@ -117,9 +116,9 @@ describe("AQL queries", function() {
         values[3]
       } E ${values[4]} F ${values[5]} G ${values[6]} H ${values[7]} I ${
         values[8]
-      } J ${values[9]} K ${values[10]} EOF`;
+      } J ${values[9]} K EOF`;
       expect(query.query).to.equal(
-        `A @value0 B @value1 C @value2 D @value3 E @value4 F @value5 G @value6 H @value7 I @value8 J @value9 K @value10 EOF`
+        `A @value0 B @value1 C @value2 D @value3 E @value4 F @value5 G @value6 H @value7 I @value8 J @value9 K EOF`
       );
       const bindVarNames = Object.keys(query.bindVars).sort(
         (a, b) => (+a.substr(5) > +b.substr(5) ? 1 : -1)
@@ -134,10 +133,14 @@ describe("AQL queries", function() {
         "value6",
         "value7",
         "value8",
-        "value9",
-        "value10"
+        "value9"
       ]);
       expect(bindVarNames.map(k => query.bindVars[k])).to.eql(values);
+    });
+    it("omits undefined bindvars", () => {
+      const query = aql`A ${undefined} B`;
+      expect(query.query).to.equal("A  B");
+      expect(query.bindVars).to.eql({});
     });
     it("supports arangojs collection parameters", () => {
       const collection = db.collection("potato");
