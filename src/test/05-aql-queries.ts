@@ -4,31 +4,35 @@ import { ArrayCursor } from "../cursor";
 import { ArangoError } from "../error";
 
 describe("AQL queries", function() {
-  // create database takes 11s in a standard cluster
-  this.timeout(20000);
-
-  const name = `testdb_${Date.now()}`;
-  let db: Database;
-  before(async () => {
-    db = new Database({
-      url: process.env.TEST_ARANGODB_URL || "http://localhost:8529",
-      arangoVersion: Number(process.env.ARANGO_VERSION || 30400)
-    });
-    await db.createDatabase(name);
-    db.useDatabase(name);
-  });
-  after(async () => {
-    try {
-      db.useDatabase("_system");
-      await db.dropDatabase(name);
-    } finally {
-      db.close();
-    }
-  });
   describe("database.query", () => {
-    it("returns a cursor for the query result", async () => {
-      const cursor = await db.query("RETURN 23");
-      expect(cursor).to.be.an.instanceof(ArrayCursor);
+    // create database takes 11s in a standard cluster
+    this.timeout(20000);
+
+    const name = `testdb_${Date.now()}`;
+    let db: Database;
+    before(async () => {
+      db = new Database({
+        url: process.env.TEST_ARANGODB_URL || "http://localhost:8529",
+        arangoVersion: Number(process.env.ARANGO_VERSION || 30400)
+      });
+      await db.createDatabase(name);
+      db.useDatabase(name);
+    });
+    after(async () => {
+      try {
+        db.useDatabase("_system");
+        await db.dropDatabase(name);
+      } finally {
+        db.close();
+      }
+    });
+    it("returns a cursor for the query result", done => {
+      db.query("RETURN 23")
+        .then(cursor => {
+          expect(cursor).to.be.an.instanceof(ArrayCursor);
+          done();
+        })
+        .catch(done);
     });
     it("throws an exception on error", async () => {
       try {
@@ -94,7 +98,8 @@ describe("AQL queries", function() {
     });
   });
   describe("aql", () => {
-    it("correctly handles simple parameters", () => {
+    const db = new Database();
+    it("supports simple parameters", () => {
       const values: any[] = [
         0,
         42,
@@ -108,18 +113,14 @@ describe("AQL queries", function() {
         [1, 2, 3],
         { a: "b" }
       ];
-      const query = aql`
-        A ${values[0]} B ${values[1]} C ${values[2]} D ${values[3]} E ${
-        values[4]
-      } F ${values[5]}
-        G ${values[6]} H ${values[7]} I ${values[8]} J ${values[9]} K ${
-        values[10]
-      } EOF
-      `;
-      expect(query.query).to.equal(`
-        A @value0 B @value1 C @value2 D @value3 E @value4 F @value5
-        G @value6 H @value7 I @value8 J @value9 K @value10 EOF
-      `);
+      const query = aql`A ${values[0]} B ${values[1]} C ${values[2]} D ${
+        values[3]
+      } E ${values[4]} F ${values[5]} G ${values[6]} H ${values[7]} I ${
+        values[8]
+      } J ${values[9]} K ${values[10]} EOF`;
+      expect(query.query).to.equal(
+        `A @value0 B @value1 C @value2 D @value3 E @value4 F @value5 G @value6 H @value7 I @value8 J @value9 K @value10 EOF`
+      );
       const bindVarNames = Object.keys(query.bindVars).sort(
         (a, b) => (+a.substr(5) > +b.substr(5) ? 1 : -1)
       );
@@ -138,14 +139,14 @@ describe("AQL queries", function() {
       ]);
       expect(bindVarNames.map(k => query.bindVars[k])).to.eql(values);
     });
-    it("correctly handles arangojs collection parameters", () => {
+    it("supports arangojs collection parameters", () => {
       const collection = db.collection("potato");
       const query = aql`${collection}`;
       expect(query.query).to.equal("@@value0");
       expect(Object.keys(query.bindVars)).to.eql(["@value0"]);
       expect(query.bindVars["@value0"]).to.equal("potato");
     });
-    it("correctly handles ArangoDB collection parameters", () => {
+    it("supports ArangoDB collection parameters", () => {
       class ArangoCollection {
         isArangoCollection = true;
         name = "tomato";
@@ -155,6 +156,68 @@ describe("AQL queries", function() {
       expect(query.query).to.equal("@@value0");
       expect(Object.keys(query.bindVars)).to.eql(["@value0"]);
       expect(query.bindVars["@value0"]).to.equal("tomato");
+    });
+    it("supports nesting simple queries", () => {
+      const query = aql`FOR x IN (${aql`FOR a IN 1..3 RETURN a`}) RETURN x`;
+      expect(query.query).to.equal(
+        "FOR x IN (FOR a IN 1..3 RETURN a) RETURN x"
+      );
+    });
+    it("supports deeply nesting simple queries", () => {
+      const query = aql`FOR x IN (${aql`FOR a IN (${aql`FOR b IN 1..3 RETURN b`}) RETURN a`}) RETURN x`;
+      expect(query.query).to.equal(
+        "FOR x IN (FOR a IN (FOR b IN 1..3 RETURN b) RETURN a) RETURN x"
+      );
+    });
+    it("supports nesting with bindVars", () => {
+      const collection = db.collection("paprika");
+      const query = aql`A ${collection} B ${aql`X ${collection} Y ${aql`J ${collection} K ${9} L`} Z`} C ${4}`;
+      expect(query.query).to.equal(
+        "A @@value0 B X @@value0 Y J @@value0 K @value1 L Z C @value2"
+      );
+      expect(query.bindVars).to.eql({
+        "@value0": "paprika",
+        value1: 9,
+        value2: 4
+      });
+    });
+    it("supports arbitrary nesting", () => {
+      const users = db.collection("users");
+      const role = "admin";
+      const filter = aql`FILTER u.role == ${role}`;
+      const query = aql`FOR u IN ${users} ${filter} RETURN u`;
+      expect(query.query).to.equal(
+        "FOR u IN @@value0 FILTER u.role == @value1 RETURN u"
+      );
+      expect(query.bindVars).to.eql({
+        "@value0": users.name,
+        value1: role
+      });
+    });
+    it("supports basic nesting", () => {
+      const query = aql`A ${aql`a ${1} b`} B`;
+      expect(query.query).to.equal("A a @value0 b B");
+      expect(query.bindVars).to.eql({ value0: 1 });
+    });
+    it("supports deep nesting", () => {
+      const query = aql`A ${1} ${aql`a ${2} ${aql`X ${3} ${aql`x ${4} y`} ${5} Y`} ${6} b`} ${7} B`;
+      expect(query.query).to.equal(
+        "A @value0 a @value1 X @value2 x @value3 y @value4 Y @value5 b @value6 B"
+      );
+      expect(query.bindVars).to.eql({
+        value0: 1,
+        value1: 2,
+        value2: 3,
+        value3: 4,
+        value4: 5,
+        value5: 6,
+        value6: 7
+      });
+    });
+    it("supports nesting without bindvars", () => {
+      const query = aql`A ${aql`B`} C`;
+      expect(query.query).to.equal("A B C");
+      expect(query.bindVars).to.eql({});
     });
   });
 });
