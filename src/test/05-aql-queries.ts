@@ -155,10 +155,17 @@ describe("AQL queries", function() {
         name = "tomato";
       }
       const collection = new ArangoCollection();
-      const query = aql`${collection as any}`;
+      const query = aql`${collection}`;
       expect(query.query).to.equal("@@value0");
       expect(Object.keys(query.bindVars)).to.eql(["@value0"]);
       expect(query.bindVars["@value0"]).to.equal("tomato");
+    });
+    it("supports AQL literals", () => {
+      const query = aql`FOR x IN whatever ${aql.literal(
+        "FILTER x.blah"
+      )} RETURN x`;
+      expect(query.query).to.equal("FOR x IN whatever FILTER x.blah RETURN x");
+      expect(query.bindVars).to.eql({});
     });
     it("supports nesting simple queries", () => {
       const query = aql`FOR x IN (${aql`FOR a IN 1..3 RETURN a`}) RETURN x`;
