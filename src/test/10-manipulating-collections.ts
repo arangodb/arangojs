@@ -8,7 +8,7 @@ describe("Manipulating collections", function() {
   // create database takes 11s in a standard cluster
   this.timeout(20000);
 
-  let name = `testdb_${Date.now()}`;
+  const name = `testdb_${Date.now()}`;
   let db: Database;
   let collection: DocumentCollection;
   before(async () => {
@@ -27,153 +27,94 @@ describe("Manipulating collections", function() {
       db.close();
     }
   });
-  beforeEach(done => {
+  beforeEach(async () => {
     collection = db.collection(`collection-${Date.now()}`);
-    collection
-      .create()
-      .then(() => void done())
-      .catch(done);
+    await collection.create();
   });
-  afterEach(done => {
-    collection
-      .get()
-      .then(() => {
-        collection
-          .drop()
-          .then(() => void done())
-          .catch(done);
-      })
-      .catch(() => void done());
+  afterEach(async () => {
+    try {
+      await collection.get();
+    } catch (e) {
+      return;
+    }
+    await collection.drop();
   });
   describe("collection.create", () => {
-    it("creates a new document collection", done => {
+    it("creates a new document collection", async () => {
       const collection = db.collection(`document-collection-${Date.now()}`);
-      collection
-        .create()
-        .then(() => {
-          return db
-            .collection(collection.name)
-            .get()
-            .then(info => {
-              expect(info).to.have.property("name", collection.name);
-              expect(info).to.have.property("isSystem", false);
-              expect(info).to.have.property("status", 3); // loaded
-              expect(info).to.have.property("type", 2); // document collection
-            });
-        })
-        .then(() => void done())
-        .catch(done);
+      await collection.create();
+      const info = await db.collection(collection.name).get();
+      expect(info).to.have.property("name", collection.name);
+      expect(info).to.have.property("isSystem", false);
+      expect(info).to.have.property("status", 3); // loaded
+      expect(info).to.have.property("type", 2); // document collection
     });
-    it("creates a new edge collection", done => {
+    it("creates a new edge collection", async () => {
       const collection = db.edgeCollection(`edge-collection-${Date.now()}`);
-      collection
-        .create()
-        .then(() => {
-          return db
-            .collection(collection.name)
-            .get()
-            .then(info => {
-              expect(info).to.have.property("name", collection.name);
-              expect(info).to.have.property("isSystem", false);
-              expect(info).to.have.property("status", 3); // loaded
-              expect(info).to.have.property("type", 3); // edge collection
-            });
-        })
-        .then(() => void done())
-        .catch(done);
+      await collection.create();
+      const info = await db.collection(collection.name).get();
+      expect(info).to.have.property("name", collection.name);
+      expect(info).to.have.property("isSystem", false);
+      expect(info).to.have.property("status", 3); // loaded
+      expect(info).to.have.property("type", 3); // edge collection
     });
   });
   describe("collection.load", () => {
-    it("should load a collection", done => {
-      collection
-        .load()
-        .then(info => {
-          expect(info).to.have.property("name", collection.name);
-          expect(info).to.have.property("status", 3); // loaded
-        })
-        .then(() => void done())
-        .catch(done);
+    it("should load a collection", async () => {
+      const info = await collection.load();
+      expect(info).to.have.property("name", collection.name);
+      expect(info).to.have.property("status", 3); // loaded
     });
   });
   describe("collection.unload", () => {
-    it("should unload a collection", done => {
-      collection
-        .unload()
-        .then(info => {
-          expect(info).to.have.property("name", collection.name);
-          expect(info).to.have.property("status");
-          expect(info.status === 2 || info.status === 4).to.be.true; // unloaded
-        })
-        .then(() => void done())
-        .catch(done);
+    it("should unload a collection", async () => {
+      const info = await collection.unload();
+      expect(info).to.have.property("name", collection.name);
+      expect(info).to.have.property("status");
+      expect(info.status === 2 || info.status === 4).to.be.true; // unloaded
     });
   });
   describe("collection.setProperties", () => {
-    it("should change properties", done => {
-      collection
-        .setProperties({ waitForSync: true })
-        .then(info => {
-          expect(info).to.have.property("name", collection.name);
-          expect(info).to.have.property("waitForSync", true);
-        })
-        .then(() => void done())
-        .catch(done);
+    it("should change properties", async () => {
+      const info = await collection.setProperties({ waitForSync: true });
+      expect(info).to.have.property("name", collection.name);
+      expect(info).to.have.property("waitForSync", true);
     });
   });
   describe("collection.rename", () => {
-    it("should rename a collection", done => {
-      db.route("/_admin/server/role")
-        .get()
-        .then(res => {
-          if (res.body.role !== "SINGLE") return;
-          const name = `rename-collection-${Date.now()}`;
-          return collection.rename(name).then(info => {
-            expect(info).to.have.property("name", name);
-          });
-        })
-        .then(() => void done())
-        .catch(done);
+    it("should rename a collection", async () => {
+      const res = await db.route("/_admin/server/role").get();
+      if (res.body.role !== "SINGLE") return;
+      const name = `rename-collection-${Date.now()}`;
+      const info = await collection.rename(name);
+      expect(info).to.have.property("name", name);
     });
   });
   describe("collection.truncate", () => {
-    it("should truncate a non-empty collection", done => {
-      collection.save({}).then(() => {
-        return collection
-          .truncate()
-          .then(() => {
-            collection.count().then(info => {
-              expect(info).to.have.property("name", collection.name);
-              expect(info).to.have.property("count", 0);
-            });
-          })
-          .then(() => void done())
-          .catch(done);
-      });
+    it("should truncate a non-empty collection", async () => {
+      await collection.save({});
+      await collection.truncate();
+      const info = await collection.count();
+      expect(info).to.have.property("name", collection.name);
+      expect(info).to.have.property("count", 0);
     });
-    it("should allow truncating a empty collection", done => {
-      collection.truncate().then(() => {
-        return collection
-          .count()
-          .then(info => {
-            expect(info).to.have.property("name", collection.name);
-            expect(info).to.have.property("count", 0);
-          })
-          .then(() => void done())
-          .catch(done);
-      });
+    it("should allow truncating a empty collection", async () => {
+      await collection.truncate();
+      const info = await collection.count();
+      expect(info).to.have.property("name", collection.name);
+      expect(info).to.have.property("count", 0);
     });
   });
   describe("collection.drop", () => {
-    it("should drop a collection", done => {
-      collection.drop().then(() => {
-        return collection
-          .get()
-          .then(done)
-          .catch(err => {
-            expect(err).to.have.property("errorNum", 1203);
-            void done();
-          });
-      });
+    it("should drop a collection", async () => {
+      await collection.drop();
+      try {
+        await collection.get();
+      } catch (err) {
+        expect(err).to.have.property("errorNum", 1203);
+        return;
+      }
+      expect.fail();
     });
   });
 });

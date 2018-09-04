@@ -7,8 +7,8 @@ describe("Manipulating graph edges", function() {
   this.timeout(20000);
 
   const dbName = `testdb_${Date.now()}`;
-  let db: Database;
   const graphName = `testgraph_${Date.now()}`;
+  let db: Database;
   let graph: Graph;
   before(async () => {
     db = new Database({
@@ -26,171 +26,130 @@ describe("Manipulating graph edges", function() {
       db.close();
     }
   });
-  beforeEach(done => {
+  beforeEach(async () => {
     graph = db.graph(graphName);
-    graph
-      .create({
-        edgeDefinitions: [
-          {
-            collection: "knows",
-            from: ["person"],
-            to: ["person"]
-          }
-        ]
-      })
-      .then(() => void done())
-      .catch(done);
+    await graph.create({
+      edgeDefinitions: [
+        {
+          collection: "knows",
+          from: ["person"],
+          to: ["person"]
+        }
+      ]
+    });
   });
-  afterEach(done => {
-    graph
-      .drop()
-      .then(() => void done())
-      .catch(done);
+  afterEach(async () => {
+    await graph.drop();
   });
   describe("graph.get", () => {
-    it("should return information about the graph", done => {
-      graph
-        .get()
-        .then(info => {
-          expect(info).to.have.property("name", graphName);
-          expect(info).to.have.property("edgeDefinitions");
-          expect(info.edgeDefinitions).to.be.instanceOf(Array);
-          expect(info.edgeDefinitions.length).to.equal(1);
-          expect(info.edgeDefinitions.map((e: any) => e.collection)).to.contain(
-            "knows"
-          );
-          const edgeDefinition = info.edgeDefinitions.filter(
-            (e: any) => e.collection === "knows"
-          );
-          expect(
-            [].concat.apply([], edgeDefinition.map((e: any) => e.from))
-          ).to.contain("person");
-          expect(
-            [].concat.apply([], edgeDefinition.map((e: any) => e.to))
-          ).to.contain("person");
-        })
-        .then(() => done())
-        .catch(done);
+    it("should return information about the graph", async () => {
+      const info = await graph.get();
+      expect(info).to.have.property("name", graphName);
+      expect(info).to.have.property("edgeDefinitions");
+      expect(info.edgeDefinitions).to.be.instanceOf(Array);
+      expect(info.edgeDefinitions.length).to.equal(1);
+      expect(info.edgeDefinitions.map((e: any) => e.collection)).to.contain(
+        "knows"
+      );
+      const edgeDefinition = info.edgeDefinitions.filter(
+        (e: any) => e.collection === "knows"
+      );
+      expect(
+        [].concat.apply([], edgeDefinition.map((e: any) => e.from))
+      ).to.contain("person");
+      expect(
+        [].concat.apply([], edgeDefinition.map((e: any) => e.to))
+      ).to.contain("person");
     });
   });
   describe("graph.edgeCollections", () => {
-    it("should contain edge collection", done => {
-      graph
-        .edgeCollections()
-        .then(info => {
-          expect(info).to.be.instanceOf(Array);
-          expect(info.length).to.equal(1);
-          expect(info.map((c: any) => c.name)).to.contain("knows");
-        })
-        .then(() => done())
-        .catch(done);
+    it("should contain edge collection", async () => {
+      const info = await graph.edgeCollections();
+      expect(info).to.be.instanceOf(Array);
+      expect(info.length).to.equal(1);
+      expect(info.map((c: any) => c.name)).to.contain("knows");
     });
   });
   describe("graph.listEdgeCollections", () => {
-    it("should return all edge collection names", done => {
-      graph
-        .listEdgeCollections()
-        .then(info => {
-          expect(info).to.be.instanceOf(Array);
-          expect(info.length).to.equal(1);
-          expect(info).to.contain("knows");
-        })
-        .then(() => done())
-        .catch(done);
+    it("should return all edge collection names", async () => {
+      const info = await graph.listEdgeCollections();
+      expect(info).to.be.instanceOf(Array);
+      expect(info.length).to.equal(1);
+      expect(info).to.contain("knows");
     });
   });
   describe("graph.listVertexCollections", () => {
-    it("should return all vertex collection names", done => {
-      graph
-        .listVertexCollections()
-        .then(info => {
-          expect(info).to.be.instanceOf(Array);
-          expect(info.length).to.equal(1);
-          expect(info).to.contain("person");
-        })
-        .then(() => done())
-        .catch(done);
+    it("should return all vertex collection names", async () => {
+      const info = await graph.listVertexCollections();
+      expect(info).to.be.instanceOf(Array);
+      expect(info.length).to.equal(1);
+      expect(info).to.contain("person");
     });
   });
   describe("graph.addEdgeDefinition", () => {
-    it("should add an edgeDefinition to the graph", done => {
-      graph
-        .addEdgeDefinition({
-          collection: "works_in",
-          from: ["person"],
-          to: ["city"]
-        })
-        .then(info => {
-          expect(info).to.have.property("name", graphName);
-          expect(info).to.have.property("edgeDefinitions");
-          expect(info.edgeDefinitions).to.be.instanceOf(Array);
-          expect(info.edgeDefinitions.length).to.equal(2);
-          expect(info.edgeDefinitions.map((e: any) => e.collection)).to.contain(
-            "works_in"
-          );
-          const edgeDefinition = info.edgeDefinitions.filter(
-            (e: any) => e.collection === "works_in"
-          );
-          expect(
-            [].concat.apply([], edgeDefinition.map((e: any) => e.from))
-          ).to.contain("person");
-          expect(
-            [].concat.apply([], edgeDefinition.map((e: any) => e.to))
-          ).to.contain("city");
-        })
-        .then(() => done())
-        .catch(done);
+    it("should add an edgeDefinition to the graph", async () => {
+      const info = await graph.addEdgeDefinition({
+        collection: "works_in",
+        from: ["person"],
+        to: ["city"]
+      });
+      expect(info).to.have.property("name", graphName);
+      expect(info).to.have.property("edgeDefinitions");
+      expect(info.edgeDefinitions).to.be.instanceOf(Array);
+      expect(info.edgeDefinitions.length).to.equal(2);
+      expect(info.edgeDefinitions.map((e: any) => e.collection)).to.contain(
+        "works_in"
+      );
+      const edgeDefinition = info.edgeDefinitions.filter(
+        (e: any) => e.collection === "works_in"
+      );
+      expect(
+        [].concat.apply([], edgeDefinition.map((e: any) => e.from))
+      ).to.contain("person");
+      expect(
+        [].concat.apply([], edgeDefinition.map((e: any) => e.to))
+      ).to.contain("city");
     });
   });
   describe("graph.replaceEdgeDefinition", () => {
-    it("should replace an existing edgeDefinition in the graph", done => {
-      graph
-        .replaceEdgeDefinition("knows", {
-          collection: "knows",
-          from: ["person"],
-          to: ["city"]
-        })
-        .then(info => {
-          expect(info).to.have.property("name", graphName);
-          expect(info).to.have.property("edgeDefinitions");
-          expect(info.edgeDefinitions).to.be.instanceOf(Array);
-          expect(info.edgeDefinitions.length).to.equal(1);
-          expect(info.edgeDefinitions.map((e: any) => e.collection)).to.contain(
-            "knows"
-          );
-          const edgeDefinition = info.edgeDefinitions.filter(
-            (e: any) => e.collection === "knows"
-          );
-          expect(
-            [].concat.apply([], edgeDefinition.map((e: any) => e.from))
-          ).to.contain("person");
-          expect(
-            [].concat.apply([], edgeDefinition.map((e: any) => e.to))
-          ).to.contain("city");
-        })
-        .then(() => done())
-        .catch(done);
+    it("should replace an existing edgeDefinition in the graph", async () => {
+      const info = await graph.replaceEdgeDefinition("knows", {
+        collection: "knows",
+        from: ["person"],
+        to: ["city"]
+      });
+      expect(info).to.have.property("name", graphName);
+      expect(info).to.have.property("edgeDefinitions");
+      expect(info.edgeDefinitions).to.be.instanceOf(Array);
+      expect(info.edgeDefinitions.length).to.equal(1);
+      expect(info.edgeDefinitions.map((e: any) => e.collection)).to.contain(
+        "knows"
+      );
+      const edgeDefinition = info.edgeDefinitions.filter(
+        (e: any) => e.collection === "knows"
+      );
+      expect(
+        [].concat.apply([], edgeDefinition.map((e: any) => e.from))
+      ).to.contain("person");
+      expect(
+        [].concat.apply([], edgeDefinition.map((e: any) => e.to))
+      ).to.contain("city");
     });
   });
   describe("graph.removeEdgeDefinition", () => {
-    it("should remove an edgeDefinition from the graph", done => {
-      graph
-        .removeEdgeDefinition("knows")
-        .then(info => {
-          expect(info).to.have.property("name", graphName);
-          expect(info).to.have.property("edgeDefinitions");
-          expect(info.edgeDefinitions).to.be.instanceOf(Array);
-          expect(info.edgeDefinitions.length).to.equal(0);
-        })
-        .then(() => done())
-        .catch(done);
+    it("should remove an edgeDefinition from the graph", async () => {
+      const info = await graph.removeEdgeDefinition("knows");
+      expect(info).to.have.property("name", graphName);
+      expect(info).to.have.property("edgeDefinitions");
+      expect(info.edgeDefinitions).to.be.instanceOf(Array);
+      expect(info.edgeDefinitions.length).to.equal(0);
     });
   });
   describe("graph.traversal", () => {
-    beforeEach(done => {
+    beforeEach(async () => {
       const knows = graph.edgeCollection("knows");
       const person = graph.vertexCollection("person");
-      Promise.all([
+      await Promise.all([
         person.import([
           { _key: "Alice" },
           { _key: "Bob" },
@@ -205,31 +164,26 @@ describe("Manipulating graph edges", function() {
           { _from: "person/Eve", _to: "person/Alice" },
           { _from: "person/Eve", _to: "person/Bob" }
         ])
-      ])
-        .then(() => done())
-        .catch(done);
+      ]);
     });
-    it("executes traversal", done => {
-      graph
-        .traversal("person/Alice", { direction: "outbound" })
-        .then((result: any) => {
-          expect(result).to.have.property("visited");
-          const visited = result.visited;
-          expect(visited).to.have.property("vertices");
-          const vertices = visited.vertices;
-          expect(vertices).to.be.instanceOf(Array);
-          expect(vertices.length).to.equal(4);
-          const names = vertices.map((d: any) => d._key);
-          for (const name of ["Alice", "Bob", "Charlie", "Dave"]) {
-            expect(names).to.contain(name);
-          }
-          expect(visited).to.have.property("paths");
-          const paths = visited.paths;
-          expect(paths).to.be.instanceOf(Array);
-          expect(paths.length).to.equal(4);
-        })
-        .then(() => done())
-        .catch(done);
+    it("executes traversal", async () => {
+      const result = await graph.traversal("person/Alice", {
+        direction: "outbound"
+      });
+      expect(result).to.have.property("visited");
+      const visited = result.visited;
+      expect(visited).to.have.property("vertices");
+      const vertices = visited.vertices;
+      expect(vertices).to.be.instanceOf(Array);
+      expect(vertices.length).to.equal(4);
+      const names = vertices.map((d: any) => d._key);
+      for (const name of ["Alice", "Bob", "Charlie", "Dave"]) {
+        expect(names).to.contain(name);
+      }
+      expect(visited).to.have.property("paths");
+      const paths = visited.paths;
+      expect(paths).to.be.instanceOf(Array);
+      expect(paths.length).to.equal(4);
     });
   });
 });

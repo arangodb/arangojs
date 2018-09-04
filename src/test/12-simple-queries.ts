@@ -31,162 +31,110 @@ describe("Simple queries", function() {
       db.close();
     }
   });
-  beforeEach(done => {
+  beforeEach(async () => {
     collection = db.collection(`c_${Date.now()}`);
-    collection
-      .create()
-      .then(() =>
-        range(10).reduce(
-          (p, v) =>
-            p.then(() =>
-              collection.save({
-                _key: alpha(v),
-                value: v + 1,
-                group: Math.floor(v / 2) + 1
-              })
-            ),
-          Promise.resolve()
-        )
+    await collection.create();
+    await Promise.all(
+      range(10).map(i =>
+        collection.save({
+          _key: alpha(i),
+          value: i + 1,
+          group: Math.floor(i / 2) + 1
+        })
       )
-      .then(() => void done())
-      .catch(done);
+    );
   });
-  afterEach(function(done) {
-    this.timeout(10000);
-    collection
-      .drop()
-      .then(() => void done())
-      .catch(done);
+  afterEach(async () => {
+    await collection.drop();
   });
   describe("collection.all", () => {
-    it("returns a cursor for all documents in the collection", done => {
-      collection
-        .all()
-        .then(cursor => {
-          expect(cursor).to.be.an.instanceof(ArrayCursor);
-          expect(cursor.count).to.equal(10);
-          return cursor.all();
-        })
-        .then(arr => {
-          expect(arr).to.have.length(10);
-          arr.forEach((doc: any) => {
-            expect(doc).to.have.keys("_key", "_id", "_rev", "value", "group");
-            expect(doc._id).to.equal(`${collection.name}/${doc._key}`);
-            expect(doc.group).to.equal(Math.floor((doc.value - 1) / 2) + 1);
-          });
-          expect(arr.map((d: any) => d.value).sort()).to.eql(
-            range(10)
-              .map(i => i + 1)
-              .sort()
-          );
-          expect(arr.map((d: any) => d._key).sort()).to.eql(
-            range(10)
-              .map(alpha)
-              .sort()
-          );
-          done();
-        })
-        .catch(done);
+    it("returns a cursor for all documents in the collection", async () => {
+      const cursor = await collection.all();
+      expect(cursor).to.be.an.instanceof(ArrayCursor);
+      expect(cursor.count).to.equal(10);
+      const arr = await cursor.all();
+      expect(arr).to.have.length(10);
+      arr.forEach((doc: any) => {
+        expect(doc).to.have.keys("_key", "_id", "_rev", "value", "group");
+        expect(doc._id).to.equal(`${collection.name}/${doc._key}`);
+        expect(doc.group).to.equal(Math.floor((doc.value - 1) / 2) + 1);
+      });
+      expect(arr.map((d: any) => d.value).sort()).to.eql(
+        range(10)
+          .map(i => i + 1)
+          .sort()
+      );
+      expect(arr.map((d: any) => d._key).sort()).to.eql(
+        range(10)
+          .map(alpha)
+          .sort()
+      );
     });
   });
   describe("collection.any", () => {
-    it("returns a random document from the collection", done => {
-      collection
-        .any()
-        .then(doc => {
-          expect(doc).to.have.keys("_key", "_id", "_rev", "value", "group");
-          expect(doc._key).to.equal(alpha(doc.value - 1));
-          expect(doc._id).to.equal(`${collection.name}/${doc._key}`);
-          expect(doc.value).to.be.within(1, 10);
-          expect(doc.group).to.equal(Math.floor((doc.value - 1) / 2) + 1);
-          done();
-        })
-        .catch(done);
+    it("returns a random document from the collection", async () => {
+      const doc = await collection.any();
+      expect(doc).to.have.keys("_key", "_id", "_rev", "value", "group");
+      expect(doc._key).to.equal(alpha(doc.value - 1));
+      expect(doc._id).to.equal(`${collection.name}/${doc._key}`);
+      expect(doc.value).to.be.within(1, 10);
+      expect(doc.group).to.equal(Math.floor((doc.value - 1) / 2) + 1);
     });
   });
   describe2x("collection.first", () => {
-    it("returns the first document in the collection", done => {
-      collection
-        .first()
-        .then(doc => {
-          expect(doc).to.have.keys("_key", "_id", "_rev", "value", "group");
-          expect(doc._key).to.equal("a");
-          expect(doc._id).to.equal(`${collection.name}/${doc._key}`);
-          expect(doc.value).to.equal(1);
-          expect(doc.group).to.equal(1);
-          done();
-        })
-        .catch(done);
+    it("returns the first document in the collection", async () => {
+      const doc = await collection.first();
+      expect(doc).to.have.keys("_key", "_id", "_rev", "value", "group");
+      expect(doc._key).to.equal("a");
+      expect(doc._id).to.equal(`${collection.name}/${doc._key}`);
+      expect(doc.value).to.equal(1);
+      expect(doc.group).to.equal(1);
     });
   });
   describe2x("collection.last", () => {
-    it("returns the last document in the collection", done => {
-      collection
-        .last()
-        .then(doc => {
-          expect(doc).to.have.keys("_key", "_id", "_rev", "value", "group");
-          expect(doc._key).to.equal(alpha(9));
-          expect(doc._id).to.equal(`${collection.name}/${doc._key}`);
-          expect(doc.value).to.equal(10);
-          expect(doc.group).to.equal(5);
-          done();
-        })
-        .catch(done);
+    it("returns the last document in the collection", async () => {
+      const doc = await collection.last();
+      expect(doc).to.have.keys("_key", "_id", "_rev", "value", "group");
+      expect(doc._key).to.equal(alpha(9));
+      expect(doc._id).to.equal(`${collection.name}/${doc._key}`);
+      expect(doc.value).to.equal(10);
+      expect(doc.group).to.equal(5);
     });
   });
   describe("collection.byExample", () => {
-    it("returns all documents matching the example", done => {
-      collection
-        .byExample({ group: 2 })
-        .then(cursor => {
-          expect(cursor).to.be.an.instanceof(ArrayCursor);
-          return cursor.all();
-        })
-        .then(arr => {
-          expect(arr).to.have.length(2);
-          arr.forEach((doc: any) => {
-            expect(doc).to.have.keys("_key", "_id", "_rev", "value", "group");
-            expect(doc._id).to.equal(`${collection.name}/${doc._key}`);
-            expect(doc.group).to.equal(2);
-          });
-          expect(arr.map((d: any) => d._key).sort()).to.eql(["c", "d"]);
-          expect(arr.map((d: any) => d.value).sort()).to.eql([3, 4]);
-          done();
-        })
-        .catch(done);
+    it("returns all documents matching the example", async () => {
+      const cursor = await collection.byExample({ group: 2 });
+      expect(cursor).to.be.an.instanceof(ArrayCursor);
+      const arr = await cursor.all();
+      expect(arr).to.have.length(2);
+      arr.forEach((doc: any) => {
+        expect(doc).to.have.keys("_key", "_id", "_rev", "value", "group");
+        expect(doc._id).to.equal(`${collection.name}/${doc._key}`);
+        expect(doc.group).to.equal(2);
+      });
+      expect(arr.map((d: any) => d._key).sort()).to.eql(["c", "d"]);
+      expect(arr.map((d: any) => d.value).sort()).to.eql([3, 4]);
     });
   });
   describe("collection.firstExample", () => {
-    it("returns the first document matching the example", done => {
-      collection
-        .firstExample({ group: 2 })
-        .then(doc => {
-          expect(doc).to.have.keys("_key", "_id", "_rev", "value", "group");
-          expect(doc._key).to.match(/^[cd]$/);
-          expect(doc._id).to.equal(`${collection.name}/${doc._key}`);
-          expect(doc.group).to.equal(2);
-          done();
-        })
-        .catch(done);
+    it("returns the first document matching the example", async () => {
+      const doc = await collection.firstExample({ group: 2 });
+      expect(doc).to.have.keys("_key", "_id", "_rev", "value", "group");
+      expect(doc._key).to.match(/^[cd]$/);
+      expect(doc._id).to.equal(`${collection.name}/${doc._key}`);
+      expect(doc.group).to.equal(2);
     });
   });
-  if (ARANGO_VERSION >= 20600) {
-    describe2x("collection.lookupByKeys", () => {
-      it("returns the documents with the given keys", done => {
-        collection
-          .lookupByKeys(["b", "c", "d"])
-          .then(arr => {
-            expect(arr).to.have.length(3);
-            arr.forEach((doc: any) => {
-              expect(doc).to.have.keys("_key", "_id", "_rev", "value", "group");
-              expect(doc._id).to.equal(`${collection.name}/${doc._key}`);
-              expect(doc.group).to.equal(Math.floor((doc.value - 1) / 2) + 1);
-            });
-            expect(arr.map((d: any) => d._key)).to.eql(["b", "c", "d"]);
-            done();
-          })
-          .catch(done);
+  describe("collection.lookupByKeys", () => {
+    it("returns the documents with the given keys", async () => {
+      const arr = await collection.lookupByKeys(["b", "c", "d"]);
+      expect(arr).to.have.length(3);
+      arr.forEach((doc: any) => {
+        expect(doc).to.have.keys("_key", "_id", "_rev", "value", "group");
+        expect(doc._id).to.equal(`${collection.name}/${doc._key}`);
+        expect(doc.group).to.equal(Math.floor((doc.value - 1) / 2) + 1);
       });
+      expect(arr.map((d: any) => d._key)).to.eql(["b", "c", "d"]);
     });
-  }
+  });
 });

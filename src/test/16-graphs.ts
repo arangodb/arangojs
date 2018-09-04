@@ -4,21 +4,22 @@ import { Graph } from "../graph";
 
 const range = (n: number): number[] => Array.from(Array(n).keys());
 
-function createCollections(db: Database) {
-  let vertexCollectionNames = range(2).map(i => `vc_${Date.now()}_${i}`);
-  let edgeCollectionNames = range(2).map(i => `ec_${Date.now()}_${i}`);
-  return Promise.all([
+async function createCollections(db: Database) {
+  const vertexCollectionNames = range(2).map(i => `vc_${Date.now()}_${i}`);
+  const edgeCollectionNames = range(2).map(i => `ec_${Date.now()}_${i}`);
+  await Promise.all([
     ...vertexCollectionNames.map(name => db.collection(name).create()),
     ...edgeCollectionNames.map(name => db.edgeCollection(name).create())
-  ]).then(() => [vertexCollectionNames, edgeCollectionNames]);
+  ]);
+  return [vertexCollectionNames, edgeCollectionNames];
 }
 
-function createGraph(
+async function createGraph(
   graph: Graph,
   vertexCollectionNames: string[],
   edgeCollectionNames: string[]
 ) {
-  return graph.create({
+  return await graph.create({
     edgeDefinitions: edgeCollectionNames.map(name => ({
       collection: name,
       from: vertexCollectionNames,
@@ -32,7 +33,7 @@ describe("Graph API", function() {
   this.timeout(20000);
 
   let db: Database;
-  let name = `testdb_${Date.now()}`;
+  const name = `testdb_${Date.now()}`;
   before(async () => {
     db = new Database({
       url: process.env.TEST_ARANGODB_URL || "http://localhost:8529",
@@ -52,140 +53,99 @@ describe("Graph API", function() {
   describe("graph.get", () => {
     let graph: Graph;
     let collectionNames: string[];
-    before(done => {
+    before(async () => {
       graph = db.graph(`g_${Date.now()}`);
-      createCollections(db)
-        .then(names => {
-          collectionNames = names.reduce((a, b) => a.concat(b));
-          return createGraph(graph, names[0], names[1]);
-        })
-        .then(() => void done())
-        .catch(done);
+      const names = await createCollections(db);
+      collectionNames = names.reduce((a, b) => a.concat(b));
+      await createGraph(graph, names[0], names[1]);
     });
-    after(done => {
-      graph
-        .drop()
-        .then(() =>
-          Promise.all(collectionNames.map(name => db.collection(name).drop()))
-        )
-        .then(() => void done())
-        .catch(done);
+    after(async () => {
+      await graph.drop();
+      await Promise.all(
+        collectionNames.map(name => db.collection(name).drop())
+      );
     });
-    it("fetches information about the graph", done => {
-      graph
-        .get()
-        .then(data => {
-          expect(data).to.have.property("name", graph.name);
-          done();
-        })
-        .catch(done);
+    it("fetches information about the graph", async () => {
+      const data = await graph.get();
+      expect(data).to.have.property("name", graph.name);
     });
   });
   describe("graph.create", () => {
     let edgeCollectionNames: string[];
     let vertexCollectionNames: string[];
-    before(done => {
-      createCollections(db)
-        .then(names => {
-          [vertexCollectionNames, edgeCollectionNames] = names;
-          done();
-        })
-        .catch(done);
+    before(async () => {
+      [vertexCollectionNames, edgeCollectionNames] = await createCollections(
+        db
+      );
     });
-    after(done => {
-      Promise.all(
+    after(async () => {
+      await Promise.all(
         [...edgeCollectionNames, ...vertexCollectionNames].map(name =>
           db.collection(name).drop()
         )
-      )
-        .then(() => void done())
-        .catch(done);
+      );
     });
-    it("creates the graph", done => {
-      let graph = db.graph(`g_${Date.now()}`);
-      graph
-        .create({
-          edgeDefinitions: edgeCollectionNames.map(name => ({
-            collection: name,
-            from: vertexCollectionNames,
-            to: vertexCollectionNames
-          }))
-        })
-        .then(() => graph.get())
-        .then(data => {
-          expect(data).to.have.property("name", graph.name);
-          done();
-        })
-        .catch(done);
+    it("creates the graph", async () => {
+      const graph = db.graph(`g_${Date.now()}`);
+      await graph.create({
+        edgeDefinitions: edgeCollectionNames.map(name => ({
+          collection: name,
+          from: vertexCollectionNames,
+          to: vertexCollectionNames
+        }))
+      });
+      const data = await graph.get();
+      expect(data).to.have.property("name", graph.name);
     });
   });
   describe("graph.drop", () => {
     let graph: Graph;
     let edgeCollectionNames: string[];
     let vertexCollectionNames: string[];
-    beforeEach(done => {
+    beforeEach(async () => {
       graph = db.graph(`g_${Date.now()}`);
-      createCollections(db)
-        .then(names => {
-          [vertexCollectionNames, edgeCollectionNames] = names;
-          return createGraph(graph, names[0], names[1]);
-        })
-        .then(() => void done())
-        .catch(done);
+      [vertexCollectionNames, edgeCollectionNames] = await createCollections(
+        db
+      );
+      await createGraph(graph, vertexCollectionNames, edgeCollectionNames);
     });
-    afterEach(done => {
-      Promise.all(
+    afterEach(async () => {
+      await Promise.all(
         [...edgeCollectionNames, ...vertexCollectionNames].map(name =>
           db
             .collection(name)
             .drop()
             .catch(() => null)
         )
-      )
-        .then(() => void done())
-        .catch(done);
+      );
     });
-    it("destroys the graph if not passed true", done => {
-      graph
-        .drop()
-        .then(() =>
-          graph
-            .get()
-            .then(
-              () => Promise.reject(new Error("Should not succeed")),
-              () => undefined
-            )
-        )
-        .then(() => db.listCollections())
-        .then(collections => {
-          expect(collections.map((c: any) => c.name)).to.include.members([
-            ...edgeCollectionNames,
-            ...vertexCollectionNames
-          ]);
-          done();
-        })
-        .catch(done);
+    it("destroys the graph if not passed true", async () => {
+      await graph.drop();
+      try {
+        await graph.get();
+      } catch (e) {
+        const collections = await db.listCollections();
+        expect(collections.map((c: any) => c.name)).to.include.members([
+          ...edgeCollectionNames,
+          ...vertexCollectionNames
+        ]);
+        return;
+      }
+      expect.fail();
     });
-    it("additionally drops all of its collections if passed true", done => {
-      graph
-        .drop(true)
-        .then(() =>
-          graph
-            .get()
-            .then(
-              () => Promise.reject(new Error("Should not succeed")),
-              () => undefined
-            )
-        )
-        .then(() => db.listCollections())
-        .then(collections => {
-          expect(collections.map((c: any) => c.name)).not.to.include.members([
-            ...edgeCollectionNames,
-            ...vertexCollectionNames
-          ]);
-          done();
-        })
-        .catch(done);
+    it("additionally drops all of its collections if passed true", async () => {
+      await graph.drop(true);
+      try {
+        await graph.get();
+      } catch (e) {
+        const collections = await db.listCollections();
+        expect(collections.map((c: any) => c.name)).not.to.include.members([
+          ...edgeCollectionNames,
+          ...vertexCollectionNames
+        ]);
+        return;
+      }
+      expect.fail();
     });
   });
 });

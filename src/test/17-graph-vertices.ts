@@ -6,21 +6,22 @@ import { Graph, GraphVertexCollection } from "../graph";
 
 const range = (n: number): number[] => Array.from(Array(n).keys());
 
-function createCollections(db: Database) {
-  let vertexCollectionNames = range(2).map(i => `vc_${Date.now()}_${i}`);
-  let edgeCollectionNames = range(2).map(i => `ec_${Date.now()}_${i}`);
-  return Promise.all([
+async function createCollections(db: Database) {
+  const vertexCollectionNames = range(2).map(i => `vc_${Date.now()}_${i}`);
+  const edgeCollectionNames = range(2).map(i => `ec_${Date.now()}_${i}`);
+  await Promise.all([
     ...vertexCollectionNames.map(name => db.collection(name).create()),
     ...edgeCollectionNames.map(name => db.edgeCollection(name).create())
-  ]).then(() => [vertexCollectionNames, edgeCollectionNames]);
+  ]);
+  return [vertexCollectionNames, edgeCollectionNames];
 }
 
-function createGraph(
+async function createGraph(
   graph: Graph,
   vertexCollectionNames: string[],
   edgeCollectionNames: string[]
 ) {
-  return graph.create({
+  return await graph.create({
     edgeDefinitions: edgeCollectionNames.map(name => ({
       collection: name,
       from: vertexCollectionNames,
@@ -33,8 +34,8 @@ describe("Manipulating graph vertices", function() {
   // create database takes 11s in a standard cluster
   this.timeout(20000);
 
+  const name = `testdb_${Date.now()}`;
   let db: Database;
-  let name = `testdb_${Date.now()}`;
   let graph: Graph;
   let collectionNames: string[];
   before(async () => {
@@ -53,29 +54,20 @@ describe("Manipulating graph vertices", function() {
       db.close();
     }
   });
-  beforeEach(done => {
+  beforeEach(async () => {
     graph = db.graph(`g_${Date.now()}`);
-    createCollections(db)
-      .then(names => {
-        collectionNames = names.reduce((a, b) => a.concat(b));
-        return createGraph(graph, names[0], names[1]);
-      })
-      .then(() => void done())
-      .catch(done);
+    const names = await createCollections(db);
+    collectionNames = names.reduce((a, b) => a.concat(b));
+    await createGraph(graph, names[0], names[1]);
   });
-  afterEach(done => {
-    graph
-      .drop()
-      .then(() =>
-        Promise.all(collectionNames.map(name => db.collection(name).drop()))
-      )
-      .then(() => void done())
-      .catch(done);
+  afterEach(async () => {
+    await graph.drop();
+    await Promise.all(collectionNames.map(name => db.collection(name).drop()));
   });
   describe("graph.vertexCollection", () => {
     it("returns a GraphVertexCollection instance for the collection", () => {
-      let name = "potato";
-      let collection = graph.vertexCollection(name);
+      const name = "potato";
+      const collection = graph.vertexCollection(name);
       expect(collection).to.be.an.instanceof(GraphVertexCollection);
       expect(collection)
         .to.have.property("name")
@@ -84,64 +76,43 @@ describe("Manipulating graph vertices", function() {
   });
   describe("graph.addVertexCollection", () => {
     let vertexCollection: BaseCollection;
-    beforeEach(done => {
+    beforeEach(async () => {
       vertexCollection = db.collection(`xc_${Date.now()}`);
-      vertexCollection
-        .create()
-        .then(() => void done())
-        .catch(done);
+      await vertexCollection.create();
     });
-    afterEach(done => {
-      vertexCollection
-        .drop()
-        .then(() => void done())
-        .catch(done);
+    afterEach(async () => {
+      await vertexCollection.drop();
     });
-    it("adds the given vertex collection to the graph", done => {
-      graph
-        .addVertexCollection(vertexCollection.name)
-        .then(data => {
-          expect(data.orphanCollections).to.contain(vertexCollection.name);
-          done();
-        })
-        .catch(done);
+    it("adds the given vertex collection to the graph", async () => {
+      const data = await graph.addVertexCollection(vertexCollection.name);
+      expect(data.orphanCollections).to.contain(vertexCollection.name);
     });
   });
   describe("graph.removeVertexCollection", () => {
     let vertexCollection: BaseCollection;
-    beforeEach(done => {
+    beforeEach(async () => {
       vertexCollection = db.collection(`xc_${Date.now()}`);
-      vertexCollection
-        .create()
-        .then(() => graph.addVertexCollection(vertexCollection.name))
-        .then(() => void done())
-        .catch(done);
+      await vertexCollection.create();
+      await graph.addVertexCollection(vertexCollection.name);
     });
-    it("removes the given vertex collection from the graph", done => {
-      graph
-        .removeVertexCollection(vertexCollection.name)
-        .then(data => {
-          expect(data.orphanCollections).not.to.contain(vertexCollection.name);
-          return vertexCollection.get();
-        })
-        .then(() => done())
-        .catch(done);
+    it("removes the given vertex collection from the graph", async () => {
+      const data = await graph.removeVertexCollection(vertexCollection.name);
+      expect(data.orphanCollections).not.to.contain(vertexCollection.name);
+      await vertexCollection.get();
     });
-    it("destroys the collection if explicitly passed true", done => {
-      graph
-        .removeVertexCollection(vertexCollection.name, true)
-        .then(data => {
-          expect(data.orphanCollections).not.to.contain(vertexCollection.name);
-          return vertexCollection.get();
-        })
-        .then(
-          () => Promise.reject(new Error("Should not succeed")),
-          err => {
-            expect(err).to.be.an.instanceof(ArangoError);
-            done();
-          }
-        )
-        .catch(done);
+    it("destroys the collection if explicitly passed true", async () => {
+      const data = await graph.removeVertexCollection(
+        vertexCollection.name,
+        true
+      );
+      expect(data.orphanCollections).not.to.contain(vertexCollection.name);
+      try {
+        await vertexCollection.get();
+      } catch (err) {
+        expect(err).to.be.an.instanceof(ArangoError);
+        return;
+      }
+      expect.fail();
     });
   });
 });
