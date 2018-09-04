@@ -9,10 +9,10 @@ describe34("View metadata", function() {
   // create database takes 11s in a standard cluster
   this.timeout(20000);
 
+  const dbName = `testdb_${Date.now()}`;
+  const viewName = `view-${Date.now()}`;
   let db: Database;
-  let dbName = `testdb_${Date.now()}`;
   let view: ArangoSearchView;
-  let viewName = `view-${Date.now()}`;
   before(async () => {
     db = new Database({
       url: process.env.TEST_ARANGODB_URL || "http://localhost:8529",

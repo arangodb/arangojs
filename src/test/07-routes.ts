@@ -60,163 +60,104 @@ describe("Route API", function() {
     });
   });
   describe("route.get", () => {
-    it("should be executed using the route path", done => {
-      db.route("/_api/version")
-        .get()
-        .then(res => {
-          expect(res).to.have.property("body");
-          const body = res.body;
-          expect(body).to.have.property("version");
-          expect(body).to.have.property("server");
-        })
-        .then(() => done())
-        .catch(done);
+    it("should be executed using the route path", async () => {
+      const res = await db.route("/_api/version").get();
+      expect(res).to.have.property("body");
+      const body = res.body;
+      expect(body).to.have.property("version");
+      expect(body).to.have.property("server");
     });
-    it("should concat path to route path", done => {
-      db.route("/_api")
-        .get("/version")
-        .then(res => {
-          expect(res).to.have.property("body");
-          const body = res.body;
-          expect(body).to.have.property("version");
-          expect(body).to.have.property("server");
-        })
-        .then(() => done())
-        .catch(done);
+    it("should concat path to route path", async () => {
+      const res = await db.route("/_api").get("/version");
+      expect(res).to.have.property("body");
+      const body = res.body;
+      expect(body).to.have.property("version");
+      expect(body).to.have.property("server");
     });
-    it("should passes query parameters", done => {
-      db.route("/_api")
-        .get("/version", { details: true })
-        .then(res => {
-          expect(res).to.have.property("body");
-          const body = res.body;
-          expect(body).to.have.property("version");
-          expect(body).to.have.property("server");
-          expect(body).to.have.property("details");
-        })
-        .then(() => done())
-        .catch(done);
+    it("should passes query parameters", async () => {
+      const res = await db.route("/_api").get("/version", { details: true });
+      expect(res).to.have.property("body");
+      const body = res.body;
+      expect(body).to.have.property("version");
+      expect(body).to.have.property("server");
+      expect(body).to.have.property("details");
     });
   });
   describe("route.post", () => {
-    it("should passes body", done => {
-      db.route(`/_api/document/${collection.name}`)
-        .post({ foo: "bar" })
-        .then(res => {
-          expect(res).to.have.property("body");
-          expect(res.body).to.have.property("_id");
-          expect(res.body).to.have.property("_key");
-          expect(res.body).to.have.property("_rev");
-        })
-        .then(() => done())
-        .catch(done);
+    it("should passes body", async () => {
+      const res = await db
+        .route(`/_api/document/${collection.name}`)
+        .post({ foo: "bar" });
+      expect(res).to.have.property("body");
+      expect(res.body).to.have.property("_id");
+      expect(res.body).to.have.property("_key");
+      expect(res.body).to.have.property("_rev");
     });
   });
   describe("route.put", () => {
-    let documentHandle: String;
-    beforeEach(done => {
-      collection
-        .save({ foo: "bar" })
-        .then(doc => {
-          documentHandle = doc._id;
-          done();
-        })
-        .catch(done);
+    let documentHandle: string;
+    beforeEach(async () => {
+      const doc = await collection.save({ foo: "bar" });
+      documentHandle = doc._id;
     });
-    it("should passes body", done => {
-      db.route(`/_api/document/${documentHandle}`)
-        .put({ hello: "world" })
-        .then(res => {
-          expect(res).to.have.property("body");
-          expect(res.body).to.have.property("_id");
-          expect(res.body).to.have.property("_key");
-          expect(res.body).to.have.property("_rev");
-        })
-        .then(() => done())
-        .catch(done);
+    it("should pass body", async () => {
+      const res = await db
+        .route(`/_api/document/${documentHandle}`)
+        .put({ hello: "world" });
+      expect(res).to.have.property("body");
+      expect(res.body).to.have.property("_id");
+      expect(res.body).to.have.property("_key");
+      expect(res.body).to.have.property("_rev");
     });
   });
   describe("route.patch", () => {
-    let documentHandle: String;
-    beforeEach(done => {
-      collection
-        .save({ foo: "bar" })
-        .then(doc => {
-          documentHandle = doc._id;
-          done();
-        })
-        .catch(done);
+    let documentHandle: string;
+    beforeEach(async () => {
+      const doc = await collection.save({ foo: "bar" });
+      documentHandle = doc._id;
     });
-    it("should passes body", done => {
-      db.route(`/_api/document/${documentHandle}`)
-        .patch({ hello: "world" })
-        .then(res => {
-          expect(res).to.have.property("body");
-          expect(res.body).to.have.property("_id");
-          expect(res.body).to.have.property("_key");
-          expect(res.body).to.have.property("_rev");
-        })
-        .then(() => done())
-        .catch(done);
+    it("should passes body", async () => {
+      const res = await db
+        .route(`/_api/document/${documentHandle}`)
+        .patch({ hello: "world" });
+      expect(res).to.have.property("body");
+      expect(res.body).to.have.property("_id");
+      expect(res.body).to.have.property("_key");
+      expect(res.body).to.have.property("_rev");
     });
   });
   describe("route.delete", () => {
-    let documentHandle: String;
-    beforeEach(done => {
-      collection
-        .save({ foo: "bar" })
-        .then(doc => {
-          documentHandle = doc._id;
-          done();
-        })
-        .catch(done);
+    let documentHandle: string;
+    beforeEach(async () => {
+      const doc = await collection.save({ foo: "bar" });
+      documentHandle = doc._id;
     });
-    it("should be executed using the route path", done => {
-      db.route(`/_api/document/${documentHandle}`)
-        .delete()
-        .then(res => {
-          expect(res).to.have.property("body");
-          expect(res.body).to.have.property("_id");
-          expect(res.body).to.have.property("_key");
-          expect(res.body).to.have.property("_rev");
-        })
-        .then(() => done())
-        .catch(done);
+    it("should be executed using the route path", async () => {
+      const res = await db.route(`/_api/document/${documentHandle}`).delete();
+      expect(res).to.have.property("body");
+      expect(res.body).to.have.property("_id");
+      expect(res.body).to.have.property("_key");
+      expect(res.body).to.have.property("_rev");
     });
   });
   describe("route.head", () => {
-    let documentHandle: String;
-    beforeEach(done => {
-      collection
-        .save({ foo: "bar" })
-        .then(doc => {
-          documentHandle = doc._id;
-          done();
-        })
-        .catch(done);
+    let documentHandle: string;
+    beforeEach(async () => {
+      const doc = await collection.save({ foo: "bar" });
+      documentHandle = doc._id;
     });
-    it("should be executed using the route path", done => {
-      db.route(`/_api/document/${documentHandle}`)
-        .head()
-        .then(res => {
-          expect(res).to.have.property("statusCode", 200);
-        })
-        .then(() => done())
-        .catch(done);
+    it("should be executed using the route path", async () => {
+      const res = await db.route(`/_api/document/${documentHandle}`).head();
+      expect(res).to.have.property("statusCode", 200);
     });
   });
   describe("route.request", () => {
-    it("should be executed using the route path", done => {
-      db.route("/_api/version")
-        .request("get")
-        .then(res => {
-          expect(res).to.have.property("body");
-          const body = res.body;
-          expect(body).to.have.property("version");
-          expect(body).to.have.property("server");
-        })
-        .then(() => done())
-        .catch(done);
+    it("should be executed using the route path", async () => {
+      const res = await db.route("/_api/version").request("get");
+      expect(res).to.have.property("body");
+      const body = res.body;
+      expect(body).to.have.property("version");
+      expect(body).to.have.property("server");
     });
   });
 });

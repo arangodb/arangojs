@@ -8,7 +8,7 @@ describe("Managing functions", function() {
   // create database takes 11s in a standard cluster
   this.timeout(20000);
 
-  let name = `testdb_${Date.now()}`;
+  const name = `testdb_${Date.now()}`;
   let db: Database;
   before(async () => {
     db = new Database({
@@ -27,65 +27,47 @@ describe("Managing functions", function() {
     }
   });
   describe("database.listFunctions", () => {
-    it34("should be empty per default", done => {
-      db.listFunctions()
-        .then(info => {
-          expect(info).to.have.property("result");
-          expect(info.result).to.be.instanceof(Array);
-          expect(info.result).to.be.empty;
-        })
-        .then(() => done())
-        .catch(done);
+    it34("should be empty per default", async () => {
+      const info = await db.listFunctions();
+      expect(info).to.have.property("result");
+      expect(info.result).to.be.instanceof(Array);
+      expect(info.result).to.be.empty;
     });
-    it34("should include before created function", done => {
+    it34("should include before created function", async () => {
       const name = "myfunctions::temperature::celsiustofahrenheit";
       const code = "function (celsius) { return celsius * 1.8 + 32; }";
-      db.createFunction(name, code)
-        .then(() => {
-          return db.listFunctions().then(info => {
-            expect(info).to.have.property("result");
-            expect(info.result).to.be.instanceof(Array);
-            expect(info.result.length).to.equal(1);
-            expect(info.result[0]).to.eql({
-              name,
-              code,
-              isDeterministic: false
-            });
-          });
-        })
-        .then(() => done())
-        .catch(done);
-    });
-  });
-  describe("database.createFunction", () => {
-    it("should create a function", done => {
-      db.createFunction(
-        "myfunctions::temperature::celsiustofahrenheit2",
-        "function (celsius) { return celsius * 1.8 + 32; }"
-      )
-        .then(info => {
-          expect(info).to.have.property("code", 201);
-          expect(info).to.have.property("error", false);
-        })
-        .then(() => done())
-        .catch(done);
-    });
-  });
-  describe("database.dropFunction", () => {
-    it("should drop a existing function", done => {
-      const name = "myfunctions::temperature::celsiustofahrenheit";
-      db.createFunction(
+      await db.createFunction(name, code);
+      const info = await db.listFunctions();
+      expect(info).to.have.property("result");
+      expect(info.result).to.be.instanceof(Array);
+      expect(info.result.length).to.equal(1);
+      expect(info.result[0]).to.eql({
         name,
-        "function (celsius) { return celsius * 1.8 + 32; }"
-      )
-        .then(() => {
-          return db.dropFunction(name).then(info => {
-            if (ARANGO_VERSION >= 30400)
-              expect(info).to.have.property("deletedCount", 1);
-          });
-        })
-        .then(() => done())
-        .catch(done);
+        code,
+        isDeterministic: false
+      });
+    });
+    describe("database.createFunction", () => {
+      it("should create a function", async () => {
+        const info = await db.createFunction(
+          "myfunctions::temperature::celsiustofahrenheit2",
+          "function (celsius) { return celsius * 1.8 + 32; }"
+        );
+        expect(info).to.have.property("code", 201);
+        expect(info).to.have.property("error", false);
+      });
+    });
+    describe("database.dropFunction", () => {
+      it("should drop a existing function", async () => {
+        const name = "myfunctions::temperature::celsiustofahrenheit";
+        await db.createFunction(
+          name,
+          "function (celsius) { return celsius * 1.8 + 32; }"
+        );
+        const info = await db.dropFunction(name);
+        if (ARANGO_VERSION >= 30400)
+          expect(info).to.have.property("deletedCount", 1);
+      });
     });
   });
 });

@@ -8,7 +8,7 @@ describe("Accessing graphs", function() {
   // create database takes 11s in a standard cluster
   this.timeout(20000);
 
-  let name = `testdb_${Date.now()}`;
+  const name = `testdb_${Date.now()}`;
   let db: Database;
   before(async () => {
     db = new Database({
@@ -28,8 +28,8 @@ describe("Accessing graphs", function() {
   });
   describe("database.graph", () => {
     it("returns a Graph instance", () => {
-      let name = "potato";
-      let graph = db.graph(name);
+      const name = "potato";
+      const graph = db.graph(name);
       expect(graph).to.be.an.instanceof(Graph);
       expect(graph)
         .to.have.property("name")
@@ -37,100 +37,74 @@ describe("Accessing graphs", function() {
     });
   });
   describe("database.listGraphs", () => {
-    let vertexCollectionNames = range(2).map(i => `vc_${Date.now()}_${i}`);
-    let edgeCollectionNames = range(2).map(i => `ec_${Date.now()}_${i}`);
-    let graphNames = range(4).map(i => `g_${Date.now()}_${i}`);
-    before(done => {
-      Promise.all([
+    const vertexCollectionNames = range(2).map(i => `vc_${Date.now()}_${i}`);
+    const edgeCollectionNames = range(2).map(i => `ec_${Date.now()}_${i}`);
+    const graphNames = range(4).map(i => `g_${Date.now()}_${i}`);
+    before(async () => {
+      await Promise.all([
         ...vertexCollectionNames.map(name => db.collection(name).create()),
         ...edgeCollectionNames.map(name => db.edgeCollection(name).create())
-      ])
-        .then(() =>
-          Promise.all([
-            ...graphNames.map(name =>
-              db.graph(name).create({
-                edgeDefinitions: edgeCollectionNames.map(name => ({
-                  collection: name,
-                  from: vertexCollectionNames,
-                  to: vertexCollectionNames
-                }))
-              })
-            )
-          ])
+      ]);
+      await Promise.all([
+        ...graphNames.map(name =>
+          db.graph(name).create({
+            edgeDefinitions: edgeCollectionNames.map(name => ({
+              collection: name,
+              from: vertexCollectionNames,
+              to: vertexCollectionNames
+            }))
+          })
         )
-        .then(() => void done())
-        .catch(done);
+      ]);
     });
-    after(done => {
-      Promise.all(graphNames.map(name => db.graph(name).drop()))
-        .then(() =>
-          Promise.all(
-            vertexCollectionNames
-              .concat(edgeCollectionNames)
-              .map(name => db.collection(name).drop())
-          )
-        )
-        .then(() => void done())
-        .catch(done);
+    after(async () => {
+      await Promise.all(graphNames.map(name => db.graph(name).drop()));
+      await Promise.all(
+        vertexCollectionNames
+          .concat(edgeCollectionNames)
+          .map(name => db.collection(name).drop())
+      );
     });
-    it("fetches information about all graphs", done => {
-      db.listGraphs()
-        .then(graphs => {
-          expect(graphs.length).to.equal(graphNames.length);
-          expect(graphs.map((g: any) => g._key).sort()).to.eql(graphNames);
-          done();
-        })
-        .catch(done);
+    it("fetches information about all graphs", async () => {
+      const graphs = await db.listGraphs();
+      expect(graphs.length).to.equal(graphNames.length);
+      expect(graphs.map((g: any) => g._key).sort()).to.eql(graphNames);
     });
   });
   describe("database.graphs", () => {
-    let vertexCollectionNames = range(2).map(i => `vc_${Date.now()}_${i}`);
-    let edgeCollectionNames = range(2).map(i => `ec_${Date.now()}_${i}`);
-    let graphNames = range(4).map(i => `g_${Date.now()}_${i}`);
-    before(done => {
-      Promise.all([
+    const vertexCollectionNames = range(2).map(i => `vc_${Date.now()}_${i}`);
+    const edgeCollectionNames = range(2).map(i => `ec_${Date.now()}_${i}`);
+    const graphNames = range(4).map(i => `g_${Date.now()}_${i}`);
+    before(async () => {
+      await Promise.all([
         ...vertexCollectionNames.map(name => db.collection(name).create()),
         ...edgeCollectionNames.map(name => db.edgeCollection(name).create())
-      ])
-        .then(() =>
-          Promise.all([
-            ...graphNames.map(name =>
-              db.graph(name).create({
-                edgeDefinitions: edgeCollectionNames.map(name => ({
-                  collection: name,
-                  from: vertexCollectionNames,
-                  to: vertexCollectionNames
-                }))
-              })
-            )
-          ])
+      ]);
+      await Promise.all([
+        ...graphNames.map(name =>
+          db.graph(name).create({
+            edgeDefinitions: edgeCollectionNames.map(name => ({
+              collection: name,
+              from: vertexCollectionNames,
+              to: vertexCollectionNames
+            }))
+          })
         )
-        .then(() => void done())
-        .catch(done);
+      ]);
     });
-    after(done => {
-      Promise.all(graphNames.map(name => db.graph(name).drop()))
-        .then(() =>
-          Promise.all(
-            vertexCollectionNames
-              .concat(edgeCollectionNames)
-              .map(name => db.collection(name).drop())
-          )
-        )
-        .then(() => void done())
-        .catch(done);
+    after(async () => {
+      await Promise.all(graphNames.map(name => db.graph(name).drop()));
+      await Promise.all(
+        vertexCollectionNames
+          .concat(edgeCollectionNames)
+          .map(name => db.collection(name).drop())
+      );
     });
-    it("creates Graph instances", done => {
-      db.graphs()
-        .then(graphs => {
-          expect(graphs.length).to.equal(graphNames.length);
-          expect(graphs.map((g: any) => g.name).sort()).to.eql(graphNames);
-          graphs.forEach((graph: any) =>
-            expect(graph).to.be.an.instanceof(Graph)
-          );
-          done();
-        })
-        .catch(done);
+    it("creates Graph instances", async () => {
+      const graphs = await db.graphs();
+      expect(graphs.length).to.equal(graphNames.length);
+      expect(graphs.map((g: any) => g.name).sort()).to.eql(graphNames);
+      graphs.forEach((graph: any) => expect(graph).to.be.an.instanceof(Graph));
     });
   });
 });

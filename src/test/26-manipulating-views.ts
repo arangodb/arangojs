@@ -9,7 +9,7 @@ describe34("Manipulating views", function() {
   // create database takes 11s in a standard cluster
   this.timeout(20000);
 
-  let name = `testdb_${Date.now()}`;
+  const name = `testdb_${Date.now()}`;
   let db: Database;
   let view: ArangoSearchView;
   before(async () => {
