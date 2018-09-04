@@ -45,6 +45,7 @@ export type ServiceOptions = {
 };
 
 export type QueryOptions = {
+  allowDirtyRead?: boolean;
   count?: boolean;
   batchSize?: number;
   cache?: boolean;
@@ -365,11 +366,13 @@ export class Database {
     } else if (isAqlLiteral(query)) {
       query = query.toAQL();
     }
+    const { allowDirtyRead = undefined, ...extra } = opts || {};
     return this._connection.request(
       {
         method: "POST",
         path: "/_api/cursor",
-        body: { ...opts, query, bindVars }
+        body: { ...extra, query, bindVars },
+        allowDirtyRead
       },
       res => new ArrayCursor(this._connection, res.body, res.host)
     );
