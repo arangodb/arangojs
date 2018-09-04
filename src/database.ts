@@ -51,10 +51,10 @@ export interface ViewDescription {
 }
 
 export interface CreateDatabaseUser {
-  username: string
-  passwd?: string
-  active?: boolean
-  extra?: {[key: string]: any}
+  username: string;
+  passwd?: string;
+  active?: boolean;
+  extra?: { [key: string]: any };
 }
 
 const DATABASE_NOT_FOUND = 1228;
