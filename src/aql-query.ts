@@ -96,9 +96,34 @@ export function aql(
 }
 
 export namespace aql {
-  export const literal = (value: any): AqlLiteral => ({
-    toAQL() {
-      return String(value);
+  export const literal = (
+    value: string | number | boolean | AqlLiteral | null | undefined
+  ): AqlLiteral => {
+    if (isAqlLiteral(value)) {
+      return value;
     }
-  });
+    return {
+      toAQL() {
+        if (value === undefined) {
+          return "";
+        }
+        return String(value);
+      }
+    };
+  };
+  export const join = (
+    values: AqlValue[],
+    sep: string = " "
+  ): GeneratedAqlQuery => {
+    if (!values.length) {
+      return aql``;
+    }
+    if (values.length === 1) {
+      return aql`${values[0]}`;
+    }
+    return aql(
+      ["", ...Array(values.length - 1).fill(sep), ""] as any,
+      ...values
+    );
+  };
 }

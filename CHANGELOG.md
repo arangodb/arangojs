@@ -56,6 +56,31 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   // because the value is part of the literal, not a bind parameter
   ```
 
+- Added support for `undefined` and AQL literals to `aql.literal`
+
+  Passing undefined to `aql.literal` will now result in an empty literal as
+  would be expected. Passing an AQL literal back into `aql.literal` will return
+  the existing literal rather than the string `[object Object]`.
+
+- Added `aql.join` function
+
+  The function `aql.join` can be used to convert an array of `aql` queries into
+  a combined query:
+
+  ```js
+  const users = db.collection("users");
+  const keys = ["a", "b", "c"];
+  const fragments = keys.map(key => aql`DOCUMENT(${users}, ${key})`);
+  const combined = aql`[${aql.join(fragments, ", ")}]`;
+  // [DOCUMENT(@@value0, @value1), DOCUMENT(@@value0, @value2), \
+  // DOCUMENT(@@value0, @value3)]
+  // {"@value0": "users", "value1": "a", "value2": "b", "value3": "c"}
+  const query = aql`FOR user IN ${combined} RETURN user.email`;
+  // FOR user IN [DOCUMENT(@@value0, @value1), DOCUMENT(@@value0, @value2), \
+  // DOCUMENT(@@value0, @value3)] RETURN user.email
+  // {"@value0": "users", "value1": "a", "value2": "b", "value3": "c"}
+  ```
+
 ## [6.6.0] - 2018-08-28
 
 ### Changed
