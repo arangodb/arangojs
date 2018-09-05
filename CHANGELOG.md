@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed
 
+- No longer emitting `undefined` values in `aql` template strings
+
+  Previously using `undefined` values in an aql template string would result
+  in a bind parameter being added with no value, which would always lead to an
+  error response when ArangoDB executes the query.
+  Now undefined values will simply be omitted, also easing the conditional
+  insertion of query fragments.
+
 - Changed experimental Views API
 
   This release updates the experimental support for the Views API to the version
@@ -19,6 +27,59 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
   This may result in type signatures that are incompatible with TypeScript 2
   being added in future releases (including patch releases).
+
+### Added
+
+- Added nesting support for `aql` template strings ([#481](https://github.com/arangodb/arangojs/issues/481))
+
+  It is now possible to use aql queries as values in `aql` template strings:
+
+  ```js
+  function createQuery(flowers, color) {
+    const filter = color ? aql`FILTER flower.color == ${color}` : undefined;
+    return aql`FOR flower IN ${flowers} ${filter} RETURN flower`;
+  }
+  createQuery(db.collection("flowers", "green"));
+  // FOR flower IN @@value0 FILTER @value1 RETURN flower
+  // {"@value0": "flowers", "value1": "green"}
+  createQuery(db.collection("flowers"));
+  // FOR flower IN @@value0  RETURN flower
+  // {"@value0": "flowers"}
+  ```
+
+  Previously aql fragments could only be created with `aql.literal`, which
+  does not support bind parameters:
+
+  ```js
+  aql.literal("FILTER flower.color == " + JSON.stringify(color));
+  // Note that we had to rely on JSON.stringify to correctly escape the value
+  // because the value is part of the literal, not a bind parameter
+  ```
+
+- Added support for `undefined` and AQL literals to `aql.literal`
+
+  Passing undefined to `aql.literal` will now result in an empty literal as
+  would be expected. Passing an AQL literal back into `aql.literal` will return
+  the existing literal rather than the string `[object Object]`.
+
+- Added `aql.join` function
+
+  The function `aql.join` can be used to convert an array of `aql` queries into
+  a combined query:
+
+  ```js
+  const users = db.collection("users");
+  const keys = ["a", "b", "c"];
+  const fragments = keys.map(key => aql`DOCUMENT(${users}, ${key})`);
+  const combined = aql`[${aql.join(fragments, ", ")}]`;
+  // [DOCUMENT(@@value0, @value1), DOCUMENT(@@value0, @value2), \
+  // DOCUMENT(@@value0, @value3)]
+  // {"@value0": "users", "value1": "a", "value2": "b", "value3": "c"}
+  const query = aql`FOR user IN ${combined} RETURN user.email`;
+  // FOR user IN [DOCUMENT(@@value0, @value1), DOCUMENT(@@value0, @value2), \
+  // DOCUMENT(@@value0, @value3)] RETURN user.email
+  // {"@value0": "users", "value1": "a", "value2": "b", "value3": "c"}
+  ```
 
 ## [6.6.0] - 2018-08-28
 
@@ -300,7 +361,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
   Graph methods now only return the relevant part of the response body.
 
-[Unreleased]: https://github.com/arangodb/arangojs/compare/v6.6.0...HEAD
+[unreleased]: https://github.com/arangodb/arangojs/compare/v6.6.0...HEAD
 [6.6.0]: https://github.com/arangodb/arangojs/compare/v6.5.1...v6.6.0
 [6.5.1]: https://github.com/arangodb/arangojs/compare/v6.5.0...v6.5.1
 [6.5.0]: https://github.com/arangodb/arangojs/compare/v6.4.0...v6.5.0
