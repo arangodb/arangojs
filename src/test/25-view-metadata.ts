@@ -33,7 +33,6 @@ describe34("View metadata", function() {
       expect(info).to.have.property("name", viewName);
       expect(info).to.have.property("id");
       expect(info).to.have.property("type", "arangosearch");
-      console.log(info);
     });
     it("should throw if view does not exists", async () => {
       try {
