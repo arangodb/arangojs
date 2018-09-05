@@ -10,6 +10,7 @@ import { joinPath } from "./joinPath";
 import { Errback } from "./types";
 
 export type ArangojsResponse = IncomingMessage & {
+  request: ClientRequest;
   body?: any;
   host?: number;
 };
@@ -76,6 +77,7 @@ export function createRequest(
             res.on("data", chunk => data.push(chunk as Buffer));
             res.on("end", () => {
               const result = res as ArangojsResponse;
+              result.request = req;
               result.body = Buffer.concat(data);
               if (called) return;
               called = true;
