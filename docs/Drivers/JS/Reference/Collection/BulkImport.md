@@ -105,8 +105,8 @@ Bulk imports the given _data_ into the collection.
     Whether the response should contain additional details about documents that
     could not be imported.
 
-For more information on the _opts_ object, see
-[the HTTP API documentation for bulk imports](https://docs.arangodb.com/latest/HTTP/BulkImports/).
+For more information on the _opts_ object, see the
+[HTTP API documentation for bulk imports](https://docs.arangodb.com/latest/HTTP/BulkImports/index.html).
 
 **Examples**
 
@@ -135,16 +135,16 @@ const result = await collection.import(
   buf,
   { type: "array" } // optional
 );
-```
 
 // -- or --
 
 const result = await collection.import(
-[
-["username", "password"],
-["jcd", "bionicman"],
-["jreyes", "amigo"],
-["ghermann", "zeitgeist"]
-],
-{ type: null } // required
+  [
+    ["username", "password"],
+    ["jcd", "bionicman"],
+    ["jreyes", "amigo"],
+    ["ghermann", "zeitgeist"]
+  ],
+  { type: null } // required
 );
+```
