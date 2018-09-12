@@ -13,8 +13,8 @@ Creates an arbitrary index on the collection.
 
 - **details**: `Object`
 
-  For information on the possible properties of the _details_ object, see
-  [the HTTP API for manipulating indexes](https://docs.arangodb.com/latest/HTTP/Indexes/WorkingWith.html).
+  For information on the possible properties of the _details_ object, see the
+  [HTTP API for manipulating indexes](https://docs.arangodb.com/latest/HTTP/Indexes/WorkingWith.html).
 
 **Examples**
 
@@ -46,8 +46,8 @@ Creates a hash index on the collection.
   Additional options for this index. If the value is a boolean, it will be
   interpreted as _opts.unique_.
 
-For more information on hash indexes, see
-[the HTTP API for hash indexes](https://docs.arangodb.com/latest/HTTP/Indexes/Hash.html).
+For more information on hash indexes, see the
+[HTTP API for hash indexes](https://docs.arangodb.com/latest/HTTP/Indexes/Hash.html).
 
 **Examples**
 
@@ -84,8 +84,8 @@ Creates a skiplist index on the collection.
   Additional options for this index. If the value is a boolean, it will be
   interpreted as _opts.unique_.
 
-For more information on skiplist indexes, see
-[the HTTP API for skiplist indexes](https://docs.arangodb.com/latest/HTTP/Indexes/Skiplist.html).
+For more information on skiplist indexes, see the
+[HTTP API for skiplist indexes](https://docs.arangodb.com/latest/HTTP/Indexes/Skiplist.html).
 
 **Examples**
 
@@ -122,8 +122,8 @@ Creates a geo-spatial index on the collection.
 
   An object containing additional properties of the index.
 
-For more information on the properties of the _opts_ object see
-[the HTTP API for manipulating geo indexes](https://docs.arangodb.com/latest/HTTP/Indexes/Geo.html).
+For more information on the properties of the _opts_ object see the
+[HTTP API for manipulating geo indexes](https://docs.arangodb.com/latest/HTTP/Indexes/Geo.html).
 
 **Examples**
 
@@ -318,8 +318,8 @@ see [Compatibility](../../GettingStarted/README.md#compatibility).
 
 If _size_ is a number, it will be interpreted as _size.size_.
 
-For more information on the properties of the _size_ object see
-[the HTTP API for creating cap constraints](https://docs.arangodb.com/2.8/HttpIndexes/Cap.html).
+For more information on the properties of the _size_ object see the
+[HTTP API for creating cap constraints](https://docs.arangodb.com/2.8/HttpIndexes/Cap.html).
 
 **Examples**
 

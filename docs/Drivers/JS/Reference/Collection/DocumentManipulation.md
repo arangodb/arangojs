@@ -50,8 +50,8 @@ given _newValue_ and returns an object containing the document's metadata.
 If a string is passed instead of an options object, it will be interpreted as
 the _rev_ option.
 
-For more information on the _opts_ object, see
-[the HTTP API documentation for working with documents](https://docs.arangodb.com/latest/HTTP/Document/WorkingWithDocuments.html).
+For more information on the _opts_ object, see the
+[HTTP API documentation for working with documents](https://docs.arangodb.com/latest/HTTP/Document/WorkingWithDocuments.html).
 
 **Examples**
 
@@ -145,8 +145,8 @@ metadata.
 If a string is passed instead of an options object, it will be interpreted as
 the _rev_ option.
 
-For more information on the _opts_ object, see
-[the HTTP API documentation for working with documents](https://docs.arangodb.com/latest/HTTP/Document/WorkingWithDocuments.html).
+For more information on the _opts_ object, see the
+[HTTP API documentation for working with documents](https://docs.arangodb.com/latest/HTTP/Document/WorkingWithDocuments.html).
 
 **Examples**
 
@@ -219,8 +219,8 @@ see [Compatibility](../../GettingStarted/README.md#compatibility).
     given in a body document is taken as a precondition. The document is only
     updated if the current revision is the one specified.
 
-For more information on the _opts_ object, see
-[the HTTP API documentation for working with documents](https://docs.arangodb.com/latest/HTTP/Document/WorkingWithDocuments.html).
+For more information on the _opts_ object, see the
+[HTTP API documentation for working with documents](https://docs.arangodb.com/latest/HTTP/Document/WorkingWithDocuments.html).
 
 **Examples**
 
@@ -279,8 +279,8 @@ Deletes the document with the given _documentHandle_ from the collection.
 If a string is passed instead of an options object, it will be interpreted as
 the _rev_ option.
 
-For more information on the _opts_ object, see
-[the HTTP API documentation for working with documents](https://docs.arangodb.com/latest/HTTP/Document/WorkingWithDocuments.html).
+For more information on the _opts_ object, see the
+[HTTP API documentation for working with documents](https://docs.arangodb.com/latest/HTTP/Document/WorkingWithDocuments.html).
 
 **Examples**
 

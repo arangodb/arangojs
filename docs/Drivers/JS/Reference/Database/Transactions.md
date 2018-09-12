@@ -32,8 +32,8 @@ Performs a server-side transaction and returns its return value.
   {% hint 'warning ' %}
   This function will be executed on the server inside ArangoDB and can not use
   the arangojs driver or any variables other than those passed as _params_.
-  For accessing the database from within ArangoDB, see
-  [the documentation for the `@arangodb` module in ArangoDB](https://docs.arangodb.com/latest/Manual/Appendix/JavaScriptModules/ArangoDB.html).
+  For accessing the database from within ArangoDB, see the documentation for the
+  [`@arangodb` module in ArangoDB](https://docs.arangodb.com/latest/Manual/Appendix/JavaScriptModules/ArangoDB.html).
   {% endhint %}
 
 - **params**: `Object` (optional)
@@ -76,8 +76,8 @@ JavaScript function, it's not possible to pass in a JavaScript function directly
 because the function needs to be evaluated on the server and will be transmitted
 in plain text.
 
-For more information on transactions, see
-[the HTTP API documentation for transactions](https://docs.arangodb.com/latest/HTTP/Transaction/index.html).
+For more information on transactions, see the
+[HTTP API documentation for transactions](https://docs.arangodb.com/latest/HTTP/Transaction/index.html).
 
 **Examples**
 

@@ -189,7 +189,9 @@ AQL queries without making your code vulnerable to injection attacks.
 ## Error responses
 
 If arangojs encounters an API error, it will throw an _ArangoError_ with an
-[_errorNum_ as defined in the ArangoDB documentation](https://docs.arangodb.com/latest/Manual/Appendix/ErrorCodes.html) as well as a _code_ and _statusCode_ property indicating the intended and actual HTTP status code of the response.
+[_errorNum_ error code](https://docs.arangodb.com/latest/Manual/Appendix/ErrorCodes.html)
+as well as a _code_ and _statusCode_ property indicating the intended and
+actual HTTP status code of the response.
 
 For any other error responses (4xx/5xx status code), it will throw an
 _HttpError_ error with the status code indicated by the _code_ and _statusCode_ properties.
@@ -200,7 +202,8 @@ not be parsed, a _SyntaxError_ may be thrown instead.
 In all of these cases the error object will additionally have a _response_
 property containing the server response object.
 
-If the request failed at a network level or the connection was closed without receiving a response, the underlying error will be thrown instead.
+If the request failed at a network level or the connection was closed without
+receiving a response, the underlying error will be thrown instead.
 
 **Examples**
 
@@ -222,7 +225,9 @@ db.createDatabase("mydb").then(
 );
 ```
 
-**Note**: The examples in the remainder of this documentation use `async`/`await`
+{% hint 'tip' %}
+The examples in the remainder of this documentation use `async`/`await`
 and other modern language features like multi-line strings and template tags.
 When developing for an environment without support for these language features,
 substitute promises for `await` syntax as in the above example.
+{% endhint %}

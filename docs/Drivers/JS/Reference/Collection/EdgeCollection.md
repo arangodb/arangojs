@@ -274,8 +274,8 @@ contained in this edge collection.
 
 - **opts**: `Object`
 
-  See
-  [the HTTP API documentation](https://docs.arangodb.com/latest/HTTP/Traversal/index.html)
+  See the
+  [HTTP API documentation](https://docs.arangodb.com/latest/HTTP/Traversal/index.html)
   for details on the additional arguments.
 
   Please note that while _opts.filter_, _opts.visitor_, _opts.init_,
