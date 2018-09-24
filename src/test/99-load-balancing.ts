@@ -2,6 +2,8 @@ import Instance from "arangodb-instance-manager/lib/Instance";
 import InstanceManager from "arangodb-instance-manager/lib/InstanceManager";
 import { expect } from "chai";
 import { Database } from "../arangojs";
+import { DocumentCollection } from "../collection";
+import { Connection } from "../connection";
 
 const sleep = (timeout: number) =>
   new Promise(resolve => setTimeout(resolve, timeout));
@@ -23,6 +25,7 @@ describeIm("Single-server active failover", function() {
   let uuid: string;
   let leader: Instance;
   let db: Database;
+  let conn: Connection;
   beforeEach(async () => {
     im = new InstanceManager(ARANGO_PATH, ARANGO_RUNNER);
     await im.startAgency();
@@ -31,6 +34,7 @@ describeIm("Single-server active failover", function() {
     uuid = await im.asyncReplicationLeaderSelected();
     leader = await im.asyncReplicationLeaderInstance();
     db = new Database({ url: leader.endpoint });
+    conn = (db as any)._connection;
     await db.acquireHostList();
   });
   afterEach(async () => {
@@ -45,8 +49,8 @@ describeIm("Single-server active failover", function() {
     return res.headers;
   }
   it("failover to follower if leader is down", async () => {
-    expect((db as any)._connection._urls).to.have.lengthOf(2);
-    (db as any)._connection._activeHost = 0;
+    expect((conn as any)._urls).to.have.lengthOf(2);
+    (conn as any)._activeHost = 0;
     const leaderId = await getServerId();
     expect(leaderId).not.to.be.empty;
     const headers = await responseHeaders();
@@ -64,8 +68,8 @@ describeIm("Single-server active failover", function() {
     expect(newHeaders).not.to.include.keys("x-arango-endpoint");
   });
   it("redirect to leader if server is not leader", async () => {
-    expect((db as any)._connection._urls).to.have.lengthOf(2);
-    (db as any)._connection._activeHost = 1;
+    expect((conn as any)._urls).to.have.lengthOf(2);
+    (conn as any)._activeHost = 1;
     const followerId = await getServerId();
     expect(followerId).not.to.be.empty;
     const headers = await responseHeaders();
@@ -83,11 +87,71 @@ describeIm("Single-server active failover", function() {
   });
 });
 
+describeIm("Single-server with follower", function() {
+  this.timeout(Infinity);
+  let im: InstanceManager;
+  let leader: Instance;
+  let db: Database;
+  let conn: Connection;
+  let collection: DocumentCollection;
+  beforeEach(async () => {
+    im = new InstanceManager(ARANGO_PATH, ARANGO_RUNNER);
+    await im.startAgency();
+    await im.startSingleServer("arangojs", 2);
+    await im.waitForAllInstances();
+    leader = await im.asyncReplicationLeaderInstance();
+    db = new Database({ url: leader.endpoint });
+    conn = (db as any)._connection;
+    await db.acquireHostList();
+    collection = db.collection("test");
+    await collection.create();
+    await collection.save({ _key: "abc" });
+    await sleep(3000);
+  });
+  afterEach(async () => {
+    await collection.drop();
+    await sleep(3000);
+    await im.cleanup();
+  });
+  async function getResponse(dirty?: boolean) {
+    return await conn.request({
+      method: "GET",
+      path: "/_api/document/test/abc",
+      allowDirtyRead: dirty
+    });
+  }
+  it("supports dirty reads", async () => {
+    expect((conn as any)._urls).to.have.lengthOf(2);
+    const res1 = await getResponse(true);
+    expect(res1.host).to.be.a("number");
+    const headers1 = res1.request.getHeaders();
+    expect(headers1).to.include.keys("x-arango-allow-dirty-read");
+    const res2 = await getResponse(true);
+    expect(res2.host).to.be.a("number");
+    expect(res2.host).not.to.equal(res1.host);
+    const headers2 = res2.request.getHeaders();
+    expect(headers2).to.include.keys("x-arango-allow-dirty-read");
+  });
+  it("supports non-dirty reads", async () => {
+    expect((conn as any)._urls).to.have.lengthOf(2);
+    const res1 = await getResponse();
+    expect(res1.host).to.be.a("number");
+    const headers1 = res1.request.getHeaders();
+    expect(headers1).not.to.include.keys("x-arango-allow-dirty-read");
+    const res2 = await getResponse();
+    expect(res2.host).to.be.a("number");
+    expect(res2.host).to.equal(res1.host);
+    const headers2 = res2.request.getHeaders();
+    expect(headers2).not.to.include.keys("x-arango-allow-dirty-read");
+  });
+});
+
 describeIm("Cluster round robin", function() {
   this.timeout(Infinity);
   const NUM_COORDINATORS = 3;
   let im: InstanceManager;
   let db: Database;
+  let conn: Connection;
   beforeEach(async () => {
     im = new InstanceManager(ARANGO_PATH, ARANGO_RUNNER);
     const endpoint = await im.startCluster(1, NUM_COORDINATORS, 2);
@@ -95,6 +159,7 @@ describeIm("Cluster round robin", function() {
       url: endpoint,
       loadBalancingStrategy: "ROUND_ROBIN"
     });
+    conn = (db as any)._connection;
     await db.acquireHostList();
   });
   afterEach(async () => {
@@ -105,7 +170,7 @@ describeIm("Cluster round robin", function() {
     return res.body.serverInfo && res.body.serverInfo.serverId;
   }
   it("cycles servers", async () => {
-    expect((db as any)._connection._urls).to.have.lengthOf(NUM_COORDINATORS);
+    expect((conn as any)._urls).to.have.lengthOf(NUM_COORDINATORS);
     const serverIds = new Set<string>();
     for (let i = 0; i < NUM_COORDINATORS; i++) {
       const serverId = await getServerId();
@@ -121,7 +186,7 @@ describeIm("Cluster round robin", function() {
     }
   });
   it("skips downed servers", async () => {
-    expect((db as any)._connection._urls).to.have.lengthOf(NUM_COORDINATORS);
+    expect((conn as any)._urls).to.have.lengthOf(NUM_COORDINATORS);
     const firstRun = new Set<string>();
     for (let i = 0; i < NUM_COORDINATORS; i++) {
       const serverId = await getServerId();
@@ -143,7 +208,7 @@ describeIm("Cluster round robin", function() {
     expect(firstRun.size - secondRun.size).to.equal(1);
   });
   it("it picks up restarted servers", async () => {
-    expect((db as any)._connection._urls).to.have.lengthOf(NUM_COORDINATORS);
+    expect((conn as any)._urls).to.have.lengthOf(NUM_COORDINATORS);
     const firstRun = new Set<string>();
     for (let i = 0; i < NUM_COORDINATORS; i++) {
       const serverId = await getServerId();
@@ -170,7 +235,7 @@ describeIm("Cluster round robin", function() {
     expect(firstRun.size).to.equal(secondRun.size);
   });
   it("treats cursors as sticky", async () => {
-    expect((db as any)._connection._urls).to.have.lengthOf(NUM_COORDINATORS);
+    expect((conn as any)._urls).to.have.lengthOf(NUM_COORDINATORS);
     const LENGTH = 2;
     const cursor = await db.query(
       `FOR i IN 1..${LENGTH} RETURN i`,

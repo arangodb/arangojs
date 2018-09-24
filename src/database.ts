@@ -44,6 +44,29 @@ export type ServiceOptions = {
   dependencies?: { [key: string]: any };
 };
 
+export type QueryOptions = {
+  allowDirtyRead?: boolean;
+  count?: boolean;
+  batchSize?: number;
+  cache?: boolean;
+  memoryLimit?: number;
+  ttl?: number;
+  options?: {
+    failOnWarning?: boolean;
+    profile?: boolean;
+    maxTransactionSize?: number;
+    stream?: boolean;
+    skipInaccessibleCollections?: boolean;
+    maxWarningsCount?: number;
+    intermediateCommitCount?: number;
+    satteliteSyncWait?: number;
+    fullCount?: boolean;
+    intermediateCommitSize?: number;
+    optimizer?: { rules?: string[] };
+    maxPlans?: number;
+  };
+};
+
 export interface ViewDescription {
   id: string;
   name: string;
@@ -128,7 +151,10 @@ export class Database {
     );
   }
 
-  createDatabase(databaseName: string, users?: CreateDatabaseUser[]): Promise<any> {
+  createDatabase(
+    databaseName: string,
+    users?: CreateDatabaseUser[]
+  ): Promise<any> {
     return this._connection.request(
       {
         method: "POST",
@@ -322,16 +348,16 @@ export class Database {
   }
 
   query(query: string | AqlQuery | AqlLiteral): Promise<ArrayCursor>;
-  query(query: AqlQuery, opts?: any): Promise<ArrayCursor>;
+  query(query: AqlQuery, opts?: QueryOptions): Promise<ArrayCursor>;
   query(
     query: string | AqlLiteral,
     bindVars?: any,
-    opts?: any
+    opts?: QueryOptions
   ): Promise<ArrayCursor>;
   query(
     query: string | AqlQuery | AqlLiteral,
     bindVars?: any,
-    opts?: any
+    opts?: QueryOptions
   ): Promise<ArrayCursor> {
     if (isAqlQuery(query)) {
       opts = bindVars;
@@ -340,11 +366,13 @@ export class Database {
     } else if (isAqlLiteral(query)) {
       query = query.toAQL();
     }
+    const { allowDirtyRead = undefined, ...extra } = opts || {};
     return this._connection.request(
       {
         method: "POST",
         path: "/_api/cursor",
-        body: { ...opts, query, bindVars }
+        body: { ...extra, query, bindVars },
+        allowDirtyRead
       },
       res => new ArrayCursor(this._connection, res.body, res.host)
     );

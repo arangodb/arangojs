@@ -42,6 +42,7 @@ export type RequestOptions = {
   body?: any;
   expectBinary?: boolean;
   isBinary?: boolean;
+  allowDirtyRead?: boolean;
   headers?: { [key: string]: string };
   absolutePath?: boolean;
   basePath?: string;
@@ -51,6 +52,7 @@ export type RequestOptions = {
 
 type Task = {
   host?: number;
+  allowDirtyRead: boolean;
   resolve: Function;
   reject: Function;
   retries: number;
@@ -93,6 +95,7 @@ export class Connection {
   private _hosts: RequestFunction[] = [];
   private _urls: string[] = [];
   private _activeHost: number;
+  private _activeDirtyHost: number;
 
   constructor(config: Config = {}) {
     if (typeof config === "string") config = { url: config };
@@ -136,8 +139,10 @@ export class Connection {
 
     if (this._loadBalancingStrategy === "ONE_RANDOM") {
       this._activeHost = Math.floor(Math.random() * this._hosts.length);
+      this._activeDirtyHost = Math.floor(Math.random() * this._hosts.length);
     } else {
       this._activeHost = 0;
+      this._activeDirtyHost = 0;
     }
   }
 
@@ -151,6 +156,10 @@ export class Connection {
     let host = this._activeHost;
     if (task.host !== undefined) {
       host = task.host;
+    } else if (task.allowDirtyRead) {
+      host = this._activeDirtyHost;
+      this._activeDirtyHost = (this._activeDirtyHost + 1) % this._hosts.length;
+      task.options.headers["x-arango-allow-dirty-read"] = "true";
     } else if (this._loadBalancingStrategy === "ROUND_ROBIN") {
       this._activeHost = (this._activeHost + 1) % this._hosts.length;
     }
@@ -159,6 +168,7 @@ export class Connection {
       this._activeTasks -= 1;
       if (err) {
         if (
+          !task.allowDirtyRead &&
           this._hosts.length > 1 &&
           this._activeHost === host &&
           this._useFailOver
@@ -271,6 +281,7 @@ export class Connection {
       body,
       expectBinary = false,
       isBinary = false,
+      allowDirtyRead = false,
       headers,
       ...urlInfo
     }: RequestOptions,
@@ -298,6 +309,7 @@ export class Connection {
       this._queue.push({
         retries: 0,
         host,
+        allowDirtyRead,
         options: {
           url: this._buildUrl(urlInfo),
           headers: { ...extraHeaders, ...headers },
