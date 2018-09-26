@@ -145,15 +145,14 @@ describeIm("Single-server with follower", function() {
     expect(headers2).not.to.include.keys("x-arango-allow-dirty-read");
   });
   it("supports dirty read over multiple cursor batches", async () => {
-    const cursor = await db.query(
-      "FOR i IN 1..2 RETURN i",
-      {},
-      { allowDirtyRead: true, batchSize: 1 }
-    );
-    expect(cursor.hasNext()).to.be.true;
-    expect(cursor.next()).to.equal(1);
-    expect(cursor.hasNext()).to.be.true;
-    expect(cursor.next()).to.equal(2);
+    const cursor = await db.query("FOR i IN 1..2 RETURN i", {
+      allowDirtyRead: true,
+      batchSize: 1
+    });
+    expect(cursor.hasNext()).to.equal(true);
+    expect(await cursor.next()).to.equal(1);
+    expect(cursor.hasNext()).to.equal(true);
+    expect(await cursor.next()).to.equal(2);
   });
 });
 
