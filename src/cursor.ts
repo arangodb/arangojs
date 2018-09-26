@@ -9,8 +9,14 @@ export class ArrayCursor {
   private _hasMore: boolean;
   private _id: string;
   private _host?: number;
+  private _allowDirtyRead?: boolean;
 
-  constructor(connection: Connection, body: any, host?: number) {
+  constructor(
+    connection: Connection,
+    body: any,
+    host?: number,
+    allowDirtyRead?: boolean
+  ) {
     this.extra = body.extra;
     this._connection = connection;
     this._result = body.result;
@@ -18,6 +24,7 @@ export class ArrayCursor {
     this._id = body.id;
     this._host = host;
     this.count = body.count;
+    this._allowDirtyRead = allowDirtyRead;
   }
 
   private async _drain(): Promise<ArrayCursor> {
@@ -32,7 +39,8 @@ export class ArrayCursor {
       const res = await this._connection.request({
         method: "PUT",
         path: `/_api/cursor/${this._id}`,
-        host: this._host
+        host: this._host,
+        allowDirtyRead: this._allowDirtyRead
       });
       this._result.push(...res.body.result);
       this._hasMore = res.body.hasMore;

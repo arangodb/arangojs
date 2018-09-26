@@ -374,7 +374,8 @@ export class Database {
         body: { ...extra, query, bindVars },
         allowDirtyRead
       },
-      res => new ArrayCursor(this._connection, res.body, res.host)
+      res =>
+        new ArrayCursor(this._connection, res.body, res.host, allowDirtyRead)
     );
   }
 
