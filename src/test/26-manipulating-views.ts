@@ -54,14 +54,17 @@ describe34("Manipulating views", function() {
       const properties = await view.setProperties({
         consolidationPolicy: {
           type: "count",
-          threshold: 123
+          threshold: 0.123
         }
       });
       expect(properties).to.have.property("name", view.name);
       expect(properties).to.have.property("links");
       expect(properties).to.have.property("consolidationPolicy");
       expect(properties.consolidationPolicy).to.have.property("type", "count");
-      expect(properties.consolidationPolicy).to.have.property("threshold", 123);
+      expect(properties.consolidationPolicy).to.have.property("threshold");
+      expect(properties.consolidationPolicy.threshold.toFixed(3)).to.equal(
+        "0.123"
+      );
     });
   });
   describe("view.replaceProperties", () => {
@@ -71,22 +74,28 @@ describe34("Manipulating views", function() {
       const oldProps = await view.replaceProperties({
         consolidationPolicy: {
           type: "bytes",
-          threshold: 123
+          threshold: 0.123
         }
       });
-      expect(oldProps.consolidationPolicy).to.have.property("threshold", 123);
+      expect(oldProps.consolidationPolicy).to.have.property("threshold");
+      expect(oldProps.consolidationPolicy.threshold.toFixed(3)).to.equal(
+        "0.123"
+      );
       expect(oldProps.consolidationPolicy).to.have.property("type", "bytes");
       const properties = await view.replaceProperties({
         consolidationPolicy: {
           type: "fill",
-          threshold: 456
+          threshold: 0.456
         }
       });
       expect(properties).to.have.property("name", view.name);
       expect(properties).to.have.property("links");
       expect(properties).to.have.property("consolidationPolicy");
       expect(properties.consolidationPolicy).to.have.property("type", "fill");
-      expect(properties.consolidationPolicy).to.have.property("threshold", 456);
+      expect(properties.consolidationPolicy).to.have.property("threshold");
+      expect(properties.consolidationPolicy.threshold.toFixed(3)).to.equal(
+        "0.456"
+      );
     });
   });
   describe("view.rename", () => {
