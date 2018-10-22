@@ -35,7 +35,6 @@ export interface ArangoSearchViewProperties {
   consolidationIntervalMsec: number;
   consolidationPolicy: {
     type: ArangoSearchViewConsolidationType;
-    segmentThreshold: number;
     threshold: number;
   };
   links: {
@@ -54,7 +53,6 @@ export interface ArangoSearchViewPropertiesOptions {
   consolidationIntervalMsec?: number;
   consolidationPolicy?: {
     type?: ArangoSearchViewConsolidationType;
-    segmentThreshold?: number;
     threshold?: number;
   };
   links?: {

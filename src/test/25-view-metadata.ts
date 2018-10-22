@@ -55,9 +55,6 @@ describe34("View metadata", function() {
       expect(properties).to.have.property("consolidationPolicy");
       expect(properties).to.have.property("consolidationIntervalMsec");
       expect(properties.consolidationPolicy).to.have.property("type");
-      expect(properties.consolidationPolicy).to.have.property(
-        "segmentThreshold"
-      );
       expect(properties.consolidationPolicy).to.have.property("threshold");
     });
   });
