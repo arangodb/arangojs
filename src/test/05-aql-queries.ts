@@ -160,6 +160,22 @@ describe("AQL queries", function() {
       expect(Object.keys(query.bindVars)).to.eql(["@value0"]);
       expect(query.bindVars["@value0"]).to.equal("tomato");
     });
+    it("supports arbitrary types", () => {
+      interface Whatever {
+        color: string;
+        more: {
+          x: number;
+        };
+      }
+      const whatever: Whatever[] = [
+        { color: "green", more: { x: 2 } },
+        { color: "yellow", more: { x: 3 } }
+      ];
+      const query = aql`${whatever}`;
+      expect(query.query).to.equal("@value0");
+      expect(Object.keys(query.bindVars)).to.eql(["value0"]);
+      expect(query.bindVars.value0).to.equal(whatever);
+    });
     it("supports AQL literals", () => {
       const query = aql`FOR x IN whatever ${aql.literal(
         "FILTER x.blah"
