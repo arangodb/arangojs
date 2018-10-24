@@ -41,6 +41,11 @@ export interface ImportResult {
   details?: string[];
 }
 
+export interface DocumentReadOptions {
+  graceful?: boolean;
+  allowDirtyRead?: boolean;
+}
+
 export function isArangoCollection(
   collection: any
 ): collection is ArangoCollection {
@@ -242,12 +247,21 @@ export abstract class BaseCollection implements ArangoCollection {
       });
   }
 
+  document(documentHandle: DocumentHandle, graceful: boolean): Promise<any>;
   document(
     documentHandle: DocumentHandle,
-    graceful: boolean = false
+    opts?: DocumentReadOptions
+  ): Promise<any>;
+  document(
+    documentHandle: DocumentHandle,
+    opts: boolean | DocumentReadOptions = {}
   ): Promise<any> {
+    if (typeof opts === "boolean") {
+      opts = { graceful: opts };
+    }
+    const { allowDirtyRead = undefined, graceful = false } = opts;
     const result = this._connection.request(
-      { path: `/_api/${this._documentPath(documentHandle)}` },
+      { path: `/_api/${this._documentPath(documentHandle)}`, allowDirtyRead },
       res => res.body
     );
     if (!graceful) return result;
@@ -760,11 +774,19 @@ export class EdgeCollection extends BaseCollection {
     return `document/${this._documentHandle(documentHandle)}`;
   }
 
+  edge(documentHandle: DocumentHandle, graceful: boolean): Promise<any>;
   edge(
     documentHandle: DocumentHandle,
-    graceful: boolean = false
+    opts?: DocumentReadOptions
+  ): Promise<any>;
+  edge(
+    documentHandle: DocumentHandle,
+    opts: boolean | DocumentReadOptions = {}
   ): Promise<any> {
-    return this.document(documentHandle, graceful);
+    if (typeof opts === "boolean") {
+      opts = { graceful: opts };
+    }
+    return this.document(documentHandle, opts);
   }
 
   save(data: any, opts?: DocumentSaveOptions | boolean): Promise<any>;

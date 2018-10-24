@@ -3,6 +3,7 @@ import {
   BaseCollection,
   CollectionType,
   DocumentHandle,
+  DocumentReadOptions,
   DOCUMENT_NOT_FOUND,
   EdgeCollection,
   isArangoCollection
@@ -20,15 +21,25 @@ export class GraphVertexCollection extends BaseCollection {
     this.graph = graph;
   }
 
+  document(documentHandle: DocumentHandle, graceful: boolean): Promise<any>;
   document(
     documentHandle: DocumentHandle,
-    graceful: boolean = false
+    opts?: DocumentReadOptions
+  ): Promise<any>;
+  document(
+    documentHandle: DocumentHandle,
+    opts: boolean | DocumentReadOptions = {}
   ): Promise<any> {
+    if (typeof opts === "boolean") {
+      opts = { graceful: opts };
+    }
+    const { allowDirtyRead = undefined, graceful = false } = opts;
     const result = this._connection.request(
       {
         path: `/_api/gharial/${this.graph.name}/vertex/${this._documentHandle(
           documentHandle
-        )}`
+        )}`,
+        allowDirtyRead
       },
       res => res.body.vertex
     );
@@ -41,11 +52,19 @@ export class GraphVertexCollection extends BaseCollection {
     });
   }
 
+  vertex(documentHandle: DocumentHandle, graceful: boolean): Promise<any>;
   vertex(
     documentHandle: DocumentHandle,
-    graceful: boolean = false
+    opts?: DocumentReadOptions
+  ): Promise<any>;
+  vertex(
+    documentHandle: DocumentHandle,
+    opts: boolean | DocumentReadOptions = {}
   ): Promise<any> {
-    return this.document(documentHandle, graceful);
+    if (typeof opts === "boolean") {
+      opts = { graceful: opts };
+    }
+    return this.document(documentHandle, opts);
   }
 
   save(data: any, opts?: { waitForSync?: boolean }) {
@@ -143,15 +162,25 @@ export class GraphEdgeCollection extends EdgeCollection {
     this.graph = graph;
   }
 
+  document(documentHandle: DocumentHandle, graceful: boolean): Promise<any>;
   document(
     documentHandle: DocumentHandle,
-    graceful: boolean = false
+    opts?: DocumentReadOptions
+  ): Promise<any>;
+  document(
+    documentHandle: DocumentHandle,
+    opts: boolean | DocumentReadOptions = {}
   ): Promise<any> {
+    if (typeof opts === "boolean") {
+      opts = { graceful: opts };
+    }
+    const { allowDirtyRead = undefined, graceful = false } = opts;
     const result = this._connection.request(
       {
         path: `/_api/gharial/${this.graph.name}/edge/${this._documentHandle(
           documentHandle
-        )}`
+        )}`,
+        allowDirtyRead
       },
       res => res.body.edge
     );

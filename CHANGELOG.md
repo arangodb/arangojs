@@ -81,6 +81,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   // {"@value0": "users", "value1": "a", "value2": "b", "value3": "c"}
   ```
 
+- Added `allowDirtyRead` option to `db.query` and `collection.document`
+
+  Dirty reads are supported in leader/follower replication setups and require
+  ArangoDB 3.4 or later. When performing a request that permits dirty reads,
+  arangojs will load balance across all know leaders and followers and instruct
+  ArangoDB to allow responding with stale or dirty response data. Note that
+  data returned from a dirty read may be out of date or inconsistent.
+
 ## [6.6.0] - 2018-08-28
 
 ### Changed
