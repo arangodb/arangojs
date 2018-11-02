@@ -61,6 +61,18 @@ db.query({
   });
 ```
 
+## Common issues
+
+### TypeScript `error TS2304: Cannot find name 'Blob'.`
+
+Even if your project doesn't contain any browser code, you need to add `"dom"` to the `"lib"` array in your `tsconfig.json` to make arangojs work. This is a known limitation because the library supports both browser and Node environments and there is no common binary format that works in both environments:
+
+```diff
+// tsconfig.json
+- "lib": ["es6"],
++ "lib": ["es6", "dom"],
+```
+
 ## Documentation
 
 [Latest Documentation](https://docs.arangodb.com/devel/Drivers/JS/)
