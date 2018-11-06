@@ -226,8 +226,10 @@ export class Connection {
   }
 
   private _sanitizeEndpointUrl(url: string): string {
-    if (url.startsWith("tcp:")) return url.replace(/^tcp:/, "http:");
-    if (url.startsWith("ssl:")) return url.replace(/^ssl:/, "https:");
+    const raw = url.match(/^(tcp|ssl|tls)((?::|\+).+)/);
+    if (raw) url = (raw[1] === "tcp" ? "http" : "https") + raw[2];
+    const unix = url.match(/^(?:(https?)\+)?unix:\/\/(\/.+)/);
+    if (unix) url = `${unix[1] || "http"}://unix:${unix[2]}`;
     return url;
   }
 

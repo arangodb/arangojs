@@ -44,17 +44,9 @@ export function createRequest(
   if (!baseUrlParts.protocol) {
     throw new Error(`Invalid URL (no protocol): ${baseUrl}`);
   }
-  const isTls = baseUrlParts.protocol.match(/^https(?:\+|\:)/);
+  const isTls = baseUrlParts.protocol === "https:";
   let socketPath: string | undefined;
-  if (baseUrlParts.protocol.match(/^(?:https?\+)?unix:$/)) {
-    if (!baseUrlParts.pathname || baseUrlParts.host) {
-      throw new Error(
-        `Unix socket URL must be in the format http://unix:/socket/path or http+unix:///socket/path or unix:///socket/path not ${baseUrl}`
-      );
-    }
-    socketPath = baseUrlParts.pathname;
-    baseUrlParts.pathname = undefined;
-  } else if (baseUrl.match(/^https?:\/\/unix:\//)) {
+  if (baseUrl.startsWith(`${baseUrlParts.protocol}//unix:`)) {
     if (!baseUrlParts.pathname) {
       throw new Error(
         `Unix socket URL must be in the format http://unix:/socket/path, http+unix:///socket/path or unix:///socket/path not ${baseUrl}`
