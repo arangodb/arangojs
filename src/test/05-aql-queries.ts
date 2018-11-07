@@ -176,6 +176,22 @@ describe("AQL queries", function() {
       expect(Object.keys(query.bindVars)).to.eql(["value0"]);
       expect(query.bindVars.value0).to.equal(whatever);
     });
+    it("supports arbitrary classes", () => {
+      class Whatever {
+        color: string;
+        constructor(color: string) {
+          this.color = color;
+        }
+      }
+      const whatever: Whatever[] = [
+        new Whatever("green"),
+        new Whatever("yellow")
+      ];
+      const query = aql`${whatever}`;
+      expect(query.query).to.equal("@value0");
+      expect(Object.keys(query.bindVars)).to.eql(["value0"]);
+      expect(query.bindVars.value0).to.equal(whatever);
+    });
     it("supports AQL literals", () => {
       const query = aql`FOR x IN whatever ${aql.literal(
         "FILTER x.blah"
