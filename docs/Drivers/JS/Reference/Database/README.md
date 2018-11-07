@@ -26,26 +26,20 @@ If _config_ is a string, it will be interpreted as _config.url_.
     When running ArangoDB on a unix socket, e.g. `/tmp/arangodb.sock` the
     following URL formats are supported for unix sockets:
 
-    * `unix:///tmp/arangodb.sock` (no SSL)
-    * `http+unix:///tmp/arangodb.sock` (or `https+unix://` for SSL)
-    * `http://unix:/tmp/arangodb.sock` (or `https://unix:` for SSL)
+    - `unix:///tmp/arangodb.sock` (no SSL)
+    - `http+unix:///tmp/arangodb.sock` (or `https+unix://` for SSL)
+    - `http://unix:/tmp/arangodb.sock` (or `https://unix:` for SSL)
 
     Additionally `ssl` and `tls` are treated as synonymous with `https` and
     `tcp` is treated as synonymous with `http`, so the following URLs are
     considered identical:
 
-    * `tcp://localhost:8529` and `http://localhost:8529`
-    * `ssl://localhost:8529` and `https://localhost:8529`
-    * `tcp+unix:///tmp/arangodb.sock` and `http+unix:///tmp/arangodb.sock`
-    * `ssl+unix:///tmp/arangodb.sock` and `https+unix:///tmp/arangodb.sock`
-    * `tcp://unix:/tmp/arangodb.sock` and `http://unix:/tmp/arangodb.sock`
-    * `ssl://unix:/tmp/arangodb.sock` and `https://unix:/tmp/arangodb.sock`
-
-    {% hint 'warning' %}
-    As of arangojs 6.0.0 it is no longer possible to pass
-    the username or password from the URL. Use
-    [`database.useBasicAuth`](#databaseusebasicauth) instead.
-    {% endhint %}
+    - `tcp://localhost:8529` and `http://localhost:8529`
+    - `ssl://localhost:8529` and `https://localhost:8529`
+    - `tcp+unix:///tmp/arangodb.sock` and `http+unix:///tmp/arangodb.sock`
+    - `ssl+unix:///tmp/arangodb.sock` and `https+unix:///tmp/arangodb.sock`
+    - `tcp://unix:/tmp/arangodb.sock` and `http://unix:/tmp/arangodb.sock`
+    - `ssl://unix:/tmp/arangodb.sock` and `https://unix:/tmp/arangodb.sock`
 
     If you want to use ArangoDB with authentication, see
     _useBasicAuth_ or _useBearerAuth_ methods.

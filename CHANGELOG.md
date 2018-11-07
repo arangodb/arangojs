@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Changed
+
+- Restored support for credentials in URLs
+
+  If the server URL includes credentials, arangojs will now use them instead of
+  the default username "root" and an empty password. Any credentials explicitly
+  set using `useBasicAuth` or `useBearerAuth` will still override the default
+  credentials as before.
+
 ## [6.8.0] - 2018-11-07
 
 ### Changed

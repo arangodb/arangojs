@@ -7,6 +7,7 @@ import {
 } from "http";
 import { Agent as HttpsAgent, request as httpsRequest } from "https";
 import { parse as parseUrl, Url } from "url";
+import { btoa } from "./btoa";
 import { joinPath } from "./joinPath";
 import { Errback } from "./types";
 
@@ -87,6 +88,11 @@ export function createRequest(
       if (body && !headers["content-length"]) {
         headers["content-length"] = String(Buffer.byteLength(body));
       }
+      if (!headers["authorization"]) {
+        headers["authorization"] = `Basic ${btoa(
+          baseUrlParts.auth || "root:"
+        )}`;
+      }
       const options: ClientRequestArgs = { path, method, headers, agent };
       if (socketPath) {
         options.socketPath = socketPath;
@@ -94,7 +100,6 @@ export function createRequest(
         options.host = baseUrlParts.hostname;
         options.port = baseUrlParts.port;
       }
-      options.auth = baseUrlParts.auth;
       let called = false;
       try {
         const req = (isTls ? httpsRequest : httpRequest)(

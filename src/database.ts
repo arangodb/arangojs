@@ -86,7 +86,6 @@ export class Database {
 
   constructor(config?: Config) {
     this._connection = new Connection(config);
-    this.useBasicAuth();
   }
 
   get name(): string | null {
