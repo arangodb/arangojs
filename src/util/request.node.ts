@@ -1,6 +1,7 @@
 import {
   Agent as HttpAgent,
   ClientRequest,
+  ClientRequestArgs,
   IncomingMessage,
   request as httpRequest
 } from "http";
@@ -40,7 +41,29 @@ export function createRequest(
   agent: any
 ): RequestFunction {
   const baseUrlParts = parseUrl(baseUrl);
+  if (!baseUrlParts.protocol) {
+    throw new Error(`Invalid URL (no protocol): ${baseUrl}`);
+  }
   const isTls = baseUrlParts.protocol === "https:";
+  let socketPath: string | undefined;
+  if (baseUrl.startsWith(`${baseUrlParts.protocol}//unix:`)) {
+    if (!baseUrlParts.pathname) {
+      throw new Error(
+        `Unix socket URL must be in the format http://unix:/socket/path, http+unix:///socket/path or unix:///socket/path not ${baseUrl}`
+      );
+    }
+    const i = baseUrlParts.pathname.indexOf(":");
+    if (i === -1) {
+      socketPath = baseUrlParts.pathname;
+      baseUrlParts.pathname = undefined;
+    } else {
+      socketPath = baseUrlParts.pathname.slice(0, i);
+      baseUrlParts.pathname = baseUrlParts.pathname.slice(i + 1) || undefined;
+    }
+  }
+  if (socketPath && !socketPath.replace(/\//g, "").length) {
+    throw new Error(`Invalid URL (empty unix socket path): ${baseUrl}`);
+  }
   if (!agent) {
     if (isTls) agent = new HttpsAgent(agentOptions);
     else agent = new HttpAgent(agentOptions);
@@ -64,9 +87,13 @@ export function createRequest(
       if (body && !headers["content-length"]) {
         headers["content-length"] = String(Buffer.byteLength(body));
       }
-      const options: any = { path, method, headers, agent };
-      options.hostname = baseUrlParts.hostname;
-      options.port = baseUrlParts.port;
+      const options: ClientRequestArgs = { path, method, headers, agent };
+      if (socketPath) {
+        options.socketPath = socketPath;
+      } else {
+        options.host = baseUrlParts.hostname;
+        options.port = baseUrlParts.port;
+      }
       options.auth = baseUrlParts.auth;
       let called = false;
       try {

@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Added
+
+- Added support for UNIX socket URLs ([#405](https://github.com/arangodb/arangojs/issues/405))
+
+  In addition to the `unix:///socket/path` and `http+unix:///socket/path`
+  URL formats recognized by ArangoDB, arangojs also supports the format
+  `http://unix:/socket/path` commonly supported in the Node ecosystem and
+  automatically converts ArangoDB endpoint URLs between them.
+
 ## [6.7.0] - 2018-10-24
 
 ### Changed
