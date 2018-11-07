@@ -22,7 +22,8 @@ export type AqlValue =
   | boolean
   | null
   | undefined
-  | object;
+  | object
+  | any[];
 
 export function isAqlQuery(query: any): query is AqlQuery {
   return Boolean(query && query.query && query.bindVars);
