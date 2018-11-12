@@ -16,11 +16,7 @@ export interface ArangoViewResponse {
   type: ViewType;
 }
 
-type ArangoSearchViewConsolidationType =
-  | "bytes"
-  | "bytes_accum"
-  | "count"
-  | "fill";
+type ArangoSearchViewConsolidationType = "bytes_accum" | "tier";
 
 interface ArangoSearchViewCollectionLink {
   analyzers?: string[];

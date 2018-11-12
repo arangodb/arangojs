@@ -53,14 +53,14 @@ describe34("Manipulating views", function() {
     it("should change properties", async () => {
       const properties = await view.setProperties({
         consolidationPolicy: {
-          type: "count",
+          type: "tier",
           threshold: 0.123
         }
       });
       expect(properties).to.have.property("name", view.name);
       expect(properties).to.have.property("links");
       expect(properties).to.have.property("consolidationPolicy");
-      expect(properties.consolidationPolicy).to.have.property("type", "count");
+      expect(properties.consolidationPolicy).to.have.property("type", "tier");
       expect(properties.consolidationPolicy).to.have.property("threshold");
       expect(properties.consolidationPolicy.threshold.toFixed(3)).to.equal(
         "0.123"
@@ -73,7 +73,7 @@ describe34("Manipulating views", function() {
       expect(initial.consolidationPolicy).to.have.property("threshold");
       const oldProps = await view.replaceProperties({
         consolidationPolicy: {
-          type: "bytes",
+          type: "bytes_accum",
           threshold: 0.123
         }
       });
@@ -81,17 +81,20 @@ describe34("Manipulating views", function() {
       expect(oldProps.consolidationPolicy.threshold.toFixed(3)).to.equal(
         "0.123"
       );
-      expect(oldProps.consolidationPolicy).to.have.property("type", "bytes");
+      expect(oldProps.consolidationPolicy).to.have.property(
+        "type",
+        "bytes_accum"
+      );
       const properties = await view.replaceProperties({
         consolidationPolicy: {
-          type: "fill",
+          type: "tier",
           threshold: 0.456
         }
       });
       expect(properties).to.have.property("name", view.name);
       expect(properties).to.have.property("links");
       expect(properties).to.have.property("consolidationPolicy");
-      expect(properties.consolidationPolicy).to.have.property("type", "fill");
+      expect(properties.consolidationPolicy).to.have.property("type", "tier");
       expect(properties.consolidationPolicy).to.have.property("threshold");
       expect(properties.consolidationPolicy.threshold.toFixed(3)).to.equal(
         "0.456"
