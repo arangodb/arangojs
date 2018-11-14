@@ -4,15 +4,26 @@ import * as path from "path";
 import { ArangoError } from "../error";
 import { Database } from "../arangojs";
 import { expect } from "chai";
+import { sanitizeUrl } from "../util/sanitizeUrl";
 
 const ARANGO_VERSION = Number(process.env.ARANGO_VERSION || 30400);
 const ARANGO_URL = process.env.TEST_ARANGODB_URL || "http://localhost:8529";
-const ARANGO_URL_SELF_REACHABLE =
-  process.env.TEST_ARANGODB_URL_SELF_REACHABLE || ARANGO_URL;
+const ARANGO_URL_SELF_REACHABLE = process.env.TEST_ARANGODB_URL_SELF_REACHABLE;
 
+const normalizedArangoUrl = sanitizeUrl(ARANGO_URL);
 const localAppsPath = path.resolve(".", "fixtures");
 const mount = "/foxx-crud-test";
 const serviceServiceMount = "/foxx-crud-test-download";
+
+function makeSelfReachable(returnedUrl: string) {
+  if (ARANGO_URL_SELF_REACHABLE) {
+    return returnedUrl.replace(normalizedArangoUrl, ARANGO_URL_SELF_REACHABLE);
+  }
+  if (normalizedArangoUrl.match(/^[a-z]+:\/\/unix:/)) {
+    return returnedUrl.replace(normalizedArangoUrl + ":", "http://");
+  }
+  return returnedUrl;
+}
 
 describe("Foxx service", () => {
   let db: Database;
@@ -71,13 +82,11 @@ describe("Foxx service", () => {
     },
     {
       name: "remoteJsFile",
-      source: (arangoPaths: any) =>
-        arangoPaths.remote.js.replace(ARANGO_URL, ARANGO_URL_SELF_REACHABLE)
+      source: (arangoPaths: any) => makeSelfReachable(arangoPaths.remote.js)
     },
     {
       name: "remoteZipFile",
-      source: (arangoPaths: any) =>
-        arangoPaths.remote.zip.replace(ARANGO_URL, ARANGO_URL_SELF_REACHABLE)
+      source: (arangoPaths: any) => makeSelfReachable(arangoPaths.remote.zip)
     }
   ];
 
