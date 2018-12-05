@@ -6,6 +6,7 @@ import {
   isBrowser,
   RequestFunction
 } from "./util/request";
+import { sanitizeUrl } from "./util/sanitizeUrl";
 
 const LinkedList = require("linkedlist/lib/linkedlist") as typeof Array;
 
@@ -225,17 +226,9 @@ export class Connection {
     return search ? { pathname, search } : { pathname };
   }
 
-  private _sanitizeEndpointUrl(url: string): string {
-    const raw = url.match(/^(tcp|ssl|tls)((?::|\+).+)/);
-    if (raw) url = (raw[1] === "tcp" ? "http" : "https") + raw[2];
-    const unix = url.match(/^(?:(https?)\+)?unix:\/\/(\/.+)/);
-    if (unix) url = `${unix[1] || "http"}://unix:${unix[2]}`;
-    return url;
-  }
-
   addToHostList(urls: string | string[]): number[] {
     const cleanUrls = (Array.isArray(urls) ? urls : [urls]).map(url =>
-      this._sanitizeEndpointUrl(url)
+      sanitizeUrl(url)
     );
     const newUrls = cleanUrls.filter(url => this._urls.indexOf(url) === -1);
     this._urls.push(...newUrls);
