@@ -51,6 +51,7 @@ export type QueryOptions = {
   cache?: boolean;
   memoryLimit?: number;
   ttl?: number;
+  timeout?: number;
   options?: {
     failOnWarning?: boolean;
     profile?: boolean;
@@ -365,13 +366,15 @@ export class Database {
     } else if (isAqlLiteral(query)) {
       query = query.toAQL();
     }
-    const { allowDirtyRead = undefined, ...extra } = opts || {};
+    const { allowDirtyRead = undefined, timeout = undefined, ...extra } =
+      opts || {};
     return this._connection.request(
       {
         method: "POST",
         path: "/_api/cursor",
         body: { ...extra, query, bindVars },
-        allowDirtyRead
+        allowDirtyRead,
+        timeout
       },
       res =>
         new ArrayCursor(this._connection, res.body, res.host, allowDirtyRead)

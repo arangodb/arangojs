@@ -45,16 +45,23 @@ describe("AQL queries", function() {
       }
       expect.fail();
     });
-    it("throws an exception on error (async await)", async () => {
+    it("times out if a timeout is set and exceeded", async () => {
       try {
-        await db.query("FOR i IN no RETURN i");
+        await db.query(aql`RETURN SLEEP(1)`, { timeout: 10 });
       } catch (err) {
-        expect(err).is.instanceof(ArangoError);
-        expect(err).to.have.property("statusCode", 404);
-        expect(err).to.have.property("errorNum", 1203);
+        expect(err).is.instanceof(Error);
+        expect(err).is.not.instanceof(ArangoError);
+        expect(err).to.have.property("code", "ECONNRESET");
         return;
       }
       expect.fail();
+    });
+    it("does not time out if a timeout is set and not exceeded", async () => {
+      try {
+        await db.query(aql`RETURN SLEEP(0.01)`, { timeout: 1000 });
+      } catch (err) {
+        expect.fail();
+      }
     });
     it("supports bindVars", async () => {
       const cursor = await db.query("RETURN @x", { x: 5 });

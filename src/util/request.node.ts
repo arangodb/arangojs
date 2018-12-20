@@ -27,6 +27,7 @@ export interface RequestOptions {
   headers: { [key: string]: string };
   body: any;
   expectBinary: boolean;
+  timeout?: number;
 }
 
 export interface RequestFunction {
@@ -71,7 +72,7 @@ export function createRequest(
   }
   return Object.assign(
     function request(
-      { method, url, headers, body }: RequestOptions,
+      { method, url, headers, body, timeout }: RequestOptions,
       callback: Errback<ArangojsResponse>
     ) {
       let path = baseUrlParts.pathname
@@ -117,6 +118,12 @@ export function createRequest(
             });
           }
         );
+        if (timeout) {
+          req.setTimeout(timeout);
+        }
+        req.on("timeout", () => {
+          req.abort();
+        });
         req.on("error", err => {
           const error = err as ArangojsError;
           error.request = req;

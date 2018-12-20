@@ -15,6 +15,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   implemented in the current ArangoDB 3.4 release candidate. Please note that this API
   is still subject to change and may indeed still change until the 3.4.0 GA release.
 
+### Added
+
+- Added `timeout` option to `db.query` and request methods
+
+  Note that this merely cancels the request. Queries will still be executed
+  and ArangoDB will still continue processing the request, this will merely
+  result in the socket being forcefully disconnected.
+
 ## [6.9.0] - 2018-11-07
 
 ### Changed
