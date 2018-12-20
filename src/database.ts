@@ -387,18 +387,18 @@ export class Database {
     );
   }
 
-  explain(query: string | AqlQuery | AqlLiteral): Promise<any>;
-  explain(query: AqlQuery, opts?: ExplainOptions): Promise<any>;
+  explain(query: string | AqlQuery | AqlLiteral): Promise<Array<any>>;
+  explain(query: AqlQuery, opts?: ExplainOptions): Promise<Array<any>>;
   explain(
     query: string | AqlLiteral,
     bindVars?: any,
     opts?: ExplainOptions
-  ): Promise<any>;
+  ): Promise<Array<any>>;
   explain(
     query: string | AqlQuery | AqlLiteral,
     bindVars?: any,
     opts?: ExplainOptions
-  ): Promise<any> {
+  ): Promise<Array<any>> {
     if (isAqlQuery(query)) {
       opts = bindVars;
       bindVars = query.bindVars;
@@ -406,11 +406,14 @@ export class Database {
     } else if (isAqlLiteral(query)) {
       query = query.toAQL();
     }
-    return this._connection.request({
-      method: "POST",
-      path: "/_api/explain",
-      body: { options: opts, query, bindVars }
-    });
+    return this._connection.request(
+      {
+        method: "POST",
+        path: "/_api/explain",
+        body: { options: opts, query, bindVars }
+      },
+      res => (opts && opts.allPlans ? res.body.plans : [res.body.plan])
+    );
   }
 
   parse(query: string | AqlQuery | AqlLiteral): Promise<any>;
@@ -422,11 +425,14 @@ export class Database {
     } else if (isAqlLiteral(query)) {
       query = query.toAQL();
     }
-    return this._connection.request({
-      method: "POST",
-      path: "/_api/query",
-      body: { query }
-    });
+    return this._connection.request(
+      {
+        method: "POST",
+        path: "/_api/query",
+        body: { query }
+      },
+      res => res.body
+    );
   }
 
   queryTracking(): Promise<any> {
