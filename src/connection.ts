@@ -45,6 +45,7 @@ export type RequestOptions = {
   isBinary?: boolean;
   allowDirtyRead?: boolean;
   headers?: { [key: string]: string };
+  timeout?: number;
   absolutePath?: boolean;
   basePath?: string;
   path?: string;
@@ -60,6 +61,7 @@ type Task = {
   options: {
     method: string;
     expectBinary: boolean;
+    timeout?: number;
     url: { pathname: string; search?: string };
     headers: { [key: string]: string };
     body: any;
@@ -277,6 +279,7 @@ export class Connection {
       expectBinary = false,
       isBinary = false,
       allowDirtyRead = false,
+      timeout = 0,
       headers,
       ...urlInfo
     }: RequestOptions,
@@ -308,6 +311,7 @@ export class Connection {
         options: {
           url: this._buildUrl(urlInfo),
           headers: { ...extraHeaders, ...headers },
+          timeout,
           method,
           expectBinary,
           body
