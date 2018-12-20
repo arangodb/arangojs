@@ -27,7 +27,7 @@ export function createRequest(baseUrl: string, agentOptions: any) {
     "maxSockets"
   ]);
   return function request(
-    { method, url, headers, body, expectBinary }: RequestOptions,
+    { method, url, headers, body, timeout, expectBinary }: RequestOptions,
     cb: Errback<ArangojsResponse>
   ) {
     const urlParts = {
@@ -60,7 +60,8 @@ export function createRequest(baseUrl: string, agentOptions: any) {
         useXDR: true,
         body,
         method,
-        headers
+        headers,
+        timeout
       },
       (err: Error | null, res?: any) => {
         if (!err) {
