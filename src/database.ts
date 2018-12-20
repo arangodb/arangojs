@@ -68,6 +68,12 @@ export type QueryOptions = {
   };
 };
 
+export type ExplainOptions = {
+  optimizer?: { rules?: string[] };
+  maxNumberOfPlans?: number;
+  allPlans?: boolean;
+};
+
 export interface ViewDescription {
   id: string;
   name: string;
@@ -378,6 +384,109 @@ export class Database {
       },
       res =>
         new ArrayCursor(this._connection, res.body, res.host, allowDirtyRead)
+    );
+  }
+
+  explain(query: string | AqlQuery | AqlLiteral): Promise<any>;
+  explain(query: AqlQuery, opts?: ExplainOptions): Promise<any>;
+  explain(
+    query: string | AqlLiteral,
+    bindVars?: any,
+    opts?: ExplainOptions
+  ): Promise<any>;
+  explain(
+    query: string | AqlQuery | AqlLiteral,
+    bindVars?: any,
+    opts?: ExplainOptions
+  ): Promise<any> {
+    if (isAqlQuery(query)) {
+      opts = bindVars;
+      bindVars = query.bindVars;
+      query = query.query;
+    } else if (isAqlLiteral(query)) {
+      query = query.toAQL();
+    }
+    return this._connection.request({
+      method: "POST",
+      path: "/_api/explain",
+      body: { options: opts, query, bindVars }
+    });
+  }
+
+  parse(query: string | AqlQuery | AqlLiteral): Promise<any>;
+  parse(query: AqlQuery): Promise<any>;
+  parse(query: string | AqlLiteral): Promise<any>;
+  parse(query: string | AqlQuery | AqlLiteral): Promise<any> {
+    if (isAqlQuery(query)) {
+      query = query.query;
+    } else if (isAqlLiteral(query)) {
+      query = query.toAQL();
+    }
+    return this._connection.request({
+      method: "POST",
+      path: "/_api/query",
+      body: { query }
+    });
+  }
+
+  queryTracking(): Promise<any> {
+    return this._connection.request(
+      {
+        method: "GET",
+        path: "/_api/query/properties"
+      },
+      res => res.body
+    );
+  }
+
+  setQueryTracking(opts?: any): Promise<any> {
+    return this._connection.request(
+      {
+        method: "PUT",
+        path: "/_api/query/properties",
+        body: opts
+      },
+      res => res.body
+    );
+  }
+
+  listRunningQueries(): Promise<any> {
+    return this._connection.request(
+      {
+        method: "GET",
+        path: "/_api/query/current"
+      },
+      res => res.body
+    );
+  }
+
+  listSlowQueries(): Promise<any> {
+    return this._connection.request(
+      {
+        method: "GET",
+        path: "/_api/query/slow"
+      },
+      res => res.body
+    );
+  }
+
+  clearSlowQueries(): Promise<void> {
+    return this._connection.request(
+      {
+        method: "DELETE",
+        path: "/_api/query/slow"
+      },
+      () => undefined
+    );
+  }
+
+  killQuery(queryId: string): Promise<void> {
+    return this._connection.request(
+      {
+        method: "DELETE",
+        path: `/_api/query/${queryId}`
+      },
+      () => undefined
     );
   }
 
