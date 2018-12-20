@@ -47,6 +47,12 @@ Dirty reads are only available when targeting ArangoDB 3.4 or later,
 see [Compatibility](../../GettingStarted/README.md#compatibility).
 {% endhint %}
 
+Additionally _opts.timeout_ can be set to a non-negative number to force the
+request to be cancelled after that amount of milliseconds. Note that this will
+simply close the connection and not result in the actual query being cancelled
+in ArangoDB, the query will still be executed to completion and continue to
+consume resources in the database or cluster.
+
 If _query_ is an object with _query_ and _bindVars_ properties, those will be
 used as the values of the respective arguments instead.
 
@@ -67,10 +73,9 @@ const cursor = await db.query(aql`
 // -- or --
 
 // Old-school JS with explicit bindVars:
-db.query(
-  "FOR u IN _users FILTER u.authData.active == @active RETURN u.user",
-  { active: true }
-).then(function(cursor) {
+db.query("FOR u IN _users FILTER u.authData.active == @active RETURN u.user", {
+  active: true
+}).then(function(cursor) {
   // cursor is a cursor for the query result
 });
 ```
