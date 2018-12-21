@@ -9,11 +9,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed
 
-- Changed experimental Views API `ArangoSearchViewConsolidationType`
+- Changed Views API to match 3.4 GA implementation
 
-  This release updates the experimental support for the Views API to the version
-  implemented in the current ArangoDB 3.4 release candidate. Please note that this API
-  is still subject to change and may indeed still change until the 3.4.0 GA release.
+  This release updates the Views API to the version implemented in the final
+  ArangoDB 3.4 GA release. Please note that these changes may break code
+  written for earlier ArangoDB 3.4 release candidates.
 
 ### Added
 

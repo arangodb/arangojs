@@ -16,8 +16,6 @@ export interface ArangoViewResponse {
   type: ViewType;
 }
 
-type ArangoSearchViewConsolidationType = "bytes_accum" | "tier";
-
 interface ArangoSearchViewCollectionLink {
   analyzers?: string[];
   fields?: { [key: string]: ArangoSearchViewCollectionLink | undefined };
@@ -29,9 +27,17 @@ interface ArangoSearchViewCollectionLink {
 export interface ArangoSearchViewProperties {
   cleanupIntervalStep: number;
   consolidationIntervalMsec: number;
+  writebufferIdle: number;
+  writebufferActive: number;
+  writebufferSizeMax: number;
   consolidationPolicy: {
-    type: ArangoSearchViewConsolidationType;
-    threshold: number;
+    type: "bytes_accum" | "tier";
+    threshold?: number;
+    segments_min?: number;
+    segments_max?: number;
+    segments_bytes_max?: number;
+    segments_bytes_floor?: number;
+    lookahead?: number;
   };
   links: {
     [key: string]: ArangoSearchViewCollectionLink | undefined;
@@ -47,10 +53,22 @@ export interface ArangoSearchViewPropertiesResponse
 export interface ArangoSearchViewPropertiesOptions {
   cleanupIntervalStep?: number;
   consolidationIntervalMsec?: number;
-  consolidationPolicy?: {
-    type?: ArangoSearchViewConsolidationType;
-    threshold?: number;
-  };
+  writebufferIdle?: number;
+  writebufferActive?: number;
+  writebufferSizeMax?: number;
+  consolidationPolicy?:
+    | {
+        type: "bytes_accum";
+        threshold?: number;
+      }
+    | {
+        type: "tier";
+        lookahead?: number;
+        segments_min?: number;
+        segments_max?: number;
+        segments_bytes_max?: number;
+        segments_bytes_floor?: number;
+      };
   links?: {
     [key: string]: ArangoSearchViewCollectionLink | undefined;
   };

@@ -51,54 +51,38 @@ describe34("Manipulating views", function() {
   });
   describe("view.setProperties", () => {
     it("should change properties", async () => {
-      const properties = await view.setProperties({
-        consolidationPolicy: {
-          type: "tier",
-          threshold: 0.123
-        }
+      const initial = await view.properties();
+      expect(initial.cleanupIntervalStep).to.equal(10);
+      expect(initial.writebufferIdle).to.equal(64);
+      const oldProps = await view.setProperties({
+        cleanupIntervalStep: 20,
+        writebufferIdle: 48
       });
-      expect(properties).to.have.property("name", view.name);
-      expect(properties).to.have.property("links");
-      expect(properties).to.have.property("consolidationPolicy");
-      expect(properties.consolidationPolicy).to.have.property("type", "tier");
-      expect(properties.consolidationPolicy).to.have.property("threshold");
-      expect(properties.consolidationPolicy.threshold.toFixed(3)).to.equal(
-        "0.123"
-      );
+      expect(oldProps.cleanupIntervalStep).to.equal(20);
+      expect(oldProps.writebufferIdle).to.equal(48);
+      const properties = await view.setProperties({
+        writebufferIdle: 32
+      });
+      expect(properties.cleanupIntervalStep).to.equal(20);
+      expect(properties.writebufferIdle).to.equal(32);
     });
   });
   describe("view.replaceProperties", () => {
     it("should change properties", async () => {
       const initial = await view.properties();
-      expect(initial.consolidationPolicy).to.have.property("threshold");
-      const oldProps = await view.replaceProperties({
-        consolidationPolicy: {
-          type: "bytes_accum",
-          threshold: 0.123
-        }
+      expect(initial.cleanupIntervalStep).to.equal(10);
+      expect(initial.writebufferIdle).to.equal(64);
+      const oldProps = await view.setProperties({
+        cleanupIntervalStep: 20,
+        writebufferIdle: 48
       });
-      expect(oldProps.consolidationPolicy).to.have.property("threshold");
-      expect(oldProps.consolidationPolicy.threshold.toFixed(3)).to.equal(
-        "0.123"
-      );
-      expect(oldProps.consolidationPolicy).to.have.property(
-        "type",
-        "bytes_accum"
-      );
-      const properties = await view.replaceProperties({
-        consolidationPolicy: {
-          type: "tier",
-          threshold: 0.456
-        }
+      expect(oldProps.cleanupIntervalStep).to.equal(20);
+      expect(oldProps.writebufferIdle).to.equal(48);
+      const properties = await view.setProperties({
+        writebufferIdle: 32
       });
-      expect(properties).to.have.property("name", view.name);
-      expect(properties).to.have.property("links");
-      expect(properties).to.have.property("consolidationPolicy");
-      expect(properties.consolidationPolicy).to.have.property("type", "tier");
-      expect(properties.consolidationPolicy).to.have.property("threshold");
-      expect(properties.consolidationPolicy.threshold.toFixed(3)).to.equal(
-        "0.456"
-      );
+      expect(properties.cleanupIntervalStep).to.equal(10);
+      expect(properties.writebufferIdle).to.equal(32);
     });
   });
   describe("view.rename", () => {
