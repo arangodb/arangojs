@@ -68,6 +68,70 @@ export type QueryOptions = {
   };
 };
 
+export type ExplainOptions = {
+  optimizer?: { rules?: string[] };
+  maxNumberOfPlans?: number;
+  allPlans?: boolean;
+};
+
+export type ExplainPlan = {
+  nodes: any[];
+  rules: any[];
+  collections: any[];
+  variables: any[];
+  estimatedCost: number;
+  estimatedNrItems: number;
+  initialize: boolean;
+  isModificationQuery: boolean;
+};
+
+export type ExplainResult = {
+  plan?: ExplainPlan;
+  plans?: Array<ExplainPlan>;
+  cacheable: boolean;
+  warnings: any[];
+  stats: {
+    rulesExecuted: number;
+    rulesSkipped: number;
+    plansCreated: number;
+  };
+};
+
+export type ParseResult = {
+  parsed: boolean;
+  collections: any[];
+  bindVars: any[];
+  ast: any[];
+};
+
+export type QueryTracking = {
+  enabled: boolean;
+  maxQueryStringLength: number;
+  maxSlowQueries: number;
+  slowQueryThreshold: number;
+  trackBindVars: boolean;
+  trackSlowQueries: boolean;
+};
+
+export type QueryTrackingOptions = {
+  enabled?: boolean;
+  maxQueryStringLength?: number;
+  maxSlowQueries?: number;
+  slowQueryThreshold?: number;
+  trackBindVars?: boolean;
+  trackSlowQueries?: boolean;
+};
+
+export type RunningQuery = {
+  id: string;
+  query: string;
+  bindVars: any;
+  runTime: number;
+  started: string;
+  state: string; // TODO determine valid states: executing, finished, ...?
+  stream: boolean;
+};
+
 export interface ViewDescription {
   id: string;
   name: string;
@@ -378,6 +442,115 @@ export class Database {
       },
       res =>
         new ArrayCursor(this._connection, res.body, res.host, allowDirtyRead)
+    );
+  }
+
+  explain(query: string | AqlQuery | AqlLiteral): Promise<ExplainResult>;
+  explain(query: AqlQuery, opts?: ExplainOptions): Promise<ExplainResult>;
+  explain(
+    query: string | AqlLiteral,
+    bindVars?: any,
+    opts?: ExplainOptions
+  ): Promise<ExplainResult>;
+  explain(
+    query: string | AqlQuery | AqlLiteral,
+    bindVars?: any,
+    opts?: ExplainOptions
+  ): Promise<ExplainResult> {
+    if (isAqlQuery(query)) {
+      opts = bindVars;
+      bindVars = query.bindVars;
+      query = query.query;
+    } else if (isAqlLiteral(query)) {
+      query = query.toAQL();
+    }
+    return this._connection.request(
+      {
+        method: "POST",
+        path: "/_api/explain",
+        body: { options: opts, query, bindVars }
+      },
+      res => res.body
+    );
+  }
+
+  parse(query: string | AqlQuery | AqlLiteral): Promise<ParseResult>;
+  parse(query: AqlQuery): Promise<ParseResult>;
+  parse(query: string | AqlLiteral): Promise<ParseResult>;
+  parse(query: string | AqlQuery | AqlLiteral): Promise<ParseResult> {
+    if (isAqlQuery(query)) {
+      query = query.query;
+    } else if (isAqlLiteral(query)) {
+      query = query.toAQL();
+    }
+    return this._connection.request(
+      {
+        method: "POST",
+        path: "/_api/query",
+        body: { query }
+      },
+      res => res.body
+    );
+  }
+
+  queryTracking(): Promise<QueryTracking> {
+    return this._connection.request(
+      {
+        method: "GET",
+        path: "/_api/query/properties"
+      },
+      res => res.body
+    );
+  }
+
+  setQueryTracking(opts?: QueryTrackingOptions): Promise<QueryTracking> {
+    return this._connection.request(
+      {
+        method: "PUT",
+        path: "/_api/query/properties",
+        body: opts
+      },
+      res => res.body
+    );
+  }
+
+  listRunningQueries(): Promise<Array<RunningQuery>> {
+    return this._connection.request(
+      {
+        method: "GET",
+        path: "/_api/query/current"
+      },
+      res => res.body
+    );
+  }
+
+  listSlowQueries(): Promise<any> {
+    return this._connection.request(
+      {
+        method: "GET",
+        path: "/_api/query/slow"
+      },
+      res => res.body
+    );
+  }
+
+  clearSlowQueries(): Promise<void> {
+    return this._connection.request(
+      {
+        method: "DELETE",
+        path: "/_api/query/slow"
+      },
+      () => undefined
+    );
+  }
+
+  killQuery(queryId: string): Promise<void> {
+    return this._connection.request(
+      {
+        method: "DELETE",
+        path: `/_api/query/${queryId}`
+      },
+      () => undefined
     );
   }
 

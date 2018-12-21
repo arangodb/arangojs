@@ -23,6 +23,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   and ArangoDB will still continue processing the request, this will merely
   result in the socket being forcefully disconnected.
 
+- Added query management API
+
+  This implements most endpoints of https://docs.arangodb.com/3.4/HTTP/AqlQuery/.
+
 ## [6.9.0] - 2018-11-07
 
 ### Changed
