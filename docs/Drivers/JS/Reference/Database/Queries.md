@@ -147,10 +147,10 @@ const query = aql`
 
 ## database.explain
 
-`async database.explain(query, [bindVars,] [opts]): Array<Plan>`
+`async database.explain(query, [bindVars,] [opts]): ExplainResult`
 
 Explains a database query using the given _query_ and _bindVars_ and
-returns an array of execution plans for the query.
+returns one or more plans.
 
 **Arguments**
 
@@ -180,8 +180,9 @@ returns an array of execution plans for the query.
 
   - **allPlans**: `boolean` (Default: `false`)
 
-    If set to true, all possible execution plans will be returned.
-    Otherwise only the optimal execution plan will be returned.
+    If set to true, all possible execution plans will be returned
+    as the _plans_ property. Otherwise only the optimal execution plan will
+    be returned as the _plan_ property.
 
 ## database.parse
 
