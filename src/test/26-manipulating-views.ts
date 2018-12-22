@@ -52,37 +52,49 @@ describe34("Manipulating views", function() {
   describe("view.setProperties", () => {
     it("should change properties", async () => {
       const initial = await view.properties();
-      expect(initial.cleanupIntervalStep).to.equal(10);
-      expect(initial.writebufferIdle).to.equal(64);
+      expect(initial.consolidationIntervalMsec).to.equal(60000);
+      expect(initial.consolidationPolicy).to.have.property(
+        "type",
+        "bytes_accum"
+      );
       const oldProps = await view.setProperties({
-        cleanupIntervalStep: 20,
-        writebufferIdle: 48
+        consolidationIntervalMsec: 45000,
+        consolidationPolicy: { type: "tier" }
       });
-      expect(oldProps.cleanupIntervalStep).to.equal(20);
-      expect(oldProps.writebufferIdle).to.equal(48);
+      expect(oldProps.consolidationIntervalMsec).to.equal(45000);
+      expect(oldProps.consolidationPolicy).to.have.property("type", "tier");
       const properties = await view.setProperties({
-        writebufferIdle: 32
+        consolidationPolicy: { type: "bytes_accum" }
       });
-      expect(properties.cleanupIntervalStep).to.equal(20);
-      expect(properties.writebufferIdle).to.equal(32);
+      expect(properties.consolidationIntervalMsec).to.equal(45000);
+      expect(properties.consolidationPolicy).to.have.property(
+        "type",
+        "bytes_accum"
+      );
     });
   });
   describe("view.replaceProperties", () => {
     it("should change properties", async () => {
       const initial = await view.properties();
-      expect(initial.cleanupIntervalStep).to.equal(10);
-      expect(initial.writebufferIdle).to.equal(64);
-      const oldProps = await view.setProperties({
-        cleanupIntervalStep: 20,
-        writebufferIdle: 48
+      expect(initial.consolidationIntervalMsec).to.equal(60000);
+      expect(initial.consolidationPolicy).to.have.property(
+        "type",
+        "bytes_accum"
+      );
+      const oldProps = await view.replaceProperties({
+        consolidationIntervalMsec: 45000,
+        consolidationPolicy: { type: "tier" }
       });
-      expect(oldProps.cleanupIntervalStep).to.equal(20);
-      expect(oldProps.writebufferIdle).to.equal(48);
-      const properties = await view.setProperties({
-        writebufferIdle: 32
+      expect(oldProps.consolidationIntervalMsec).to.equal(45000);
+      expect(oldProps.consolidationPolicy).to.have.property("type", "tier");
+      const properties = await view.replaceProperties({
+        consolidationPolicy: { type: "bytes_accum" }
       });
-      expect(properties.cleanupIntervalStep).to.equal(10);
-      expect(properties.writebufferIdle).to.equal(32);
+      expect(properties.consolidationIntervalMsec).to.equal(60000);
+      expect(properties.consolidationPolicy).to.have.property(
+        "type",
+        "bytes_accum"
+      );
     });
   });
   describe("view.rename", () => {
