@@ -136,6 +136,13 @@ describe("Query Management API", function() {
   });
 
   describe("database.setQueryTracking", () => {
+    afterEach(async () => {
+      await db.setQueryTracking({
+        enabled: true,
+        slowQueryThreshold: 5
+      });
+      await db.clearSlowQueries();
+    });
     it("returns the AQL query tracking properties", async () => {
       const result = await db.setQueryTracking({
         enabled: true,
@@ -167,16 +174,59 @@ describe("Query Management API", function() {
   });
 
   describe("database.listSlowQueries", () => {
-    it("returns a list of slow queries");
+    beforeEach(async () => {
+      await db.setQueryTracking({
+        enabled: true,
+        slowQueryThreshold: 0.1,
+        trackSlowQueries: true
+      });
+      await db.clearSlowQueries();
+    });
+    afterEach(async () => {
+      await db.setQueryTracking({
+        enabled: true,
+        slowQueryThreshold: 5
+      });
+      await db.clearSlowQueries();
+    });
+    it("returns a list of slow queries", async () => {
+      const query = "RETURN SLEEP(0.2)";
+      await db.query(query);
+      const queries = await db.listSlowQueries();
+      expect(queries).to.have.lengthOf(1);
+      expect(queries[0]).to.have.property("query", query);
+    });
   });
 
   describe("database.clearSlowQueries", () => {
-    it("clears the list of slow queries");
+    beforeEach(async () => {
+      await db.setQueryTracking({
+        enabled: true,
+        slowQueryThreshold: 0.1,
+        trackSlowQueries: true
+      });
+      await db.clearSlowQueries();
+    });
+    afterEach(async () => {
+      await db.setQueryTracking({
+        enabled: true,
+        slowQueryThreshold: 5
+      });
+      await db.clearSlowQueries();
+    });
+    it("clears the list of slow queries", async () => {
+      await db.query("RETURN SLEEP(0.2)");
+      const queries1 = await db.listSlowQueries();
+      expect(queries1).to.have.lengthOf(1);
+      await db.clearSlowQueries();
+      const queries2 = await db.listSlowQueries();
+      expect(queries2).to.have.lengthOf(0);
+    });
   });
 
   describe("database.killQuery", () => {
     it("kills the given query", async () => {
-      const query = "RETURN SLEEP(5)";
+      const query = "RETURN SLEEP(0.5)";
       const p1 = db.query(query);
       const queries = await db.listRunningQueries();
       expect(queries).to.have.lengthOf(1);
@@ -186,6 +236,9 @@ describe("Query Management API", function() {
       try {
         await p1;
       } catch (e) {
+        expect(e).to.be.instanceOf(ArangoError);
+        expect(e).to.have.property("errorNum", 1500);
+        expect(e).to.have.property("code", 410);
         return;
       }
       expect.fail();
