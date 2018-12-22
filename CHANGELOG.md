@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [6.10.0] - 2018-12-22
 
 ### Changed
 
@@ -17,13 +17,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 
-- Added `timeout` option to `db.query` and request methods
+- Added `timeout` option to `db.query` and request methods ([#572](https://github.com/arangodb/arangojs/issues/572))
 
   Note that this merely cancels the request. Queries will still be executed
   and ArangoDB will still continue processing the request, this will merely
   result in the socket being forcefully disconnected.
 
-- Added query management API
+- Added query management API ([#474](https://github.com/arangodb/arangojs/issues/474))
 
   This implements most endpoints of https://docs.arangodb.com/3.4/HTTP/AqlQuery/.
 
@@ -420,7 +420,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
   Graph methods now only return the relevant part of the response body.
 
-[unreleased]: https://github.com/arangodb/arangojs/compare/v6.9.0...HEAD
+[6.10.0]: https://github.com/arangodb/arangojs/compare/v6.9.0...v6.10.0
 [6.9.0]: https://github.com/arangodb/arangojs/compare/v6.8.0...v6.9.0
 [6.8.0]: https://github.com/arangodb/arangojs/compare/v6.7.0...v6.8.0
 [6.7.0]: https://github.com/arangodb/arangojs/compare/v6.6.0...v6.7.0
