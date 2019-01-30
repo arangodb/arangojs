@@ -273,7 +273,7 @@ export abstract class BaseCollection implements ArangoCollection {
     });
   }
 
-  replace(documentHandle: DocumentHandle, newValue: any, opts: any = {}) {
+  replace(documentHandle: DocumentHandle, newValue: Object | Array<Object>, opts: any = {}) {
     const headers: { [key: string]: string } = {};
     if (typeof opts === "string") {
       opts = { rev: opts };
@@ -295,7 +295,7 @@ export abstract class BaseCollection implements ArangoCollection {
     );
   }
 
-  update(documentHandle: DocumentHandle, newValue: any, opts: any = {}) {
+  update(documentHandle: DocumentHandle, newValue: Object | Array<Object>, opts: any = {}) {
     const headers: { [key: string]: string } = {};
     if (typeof opts === "string") {
       opts = { rev: opts };
@@ -317,7 +317,7 @@ export abstract class BaseCollection implements ArangoCollection {
     );
   }
 
-  bulkUpdate(newValues: any, opts?: any) {
+  bulkUpdate(newValues: Object | Array<Object>, opts?: any) {
     return this._connection.request(
       {
         method: "PATCH",
@@ -728,7 +728,7 @@ export class DocumentCollection extends BaseCollection {
     super(connection, name);
   }
 
-  save(data: any, opts?: DocumentSaveOptions | boolean) {
+  save(data: Object | Array<Object>, opts?: DocumentSaveOptions | boolean) {
     if (typeof opts === "boolean") {
       opts = { returnNew: opts };
     }
@@ -789,15 +789,15 @@ export class EdgeCollection extends BaseCollection {
     return this.document(documentHandle, opts);
   }
 
-  save(data: any, opts?: DocumentSaveOptions | boolean): Promise<any>;
+  save(data: Object | Array<Object>, opts?: DocumentSaveOptions | boolean): Promise<any>;
   save(
-    data: any,
+    data: Object | Array<Object>,
     fromId: DocumentHandle,
     toId: DocumentHandle,
     opts?: DocumentSaveOptions | boolean
   ): Promise<any>;
   save(
-    data: any,
+    data: Object | Array<Object>,
     fromIdOrOpts?: DocumentHandle | DocumentSaveOptions | boolean,
     toId?: DocumentHandle,
     opts?: DocumentSaveOptions | boolean

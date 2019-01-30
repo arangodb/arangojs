@@ -67,7 +67,7 @@ export class GraphVertexCollection extends BaseCollection {
     return this.document(documentHandle, opts);
   }
 
-  save(data: any, opts?: { waitForSync?: boolean }) {
+  save(data: Object | Array<Object>, opts?: { waitForSync?: boolean }) {
     return this._connection.request(
       {
         method: "POST",
@@ -79,7 +79,7 @@ export class GraphVertexCollection extends BaseCollection {
     );
   }
 
-  replace(documentHandle: DocumentHandle, newValue: any, opts: any = {}) {
+  replace(documentHandle: DocumentHandle, newValue: Object | Array<Object>, opts: any = {}) {
     const headers: { [key: string]: string } = {};
     if (typeof opts === "string") {
       opts = { rev: opts };
@@ -103,7 +103,7 @@ export class GraphVertexCollection extends BaseCollection {
     );
   }
 
-  update(documentHandle: DocumentHandle, newValue: any, opts: any = {}) {
+  update(documentHandle: DocumentHandle, newValue: Object | Array<Object>, opts: any = {}) {
     const headers: { [key: string]: string } = {};
     if (typeof opts === "string") {
       opts = { rev: opts };
@@ -193,15 +193,15 @@ export class GraphEdgeCollection extends EdgeCollection {
     });
   }
 
-  save(data: any, opts?: { waitForSync?: boolean }): Promise<any>;
+  save(data: Object | Array<Object>, opts?: { waitForSync?: boolean }): Promise<any>;
   save(
-    data: any,
+    data: Object | Array<Object>,
     fromId: DocumentHandle,
     toId: DocumentHandle,
     opts?: { waitForSync?: boolean }
   ): Promise<any>;
   save(
-    data: any,
+    data: Object | Array<Object>,
     fromId?: DocumentHandle | any,
     toId?: DocumentHandle,
     opts?: { waitForSync?: boolean }
@@ -225,7 +225,7 @@ export class GraphEdgeCollection extends EdgeCollection {
     );
   }
 
-  replace(documentHandle: DocumentHandle, newValue: any, opts: any = {}) {
+  replace(documentHandle: DocumentHandle, newValue: Object | Array<Object>, opts: any = {}) {
     const headers: { [key: string]: string } = {};
     if (typeof opts === "string") {
       opts = { rev: opts };
@@ -249,7 +249,7 @@ export class GraphEdgeCollection extends EdgeCollection {
     );
   }
 
-  update(documentHandle: DocumentHandle, newValue: any, opts: any = {}) {
+  update(documentHandle: DocumentHandle, newValue: Object | Array<Object>, opts: any = {}) {
     const headers: { [key: string]: string } = {};
     if (typeof opts === "string") {
       opts = { rev: opts };
