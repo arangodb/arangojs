@@ -107,7 +107,11 @@ if (exists === false) {
 `async documentCollection.save(data, [opts]): Object`
 
 Creates a new document with the given _data_ and returns an object containing
-the document's metadata.
+the document's metadata (`_id`, `_key` and `_rev` attributes).
+
+Multiple documents can be created in a single call by passing an array of
+objects as argument for _data_. The result will be an array too, of which
+some elements can be error objects if the documents couldn't be saved.
 
 **Arguments**
 
@@ -125,12 +129,12 @@ the document's metadata.
 
   - **returnNew**: `boolean` (Default: `false`)
 
-    If set to `true`, return additionally the complete new documents under the
+    If set to `true`, return additionally the complete new document(s) under the
     attribute `new` in the result.
 
   - **returnOld**: `boolean` (Default: `false`)
 
-    If set to `true`, return additionally the complete old documents under the
+    If set to `true`, return additionally the complete old document(s) under the
     attribute `old` in the result.
 
   - **silent**: `boolean` (Default: `false`)
