@@ -5,7 +5,7 @@ The _EdgeCollection API_ extends the
 
 ## edgeCollection.document
 
-`async edgeCollection.document(documentHandle, [opts]): Object`
+`async edgeCollection.document(documentHandle, [opts]): Edge`
 
 Alias: `edgeCollection.edge`.
 

@@ -79,7 +79,11 @@ export class GraphVertexCollection extends BaseCollection {
     );
   }
 
-  replace(documentHandle: DocumentHandle, newValue: Object | Array<Object>, opts: any = {}) {
+  replace(
+    documentHandle: DocumentHandle,
+    newValue: Object | Array<Object>,
+    opts: any = {}
+  ) {
     const headers: { [key: string]: string } = {};
     if (typeof opts === "string") {
       opts = { rev: opts };
@@ -103,7 +107,11 @@ export class GraphVertexCollection extends BaseCollection {
     );
   }
 
-  update(documentHandle: DocumentHandle, newValue: Object | Array<Object>, opts: any = {}) {
+  update(
+    documentHandle: DocumentHandle,
+    newValue: Object | Array<Object>,
+    opts: any = {}
+  ) {
     const headers: { [key: string]: string } = {};
     if (typeof opts === "string") {
       opts = { rev: opts };
@@ -193,7 +201,10 @@ export class GraphEdgeCollection extends EdgeCollection {
     });
   }
 
-  save(data: Object | Array<Object>, opts?: { waitForSync?: boolean }): Promise<any>;
+  save(
+    data: Object | Array<Object>,
+    opts?: { waitForSync?: boolean }
+  ): Promise<any>;
   save(
     data: Object | Array<Object>,
     fromId: DocumentHandle,
@@ -202,16 +213,21 @@ export class GraphEdgeCollection extends EdgeCollection {
   ): Promise<any>;
   save(
     data: Object | Array<Object>,
-    fromId?: DocumentHandle | any,
+    fromIdOrOpts?: DocumentHandle | { waitForSync?: boolean },
     toId?: DocumentHandle,
     opts?: { waitForSync?: boolean }
   ) {
-    if (fromId !== undefined) {
-      if (toId !== undefined) {
-        data._from = this._documentHandle(fromId);
-        data._to = this._documentHandle(toId!);
+    if (toId !== undefined) {
+      const fromId = this._documentHandle(fromIdOrOpts as DocumentHandle);
+      toId = this._documentHandle(toId);
+      if (Array.isArray(data)) {
+        data = data.map(data => ({ ...data, _from: fromId, _to: toId }));
       } else {
-        opts = fromId;
+        data = { ...data, _from: fromId, _to: toId };
+      }
+    } else {
+      if (fromIdOrOpts !== undefined) {
+        opts = fromIdOrOpts as { waitForSync?: boolean };
       }
     }
     return this._connection.request(
@@ -225,7 +241,11 @@ export class GraphEdgeCollection extends EdgeCollection {
     );
   }
 
-  replace(documentHandle: DocumentHandle, newValue: Object | Array<Object>, opts: any = {}) {
+  replace(
+    documentHandle: DocumentHandle,
+    newValue: Object | Array<Object>,
+    opts: any = {}
+  ) {
     const headers: { [key: string]: string } = {};
     if (typeof opts === "string") {
       opts = { rev: opts };
@@ -249,7 +269,11 @@ export class GraphEdgeCollection extends EdgeCollection {
     );
   }
 
-  update(documentHandle: DocumentHandle, newValue: Object | Array<Object>, opts: any = {}) {
+  update(
+    documentHandle: DocumentHandle,
+    newValue: Object | Array<Object>,
+    opts: any = {}
+  ) {
     const headers: { [key: string]: string } = {};
     if (typeof opts === "string") {
       opts = { rev: opts };

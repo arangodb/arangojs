@@ -129,9 +129,9 @@ describe("Manipulating databases", function() {
           }
           expect.fail(`Expected document to be destroyed: ${doc._id}`);
         }),
-        ...systemCollections.map(name =>
-          db.collection(name).document("example")
-        )
+        ...systemCollections.map(name => {
+          db.collection(name).document("example");
+        })
       ]);
     });
     it2x(
