@@ -65,13 +65,34 @@ db.query({
 
 ### TypeScript `error TS2304: Cannot find name 'Blob'.`
 
-Even if your project doesn't contain any browser code, you need to add `"dom"` to the `"lib"` array in your `tsconfig.json` to make arangojs work. This is a known limitation because the library supports both browser and Node environments and there is no common binary format that works in both environments:
+Even if your project doesn't contain any browser code, you need to add `"dom"`
+to the `"lib"` array in your `tsconfig.json` to make arangojs work. This is a
+known limitation because the library supports both browser and Node
+environments and there is no common binary format that works in
+both environments:
 
 ```diff
 // tsconfig.json
 - "lib": ["es6"],
 + "lib": ["es6", "dom"],
 ```
+
+### Node.js `ReferenceError: window is not defined`
+
+If you compile your Node project using a build tool like Webpack, you may need
+to tell it to
+[target the correct environment](https://webpack.js.org/configuration/target/):
+
+```diff
+// webpack.config.js
++ "target": "node",
+```
+
+To support use in both browser and Node environments arangojs uses the
+[`package.json` `browser` field](https://github.com/defunctzombie/package-browser-field-spec),
+to substitute browser-specific implementations for certain modules.
+Build tools like Webpack will respect this field when targetting a browser
+environment and may need to be explicitly told you are targetting Node instead.
 
 ## Documentation
 
