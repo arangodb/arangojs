@@ -23,48 +23,6 @@ Performs a query to fetch all documents in the collection. Returns a
 
 Fetches a document from the collection at random.
 
-## collection.first
-
-`async collection.first([opts]): Array<Object>`
-
-Performs a query to fetch the first documents in the collection. Returns an
-array of the matching documents.
-
-{% hint 'warning' %}
-This method is not available when targeting ArangoDB 3.0 or later,
-see [Compatibility](../../GettingStarted/README.md#compatibility).
-{% endhint %}
-
-**Arguments**
-
-- **opts**: `Object` (optional)
-
-  For information on the possible options see the
-  [HTTP API for returning the first document of a collection](https://docs.arangodb.com/2.8/HttpSimpleQuery/#first-document-of-a-collection).
-
-  If _opts_ is a number it is treated as _opts.count_.
-
-## collection.last
-
-`async collection.last([opts]): Array<Object>`
-
-Performs a query to fetch the last documents in the collection. Returns an array
-of the matching documents.
-
-{% hint 'warning' %}
-This method is not available when targeting ArangoDB 3.0 or later,
-see [Compatibility](../../GettingStarted/README.md#compatibility).
-{% endhint %}
-
-**Arguments**
-
-- **opts**: `Object` (optional)
-
-  For information on the possible options see the
-  [HTTP API for returning the last document of a collection](https://docs.arangodb.com/2.8/HttpSimpleQuery/#last-document-of-a-collection).
-
-  If _opts_ is a number it is treated as _opts.count_.
-
 ## collection.byExample
 
 `async collection.byExample(example, [opts]): Cursor`

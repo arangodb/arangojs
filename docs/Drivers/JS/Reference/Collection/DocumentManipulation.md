@@ -172,11 +172,6 @@ assert.equal(doc3.hello, doc.hello);
 Updates (merges) the content of the documents with the given _documents_ and
 returns an array containing the documents' metadata.
 
-{% hint 'info' %}
-This method is only available when targeting ArangoDB 3.0 or later,
-see [Compatibility](../../GettingStarted/README.md#compatibility).
-{% endhint %}
-
 **Arguments**
 
 - **documents**: `Array<Object>`

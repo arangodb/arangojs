@@ -86,7 +86,7 @@ export class Connection {
   private _activeTasks: number = 0;
   private _agent?: any;
   private _agentOptions: { [key: string]: any };
-  private _arangoVersion: number = 30000;
+  private _arangoVersion: number = 30400;
   private _databaseName: string | false = "_system";
   private _headers: { [key: string]: string };
   private _loadBalancingStrategy: LoadBalancingStrategy;

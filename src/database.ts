@@ -314,10 +314,7 @@ export class Database {
         path: "/_api/collection",
         qs: { excludeSystem }
       },
-      res =>
-        this._connection.arangoMajor <= 2
-          ? res.body.collections
-          : res.body.result
+      res => res.body.result
     );
   }
 
