@@ -89,11 +89,6 @@ export abstract class BaseCollection<T extends object = any>
     this.name = name;
     this._idPrefix = `${this.name}/`;
     this._connection = connection;
-    if (this._connection.arangoMajor >= 3) {
-      this.first = undefined!;
-      this.last = undefined!;
-      this.createCapConstraint = undefined!;
-    }
   }
 
   protected _documentPath(documentHandle: DocumentHandle) {
@@ -328,7 +323,7 @@ export abstract class BaseCollection<T extends object = any>
     if (typeof opts === "string") {
       opts = { rev: opts };
     }
-    if (opts.rev && this._connection.arangoMajor >= 3) {
+    if (opts.rev) {
       let rev: string | undefined;
       ({ rev, ...opts } = opts);
       headers["if-match"] = rev!;
@@ -354,7 +349,7 @@ export abstract class BaseCollection<T extends object = any>
     if (typeof opts === "string") {
       opts = { rev: opts };
     }
-    if (opts.rev && this._connection.arangoMajor >= 3) {
+    if (opts.rev) {
       let rev: string | undefined;
       ({ rev, ...opts } = opts);
       headers["if-match"] = rev!;
@@ -388,7 +383,7 @@ export abstract class BaseCollection<T extends object = any>
     if (typeof opts === "string") {
       opts = { rev: opts };
     }
-    if (opts.rev && this._connection.arangoMajor >= 3) {
+    if (opts.rev) {
       let rev: string | undefined;
       ({ rev, ...opts } = opts);
       headers["if-match"] = rev!;
@@ -405,16 +400,6 @@ export abstract class BaseCollection<T extends object = any>
   }
 
   list(type: string = "id") {
-    if (this._connection.arangoMajor <= 2) {
-      return this._connection.request(
-        {
-          path: "/_api/document",
-          qs: { type, collection: this.name }
-        },
-        res => res.body.documents
-      );
-    }
-
     return this._connection.request(
       {
         method: "PUT",
@@ -447,40 +432,6 @@ export abstract class BaseCollection<T extends object = any>
         body: { collection: this.name }
       },
       res => res.body.document
-    );
-  }
-
-  first(opts?: any) {
-    if (typeof opts === "number") {
-      opts = { count: opts };
-    }
-    return this._connection.request(
-      {
-        method: "PUT",
-        path: "/_api/simple/first",
-        body: {
-          ...opts,
-          collection: this.name
-        }
-      },
-      res => res.body.result
-    );
-  }
-
-  last(opts?: any) {
-    if (typeof opts === "number") {
-      opts = { count: opts };
-    }
-    return this._connection.request(
-      {
-        method: "PUT",
-        path: "/_api/simple/last",
-        body: {
-          ...opts,
-          collection: this.name
-        }
-      },
-      res => res.body.result
     );
   }
 
@@ -660,21 +611,6 @@ export abstract class BaseCollection<T extends object = any>
     );
   }
 
-  createCapConstraint(opts?: any) {
-    if (typeof opts === "number") {
-      opts = { size: opts };
-    }
-    return this._connection.request(
-      {
-        method: "POST",
-        path: "/_api/index",
-        body: { ...opts, type: "cap" },
-        qs: { collection: this.name }
-      },
-      res => res.body
-    );
-  }
-
   createHashIndex(fields: string[] | string, opts?: any) {
     if (typeof fields === "string") {
       fields = [fields];
@@ -793,21 +729,6 @@ export class DocumentCollection<T extends object = any> extends BaseCollection<
       opts = { returnNew: opts };
     }
 
-    if (this._connection.arangoMajor <= 2) {
-      return this._connection.request(
-        {
-          method: "POST",
-          path: "/_api/document",
-          body: data,
-          qs: {
-            ...opts,
-            collection: this.name
-          }
-        },
-        res => res.body
-      );
-    }
-
     return this._connection.request(
       {
         method: "POST",
@@ -828,9 +749,6 @@ export class EdgeCollection<T extends object = any> extends BaseCollection<T> {
   }
 
   protected _documentPath(documentHandle: DocumentHandle) {
-    if (this._connection.arangoMajor < 3) {
-      return `edge/${this._documentHandle(documentHandle)}`;
-    }
     return `document/${this._documentHandle(documentHandle)}`;
   }
 
@@ -879,25 +797,6 @@ export class EdgeCollection<T extends object = any> extends BaseCollection<T> {
     }
     if (typeof opts === "boolean") {
       opts = { returnNew: opts };
-    }
-    if (this._connection.arangoMajor <= 2) {
-      if (Array.isArray(data)) {
-        throw new Error("ArangoDB 2 does not support batch operations");
-      }
-      return this._connection.request(
-        {
-          method: "POST",
-          path: "/_api/edge",
-          body: data,
-          qs: {
-            ...opts,
-            collection: this.name,
-            from: (data as any)._from,
-            to: (data as any)._to
-          }
-        },
-        res => res.body
-      );
     }
 
     return this._connection.request(
