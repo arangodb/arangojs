@@ -7,10 +7,13 @@ the time of the driver release.
 
 The [_arangoVersion_ option](../Reference/Database/README.md)
 can be used to tell arangojs to target a specific
-ArangoDB version. Depending on the version this will enable or disable certain
+ArangoDB version. Depending on the version this may enable or disable certain
 methods and change behavior to maintain compatibility with the given version.
-The oldest version of ArangoDB supported by arangojs when using this option
-is 2.8.0 (using `arangoVersion: 20800`).
+
+**Note**: As of June 2018 ArangoDB 2.8 has reached its End of Life and is no
+longer supported in arangojs 7.0.0 and later. If your code needs to work with
+ArangoDB 2.8 you can continue using arangojs 6 and enable ArangoDB 2.8
+compatibility mode by setting the option `arangoVersion: 20800`.
 
 The yarn/npm distribution of ArangoJS is compatible with Node.js versions 9.x
 (latest), 8.x (LTS) and 6.x (LTS). Node.js version support follows
@@ -175,11 +178,6 @@ db.useBasicAuth("admin", "maplesyrup");
 const db = new Database({
   url: "http://myproxy.local:8000",
   isAbsolute: true // don't automatically append database path to URL
-});
-
-// Trigger ArangoDB 2.8 compatibility mode
-const db = new Database({
-  arangoVersion: 20800
 });
 ```
 

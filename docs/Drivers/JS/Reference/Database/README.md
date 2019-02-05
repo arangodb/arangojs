@@ -78,7 +78,7 @@ If _config_ is a string, it will be interpreted as _config.url_.
     hatch when working with standalone servers exposing a single database API
     from behind a reverse proxy, which is not a recommended setup.
 
-  - **arangoVersion**: `number` (Default: `30000`)
+  - **arangoVersion**: `number` (Default: `30400`)
 
     Numeric representation of the ArangoDB version the driver should expect.
     The format is defined as `XYYZZ` where `X` is the major version, `Y` is
