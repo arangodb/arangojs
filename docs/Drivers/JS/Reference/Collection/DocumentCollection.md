@@ -147,7 +147,9 @@ some elements can be error objects if the documents couldn't be saved.
 
     If set to true, the insert becomes a replace-insert. If a document with the
     same \_key already exists the new document is not rejected with unique
-    constraint violated but will replace the old document.
+    constraint violated but will replace the old document. This argument is
+    available and will take effect only if you are connected to an ArangoDB 
+    v3.4.0 or higher.
 
 If a boolean is passed instead of an options object, it will be interpreted as
 the _returnNew_ option.
