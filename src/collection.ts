@@ -1,6 +1,22 @@
 import { Connection } from "./connection";
 import { ArrayCursor } from "./cursor";
 import { isArangoError } from "./error";
+import {
+  CollectionChecksum,
+  CollectionFigures,
+  CollectionProperties,
+  CollectionPropertiesOptions,
+  CreateCollectionOptions,
+  Document,
+  DocumentData,
+  Edge,
+  InsertOptions,
+  RemoveByExampleOptions,
+  RemoveOptions,
+  ReplaceOptions,
+  UpdateByExampleOptions,
+  UpdateOptions
+} from "./util/types";
 
 export enum CollectionType {
   DOCUMENT_COLLECTION = 2,
@@ -59,7 +75,9 @@ export interface ArangoCollection {
 
 export const DOCUMENT_NOT_FOUND = 1202;
 export const COLLECTION_NOT_FOUND = 1203;
-export abstract class BaseCollection implements ArangoCollection {
+
+export abstract class BaseCollection<T extends object = any>
+  implements ArangoCollection {
   isArangoCollection: true = true;
   name: string;
   abstract type: CollectionType;
@@ -147,7 +165,7 @@ export abstract class BaseCollection implements ArangoCollection {
     );
   }
 
-  create(properties?: any) {
+  create(properties?: CreateCollectionOptions) {
     return this._connection.request(
       {
         method: "POST",
@@ -162,7 +180,7 @@ export abstract class BaseCollection implements ArangoCollection {
     );
   }
 
-  properties() {
+  properties(): Promise<CollectionProperties> {
     return this._get("properties");
   }
 
@@ -170,7 +188,7 @@ export abstract class BaseCollection implements ArangoCollection {
     return this._get("count");
   }
 
-  figures() {
+  figures(): Promise<CollectionFigures> {
     return this._get("figures");
   }
 
@@ -178,7 +196,7 @@ export abstract class BaseCollection implements ArangoCollection {
     return this._get("revision");
   }
 
-  checksum(opts?: any) {
+  checksum(opts?: any): Promise<CollectionChecksum> {
     return this._get("checksum", opts);
   }
 
@@ -193,7 +211,7 @@ export abstract class BaseCollection implements ArangoCollection {
     return this._put("unload", undefined);
   }
 
-  setProperties(properties: any) {
+  setProperties(properties: CollectionPropertiesOptions) {
     return this._put("properties", properties);
   }
 
@@ -247,15 +265,18 @@ export abstract class BaseCollection implements ArangoCollection {
       });
   }
 
-  document(documentHandle: DocumentHandle, graceful: boolean): Promise<any>;
+  document(
+    documentHandle: DocumentHandle,
+    graceful: boolean
+  ): Promise<Document<T>>;
   document(
     documentHandle: DocumentHandle,
     opts?: DocumentReadOptions
-  ): Promise<any>;
+  ): Promise<Document<T>>;
   document(
     documentHandle: DocumentHandle,
     opts: boolean | DocumentReadOptions = {}
-  ): Promise<any> {
+  ): Promise<Document<T>> {
     if (typeof opts === "boolean") {
       opts = { graceful: opts };
     }
@@ -273,15 +294,19 @@ export abstract class BaseCollection implements ArangoCollection {
     });
   }
 
-  replace(documentHandle: DocumentHandle, newValue: any, opts: any = {}) {
+  replace(
+    documentHandle: DocumentHandle,
+    newValue: Object | Array<Object>,
+    opts: ReplaceOptions = {}
+  ) {
     const headers: { [key: string]: string } = {};
     if (typeof opts === "string") {
       opts = { rev: opts };
     }
     if (opts.rev && this._connection.arangoMajor >= 3) {
-      let rev: string;
+      let rev: string | undefined;
       ({ rev, ...opts } = opts);
-      headers["if-match"] = rev;
+      headers["if-match"] = rev!;
     }
     return this._connection.request(
       {
@@ -295,15 +320,19 @@ export abstract class BaseCollection implements ArangoCollection {
     );
   }
 
-  update(documentHandle: DocumentHandle, newValue: any, opts: any = {}) {
+  update(
+    documentHandle: DocumentHandle,
+    newValue: Object | Array<Object>,
+    opts: UpdateOptions = {}
+  ) {
     const headers: { [key: string]: string } = {};
     if (typeof opts === "string") {
       opts = { rev: opts };
     }
     if (opts.rev && this._connection.arangoMajor >= 3) {
-      let rev: string;
+      let rev: string | undefined;
       ({ rev, ...opts } = opts);
-      headers["if-match"] = rev;
+      headers["if-match"] = rev!;
     }
     return this._connection.request(
       {
@@ -317,7 +346,7 @@ export abstract class BaseCollection implements ArangoCollection {
     );
   }
 
-  bulkUpdate(newValues: any, opts?: any) {
+  bulkUpdate(newValues: Object | Array<Object>, opts?: any) {
     return this._connection.request(
       {
         method: "PATCH",
@@ -329,15 +358,15 @@ export abstract class BaseCollection implements ArangoCollection {
     );
   }
 
-  remove(documentHandle: DocumentHandle, opts: any = {}) {
+  remove(documentHandle: DocumentHandle, opts: RemoveOptions = {}) {
     const headers: { [key: string]: string } = {};
     if (typeof opts === "string") {
       opts = { rev: opts };
     }
     if (opts.rev && this._connection.arangoMajor >= 3) {
-      let rev: string;
+      let rev: string | undefined;
       ({ rev, ...opts } = opts);
-      headers["if-match"] = rev;
+      headers["if-match"] = rev!;
     }
     return this._connection.request(
       {
@@ -459,7 +488,7 @@ export abstract class BaseCollection implements ArangoCollection {
     );
   }
 
-  removeByExample(example: any, opts?: any) {
+  removeByExample(example: any, opts?: RemoveByExampleOptions) {
     return this._connection.request(
       {
         method: "PUT",
@@ -474,7 +503,11 @@ export abstract class BaseCollection implements ArangoCollection {
     );
   }
 
-  replaceByExample(example: any, newValue: any, opts?: any) {
+  replaceByExample(
+    example: any,
+    newValue: any,
+    opts?: { waitForSync?: boolean; limit?: number }
+  ) {
     return this._connection.request(
       {
         method: "PUT",
@@ -490,7 +523,7 @@ export abstract class BaseCollection implements ArangoCollection {
     );
   }
 
-  updateByExample(example: any, newValue: any, opts?: any) {
+  updateByExample(example: any, newValue: any, opts?: UpdateByExampleOptions) {
     return this._connection.request(
       {
         method: "PUT",
@@ -714,21 +747,18 @@ export abstract class BaseCollection implements ArangoCollection {
   }
 }
 
-export interface DocumentSaveOptions {
-  waitForSync?: boolean;
-  returnNew?: boolean;
-  returnOld?: boolean;
-  overwrite?: boolean;
-  silent?: boolean;
-}
-
-export class DocumentCollection extends BaseCollection {
+export class DocumentCollection<T extends object = any> extends BaseCollection<
+  T
+> {
   type = CollectionType.DOCUMENT_COLLECTION;
   constructor(connection: Connection, name: string) {
     super(connection, name);
   }
 
-  save(data: any, opts?: DocumentSaveOptions | boolean) {
+  save(
+    data: DocumentData<T> | Array<DocumentData<T>>,
+    opts?: InsertOptions | boolean
+  ) {
     if (typeof opts === "boolean") {
       opts = { returnNew: opts };
     }
@@ -760,7 +790,7 @@ export class DocumentCollection extends BaseCollection {
   }
 }
 
-export class EdgeCollection extends BaseCollection {
+export class EdgeCollection<T extends object = any> extends BaseCollection<T> {
   type = CollectionType.EDGE_COLLECTION;
 
   constructor(connection: Connection, name: string) {
@@ -774,44 +804,56 @@ export class EdgeCollection extends BaseCollection {
     return `document/${this._documentHandle(documentHandle)}`;
   }
 
-  edge(documentHandle: DocumentHandle, graceful: boolean): Promise<any>;
+  edge(documentHandle: DocumentHandle, graceful: boolean): Promise<Edge<T>>;
   edge(
     documentHandle: DocumentHandle,
     opts?: DocumentReadOptions
-  ): Promise<any>;
+  ): Promise<Edge<T>>;
   edge(
     documentHandle: DocumentHandle,
     opts: boolean | DocumentReadOptions = {}
-  ): Promise<any> {
+  ): Promise<Edge<T>> {
     if (typeof opts === "boolean") {
       opts = { graceful: opts };
     }
-    return this.document(documentHandle, opts);
+    return this.document(documentHandle, opts) as Promise<Edge<T>>;
   }
 
-  save(data: any, opts?: DocumentSaveOptions | boolean): Promise<any>;
+  save(data: T | Array<T>, opts?: InsertOptions | boolean): Promise<any>;
   save(
-    data: any,
+    data: T | Array<T>,
     fromId: DocumentHandle,
     toId: DocumentHandle,
-    opts?: DocumentSaveOptions | boolean
+    opts?: InsertOptions | boolean
   ): Promise<any>;
   save(
-    data: any,
-    fromIdOrOpts?: DocumentHandle | DocumentSaveOptions | boolean,
+    data: T | Array<T>,
+    fromIdOrOpts?: DocumentHandle | InsertOptions | boolean,
     toId?: DocumentHandle,
-    opts?: DocumentSaveOptions | boolean
+    opts?: InsertOptions | boolean
   ) {
     if (toId !== undefined) {
-      data._from = this._documentHandle(fromIdOrOpts as DocumentHandle);
-      data._to = this._documentHandle(toId!);
-    } else if (fromIdOrOpts !== undefined) {
-      opts = fromIdOrOpts as DocumentSaveOptions | boolean;
+      const fromId = this._documentHandle(fromIdOrOpts as DocumentHandle);
+      toId = this._documentHandle(toId);
+      if (Array.isArray(data)) {
+        data = data.map(data =>
+          Object.assign(data, { _from: fromId, _to: toId })
+        );
+      } else {
+        data = Object.assign(data, { _from: fromId, _to: toId });
+      }
+    } else {
+      if (fromIdOrOpts !== undefined) {
+        opts = fromIdOrOpts as InsertOptions | boolean;
+      }
     }
     if (typeof opts === "boolean") {
       opts = { returnNew: opts };
     }
     if (this._connection.arangoMajor <= 2) {
+      if (Array.isArray(data)) {
+        throw new Error("ArangoDB 2 does not support batch operations");
+      }
       return this._connection.request(
         {
           method: "POST",
@@ -820,8 +862,8 @@ export class EdgeCollection extends BaseCollection {
           qs: {
             ...opts,
             collection: this.name,
-            from: data._from,
-            to: data._to
+            from: (data as any)._from,
+            to: (data as any)._to
           }
         },
         res => res.body
@@ -842,7 +884,7 @@ export class EdgeCollection extends BaseCollection {
     );
   }
 
-  protected _edges(documentHandle: DocumentHandle, direction: any) {
+  protected _edges(documentHandle: DocumentHandle, direction?: "in" | "out") {
     return this._connection.request(
       {
         path: `/_api/edges/${this.name}`,
@@ -856,7 +898,7 @@ export class EdgeCollection extends BaseCollection {
   }
 
   edges(vertex: DocumentHandle) {
-    return this._edges(vertex, undefined);
+    return this._edges(vertex);
   }
 
   inEdges(vertex: DocumentHandle) {

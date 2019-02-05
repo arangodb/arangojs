@@ -255,11 +255,15 @@ export class Database {
 
   // Collection manipulation
 
-  collection(collectionName: string): DocumentCollection {
+  collection<T extends object = any>(
+    collectionName: string
+  ): DocumentCollection<T> {
     return new DocumentCollection(this._connection, collectionName);
   }
 
-  edgeCollection(collectionName: string): EdgeCollection {
+  edgeCollection<T extends object = any>(
+    collectionName: string
+  ): EdgeCollection<T> {
     return new EdgeCollection(this._connection, collectionName);
   }
 

@@ -5,7 +5,7 @@ The _DocumentCollection API_ extends the
 
 ## documentCollection.document
 
-`async documentCollection.document(documentHandle, [opts]): Object`
+`async documentCollection.document(documentHandle, [opts]): Document`
 
 Retrieves the document with the given _documentHandle_ from the collection.
 
@@ -115,7 +115,7 @@ some elements can be error objects if the documents couldn't be saved.
 
 **Arguments**
 
-- **data**: `Object`
+- **data**: `Object | Object[]`
 
   The data of the new document, may include a `_key`.
 
