@@ -144,12 +144,14 @@ some elements can be error objects if the documents couldn't be saved.
     some network traffic.
 
   - **overwrite**: `boolean` (Default: `false`)
+    
+    {% hint 'warning' %}
+    This option is only available when targeting ArangoDB v3.4.0 and later.
+    {% endhint %}
 
     If set to true, the insert becomes a replace-insert. If a document with the
     same \_key already exists the new document is not rejected with unique
-    constraint violated but will replace the old document. This argument is
-    available and will take effect only if you are connected to an ArangoDB 
-    v3.4.0 or higher.
+    constraint violated but will replace the old document.
 
 If a boolean is passed instead of an options object, it will be interpreted as
 the _returnNew_ option.
