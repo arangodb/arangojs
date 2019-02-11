@@ -26,7 +26,7 @@ export type AqlValue =
   | any[];
 
 export function isAqlQuery(query: any): query is AqlQuery {
-  return Boolean(query && query.query && query.bindVars);
+  return Boolean(query && typeof query.query === "string" && query.bindVars);
 }
 
 export function isGeneratedAqlQuery(query: any): query is GeneratedAqlQuery {
