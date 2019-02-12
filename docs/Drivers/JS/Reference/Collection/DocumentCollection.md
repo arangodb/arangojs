@@ -144,6 +144,10 @@ some elements can be error objects if the documents couldn't be saved.
     some network traffic.
 
   - **overwrite**: `boolean` (Default: `false`)
+    
+    {% hint 'warning' %}
+    This option is only available when targeting ArangoDB v3.4.0 and later.
+    {% endhint %}
 
     If set to true, the insert becomes a replace-insert. If a document with the
     same \_key already exists the new document is not rejected with unique
