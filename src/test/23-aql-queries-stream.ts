@@ -74,9 +74,9 @@ describe34("AQL Stream queries", function() {
       let collection = db.collection(cname);
       await collection.create();
       await Promise.all(
-        Array.apply(null, { length: 1000 })
-          .map(Number.call, Number)
-          .map((i: Number) => collection.save({ hallo: i }))
+        Array.from(Array(1000).keys())
+          .map(i => Number(i))
+          .map((i: number) => collection.save({ hallo: i }))
       );
     });
     /*after(async () => {
@@ -89,7 +89,7 @@ describe34("AQL Stream queries", function() {
 
       let count = 0;
       const cursors = await Promise.all(
-        Array.apply(null, { length: 25 }).map(() => db.query(query, opts))
+        Array.from(Array(25)).map(() => db.query(query, opts))
       );
       await Promise.all(
         cursors.map(c =>
