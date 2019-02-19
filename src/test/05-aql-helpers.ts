@@ -42,9 +42,11 @@ describe("AQL helpers", function() {
       ]);
       expect(bindVarNames.map(k => query.bindVars[k])).to.eql(values);
     });
-    it("omits undefined bindvars", () => {
-      const query = aql`A ${undefined} B`;
-      expect(query.query).to.equal("A  B");
+    it("omits undefined bindvars and empty queries", () => {
+      const query = aql`A ${undefined} B ${aql``} C ${aql.join(
+        []
+      )} D ${aql.literal("")} E`;
+      expect(query.query).to.equal("A  B  C  D  E");
       expect(query.bindVars).to.eql({});
     });
     it("supports arangojs collection parameters", () => {
@@ -115,10 +117,6 @@ describe("AQL helpers", function() {
       expect(query.query).to.equal(
         "FOR x IN (FOR a IN (FOR b IN 1..3 RETURN b) RETURN a) RETURN x"
       );
-    });
-    it("supports nesting empty queries", () => {
-      const query = aql`X ${aql``} Y`;
-      expect(query.query).to.equal("X  Y");
     });
     it("supports nesting with bindVars", () => {
       const collection = db.collection("paprika");
