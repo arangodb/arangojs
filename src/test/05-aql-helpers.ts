@@ -116,6 +116,10 @@ describe("AQL helpers", function() {
         "FOR x IN (FOR a IN (FOR b IN 1..3 RETURN b) RETURN a) RETURN x"
       );
     });
+    it("supports nesting empty queries", () => {
+      const query = aql`X ${aql``} Y`;
+      expect(query.query).to.equal("X  Y");
+    });
     it("supports nesting with bindVars", () => {
       const collection = db.collection("paprika");
       const query = aql`A ${collection} B ${aql`X ${collection} Y ${aql`J ${collection} K ${9} L`} Z`} C ${4}`;
