@@ -2,6 +2,7 @@
 
 This function implements the
 [HTTP API for transactions](https://docs.arangodb.com/latest/HTTP/Transaction/index.html).
+Also see [ArangoDB Transactions](https://docs.arangodb.com/latest/Manual/Transactions/index.html).
 
 ## database.transaction
 
@@ -23,7 +24,16 @@ Performs a server-side transaction and returns its return value.
   - **write**: `Array<string>` (optional)
 
     An array of names (or a single name) of collections that will be written to
-    or read from during the transaction.
+    or read from during the transaction. Write access to the collection will be
+    shared if the RocksDB storage engine is used, i.e. other writes to the
+    collection may run in parallel. It will acquire collection-level locks in
+    the MMFiles engine and is therefore synonymous with *exclusive*.
+
+  - **exclusive**: `Array<string>` (optional)
+
+    An array of names (or a single name) of collections that will be written to
+    or read from during the transaction. Write access will be exclusive to the
+    collection, i.e. no other writes will be run in parallel.
 
 - **action**: `string`
 
