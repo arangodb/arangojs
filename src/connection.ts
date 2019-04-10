@@ -205,7 +205,7 @@ export class Connection {
           }
           this._queue.push(task);
         } else {
-          response.host = host;
+          task.host = host;
           task.resolve(response);
         }
       }
