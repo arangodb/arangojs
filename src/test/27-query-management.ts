@@ -165,11 +165,11 @@ describe("Query Management API", function() {
     it("returns a list of running queries", async () => {
       const query = "RETURN SLEEP(0.5)";
       const p1 = db.query(query);
-      const p2 = db.listRunningQueries();
-      const [, queries] = await Promise.all([p1, p2]);
+      const queries = await db.listRunningQueries();
       expect(queries).to.have.lengthOf(1);
       expect(queries[0]).to.have.property("bindVars");
       expect(queries[0]).to.have.property("query", query);
+      await p1;
     });
   });
 
@@ -226,7 +226,7 @@ describe("Query Management API", function() {
 
   describe("database.killQuery", () => {
     it("kills the given query", async () => {
-      const query = "RETURN SLEEP(0.5)";
+      const query = "RETURN SLEEP(5)";
       const p1 = db.query(query);
       const queries = await db.listRunningQueries();
       expect(queries).to.have.lengthOf(1);
