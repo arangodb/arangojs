@@ -4,9 +4,6 @@ import { ArrayCursor } from "../cursor";
 import { ArangoError } from "../error";
 
 describe("Query Management API", function() {
-  // create database takes 11s in a standard cluster
-  this.timeout(20000);
-
   const dbName = `testdb_${Date.now()}`;
   let db: Database;
   before(async () => {

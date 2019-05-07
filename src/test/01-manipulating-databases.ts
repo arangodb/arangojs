@@ -7,9 +7,6 @@ const ARANGO_VERSION = Number(process.env.ARANGO_VERSION || 30400);
 const it2x = ARANGO_VERSION < 30000 ? it : it.skip;
 
 describe("Manipulating databases", function() {
-  // create database takes 11s in a standard cluster
-  this.timeout(20000);
-
   let db: Database;
   beforeEach(() => {
     db = new Database({

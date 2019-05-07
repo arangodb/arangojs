@@ -5,9 +5,6 @@ import { Graph } from "../graph";
 const range = (n: number): number[] => Array.from(Array(n).keys());
 
 describe("Accessing graphs", function() {
-  // create database takes 11s in a standard cluster
-  this.timeout(20000);
-
   const name = `testdb_${Date.now()}`;
   let db: Database;
   before(async () => {

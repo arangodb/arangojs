@@ -29,9 +29,6 @@ async function createGraph(
 }
 
 describe("Graph API", function() {
-  // create database takes 11s in a standard cluster
-  this.timeout(20000);
-
   let db: Database;
   const name = `testdb_${Date.now()}`;
   before(async () => {

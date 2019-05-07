@@ -9,9 +9,6 @@ const ARANGO_VERSION = Number(process.env.ARANGO_VERSION || 30400);
 const describe2x = ARANGO_VERSION < 30000 ? describe : describe.skip;
 
 describe("Simple queries", function() {
-  // create database takes 11s in a standard cluster
-  this.timeout(20000);
-
   let name = `testdb_${Date.now()}`;
   let db: Database;
   let collection: DocumentCollection;

@@ -7,9 +7,6 @@ const itPre34 = ARANGO_VERSION < 30400 ? it : it.skip;
 const it34 = ARANGO_VERSION >= 30400 ? it : it.skip;
 
 describe("Managing indexes", function() {
-  // create database takes 11s in a standard cluster
-  this.timeout(20000);
-
   let db: Database;
   let collection: DocumentCollection;
   const dbName = `testdb_${Date.now()}`;

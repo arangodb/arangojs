@@ -6,9 +6,6 @@ const ARANGO_VERSION = Number(process.env.ARANGO_VERSION || 30400);
 const it3x = ARANGO_VERSION >= 30000 ? it : it.skip;
 
 describe("DocumentCollection API", function() {
-  // create database takes 11s in a standard cluster
-  this.timeout(20000);
-
   const name = `testdb_${Date.now()}`;
   let db: Database;
   let collection: DocumentCollection;

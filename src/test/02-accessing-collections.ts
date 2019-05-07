@@ -5,9 +5,6 @@ import { DocumentCollection, EdgeCollection } from "../collection";
 const range = (n: number): number[] => Array.from(Array(n).keys());
 
 describe("Accessing collections", function() {
-  // create database takes 11s in a standard cluster
-  this.timeout(20000);
-
   const name = `testdb_${Date.now()}`;
   let db: Database;
   let builtinSystemCollections: string[];

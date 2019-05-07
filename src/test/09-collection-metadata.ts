@@ -3,9 +3,6 @@ import { Database } from "../arangojs";
 import { COLLECTION_NOT_FOUND, DocumentCollection } from "../collection";
 
 describe("Collection metadata", function() {
-  // create database takes 11s in a standard cluster
-  this.timeout(20000);
-
   let db: Database;
   let collection: DocumentCollection;
   const dbName = `testdb_${Date.now()}`;

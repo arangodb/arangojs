@@ -3,9 +3,6 @@ import { Database } from "../arangojs";
 import { Graph } from "../graph";
 
 describe("Manipulating graph edges", function() {
-  // create database takes 11s in a standard cluster
-  this.timeout(20000);
-
   const dbName = `testdb_${Date.now()}`;
   const graphName = `testgraph_${Date.now()}`;
   let db: Database;

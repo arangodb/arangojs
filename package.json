@@ -49,9 +49,9 @@
   "scripts": {
     "test": "mocha --growl --reporter spec --require source-map-support/register --timeout 10000 lib/async/test",
     "pretest": "yarn dist",
-    "ci": "mocha --reporter spec --require source-map-support/register --timeout 10000 lib/cjs/test",
+    "ci": "mocha --reporter spec --require source-map-support/register --timeout 30000 lib/cjs/test",
     "preci": "yarn install",
-    "jenkins": "yarn ci -- --timeout 0 --reporter xunit-file",
+    "jenkins": "yarn ci --timeout 0 --reporter xunit-file",
     "dist:cjs": "tsc -p . --outDir ./lib/cjs/ --declarationMap true && cpy src/index.js lib/cjs/",
     "dist:async": "tsc -p . --outDir ./lib/async/ --target es2018 --declarationMap true && cpy src/index.js lib/async/",
     "dist:web": "webpack",
