@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Fixed
+
+- Fixed a problem causing empty nested AQL expressions to be converted to bind variables
+
+  Nesting an empty AQL expression like the result of calling `aql.join` with an empty
+  array would previously result in the AQL expression not being recognised and being
+  converted to an object bind variable instead.
+
 ## [6.10.0] - 2018-12-22
 
 ### Changed
