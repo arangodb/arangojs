@@ -48,12 +48,6 @@ describe34("Manipulating views", function() {
   });
   describe("view.setProperties", () => {
     it("should change properties", async () => {
-      const initial = await view.properties();
-      expect(initial.consolidationIntervalMsec).to.equal(60000);
-      expect(initial.consolidationPolicy).to.have.property(
-        "type",
-        "bytes_accum"
-      );
       const oldProps = await view.setProperties({
         consolidationIntervalMsec: 45000,
         consolidationPolicy: { type: "tier" }
@@ -73,11 +67,7 @@ describe34("Manipulating views", function() {
   describe("view.replaceProperties", () => {
     it("should change properties", async () => {
       const initial = await view.properties();
-      expect(initial.consolidationIntervalMsec).to.equal(60000);
-      expect(initial.consolidationPolicy).to.have.property(
-        "type",
-        "bytes_accum"
-      );
+      expect(initial.consolidationIntervalMsec).not.to.equal(45000);
       const oldProps = await view.replaceProperties({
         consolidationIntervalMsec: 45000,
         consolidationPolicy: { type: "tier" }
@@ -87,7 +77,7 @@ describe34("Manipulating views", function() {
       const properties = await view.replaceProperties({
         consolidationPolicy: { type: "bytes_accum" }
       });
-      expect(properties.consolidationIntervalMsec).to.equal(60000);
+      expect(properties.consolidationIntervalMsec).to.equal(initial.consolidationIntervalMsec);
       expect(properties.consolidationPolicy).to.have.property(
         "type",
         "bytes_accum"
