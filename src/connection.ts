@@ -7,6 +7,7 @@ import {
   RequestFunction
 } from "./util/request";
 import { sanitizeUrl } from "./util/sanitizeUrl";
+import { Errback } from "./util/types";
 
 const LinkedList = require("linkedlist/lib/linkedlist") as typeof Array;
 
@@ -167,7 +168,7 @@ export class Connection {
       this._activeHost = (this._activeHost + 1) % this._hosts.length;
     }
     this._activeTasks += 1;
-    this._hosts[host](task.options, (err, res) => {
+    const callback: Errback<ArangojsResponse> = (err, res) => {
       this._activeTasks -= 1;
       if (err) {
         if (
@@ -210,7 +211,12 @@ export class Connection {
         }
       }
       this._runQueue();
-    });
+    };
+    try {
+      this._hosts[host](task.options, callback);
+    } catch (e) {
+      callback(e);
+    }
   }
 
   private _buildUrl({ absolutePath = false, basePath, path, qs }: UrlInfo) {

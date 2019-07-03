@@ -136,7 +136,9 @@ export function createRequest(
       } catch (e) {
         if (called) return;
         called = true;
-        callback(e);
+        setTimeout(() => {
+          callback(e);
+        });
       }
     },
     {
