@@ -354,7 +354,7 @@ export class Connection {
           ) {
             res.body = parsedBody;
             reject(new ArangoError(res));
-          } else if (res.statusCode && res.statusCode >= 400) {
+          } else if (res.statusCode && res.statusCode >= 300) {
             res.body = parsedBody;
             reject(new HttpError(res));
           } else {

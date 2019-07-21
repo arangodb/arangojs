@@ -3,6 +3,7 @@ import * as http from "http";
 import * as https from "https";
 import arangojs, { Database } from "../arangojs";
 import { Connection } from "../connection";
+import { AddressInfo } from "net";
 
 describe("Creating a Database", () => {
   describe("using the factory", () => {
@@ -169,5 +170,29 @@ describe("Configuring the driver", () => {
       conn.close();
       expect(agent._destroyed).to.equal(true);
     });
+  });
+});
+describe("Error handling", function() {
+  it("3xx codes should be treated as errors", async function() {
+    const server = http
+      .createServer((_req, res) => {
+        res.writeHead(308, {});
+        res.write("308 Permanent Redirect");
+        res.end();
+      })
+      .listen();
+    const conn = new Connection({
+      url: "http://127.0.0.1:" + (server.address() as AddressInfo).port
+    });
+    try {
+      await conn.request({});
+      expect.fail("Error should be thrown");
+    } catch (e) {
+      if (e.name !== "AssertionError") {
+        expect(e.message).eq("Permanent Redirect");
+      }
+    } finally {
+      server.close();
+    }
   });
 });
