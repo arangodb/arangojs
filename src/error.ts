@@ -85,7 +85,7 @@ export class ArangoError extends ExtendableError {
     const err = new Error(this.message);
     err.name = this.name;
     for (const key of nativeErrorKeys) {
-      if (err[key]) (this as any)[key] = err[key];
+      if (err[key]) (this as any)[key] = err[key] as string;
     }
   }
 }
