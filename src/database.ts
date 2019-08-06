@@ -157,6 +157,17 @@ export class Database {
     return this._connection.getDatabaseName() || null;
   }
 
+  //#region misc
+  version(): Promise<any> {
+    return this._connection.request(
+      {
+        method: "GET",
+        path: "/_api/version"
+      },
+      res => res.body
+    );
+  }
+
   route(path?: string, headers?: Object): Route {
     return new Route(this._connection, path, headers);
   }
@@ -175,12 +186,21 @@ export class Database {
   close(): void {
     this._connection.close();
   }
+  //#endregion
 
-  // Database manipulation
-
-  useDatabase(databaseName: string): this {
-    this._connection.setDatabaseName(databaseName);
-    return this;
+  //#region auth
+  login(username: string = "root", password: string = ""): Promise<string> {
+    return this._connection.request(
+      {
+        method: "POST",
+        path: "/_open/auth",
+        body: { username, password }
+      },
+      res => {
+        this.useBearerAuth(res.body.jwt);
+        return res.body.jwt;
+      }
+    );
   }
 
   useBearerAuth(token: string): this {
@@ -193,6 +213,13 @@ export class Database {
       "authorization",
       `Basic ${btoa(`${username}:${password}`)}`
     );
+    return this;
+  }
+  //#endregion
+
+  //#region databases
+  useDatabase(databaseName: string): this {
+    this._connection.setDatabaseName(databaseName);
     return this;
   }
 
@@ -252,9 +279,9 @@ export class Database {
       res => res.body
     );
   }
+  //#endregion
 
-  // Collection manipulation
-
+  //#region collections
   collection<T extends object = any>(
     collectionName: string
   ): DocumentCollection<T> {
@@ -303,9 +330,9 @@ export class Database {
       )
     );
   }
+  //#endregion
 
-  // Views
-
+  //#region views
   arangoSearchView(viewName: string): ArangoSearchView {
     return new ArangoSearchView(this._connection, viewName);
   }
@@ -321,9 +348,9 @@ export class Database {
     const views = await this.listViews();
     return views.map((data: any) => constructView(this._connection, data));
   }
+  //#endregion
 
-  // Graph manipulation
-
+  //#region graphs
   graph(graphName: string): Graph {
     return new Graph(this._connection, graphName);
   }
@@ -339,9 +366,9 @@ export class Database {
     const graphs = await this.listGraphs();
     return graphs.map((data: any) => this.graph(data._key));
   }
+  //#endregion
 
-  // Queries
-
+  //#region queries
   transaction(
     collections: TransactionCollections,
     action: string
@@ -557,9 +584,9 @@ export class Database {
       () => undefined
     );
   }
+  //#endregion
 
-  // Function management
-
+  //#region functions
   listFunctions() {
     return this._connection.request(
       { path: "/_api/aqlfunction" },
@@ -588,9 +615,9 @@ export class Database {
       res => res.body
     );
   }
+  //#endregion
 
-  // Service management
-
+  //#region services
   listServices() {
     return this._connection.request({ path: "/_api/foxx" }, res => res.body);
   }
@@ -941,28 +968,5 @@ export class Database {
       () => undefined
     );
   }
-
-  version(): Promise<any> {
-    return this._connection.request(
-      {
-        method: "GET",
-        path: "/_api/version"
-      },
-      res => res.body
-    );
-  }
-
-  login(username: string = "root", password: string = ""): Promise<string> {
-    return this._connection.request(
-      {
-        method: "POST",
-        path: "/_open/auth",
-        body: { username, password }
-      },
-      res => {
-        this.useBearerAuth(res.body.jwt);
-        return res.body.jwt;
-      }
-    );
-  }
+  //#endregion
 }
