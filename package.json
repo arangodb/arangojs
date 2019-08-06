@@ -47,7 +47,7 @@
     "lib/cjs/util/*.*"
   ],
   "scripts": {
-    "test": "mocha --growl --reporter spec --require source-map-support/register --timeout 10000 lib/async/test",
+    "test": "mocha --reporter spec --require source-map-support/register --timeout 10000 lib/async/test",
     "pretest": "yarn dist",
     "ci": "mocha --reporter spec --require source-map-support/register --timeout 30000 lib/cjs/test",
     "preci": "yarn install",
