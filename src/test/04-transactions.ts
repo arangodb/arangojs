@@ -74,7 +74,7 @@ describe("Transactions", () => {
 
     it("can insert a document", async () => {
       const trx = await db.beginTransaction(collection);
-      const meta = await trx.exec(() => collection.save({ _key: "test" }));
+      const meta = await trx.run(() => collection.save({ _key: "test" }));
       expect(meta).to.have.property("_key", "test");
       const { id, status } = await trx.commit();
       expect(id).to.equal(trx.id);
@@ -85,7 +85,7 @@ describe("Transactions", () => {
 
     it("does not leak when inserting a document", async () => {
       const trx = await db.beginTransaction(collection);
-      await trx.exec(() => collection.save({ _key: "test" }));
+      await trx.run(() => collection.save({ _key: "test" }));
       let doc: any;
       try {
         doc = await collection.document("test");
@@ -98,7 +98,7 @@ describe("Transactions", () => {
 
     it("does not insert a document when aborted", async () => {
       const trx = await db.beginTransaction(collection);
-      const meta = await trx.exec(() => collection.save({ _key: "test" }));
+      const meta = await trx.run(() => collection.save({ _key: "test" }));
       expect(meta).to.have.property("_key", "test");
       const { id, status } = await trx.abort();
       expect(id).to.equal(trx.id);
