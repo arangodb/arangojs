@@ -42,7 +42,9 @@ export type TransactionOptions = {
   allowImplicit?: boolean;
   lockTimeout?: number;
   maxTransactionSize?: number;
+  /** @deprecated removed in ArangoDB 3.4, RocksDB-only */
   intermediateCommitCount?: number;
+  /** @deprecated removed in ArangoDB 3.4, RocksDB-only */
   intermediateCommitSize?: number;
   waitForSync?: boolean;
 };
@@ -68,9 +70,11 @@ export type QueryOptions = {
     stream?: boolean;
     skipInaccessibleCollections?: boolean;
     maxWarningsCount?: number;
+    /** RocksDB-only */
     intermediateCommitCount?: number;
     satteliteSyncWait?: number;
     fullCount?: boolean;
+    /** RocksDB-only */
     intermediateCommitSize?: number;
     optimizer?: { rules?: string[] };
     maxPlans?: number;
