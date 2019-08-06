@@ -101,6 +101,29 @@ export class ArrayCursor<T = any> {
   }
 
   /**
+   * Enables use with `for await` to exhaust the cursor by asynchronously
+   * yielding every value in the cursor's remaining result set.
+   *
+   * @example
+   * ```js
+   * const cursor = await db.query(aql`
+   *   FOR user IN users
+   *   FILTER user.isActive
+   *   RETURN user
+   * `);
+   * for await (const user of cursor) {
+   *   console.log(user.email, user.isAdmin);
+   * }
+   * ```
+   */
+  async *[Symbol.asyncIterator](): AsyncGenerator<T, undefined, undefined> {
+    while (this.hasNext) {
+      yield this.next() as Promise<T>;
+    }
+    return undefined;
+  }
+
+  /**
    * TODO
    */
   async all(): Promise<T[]> {
