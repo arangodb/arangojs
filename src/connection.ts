@@ -272,6 +272,10 @@ export class Connection {
     this._transactionId = transactionId;
   }
 
+  clearTransactionId() {
+    this._transactionId = null;
+  }
+
   setHeader(key: string, value: string) {
     this._headers[key] = value;
   }
@@ -317,7 +321,6 @@ export class Connection {
 
       if (this._transactionId) {
         extraHeaders["x-arango-trx-id"] = this._transactionId;
-        this._transactionId = null;
       }
 
       this._queue.push({

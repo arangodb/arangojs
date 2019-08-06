@@ -46,6 +46,10 @@ export class ArangoTransaction {
 
   run<T>(fn: () => Promise<T>): Promise<T> {
     this._connection.setTransactionId(this.id);
-    return fn();
+    try {
+      return fn();
+    } finally {
+      this._connection.clearTransactionId();
+    }
   }
 }

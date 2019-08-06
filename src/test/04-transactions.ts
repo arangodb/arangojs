@@ -83,12 +83,53 @@ describe("Transactions", () => {
       expect(doc).to.have.property("_key", "test");
     });
 
+    it("can insert two documents at a time", async () => {
+      const trx = await db.beginTransaction(collection);
+      const [meta1, meta2] = await trx.run(() =>
+        Promise.all([
+          collection.save({ _key: "test1" }),
+          collection.save({ _key: "test2" })
+        ])
+      );
+      expect(meta1).to.have.property("_key", "test1");
+      expect(meta2).to.have.property("_key", "test2");
+      const { id, status } = await trx.commit();
+      expect(id).to.equal(trx.id);
+      expect(status).to.equal("committed");
+      const doc1 = await collection.document("test1");
+      expect(doc1).to.have.property("_key", "test1");
+      const doc2 = await collection.document("test2");
+      expect(doc2).to.have.property("_key", "test2");
+    });
+
     it("does not leak when inserting a document", async () => {
       const trx = await db.beginTransaction(collection);
       await trx.run(() => collection.save({ _key: "test" }));
       let doc: any;
       try {
         doc = await collection.document("test");
+      } catch (e) {}
+      if (doc) expect.fail("Document should not exist yet.");
+      const { id, status } = await trx.commit();
+      expect(id).to.equal(trx.id);
+      expect(status).to.equal("committed");
+    });
+
+    it("does not leak when inserting two documents at a time", async () => {
+      const trx = await db.beginTransaction(collection);
+      await trx.run(() =>
+        Promise.all([
+          collection.save({ _key: "test1" }),
+          collection.save({ _key: "test2" })
+        ])
+      );
+      let doc: any;
+      try {
+        doc = await collection.document("test1");
+      } catch (e) {}
+      if (doc) expect.fail("Document should not exist yet.");
+      try {
+        doc = await collection.document("test2");
       } catch (e) {}
       if (doc) expect.fail("Document should not exist yet.");
       const { id, status } = await trx.commit();
