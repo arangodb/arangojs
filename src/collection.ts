@@ -262,6 +262,14 @@ export abstract class BaseCollection<T extends object = any>
     );
   }
 
+  getResponsibleShard(documentHandle: DocumentHandle): Promise<any> {
+    // TODO what to do with the document handle?
+    return this._connection.request(
+      { method: "PUT", path: `/_api/collection/${this.name}/responsibleShard` },
+      res => res.body.shardId
+    );
+  }
+
   documentExists(documentHandle: DocumentHandle): Promise<boolean> {
     return this._connection
       .request(
