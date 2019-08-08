@@ -53,6 +53,7 @@ export interface ArangoSearchViewPropertiesResponse
 export interface ArangoSearchViewPropertiesOptions {
   cleanupIntervalStep?: number;
   consolidationIntervalMsec?: number;
+  commitIntervalMsec?: number;
   writebufferIdle?: number;
   writebufferActive?: number;
   writebufferSizeMax?: number;
