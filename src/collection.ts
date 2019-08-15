@@ -262,10 +262,13 @@ export abstract class BaseCollection<T extends object = any>
     );
   }
 
-  getResponsibleShard(documentHandle: DocumentHandle): Promise<any> {
-    // TODO what to do with the document handle?
+  getResponsibleShard(documentOrShardKey: any): Promise<any> {
     return this._connection.request(
-      { method: "PUT", path: `/_api/collection/${this.name}/responsibleShard` },
+      {
+        method: "PUT",
+        path: `/_api/collection/${this.name}/responsibleShard`,
+        body: documentOrShardKey
+      },
       res => res.body.shardId
     );
   }
