@@ -12,7 +12,7 @@ describe34("Accessing views", function() {
   before(async () => {
     db = new Database({
       url: process.env.TEST_ARANGODB_URL || "http://localhost:8529",
-      arangoVersion: Number(process.env.ARANGO_VERSION || 30400)
+      arangoVersion: ARANGO_VERSION
     });
     await db.createDatabase(name);
     db.useDatabase(name);
@@ -50,7 +50,7 @@ describe34("Accessing views", function() {
     it("fetches information about all views", async () => {
       const views = await db.listViews();
       expect(views.length).to.equal(viewNames.length);
-      expect(views.map((c: any) => c.name).sort()).to.eql(viewNames);
+      expect(views.map(v => v.name).sort()).to.eql(viewNames);
     });
   });
   describe("database.views", () => {
@@ -68,10 +68,10 @@ describe34("Accessing views", function() {
     it("creates ArangoSearchView instances", async () => {
       const views = await db.views();
       let arangoSearchViews = views
-        .filter((c: any) => c instanceof ArangoSearchView)
+        .filter(v => v instanceof ArangoSearchView)
         .sort();
       expect(arangoSearchViews.length).to.equal(arangoSearchViewNames.length);
-      expect(arangoSearchViews.map((c: any) => c.name).sort()).to.eql(
+      expect(arangoSearchViews.map(v => v.name).sort()).to.eql(
         arangoSearchViewNames
       );
     });
