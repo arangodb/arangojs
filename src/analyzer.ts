@@ -1,4 +1,5 @@
 import { Connection } from "./connection";
+import { isArangoError } from "./error";
 
 export type AnalyzerDescription = AnyAnalyzer & {
   name: string;
@@ -43,7 +44,11 @@ export interface NormAnalyzer {
 
 export interface NgramAnalyzer {
   type: "ngram";
-  properties: { max: number; min: number; preserveOriginal: boolean };
+  properties: {
+    max: number;
+    min: number;
+    preserveOriginal: boolean;
+  };
 }
 
 export interface TextAnalyzer {
@@ -58,6 +63,7 @@ export interface TextAnalyzer {
   };
 }
 
+const ANALYZER_NOT_FOUND = 1202;
 export class ArangoAnalyzer {
   private _connection: Connection;
 
@@ -73,6 +79,18 @@ export class ArangoAnalyzer {
     return this._connection.request(
       { path: `/_api/analyzer/${this.name}` },
       res => res.body
+    );
+  }
+
+  exists() {
+    return this.get().then(
+      () => true,
+      err => {
+        if (isArangoError(err) && err.errorNum === ANALYZER_NOT_FOUND) {
+          return false;
+        }
+        throw err;
+      }
     );
   }
 
