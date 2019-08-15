@@ -16,24 +16,31 @@ Performs a server-side transaction and returns its return value.
 
   An object with the following properties:
 
-  - **read**: `Array<string>` (optional)
+  - **read**: `Array<string | Collection> | string | Collection` (optional)
 
-    An array of names (or a single name) of collections that will be read from
-    during the transaction.
+    An array of names (or a single name) of collections, or an array of
+    `Collection` instances (or a single `Collection` instance), that will be
+    read from during the transaction.
 
-  - **write**: `Array<string>` (optional)
+  - **write**: `Array<string | Collection> | string | Collection` (optional)
 
-    An array of names (or a single name) of collections that will be written to
-    or read from during the transaction. Write access to the collection will be
-    shared if the RocksDB storage engine is used, i.e. other writes to the
-    collection may run in parallel. It will acquire collection-level locks in
-    the MMFiles engine and is therefore synonymous with _exclusive_.
+    An array of names (or a single name) of collections, or an array of
+    `Collection` instances (or a single `Collection` instance), that will be
+    written to or read from during the transaction.
 
-  - **exclusive**: `Array<string>` (optional)
+    If ArangoDB is using the RocksDB storage engine, write access to the
+    collections will be shared, i.e. other writes to the collections may run in
+    parallel.
 
-    An array of names (or a single name) of collections that will be written to
-    or read from during the transaction. Write access will be exclusive to the
-    collection, i.e. no other writes will be run in parallel.
+    If ArangoDB is using the MMFiles engine, this option is synonymous with
+    _collections.exclusive_, i.e. no other writes will run in parallel.
+
+  - **exclusive**: `Array<string | Collection> | string | Collection` (optional)
+
+    An array of names (or a single name) of collections, or an array of
+    `Collection` instances (or a single `Collection` instance), that will be
+    written to or read from during the transaction. Write access will be
+    exclusive to the collection, i.e. no other writes will be run in parallel.
 
 - **action**: `string`
 
@@ -50,7 +57,7 @@ Performs a server-side transaction and returns its return value.
 
   An object with any of the following properties:
 
-  - **params**: `Object` (optional)
+  - **params**: `any` (optional)
 
     Available as the first argument to the _action_ function when it is executed on the
     server. Check the example below.
@@ -78,7 +85,7 @@ Performs a server-side transaction and returns its return value.
     Determine the maximum total size of operations after which an intermediate commit is
     performed automatically. Honored by the RocksDB storage engine only.
 
-If _collections_ is an array or string, it will be treated as
+If _collections_ is an array, string or `Collection`, it will be treated as
 _collections.write_.
 
 Please note that while _action_ should be a string evaluating to a well-formed
@@ -111,27 +118,192 @@ const result = await db.executeTransaction("_users", action, {
 
 `database.transaction(id): Transaction`
 
+Returns a `Transaction` instance for an existing transaction with the given
+_id_.
+
+{% hint 'warning' %}
+For backwards-compatibility with arangojs 6.10 and earlier, this method will
+behave like _executeTransaction_ when passed the following arguments:
+
+- **collections**: `Object`
+
+  See _collections_ in _executeTransaction_.
+
+- **action**: `string`
+
+  See _action_ in _executeTransaction_.
+
+- **params**: `any` (optional)
+
+  See _options.params_ in _executeTransaction_.
+
+- **options**: `Object` (optional)
+
+  See _options_ in _executeTransaction_.
+
+If _params_ or _options_ is a `number`, it will be treated as
+_options.lockTimeout_.
+
+This behavior is deprecated and will be removed in arangojs 7.
+{% endhint %}
+
 - **id**: `string`
+
+  The _id_ of an existing stream transaction.
+
+**Examples**
+
+```js
+const trx1 = await db.beginTransaction(collections);
+const id = trx1.id;
+// later
+const trx2 = db.transaction(id);
+await trx2.commit();
+```
 
 ## database.beginTransaction
 
 `async database.beginTransaction(collections, [options]): Transaction`
 
+Begins a new streaming transaction for the given collections, then returns a
+`Transaction` instance for the transaction.
+
 - **collections**: `Object`
 
+  An object with the following properties:
+
+  - **read**: `Array<string | Collection> | string | Collection` (optional)
+
+    An array of names (or a single name) of collections, or an array of
+    `Collection` instances (or a single `Collection` instance), that will be
+    read from during the transaction.
+
+  - **write**: `Array<string | Collection> | string | Collection` (optional)
+
+    An array of names (or a single name) of collections, or an array of
+    `Collection` instances (or a single `Collection` instance), that will be
+    written to or read from during the transaction.
+
+    If ArangoDB is using the RocksDB storage engine, write access to the
+    collections will be shared, i.e. other writes to the collections may run in
+    parallel.
+
+    If ArangoDB is using the MMFiles engine, this option is synonymous with
+    _collections.exclusive_, i.e. no other writes will run in parallel.
+
+  - **exclusive**: `Array<string | Collection> | string | Collection` (optional)
+
+    An array of names (or a single name) of collections, or an array of
+    `Collection` instances (or a single `Collection` instance), that will be
+    written to or read from during the transaction. Write access will be
+    exclusive to the collection, i.e. no other writes will be run in parallel.
+
 - **options**: `Object` (optional)
+
+  An object with the following properties:
+
+  - **lockTimeout**: `number` (optional)
+
+    Determines how long the database will wait while attempting to gain locks on
+    collections used by the transaction before timing out.
+
+  - **waitForSync**: `boolean` (optional)
+
+    Determines whether to force the transaction to write all data to disk before returning.
+
+  - **maxTransactionSize**: `number` (optional)
+
+    Determines the transaction size limit in bytes. Honored by the RocksDB storage engine only.
+
+  - **intermediateCommitCount**: `number` (optional)
+
+    Determines the maximum number of operations after which an intermediate commit is
+    performed automatically. Honored by the RocksDB storage engine only.
+
+  - **intermediateCommitSize**: `number` (optional)
+
+    Determine the maximum total size of operations after which an intermediate commit is
+    performed automatically. Honored by the RocksDB storage engine only.
+
+If _collections_ is an array, string or `Collection`, it will be treated as
+_collections.write_.
+
+**Examples**
+
+```js
+const vertices = db.collection("vertices");
+const edges = db.collection("edges");
+const trx = await db.beginTransaction({
+  read: ["vertices"],
+  write: [edges] // collection instances can be passed directly
+});
+const start = await trx.run(() => vertices.document("a"));
+const end = await trx.run(() => vertices.document("b"));
+await trx.run(() => edges.save({ _from: start._id, _to: end._id }));
+await trx.commit();
+```
+
+## transaction.exists
+
+`async transaction.exists(): boolean`
+
+Checks whether the transaction exists.
+
+**Examples**
+
+```js
+const db = new Database();
+const transaction = db.transaction("some-transaction");
+const result = await transaction.exists();
+// result indicates whether the transaction exists
+```
 
 ## transaction.get
 
 `async transaction.get(): Object`
 
+Retrieves general information about the transaction.
+
+**Examples**
+
+```js
+const db = new Database();
+const transaction = db.transaction("some-transaction");
+const result = await transaction.get();
+// result indicates the transaction id and status
+```
+
 ## transaction.commit
 
 `async transaction.commit(): Object`
 
+Attempts to commit the transaction to the database, then returns an object
+indicating the transaction's id and updated status.
+
+**Examples**
+
+```js
+const db = new Database();
+const transaction = db.transaction("some-transaction");
+const result = await transaction.commit();
+// result indicates the transaction id and updated status
+```
+
 ## transaction.abort
 
 `async transaction.abort(): Object`
+
+Attempts to abort the transaction in the database, then returns an object
+indicating the transaction's id and updated status.
+
+**Examples**
+
+```js
+const db = new Database();
+const transaction = db.transaction("some-transaction");
+const result = await transaction.abort();
+// result indicates the transaction id and updated status
+```
 
 ## transaction.run
 
