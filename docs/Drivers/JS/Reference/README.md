@@ -19,7 +19,7 @@
   - [Simple Queries](Collection/SimpleQueries.md)
   - [Bulk Import](Collection/BulkImport.md)
 - [AQL Helpers](Aql.md)
-- [View Manipulation](ViewManipulation.md)
+- [View](View.md)
 - [Cursor](Cursor.md)
 - [Graph](Graph/README.md)
   - [Vertices](Graph/Vertices.md)
