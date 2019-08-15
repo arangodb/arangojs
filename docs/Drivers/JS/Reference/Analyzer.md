@@ -73,71 +73,77 @@ definition.
 
     - **delimiter**: `string`
 
-      TODO
+      Delimiter to use to split text into tokens as specified in RFC 4180,
+      without starting new records on newlines.
 
     If the type is `"stem"`, the _properties_ must be an object with the
     following property:
 
     - **locale**: `string`
 
-      TODO
+      Text locale. Format: `language[_COUNTRY][.encoding][@variant]`.
 
     If the type is `"norm"`, the _properties_ must be an object with the
     following properties:
 
     - **locale**: `string`
 
-      TODO
+      Text locale. Format: `language[_COUNTRY][.encoding][@variant]`.
 
-    - **case**: `string` (Default: TODO)
+    - **case**: `string` (Default: `"lower"`)
 
-      Can be `"lower"`, `"none"` or `"upper"`.
+      Case conversion. Can be `"lower"`, `"none"` or `"upper"`.
 
-    - **accent**: `boolean` (Default: TODO)
+    - **accent**: `boolean` (Default: `false`)
 
-      TODO
+      Preserve accent in returned words.
 
     If the type is `"ngram"`, the _properties_ must be an object with the
     following properties:
 
     - **max**: `number`
 
-      TODO
+      Maximum n-gram length.
 
     - **min**: `number`
 
-      TODO
+      Minimum n-gram length.
 
     - **preserveOriginal**: `boolean`
 
-      TODO
+      Output the original value as well.
 
     If the type is `"text"`, the _properties_ must be an object with the
     following properties:
 
     - **locale**: `string`
 
-      TODO
+      Text locale. Format: `language[_COUNTRY][.encoding][@variant]`.
 
-    - **case**: `string` (Default: TODO)
+    - **case**: `string` (Default: `"lower"`)
 
-      TODO
+      Case conversion. Can be `"lower"`, `"none"` or `"upper"`.
 
     - **stopwords**: `Array<string>` (optional)
 
-      TODO
+      Words to omit from result. Defaults to the words loaded from the file at
+      _stopwordsPath_.
 
     - **stopwordsPath**: `string` (optional)
 
-      TODO
+      Path with a `language` sub-directory containing files with words to omit.
 
-    - **accent**: `boolean` (Default: TODO)
+      Defaults to the path specified in the server-side environment variable
+      `IRESEARCH_TEXT_STOPWORD_PATH` or the current working directory of the
+      ArangoDB process.
 
-      TODO
+    - **accent**: `boolean` (Default: `false`)
 
-    - **stemming**: `boolean` (Default: TODO)
+      Preserve accent in returned words.
 
-      TODO
+    - **stemming**: `boolean` (Default: `true`)
+
+      Apply stemming on returned words.
 
 **Examples**
 
