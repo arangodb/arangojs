@@ -150,5 +150,16 @@ describe("Transactions", () => {
       } catch (e) {}
       if (doc) expect.fail("Document should not exist yet.");
     });
+
+    it("does not revert unrelated changes when aborted", async () => {
+      const trx = await db.beginTransaction(collection);
+      const meta = await collection.save({ _key: "test" });
+      expect(meta).to.have.property("_key", "test");
+      const { id, status } = await trx.abort();
+      expect(id).to.equal(trx.id);
+      expect(status).to.equal("aborted");
+      const doc = await collection.document("test");
+      expect(doc).to.have.property("_key", "test");
+    });
   });
 });
