@@ -1,10 +1,12 @@
 import { Connection } from "./connection";
+import { isArangoError } from "./error";
 
 interface TransactionStatus {
   id: string;
   status: "running" | "committed" | "aborted";
 }
 
+const TRANSACTION_NOT_FOUND = 10;
 export class ArangoTransaction {
   isArangoTransaction: true = true;
   private _connection: Connection;
@@ -13,6 +15,18 @@ export class ArangoTransaction {
   constructor(connection: Connection, id: string) {
     this._connection = connection;
     this.id = id;
+  }
+
+  exists(): Promise<boolean> {
+    return this.get().then(
+      () => true,
+      err => {
+        if (isArangoError(err) && err.errorNum === TRANSACTION_NOT_FOUND) {
+          return false;
+        }
+        throw err;
+      }
+    );
   }
 
   get(): Promise<TransactionStatus> {
