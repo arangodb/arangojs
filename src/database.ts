@@ -1,12 +1,6 @@
 import { AnalyzerDescription, ArangoAnalyzer } from "./analyzer";
 import { AqlLiteral, AqlQuery, isAqlLiteral, isAqlQuery } from "./aql-query";
-import {
-  ArangoCollection,
-  constructCollection,
-  DocumentCollection,
-  EdgeCollection,
-  isArangoCollection
-} from "./collection";
+import { ArangoCollection, constructCollection, DocumentCollection, EdgeCollection, isArangoCollection } from "./collection";
 import { Config, Connection } from "./connection";
 import { ArrayCursor } from "./cursor";
 import { isArangoError } from "./error";
@@ -365,11 +359,7 @@ export class Database {
 
   async analyzers(): Promise<ArangoAnalyzer[]> {
     const analyzers = await this.listAnalyzers();
-    // TODO The returned name seems to be always qualified but the API always
-    // expects a local name. Check if this changes before GA.
-    return analyzers.map(data =>
-      this.analyzer(data.name.replace(/^[^:]+::/, ""))
-    );
+    return analyzers.map(data => this.analyzer(data.name));
   }
   //#endregion
 
