@@ -15,6 +15,14 @@ versions of ArangoDB.
 Returns an _Analyzer_ instance representing the analyzer with the given analyzer
 name.
 
+**Examples**
+
+```js
+const db = new Database();
+const analyzer = db.analyzer("some-analyzer");
+const info = await analyzer.get();
+```
+
 ## database.listAnalyzers
 
 `async database.listAnalyzers(): Array<Object>`

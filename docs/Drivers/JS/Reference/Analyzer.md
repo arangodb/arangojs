@@ -1,7 +1,7 @@
 # Analyzer API
 
 These functions implement the
-[HTTP API for manipulating analyzers](https://docs.arangodb.com/latest/HTTP/Analyzers/index.html).
+[HTTP API for manipulating analyzers](https://docs.arangodb.com/latest/HTTP/Analyzers.html).
 
 {% hint 'info' %}
 Analyzers were introduced in ArangoDB 3.5 and are not supported by earlier
