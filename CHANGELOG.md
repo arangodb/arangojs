@@ -7,7 +7,28 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Changed
+
+- Renamed `db.transaction` to `db.executeTransaction`
+
+  The method for executing server-side transactions is now called
+  `executeTransaction` and the `params` argument now must be passed via the
+  `options` object.
+
+  For backwards-compatible the new `db.transaction` method will continue to
+  behave like before when passed an `action` string as the second argument.
+  Note that this behavior is deprecated and will be removed in arangojs 7.
+
 ### Added
+
+- Added support for ArangoDB 3.5 streaming transactions
+
+  New streaming transactions can be created using `db.beginTransaction` and
+  existing streaming transactions can be accessed by passing the transaction ID
+  to `db.transaction`.
+
+  See the documentation of the `transaction.run` method for examples of using
+  streaming transactions with arangojs.
 
 - Added support for ArangoDB 3.5 Analyzers API
 

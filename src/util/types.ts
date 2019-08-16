@@ -66,6 +66,12 @@ export interface CollectionPropertiesOptions {
   journalSize?: number;
   indexBuckets?: number;
   replicationFactor?: number;
+  minReplicationFactor?: number;
+}
+
+export interface CreateCollectionQueryOptions {
+  waitForSyncReplication?: boolean;
+  enforceReplicationFactor?: boolean;
 }
 
 export interface CreateCollectionOptions {
@@ -81,7 +87,11 @@ export interface CreateCollectionOptions {
   };
   numberOfShards?: number;
   shardKeys?: string[];
+  distributeShardsLike?: string;
+  shardingStrategy?: string;
+  smartJoinAttribute?: string;
   replicationFactor?: number;
+  minReplicationFactor?: number;
 }
 
 export interface CollectionProperties {
@@ -98,7 +108,11 @@ export interface CollectionProperties {
   indexBuckets: number;
   numberOfShards?: number;
   shardKeys?: string[];
+  distributeShardsLike?: string;
+  shardingStrategy?: string;
+  smartJoinAttribute?: string;
   replicationFactor?: number;
+  minReplicationFactor?: number;
 }
 
 // Document
