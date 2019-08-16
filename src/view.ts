@@ -53,6 +53,7 @@ export interface ArangoSearchViewPropertiesResponse
 export interface ArangoSearchViewPropertiesOptions {
   cleanupIntervalStep?: number;
   consolidationIntervalMsec?: number;
+  commitIntervalMsec?: number;
   writebufferIdle?: number;
   writebufferActive?: number;
   writebufferSizeMax?: number;
@@ -69,6 +70,15 @@ export interface ArangoSearchViewPropertiesOptions {
         segments_bytes_max?: number;
         segments_bytes_floor?: number;
       };
+  primarySort?: (
+    | {
+        field: string;
+        direction: "desc" | "asc";
+      }
+    | {
+        field: string;
+        asc: boolean;
+      })[];
   links?: {
     [key: string]: ArangoSearchViewCollectionLink | undefined;
   };

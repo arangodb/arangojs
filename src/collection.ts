@@ -1,4 +1,4 @@
-import { Connection } from "./connection";
+import { Connection, RequestOptions } from "./connection";
 import { ArrayCursor } from "./cursor";
 import { isArangoError } from "./error";
 import {
@@ -7,6 +7,7 @@ import {
   CollectionProperties,
   CollectionPropertiesOptions,
   CreateCollectionOptions,
+  CreateCollectionQueryOptions,
   Document,
   DocumentData,
   Edge,
@@ -165,13 +166,26 @@ export abstract class BaseCollection<T extends object = any>
     );
   }
 
-  create(properties?: CreateCollectionOptions) {
+  create(properties?: CreateCollectionOptions & CreateCollectionQueryOptions) {
+    const {
+      waitForSyncReplication = undefined,
+      enforceReplicationFactor = undefined,
+      ...options
+    } = properties || {};
+    const qs: RequestOptions["qs"] = {};
+    if (typeof waitForSyncReplication === "boolean") {
+      qs.waitForSyncReplication = waitForSyncReplication ? 1 : 0;
+    }
+    if (typeof enforceReplicationFactor === "boolean") {
+      qs.enforceReplicationFactor = enforceReplicationFactor ? 1 : 0;
+    }
     return this._connection.request(
       {
         method: "POST",
         path: "/_api/collection",
+        qs,
         body: {
-          ...properties,
+          ...options,
           name: this.name,
           type: this.type
         }
@@ -245,6 +259,17 @@ export abstract class BaseCollection<T extends object = any>
         qs: opts
       },
       res => res.body
+    );
+  }
+
+  getResponsibleShard(document: Object): Promise<string> {
+    return this._connection.request(
+      {
+        method: "PUT",
+        path: `/_api/collection/${this.name}/responsibleShard`,
+        body: document
+      },
+      res => res.body.shardId
     );
   }
 

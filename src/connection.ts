@@ -100,6 +100,7 @@ export class Connection {
   private _urls: string[] = [];
   private _activeHost: number;
   private _activeDirtyHost: number;
+  private _transactionId: string | null = null;
 
   constructor(config: Config = {}) {
     if (typeof config === "string") config = { url: config };
@@ -267,6 +268,14 @@ export class Connection {
     this._databaseName = databaseName;
   }
 
+  setTransactionId(transactionId: string) {
+    this._transactionId = transactionId;
+  }
+
+  clearTransactionId() {
+    this._transactionId = null;
+  }
+
   setHeader(key: string, value: string) {
     this._headers[key] = value;
   }
@@ -309,6 +318,10 @@ export class Connection {
         "content-type": contentType,
         "x-arango-version": String(this._arangoVersion)
       };
+
+      if (this._transactionId) {
+        extraHeaders["x-arango-trx-id"] = this._transactionId;
+      }
 
       this._queue.push({
         retries: 0,
