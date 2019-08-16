@@ -26,7 +26,7 @@ Checks whether the collection exists.
 
 ```js
 const db = new Database();
-const collection = db.collection('some-collection');
+const collection = db.collection("some-collection");
 const result = await collection.exists();
 // result indicates whether the collection exists
 ```
@@ -41,9 +41,33 @@ Retrieves general information about the collection.
 
 ```js
 const db = new Database();
-const collection = db.collection('some-collection');
+const collection = db.collection("some-collection");
 const data = await collection.get();
 // data contains general information about the collection
+```
+
+### collection.getResponsibleShard
+
+`async collection.getResponsibleShard(document): string`
+
+Retrieves the `shardId` of the shard responsible for the given document.
+
+**Arguments**
+
+- **document**: `Object`
+
+  Document to look up the responsible shard for. This can either be a full
+  document or an object with at least those attributes present, which are
+  used as shard key for the collection (Default: `_key`).
+
+**Examples**
+
+```js
+const doc = await collection.document("abc123");
+const shardId = await collection.getResponsibleShard(doc);
+// -- or --
+// Assuming the collection shard key is "_key" (the default)
+const shardId = await collection.getResponsibleShard({ _key: "abc123" });
 ```
 
 ### collection.properties
@@ -56,7 +80,7 @@ Retrieves the collection's properties.
 
 ```js
 const db = new Database();
-const collection = db.collection('some-collection');
+const collection = db.collection("some-collection");
 const data = await collection.properties();
 // data contains the collection's properties
 ```
@@ -71,7 +95,7 @@ Retrieves information about the number of documents in a collection.
 
 ```js
 const db = new Database();
-const collection = db.collection('some-collection');
+const collection = db.collection("some-collection");
 const data = await collection.count();
 // data contains the collection's count
 ```
@@ -86,7 +110,7 @@ Retrieves statistics for a collection.
 
 ```js
 const db = new Database();
-const collection = db.collection('some-collection');
+const collection = db.collection("some-collection");
 const data = await collection.figures();
 // data contains the collection's figures
 ```
@@ -101,7 +125,7 @@ Retrieves the collection revision ID.
 
 ```js
 const db = new Database();
-const collection = db.collection('some-collection');
+const collection = db.collection("some-collection");
 const data = await collection.revision();
 // data contains the collection's revision
 ```
@@ -123,7 +147,7 @@ Retrieves the collection checksum.
 
 ```js
 const db = new Database();
-const collection = db.collection('some-collection');
+const collection = db.collection("some-collection");
 const data = await collection.checksum();
 // data contains the collection's checksum
 ```

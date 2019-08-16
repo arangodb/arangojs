@@ -168,6 +168,8 @@ await trx2.commit();
 Begins a new streaming transaction for the given collections, then returns a
 `Transaction` instance for the transaction.
 
+**Arguments**
+
 - **collections**: `Object`
 
   An object with the following properties:
@@ -311,6 +313,8 @@ const result = await transaction.abort();
 
 Executes the given function locally within the transaction and returns a promise
 for its result.
+
+**Arguments**
 
 - **fn**: `Function`
 

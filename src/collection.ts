@@ -262,12 +262,12 @@ export abstract class BaseCollection<T extends object = any>
     );
   }
 
-  getResponsibleShard(documentOrShardKey: any): Promise<any> {
+  getResponsibleShard(document: Object): Promise<string> {
     return this._connection.request(
       {
         method: "PUT",
         path: `/_api/collection/${this.name}/responsibleShard`,
-        body: documentOrShardKey
+        body: document
       },
       res => res.body.shardId
     );

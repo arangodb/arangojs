@@ -35,6 +35,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   See the documentation of the `database.analyzer` method and the `Analyzer`
   instances for information on using this API.
 
+- Added `collection.getResponsibleShard` method
+
+- Added support for new ArangoDB 3.5 collection properties
+
+- Added support for new ArangoDB 3.5 view properties
+
 ### Fixed
 
 - Fixed a problem causing empty nested AQL expressions to be converted to bind variables
