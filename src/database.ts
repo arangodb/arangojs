@@ -1,11 +1,6 @@
+import { AnalyzerDescription, ArangoAnalyzer } from "./analyzer";
 import { AqlLiteral, AqlQuery, isAqlLiteral, isAqlQuery } from "./aql-query";
-import {
-  ArangoCollection,
-  constructCollection,
-  DocumentCollection,
-  EdgeCollection,
-  isArangoCollection
-} from "./collection";
+import { ArangoCollection, constructCollection, DocumentCollection, EdgeCollection, isArangoCollection } from "./collection";
 import { Config, Connection } from "./connection";
 import { ArrayCursor } from "./cursor";
 import { isArangoError } from "./error";
@@ -360,6 +355,24 @@ export class Database {
   async views(): Promise<ArangoView[]> {
     const views = await this.listViews();
     return views.map((data: any) => constructView(this._connection, data));
+  }
+  //#endregion
+
+  //#region analyzers
+  analyzer(name: string): ArangoAnalyzer {
+    return new ArangoAnalyzer(this._connection, name);
+  }
+
+  listAnalyzers(): Promise<AnalyzerDescription[]> {
+    return this._connection.request(
+      { path: "/_api/analyzer" },
+      res => res.body.result
+    );
+  }
+
+  async analyzers(): Promise<ArangoAnalyzer[]> {
+    const analyzers = await this.listAnalyzers();
+    return analyzers.map(data => this.analyzer(data.name));
   }
   //#endregion
 

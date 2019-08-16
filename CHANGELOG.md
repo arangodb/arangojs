@@ -30,6 +30,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   See the documentation of the `transaction.run` method for examples of using
   streaming transactions with arangojs.
 
+- Added support for ArangoDB 3.5 Analyzers API
+
+  See the documentation of the `database.analyzer` method and the `Analyzer`
+  instances for information on using this API.
+
 ### Fixed
 
 - Fixed a problem causing empty nested AQL expressions to be converted to bind variables
