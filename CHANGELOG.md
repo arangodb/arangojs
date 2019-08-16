@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   `executeTransaction` and the `params` argument now must be passed via the
   `options` object.
 
-  For backwards-compatible the new `db.transaction` method will continue to
+  For backwards-compatibility the new `db.transaction` method will continue to
   behave like before when passed an `action` string as the second argument.
   Note that this behavior is deprecated and will be removed in arangojs 7.
 
