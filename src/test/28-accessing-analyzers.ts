@@ -7,7 +7,8 @@ const ARANGO_VERSION = Number(process.env.ARANGO_VERSION || 30500);
 const describe35 = ARANGO_VERSION >= 30500 ? describe : describe.skip;
 
 describe35("Accessing analyzers", function() {
-  let name = `testdb_${Date.now()}`;
+  const builtins: string[] = [];
+  const name = `testdb_${Date.now()}`;
   let db: Database;
   before(async () => {
     db = new Database({
@@ -16,6 +17,8 @@ describe35("Accessing analyzers", function() {
     });
     await db.createDatabase(name);
     db.useDatabase(name);
+    builtins.push(...(await db.listAnalyzers()).map(a => a.name));
+    expect(builtins).not.to.have.length(0);
   });
   after(async () => {
     try {
@@ -36,42 +39,53 @@ describe35("Accessing analyzers", function() {
     });
   });
   describe("database.listAnalyzers", () => {
-    let analyzerNames = range(4).map(i => `a_${Date.now()}_${i}`);
+    const analyzerNames = range(4).map(i => `${name}::a_${Date.now()}_${i}`);
+    let allNames: string[];
     before(async () => {
+      allNames = [...builtins, ...analyzerNames].sort();
       await Promise.all(
         analyzerNames.map(name =>
-          db.analyzer(name).create({ type: "identity" })
+          db.analyzer(name.replace(/^[^:]+::/, "")).create({ type: "identity" })
         )
       );
     });
     after(async () => {
-      await Promise.all(analyzerNames.map(name => db.analyzer(name).drop()));
+      await Promise.all(
+        analyzerNames.map(name =>
+          db.analyzer(name.replace(/^[^:]+::/, "")).drop()
+        )
+      );
     });
     it("fetches information about all analyzers", async () => {
       const analyzers = await db.listAnalyzers();
-      expect(analyzers.length).to.equal(analyzerNames.length);
-      expect(analyzers.map(a => a.name).sort()).to.eql(analyzerNames);
+      console.log(analyzers.map(a => a.name), allNames);
+      expect(analyzers.map(a => a.name).sort()).to.eql(allNames);
     });
   });
   describe("database.analyzers", () => {
-    let analyzerNames = range(4).map(i => `a_${Date.now()}_${i}`);
+    const analyzerNames = range(4).map(i => `${name}::a_${Date.now()}_${i}`);
+    let allNames: string[];
     before(async () => {
+      allNames = [...builtins, ...analyzerNames].sort();
       await Promise.all(
         analyzerNames.map(name =>
-          db.analyzer(name).create({ type: "identity" })
+          db.analyzer(name.replace(/^[^:]+::/, "")).create({ type: "identity" })
         )
       );
     });
     after(async () => {
-      await Promise.all(analyzerNames.map(name => db.analyzer(name).drop()));
+      await Promise.all(
+        analyzerNames.map(name =>
+          db.analyzer(name.replace(/^[^:]+::/, "")).drop()
+        )
+      );
     });
     it("creates ArangoAnalyzer instances", async () => {
       const analyzers = await db.analyzers();
-      let arangoAnalyzers = analyzers
-        .filter(a => a instanceof ArangoAnalyzer)
-        .sort();
-      expect(arangoAnalyzers.length).to.equal(analyzerNames.length);
-      expect(arangoAnalyzers.map(a => a.name).sort()).to.eql(analyzerNames);
+      for (const analyzer of analyzers) {
+        expect(analyzer).to.be.instanceOf(ArangoAnalyzer);
+      }
+      expect(analyzers.map(a => a.name).sort()).to.eql(allNames);
     });
   });
 });

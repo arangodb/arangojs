@@ -6,8 +6,8 @@ const ARANGO_VERSION = Number(process.env.ARANGO_VERSION || 30500);
 const describe35 = ARANGO_VERSION >= 30500 ? describe : describe.skip;
 
 describe35("Manipulating analyzers", function() {
-  let db: Database;
   const name = `testdb_${Date.now()}`;
+  let db: Database;
   before(async () => {
     db = new Database({
       url: process.env.TEST_ARANGODB_URL || "http://localhost:8529",
@@ -43,7 +43,7 @@ describe35("Manipulating analyzers", function() {
     });
     it("fetches information about the analyzer", async () => {
       const data = await analyzer.get();
-      expect(data).to.have.property("name", analyzer.name);
+      expect(data).to.have.property("name", `${name}::${analyzer.name}`);
     });
   });
   describe("analyzer.create", () => {
@@ -51,7 +51,8 @@ describe35("Manipulating analyzers", function() {
       const analyzer = db.analyzer(`a_${Date.now()}`);
       await analyzer.create({ type: "identity" });
       const data = await analyzer.get();
-      expect(data).to.have.property("name", `${db.name}::${analyzer.name}`);
+      expect(data).to.have.property("name", `${name}::${analyzer.name}`);
+      expect(data).to.have.property("type", "identity");
     });
   });
   describe("analyzer.drop", () => {
@@ -62,12 +63,7 @@ describe35("Manipulating analyzers", function() {
     });
     it("destroys the analyzer", async () => {
       await analyzer.drop();
-      try {
-        await analyzer.get();
-      } catch (e) {
-        expect(await analyzer.exists()).to.equal(false);
-      }
-      expect.fail();
+      expect(await analyzer.exists()).to.equal(false);
     });
   });
 });
