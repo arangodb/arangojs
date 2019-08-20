@@ -58,7 +58,6 @@ describe35("Accessing analyzers", function() {
     });
     it("fetches information about all analyzers", async () => {
       const analyzers = await db.listAnalyzers();
-      console.log(analyzers.map(a => a.name), allNames);
       expect(analyzers.map(a => a.name).sort()).to.eql(allNames);
     });
   });
