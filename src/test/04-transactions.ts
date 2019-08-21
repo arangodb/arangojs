@@ -27,7 +27,7 @@ describe("Transactions", () => {
       expect(result).to.equal("test");
     });
   });
-  describe("stream transactions", () => {
+  describe35("stream transactions", () => {
     const name = `testdb_${Date.now()}`;
     let collection: DocumentCollection;
     before(async () => {
@@ -106,7 +106,7 @@ describe("Transactions", () => {
       expect(doc2).to.have.property("_key", "test2");
     });
 
-    it("does not leak when inserting a document", async () => {
+    itRdb("does not leak when inserting a document", async () => {
       const trx = await db.beginTransaction(collection);
       await trx.run(() => collection.save({ _key: "test" }));
       let doc: any;
@@ -119,7 +119,7 @@ describe("Transactions", () => {
       expect(status).to.equal("committed");
     });
 
-    it("does not leak when inserting two documents at a time", async () => {
+    itRdb("does not leak when inserting two documents at a time", async () => {
       const trx = await db.beginTransaction(collection);
       await trx.run(() =>
         Promise.all([
@@ -155,7 +155,7 @@ describe("Transactions", () => {
       if (doc) expect.fail("Document should not exist yet.");
     });
 
-    it("does not revert unrelated changes when aborted", async () => {
+    itRdb("does not revert unrelated changes when aborted", async () => {
       const trx = await db.beginTransaction(collection);
       const meta = await collection.save({ _key: "test" });
       expect(meta).to.have.property("_key", "test");
