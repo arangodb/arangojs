@@ -2,7 +2,10 @@ import { expect } from "chai";
 import { Database } from "../arangojs";
 import { ArangoSearchView } from "../view";
 
-const ARANGO_VERSION = Number(process.env.ARANGO_VERSION || 30400);
+const ARANGO_URL = process.env.TEST_ARANGODB_URL || "http://localhost:8529";
+const ARANGO_VERSION = Number(
+  process.env.ARANGO_VERSION || process.env.ARANGOJS_DEVEL_VERSION || 30400
+);
 const describe34 = ARANGO_VERSION >= 30400 ? describe : describe.skip;
 
 describe34("View metadata", function() {
@@ -11,10 +14,7 @@ describe34("View metadata", function() {
   let db: Database;
   let view: ArangoSearchView;
   before(async () => {
-    db = new Database({
-      url: process.env.TEST_ARANGODB_URL || "http://localhost:8529",
-      arangoVersion: Number(process.env.ARANGO_VERSION || 30400)
-    });
+    db = new Database({ url: ARANGO_URL, arangoVersion: ARANGO_VERSION });
     await db.createDatabase(dbName);
     db.useDatabase(dbName);
     view = db.arangoSearchView(viewName);

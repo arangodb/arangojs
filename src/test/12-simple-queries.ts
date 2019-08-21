@@ -5,7 +5,11 @@ import { ArrayCursor } from "../cursor";
 
 const range = (n: number): number[] => Array.from(Array(n).keys());
 const alpha = (i: number): string => String.fromCharCode("a".charCodeAt(0) + i);
-const ARANGO_VERSION = Number(process.env.ARANGO_VERSION || 30400);
+
+const ARANGO_URL = process.env.TEST_ARANGODB_URL || "http://localhost:8529";
+const ARANGO_VERSION = Number(
+  process.env.ARANGO_VERSION || process.env.ARANGOJS_DEVEL_VERSION || 30400
+);
 const describe2x = ARANGO_VERSION < 30000 ? describe : describe.skip;
 
 describe("Simple queries", function() {
@@ -13,10 +17,7 @@ describe("Simple queries", function() {
   let db: Database;
   let collection: DocumentCollection;
   before(async () => {
-    db = new Database({
-      url: process.env.TEST_ARANGODB_URL || "http://localhost:8529",
-      arangoVersion: ARANGO_VERSION
-    });
+    db = new Database({ url: ARANGO_URL, arangoVersion: ARANGO_VERSION });
     await db.createDatabase(name);
     db.useDatabase(name);
   });

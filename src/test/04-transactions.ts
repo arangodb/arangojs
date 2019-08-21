@@ -2,13 +2,17 @@ import { expect } from "chai";
 import { Database } from "../arangojs";
 import { DocumentCollection } from "../collection";
 
+const ARANGO_URL = process.env.TEST_ARANGODB_URL || "http://localhost:8529";
+const ARANGO_VERSION = Number(
+  process.env.ARANGO_VERSION || process.env.ARANGOJS_DEVEL_VERSION || 30400
+);
+const describe35 = ARANGO_VERSION >= 30500 ? describe : describe.skip;
+const itRdb = process.env.ARANGO_STORAGE_ENGINE !== "mmfiles" ? it : it.skip;
+
 describe("Transactions", () => {
   let db: Database;
   before(() => {
-    db = new Database({
-      url: process.env.TEST_ARANGODB_URL || "http://localhost:8529",
-      arangoVersion: Number(process.env.ARANGO_VERSION || 30400)
-    });
+    db = new Database({ url: ARANGO_URL, arangoVersion: ARANGO_VERSION });
   });
   after(() => {
     db.close();

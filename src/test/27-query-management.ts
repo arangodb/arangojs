@@ -3,14 +3,16 @@ import { aql, Database } from "../arangojs";
 import { ArrayCursor } from "../cursor";
 import { ArangoError } from "../error";
 
+const ARANGO_URL = process.env.TEST_ARANGODB_URL || "http://localhost:8529";
+const ARANGO_VERSION = Number(
+  process.env.ARANGO_VERSION || process.env.ARANGOJS_DEVEL_VERSION || 30400
+);
+
 describe("Query Management API", function() {
   const dbName = `testdb_${Date.now()}`;
   let db: Database;
   before(async () => {
-    db = new Database({
-      url: process.env.TEST_ARANGODB_URL || "http://localhost:8529",
-      arangoVersion: Number(process.env.ARANGO_VERSION || 30400)
-    });
+    db = new Database({ url: ARANGO_URL, arangoVersion: ARANGO_VERSION });
     await db.createDatabase(dbName);
     db.useDatabase(dbName);
   });

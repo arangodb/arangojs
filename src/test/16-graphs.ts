@@ -4,6 +4,11 @@ import { Graph } from "../graph";
 
 const range = (n: number): number[] => Array.from(Array(n).keys());
 
+const ARANGO_URL = process.env.TEST_ARANGODB_URL || "http://localhost:8529";
+const ARANGO_VERSION = Number(
+  process.env.ARANGO_VERSION || process.env.ARANGOJS_DEVEL_VERSION || 30400
+);
+
 async function createCollections(db: Database) {
   const vertexCollectionNames = range(2).map(i => `vc_${Date.now()}_${i}`);
   const edgeCollectionNames = range(2).map(i => `ec_${Date.now()}_${i}`);
@@ -32,10 +37,7 @@ describe("Graph API", function() {
   let db: Database;
   const name = `testdb_${Date.now()}`;
   before(async () => {
-    db = new Database({
-      url: process.env.TEST_ARANGODB_URL || "http://localhost:8529",
-      arangoVersion: Number(process.env.ARANGO_VERSION || 30400)
-    });
+    db = new Database({ url: ARANGO_URL, arangoVersion: ARANGO_VERSION });
     await db.createDatabase(name);
     db.useDatabase(name);
   });

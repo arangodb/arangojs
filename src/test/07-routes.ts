@@ -3,10 +3,15 @@ import { Database } from "../arangojs";
 import { DocumentCollection } from "../collection";
 import { Route } from "../route";
 
+const ARANGO_URL = process.env.TEST_ARANGODB_URL || "http://localhost:8529";
+const ARANGO_VERSION = Number(
+  process.env.ARANGO_VERSION || process.env.ARANGOJS_DEVEL_VERSION || 30400
+);
+
 describe("Arbitrary HTTP routes", () => {
   const db = new Database({
-    url: process.env.TEST_ARANGODB_URL || "http://localhost:8529",
-    arangoVersion: Number(process.env.ARANGO_VERSION || 30400)
+    url: ARANGO_URL,
+    arangoVersion: ARANGO_VERSION
   });
   describe("database.route", () => {
     it("returns a Route instance", () => {
@@ -30,10 +35,7 @@ describe("Route API", function() {
   let db: Database;
   let collection: DocumentCollection;
   before(async () => {
-    db = new Database({
-      url: process.env.TEST_ARANGODB_URL || "http://localhost:8529",
-      arangoVersion: Number(process.env.ARANGO_VERSION || 30400)
-    });
+    db = new Database({ url: ARANGO_URL, arangoVersion: ARANGO_VERSION });
     await db.createDatabase(name);
     db.useDatabase(name);
     collection = db.collection(`c_${Date.now()}`);

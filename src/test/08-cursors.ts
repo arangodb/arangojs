@@ -2,6 +2,11 @@ import { expect } from "chai";
 import { aql, Database } from "../arangojs";
 import { ArrayCursor } from "../cursor";
 
+const ARANGO_URL = process.env.TEST_ARANGODB_URL || "http://localhost:8529";
+const ARANGO_VERSION = Number(
+  process.env.ARANGO_VERSION || process.env.ARANGOJS_DEVEL_VERSION || 30400
+);
+
 const aqlQuery = aql`FOR i In 0..10 RETURN i`;
 const aqlResult = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
@@ -15,10 +20,7 @@ describe("Cursor API", () => {
   let db: Database;
   let cursor: ArrayCursor;
   before(() => {
-    db = new Database({
-      url: process.env.TEST_ARANGODB_URL || "http://localhost:8529",
-      arangoVersion: Number(process.env.ARANGO_VERSION || 30400)
-    });
+    db = new Database({ url: ARANGO_URL, arangoVersion: ARANGO_VERSION });
   });
   after(() => {
     db.close();
