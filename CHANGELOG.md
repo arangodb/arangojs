@@ -11,6 +11,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - Fixed view properties not being passed correctly when creating views ([#621](https://github.com/arangodb/arangojs/issues/621))
 
+- Renamed internal `response.host` attribute to `response.arangojsHostId` ([#604](https://github.com/arangodb/arangojs/pull/604))
+
+  In some environments the `host` attribute is already present and read-only.
+  This should avoid a `TypeError` being thrown when a value is assigned by
+  arangojs.
+
 ## [6.11.0] - 2019-08-16
 
 ### Changed

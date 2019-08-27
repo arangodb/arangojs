@@ -435,7 +435,7 @@ export abstract class BaseCollection<T extends object = any>
           collection: this.name
         }
       },
-      res => new ArrayCursor(this._connection, res.body, res.host)
+      res => new ArrayCursor(this._connection, res.body, res.arangojsHostId)
     );
   }
 
@@ -495,7 +495,7 @@ export abstract class BaseCollection<T extends object = any>
           collection: this.name
         }
       },
-      res => new ArrayCursor(this._connection, res.body, res.host)
+      res => new ArrayCursor(this._connection, res.body, res.arangojsHostId)
     );
   }
 
@@ -767,7 +767,7 @@ export abstract class BaseCollection<T extends object = any>
           collection: this.name
         }
       },
-      res => new ArrayCursor(this._connection, res.body, res.host)
+      res => new ArrayCursor(this._connection, res.body, res.arangojsHostId)
     );
   }
 }

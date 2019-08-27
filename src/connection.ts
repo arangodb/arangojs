@@ -207,7 +207,7 @@ export class Connection {
           }
           this._queue.push(task);
         } else {
-          response.host = host;
+          response.arangojsHostId = host;
           task.resolve(response);
         }
       }

@@ -1,6 +1,12 @@
 import { AnalyzerDescription, ArangoAnalyzer } from "./analyzer";
 import { AqlLiteral, AqlQuery, isAqlLiteral, isAqlQuery } from "./aql-query";
-import { ArangoCollection, constructCollection, DocumentCollection, EdgeCollection, isArangoCollection } from "./collection";
+import {
+  ArangoCollection,
+  constructCollection,
+  DocumentCollection,
+  EdgeCollection,
+  isArangoCollection
+} from "./collection";
 import { Config, Connection } from "./connection";
 import { ArrayCursor } from "./cursor";
 import { isArangoError } from "./error";
@@ -503,7 +509,12 @@ export class Database {
         timeout
       },
       res =>
-        new ArrayCursor(this._connection, res.body, res.host, allowDirtyRead)
+        new ArrayCursor(
+          this._connection,
+          res.body,
+          res.arangojsHostId,
+          allowDirtyRead
+        )
     );
   }
 

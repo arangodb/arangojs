@@ -14,7 +14,7 @@ import { Errback } from "./types";
 export type ArangojsResponse = IncomingMessage & {
   request: ClientRequest;
   body?: any;
-  host?: number;
+  arangojsHostId?: number;
 };
 
 export type ArangojsError = Error & {
