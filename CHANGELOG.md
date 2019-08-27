@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
-- Fixed view properties not being passed correctly when creating views ([#621](https://github.com/arangodb/arangojs/issues/621)
+- Fixed view properties not being passed correctly when creating views ([#621](https://github.com/arangodb/arangojs/issues/621))
 
 ## [6.11.0] - 2019-08-16
 
