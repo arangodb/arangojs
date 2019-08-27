@@ -150,7 +150,7 @@ export class ArangoSearchView extends BaseView {
         method: "POST",
         path: "/_api/view",
         body: {
-          properties,
+          ...properties,
           name: this.name,
           type: this.type
         }
