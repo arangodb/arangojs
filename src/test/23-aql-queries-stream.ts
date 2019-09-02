@@ -7,6 +7,7 @@ const ARANGO_VERSION = Number(
   process.env.ARANGO_VERSION || process.env.ARANGOJS_DEVEL_VERSION || 30400
 );
 const describe34 = ARANGO_VERSION >= 30400 ? describe : describe.skip;
+const itRdb = process.env.ARANGO_STORAGE_ENGINE !== "mmfiles" ? it : it.skip;
 
 describe34("AQL Stream queries", function() {
   let name = `testdb_${Date.now()}`;
@@ -97,7 +98,7 @@ describe34("AQL Stream queries", function() {
       );
       expect(count).to.equal(25 * 1000);
     });
-    it("can do writes and reads", async () => {
+    itRdb("can do writes and reads", async () => {
       let collection = db.collection(cname);
       let readQ = aql`FOR doc in ${collection} RETURN doc`;
       let writeQ = aql`FOR i in 1..1000 LET y = SLEEP(1) INSERT {forbidden: i} INTO ${collection}`;
