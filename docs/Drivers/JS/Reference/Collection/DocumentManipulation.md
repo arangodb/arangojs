@@ -3,6 +3,44 @@
 These functions implement the
 [HTTP API for manipulating documents](https://www.arangodb.com/docs/stable/http/document.html).
 
+Note that passing a document or `_id` from a different collection as a _selector_
+for a document in the current collection will result in an error being thrown.
+
+## collection.documentId
+
+`collection.documentId(selector): string`
+
+Returns the document `_id` for the given _selector_ in this collection.
+
+**Arguments**
+
+- **selector**: `string`
+
+  The handle of the document. This can be either the `_id` or the `_key` of a
+  document in the collection, or a document (i.e. an object with an `_id` or
+  `_key` property).
+
+Returns the `_id` for the given document.
+
+**Examples**
+
+```js
+const db = new Database();
+const collection = db.collection("my-docs");
+
+let documentId = collection.documentId("some-key"); // my-docs/some-key
+// - or -
+documentId = collection.documentId("my-docs/some-key");
+// - or -
+documentId = collection.documentId({ _key: "some-key" });
+// - or -
+documentId = collection.documentId({ _id: "my-docs/some-key" });
+
+// The following will throw because the collection name does not match:
+documentId = collection.documentId({ _id: "elsewhere/some-key" }); // THROWS!
+documentId = collection.documentId("elsewhere/some-key"); // THROWS!
+```
+
 ## collection.documentExists
 
 `async collection.documentExists(selector): boolean`
