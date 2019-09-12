@@ -5,29 +5,47 @@ import { COLLECTION_NOT_FOUND, DOCUMENT_NOT_FOUND } from "./util/codes";
 import { ArangoResponseMetadata, Patch, StrictObject } from "./util/types";
 
 export function documentHandle(
-  selector: Selector,
+  selector: DocumentSelector,
   collectionName: string
 ): string {
   if (typeof selector !== "string") {
     if (selector._id) {
-      if (!selector._id.startsWith(`${collectionName}/`)) {
-        throw new Error(
-          `Document ID "${selector._id}" does not match collection name "${collectionName}"`
-        );
-      }
-      return selector._id;
+      return documentHandle(selector._id, collectionName);
     }
     if (selector._key) {
       return documentHandle(selector._key, collectionName);
     }
     throw new Error(
-      "Document handle must be a string or an object with a _key or _id"
+      "Document handle must be a string or an object with a _key or _id attribute"
     );
   }
   if (selector.includes("/")) {
     if (selector.startsWith(`${collectionName}/`)) {
       throw new Error(
         `Document ID "${selector}" does not match collection name "${collectionName}"`
+      );
+    }
+    return selector;
+  }
+  return `${collectionName}/${selector}`;
+}
+
+export function indexHandle(
+  selector: IndexSelector,
+  collectionName: string
+): string {
+  if (typeof selector !== "string") {
+    if (selector.id) {
+      return indexHandle(selector.id, collectionName);
+    }
+    throw new Error(
+      "Index handle must be a string or an object with an id attribute"
+    );
+  }
+  if (selector.includes("/")) {
+    if (!selector.startsWith(`${collectionName}/`)) {
+      throw new Error(
+        `Index ID "${selector}" does not match collection name "${collectionName}"`
       );
     }
     return selector;
@@ -446,7 +464,7 @@ export interface ObjectWithKey {
 
 export type DocumentLike = ObjectWithId | ObjectWithKey;
 
-export type Selector = DocumentLike | string;
+export type DocumentSelector = DocumentLike | string;
 
 export interface DocumentMetadata {
   _key: string;
@@ -528,7 +546,7 @@ export type Index =
   | HashIndex
   | SkiplistIndex;
 
-export type IndexHandle = string | Index;
+export type IndexSelector = string | Index;
 
 // Collections
 
@@ -558,12 +576,12 @@ export interface DocumentCollection<T extends object = any>
 
   //#region crud
   getResponsibleShard(document: Partial<Document<T>>): Promise<string>;
-  documentExists(selector: Selector): Promise<boolean>;
+  documentExists(selector: DocumentSelector): Promise<boolean>;
   document(
-    selector: Selector,
+    selector: DocumentSelector,
     opts?: CollectionReadOptions
   ): Promise<Document<T>>;
-  document(selector: Selector, graceful: boolean): Promise<Document<T>>;
+  document(selector: DocumentSelector, graceful: boolean): Promise<Document<T>>;
   save(
     data: DocumentData<T>,
     opts?: CollectionInsertOptions
@@ -573,7 +591,7 @@ export interface DocumentCollection<T extends object = any>
     opts?: CollectionInsertOptions
   ): Promise<CollectionSaveResult<Document<T>>[]>;
   replace(
-    selector: Selector,
+    selector: DocumentSelector,
     newValue: DocumentData<T>,
     opts?: CollectionReplaceOptions
   ): Promise<CollectionSaveResult<Document<T>>>;
@@ -582,7 +600,7 @@ export interface DocumentCollection<T extends object = any>
     opts?: CollectionReplaceOptions
   ): Promise<CollectionSaveResult<Document<T>>[]>;
   update(
-    selector: Selector,
+    selector: DocumentSelector,
     newValue: Patch<DocumentData<T>>,
     opts?: CollectionUpdateOptions
   ): Promise<CollectionSaveResult<Document<T>>>;
@@ -591,11 +609,11 @@ export interface DocumentCollection<T extends object = any>
     opts?: CollectionUpdateOptions
   ): Promise<CollectionSaveResult<Document<T>>[]>;
   remove(
-    selector: Selector,
+    selector: DocumentSelector,
     opts?: CollectionRemoveOptions
   ): Promise<CollectionRemoveResult<Document<T>>>;
   removeAll(
-    selector: Array<Selector>,
+    selector: Array<DocumentSelector>,
     opts?: CollectionRemoveOptions
   ): Promise<CollectionRemoveResult<Document<T>>[]>;
   import(
@@ -644,11 +662,11 @@ export interface DocumentCollection<T extends object = any>
     opts?: SimpleQueryUpdateByExampleOptions
   ): Promise<ArangoResponseMetadata & SimpleQueryUpdateByExampleResult>;
   remove(
-    selector: Selector,
+    selector: DocumentSelector,
     opts?: CollectionRemoveOptions
   ): Promise<CollectionRemoveResult<Edge<T>>>;
   removeAll(
-    selector: Array<Selector>,
+    selector: Array<DocumentSelector>,
     opts?: CollectionRemoveOptions
   ): Promise<CollectionRemoveResult<Edge<T>>[]>;
   /** @deprecated ArangoDB 3.4 */
@@ -668,12 +686,12 @@ export interface DocumentCollection<T extends object = any>
 
   //#region indexes
   indexes(): Promise<Index[]>;
-  index(indexHandle: IndexHandle): Promise<Index[]>;
+  index(selector: IndexSelector): Promise<Index[]>;
   createIndex(
     details: CreateIndexOptions
   ): Promise<ArangoResponseMetadata & CollectionIndexResult>;
   dropIndex(
-    indexHandle: IndexHandle
+    selector: IndexSelector
   ): Promise<ArangoResponseMetadata & CollectionIndexResult>;
   createHashIndex(
     fields: string | string[],
@@ -701,10 +719,16 @@ export interface DocumentCollection<T extends object = any>
 export interface EdgeCollection<T extends object = any>
   extends DocumentCollection<T> {
   //#region crud
-  edge(selector: Selector, opts?: CollectionReadOptions): Promise<Edge<T>>;
-  edge(selector: Selector, graceful: boolean): Promise<Edge<T>>;
-  document(selector: Selector, opts?: CollectionReadOptions): Promise<Edge<T>>;
-  document(selector: Selector, graceful: boolean): Promise<Edge<T>>;
+  edge(
+    selector: DocumentSelector,
+    opts?: CollectionReadOptions
+  ): Promise<Edge<T>>;
+  edge(selector: DocumentSelector, graceful: boolean): Promise<Edge<T>>;
+  document(
+    selector: DocumentSelector,
+    opts?: CollectionReadOptions
+  ): Promise<Edge<T>>;
+  document(selector: DocumentSelector, graceful: boolean): Promise<Edge<T>>;
   save(
     data: EdgeData<T>,
     opts?: CollectionInsertOptions
@@ -714,7 +738,7 @@ export interface EdgeCollection<T extends object = any>
     opts?: CollectionInsertOptions
   ): Promise<CollectionSaveResult<Edge<T>>[]>;
   replace(
-    selector: Selector,
+    selector: DocumentSelector,
     newValue: DocumentData<T>,
     opts?: CollectionReplaceOptions
   ): Promise<CollectionSaveResult<Edge<T>>>;
@@ -723,7 +747,7 @@ export interface EdgeCollection<T extends object = any>
     opts?: CollectionReplaceOptions
   ): Promise<CollectionSaveResult<Edge<T>>[]>;
   update(
-    selector: Selector,
+    selector: DocumentSelector,
     newValue: Patch<DocumentData<T>>,
     opts?: CollectionUpdateOptions
   ): Promise<CollectionSaveResult<Edge<T>>>;
@@ -769,16 +793,19 @@ export interface EdgeCollection<T extends object = any>
 
   //#region edges
   edges(
-    selector: Selector
+    selector: DocumentSelector
   ): Promise<ArangoResponseMetadata & CollectionEdgesResult<T>>;
   inEdges(
-    selector: Selector
+    selector: DocumentSelector
   ): Promise<ArangoResponseMetadata & CollectionEdgesResult<T>>;
   outEdges(
-    selector: Selector
+    selector: DocumentSelector
   ): Promise<ArangoResponseMetadata & CollectionEdgesResult<T>>;
   /** @deprecated ArangoDB 3.4 */
-  traversal(startVertex: Selector, opts?: TraversalOptions): Promise<any>;
+  traversal(
+    startVertex: DocumentSelector,
+    opts?: TraversalOptions
+  ): Promise<any>;
   //#endregion
 }
 
@@ -798,36 +825,6 @@ class GenericCollection<T extends object = any>
   }
 
   //#region internals
-  protected _documentHandle(documentHandle: Selector) {
-    if (typeof documentHandle !== "string") {
-      if (documentHandle._id) {
-        return documentHandle._id;
-      }
-      if (documentHandle._key) {
-        return this._idPrefix + documentHandle._key;
-      }
-      throw new Error(
-        "Document handle must be a string or an object with a _key or _id"
-      );
-    }
-    if (documentHandle.indexOf("/") === -1) {
-      return this._idPrefix + documentHandle;
-    }
-    return documentHandle;
-  }
-
-  protected _indexHandle(indexHandle: IndexHandle) {
-    if (typeof indexHandle !== "string") {
-      if (indexHandle.id) {
-        return indexHandle.id;
-      }
-      throw new Error("Index handle must be a index or string");
-    }
-    if (indexHandle.indexOf("/") === -1) {
-      return this._idPrefix + indexHandle;
-    }
-    return indexHandle;
-  }
 
   protected _get(path: string, qs?: any) {
     return this._connection.request(
@@ -977,7 +974,7 @@ class GenericCollection<T extends object = any>
     );
   }
 
-  documentExists(selector: Selector): Promise<boolean> {
+  documentExists(selector: DocumentSelector): Promise<boolean> {
     return this._connection
       .request(
         {
@@ -994,7 +991,10 @@ class GenericCollection<T extends object = any>
       });
   }
 
-  document(selector: Selector, opts: boolean | CollectionReadOptions = {}) {
+  document(
+    selector: DocumentSelector,
+    opts: boolean | CollectionReadOptions = {}
+  ) {
     if (typeof opts === "boolean") {
       opts = { graceful: opts };
     }
@@ -1015,7 +1015,7 @@ class GenericCollection<T extends object = any>
     });
   }
 
-  edge(selector: Selector, opts: boolean | CollectionReadOptions = {}) {
+  edge(selector: DocumentSelector, opts: boolean | CollectionReadOptions = {}) {
     return this.document(selector, opts) as Promise<Edge<T>>;
   }
 
@@ -1044,7 +1044,7 @@ class GenericCollection<T extends object = any>
   }
 
   replace(
-    selector: Selector,
+    selector: DocumentSelector,
     newValue: DocumentData<T>,
     opts?: CollectionReplaceOptions
   ) {
@@ -1075,7 +1075,7 @@ class GenericCollection<T extends object = any>
   }
 
   update(
-    selector: Selector,
+    selector: DocumentSelector,
     newValue: Patch<DocumentData<T>>,
     opts?: CollectionUpdateOptions
   ) {
@@ -1105,7 +1105,7 @@ class GenericCollection<T extends object = any>
     );
   }
 
-  remove(selector: Selector, opts?: CollectionRemoveOptions) {
+  remove(selector: DocumentSelector, opts?: CollectionRemoveOptions) {
     return this._connection.request(
       {
         method: "DELETE",
@@ -1116,7 +1116,10 @@ class GenericCollection<T extends object = any>
     );
   }
 
-  removeAll(selectors: Array<Selector>, opts?: CollectionRemoveOptions) {
+  removeAll(
+    selectors: Array<DocumentSelector>,
+    opts?: CollectionRemoveOptions
+  ) {
     return this._connection.request(
       {
         method: "DELETE",
@@ -1155,7 +1158,7 @@ class GenericCollection<T extends object = any>
   //#endregion
 
   //#region edges
-  protected _edges(selector: Selector, direction?: "in" | "out") {
+  protected _edges(selector: DocumentSelector, direction?: "in" | "out") {
     return this._connection.request(
       {
         path: `/_api/edges/${this._name}`,
@@ -1168,19 +1171,19 @@ class GenericCollection<T extends object = any>
     );
   }
 
-  edges(vertex: Selector) {
+  edges(vertex: DocumentSelector) {
     return this._edges(vertex);
   }
 
-  inEdges(vertex: Selector) {
+  inEdges(vertex: DocumentSelector) {
     return this._edges(vertex, "in");
   }
 
-  outEdges(vertex: Selector) {
+  outEdges(vertex: DocumentSelector) {
     return this._edges(vertex, "out");
   }
 
-  traversal(startVertex: Selector, opts?: TraversalOptions) {
+  traversal(startVertex: DocumentSelector, opts?: TraversalOptions) {
     return this._connection.request(
       {
         method: "POST",
@@ -1364,9 +1367,9 @@ class GenericCollection<T extends object = any>
     );
   }
 
-  index(indexHandle: IndexHandle) {
+  index(selector: IndexSelector) {
     return this._connection.request(
-      { path: `/_api/index/${this._indexHandle(indexHandle)}` },
+      { path: `/_api/index/${indexHandle(selector, this._name)}` },
       (res) => res.body
     );
   }
@@ -1388,11 +1391,11 @@ class GenericCollection<T extends object = any>
     return this.ensureIndex(details);
   }
 
-  dropIndex(indexHandle: IndexHandle) {
+  dropIndex(selector: IndexSelector) {
     return this._connection.request(
       {
         method: "DELETE",
-        path: `/_api/index/${this._indexHandle(indexHandle)}`,
+        path: `/_api/index/${indexHandle(selector, this._name)}`,
       },
       (res) => res.body
     );
@@ -1491,15 +1494,15 @@ class GenericCollection<T extends object = any>
   fulltext(
     attribute: string,
     query: string,
-    opts: SimpleQueryFulltextOptions = {}
+    { index, ...opts }: SimpleQueryFulltextOptions = {}
   ) {
-    if (opts.index) opts.index = this._indexHandle(opts.index);
     return this._connection.request(
       {
         method: "PUT",
         path: "/_api/simple/fulltext",
         body: {
           ...opts,
+          index: index ? indexHandle(index, this._name) : undefined,
           attribute,
           query,
           collection: this._name,
