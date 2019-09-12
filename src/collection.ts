@@ -576,6 +576,7 @@ export interface DocumentCollection<T extends object = any>
 
   //#region crud
   getResponsibleShard(document: Partial<Document<T>>): Promise<string>;
+  documentId(selector: DocumentSelector): string;
   documentExists(selector: DocumentSelector): Promise<boolean>;
   document(
     selector: DocumentSelector,
@@ -972,6 +973,10 @@ class GenericCollection<T extends object = any>
       },
       (res) => res.body.shardId
     );
+  }
+
+  documentId(selector: DocumentSelector): string {
+    return documentHandle(selector, this._name);
   }
 
   documentExists(selector: DocumentSelector): Promise<boolean> {
