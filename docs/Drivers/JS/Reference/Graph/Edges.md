@@ -9,7 +9,7 @@ the given name bound to this graph.
 
 **Arguments**
 
-* **collectionName**: `string`
+- **collectionName**: `string`
 
   Name of the edge collection.
 
@@ -26,13 +26,13 @@ assert.equal(collection.name, "edges");
 
 ## graph.addEdgeDefinition
 
-`async graph.addEdgeDefinition(definition): Object`
+`async graph.addEdgeDefinition(definition): TODO`
 
 Adds the given edge definition _definition_ to the graph.
 
 **Arguments**
 
-* **definition**: `Object`
+- **definition**: `object`
 
   For more information on edge definitions see
   [the HTTP API for managing graphs](https://www.arangodb.com/docs/stable/http/gharial-management.html).
@@ -42,29 +42,29 @@ Adds the given edge definition _definition_ to the graph.
 ```js
 const db = new Database();
 // assuming the collections "edges" and "vertices" exist
-const graph = db.graph('some-graph');
+const graph = db.graph("some-graph");
 await graph.addEdgeDefinition({
-  collection: 'edges',
-  from: ['vertices'],
-  to: ['vertices']
+  collection: "edges",
+  from: ["vertices"],
+  to: ["vertices"]
 });
 // the edge definition has been added to the graph
 ```
 
 ## graph.replaceEdgeDefinition
 
-`async graph.replaceEdgeDefinition(collectionName, definition): Object`
+`async graph.replaceEdgeDefinition(collectionName, definition): TODO`
 
 Replaces the edge definition for the edge collection named _collectionName_ with
 the given _definition_.
 
 **Arguments**
 
-* **collectionName**: `string`
+- **collectionName**: `string`
 
   Name of the edge collection to replace the definition of.
 
-* **definition**: `Object`
+- **definition**: `object`
 
   For more information on edge definitions see
   [the HTTP API for managing graphs](https://www.arangodb.com/docs/stable/http/gharial-management.html).
@@ -74,28 +74,28 @@ the given _definition_.
 ```js
 const db = new Database();
 // assuming the collections "edges", "vertices" and "more-vertices" exist
-const graph = db.graph('some-graph');
-await graph.replaceEdgeDefinition('edges', {
-  collection: 'edges',
-  from: ['vertices'],
-  to: ['more-vertices']
+const graph = db.graph("some-graph");
+await graph.replaceEdgeDefinition("edges", {
+  collection: "edges",
+  from: ["vertices"],
+  to: ["more-vertices"]
 });
 // the edge definition has been modified
 ```
 
 ## graph.removeEdgeDefinition
 
-`async graph.removeEdgeDefinition(definitionName, [dropCollection]): Object`
+`async graph.removeEdgeDefinition(definitionName, [dropCollection]): TODO`
 
 Removes the edge definition with the given _definitionName_ form the graph.
 
 **Arguments**
 
-* **definitionName**: `string`
+- **definitionName**: `string`
 
   Name of the edge definition to remove from the graph.
 
-* **dropCollection**: `boolean` (optional)
+- **dropCollection**: `boolean` (optional)
 
   If set to `true`, the edge collection associated with the definition will also
   be deleted from the database.
@@ -104,14 +104,14 @@ Removes the edge definition with the given _definitionName_ form the graph.
 
 ```js
 const db = new Database();
-const graph = db.graph('some-graph');
+const graph = db.graph("some-graph");
 
-await graph.removeEdgeDefinition('edges')
+await graph.removeEdgeDefinition("edges");
 // the edge definition has been removed
 
 // -- or --
 
-await graph.removeEdgeDefinition('edges', true)
+await graph.removeEdgeDefinition("edges", true);
 // the edge definition has been removed
 // and the edge collection "edges" has been dropped
 // this may have been a bad idea
@@ -119,19 +119,19 @@ await graph.removeEdgeDefinition('edges', true)
 
 ## graph.traversal
 
-`async graph.traversal(startVertex, opts): Object`
+`async graph.traversal(startVertex, opts): TODO`
 
 Performs a traversal starting from the given _startVertex_ and following edges
 contained in any of the edge collections of this graph.
 
 **Arguments**
 
-* **startVertex**: `string`
+- **startVertex**: `string`
 
   The handle of the start vertex. This can be either the `_id` of a document in
   the graph or a document (i.e. an object with an `_id` property).
 
-* **opts**: `Object`
+- **opts**: `object`
 
   See
   [the HTTP API documentation](https://www.arangodb.com/docs/stable/http/traversal.html)
@@ -147,18 +147,18 @@ contained in any of the edge collections of this graph.
 
 ```js
 const db = new Database();
-const graph = db.graph('some-graph');
-const collection = graph.edgeCollection('edges');
+const graph = db.graph("some-graph");
+const collection = graph.edgeCollection("edges");
 await collection.import([
-  ['_key', '_from', '_to'],
-  ['x', 'vertices/a', 'vertices/b'],
-  ['y', 'vertices/b', 'vertices/c'],
-  ['z', 'vertices/c', 'vertices/d']
-])
-const result = await graph.traversal('vertices/a', {
-  direction: 'outbound',
-  visitor: 'result.vertices.push(vertex._key);',
-  init: 'result.vertices = [];'
+  ["_key", "_from", "_to"],
+  ["x", "vertices/a", "vertices/b"],
+  ["y", "vertices/b", "vertices/c"],
+  ["z", "vertices/c", "vertices/d"]
+]);
+const result = await graph.traversal("vertices/a", {
+  direction: "outbound",
+  visitor: "result.vertices.push(vertex._key);",
+  init: "result.vertices = [];"
 });
-assert.deepEqual(result.vertices, ['a', 'b', 'c', 'd']);
+assert.deepEqual(result.vertices, ["a", "b", "c", "d"]);
 ```

@@ -3,55 +3,249 @@
 These functions implement the
 [HTTP API for manipulating documents](https://www.arangodb.com/docs/stable/http/document.html).
 
-## collection.replace
+## collection.documentExists
 
-`async collection.replace(documentHandle, newValue, [opts]): Object`
+`async collection.documentExists(selector): boolean`
 
-Replaces the content of the document with the given _documentHandle_ with the
-given _newValue_ and returns an object containing the document's metadata.
+Checks whether the document matching the given _selector_ exists.
 
 **Arguments**
 
-- **documentHandle**: `string`
+- **selector**: `string`
 
-  The handle of the document to replace. This can either be the `_id` or the
+  The handle of the document to retrieve. This can be either the `_id` or the
   `_key` of a document in the collection, or a document (i.e. an object with an
   `_id` or `_key` property).
 
-- **newValue**: `Object`
+Returns a boolean indicating the document's existence.
 
-  The new data of the document.
+**Examples**
 
-- **opts**: `Object` (optional)
+```js
+const db = new Database();
+const collection = db.collection("my-docs");
+
+const exists = await collection.documentExists("some-key");
+if (exists === false) {
+  // the document does not exist
+}
+```
+
+## collection.document
+
+`async collection.document(selector, [opts]): Document`
+
+Retrieves the document matching the given _selector_ from the collection.
+
+**Arguments**
+
+- **selector**: `string`
+
+  The handle of the document to retrieve. This can be either the `_id` or the
+  `_key` of a document in the collection, or a document (i.e. an object with an
+  `_id` or `_key` property).
+
+- **opts**: `object` (optional)
+
+  An object with the following properties:
+
+  - **graceful**: `boolean` (Default: `false`)
+
+    If set to `true`, the method will return `null` instead of throwing an
+    error if the document does not exist.
+
+  - **allowDirtyRead**: `boolean` (Default: `false`)
+
+    {% hint 'info' %}
+    Dirty reads were introduced in ArangoDB 3.4 and are not supported by
+    earlier versions of ArangoDB.
+    {% endhint %}
+
+    If set to `true`, the request will explicitly permit ArangoDB to return a
+    potentially dirty or stale result and arangojs will load balance the
+    request without distinguishing between leaders and followers.
+
+If a boolean is passed instead of an options object, it will be interpreted as
+the _graceful_ option.
+
+Returns the document.
+
+**Examples**
+
+```js
+const db = new Database();
+const collection = db.collection("my-docs");
+
+try {
+  const doc = await collection.document("some-key");
+  // the document exists
+  assert.equal(doc._key, "some-key");
+  assert.equal(doc._id, "my-docs/some-key");
+} catch (err) {
+  // something went wrong or
+  // the document does not exist
+}
+
+// -- or --
+
+try {
+  const doc = await collection.document("my-docs/some-key");
+  // the document exists
+  assert.equal(doc._key, "some-key");
+  assert.equal(doc._id, "my-docs/some-key");
+} catch (err) {
+  // something went wrong or
+  // the document does not exist
+}
+
+// -- or --
+
+const doc = await collection.document("some-key", true);
+if (doc === null) {
+  // the document does not exist
+}
+```
+
+## collection.save
+
+`async collection.save(data, [opts]): CollectionSaveResult`
+
+Creates a new document with the given _data_.
+
+**Arguments**
+
+- **data**: `object`
+
+  The data of the new document, may include a `_key`.
+
+- **opts**: `object` (optional)
 
   If _opts_ is set, it must be an object with any of the following properties:
 
   - **waitForSync**: `boolean` (Default: `false`)
 
-    Wait until the document has been synced to disk. Default: `false`.
+    Wait until document has been synced to disk.
 
-  - **rev**: `string` (optional)
+  - **returnNew**: `boolean` (Default: `false`)
 
-    Only replace the document if it matches this revision.
+    If set to `true`, return additionally the complete new document under the
+    attribute `new` in the result.
 
-  - **policy**: `string` (optional)
+  - **returnOld**: `boolean` (Default: `false`)
+
+    If set to `true`, return additionally the complete old document under the
+    attribute `old` in the result.
+
+  - **silent**: `boolean` (Default: `false`)
+
+    If set to true, an empty object will be returned as response. No meta-data
+    will be returned for the created document. This option can be used to save
+    some network traffic.
+
+  - **overwrite**: `boolean` (Default: `false`)
 
     {% hint 'warning' %}
-    This option has no effect in ArangoDB 3.0 and later.
+    This option is only available when targeting ArangoDB v3.4.0 and later.
     {% endhint %}
 
-    Determines the behavior when the revision is not matched:
+    If set to true, the insert becomes a replace-insert. If a document with the
+    same `_key` already exists the new document is not rejected with unique
+    constraint violated but will replace the old document.
 
-    - if _policy_ is set to `"last"`, the document will be replaced regardless
-      of the revision.
-    - if _policy_ is set to `"error"` or not set, the replacement will fail with
-      an error.
+Returns an object.
 
-If a string is passed instead of an options object, it will be interpreted as
-the _rev_ option.
+If **silent** was not set to `true`, the object will include the new document's
+`_id`, `_key` and `_rev` properties.
 
-For more information on the _opts_ object, see the
-[HTTP API documentation for working with documents](https://www.arangodb.com/docs/stable/http/document-working-with-documents.html).
+If **returnNew** was set to `true`, the object will include a full copy of the
+stored document in the `new` property.
+
+If **returnOld** and **overwrite** were set to `true` and the inserted document
+replaced an existing document, the object will include a full copy of the
+previous document in the `old` property.
+
+**Examples**
+
+```js
+const db = new Database();
+const collection = db.collection("my-docs");
+const data = { some: "data" };
+const info = await collection.save(data);
+assert.equal(info._id, "my-docs/" + info._key);
+const doc2 = await collection.document(info);
+assert.equal(doc2._id, info._id);
+assert.equal(doc2._rev, info._rev);
+assert.equal(doc2.some, data.some);
+
+// -- or --
+
+const db = new Database();
+const collection = db.collection("my-docs");
+const data = { some: "data" };
+const opts = { returnNew: true };
+const doc = await collection.save(data, opts);
+assert.equal(doc1._id, "my-docs/" + doc1._key);
+assert.equal(doc1.new.some, data.some);
+```
+
+## collection.replace
+
+`async collection.replace(selector, newValue, [opts]): CollectionSaveResult`
+
+Replaces the content of the document matching the given _selector_ with the
+given _newValue_ and returns an object containing the document's metadata.
+
+**Arguments**
+
+- **selector**: `string`
+
+  The handle of the document to replace. This can either be the `_id` or the
+  `_key` of a document in the collection, or a document (i.e. an object with an
+  `_id` or `_key` property).
+
+- **newValue**: `DocumentData`
+
+  The new data of the document.
+
+- **opts**: `object` (optional)
+
+  If _opts_ is set, it must be an object with any of the following properties:
+
+  - **waitForSync**: `boolean` (Default: `false`)
+
+    Wait until document has been synced to disk.
+
+  - **returnNew**: `boolean` (Default: `false`)
+
+    If set to `true`, return additionally the complete new document under the
+    attribute `new` in the result.
+
+  - **returnOld**: `boolean` (Default: `false`)
+
+    If set to `true`, return additionally the complete old document under the
+    attribute `old` in the result.
+
+  - **silent**: `boolean` (Default: `false`)
+
+    If set to true, an empty object will be returned as response. No meta-data
+    will be returned for the created document. This option can be used to save
+    some network traffic.
+
+  - **ignoreRevs**: `boolean` (Default: `true`)
+
+    If set to `false`, the existing document will only be replaced if its
+    `_rev` attribute matches `newValue._rev`.
+
+Returns an object.
+
+If **silent** was not set to `true`, the object will include the new document's
+`_id`, `_key` and `_rev` properties.
+
+If **returnNew** was set to `true`, the object will include a full copy of the
+stored document in the `new` property.
+
+If **returnOld** was set to `true`, the object will include a full copy of the
+previous document in the `old` property.
 
 **Examples**
 
@@ -72,25 +266,24 @@ assert.equal(doc.hello, undefined);
 
 ## collection.update
 
-`async collection.update(documentHandle, newValue, [opts]): Object`
+`async collection.update(selector, newValue, [opts]): CollectionSaveResult`
 
-Updates (merges) the content of the document with the given _documentHandle_
-with the given _newValue_ and returns an object containing the document's
-metadata.
+Updates (merges) the content of the document matching the given _selector_
+with the given _newValue_.
 
 **Arguments**
 
-- **documentHandle**: `string`
+- **selector**: `string`
 
   Handle of the document to update. This can be either the `_id` or the `_key`
   of a document in the collection, or a document (i.e. an object with an `_id`
   or `_key` property).
 
-- **newValue**: `Object`
+- **newValue**: `DocumentData`
 
   The new data of the document.
 
-- **opts**: `Object` (optional)
+- **opts**: `object` (optional)
 
   If _opts_ is set, it must be an object with any of the following properties:
 
@@ -98,55 +291,37 @@ metadata.
 
     Wait until document has been synced to disk.
 
-  - **keepNull**: `boolean` (Default: `true`)
+  - **returnNew**: `boolean` (Default: `false`)
 
-    If set to `false`, properties with a value of `null` indicate that a
-    property should be deleted.
-
-  - **mergeObjects**: `boolean` (Default: `true`)
-
-    If set to `false`, object properties that already exist in the old document
-    will be overwritten rather than merged. This does not affect arrays.
+    If set to `true`, return additionally the complete new document under the
+    attribute `new` in the result.
 
   - **returnOld**: `boolean` (Default: `false`)
 
-    If set to `true`, return additionally the complete previous revision of the
-    changed documents under the attribute `old` in the result.
+    If set to `true`, return additionally the complete old document under the
+    attribute `old` in the result.
 
-  - **returnNew**: `boolean` (Default: `false`)
+  - **silent**: `boolean` (Default: `false`)
 
-    If set to `true`, return additionally the complete new documents under the
-    attribute `new` in the result.
+    If set to true, an empty object will be returned as response. No meta-data
+    will be returned for the created document. This option can be used to save
+    some network traffic.
 
   - **ignoreRevs**: `boolean` (Default: `true`)
 
-    By default, or if this is set to true, the `_rev` attributes in the given
-    documents are ignored. If this is set to false, then any `_rev` attribute
-    given in a body document is taken as a precondition. The document is only
-    updated if the current revision is the one specified.
+    If set to `false`, the existing document will only be replaced if its
+    `_rev` attribute matches `newValue._rev`.
 
-  - **rev**: `string` (optional)
+Returns an object.
 
-    Only update the document if it matches this revision.
+If **silent** was not set to `true`, the object will include the new document's
+`_id`, `_key` and `_rev` properties.
 
-  - **policy**: `string` (optional)
+If **returnNew** was set to `true`, the object will include a full copy of the
+stored document in the `new` property.
 
-    {% hint 'warning' %}
-    This option has no effect in ArangoDB 3.0 and later.
-    {% endhint %}
-
-    Determines the behavior when the revision is not matched:
-
-    - if _policy_ is set to `"last"`, the document will be replaced regardless
-      of the revision.
-    - if _policy_ is set to `"error"` or not set, the replacement will fail with
-      an error.
-
-If a string is passed instead of an options object, it will be interpreted as
-the _rev_ option.
-
-For more information on the _opts_ object, see the
-[HTTP API documentation for working with documents](https://www.arangodb.com/docs/stable/http/document-working-with-documents.html).
+If **returnOld** was set to `true`, the object will include a full copy of the
+previous document in the `old` property.
 
 **Examples**
 
@@ -167,19 +342,19 @@ assert.equal(doc3.hello, doc.hello);
 
 ## collection.bulkUpdate
 
-`async collection.bulkUpdate(documents, [opts]): Object`
+`async collection.bulkUpdate(documents, [opts]): TODO`
 
 Updates (merges) the content of the documents with the given _documents_ and
 returns an array containing the documents' metadata.
 
 **Arguments**
 
-- **documents**: `Array<Object>`
+- **documents**: `Array<TODO>`
 
   Documents to update. Each object must have either the `_id` or the `_key`
   property.
 
-- **opts**: `Object` (optional)
+- **opts**: `object` (optional)
 
   If _opts_ is set, it must be an object with any of the following properties:
 
@@ -234,19 +409,19 @@ const result = await collection.bulkUpdate(
 
 ## collection.remove
 
-`async collection.remove(documentHandle, [opts]): Object`
+`async collection.remove(selector, [opts]): CollectionRemoveResult`
 
-Deletes the document with the given _documentHandle_ from the collection.
+Deletes the document matching the given _selector_ from the collection.
 
 **Arguments**
 
-- **documentHandle**: `string`
+- **selector**: `string`
 
   The handle of the document to delete. This can be either the `_id` or the
   `_key` of a document in the collection, or a document (i.e. an object with an
   `_id` or `_key` property).
 
-- **opts**: `Object` (optional)
+- **opts**: `object` (optional)
 
   If _opts_ is set, it must be an object with any of the following properties:
 
@@ -254,28 +429,25 @@ Deletes the document with the given _documentHandle_ from the collection.
 
     Wait until document has been synced to disk.
 
-  - **rev**: `string` (optional)
+  - **returnOld**: `boolean` (Default: `false`)
 
-    Only update the document if it matches this revision.
+    If set to `true`, return additionally the complete old document under the
+    attribute `old` in the result.
 
-  - **policy**: `string` (optional)
+  - **silent**: `boolean` (Default: `false`)
 
-    {% hint 'warning' %}
-    This option has no effect in ArangoDB 3.0 and later.
-    {% endhint %}
+    If set to true, an empty object will be returned as response. No meta-data
+    will be returned for the created document. This option can be used to save
+    some network traffic.
 
-    Determines the behavior when the revision is not matched:
+Returns an object.
 
-    - if _policy_ is set to `"last"`, the document will be replaced regardless
-      of the revision.
-    - if _policy_ is set to `"error"` or not set, the replacement will fail with
-      an error.
+If **silent** was not set to `true`, the object will include the old document's
+`_id`, `_key` and `_rev` properties.
 
-If a string is passed instead of an options object, it will be interpreted as
-the _rev_ option.
-
-For more information on the _opts_ object, see the
-[HTTP API documentation for working with documents](https://www.arangodb.com/docs/stable/http/document-working-with-documents.html).
+If **returnOld** and **overwrite** were set to `true` and the inserted document
+replaced an existing document, the object will include a full copy of the
+previous document in the `old` property.
 
 **Examples**
 
@@ -291,22 +463,3 @@ await collection.remove("some-doc");
 await collection.remove("some-collection/some-doc");
 // document 'some-collection/some-doc' no longer exists
 ```
-
-## collection.list
-
-`async collection.list([type]): Array<string>`
-
-Retrieves a list of references for all documents in the collection.
-
-**Arguments**
-
-- **type**: `string` (Default: `"id"`)
-
-  The format of the document references:
-
-  - if _type_ is set to `"id"`, each reference will be the `_id` of the
-    document.
-  - if _type_ is set to `"key"`, each reference will be the `_key` of the
-    document.
-  - if _type_ is set to `"path"`, each reference will be the URI path of the
-    document.

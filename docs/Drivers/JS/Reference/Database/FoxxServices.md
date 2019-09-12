@@ -7,7 +7,7 @@ not supported by earlier versions of ArangoDB.
 
 ## database.listServices
 
-`async database.listServices([excludeSystem]): Array<Object>`
+`async database.listServices([excludeSystem]): Array<TODO>`
 
 Fetches a list of all installed service.
 
@@ -29,7 +29,7 @@ const services = await db.listServices(false);
 
 ## database.installService
 
-`async database.installService(mount, source, [options]): Object`
+`async database.installService(mount, source, [options]): TODO`
 
 Installs a new service.
 
@@ -43,15 +43,15 @@ Installs a new service.
 
   The service bundle to install.
 
-- **options**: `Object` (optional)
+- **options**: `object` (optional)
 
   An object with any of the following properties:
 
-  - **configuration**: `Object` (optional)
+  - **configuration**: `object` (optional)
 
     An object mapping configuration option names to values.
 
-  - **dependencies**: `Object` (optional)
+  - **dependencies**: `object` (optional)
 
     An object mapping dependency aliases to mount points.
 
@@ -89,7 +89,7 @@ const info = await db.installService("/hello", source);
 
 ## database.replaceService
 
-`async database.replaceService(mount, source, [options]): Object`
+`async database.replaceService(mount, source, [options]): TODO`
 
 Replaces an existing service with a new service by completely removing the old
 service and installing a new service at the same mount point.
@@ -104,17 +104,17 @@ service and installing a new service at the same mount point.
 
   The service bundle to replace the existing service with.
 
-- **options**: `Object` (optional)
+- **options**: `object` (optional)
 
   An object with any of the following properties:
 
-  - **configuration**: `Object` (optional)
+  - **configuration**: `object` (optional)
 
     An object mapping configuration option names to values.
 
     This configuration will replace the existing configuration.
 
-  - **dependencies**: `Object` (optional)
+  - **dependencies**: `object` (optional)
 
     An object mapping dependency aliases to mount points.
 
@@ -158,7 +158,7 @@ const info = await db.replaceService("/hello", source);
 
 ## database.upgradeService
 
-`async database.upgradeService(mount, source, [options]): Object`
+`async database.upgradeService(mount, source, [options]): TODO`
 
 Replaces an existing service with a new service while retaining the old
 service's configuration and dependencies.
@@ -173,17 +173,17 @@ service's configuration and dependencies.
 
   The service bundle to replace the existing service with.
 
-- **options**: `Object` (optional)
+- **options**: `object` (optional)
 
   An object with any of the following properties:
 
-  - **configuration**: `Object` (optional)
+  - **configuration**: `object` (optional)
 
     An object mapping configuration option names to values.
 
     This configuration will be merged into the existing configuration.
 
-  - **dependencies**: `Object` (optional)
+  - **dependencies**: `object` (optional)
 
     An object mapping dependency aliases to mount points.
 
@@ -237,7 +237,7 @@ Completely removes a service from the database.
 
   The service's mount point, relative to the database.
 
-- **options**: `Object` (optional)
+- **options**: `object` (optional)
 
   An object with any of the following properties:
 
@@ -254,7 +254,7 @@ await db.uninstallService("/my-service");
 
 ## database.getService
 
-`async database.getService(mount): Object`
+`async database.getService(mount): TODO`
 
 Retrieves information about a mounted service.
 
@@ -273,7 +273,7 @@ const info = await db.getService("/my-service");
 
 ## database.getServiceConfiguration
 
-`async database.getServiceConfiguration(mount, [minimal]): Object`
+`async database.getServiceConfiguration(mount, [minimal]): TODO`
 
 Retrieves an object with information about the service's configuration options
 and their current values.
@@ -297,7 +297,7 @@ const config = await db.getServiceConfiguration("/my-service");
 
 ## database.replaceServiceConfiguration
 
-`async database.replaceServiceConfiguration(mount, configuration, [minimal]): Object`
+`async database.replaceServiceConfiguration(mount, configuration, [minimal]): TODO`
 
 Replaces the configuration of the given service.
 
@@ -307,7 +307,7 @@ Replaces the configuration of the given service.
 
   The service's mount point, relative to the database.
 
-- **configuration**: `Object`
+- **configuration**: `object`
 
   An object mapping configuration option names to values.
 
@@ -329,7 +329,7 @@ const info = await db.replaceServiceConfiguration("/my-service", config);
 
 ## database.updateServiceConfiguration
 
-`async database.updateServiceConfiguration(mount, configuration, [minimal]): Object`
+`async database.updateServiceConfiguration(mount, configuration, [minimal]): TODO`
 
 Updates the configuration of the given service my merging the new values into
 the existing ones.
@@ -340,7 +340,7 @@ the existing ones.
 
   The service's mount point, relative to the database.
 
-- **configuration**: `Object`
+- **configuration**: `object`
 
   An object mapping configuration option names to values.
 
@@ -362,7 +362,7 @@ const info = await db.updateServiceConfiguration("/my-service", config);
 
 ## database.getServiceDependencies
 
-`async database.getServiceDependencies(mount, [minimal]): Object`
+`async database.getServiceDependencies(mount, [minimal]): TODO`
 
 Retrieves an object with information about the service's dependencies and their
 current mount points.
@@ -386,7 +386,7 @@ const deps = await db.getServiceDependencies("/my-service");
 
 ## database.replaceServiceDependencies
 
-`async database.replaceServiceDependencies(mount, dependencies, [minimal]): Object`
+`async database.replaceServiceDependencies(mount, dependencies, [minimal]): TODO`
 
 Replaces the dependencies for the given service.
 
@@ -396,7 +396,7 @@ Replaces the dependencies for the given service.
 
   The service's mount point, relative to the database.
 
-- **dependencies**: `Object`
+- **dependencies**: `object`
 
   An object mapping dependency aliases to mount points.
 
@@ -418,7 +418,7 @@ const info = await db.replaceServiceDependencies("/my-service", deps);
 
 ## database.updateServiceDependencies
 
-`async database.updateServiceDependencies(mount, dependencies, [minimal]): Object`
+`async database.updateServiceDependencies(mount, dependencies, [minimal]): TODO`
 
 Updates the dependencies for the given service by merging the new values into
 the existing ones.
@@ -429,7 +429,7 @@ the existing ones.
 
   The service's mount point, relative to the database.
 
-- **dependencies**: `Object`
+- **dependencies**: `object`
 
   An object mapping dependency aliases to mount points.
 
@@ -451,7 +451,7 @@ const info = await db.updateServiceDependencies("/my-service", deps);
 
 ## database.enableServiceDevelopmentMode
 
-`async database.enableServiceDevelopmentMode(mount): Object`
+`async database.enableServiceDevelopmentMode(mount): TODO`
 
 Enables development mode for the given service.
 
@@ -471,7 +471,7 @@ const info = await db.enableServiceDevelopmentMode("/my-service");
 
 ## database.disableServiceDevelopmentMode
 
-`async database.disableServiceDevelopmentMode(mount): Object`
+`async database.disableServiceDevelopmentMode(mount): TODO`
 
 Disabled development mode for the given service and commits the service state to
 the database.
@@ -492,7 +492,7 @@ const info = await db.disableServiceDevelopmentMode("/my-service");
 
 ## database.listServiceScripts
 
-`async database.listServiceScripts(mount): Object`
+`async database.listServiceScripts(mount): TODO`
 
 Retrieves a list of the service's scripts.
 
@@ -550,7 +550,7 @@ Runs the tests of a given service and returns a formatted report.
 
   The service's mount point, relative to the database
 
-- **options**: `Object` (optional)
+- **options**: `object` (optional)
 
   An object with any of the following properties:
 
@@ -628,7 +628,7 @@ const readme = await db.getServiceReadme("/my-service");
 
 ## database.getServiceDocumentation
 
-`async database.getServiceDocumentation(mount): Object`
+`async database.getServiceDocumentation(mount): TODO`
 
 Retrieves a Swagger API description object for the service installed at the
 given mount point.

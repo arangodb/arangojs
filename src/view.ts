@@ -1,6 +1,8 @@
 import { Connection } from "./connection";
 import { isArangoError } from "./error";
 
+type TODO_any = any;
+
 export enum ViewType {
   ARANGOSEARCH_VIEW = "arangosearch"
 }
@@ -16,7 +18,7 @@ export interface ArangoViewResponse {
   type: ViewType;
 }
 
-interface ArangoSearchViewCollectionLink {
+export interface ArangoSearchViewCollectionLink {
   analyzers?: string[];
   fields?: { [key: string]: ArangoSearchViewCollectionLink | undefined };
   includeAllFields?: boolean;
@@ -103,7 +105,7 @@ export abstract class BaseView implements ArangoView {
     );
   }
 
-  exists() {
+  exists(): Promise<boolean> {
     return this.get().then(
       () => true,
       err => {
@@ -115,7 +117,7 @@ export abstract class BaseView implements ArangoView {
     );
   }
 
-  async rename(name: string) {
+  async rename(name: string): Promise<TODO_any> {
     const result = await this._connection.request(
       {
         method: "PUT",
@@ -128,7 +130,7 @@ export abstract class BaseView implements ArangoView {
     return result;
   }
 
-  drop() {
+  drop(): Promise<TODO_any> {
     return this._connection.request(
       {
         method: "DELETE",
@@ -193,7 +195,13 @@ export class ArangoSearchView extends BaseView {
   }
 }
 
-export function constructView(connection: Connection, data: any): ArangoView {
+/**
+ * @private
+ */
+export function _constructView(
+  connection: Connection,
+  data: TODO_any
+): ArangoView {
   if (data.type && data.type !== ViewType.ARANGOSEARCH_VIEW) {
     throw new Error(`Unknown view type "${data.type}"`);
   }

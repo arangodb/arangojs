@@ -13,7 +13,7 @@ that can be used to perform arbitrary HTTP requests.
 
   The database-relative URL of the route.
 
-* **headers**: `Object` (optional)
+* **headers**: `object` (optional)
 
   Default headers that should be sent with each request to the route.
 

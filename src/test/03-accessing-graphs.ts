@@ -1,6 +1,5 @@
 import { expect } from "chai";
-import { Database } from "../arangojs";
-import { Graph } from "../graph";
+import { Database, Graph } from "../arangojs";
 
 const range = (n: number): number[] => Array.from(Array(n).keys());
 
@@ -41,8 +40,10 @@ describe("Accessing graphs", function() {
     const graphNames = range(4).map(i => `g_${Date.now()}_${i}`);
     before(async () => {
       await Promise.all([
-        ...vertexCollectionNames.map(name => db.collection(name).create()),
-        ...edgeCollectionNames.map(name => db.edgeCollection(name).create())
+        ...vertexCollectionNames.map(name => db.createCollection(name)),
+        ...edgeCollectionNames.map(
+          name => db.createEdgeCollection(name) as Promise<any>
+        )
       ]);
       await Promise.all([
         ...graphNames.map(name =>
@@ -76,8 +77,10 @@ describe("Accessing graphs", function() {
     const graphNames = range(4).map(i => `g_${Date.now()}_${i}`);
     before(async () => {
       await Promise.all([
-        ...vertexCollectionNames.map(name => db.collection(name).create()),
-        ...edgeCollectionNames.map(name => db.edgeCollection(name).create())
+        ...vertexCollectionNames.map(name => db.createCollection(name)),
+        ...edgeCollectionNames.map(
+          name => db.createEdgeCollection(name) as Promise<any>
+        )
       ]);
       await Promise.all([
         ...graphNames.map(name =>

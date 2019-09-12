@@ -1,6 +1,5 @@
 import { expect } from "chai";
-import { Database } from "../arangojs";
-import { Graph } from "../graph";
+import { Database, Graph } from "../arangojs";
 
 const range = (n: number): number[] => Array.from(Array(n).keys());
 
@@ -13,8 +12,10 @@ async function createCollections(db: Database) {
   const vertexCollectionNames = range(2).map(i => `vc_${Date.now()}_${i}`);
   const edgeCollectionNames = range(2).map(i => `ec_${Date.now()}_${i}`);
   await Promise.all([
-    ...vertexCollectionNames.map(name => db.collection(name).create()),
-    ...edgeCollectionNames.map(name => db.edgeCollection(name).create())
+    ...vertexCollectionNames.map(name => db.createCollection(name)),
+    ...edgeCollectionNames.map(
+      name => db.createEdgeCollection(name) as Promise<any>
+    )
   ]);
   return [vertexCollectionNames, edgeCollectionNames];
 }

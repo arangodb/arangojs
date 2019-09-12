@@ -25,7 +25,7 @@ const result = await view.exists();
 
 ### view.get
 
-`async view.get(): Object`
+`async view.get(): TODO`
 
 Retrieves general information about the View.
 
@@ -40,7 +40,7 @@ const data = await view.get();
 
 ### view.properties
 
-`async view.properties(): Object`
+`async view.properties(): TODO`
 
 Retrieves the View's properties.
 
@@ -55,14 +55,14 @@ const data = await view.properties();
 
 ## view.create
 
-`async view.create([properties]): Object`
+`async view.create([properties]): TODO`
 
 Creates a View with the given _properties_ for this View's name,
 then returns the server response.
 
 **Arguments**
 
-- **properties**: `Object` (optional)
+- **properties**: `object` (optional)
 
   For more information on the _properties_ object, see the
   [HTTP API documentation for creating Views](https://www.arangodb.com/docs/stable/http/views-arangosearch.html).
@@ -78,13 +78,13 @@ await view.create();
 
 ## view.setProperties
 
-`async view.setProperties(properties): Object`
+`async view.setProperties(properties): TODO`
 
 Updates the properties of the View.
 
 **Arguments**
 
-- **properties**: `Object`
+- **properties**: `object`
 
   For information on the _properties_ argument see the
   [HTTP API for modifying Views](https://www.arangodb.com/docs/stable/http/views-arangosearch.html).
@@ -100,13 +100,13 @@ assert.equal(result.consolidationIntervalMsec, 123);
 
 ## view.replaceProperties
 
-`async view.replaceProperties(properties): Object`
+`async view.replaceProperties(properties): TODO`
 
 Replaces the properties of the View.
 
 **Arguments**
 
-- **properties**: `Object`
+- **properties**: `object`
 
   For information on the _properties_ argument see the
   [HTTP API for modifying Views](https://www.arangodb.com/docs/stable/http/views-arangosearch.html).
@@ -122,7 +122,7 @@ assert.equal(result.consolidationIntervalMsec, 234);
 
 ## view.rename
 
-`async view.rename(name): Object`
+`async view.rename(name): TODO`
 
 Renames the View. The _View_ instance will automatically update its
 name when the rename succeeds.
@@ -140,7 +140,7 @@ assert.equal(view.name, result.name);
 
 ## view.drop
 
-`async view.drop(): Object`
+`async view.drop(): TODO`
 
 Deletes the View from the database.
 

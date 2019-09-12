@@ -2,10 +2,12 @@ import { AnalyzerDescription, ArangoAnalyzer } from "./analyzer";
 import { AqlLiteral, AqlQuery, isAqlLiteral, isAqlQuery } from "./aql-query";
 import {
   ArangoCollection,
-  constructCollection,
+  CollectionType,
+  CreateCollectionOptions,
   DocumentCollection,
   EdgeCollection,
-  isArangoCollection
+  isArangoCollection,
+  _constructCollection
 } from "./collection";
 import { Config, Connection } from "./connection";
 import { ArrayCursor } from "./cursor";
@@ -14,8 +16,11 @@ import { Graph } from "./graph";
 import { Route } from "./route";
 import { ArangoTransaction } from "./transaction";
 import { btoa } from "./util/btoa";
+import { DATABASE_NOT_FOUND } from "./util/codes";
 import { toForm } from "./util/multipart";
-import { ArangoSearchView, ArangoView, constructView, ViewType } from "./view";
+import { ArangoSearchView, ArangoView, ViewType, _constructView } from "./view";
+
+type TODO_any = any;
 
 function colToString(collection: string | ArangoCollection): string {
   if (isArangoCollection(collection)) {
@@ -52,8 +57,8 @@ export type TransactionOptions = {
 
 export type ServiceOptions = {
   [key: string]: any;
-  configuration?: { [key: string]: any };
-  dependencies?: { [key: string]: any };
+  configuration: { [key: string]: any };
+  dependencies: { [key: string]: string };
 };
 
 export type QueryOptions = {
@@ -109,7 +114,7 @@ export type ExplainResult = {
   plan?: ExplainPlan;
   plans?: Array<ExplainPlan>;
   cacheable: boolean;
-  warnings: any[];
+  warnings: TODO_any[];
   stats: {
     rulesExecuted: number;
     rulesSkipped: number;
@@ -119,9 +124,9 @@ export type ExplainResult = {
 
 export type ParseResult = {
   parsed: boolean;
-  collections: any[];
-  bindVars: any[];
-  ast: any[];
+  collections: TODO_any[];
+  bindVars: TODO_any[];
+  ast: TODO_any[];
 };
 
 export type QueryTracking = {
@@ -145,7 +150,7 @@ export type QueryTrackingOptions = {
 export type RunningQuery = {
   id: string;
   query: string;
-  bindVars: any;
+  bindVars: AqlQuery["bindVars"];
   runTime: number;
   started: string;
   state: string; // TODO determine valid states: executing, finished, ...?
@@ -165,7 +170,6 @@ export interface CreateDatabaseUser {
   extra?: { [key: string]: any };
 }
 
-const DATABASE_NOT_FOUND = 1228;
 export class Database {
   private _connection: Connection;
 
@@ -173,12 +177,12 @@ export class Database {
     this._connection = new Connection(config);
   }
 
-  get name(): string | null {
-    return this._connection.getDatabaseName() || null;
+  get name(): string {
+    return this._connection.getDatabaseName();
   }
 
   //#region misc
-  version(): Promise<any> {
+  version(): Promise<TODO_any> {
     return this._connection.request(
       {
         method: "GET",
@@ -188,7 +192,7 @@ export class Database {
     );
   }
 
-  route(path?: string, headers?: Object): Route {
+  route(path?: string, headers?: TODO_any): Route {
     return new Route(this._connection, path, headers);
   }
 
@@ -243,7 +247,7 @@ export class Database {
     return this;
   }
 
-  get() {
+  get(): Promise<TODO_any> {
     return this._connection.request(
       { path: "/_api/database/current" },
       res => res.body.result
@@ -265,7 +269,7 @@ export class Database {
   createDatabase(
     databaseName: string,
     users?: CreateDatabaseUser[]
-  ): Promise<any> {
+  ): Promise<TODO_any> {
     return this._connection.request(
       {
         method: "POST",
@@ -276,21 +280,21 @@ export class Database {
     );
   }
 
-  listDatabases() {
+  listDatabases(): Promise<TODO_any> {
     return this._connection.request(
       { path: "/_api/database" },
       res => res.body.result
     );
   }
 
-  listUserDatabases() {
+  listUserDatabases(): Promise<TODO_any> {
     return this._connection.request(
       { path: "/_api/database/user" },
       res => res.body.result
     );
   }
 
-  dropDatabase(databaseName: string) {
+  dropDatabase(databaseName: string): Promise<TODO_any> {
     return this._connection.request(
       {
         method: "DELETE",
@@ -304,17 +308,32 @@ export class Database {
   //#region collections
   collection<T extends object = any>(
     collectionName: string
-  ): DocumentCollection<T> {
-    return new DocumentCollection(this._connection, collectionName);
+  ): DocumentCollection<T> & EdgeCollection<T> {
+    return _constructCollection(this._connection, collectionName);
   }
 
-  edgeCollection<T extends object = any>(
-    collectionName: string
-  ): EdgeCollection<T> {
-    return new EdgeCollection(this._connection, collectionName);
+  async createCollection<T extends object = any>(
+    collectionName: string,
+    properties?: CreateCollectionOptions & { type?: CollectionType }
+  ): Promise<DocumentCollection<T> & EdgeCollection<T>> {
+    const collection = _constructCollection(this._connection, collectionName);
+    await collection.create(properties);
+    return collection;
   }
 
-  listCollections(excludeSystem: boolean = true) {
+  async createEdgeCollection<T extends object = any>(
+    collectionName: string,
+    properties?: CreateCollectionOptions
+  ): Promise<EdgeCollection<T>> {
+    const collection = _constructCollection(this._connection, collectionName);
+    await collection.create({
+      ...properties,
+      type: CollectionType.EDGE_COLLECTION
+    });
+    return collection;
+  }
+
+  listCollections(excludeSystem: boolean = true): Promise<TODO_any> {
     return this._connection.request(
       {
         path: "/_api/collection",
@@ -326,14 +345,14 @@ export class Database {
 
   async collections(
     excludeSystem: boolean = true
-  ): Promise<ArangoCollection[]> {
+  ): Promise<Array<DocumentCollection | EdgeCollection>> {
     const collections = await this.listCollections(excludeSystem);
     return collections.map((data: any) =>
-      constructCollection(this._connection, data)
+      _constructCollection(this._connection, data)
     );
   }
 
-  async truncate(excludeSystem: boolean = true) {
+  async truncate(excludeSystem: boolean = true): Promise<TODO_any> {
     const collections = await this.listCollections(excludeSystem);
     return await Promise.all(
       collections.map((data: any) =>
@@ -363,7 +382,7 @@ export class Database {
 
   async views(): Promise<ArangoView[]> {
     const views = await this.listViews();
-    return views.map((data: any) => constructView(this._connection, data));
+    return views.map((data: any) => _constructView(this._connection, data));
   }
   //#endregion
 
@@ -387,7 +406,16 @@ export class Database {
 
   //#region transactions
   executeTransaction(
-    collections: TransactionCollections,
+    collections:
+      | ArangoCollection
+      | string
+      | (ArangoCollection | string)[]
+      | {
+          allowImplicit?: boolean;
+          exclusive?: ArangoCollection | string | (ArangoCollection | string)[];
+          read?: ArangoCollection | string | (ArangoCollection | string)[];
+          write?: ArangoCollection | string | (ArangoCollection | string)[];
+        },
     action: string,
     options?: TransactionOptions & { params?: any }
   ): Promise<any> {
@@ -405,44 +433,8 @@ export class Database {
     );
   }
 
-  transaction(transactionId: string): ArangoTransaction;
-  transaction(
-    collections: TransactionCollections,
-    action: string,
-    params?: any,
-    options?: TransactionOptions
-  ): Promise<any>;
-  transaction(
-    collections: TransactionCollections,
-    action: string,
-    lockTimeout?: number
-  ): Promise<any>;
-  transaction(
-    collections: TransactionCollections,
-    action: string,
-    params?: any,
-    lockTimeout?: number
-  ): Promise<any>;
-  transaction(
-    collectionsOrId: TransactionCollections | string,
-    action?: string,
-    params?: any | number,
-    options?: TransactionOptions | number
-  ): Promise<any> | ArangoTransaction {
-    if (arguments.length === 1 && typeof collectionsOrId === "string") {
-      return new ArangoTransaction(this._connection, collectionsOrId);
-    }
-    if (typeof params === "number") {
-      options = params;
-      params = undefined;
-    }
-    if (typeof options === "number") {
-      options = { lockTimeout: options };
-    }
-    return this.executeTransaction(collectionsOrId, action!, {
-      params,
-      ...options
-    });
+  transaction(transactionId: string): ArangoTransaction {
+    return new ArangoTransaction(this._connection, transactionId);
   }
 
   beginTransaction(
@@ -480,6 +472,16 @@ export class Database {
     return new Graph(this._connection, graphName);
   }
 
+  async createGraph(
+    graphName: string,
+    properties: TODO_any,
+    opts?: { waitForSync?: boolean }
+  ): Promise<Graph> {
+    const graph = new Graph(this._connection, graphName);
+    await graph.create(properties, opts);
+    return graph;
+  }
+
   listGraphs() {
     return this._connection.request(
       { path: "/_api/gharial" },
@@ -498,12 +500,12 @@ export class Database {
   query(query: AqlQuery, opts?: QueryOptions): Promise<ArrayCursor>;
   query(
     query: string | AqlLiteral,
-    bindVars?: any,
+    bindVars?: AqlQuery["bindVars"],
     opts?: QueryOptions
   ): Promise<ArrayCursor>;
   query(
     query: string | AqlQuery | AqlLiteral,
-    bindVars?: any,
+    bindVars?: AqlQuery["bindVars"],
     opts?: QueryOptions
   ): Promise<ArrayCursor> {
     if (isAqlQuery(query)) {
@@ -537,12 +539,12 @@ export class Database {
   explain(query: AqlQuery, opts?: ExplainOptions): Promise<ExplainResult>;
   explain(
     query: string | AqlLiteral,
-    bindVars?: any,
+    bindVars?: AqlQuery["bindVars"],
     opts?: ExplainOptions
   ): Promise<ExplainResult>;
   explain(
     query: string | AqlQuery | AqlLiteral,
-    bindVars?: any,
+    bindVars?: AqlQuery["bindVars"],
     opts?: ExplainOptions
   ): Promise<ExplainResult> {
     if (isAqlQuery(query)) {
@@ -612,7 +614,7 @@ export class Database {
     );
   }
 
-  listSlowQueries(): Promise<any> {
+  listSlowQueries(): Promise<TODO_any> {
     return this._connection.request(
       {
         method: "GET",
@@ -644,14 +646,14 @@ export class Database {
   //#endregion
 
   //#region functions
-  listFunctions() {
+  listFunctions(): Promise<TODO_any> {
     return this._connection.request(
       { path: "/_api/aqlfunction" },
       res => res.body
     );
   }
 
-  createFunction(name: string, code: string) {
+  createFunction(name: string, code: string): Promise<TODO_any> {
     return this._connection.request(
       {
         method: "POST",
@@ -662,7 +664,7 @@ export class Database {
     );
   }
 
-  dropFunction(name: string, group: boolean = false) {
+  dropFunction(name: string, group: boolean = false): Promise<TODO_any> {
     return this._connection.request(
       {
         method: "DELETE",
@@ -675,11 +677,15 @@ export class Database {
   //#endregion
 
   //#region services
-  listServices() {
+  listServices(): Promise<TODO_any> {
     return this._connection.request({ path: "/_api/foxx" }, res => res.body);
   }
 
-  async installService(mount: string, source: any, opts: ServiceOptions = {}) {
+  async installService(
+    mount: string,
+    source: TODO_any,
+    opts: Partial<ServiceOptions> = {}
+  ): Promise<TODO_any> {
     const { configuration, dependencies, ...qs } = opts;
     const req = await toForm({
       configuration,
@@ -698,7 +704,11 @@ export class Database {
     );
   }
 
-  async upgradeService(mount: string, source: any, opts: ServiceOptions = {}) {
+  async upgradeService(
+    mount: string,
+    source: TODO_any,
+    opts: Partial<ServiceOptions> = {}
+  ): Promise<TODO_any> {
     const { configuration, dependencies, ...qs } = opts;
     const req = await toForm({
       configuration,
@@ -717,7 +727,11 @@ export class Database {
     );
   }
 
-  async replaceService(mount: string, source: any, opts: ServiceOptions = {}) {
+  async replaceService(
+    mount: string,
+    source: TODO_any,
+    opts: Partial<ServiceOptions> = {}
+  ): Promise<TODO_any> {
     const { configuration, dependencies, ...qs } = opts;
     const req = await toForm({
       configuration,
@@ -736,7 +750,7 @@ export class Database {
     );
   }
 
-  uninstallService(mount: string, opts: any = {}): Promise<void> {
+  uninstallService(mount: string, opts?: TODO_any): Promise<void> {
     return this._connection.request(
       {
         method: "DELETE",
@@ -747,7 +761,7 @@ export class Database {
     );
   }
 
-  getService(mount: string) {
+  getService(mount: string): Promise<TODO_any> {
     return this._connection.request(
       {
         path: "/_api/foxx/service",
@@ -757,7 +771,10 @@ export class Database {
     );
   }
 
-  async getServiceConfiguration(mount: string, minimal: boolean = false) {
+  async getServiceConfiguration(
+    mount: string,
+    minimal: boolean = false
+  ): Promise<TODO_any> {
     const result = await this._connection.request(
       {
         path: "/_api/foxx/configuration",
@@ -779,9 +796,9 @@ export class Database {
 
   async updateServiceConfiguration(
     mount: string,
-    cfg: any,
+    cfg: ServiceOptions["configuration"],
     minimal: boolean = false
-  ) {
+  ): Promise<TODO_any> {
     const result = await this._connection.request(
       {
         method: "PATCH",
@@ -811,9 +828,9 @@ export class Database {
 
   async replaceServiceConfiguration(
     mount: string,
-    cfg: any,
+    cfg: ServiceOptions["configuration"],
     minimal: boolean = false
-  ) {
+  ): Promise<TODO_any> {
     const result = await this._connection.request(
       {
         method: "PUT",
@@ -841,7 +858,10 @@ export class Database {
     return result2;
   }
 
-  async getServiceDependencies(mount: string, minimal: boolean = false) {
+  async getServiceDependencies(
+    mount: string,
+    minimal: boolean = false
+  ): Promise<TODO_any> {
     const result = await this._connection.request(
       {
         path: "/_api/foxx/dependencies",
@@ -863,14 +883,14 @@ export class Database {
 
   async updateServiceDependencies(
     mount: string,
-    cfg: any,
+    deps: ServiceOptions["dependencies"],
     minimal: boolean = false
-  ) {
+  ): Promise<TODO_any> {
     const result = await this._connection.request(
       {
         method: "PATCH",
         path: "/_api/foxx/dependencies",
-        body: cfg,
+        body: deps,
         qs: { mount, minimal }
       },
       res => res.body
@@ -884,6 +904,7 @@ export class Database {
     ) {
       return result;
     }
+    // Work around "minimal" flag not existing in 3.3
     const result2 = await this.getServiceDependencies(mount, minimal);
     if (result.warnings) {
       for (const key of Object.keys(result2)) {
@@ -895,14 +916,14 @@ export class Database {
 
   async replaceServiceDependencies(
     mount: string,
-    cfg: { [key: string]: string },
+    deps: ServiceOptions["dependencies"],
     minimal: boolean = false
-  ) {
+  ): Promise<TODO_any> {
     const result = await this._connection.request(
       {
         method: "PUT",
         path: "/_api/foxx/dependencies",
-        body: cfg,
+        body: deps,
         qs: { mount, minimal }
       },
       res => res.body
@@ -916,6 +937,7 @@ export class Database {
     ) {
       return result;
     }
+    // Work around "minimal" flag not existing in 3.3
     const result2 = await this.getServiceDependencies(mount, minimal);
     if (result.warnings) {
       for (const key of Object.keys(result2)) {
@@ -925,7 +947,7 @@ export class Database {
     return result2;
   }
 
-  enableServiceDevelopmentMode(mount: string) {
+  enableServiceDevelopmentMode(mount: string): Promise<TODO_any> {
     return this._connection.request(
       {
         method: "POST",
@@ -936,7 +958,7 @@ export class Database {
     );
   }
 
-  disableServiceDevelopmentMode(mount: string) {
+  disableServiceDevelopmentMode(mount: string): Promise<TODO_any> {
     return this._connection.request(
       {
         method: "DELETE",
@@ -947,7 +969,7 @@ export class Database {
     );
   }
 
-  listServiceScripts(mount: string) {
+  listServiceScripts(mount: string): Promise<TODO_any> {
     return this._connection.request(
       {
         path: "/_api/foxx/scripts",
@@ -957,7 +979,11 @@ export class Database {
     );
   }
 
-  runServiceScript(mount: string, name: string, args: any): Promise<any> {
+  runServiceScript(
+    mount: string,
+    name: string,
+    args: TODO_any
+  ): Promise<TODO_any> {
     return this._connection.request(
       {
         method: "POST",
@@ -969,7 +995,7 @@ export class Database {
     );
   }
 
-  runServiceTests(mount: string, opts: any): Promise<any> {
+  runServiceTests(mount: string, opts?: TODO_any): Promise<TODO_any> {
     return this._connection.request(
       {
         method: "POST",
@@ -993,7 +1019,7 @@ export class Database {
     );
   }
 
-  getServiceDocumentation(mount: string): Promise<any> {
+  getServiceDocumentation(mount: string): Promise<TODO_any> {
     return this._connection.request(
       {
         path: "/_api/foxx/swagger",

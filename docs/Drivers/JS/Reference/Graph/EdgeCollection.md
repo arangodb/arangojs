@@ -5,7 +5,7 @@ The _GraphEdgeCollection API_ extends the
 
 ## graphEdgeCollection.remove
 
-`async graphEdgeCollection.remove(documentHandle): Object`
+`async graphEdgeCollection.remove(documentHandle): TODO`
 
 Deletes the edge with the given _documentHandle_ from the collection.
 
@@ -60,7 +60,7 @@ if (exists === false) {
 
 ## graphEdgeCollection.document
 
-`async graphEdgeCollection.document(documentHandle, [opts]): Object`
+`async graphEdgeCollection.document(documentHandle, [opts]): TODO`
 
 Alias: `graphEdgeCollection.edge`.
 
@@ -74,7 +74,7 @@ Retrieves the edge with the given _documentHandle_ from the collection.
   of an edge in the collection, or an edge (i.e. an object with an `_id` or
   `_key` property).
 
-- **opts**: `Object` (optional)
+- **opts**: `object` (optional)
 
   If _opts_ is set, it must be an object with any of the following properties:
 
@@ -125,14 +125,14 @@ if (edge === null) {
 
 ## graphEdgeCollection.save
 
-`async graphEdgeCollection.save(data, [fromId, toId]): Object`
+`async graphEdgeCollection.save(data, [fromId, toId]): TODO`
 
 Creates a new edge between the vertices _fromId_ and _toId_ with the given
 _data_.
 
 **Arguments**
 
-- **data**: `Object`
+- **data**: `object`
 
   The data of the new edge. If _fromId_ and _toId_ are not specified, the _data_
   needs to contain the properties **from\_ and **to\_.
@@ -168,7 +168,7 @@ assert.equal(edge._to, "vertices/end-vertex");
 
 ## graphEdgeCollection.edges
 
-`async graphEdgeCollection.edges(documentHandle): Array<Object>`
+`async graphEdgeCollection.edges(documentHandle): Array<TODO>`
 
 Retrieves a list of all edges of the document with the given _documentHandle_.
 
@@ -199,7 +199,7 @@ assert.deepEqual(edges.map(edge => edge._key), ["x", "y", "z"]);
 
 ## graphEdgeCollection.inEdges
 
-`async graphEdgeCollection.inEdges(documentHandle): Array<Object>`
+`async graphEdgeCollection.inEdges(documentHandle): Array<TODO>`
 
 Retrieves a list of all incoming edges of the document with the given
 _documentHandle_.
@@ -231,7 +231,7 @@ assert.equal(edges[0]._key, "z");
 
 ## graphEdgeCollection.outEdges
 
-`async graphEdgeCollection.outEdges(documentHandle): Array<Object>`
+`async graphEdgeCollection.outEdges(documentHandle): Array<TODO>`
 
 Retrieves a list of all outgoing edges of the document with the given
 _documentHandle_.
@@ -263,7 +263,7 @@ assert.deepEqual(edges.map(edge => edge._key), ["x", "y"]);
 
 ## graphEdgeCollection.traversal
 
-`async graphEdgeCollection.traversal(startVertex, opts): Object`
+`async graphEdgeCollection.traversal(startVertex, opts): TODO`
 
 Performs a traversal starting from the given _startVertex_ and following edges
 contained in this edge collection.
@@ -276,7 +276,7 @@ contained in this edge collection.
   the database, the `_key` of an edge in the collection, or a document (i.e. an
   object with an `_id` or `_key` property).
 
-- **opts**: `Object`
+- **opts**: `object`
 
   See
   [the HTTP API documentation](https://www.arangodb.com/docs/stable/http/traversal.html)

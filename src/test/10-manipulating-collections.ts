@@ -1,6 +1,5 @@
 import { expect } from "chai";
-import { Database } from "../arangojs";
-import { DocumentCollection } from "../collection";
+import { Database, DocumentCollection } from "../arangojs";
 
 const ARANGO_URL = process.env.TEST_ARANGODB_URL || "http://localhost:8529";
 const ARANGO_VERSION = Number(
@@ -47,7 +46,7 @@ describe("Manipulating collections", function() {
       expect(info).to.have.property("type", 2); // document collection
     });
     it("creates a new edge collection", async () => {
-      const collection = db.edgeCollection(`edge-collection-${Date.now()}`);
+      const collection = db.collection(`edge-collection-${Date.now()}`);
       await collection.create();
       const info = await db.collection(collection.name).get();
       expect(info).to.have.property("name", collection.name);
@@ -73,7 +72,7 @@ describe("Manipulating collections", function() {
   });
   describe("collection.setProperties", () => {
     it("should change properties", async () => {
-      const info = await collection.setProperties({ waitForSync: true });
+      const info = await collection.properties({ waitForSync: true });
       expect(info).to.have.property("name", collection.name);
       expect(info).to.have.property("waitForSync", true);
     });

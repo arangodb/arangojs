@@ -6,13 +6,13 @@ Also see [ArangoDB Transactions](https://www.arangodb.com/docs/stable/transactio
 
 ## database.executeTransaction
 
-`async database.executeTransaction(collections, action, [options]): Object`
+`async database.executeTransaction(collections, action, [options]): TODO`
 
 Performs a server-side transaction and returns its return value.
 
 **Arguments**
 
-- **collections**: `Object`
+- **collections**: `object`
 
   An object with the following properties:
 
@@ -120,32 +120,6 @@ const result = await db.executeTransaction("_users", action, {
 
 Returns a `Transaction` instance for an existing transaction with the given
 _id_.
-
-{% hint 'warning' %}
-For backwards-compatibility with arangojs 6.10 and earlier, this method will
-behave like _executeTransaction_ when passed the following arguments:
-
-- **collections**: `Object`
-
-  See _collections_ in _executeTransaction_.
-
-- **action**: `string`
-
-  See _action_ in _executeTransaction_.
-
-- **params**: `any` (optional)
-
-  See _options.params_ in _executeTransaction_.
-
-- **options**: `Object` (optional)
-
-  See _options_ in _executeTransaction_.
-
-If _params_ or _options_ is a `number`, it will be treated as
-_options.lockTimeout_.
-
-This behavior is deprecated and will be removed in arangojs 7.
-{% endhint %}
 
 - **id**: `string`
 

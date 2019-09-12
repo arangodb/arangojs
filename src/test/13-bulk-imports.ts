@@ -1,6 +1,9 @@
 import { expect } from "chai";
-import { Database } from "../arangojs";
-import { DocumentCollection, ImportOptions } from "../collection";
+import {
+  CollectionImportOptions,
+  Database,
+  DocumentCollection
+} from "../arangojs";
 
 const ARANGO_URL = process.env.TEST_ARANGODB_URL || "http://localhost:8529";
 const ARANGO_VERSION = Number(
@@ -10,7 +13,7 @@ const ARANGO_VERSION = Number(
 describe("Bulk imports", function() {
   let db: Database;
   let dbName = `testdb_${Date.now()}`;
-  let collection: DocumentCollection;
+  let collection: DocumentCollection<{ data: string }>;
   let collectionName = `collection-${Date.now()}`;
   before(async () => {
     db = new Database({ url: ARANGO_URL, arangoVersion: ARANGO_VERSION });
@@ -78,7 +81,7 @@ describe("Bulk imports", function() {
       undefined,
       "auto",
       "documents"
-    ] as ImportOptions["type"][]) {
+    ] as CollectionImportOptions["type"][]) {
       describe(`with type ${JSON.stringify(type)}`, () => {
         it("should accept documents array", async () => {
           const data = [
@@ -128,7 +131,7 @@ describe("Bulk imports", function() {
       undefined,
       "auto",
       "array"
-    ] as ImportOptions["type"][]) {
+    ] as CollectionImportOptions["type"][]) {
       describe(`with type ${JSON.stringify(type)}`, () => {
         it("should accept JSON string", async () => {
           const data = JSON.stringify([
