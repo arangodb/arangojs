@@ -3,6 +3,9 @@
   "version": "6.14.1",
   "license": "Apache-2.0",
   "description": "The official ArangoDB JavaScript driver.",
+  "engines": {
+    "node": ">=8"
+  },
   "homepage": "https://github.com/arangodb/arangojs",
   "bugs": {
     "url": "https://github.com/arangodb/arangojs/issues"
@@ -30,36 +33,29 @@
     "rest"
   ],
   "main": "lib/index.js",
-  "typings": "lib/cjs/arangojs.d.ts",
+  "typings": "lib/arangojs.d.ts",
   "browser": {
-    "./lib/index.js": "./lib/cjs/index.js",
-    "./lib/cjs/util/btoa.js": "./lib/cjs/util/btoa.web.js",
-    "./lib/cjs/util/bytelength.js": "./lib/cjs/util/bytelength.web.js",
-    "./lib/cjs/util/joinPath.js": "./lib/cjs/util/joinPath.web.js",
-    "./lib/cjs/util/multipart.js": "./lib/cjs/util/multipart.web.js",
-    "./lib/cjs/util/request.js": "./lib/cjs/util/request.web.js"
+    "./lib/util/btoa.js": "./lib/util/btoa.web.js",
+    "./lib/util/bytelength.js": "./lib/util/bytelength.web.js",
+    "./lib/util/joinPath.js": "./lib/util/joinPath.web.js",
+    "./lib/util/multipart.js": "./lib/util/multipart.web.js",
+    "./lib/util/request.js": "./lib/util/request.web.js"
   },
   "files": [
     "lib/*.*",
-    "lib/async/*.*",
-    "lib/async/util/*.*",
-    "lib/cjs/*.*",
-    "lib/cjs/util/*.*"
+    "lib/util/*.*"
   ],
   "scripts": {
-    "test": "mocha --reporter spec --require source-map-support/register --timeout 10000 lib/async/test",
+    "jenkins": "mocha --reporter spec --require source-map-support/register --timeout 0 lib/test",
+    "test": "mocha --reporter spec --require source-map-support/register --timeout 10000 lib/test",
     "pretest": "yarn dist",
-    "ci": "mocha --reporter spec --require source-map-support/register --timeout 30000 lib/cjs/test",
-    "preci": "yarn install",
-    "jenkins": "mocha --reporter spec --require source-map-support/register --timeout 0 lib/cjs/test",
-    "dist:cjs": "tsc -p . --outDir ./lib/cjs/ --declarationMap true && cpy src/index.js lib/cjs/",
-    "dist:async": "tsc -p . --outDir ./lib/async/ --target es2018 --declarationMap true && cpy src/index.js lib/async/",
+    "dist:cjs": "tsc -p . --outDir ./lib/ --target es2018 --declarationMap true && cpy src/index.js lib/",
     "dist:web": "webpack",
-    "dist": "rimraf lib && npm-run-all --parallel dist:* && cpy src/index.all.js --rename index.js lib/",
+    "dist": "rimraf lib && npm-run-all --parallel dist:*",
     "prepare": "yarn dist && node -e 'require(\".\");'"
   },
   "dependencies": {
-    "@types/node": "*",
+    "@types/node": ">=8",
     "es6-error": "^4.0.1",
     "multi-part": "^2.0.0",
     "x3-linkedlist": "1.0.0",
