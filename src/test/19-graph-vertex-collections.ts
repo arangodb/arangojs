@@ -1,6 +1,5 @@
 import { expect } from "chai";
-import { Database } from "../arangojs";
-import { GraphVertexCollection } from "../graph";
+import { Database, GraphVertexCollection } from "../arangojs";
 
 const ARANGO_URL = process.env.TEST_ARANGODB_URL || "http://localhost:8529";
 const ARANGO_VERSION = Number(
@@ -36,7 +35,7 @@ describe("GraphVertexCollection API", function() {
     }
   });
   beforeEach(async () => {
-    await collection.truncate();
+    await collection.collection.truncate();
   });
   describe("graphVertexCollection.vertex", () => {
     const data = { foo: "bar" };
@@ -57,14 +56,14 @@ describe("GraphVertexCollection API", function() {
       expect(doc).to.equal(null);
     });
   });
-  describe("graphVertexCollection.document", () => {
+  describe("graphVertexCollection.vertex", () => {
     const data = { foo: "bar" };
     let meta: any;
     beforeEach(async () => {
       meta = await collection.save(data);
     });
     it("returns a vertex in the collection", async () => {
-      const doc = await collection.document(meta._id);
+      const doc = await collection.vertex(meta._id);
       expect(doc).to.have.keys("_key", "_id", "_rev", "foo");
       expect(doc._id).to.equal(meta._id);
       expect(doc._key).to.equal(meta._key);
@@ -72,7 +71,7 @@ describe("GraphVertexCollection API", function() {
       expect(doc.foo).to.equal(data.foo);
     });
     it("does not throw on not found when graceful", async () => {
-      const doc = await collection.document("does-not-exist", true);
+      const doc = await collection.vertex("does-not-exist", true);
       expect(doc).to.equal(null);
     });
   });
@@ -120,54 +119,51 @@ describe("GraphVertexCollection API", function() {
   });
   describe("graphVertexCollection.replace", () => {
     it("replaces the given vertex", async () => {
-      const doc = { potato: "tomato" };
-      const meta = await collection.save(doc);
-      delete meta.error;
-      Object.assign(doc, meta);
-      await collection.replace(doc as any, { sup: "dawg" });
-      const data = await collection.vertex((doc as any)._key);
-      expect(data).not.to.have.property("potato");
-      expect(data)
+      const data = { potato: "tomato" };
+      const meta = await collection.save(data, { returnNew: true });
+      const doc = meta.new!;
+      await collection.replace(doc, { sup: "dawg" });
+      const newData = await collection.vertex(doc._key);
+      expect(newData).not.to.have.property("potato");
+      expect(newData)
         .to.have.property("sup")
         .that.equals("dawg");
     });
   });
   describe("graphVertexCollection.update", () => {
     it("updates the given vertex", async () => {
-      const doc = { potato: "tomato", empty: false };
-      const meta = await collection.save(doc);
-      delete meta.error;
-      Object.assign(doc, meta);
-      await collection.update(doc as any, { sup: "dawg", empty: null });
-      const data = await collection.vertex((doc as any)._key);
-      expect(data)
+      const data = { potato: "tomato", empty: false };
+      const meta = await collection.save(data);
+      const doc = meta.new!;
+      await collection.update(doc, { sup: "dawg", empty: null });
+      const newData = await collection.vertex(doc._key);
+      expect(newData)
         .to.have.property("potato")
         .that.equals(doc.potato);
-      expect(data)
+      expect(newData)
         .to.have.property("sup")
         .that.equals("dawg");
-      expect(data)
+      expect(newData)
         .to.have.property("empty")
         .that.equals(null);
     });
     it("removes null values if keepNull is explicitly set to false", async () => {
-      const doc = { potato: "tomato", empty: false };
-      const meta = await collection.save(doc);
-      delete meta.error;
-      Object.assign(doc, meta);
+      const data = { potato: "tomato", empty: false };
+      const meta = await collection.save(data, { returnNew: true });
+      const doc = meta.new!;
       await collection.update(
-        doc as any,
+        doc,
         { sup: "dawg", empty: null },
         { keepNull: false }
       );
-      const data = await collection.vertex((doc as any)._key);
-      expect(data)
+      const newData = await collection.vertex(doc._key);
+      expect(newData)
         .to.have.property("potato")
         .that.equals(doc.potato);
-      expect(data)
+      expect(newData)
         .to.have.property("sup")
         .that.equals("dawg");
-      expect(data).not.to.have.property("empty");
+      expect(newData).not.to.have.property("empty");
     });
   });
   describe("graphVertexCollection.remove", () => {

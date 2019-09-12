@@ -5,7 +5,7 @@ These functions implement the
 
 ## database.createDatabase
 
-`async database.createDatabase(databaseName, [users]): Object`
+`async database.createDatabase(databaseName, [users]): TODO`
 
 Creates a new database with the given _databaseName_.
 
@@ -15,7 +15,7 @@ Creates a new database with the given _databaseName_.
 
   Name of the database to create.
 
-- **users**: `Array<Object>` (optional)
+- **users**: `Array<TODO>` (optional)
 
   If specified, the array must contain objects with the following properties:
 
@@ -31,7 +31,7 @@ Creates a new database with the given _databaseName_.
 
     Whether the user is active.
 
-  - **extra**: `Object` (optional)
+  - **extra**: `object` (optional)
 
     An object containing additional user data.
 
@@ -59,7 +59,7 @@ const result = await db.exists();
 
 ## database.get
 
-`async database.get(): Object`
+`async database.get(): TODO`
 
 Fetches the database description for the active database from the server.
 
@@ -102,7 +102,7 @@ const names = await db.listUserDatabases();
 
 ## database.dropDatabase
 
-`async database.dropDatabase(databaseName): Object`
+`async database.dropDatabase(databaseName): TODO`
 
 Deletes the database with the given _databaseName_ from the server.
 
@@ -114,7 +114,7 @@ await db.dropDatabase("mydb");
 
 ## database.truncate
 
-`async database.truncate([excludeSystem]): Object`
+`async database.truncate([excludeSystem]): TODO`
 
 Deletes **all documents in all collections** in the active database.
 

@@ -1,7 +1,5 @@
 import { expect } from "chai";
-import { aql, Database } from "../arangojs";
-import { ArrayCursor } from "../cursor";
-import { ArangoError } from "../error";
+import { aql, ArangoError, ArrayCursor, Database } from "../arangojs";
 
 const ARANGO_URL = process.env.TEST_ARANGODB_URL || "http://localhost:8529";
 const ARANGO_VERSION = Number(

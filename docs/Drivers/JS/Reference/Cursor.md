@@ -23,7 +23,7 @@ The total number of documents in the query result. This is only available if the
 
 ## cursor.all
 
-`async cursor.all(): Array<Object>`
+`async cursor.all(): Array<TODO>`
 
 Exhausts the cursor, then returns an array containing all values in the cursor's
 remaining result list.
@@ -40,7 +40,7 @@ assert.equal(cursor.hasNext(), false);
 
 ## cursor.next
 
-`async cursor.next(): Object`
+`async cursor.next(): TODO`
 
 Advances the cursor and returns the next value in the cursor's remaining result
 list. If the cursor has already been exhausted, returns `undefined` instead.

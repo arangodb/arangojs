@@ -5,7 +5,7 @@ export interface AqlQuery {
   bindVars: { [key: string]: any };
 }
 
-export interface GeneratedAqlQuery extends AqlQuery {
+interface GeneratedAqlQuery extends AqlQuery {
   _source: () => { strings: string[]; args: AqlValue[] };
 }
 
@@ -29,7 +29,7 @@ export function isAqlQuery(query: any): query is AqlQuery {
   return Boolean(query && typeof query.query === "string" && query.bindVars);
 }
 
-export function isGeneratedAqlQuery(query: any): query is GeneratedAqlQuery {
+function isGeneratedAqlQuery(query: any): query is GeneratedAqlQuery {
   return isAqlQuery(query) && typeof (query as any)._source === "function";
 }
 

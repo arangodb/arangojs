@@ -16,7 +16,7 @@ route) that can be used to perform arbitrary HTTP requests.
 
   The relative URL of the route.
 
-- **headers**: `Object` (optional)
+- **headers**: `object` (optional)
 
   Default headers that should be sent with each request to the route.
 
@@ -331,7 +331,7 @@ Performs an arbitrary request to the given URL and returns the server response.
 
 **Arguments**
 
-- **opts**: `Object` (optional)
+- **opts**: `object` (optional)
 
   An object with any of the following properties:
 
@@ -354,7 +354,7 @@ Performs an arbitrary request to the given URL and returns the server response.
     The query string for the request. If _qs_ is an object, it will be
     translated to a query string.
 
-  - **headers**: `Object` (optional)
+  - **headers**: `object` (optional)
 
     An object containing additional HTTP headers to be sent with the request.
 

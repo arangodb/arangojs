@@ -11,7 +11,7 @@ Returns a _Graph_ instance representing the graph with the given graph name.
 
 ## database.listGraphs
 
-`async database.listGraphs(): Array<Object>`
+`async database.listGraphs(): Array<TODO>`
 
 Fetches all graphs from the database and returns an array of graph descriptions.
 
