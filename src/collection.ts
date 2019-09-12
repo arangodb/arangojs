@@ -10,19 +10,29 @@ export function documentHandle(
 ): string {
   if (typeof selector !== "string") {
     if (selector._id) {
+      if (!selector._id.startsWith(`${collectionName}/`)) {
+        throw new Error(
+          `Document ID "${selector._id}" does not match collection name "${collectionName}"`
+        );
+      }
       return selector._id;
     }
     if (selector._key) {
-      return `${collectionName}/${selector._key}`;
+      return documentHandle(selector._key, collectionName);
     }
     throw new Error(
       "Document handle must be a string or an object with a _key or _id"
     );
   }
-  if (selector.indexOf("/") === -1) {
-    return `${collectionName}/${selector}`;
+  if (selector.includes("/")) {
+    if (selector.startsWith(`${collectionName}/`)) {
+      throw new Error(
+        `Document ID "${selector}" does not match collection name "${collectionName}"`
+      );
+    }
+    return selector;
   }
-  return selector;
+  return `${collectionName}/${selector}`;
 }
 
 export function isArangoCollection(
@@ -547,6 +557,7 @@ export interface DocumentCollection<T extends object = any>
   drop(opts?: CollectionDropOptions): Promise<ArangoResponseMetadata>;
 
   //#region crud
+  getResponsibleShard(document: Partial<Document<T>>): Promise<string>;
   documentExists(selector: Selector): Promise<boolean>;
   document(
     selector: Selector,
@@ -954,7 +965,8 @@ class GenericCollection<T extends object = any>
   }
   //#endregion
 
-  getResponsibleShard(document: Object): Promise<string> {
+  //#region crud
+  getResponsibleShard(document: Partial<Document<T>>): Promise<string> {
     return this._connection.request(
       {
         method: "PUT",
