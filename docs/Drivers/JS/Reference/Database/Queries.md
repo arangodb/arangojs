@@ -24,11 +24,11 @@ Performs a database query using the given _query_ and _bindVars_, then returns a
   If the query is an AQL query object, the second argument is treated as the
   _opts_ argument instead of _bindVars_.
 
-- **bindVars**: `Object` (optional)
+- **bindVars**: `object` (optional)
 
   An object defining the variables to bind the query to.
 
-- **opts**: `Object` (optional)
+- **opts**: `object` (optional)
 
   Additional parameter object that will be passed to the query API.
   Possible keys are _count_ and _options_ (explained below)
@@ -87,7 +87,7 @@ db.query("FOR u IN _users FILTER u.authData.active == @active RETURN u.user", {
 
 ## aql
 
-`aql(strings, ...args): Object`
+`aql(strings, ...args): TODO`
 
 Template string handler (aka template tag) for AQL queries. Converts a template
 string to an object that can be passed to `database.query` by converting
@@ -162,13 +162,13 @@ returns one or more plans.
   If the query is an AQL query object, the second argument is treated as the
   _opts_ argument instead of _bindVars_.
 
-- **bindVars**: `Object` (optional)
+- **bindVars**: `object` (optional)
 
   An object defining the variables to bind the query to.
 
-- **opts**: `Object` (optional)
+- **opts**: `object` (optional)
 
-  - **optimizer**: `Object` (optional)
+  - **optimizer**: `object` (optional)
 
     An object with a single property **rules**, a string array of optimizer
     rules to be used for the query.

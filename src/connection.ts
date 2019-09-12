@@ -83,7 +83,6 @@ export type Config =
   | string[]
   | Partial<{
       url: string | string[];
-      isAbsolute: boolean;
       arangoVersion: number;
       loadBalancingStrategy: LoadBalancingStrategy;
       maxRetries: false | number;
@@ -97,7 +96,7 @@ export class Connection {
   private _agent?: any;
   private _agentOptions: { [key: string]: any };
   private _arangoVersion: number = 30400;
-  private _databaseName: string | false = "_system";
+  private _databaseName: string = "_system";
   private _headers: { [key: string]: string };
   private _loadBalancingStrategy: LoadBalancingStrategy;
   private _useFailOver: boolean;
@@ -117,9 +116,6 @@ export class Connection {
 
     if (config.arangoVersion !== undefined) {
       this._arangoVersion = config.arangoVersion;
-    }
-    if (config.isAbsolute) {
-      this._databaseName = false;
     }
     this._agent = config.agent;
     this._agentOptions = isBrowser
@@ -161,7 +157,7 @@ export class Connection {
   }
 
   private get _databasePath() {
-    return this._databaseName === false ? "" : `/_db/${this._databaseName}`;
+    return `/_db/${this._databaseName}`;
   }
 
   private _runQueue() {
@@ -271,9 +267,6 @@ export class Connection {
   }
 
   setDatabaseName(databaseName: string) {
-    if (this._databaseName === false) {
-      throw new Error("Can not change database from absolute URL");
-    }
     this._databaseName = databaseName;
   }
 

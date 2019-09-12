@@ -1,6 +1,5 @@
 import { expect } from "chai";
-import { aql, Database } from "../arangojs";
-import { ArrayCursor } from "../cursor";
+import { aql, ArrayCursor, Database, DocumentCollection } from "../arangojs";
 
 const ARANGO_URL = process.env.TEST_ARANGODB_URL || "http://localhost:8529";
 const ARANGO_VERSION = Number(
@@ -69,12 +68,12 @@ describe34("AQL Stream queries", function() {
   describe("with some data", () => {
     let cname = "MyTestCollection";
     before(async () => {
-      let collection = db.collection(cname);
+      let collection = db.collection(cname) as DocumentCollection;
       await collection.create();
       await Promise.all(
-        Array.from(Array(1000).keys())
-          .map(i => Number(i))
-          .map((i: number) => collection.save({ hallo: i }))
+        Array.from(Array(1000).keys()).map((i: number) =>
+          collection.save({ hallo: i })
+        )
       );
     });
     /*after(async () => {

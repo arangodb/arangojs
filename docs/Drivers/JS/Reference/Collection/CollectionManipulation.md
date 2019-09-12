@@ -5,29 +5,83 @@ These functions implement the
 
 ## collection.create
 
-`async collection.create([properties]): Object`
+`async collection.create([properties]): CollectionProperties`
 
-Creates a collection with the given _properties_ for this collection's name,
-then returns the server response.
+Creates a collection with the given _properties_ for this collection's name.
 
 **Arguments**
 
-- **properties**: `Object` (optional)
+- **properties**: `object` (optional)
 
-  For more information on the _properties_ object, see the
-  [HTTP API documentation for creating collections](https://www.arangodb.com/docs/stable/http/collection-creating.html).
+  - **type**: `CollectionType` (Default: `CollectionType.DOCUMENT_COLLECTION`)
+
+    Type of the collection to create.
+
+  - **waitForSync**: `boolean` (optional)
+
+    TODO
+
+  - **journalSize**: `number` (optional)
+
+    TODO
+
+  - **isVolatile**: `boolean` (optional)
+
+    TODO
+
+  - **isSystem**: `boolean` (optional)
+
+    TODO
+
+  - **keyOptions**: `object` (optional)
+
+    TODO
+
+    An object with the following properties:
+
+    - **type**: `string` (optional)
+
+      TODO
+
+      One of: `"traditional"`, `"autoincrement"`, `"uuid"`, `"padded"`.
+
+    - **allowUserKeys**: `boolean` (optional)
+
+      TODO
+
+    - **increment**: `number` (optional)
+
+      TODO
+
+    - **offset**: `number` (optional)
+
+      TODO
+
+  - **numberOfShards**: `number` (optional)
+
+    TODO
+
+  - **shardKeys**: `Array<string>` (optional)
+
+    TODO
+
+  - **replicationFactor**: `number` (optional)
+
+    TODO
+
+Returns an object with all properties returned by `collection.properties()`.
 
 **Examples**
 
 ```js
 const db = new Database();
-const collection = db.collection('potatoes');
-await collection.create()
+const collection = db.collection("potatoes");
+await collection.create();
 // the document collection "potatoes" now exists
 
 // -- or --
 
-const collection = db.edgeCollection('friends');
+const collection = db.collection("friends");
 await collection.create({
   waitForSync: true // always sync document changes to disk
 });
@@ -36,7 +90,7 @@ await collection.create({
 
 ## collection.load
 
-`async collection.load([count]): Object`
+`async collection.load([count]): CollectionLoadResult`
 
 Tells the server to load the collection into memory.
 
@@ -47,39 +101,49 @@ Tells the server to load the collection into memory.
   If set to `false`, the return value will not include the number of documents
   in the collection (which may speed up the process).
 
+Returns an object. If **count** is not explicitly set to `false`, the object includes the following property:
+
+- **count**: `number`
+
+  The number of documents in the collection.
+
 **Examples**
 
 ```js
 const db = new Database();
-const collection = db.collection('some-collection');
-await collection.load(false)
+const collection = db.collection("some-collection");
+await collection.load(false);
 // the collection has now been loaded into memory
 ```
 
 ## collection.unload
 
-`async collection.unload(): Object`
+`async collection.unload(): CollectionMetadata`
 
 Tells the server to remove the collection from memory.
+
+Returns an object with all properties returned by `collection.get()`.
 
 **Examples**
 
 ```js
 const db = new Database();
-const collection = db.collection('some-collection');
-await collection.unload()
+const collection = db.collection("some-collection");
+await collection.unload();
 // the collection has now been unloaded from memory
 ```
 
-## collection.setProperties
+## collection.properties
 
-`async collection.setProperties(properties): Object`
+`async collection.properties(properties): CollectionProperties`
+
+FIXME update this
 
 Replaces the properties of the collection.
 
 **Arguments**
 
-- **properties**: `Object`
+- **properties**: `object`
 
   For information on the _properties_ argument see the
   [HTTP API for modifying collections](https://www.arangodb.com/docs/stable/http/collection-modifying.html).
@@ -88,8 +152,8 @@ Replaces the properties of the collection.
 
 ```js
 const db = new Database();
-const collection = db.collection('some-collection');
-const result = await collection.setProperties({waitForSync: true})
+const collection = db.collection("some-collection");
+const result = await collection.setProperties({ waitForSync: true });
 assert.equal(result.waitForSync, true);
 // the collection will now wait for data being written to disk
 // whenever a document is changed
@@ -97,78 +161,88 @@ assert.equal(result.waitForSync, true);
 
 ## collection.rename
 
-`async collection.rename(name): Object`
+`async collection.rename(name): CollectionMetadata`
 
 Renames the collection. The _Collection_ instance will automatically update its
 name when the rename succeeds.
+
+Returns an object with all properties returned by `collection.get()`.
 
 **Examples**
 
 ```js
 const db = new Database();
-const collection = db.collection('some-collection');
-const result = await collection.rename('new-collection-name')
-assert.equal(result.name, 'new-collection-name');
+const collection = db.collection("some-collection");
+const result = await collection.rename("new-collection-name");
+assert.equal(result.name, "new-collection-name");
 assert.equal(collection.name, result.name);
 // result contains additional information about the collection
 ```
 
 ## collection.rotate
 
-`async collection.rotate(): Object`
+`async collection.rotate(): CollectionRotateResult`
 
 Rotates the journal of the collection.
+
+Returns an object with the following properties:
+
+- **result**: `boolean`
+
+  TODO
 
 **Examples**
 
 ```js
 const db = new Database();
-const collection = db.collection('some-collection');
+const collection = db.collection("some-collection");
 const data = await collection.rotate();
 // data.result will be true if rotation succeeded
 ```
 
 ## collection.truncate
 
-`async collection.truncate(): Object`
+`async collection.truncate(): CollectionMetadata`
 
 Deletes **all documents** in the collection in the database.
+
+Returns an object with all properties returned by `collection.get()`.
 
 **Examples**
 
 ```js
 const db = new Database();
-const collection = db.collection('some-collection');
+const collection = db.collection("some-collection");
 await collection.truncate();
 // the collection "some-collection" is now empty
 ```
 
 ## collection.drop
 
-`async collection.drop([properties]): Object`
+`async collection.drop([opts]): TODO`
 
 Deletes the collection from the database.
 
 **Arguments**
 
-- **properties**: `Object` (optional)
+- **opts**: `object` (optional)
+
+  TODO
 
   An object with the following properties:
 
   - **isSystem**: `Boolean` (Default: `false`)
 
-    Whether the collection should be dropped even if it is a system collection.
+    Whether the collection should be dropped even if it is a system collection. If not set to `true`, the server will refuse to drop system collections even if the user has the necessary permissions.
 
-    This parameter must be set to `true` when dropping a system collection.
-
-  For more information on the _properties_ object, see the
-  [HTTP API documentation for dropping collections](https://www.arangodb.com/docs/stable/http/collection-creating.html#drops-a-collection).
+FIXME Returns an object.
+[HTTP API documentation for dropping collections](https://www.arangodb.com/docs/stable/http/collection-creating.html#drops-a-collection).
 
 **Examples**
 
 ```js
 const db = new Database();
-const collection = db.collection('some-collection');
+const collection = db.collection("some-collection");
 await collection.drop();
 // the collection "some-collection" no longer exists
 ```

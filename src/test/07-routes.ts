@@ -1,7 +1,5 @@
 import { expect } from "chai";
-import { Database } from "../arangojs";
-import { DocumentCollection } from "../collection";
-import { Route } from "../route";
+import { Database, DocumentCollection, Route } from "../arangojs";
 
 const ARANGO_URL = process.env.TEST_ARANGODB_URL || "http://localhost:8529";
 const ARANGO_VERSION = Number(

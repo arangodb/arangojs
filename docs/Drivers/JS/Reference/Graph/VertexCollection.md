@@ -5,7 +5,7 @@ The _GraphVertexCollection API_ extends the
 
 ## graphVertexCollection.remove
 
-`async graphVertexCollection.remove(documentHandle): Object`
+`async graphVertexCollection.remove(documentHandle): TODO`
 
 Deletes the vertex with the given _documentHandle_ from the collection.
 
@@ -60,7 +60,7 @@ if (exists === false) {
 
 ## graphVertexCollection.document
 
-`async graphVertexCollection.document(documentHandle, [graceful]): Object`
+`async graphVertexCollection.document(documentHandle, [graceful]): TODO`
 
 Alias: `graphVertexCollection.vertex`.
 
@@ -74,7 +74,7 @@ Retrieves the vertex with the given _documentHandle_ from the collection.
   `_key` of a vertex in the collection, or a vertex (i.e. an object with an
   `_id` or `_key` property).
 
-- **opts**: `Object` (optional)
+- **opts**: `object` (optional)
 
   If _opts_ is set, it must be an object with any of the following properties:
 
@@ -125,13 +125,13 @@ if (doc === null) {
 
 ## graphVertexCollection.save
 
-`async graphVertexCollection.save(data): Object`
+`async graphVertexCollection.save(data): TODO`
 
 Creates a new vertex with the given _data_.
 
 **Arguments**
 
-- **data**: `Object`
+- **data**: `object`
 
   The data of the vertex.
 

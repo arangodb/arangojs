@@ -1,6 +1,5 @@
 import { expect } from "chai";
-import { Database } from "../arangojs";
-import { ArangoError } from "../error";
+import { ArangoError, Database } from "../arangojs";
 
 const range = (n: number): number[] => Array.from(Array(n).keys());
 
@@ -8,7 +7,6 @@ const ARANGO_URL = process.env.TEST_ARANGODB_URL || "http://localhost:8529";
 const ARANGO_VERSION = Number(
   process.env.ARANGO_VERSION || process.env.ARANGOJS_DEVEL_VERSION || 30400
 );
-const it2x = ARANGO_VERSION < 30000 ? it : it.skip;
 
 describe("Manipulating databases", function() {
   let db: Database;
@@ -132,23 +130,5 @@ describe("Manipulating databases", function() {
         })
       ]);
     });
-    it2x(
-      "additionally truncates system collections if explicitly passed false",
-      async () => {
-        await db.truncate(false);
-        await Promise.all(
-          nonSystemCollections.map(async name => {
-            let doc;
-            try {
-              doc = await db.collection(name).document("example");
-            } catch (e) {
-              expect(e).to.be.an.instanceof(ArangoError);
-              return;
-            }
-            expect.fail(`Expected document to be destroyed: ${doc._id}`);
-          })
-        );
-      }
-    );
   });
 });

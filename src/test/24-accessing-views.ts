@@ -1,6 +1,5 @@
 import { expect } from "chai";
-import { Database } from "../arangojs";
-import { ArangoSearchView } from "../view";
+import { ArangoSearchView, Database } from "../arangojs";
 
 const range = (n: number): number[] => Array.from(Array(n).keys());
 

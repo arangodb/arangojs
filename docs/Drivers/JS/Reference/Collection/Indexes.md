@@ -5,13 +5,13 @@ These functions implement the
 
 ## collection.createIndex
 
-`async collection.createIndex(details): Object`
+`async collection.createIndex(details): TODO`
 
 Creates an arbitrary index on the collection.
 
 **Arguments**
 
-- **details**: `Object`
+- **details**: `object`
 
   For information on the possible properties of the _details_ object, see the
   [HTTP API for manipulating indexes](https://www.arangodb.com/docs/stable/http/indexes-working-with.html).
@@ -30,7 +30,7 @@ const index = await collection.createIndex({
 
 ## collection.createHashIndex
 
-`async collection.createHashIndex(fields, [opts]): Object`
+`async collection.createHashIndex(fields, [opts]): TODO`
 
 Creates a hash index on the collection.
 
@@ -41,7 +41,7 @@ Creates a hash index on the collection.
   An array of names of document fields on which to create the index. If the
   value is a string, it will be wrapped in an array automatically.
 
-- **opts**: `Object` (optional)
+- **opts**: `object` (optional)
 
   Additional options for this index. If the value is a boolean, it will be
   interpreted as _opts.unique_.
@@ -68,7 +68,7 @@ assert.deepEqual(index.fields, ["favorite-color"]);
 
 ## collection.createSkipList
 
-`async collection.createSkipList(fields, [opts]): Object`
+`async collection.createSkipList(fields, [opts]): TODO`
 
 Creates a skiplist index on the collection.
 
@@ -79,7 +79,7 @@ Creates a skiplist index on the collection.
   An array of names of document fields on which to create the index. If the
   value is a string, it will be wrapped in an array automatically.
 
-- **opts**: `Object` (optional)
+- **opts**: `object` (optional)
 
   Additional options for this index. If the value is a boolean, it will be
   interpreted as _opts.unique_.
@@ -106,7 +106,7 @@ assert.deepEqual(index.fields, ["favorite-color"]);
 
 ## collection.createGeoIndex
 
-`async collection.createGeoIndex(fields, [opts]): Object`
+`async collection.createGeoIndex(fields, [opts]): TODO`
 
 Creates a geo-spatial index on the collection.
 
@@ -118,7 +118,7 @@ Creates a geo-spatial index on the collection.
   geo indexes must cover exactly one field. If the value is a string, it will be
   wrapped in an array automatically.
 
-- **opts**: `Object` (optional)
+- **opts**: `object` (optional)
 
   An object containing additional properties of the index.
 
@@ -144,7 +144,7 @@ assert.deepEqual(index.fields, ["location"]);
 
 ## collection.createFulltextIndex
 
-`async collection.createFulltextIndex(fields, [minLength]): Object`
+`async collection.createFulltextIndex(fields, [minLength]): TODO`
 
 Creates a fulltext index on the collection.
 
@@ -183,7 +183,7 @@ assert.deepEqual(index.fields, ["description"]);
 
 ## collection.createPersistentIndex
 
-`async collection.createPersistentIndex(fields, [opts]): Object`
+`async collection.createPersistentIndex(fields, [opts]): TODO`
 
 Creates a Persistent index on the collection. Persistent indexes are similarly
 in operation to skiplist indexes, only that these indexes are in disk as opposed
@@ -196,7 +196,7 @@ being that it will always be orders of magnitude slower than in-memory indexes.
 
   An array of names of document fields on which to create the index.
 
-- **opts**: `Object` (optional)
+- **opts**: `object` (optional)
 
   An object containing additional properties of the index.
 
@@ -216,7 +216,7 @@ assert.deepEqual(index.fields, ["name", "email"]);
 
 ## collection.index
 
-`async collection.index(indexHandle): Object`
+`async collection.index(indexHandle): TODO`
 
 Fetches information about the index with the given _indexHandle_ and returns it.
 
@@ -247,7 +247,7 @@ assert.equal(result.id, index.id);
 
 ## collection.indexes
 
-`async collection.indexes(): Array<Object>`
+`async collection.indexes(): Array<TODO>`
 
 Fetches a list of all indexes on this collection.
 
@@ -264,7 +264,7 @@ assert.equal(indexes.length, 1);
 
 ## collection.dropIndex
 
-`async collection.dropIndex(indexHandle): Object`
+`async collection.dropIndex(indexHandle): TODO`
 
 Deletes the index with the given _indexHandle_ from the collection.
 

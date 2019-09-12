@@ -10,7 +10,7 @@ If _config_ is a string, it will be interpreted as _config.url_.
 
 **Arguments**
 
-- **config**: `Object` (optional)
+- **config**: `object` (optional)
 
   An object with the following properties:
 
@@ -88,7 +88,7 @@ If _config_ is a string, it will be interpreted as _config.url_.
     Depending on this value certain methods may become unavailable or change
     their behavior to remain compatible with different versions of ArangoDB.
 
-  - **headers**: `Object` (optional)
+  - **headers**: `object` (optional)
 
     An object with additional headers to send with every request.
 
@@ -105,7 +105,7 @@ If _config_ is a string, it will be interpreted as _config.url_.
 
     This option has no effect when using the browser version of arangojs.
 
-  - **agentOptions**: `Object` (Default: see below)
+  - **agentOptions**: `object` (Default: see below)
 
     An object with options for the agent. This will be ignored if _agent_ is
     also provided.
@@ -276,7 +276,7 @@ await db.login("admin", "hunter2");
 
 ## database.version
 
-`async database.version(): Object`
+`async database.version(): TODO`
 
 Fetches the ArangoDB version information for the active database from the server.
 

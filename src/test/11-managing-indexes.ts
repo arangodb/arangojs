@@ -1,6 +1,5 @@
 import { expect } from "chai";
-import { Database } from "../arangojs";
-import { DocumentCollection } from "../collection";
+import { Database, DocumentCollection } from "../arangojs";
 
 const ARANGO_URL = process.env.TEST_ARANGODB_URL || "http://localhost:8529";
 const ARANGO_VERSION = Number(
@@ -52,9 +51,9 @@ describe("Managing indexes", function() {
       expect(info).to.have.property("isNewlyCreated", true);
     });
   });
-  describe("collection.createSkipList", () => {
+  describe("collection.createSkiplist", () => {
     it("should create a skiplist index", async () => {
-      const info = await collection.createSkipList(["value"]);
+      const info = await collection.createSkiplist(["value"]);
       expect(info).to.have.property("id");
       expect(info).to.have.property("type", "skiplist");
       expect(info).to.have.property("fields");

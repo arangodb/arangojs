@@ -38,12 +38,12 @@ Returns an _EdgeCollection_ instance for the given collection name.
 
 ```js
 const db = new Database();
-const collection = db.edgeCollection("potatoes");
+const collection = db.collection("potatoes");
 ```
 
 ## database.listCollections
 
-`async database.listCollections([excludeSystem]): Array<Object>`
+`async database.listCollections([excludeSystem]): Array<TODO>`
 
 Fetches all collections from the database and returns an array of collection
 descriptions.
@@ -88,14 +88,14 @@ _DocumentCollection_ and _EdgeCollection_ instances for the collections.
 ```js
 const db = new Database();
 
-const collections = await db.collections()
+const collections = await db.collections();
 // collections is an array of DocumentCollection
 // and EdgeCollection instances
 // not including system collections
 
 // -- or --
 
-const collections = await db.collections(false)
+const collections = await db.collections(false);
 // collections is an array of DocumentCollection
 // and EdgeCollection instances
 // including system collections

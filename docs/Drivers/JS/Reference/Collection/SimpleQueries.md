@@ -12,14 +12,14 @@ Performs a query to fetch all documents in the collection. Returns a
 
 **Arguments**
 
-- **opts**: `Object` (optional)
+- **opts**: `object` (optional)
 
-  For information on the possible options see the
+  TODO
   [HTTP API for returning all documents](https://www.arangodb.com/docs/stable/http/simple-query.html#return-all-documents).
 
 ## collection.any
 
-`async collection.any(): Object`
+`async collection.any(): Document`
 
 Fetches a document from the collection at random.
 
@@ -32,116 +32,134 @@ _example_. Returns a [new _Cursor_ instance](../Cursor.md) for the query results
 
 **Arguments**
 
-- **example**: _Object_
+- **example**: `object`
 
   An object representing an example for documents to be matched against.
 
-- **opts**: _Object_ (optional)
+- **opts**: `object` (optional)
 
-  For information on the possible options see the
+  TODO
   [HTTP API for fetching documents by example](https://www.arangodb.com/docs/stable/http/simple-query.html#find-documents-matching-an-example).
 
 ## collection.firstExample
 
-`async collection.firstExample(example): Object`
+`async collection.firstExample(example): Document`
 
 Fetches the first document in the collection matching the given _example_.
 
 **Arguments**
 
-- **example**: _Object_
+- **example**: `object`
 
   An object representing an example for documents to be matched against.
 
 ## collection.removeByExample
 
-`async collection.removeByExample(example, [opts]): Object`
+`async collection.removeByExample(example, [opts]): SimpleQueryRemoveByExampleResult`
 
 Removes all documents in the collection matching the given _example_.
 
 **Arguments**
 
-- **example**: _Object_
+- **example**: `object`
 
   An object representing an example for documents to be matched against.
 
-- **opts**: _Object_ (optional)
+- **opts**: `object` (optional)
 
-  For information on the possible options see the
+  TODO
   [HTTP API for removing documents by example](https://www.arangodb.com/docs/stable/http/simple-query.html#remove-documents-by-example).
+
+Returns an object with the following property:
+
+- **deleted**: `number`
+
+  Number of documents removed by this query.
 
 ## collection.replaceByExample
 
-`async collection.replaceByExample(example, newValue, [opts]): Object`
+`async collection.replaceByExample(example, newValue, [opts]): SimpleQueryReplaceByExampleResult`
 
 Replaces all documents in the collection matching the given _example_ with the
 given _newValue_.
 
 **Arguments**
 
-- **example**: _Object_
+- **example**: `object`
 
   An object representing an example for documents to be matched against.
 
-- **newValue**: _Object_
+- **newValue**: `object`
 
   The new value to replace matching documents with.
 
-- **opts**: _Object_ (optional)
+- **opts**: `object` (optional)
 
-  For information on the possible options see the
+  TODO
   [HTTP API for replacing documents by example](https://www.arangodb.com/docs/stable/http/simple-query.html#replace-documents-by-example).
+
+Returns an object with the following property:
+
+- **replaced**: `number`
+
+  Number of documents replaced by this query.
 
 ## collection.updateByExample
 
-`async collection.updateByExample(example, newValue, [opts]): Object`
+`async collection.updateByExample(example, newValue, [opts]): SimpleQueryUpdateByExampleResult`
 
 Updates (patches) all documents in the collection matching the given _example_
 with the given _newValue_.
 
 **Arguments**
 
-- **example**: _Object_
+- **example**: `object`
 
   An object representing an example for documents to be matched against.
 
-- **newValue**: _Object_
+- **newValue**: `object`
 
   The new value to update matching documents with.
 
-- **opts**: _Object_ (optional)
+- **opts**: `object` (optional)
 
-  For information on the possible options see the
+  TODO
   [HTTP API for updating documents by example](https://www.arangodb.com/docs/stable/http/simple-query.html#update-documents-by-example).
+
+Returns an object with the following property:
+
+- **updated**: `number`
+
+  Number of documents updated by this query.
 
 ## collection.lookupByKeys
 
-`async collection.lookupByKeys(keys): Array<Object>`
+`async collection.lookupByKeys(keys): Array<Document>`
 
 Fetches the documents with the given _keys_ from the collection. Returns an
 array of the matching documents.
 
 **Arguments**
 
-- **keys**: _Array_
+- **keys**: `Array<string>`
 
   An array of document keys to look up.
 
 ## collection.removeByKeys
 
-`async collection.removeByKeys(keys, [opts]): Object`
+`async collection.removeByKeys(keys, [opts]): Array<Document>`
 
 Deletes the documents with the given _keys_ from the collection.
 
 **Arguments**
 
-- **keys**: _Array_
+- **keys**: `Array<string>`
 
   An array of document keys to delete.
 
-- **opts**: _Object_ (optional)
+- **opts**: `object` (optional)
 
-  For information on the possible options see the
+  TODO
   [HTTP API for removing documents by keys](https://www.arangodb.com/docs/stable/http/simple-query.html#remove-documents-by-their-keys).
 
 ## collection.fulltext
@@ -152,15 +170,15 @@ Performs a fulltext query in the given _fieldName_ on the collection.
 
 **Arguments**
 
-- **fieldName**: _String_
+- **fieldName**: `string`
 
   Name of the field to search on documents in the collection.
 
-- **query**: _String_
+- **query**: `string`
 
   Fulltext query string to search for.
 
-- **opts**: _Object_ (optional)
+- **opts**: `object` (optional)
 
-  For information on the possible options see the
+  TODO
   [HTTP API for fulltext queries](https://www.arangodb.com/docs/stable/http/indexes-fulltext.html).
