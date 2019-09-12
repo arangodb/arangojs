@@ -7,11 +7,11 @@ import {
   DocumentCollection,
   DocumentData,
   documentHandle,
+  DocumentSelector,
   Edge,
   EdgeCollection,
   EdgeData,
   isArangoCollection,
-  Selector,
   _constructCollection
 } from "./collection";
 import { Connection } from "./connection";
@@ -64,12 +64,12 @@ export class GraphVertexCollection<T extends object = any>
   }
 
   vertex(
-    selector: Selector,
+    selector: DocumentSelector,
     opts?: CollectionReadOptions
   ): Promise<Document<T>>;
-  vertex(selector: Selector, graceful: boolean): Promise<Document<T>>;
+  vertex(selector: DocumentSelector, graceful: boolean): Promise<Document<T>>;
   vertex(
-    selector: Selector,
+    selector: DocumentSelector,
     opts?: boolean | CollectionReadOptions
   ): Promise<Document<T>> {
     if (typeof opts === "boolean") {
@@ -111,7 +111,7 @@ export class GraphVertexCollection<T extends object = any>
   }
 
   replace(
-    selector: Selector,
+    selector: DocumentSelector,
     newValue: DocumentData<T>,
     opts: TODO_any = {}
   ): Promise<CollectionSaveResult<Document<T>>> {
@@ -140,7 +140,7 @@ export class GraphVertexCollection<T extends object = any>
   }
 
   update(
-    selector: Selector,
+    selector: DocumentSelector,
     newValue: Patch<DocumentData<T>>,
     opts: TODO_any = {}
   ): Promise<CollectionSaveResult<Document<T>>> {
@@ -169,7 +169,7 @@ export class GraphVertexCollection<T extends object = any>
   }
 
   remove(
-    selector: Selector,
+    selector: DocumentSelector,
     opts: TODO_any = {}
   ): Promise<CollectionRemoveResult<Document<T>>> {
     const headers: Headers = {};
@@ -216,10 +216,13 @@ export class GraphEdgeCollection<T extends object = any>
     return this._name;
   }
 
-  edge(selector: Selector, graceful: boolean): Promise<Edge<T>>;
-  edge(selector: Selector, opts?: CollectionReadOptions): Promise<Edge<T>>;
+  edge(selector: DocumentSelector, graceful: boolean): Promise<Edge<T>>;
   edge(
-    selector: Selector,
+    selector: DocumentSelector,
+    opts?: CollectionReadOptions
+  ): Promise<Edge<T>>;
+  edge(
+    selector: DocumentSelector,
     opts: boolean | CollectionReadOptions = {}
   ): Promise<Edge<T>> {
     if (typeof opts === "boolean") {
@@ -261,7 +264,7 @@ export class GraphEdgeCollection<T extends object = any>
   }
 
   replace(
-    selector: Selector,
+    selector: DocumentSelector,
     newValue: EdgeData<T>,
     opts: TODO_any = {}
   ): Promise<CollectionSaveResult<Edge<T>>> {
@@ -290,7 +293,7 @@ export class GraphEdgeCollection<T extends object = any>
   }
 
   update(
-    selector: Selector,
+    selector: DocumentSelector,
     newValue: Patch<EdgeData<T>>,
     opts: TODO_any = {}
   ): Promise<CollectionSaveResult<Edge<T>>> {
@@ -319,7 +322,7 @@ export class GraphEdgeCollection<T extends object = any>
   }
 
   remove(
-    selector: Selector,
+    selector: DocumentSelector,
     opts: TODO_any = {}
   ): Promise<CollectionRemoveResult<Edge<T>>> {
     const headers: Headers = {};
@@ -528,7 +531,7 @@ export class Graph {
     );
   }
 
-  traversal(startVertex: Selector, opts?: TODO_any): Promise<TODO_any> {
+  traversal(startVertex: DocumentSelector, opts?: TODO_any): Promise<TODO_any> {
     return this._connection.request(
       {
         method: "POST",
