@@ -815,7 +815,7 @@ export interface EdgeCollection<T extends object = any>
   //#endregion
 }
 
-class GenericCollection<T extends object = any>
+export class Collection<T extends object = any>
   implements EdgeCollection<T>, DocumentCollection<T> {
   //#region attributes
   isArangoCollection: true = true;
@@ -1517,14 +1517,4 @@ class GenericCollection<T extends object = any>
     );
   }
   //#endregion
-}
-
-/**
- * @private
- */
-export function _constructCollection(
-  connection: Connection,
-  name: string
-): DocumentCollection & EdgeCollection {
-  return new GenericCollection(connection, name);
 }
