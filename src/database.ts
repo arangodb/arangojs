@@ -7,7 +7,8 @@ import {
   DocumentCollection,
   EdgeCollection,
   isArangoCollection,
-  _constructCollection
+  _constructCollection,
+  ListCollectionResult
 } from "./collection";
 import { Config, Connection } from "./connection";
 import { ArrayCursor } from "./cursor";
@@ -333,7 +334,9 @@ export class Database {
     return collection;
   }
 
-  listCollections(excludeSystem: boolean = true): Promise<TODO_any> {
+  listCollections(
+    excludeSystem: boolean = true
+  ): Promise<ListCollectionResult[]> {
     return this._connection.request(
       {
         path: "/_api/collection",
