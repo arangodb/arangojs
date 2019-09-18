@@ -348,7 +348,7 @@ export class Database {
   ): Promise<Array<DocumentCollection | EdgeCollection>> {
     const collections = await this.listCollections(excludeSystem);
     return collections.map((data: any) =>
-      _constructCollection(this._connection, data)
+      _constructCollection(this._connection, data.name)
     );
   }
 
