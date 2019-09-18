@@ -97,6 +97,11 @@ export interface CollectionMetadata {
   isSystem: boolean;
 }
 
+export interface ListCollectionResult extends CollectionMetadata {
+  id: string;
+  globallyUniqueId: string;
+}
+
 export interface CollectionProperties extends CollectionMetadata {
   statusString: string;
   waitForSync: boolean;
