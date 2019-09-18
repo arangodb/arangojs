@@ -265,59 +265,59 @@ export interface TraversalOptions {
   maxIterations?: number;
 }
 
-export interface CreateHashIndexOptions {
+export interface EnsureHashIndexOptions {
   unique?: boolean;
   sparse?: boolean;
   deduplicate?: boolean;
 }
 
-export type CreateSkiplistIndexOptions = CreateHashIndexOptions;
+export type EnsureSkiplistIndexOptions = EnsureHashIndexOptions;
 
-export interface CreatePersistentIndexOptions {
+export interface EnsurePersistentIndexOptions {
   unique?: boolean;
   sparse?: boolean;
 }
 
-export interface CreateGeoIndexOptions {
+export interface EnsureGeoIndexOptions {
   geoJson?: boolean;
 }
 
-export interface CreateFulltextIndexOptions {
+export interface EnsureFulltextIndexOptions {
   minLength?: number;
 }
 
-export interface CreateIndexHashOptions extends CreateHashIndexOptions {
+export interface EnsureIndexHashOptions extends EnsureHashIndexOptions {
   type: "hash";
   fields: string[];
 }
 
-export interface CreateIndexSkiplistOptions extends CreateSkiplistIndexOptions {
+export interface EnsureIndexSkiplistOptions extends EnsureSkiplistIndexOptions {
   type: "skiplist";
   fields: string[];
 }
 
-export interface CreateIndexPersistentOptions
-  extends CreatePersistentIndexOptions {
+export interface EnsureIndexPersistentOptions
+  extends EnsurePersistentIndexOptions {
   type: "persistent";
   fields: string[];
 }
 
-export interface CreateIndexGeoOptions extends CreateGeoIndexOptions {
+export interface EnsureIndexGeoOptions extends EnsureGeoIndexOptions {
   type: "geo";
   fields: [string] | [string, string];
 }
 
-export interface CreateIndexFulltextOptions extends CreateFulltextIndexOptions {
+export interface EnsureIndexFulltextOptions extends EnsureFulltextIndexOptions {
   type: "fulltext";
   fields: string[];
 }
 
-export type CreateIndexOptions =
-  | CreateIndexHashOptions
-  | CreateIndexSkiplistOptions
-  | CreateIndexPersistentOptions
-  | CreateIndexGeoOptions
-  | CreateIndexFulltextOptions;
+export type EnsureIndexOptions =
+  | EnsureIndexHashOptions
+  | EnsureIndexSkiplistOptions
+  | EnsureIndexPersistentOptions
+  | EnsureIndexGeoOptions
+  | EnsureIndexFulltextOptions;
 
 // Results
 
@@ -688,31 +688,31 @@ export interface DocumentCollection<T extends object = any>
   //#region indexes
   indexes(): Promise<Index[]>;
   index(selector: IndexSelector): Promise<Index[]>;
-  createIndex(
-    details: CreateIndexOptions
+  ensureIndex(
+    details: EnsureIndexOptions
   ): Promise<ArangoResponseMetadata & CollectionIndexResult>;
   dropIndex(
     selector: IndexSelector
   ): Promise<ArangoResponseMetadata & CollectionIndexResult>;
-  createHashIndex(
+  ensureHashIndex(
     fields: string | string[],
-    opts?: CreateHashIndexOptions
+    opts?: EnsureHashIndexOptions
   ): Promise<ArangoResponseMetadata & CollectionIndexResult>;
-  createSkiplist(
+  ensureSkiplist(
     fields: string | string[],
-    opts?: CreateSkiplistIndexOptions
+    opts?: EnsureSkiplistIndexOptions
   ): Promise<ArangoResponseMetadata & CollectionIndexResult>;
-  createPersistentIndex(
+  ensurePersistentIndex(
     fields: string | string[],
-    opts?: CreatePersistentIndexOptions
+    opts?: EnsurePersistentIndexOptions
   ): Promise<ArangoResponseMetadata & CollectionIndexResult>;
-  createGeoIndex(
+  ensureGeoIndex(
     fields: string | [string] | [string, string],
-    opts?: CreateGeoIndexOptions
+    opts?: EnsureGeoIndexOptions
   ): Promise<ArangoResponseMetadata & CollectionIndexResult>;
-  createFulltextIndex(
+  ensureFulltextIndex(
     fields: string | string[],
-    opts?: CreateFulltextIndexOptions
+    opts?: EnsureFulltextIndexOptions
   ): Promise<ArangoResponseMetadata & CollectionIndexResult>;
   //#endregion
 }
@@ -1379,21 +1379,16 @@ class GenericCollection<T extends object = any>
     );
   }
 
-  ensureIndex(details: CreateIndexOptions) {
+  ensureIndex(options: EnsureIndexOptions) {
     return this._connection.request(
       {
         method: "POST",
         path: "/_api/index",
-        body: details,
+        body: options,
         qs: { collection: this._name },
       },
       (res) => res.body
     );
-  }
-
-  /** @deprecated use ensureIndex instead */
-  createIndex(details: any) {
-    return this.ensureIndex(details);
   }
 
   dropIndex(selector: IndexSelector) {
@@ -1406,7 +1401,7 @@ class GenericCollection<T extends object = any>
     );
   }
 
-  createHashIndex(fields: string[] | string, opts?: CreateHashIndexOptions) {
+  ensureHashIndex(fields: string[] | string, opts?: EnsureHashIndexOptions) {
     if (typeof fields === "string") {
       fields = [fields];
     }
@@ -1424,7 +1419,7 @@ class GenericCollection<T extends object = any>
     );
   }
 
-  createSkiplist(fields: string[] | string, opts?: CreateSkiplistIndexOptions) {
+  ensureSkiplist(fields: string[] | string, opts?: EnsureSkiplistIndexOptions) {
     if (typeof fields === "string") {
       fields = [fields];
     }
@@ -1442,9 +1437,9 @@ class GenericCollection<T extends object = any>
     );
   }
 
-  createPersistentIndex(
+  ensurePersistentIndex(
     fields: string[] | string,
-    opts?: CreatePersistentIndexOptions
+    opts?: EnsurePersistentIndexOptions
   ) {
     if (typeof fields === "string") {
       fields = [fields];
@@ -1463,7 +1458,7 @@ class GenericCollection<T extends object = any>
     );
   }
 
-  createGeoIndex(fields: string[] | string, opts?: CreateGeoIndexOptions) {
+  ensureGeoIndex(fields: string[] | string, opts?: EnsureGeoIndexOptions) {
     if (typeof fields === "string") {
       fields = [fields];
     }
@@ -1478,9 +1473,9 @@ class GenericCollection<T extends object = any>
     );
   }
 
-  createFulltextIndex(
+  ensureFulltextIndex(
     fields: string | [string] | [string, string],
-    opts?: CreateFulltextIndexOptions
+    opts?: EnsureFulltextIndexOptions
   ) {
     if (typeof fields === "string") {
       fields = [fields];
