@@ -30,6 +30,7 @@ function colToString(collection: string | ArangoCollection): string {
 }
 
 export type TransactionCollectionsObject = {
+  allowImplicit?: boolean;
   exclusive?: string | string[];
   write?: string | string[];
   read?: string | string[];
@@ -40,6 +41,7 @@ export type TransactionCollections =
   | ArangoCollection
   | (string | ArangoCollection)[]
   | {
+      allowImplicit?: boolean;
       exclusive?: string | ArangoCollection | (string | ArangoCollection)[];
       write?: string | ArangoCollection | (string | ArangoCollection)[];
       read?: string | ArangoCollection | (string | ArangoCollection)[];
@@ -407,16 +409,7 @@ export class Database {
 
   //#region transactions
   executeTransaction(
-    collections:
-      | ArangoCollection
-      | string
-      | (ArangoCollection | string)[]
-      | {
-          allowImplicit?: boolean;
-          exclusive?: ArangoCollection | string | (ArangoCollection | string)[];
-          read?: ArangoCollection | string | (ArangoCollection | string)[];
-          write?: ArangoCollection | string | (ArangoCollection | string)[];
-        },
+    collections: TransactionCollections,
     action: string,
     options?: TransactionOptions & { params?: any }
   ): Promise<any> {
@@ -1069,6 +1062,7 @@ function coerceTransactionCollections(
   }
   const cols: TransactionCollectionsObject = {};
   if (collections) {
+    cols.allowImplicit = collections.allowImplicit;
     if (collections.read) {
       cols.read = Array.isArray(collections.read)
         ? collections.read.map(colToString)
