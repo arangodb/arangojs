@@ -2,12 +2,12 @@ import { AnalyzerDescription, ArangoAnalyzer } from "./analyzer";
 import { AqlLiteral, AqlQuery, isAqlLiteral, isAqlQuery } from "./aql-query";
 import {
   ArangoCollection,
+  Collection,
   CollectionType,
   CreateCollectionOptions,
   DocumentCollection,
   EdgeCollection,
   isArangoCollection,
-  _constructCollection,
   ListCollectionResult
 } from "./collection";
 import { Config, Connection } from "./connection";
@@ -310,14 +310,14 @@ export class Database {
   collection<T extends object = any>(
     collectionName: string
   ): DocumentCollection<T> & EdgeCollection<T> {
-    return _constructCollection(this._connection, collectionName);
+    return new Collection(this._connection, collectionName);
   }
 
   async createCollection<T extends object = any>(
     collectionName: string,
     properties?: CreateCollectionOptions & { type?: CollectionType }
   ): Promise<DocumentCollection<T> & EdgeCollection<T>> {
-    const collection = _constructCollection(this._connection, collectionName);
+    const collection = new Collection(this._connection, collectionName);
     await collection.create(properties);
     return collection;
   }
@@ -326,7 +326,7 @@ export class Database {
     collectionName: string,
     properties?: CreateCollectionOptions
   ): Promise<EdgeCollection<T>> {
-    const collection = _constructCollection(this._connection, collectionName);
+    const collection = new Collection(this._connection, collectionName);
     await collection.create({
       ...properties,
       type: CollectionType.EDGE_COLLECTION
@@ -348,11 +348,9 @@ export class Database {
 
   async collections(
     excludeSystem: boolean = true
-  ): Promise<Array<DocumentCollection | EdgeCollection>> {
+  ): Promise<Array<DocumentCollection & EdgeCollection>> {
     const collections = await this.listCollections(excludeSystem);
-    return collections.map((data: any) =>
-      _constructCollection(this._connection, data.name)
-    );
+    return collections.map(data => new Collection(this._connection, data.name));
   }
 
   async truncate(excludeSystem: boolean = true): Promise<TODO_any> {

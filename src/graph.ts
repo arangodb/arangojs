@@ -1,5 +1,6 @@
 import {
   ArangoCollection,
+  Collection,
   CollectionReadOptions,
   CollectionRemoveResult,
   CollectionSaveResult,
@@ -11,8 +12,7 @@ import {
   Edge,
   EdgeCollection,
   EdgeData,
-  isArangoCollection,
-  _constructCollection
+  isArangoCollection
 } from "./collection";
 import { Connection } from "./connection";
 import { isArangoError } from "./error";
@@ -56,7 +56,7 @@ export class GraphVertexCollection<T extends object = any>
     this._connection = connection;
     this._name = name;
     this.graph = graph;
-    this.collection = _constructCollection(connection, name);
+    this.collection = new Collection(connection, name);
   }
 
   get name() {
@@ -209,7 +209,7 @@ export class GraphEdgeCollection<T extends object = any>
     this._connection = connection;
     this._name = name;
     this.graph = graph;
-    this.collection = _constructCollection(connection, name);
+    this.collection = new Collection(connection, name);
   }
 
   get name() {
