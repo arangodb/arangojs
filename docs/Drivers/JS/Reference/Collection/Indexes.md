@@ -3,17 +3,17 @@
 These functions implement the
 [HTTP API for manipulating indexes](https://www.arangodb.com/docs/stable/http/indexes.html).
 
-## collection.createIndex
+## collection.ensureIndex
 
-`async collection.createIndex(details): TODO`
+`async collection.ensureIndex(options): TODO`
 
 Creates an arbitrary index on the collection.
 
 **Arguments**
 
-- **details**: `object`
+- **options**: `object`
 
-  For information on the possible properties of the _details_ object, see the
+  For information on the possible properties of the _options_ object, see the
   [HTTP API for manipulating indexes](https://www.arangodb.com/docs/stable/http/indexes-working-with.html).
 
 **Examples**
@@ -21,16 +21,16 @@ Creates an arbitrary index on the collection.
 ```js
 const db = new Database();
 const collection = db.collection("some-collection");
-const index = await collection.createIndex({
+const index = await collection.ensureIndex({
   type: "hash",
   fields: ["a", "a.b"]
 });
 // the index has been created with the handle `index.id`
 ```
 
-## collection.createHashIndex
+## collection.ensureHashIndex
 
-`async collection.createHashIndex(fields, [opts]): TODO`
+`async collection.ensureHashIndex(fields, [opts]): TODO`
 
 Creates a hash index on the collection.
 
@@ -55,20 +55,20 @@ For more information on hash indexes, see the
 const db = new Database();
 const collection = db.collection("some-collection");
 
-const index = await collection.createHashIndex("favorite-color");
+const index = await collection.ensureHashIndex("favorite-color");
 // the index has been created with the handle `index.id`
 assert.deepEqual(index.fields, ["favorite-color"]);
 
 // -- or --
 
-const index = await collection.createHashIndex(["favorite-color"]);
+const index = await collection.ensureHashIndex(["favorite-color"]);
 // the index has been created with the handle `index.id`
 assert.deepEqual(index.fields, ["favorite-color"]);
 ```
 
-## collection.createSkipList
+## collection.ensureSkipList
 
-`async collection.createSkipList(fields, [opts]): TODO`
+`async collection.ensureSkipList(fields, [opts]): TODO`
 
 Creates a skiplist index on the collection.
 
@@ -93,20 +93,20 @@ For more information on skiplist indexes, see the
 const db = new Database();
 const collection = db.collection("some-collection");
 
-const index = await collection.createSkipList("favorite-color");
+const index = await collection.ensureSkipList("favorite-color");
 // the index has been created with the handle `index.id`
 assert.deepEqual(index.fields, ["favorite-color"]);
 
 // -- or --
 
-const index = await collection.createSkipList(["favorite-color"]);
+const index = await collection.ensureSkipList(["favorite-color"]);
 // the index has been created with the handle `index.id`
 assert.deepEqual(index.fields, ["favorite-color"]);
 ```
 
-## collection.createGeoIndex
+## collection.ensureGeoIndex
 
-`async collection.createGeoIndex(fields, [opts]): TODO`
+`async collection.ensureGeoIndex(fields, [opts]): TODO`
 
 Creates a geo-spatial index on the collection.
 
@@ -131,20 +131,20 @@ For more information on the properties of the _opts_ object see the
 const db = new Database();
 const collection = db.collection("some-collection");
 
-const index = await collection.createGeoIndex(["latitude", "longitude"]);
+const index = await collection.ensureGeoIndex(["latitude", "longitude"]);
 // the index has been created with the handle `index.id`
 assert.deepEqual(index.fields, ["longitude", "latitude"]);
 
 // -- or --
 
-const index = await collection.createGeoIndex("location", { geoJson: true });
+const index = await collection.ensureGeoIndex("location", { geoJson: true });
 // the index has been created with the handle `index.id`
 assert.deepEqual(index.fields, ["location"]);
 ```
 
-## collection.createFulltextIndex
+## collection.ensureFulltextIndex
 
-`async collection.createFulltextIndex(fields, [minLength]): TODO`
+`async collection.ensureFulltextIndex(fields, [minLength]): TODO`
 
 Creates a fulltext index on the collection.
 
@@ -170,22 +170,22 @@ For more information on fulltext indexes, see
 const db = new Database();
 const collection = db.collection("some-collection");
 
-const index = await collection.createFulltextIndex("description");
+const index = await collection.ensureFulltextIndex("description");
 // the index has been created with the handle `index.id`
 assert.deepEqual(index.fields, ["description"]);
 
 // -- or --
 
-const index = await collection.createFulltextIndex(["description"]);
+const index = await collection.ensureFulltextIndex(["description"]);
 // the index has been created with the handle `index.id`
 assert.deepEqual(index.fields, ["description"]);
 ```
 
-## collection.createPersistentIndex
+## collection.ensurePersistentIndex
 
-`async collection.createPersistentIndex(fields, [opts]): TODO`
+`async collection.ensurePersistentIndex(fields, [opts]): TODO`
 
-Creates a Persistent index on the collection. Persistent indexes are similarly
+Creates a persistent index on the collection. Persistent indexes are similarly
 in operation to skiplist indexes, only that these indexes are in disk as opposed
 to in memory. This reduces memory usage and DB startup time, with the trade-off
 being that it will always be orders of magnitude slower than in-memory indexes.
@@ -209,7 +209,7 @@ For more information on the properties of the _opts_ object see
 const db = new Database();
 const collection = db.collection("some-collection");
 
-const index = await collection.createPersistentIndex(["name", "email"]);
+const index = await collection.ensurePersistentIndex(["name", "email"]);
 // the index has been created with the handle `index.id`
 assert.deepEqual(index.fields, ["name", "email"]);
 ```
@@ -233,7 +233,7 @@ Fetches information about the index with the given _indexHandle_ and returns it.
 ```js
 const db = new Database();
 const collection = db.collection("some-collection");
-const index = await collection.createFulltextIndex("description");
+const index = await collection.ensureFulltextIndex("description");
 const result = await collection.index(index.id);
 assert.equal(result.id, index.id);
 // result contains the properties of the index
@@ -256,7 +256,7 @@ Fetches a list of all indexes on this collection.
 ```js
 const db = new Database();
 const collection = db.collection("some-collection");
-await collection.createFulltextIndex("description");
+await collection.ensureFulltextIndex("description");
 const indexes = await collection.indexes();
 assert.equal(indexes.length, 1);
 // indexes contains information about the index
@@ -281,7 +281,7 @@ Deletes the index with the given _indexHandle_ from the collection.
 ```js
 const db = new Database();
 const collection = db.collection("some-collection");
-const index = await collection.createFulltextIndex("description");
+const index = await collection.ensureFulltextIndex("description");
 await collection.dropIndex(index.id);
 // the index has been removed from the collection
 

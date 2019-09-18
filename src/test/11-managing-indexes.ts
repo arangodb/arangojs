@@ -28,9 +28,9 @@ describe("Managing indexes", function() {
       db.close();
     }
   });
-  describe("collection.createIndex", () => {
+  describe("collection.ensureIndex", () => {
     it("should create a index of given type", async () => {
-      const info = await collection.createIndex({
+      const info = await collection.ensureIndex({
         type: "hash",
         fields: ["value0"]
       });
@@ -41,9 +41,9 @@ describe("Managing indexes", function() {
       expect(info).to.have.property("isNewlyCreated", true);
     });
   });
-  describe("collection.createHashIndex", () => {
+  describe("collection.ensureHashIndex", () => {
     it("should create a hash index", async () => {
-      const info = await collection.createHashIndex(["value"]);
+      const info = await collection.ensureHashIndex(["value"]);
       expect(info).to.have.property("id");
       expect(info).to.have.property("type", "hash");
       expect(info).to.have.property("fields");
@@ -51,9 +51,9 @@ describe("Managing indexes", function() {
       expect(info).to.have.property("isNewlyCreated", true);
     });
   });
-  describe("collection.createSkiplist", () => {
+  describe("collection.ensureSkiplist", () => {
     it("should create a skiplist index", async () => {
-      const info = await collection.createSkiplist(["value"]);
+      const info = await collection.ensureSkiplist(["value"]);
       expect(info).to.have.property("id");
       expect(info).to.have.property("type", "skiplist");
       expect(info).to.have.property("fields");
@@ -61,9 +61,9 @@ describe("Managing indexes", function() {
       expect(info).to.have.property("isNewlyCreated", true);
     });
   });
-  describe("collection.createPersistentIndex", () => {
+  describe("collection.ensurePersistentIndex", () => {
     it("should create a persistent index", async () => {
-      const info = await collection.createPersistentIndex(["value"]);
+      const info = await collection.ensurePersistentIndex(["value"]);
       expect(info).to.have.property("id");
       expect(info).to.have.property("type", "persistent");
       expect(info).to.have.property("fields");
@@ -71,9 +71,9 @@ describe("Managing indexes", function() {
       expect(info).to.have.property("isNewlyCreated", true);
     });
   });
-  describe("collection.createGeoIndex", () => {
+  describe("collection.ensureGeoIndex", () => {
     itPre34("should create a geo1 index for one field", async () => {
-      const info = await collection.createGeoIndex(["value"]);
+      const info = await collection.ensureGeoIndex(["value"]);
       expect(info).to.have.property("id");
       expect(info).to.have.property("type", "geo1");
       expect(info).to.have.property("fields");
@@ -81,7 +81,7 @@ describe("Managing indexes", function() {
       expect(info).to.have.property("isNewlyCreated", true);
     });
     itPre34("should create a geo2 index for two fields", async () => {
-      const info = await collection.createGeoIndex(["value1", "value2"]);
+      const info = await collection.ensureGeoIndex(["value1", "value2"]);
       expect(info).to.have.property("id");
       expect(info).to.have.property("type", "geo2");
       expect(info).to.have.property("fields");
@@ -89,7 +89,7 @@ describe("Managing indexes", function() {
       expect(info).to.have.property("isNewlyCreated", true);
     });
     it34("should create a geo index for one field", async () => {
-      const info = await collection.createGeoIndex(["value"]);
+      const info = await collection.ensureGeoIndex(["value"]);
       expect(info).to.have.property("id");
       expect(info).to.have.property("type", "geo");
       expect(info).to.have.property("fields");
@@ -97,7 +97,7 @@ describe("Managing indexes", function() {
       expect(info).to.have.property("isNewlyCreated", true);
     });
     it34("should create a geo index for two fields", async () => {
-      const info = await collection.createGeoIndex(["value1", "value2"]);
+      const info = await collection.ensureGeoIndex(["value1", "value2"]);
       expect(info).to.have.property("id");
       expect(info).to.have.property("type", "geo");
       expect(info).to.have.property("fields");
@@ -105,9 +105,9 @@ describe("Managing indexes", function() {
       expect(info).to.have.property("isNewlyCreated", true);
     });
   });
-  describe("collection.createFulltextIndex", () => {
+  describe("collection.ensureFulltextIndex", () => {
     it("should create a fulltext index", async () => {
-      const info = await collection.createFulltextIndex(["value"]);
+      const info = await collection.ensureFulltextIndex(["value"]);
       expect(info).to.have.property("id");
       expect(info).to.have.property("type", "fulltext");
       expect(info).to.have.property("fields");
@@ -117,7 +117,7 @@ describe("Managing indexes", function() {
   });
   describe("collection.index", () => {
     it("should return information about a index", async () => {
-      const info = await collection.createHashIndex(["test"]);
+      const info = await collection.ensureHashIndex(["test"]);
       const index = await collection.index(info.id);
       expect(index).to.have.property("id", info.id);
       expect(index).to.have.property("type", info.type);
@@ -125,7 +125,7 @@ describe("Managing indexes", function() {
   });
   describe("collection.indexes", () => {
     it("should return a list of indexes", async () => {
-      const index = await collection.createHashIndex(["test"]);
+      const index = await collection.ensureHashIndex(["test"]);
       const indexes = await collection.indexes();
       expect(indexes).to.be.instanceof(Array);
       expect(indexes).to.not.be.empty;
@@ -134,7 +134,7 @@ describe("Managing indexes", function() {
   });
   describe("collection.dropIndex", () => {
     it("should drop existing index", async () => {
-      const info = await collection.createHashIndex(["test"]);
+      const info = await collection.ensureHashIndex(["test"]);
       const index = await collection.dropIndex(info.id);
       expect(index).to.have.property("id", info.id);
       const indexes = await collection.indexes();
