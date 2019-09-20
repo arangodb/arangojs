@@ -250,8 +250,6 @@ export type SimpleQueryFulltextOptions = {
 
 /** @deprecated ArangoDB 3.4 */
 export type TraversalOptions = {
-  graphName?: string;
-  edgeCollection?: string;
   init?: string;
   filter?: string;
   sort?: string;
@@ -419,14 +417,16 @@ export type CollectionEdgesResult<T extends object = any> = {
   };
 };
 
-export type CollectionSaveResult<T> = DocumentMetadata & {
+export type CollectionInsertResult<T> = DocumentMetadata & {
   new?: T;
-  old?: T;
 };
 
 export type CollectionRemoveResult<T> = DocumentMetadata & {
   old?: T;
 };
+
+export type CollectionSaveResult<T> = CollectionInsertResult<T> &
+  CollectionRemoveResult<T>;
 
 /** @deprecated ArangoDB 3.4 */
 export type SimpleQueryRemoveByExampleResult = {
@@ -1035,7 +1035,7 @@ export class Collection<T extends object = any>
     return this.document(selector, opts) as Promise<Edge<T>>;
   }
 
-  save(data: DocumentData<T>, opts?: CollectionSaveOptions) {
+  save(data: DocumentData<T>, opts?: CollectionInsertOptions) {
     return this._connection.request(
       {
         method: "POST",
@@ -1047,7 +1047,7 @@ export class Collection<T extends object = any>
     );
   }
 
-  saveAll(data: Array<DocumentData<T>>, opts?: CollectionSaveOptions) {
+  saveAll(data: Array<DocumentData<T>>, opts?: CollectionInsertOptions) {
     return this._connection.request(
       {
         method: "POST",
