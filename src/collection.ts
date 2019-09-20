@@ -695,30 +695,36 @@ export interface DocumentCollection<T extends object = any>
   index(selector: IndexSelector): Promise<Index[]>;
   ensureIndex(
     details: EnsureIndexOptions
-  ): Promise<ArangoResponseMetadata & CollectionIndexResult>;
+  ): Promise<ArangoResponseMetadata & Index & { isNewlyCreated: boolean }>;
   dropIndex(
     selector: IndexSelector
   ): Promise<ArangoResponseMetadata & CollectionIndexResult>;
   ensureHashIndex(
     fields: string | string[],
     opts?: EnsureHashIndexOptions
-  ): Promise<ArangoResponseMetadata & CollectionIndexResult>;
+  ): Promise<ArangoResponseMetadata & HashIndex & { isNewlyCreated: boolean }>;
   ensureSkiplist(
     fields: string | string[],
     opts?: EnsureSkiplistIndexOptions
-  ): Promise<ArangoResponseMetadata & CollectionIndexResult>;
+  ): Promise<
+    ArangoResponseMetadata & SkiplistIndex & { isNewlyCreated: boolean }
+  >;
   ensurePersistentIndex(
     fields: string | string[],
     opts?: EnsurePersistentIndexOptions
-  ): Promise<ArangoResponseMetadata & CollectionIndexResult>;
+  ): Promise<
+    ArangoResponseMetadata & PersistentIndex & { isNewlyCreated: boolean }
+  >;
   ensureGeoIndex(
     fields: string | [string] | [string, string],
     opts?: EnsureGeoIndexOptions
-  ): Promise<ArangoResponseMetadata & CollectionIndexResult>;
+  ): Promise<ArangoResponseMetadata & GeoIndex & { isNewlyCreated: boolean }>;
   ensureFulltextIndex(
     fields: string | string[],
     opts?: EnsureFulltextIndexOptions
-  ): Promise<ArangoResponseMetadata & CollectionIndexResult>;
+  ): Promise<
+    ArangoResponseMetadata & FulltextIndex & { isNewlyCreated: boolean }
+  >;
   //#endregion
 }
 
