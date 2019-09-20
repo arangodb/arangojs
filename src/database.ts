@@ -166,7 +166,7 @@ export interface ViewDescription {
   type: ViewType;
 }
 
-export interface CreateDatabaseUser {
+export type CreateDatabaseUser = {
   username: string;
   passwd?: string;
   active?: boolean;
