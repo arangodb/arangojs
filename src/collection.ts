@@ -505,6 +505,7 @@ export type Edge<T extends object = any> = StrictObject<T> &
 
 export type GenericIndex = {
   fields: string[];
+  name: string;
   id: string;
   sparse: boolean;
   unique: boolean;
