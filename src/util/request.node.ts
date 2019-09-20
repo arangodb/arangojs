@@ -21,19 +21,19 @@ export type ArangojsError = Error & {
   request: ClientRequest;
 };
 
-export interface RequestOptions {
+export type RequestOptions = {
   method: string;
   url: { pathname: string; search?: string };
   headers: { [key: string]: string };
   body: any;
   expectBinary: boolean;
   timeout?: number;
-}
+};
 
-export interface RequestFunction {
+export type RequestFunction = {
   (opts: RequestOptions, cb: Errback<ArangojsResponse>): void;
   close?: () => void;
-}
+};
 
 export const isBrowser = false;
 
