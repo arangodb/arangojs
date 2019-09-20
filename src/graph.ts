@@ -371,7 +371,7 @@ export type GraphInfo = {
   replicationFactor: number;
 };
 
-type GraphCreateProperties = {
+export type GraphCreateProperties = {
   edgeDefinitions?: EdgeDefinition[];
   isSmart?: boolean;
   options?: {
@@ -382,7 +382,7 @@ type GraphCreateProperties = {
   };
 };
 
-type GraphCreateOptions = {
+export type GraphCreateOptions = {
   waitForSync?: boolean;
 };
 

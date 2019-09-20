@@ -138,13 +138,13 @@ export abstract class BaseView implements ArangoView {
     return result;
   }
 
-  drop(): Promise<ArangoResponseMetadata & { result: true }> {
+  drop(): Promise<boolean> {
     return this._connection.request(
       {
         method: "DELETE",
         path: `/_api/view/${this.name}`
       },
-      res => res.body
+      res => res.body.result
     );
   }
 }
