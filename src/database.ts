@@ -14,12 +14,18 @@ import { Config, Connection } from "./connection";
 import { ArrayCursor } from "./cursor";
 import { isArangoError } from "./error";
 import { Graph } from "./graph";
-import { Route } from "./route";
+import { Headers, Route } from "./route";
 import { ArangoTransaction } from "./transaction";
 import { btoa } from "./util/btoa";
 import { DATABASE_NOT_FOUND } from "./util/codes";
 import { toForm } from "./util/multipart";
-import { ArangoSearchView, ArangoView, ViewType, _constructView } from "./view";
+import { ArangoResponseMetadata } from "./util/types";
+import {
+  ArangoSearchView,
+  ArangoView,
+  ViewDescription,
+  _constructView
+} from "./view";
 
 type TODO_any = any;
 
@@ -103,10 +109,23 @@ export type TransactionDetails = {
 };
 
 export type ExplainPlan = {
-  nodes: any[];
-  rules: any[];
-  collections: any[];
-  variables: any[];
+  nodes: {
+    [key: string]: any;
+    type: string;
+    id: number;
+    dependencies: number[];
+    estimatedCost: number;
+    estimatedNrItems: number;
+  }[];
+  rules: string[];
+  collections: {
+    name: string;
+    type: "read" | "write";
+  }[];
+  variables: {
+    id: number;
+    name: string;
+  }[];
   estimatedCost: number;
   estimatedNrItems: number;
   initialize: boolean;
@@ -115,7 +134,7 @@ export type ExplainPlan = {
 
 export type ExplainResult = {
   plan?: ExplainPlan;
-  plans?: Array<ExplainPlan>;
+  plans?: ExplainPlan[];
   cacheable: boolean;
   warnings: TODO_any[];
   stats: {
@@ -125,11 +144,17 @@ export type ExplainResult = {
   };
 };
 
+export type AstNode = {
+  [key: string]: any;
+  type: string;
+  subNodes: AstNode[];
+};
+
 export type ParseResult = {
   parsed: boolean;
-  collections: TODO_any[];
-  bindVars: TODO_any[];
-  ast: TODO_any[];
+  collections: string[];
+  bindVars: string[];
+  ast: AstNode[];
 };
 
 export type QueryTracking = {
@@ -150,27 +175,36 @@ export type QueryTrackingOptions = {
   trackSlowQueries?: boolean;
 };
 
-export type RunningQuery = {
+export type QueryInfo = {
   id: string;
   query: string;
   bindVars: AqlQuery["bindVars"];
   runTime: number;
   started: string;
-  state: string; // TODO determine valid states: executing, finished, ...?
+  state: "executing" | "finished" | "killed";
   stream: boolean;
 };
-
-export interface ViewDescription {
-  id: string;
-  name: string;
-  type: ViewType;
-}
 
 export type CreateDatabaseUser = {
   username: string;
   passwd?: string;
   active?: boolean;
   extra?: { [key: string]: any };
+};
+
+export type Service = {
+  mount: string;
+  name?: string;
+  version?: string;
+  provides: { [key: string]: string };
+  development: boolean;
+  legacy: boolean;
+};
+
+interface VersionInfo {
+  server: string;
+  license: "community" | "enterprise";
+  version: string;
 }
 
 export class Database {
@@ -185,7 +219,7 @@ export class Database {
   }
 
   //#region misc
-  version(): Promise<TODO_any> {
+  version(): Promise<VersionInfo> {
     return this._connection.request(
       {
         method: "GET",
@@ -195,7 +229,7 @@ export class Database {
     );
   }
 
-  route(path?: string, headers?: TODO_any): Route {
+  route(path?: string, headers?: Headers): Route {
     return new Route(this._connection, path, headers);
   }
 
@@ -355,10 +389,12 @@ export class Database {
     return collections.map(data => new Collection(this._connection, data.name));
   }
 
-  async truncate(excludeSystem: boolean = true): Promise<TODO_any> {
+  async truncate(
+    excludeSystem: boolean = true
+  ): Promise<Array<ListCollectionResult & ArangoResponseMetadata>> {
     const collections = await this.listCollections(excludeSystem);
     return await Promise.all(
-      collections.map((data: any) =>
+      collections.map(data =>
         this._connection.request(
           {
             method: "PUT",
@@ -529,18 +565,23 @@ export class Database {
     );
   }
 
-  explain(query: string | AqlQuery | AqlLiteral): Promise<ExplainResult>;
-  explain(query: AqlQuery, opts?: ExplainOptions): Promise<ExplainResult>;
+  explain(
+    query: string | AqlQuery | AqlLiteral
+  ): Promise<ExplainResult & ArangoResponseMetadata>;
+  explain(
+    query: AqlQuery,
+    opts?: ExplainOptions
+  ): Promise<ExplainResult & ArangoResponseMetadata>;
   explain(
     query: string | AqlLiteral,
     bindVars?: AqlQuery["bindVars"],
     opts?: ExplainOptions
-  ): Promise<ExplainResult>;
+  ): Promise<ExplainResult & ArangoResponseMetadata>;
   explain(
     query: string | AqlQuery | AqlLiteral,
     bindVars?: AqlQuery["bindVars"],
     opts?: ExplainOptions
-  ): Promise<ExplainResult> {
+  ): Promise<ExplainResult & ArangoResponseMetadata> {
     if (isAqlQuery(query)) {
       opts = bindVars;
       bindVars = query.bindVars;
@@ -598,7 +639,7 @@ export class Database {
     );
   }
 
-  listRunningQueries(): Promise<Array<RunningQuery>> {
+  listRunningQueries(): Promise<QueryInfo[]> {
     return this._connection.request(
       {
         method: "GET",
@@ -608,7 +649,7 @@ export class Database {
     );
   }
 
-  listSlowQueries(): Promise<TODO_any> {
+  listSlowQueries(): Promise<QueryInfo[]> {
     return this._connection.request(
       {
         method: "GET",
@@ -647,7 +688,10 @@ export class Database {
     );
   }
 
-  createFunction(name: string, code: string): Promise<TODO_any> {
+  createFunction(
+    name: string,
+    code: string
+  ): Promise<ArangoResponseMetadata & { isNewlyCreated: boolean }> {
     return this._connection.request(
       {
         method: "POST",
@@ -671,7 +715,7 @@ export class Database {
   //#endregion
 
   //#region services
-  listServices(): Promise<TODO_any> {
+  listServices(): Promise<Service[]> {
     return this._connection.request({ path: "/_api/foxx" }, res => res.body);
   }
 

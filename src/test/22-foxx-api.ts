@@ -589,7 +589,7 @@ describe("Foxx service", () => {
       )
     );
     const services = await db.listServices();
-    const service = services.find((service: any) => service.mount === mount);
+    const service = services.find(service => service.mount === mount)!;
     expect(service).to.have.property("name", "minimal-working-manifest");
     expect(service).to.have.property("version", "0.0.0");
     expect(service).to.have.property("provides");
