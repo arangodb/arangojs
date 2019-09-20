@@ -90,19 +90,19 @@ export type ShardingStrategy =
 /** @deprecated ArangoDB 3.4 */
 export type SimpleQueryAllKeys = "id" | "key" | "path";
 
-export interface CollectionMetadata {
+export type CollectionMetadata = {
   name: string;
   status: CollectionStatus;
   type: CollectionType;
   isSystem: boolean;
-}
+};
 
-export interface ListCollectionResult extends CollectionMetadata {
+export type ListCollectionResult = CollectionMetadata & {
   id: string;
   globallyUniqueId: string;
-}
+};
 
-export interface CollectionProperties extends CollectionMetadata {
+export type CollectionProperties = CollectionMetadata & {
   statusString: string;
   waitForSync: boolean;
   keyOptions: {
@@ -120,27 +120,27 @@ export interface CollectionProperties extends CollectionMetadata {
   shardKeys?: string[];
   replicationFactor?: number;
   shardingStrategy?: ShardingStrategy;
-}
+};
 
 // Options
 
-export interface CollectionPropertiesOptions {
+export type CollectionPropertiesOptions = {
   waitForSync?: boolean;
   journalSize?: number;
   indexBuckets?: number;
   replicationFactor?: number;
-}
+};
 
-export interface CollectionChecksumOptions {
+export type CollectionChecksumOptions = {
   withRevisions?: boolean;
   withData?: boolean;
-}
+};
 
-export interface CollectionDropOptions {
+export type CollectionDropOptions = {
   isSystem?: boolean;
-}
+};
 
-export interface CreateCollectionOptions {
+export type CreateCollectionOptions = {
   waitForSync?: boolean;
   journalSize?: number;
   isVolatile?: boolean;
@@ -154,18 +154,18 @@ export interface CreateCollectionOptions {
   numberOfShards?: number;
   shardKeys?: string[];
   replicationFactor?: number;
-}
+};
 
-export interface CollectionCreateOptions extends CreateCollectionOptions {
+export type CollectionCreateOptions = CreateCollectionOptions & {
   type?: CollectionType;
   waitForSyncReplication?: boolean;
   enforceReplicationFactor?: boolean;
-}
+};
 
-export interface CollectionReadOptions {
+export type CollectionReadOptions = {
   graceful?: boolean;
   allowDirtyRead?: boolean;
-}
+};
 
 interface CollectionSaveOptions {
   waitForSync?: boolean;
@@ -174,26 +174,26 @@ interface CollectionSaveOptions {
   returnOld?: boolean;
 }
 
-export interface CollectionInsertOptions extends CollectionSaveOptions {
+export type CollectionInsertOptions = CollectionSaveOptions & {
   overwrite?: boolean;
-}
+};
 
-export interface CollectionReplaceOptions extends CollectionSaveOptions {
+export type CollectionReplaceOptions = CollectionSaveOptions & {
   ignoreRevs?: boolean;
-}
+};
 
-export interface CollectionUpdateOptions extends CollectionReplaceOptions {
+export type CollectionUpdateOptions = CollectionReplaceOptions & {
   keepNull?: boolean;
   mergeObjects?: boolean;
-}
+};
 
-export interface CollectionRemoveOptions {
+export type CollectionRemoveOptions = {
   rSync?: boolean;
   returnOld?: boolean;
   silent?: boolean;
-}
+};
 
-export interface CollectionImportOptions {
+export type CollectionImportOptions = {
   type?: null | "auto" | "documents" | "array";
   fromPrefix?: string;
   toPrefix?: string;
@@ -202,54 +202,54 @@ export interface CollectionImportOptions {
   onDuplicate?: "error" | "update" | "replace" | "ignore";
   complete?: boolean;
   details?: boolean;
-}
+};
 
 /** @deprecated ArangoDB 3.4 */
-export interface SimpleQueryByExampleOptions {
+export type SimpleQueryByExampleOptions = {
   skip?: number;
   limit?: number;
   batchSize?: number;
   ttl?: number;
-}
+};
 
 /** @deprecated ArangoDB 3.4 */
-export interface SimpleQueryAllOptions extends SimpleQueryByExampleOptions {
+export type SimpleQueryAllOptions = SimpleQueryByExampleOptions & {
   stream?: boolean;
-}
+};
 
 /** @deprecated ArangoDB 3.4 */
-export interface SimpleQueryUpdateByExampleOptions {
+export type SimpleQueryUpdateByExampleOptions = {
   keepNull?: boolean;
   waitForSync?: boolean;
   limit?: number;
   mergeObjects?: boolean;
-}
+};
 
 /** @deprecated ArangoDB 3.4 */
-export interface SimpleQueryRemoveByExampleOptions {
+export type SimpleQueryRemoveByExampleOptions = {
   waitForSync?: boolean;
   limit?: number;
-}
+};
 
 /** @deprecated ArangoDB 3.4 */
 export type SimpleQueryReplaceByExampleOptions = SimpleQueryRemoveByExampleOptions;
 
 /** @deprecated ArangoDB 3.4 */
-export interface SimpleQueryRemoveByKeysOptions {
+export type SimpleQueryRemoveByKeysOptions = {
   returnOld?: boolean;
   silent?: boolean;
   waitForSync?: boolean;
-}
+};
 
 /** @deprecated ArangoDB 3.4 */
-export interface SimpleQueryFulltextOptions {
+export type SimpleQueryFulltextOptions = {
   index?: string;
   limit?: number;
   skip?: number;
-}
+};
 
 /** @deprecated ArangoDB 3.4 */
-export interface TraversalOptions {
+export type TraversalOptions = {
   graphName?: string;
   edgeCollection?: string;
   init?: string;
@@ -268,54 +268,53 @@ export interface TraversalOptions {
   minDepth?: number;
   maxDepth?: number;
   maxIterations?: number;
-}
+};
 
-export interface EnsureHashIndexOptions {
+export type EnsureHashIndexOptions = {
   unique?: boolean;
   sparse?: boolean;
   deduplicate?: boolean;
-}
+};
 
 export type EnsureSkiplistIndexOptions = EnsureHashIndexOptions;
 
-export interface EnsurePersistentIndexOptions {
+export type EnsurePersistentIndexOptions = {
   unique?: boolean;
   sparse?: boolean;
-}
+};
 
-export interface EnsureGeoIndexOptions {
+export type EnsureGeoIndexOptions = {
   geoJson?: boolean;
-}
+};
 
-export interface EnsureFulltextIndexOptions {
+export type EnsureFulltextIndexOptions = {
   minLength?: number;
-}
+};
 
-export interface EnsureIndexHashOptions extends EnsureHashIndexOptions {
+export type EnsureIndexHashOptions = EnsureHashIndexOptions & {
   type: "hash";
   fields: string[];
-}
+};
 
-export interface EnsureIndexSkiplistOptions extends EnsureSkiplistIndexOptions {
+export type EnsureIndexSkiplistOptions = EnsureSkiplistIndexOptions & {
   type: "skiplist";
   fields: string[];
-}
+};
 
-export interface EnsureIndexPersistentOptions
-  extends EnsurePersistentIndexOptions {
+export type EnsureIndexPersistentOptions = EnsurePersistentIndexOptions & {
   type: "persistent";
   fields: string[];
-}
+};
 
-export interface EnsureIndexGeoOptions extends EnsureGeoIndexOptions {
+export type EnsureIndexGeoOptions = EnsureGeoIndexOptions & {
   type: "geo";
   fields: [string] | [string, string];
-}
+};
 
-export interface EnsureIndexFulltextOptions extends EnsureFulltextIndexOptions {
+export type EnsureIndexFulltextOptions = EnsureFulltextIndexOptions & {
   type: "fulltext";
   fields: string[];
-}
+};
 
 export type EnsureIndexOptions =
   | EnsureIndexHashOptions
@@ -326,11 +325,11 @@ export type EnsureIndexOptions =
 
 // Results
 
-export interface CollectionPropertiesAndCount extends CollectionProperties {
+export type CollectionPropertiesAndCount = CollectionProperties & {
   count: number;
-}
+};
 
-export interface CollectionPropertiesAndFigures extends CollectionProperties {
+export type CollectionPropertiesAndFigures = CollectionProperties & {
   count: number;
   figures: {
     alive: {
@@ -383,26 +382,26 @@ export interface CollectionPropertiesAndFigures extends CollectionProperties {
       bytesWritten: number;
     };
   };
-}
+};
 
-export interface CollectionPropertiesAndRevision extends CollectionProperties {
+export type CollectionPropertiesAndRevision = CollectionProperties & {
   revision: string;
-}
+};
 
-export interface CollectionChecksum {
+export type CollectionChecksum = {
   revision: string;
   checksum: string;
-}
+};
 
-export interface CollectionLoadResult extends CollectionMetadata {
+export type CollectionLoadResult = CollectionMetadata & {
   count?: number;
-}
+};
 
-export interface CollectionRotateResult {
+export type CollectionRotateResult = {
   result: boolean;
-}
+};
 
-export interface CollectionImportResult {
+export type CollectionImportResult = {
   error: false;
   created: number;
   errors: number;
@@ -410,81 +409,81 @@ export interface CollectionImportResult {
   updated: number;
   ignored: number;
   details?: string[];
-}
+};
 
-export interface CollectionEdgesResult<T extends object = any> {
+export type CollectionEdgesResult<T extends object = any> = {
   edges: Edge<T>[];
   stats: {
     scannedIndex: number;
     filtered: number;
   };
-}
+};
 
-export interface CollectionSaveResult<T> extends DocumentMetadata {
+export type CollectionSaveResult<T> = DocumentMetadata & {
   new?: T;
   old?: T;
-}
+};
 
-export interface CollectionRemoveResult<T> extends DocumentMetadata {
+export type CollectionRemoveResult<T> = DocumentMetadata & {
   old?: T;
-}
+};
 
 /** @deprecated ArangoDB 3.4 */
-export interface SimpleQueryRemoveByExampleResult {
+export type SimpleQueryRemoveByExampleResult = {
   deleted: number;
-}
+};
 
 /** @deprecated ArangoDB 3.4 */
-export interface SimpleQueryReplaceByExampleResult {
+export type SimpleQueryReplaceByExampleResult = {
   replaced: number;
-}
+};
 
 /** @deprecated ArangoDB 3.4 */
-export interface SimpleQueryUpdateByExampleResult {
+export type SimpleQueryUpdateByExampleResult = {
   updated: number;
-}
+};
 
 /** @deprecated ArangoDB 3.4 */
-export interface SimpleQueryRemoveByKeysResult<T extends object = any> {
+export type SimpleQueryRemoveByKeysResult<T extends object = any> = {
   removed: number;
   ignored: number;
   old?: DocumentMetadata[] | Document<T>[];
-}
+};
 
-export interface CollectionIndexResult {
+export type CollectionIndexResult = {
   id: string;
-}
+};
 
 // Document
 
-export interface ObjectWithId {
+export type ObjectWithId = {
   [key: string]: any;
   _id: string;
-}
+};
 
-export interface ObjectWithKey {
+export type ObjectWithKey = {
   [key: string]: any;
   _id: string;
-}
+};
 
 export type DocumentLike = ObjectWithId | ObjectWithKey;
 
 export type DocumentSelector = DocumentLike | string;
 
-export interface DocumentMetadata {
+export type DocumentMetadata = {
   _key: string;
   _id: string;
   _rev: string;
-}
+};
 
-export interface UpdateMetadata extends DocumentMetadata {
+export type UpdateMetadata = DocumentMetadata & {
   _oldRev: string;
-}
+};
 
-export interface EdgeMetadata {
+export type EdgeMetadata = {
   _from: string;
   _to: string;
-}
+};
 
 export type DocumentData<T extends object = any> = StrictObject<T> &
   Partial<DocumentMetadata> &
@@ -504,44 +503,44 @@ export type Edge<T extends object = any> = StrictObject<T> &
 
 // Indexes
 
-export interface GenericIndex {
+export type GenericIndex = {
   fields: string[];
   id: string;
   sparse: boolean;
   unique: boolean;
-}
+};
 
-export interface SkiplistIndex extends GenericIndex {
+export type SkiplistIndex = GenericIndex & {
   type: "skiplist";
-}
+};
 
-export interface HashIndex extends GenericIndex {
+export type HashIndex = GenericIndex & {
   type: "hash";
   selectivityEstimate: number;
-}
+};
 
-export interface PrimaryIndex extends GenericIndex {
+export type PrimaryIndex = GenericIndex & {
   type: "primary";
   selectivityEstimate: number;
-}
+};
 
-export interface PersistentIndex extends GenericIndex {
+export type PersistentIndex = GenericIndex & {
   type: "persistent";
-}
+};
 
-export interface FulltextIndex extends GenericIndex {
+export type FulltextIndex = GenericIndex & {
   type: "fulltext";
   minLength: number;
-}
+};
 
-export interface GeoIndex extends GenericIndex {
-  fields: [string] | [string, string];
+export type GeoIndex = GenericIndex & {
   type: "geo";
+  fields: [string] | [string, string];
   geoJson: boolean;
   bestIndexedLevel: number;
   worstIndexedLevel: number;
   maxNumCoverCells: number;
-}
+};
 
 export type Index =
   | GeoIndex

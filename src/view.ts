@@ -12,21 +12,21 @@ export interface ArangoView {
   name: string;
 }
 
-export interface ArangoViewResponse {
+export type ArangoViewResponse = {
   name: string;
   id: string;
   type: ViewType;
-}
+};
 
-export interface ArangoSearchViewCollectionLink {
+export type ArangoSearchViewCollectionLink = {
   analyzers?: string[];
   fields?: { [key: string]: ArangoSearchViewCollectionLink | undefined };
   includeAllFields?: boolean;
   trackListPositions?: boolean;
   storeValues?: "none" | "id";
-}
+};
 
-export interface ArangoSearchViewProperties {
+export type ArangoSearchViewProperties = {
   cleanupIntervalStep: number;
   consolidationIntervalMsec: number;
   writebufferIdle: number;
@@ -44,15 +44,14 @@ export interface ArangoSearchViewProperties {
   links: {
     [key: string]: ArangoSearchViewCollectionLink | undefined;
   };
-}
+};
 
-export interface ArangoSearchViewPropertiesResponse
-  extends ArangoViewResponse,
-    ArangoSearchViewProperties {
-  type: ViewType.ARANGOSEARCH_VIEW;
-}
+export type ArangoSearchViewPropertiesResponse = ArangoViewResponse &
+  ArangoSearchViewProperties & {
+    type: ViewType.ARANGOSEARCH_VIEW;
+  };
 
-export interface ArangoSearchViewPropertiesOptions {
+export type ArangoSearchViewPropertiesOptions = {
   cleanupIntervalStep?: number;
   consolidationIntervalMsec?: number;
   commitIntervalMsec?: number;
@@ -84,7 +83,7 @@ export interface ArangoSearchViewPropertiesOptions {
   links?: {
     [key: string]: ArangoSearchViewCollectionLink | undefined;
   };
-}
+};
 
 const VIEW_NOT_FOUND = 1203;
 export abstract class BaseView implements ArangoView {

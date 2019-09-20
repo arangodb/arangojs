@@ -4,8 +4,8 @@ export type Patch<T> = { [K in keyof T]?: T[K] | Patch<T[K]> };
 
 export type StrictObject<T> = { [K in keyof T]: T[K] };
 
-export interface ArangoResponseMetadata {
+export type ArangoResponseMetadata = {
   [key: string]: any | undefined;
   error: false;
   code: number;
-}
+};
