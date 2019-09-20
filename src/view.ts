@@ -1,7 +1,6 @@
 import { Connection } from "./connection";
 import { isArangoError } from "./error";
-
-type TODO_any = any;
+import { ArangoResponseMetadata } from "./util/types";
 
 export enum ViewType {
   ARANGOSEARCH_VIEW = "arangosearch"
@@ -12,9 +11,17 @@ export interface ArangoView {
   name: string;
 }
 
+export type ViewDescription = {
+  globallyUniqueId: string;
+  id: string;
+  name: string;
+  type: ViewType;
+};
+
 export type ArangoViewResponse = {
   name: string;
   id: string;
+  globallyUniqueId: string;
   type: ViewType;
 };
 
@@ -97,7 +104,7 @@ export abstract class BaseView implements ArangoView {
     this._connection = connection;
   }
 
-  get(): Promise<ArangoViewResponse> {
+  get(): Promise<ArangoViewResponse & ArangoResponseMetadata> {
     return this._connection.request(
       { path: `/_api/view/${this.name}` },
       res => res.body
@@ -116,7 +123,9 @@ export abstract class BaseView implements ArangoView {
     );
   }
 
-  async rename(name: string): Promise<TODO_any> {
+  async rename(
+    name: string
+  ): Promise<ArangoViewResponse & ArangoResponseMetadata> {
     const result = await this._connection.request(
       {
         method: "PUT",
@@ -129,7 +138,7 @@ export abstract class BaseView implements ArangoView {
     return result;
   }
 
-  drop(): Promise<TODO_any> {
+  drop(): Promise<ArangoResponseMetadata & { result: true }> {
     return this._connection.request(
       {
         method: "DELETE",
@@ -160,7 +169,9 @@ export class ArangoSearchView extends BaseView {
     );
   }
 
-  properties(): Promise<ArangoSearchViewPropertiesResponse> {
+  properties(): Promise<
+    ArangoSearchViewPropertiesResponse & ArangoResponseMetadata
+  > {
     return this._connection.request(
       { path: `/_api/view/${this.name}/properties` },
       res => res.body
@@ -199,7 +210,7 @@ export class ArangoSearchView extends BaseView {
  */
 export function _constructView(
   connection: Connection,
-  data: TODO_any
+  data: ViewDescription
 ): ArangoView {
   if (data.type && data.type !== ViewType.ARANGOSEARCH_VIEW) {
     throw new Error(`Unknown view type "${data.type}"`);
