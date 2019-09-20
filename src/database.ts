@@ -13,7 +13,7 @@ import {
 import { Config, Connection } from "./connection";
 import { ArrayCursor } from "./cursor";
 import { isArangoError } from "./error";
-import { Graph } from "./graph";
+import { Graph, GraphCreateOptions, GraphCreateProperties } from "./graph";
 import { Headers, Route } from "./route";
 import { ArangoTransaction } from "./transaction";
 import { btoa } from "./util/btoa";
@@ -64,10 +64,12 @@ export type TransactionOptions = {
   waitForSync?: boolean;
 };
 
-export type ServiceOptions = {
-  [key: string]: any;
-  configuration: { [key: string]: any };
-  dependencies: { [key: string]: string };
+export type InstallServiceOptions = {
+  configuration?: ServiceConfigurationValues;
+  dependencies?: { [key: string]: string };
+  development?: boolean;
+  setup?: boolean;
+  legacy?: boolean;
 };
 
 export type QueryOptions = {
@@ -130,7 +132,7 @@ export type ExplainResult = {
   plan?: ExplainPlan;
   plans?: ExplainPlan[];
   cacheable: boolean;
-  warnings: TODO_any[];
+  warnings: { code: number; message: string }[];
   stats: {
     rulesExecuted: number;
     rulesSkipped: number;
@@ -195,11 +197,95 @@ export type Service = {
   legacy: boolean;
 };
 
-interface VersionInfo {
+type VersionInfo = {
   server: string;
   license: "community" | "enterprise";
   version: string;
-}
+};
+
+type AqlFunction = {
+  name: string;
+  code: string;
+  isDeterministic: boolean;
+};
+
+type ReplaceServiceOptions = {
+  configuration?: ServiceConfigurationValues;
+  dependencies?: ServiceDependenciesValues;
+  teardown?: boolean;
+  setup?: boolean;
+  legacy?: boolean;
+  force?: boolean;
+};
+
+type UninstallServiceOptions = {
+  teardown?: false;
+};
+
+type ServiceInfo = {
+  mount: string;
+  path: string;
+  name?: string;
+  version?: string;
+  development: boolean;
+  legacy: boolean;
+  manifest: TODO_any;
+  checksum: string;
+  options: {
+    configuration: ServiceConfigurationValues;
+    dependencies: ServiceDependenciesValues;
+  };
+};
+
+type ServiceConfiguration = {
+  type:
+    | "integer"
+    | "boolean"
+    | "string"
+    | "number"
+    | "json"
+    | "password"
+    | "int"
+    | "bool";
+  currentRaw: any;
+  current: any;
+  title: string;
+  description?: string;
+  required: boolean;
+  default?: any;
+};
+
+type ServiceDependency =
+  | {
+      multiple: false;
+      current?: string;
+      title: string;
+      name: string;
+      version: string;
+      description?: string;
+      required: boolean;
+    }
+  | {
+      multiple: true;
+      current?: string[];
+      title: string;
+      name: string;
+      version: string;
+      description?: string;
+      required: boolean;
+    };
+
+type ServiceConfigurationValues = {
+  [key: string]: any;
+};
+
+type ServiceDependenciesValues = {
+  [key: string]: string;
+};
+
+type ServiceScripts = {
+  [key: string]: string;
+};
 
 export class Database {
   private _connection: Connection;
@@ -300,38 +386,38 @@ export class Database {
   createDatabase(
     databaseName: string,
     users?: CreateDatabaseUser[]
-  ): Promise<TODO_any> {
+  ): Promise<boolean> {
     return this._connection.request(
       {
         method: "POST",
         path: "/_api/database",
         body: { users, name: databaseName }
       },
-      res => res.body
+      res => res.body.result
     );
   }
 
-  listDatabases(): Promise<TODO_any> {
+  listDatabases(): Promise<string[]> {
     return this._connection.request(
       { path: "/_api/database" },
       res => res.body.result
     );
   }
 
-  listUserDatabases(): Promise<TODO_any> {
+  listUserDatabases(): Promise<string[]> {
     return this._connection.request(
       { path: "/_api/database/user" },
       res => res.body.result
     );
   }
 
-  dropDatabase(databaseName: string): Promise<TODO_any> {
+  dropDatabase(databaseName: string): Promise<boolean> {
     return this._connection.request(
       {
         method: "DELETE",
         path: `/_api/database/${databaseName}`
       },
-      res => res.body
+      res => res.body.result
     );
   }
   //#endregion
@@ -486,11 +572,11 @@ export class Database {
 
   async createGraph(
     graphName: string,
-    properties: TODO_any,
-    opts?: { waitForSync?: boolean }
+    properties: GraphCreateProperties,
+    options?: GraphCreateOptions
   ): Promise<Graph> {
     const graph = new Graph(this._connection, graphName);
-    await graph.create(properties, opts);
+    await graph.create(properties, options);
     return graph;
   }
 
@@ -509,26 +595,26 @@ export class Database {
 
   //#region queries
   query(query: string | AqlQuery | AqlLiteral): Promise<ArrayCursor>;
-  query(query: AqlQuery, opts?: QueryOptions): Promise<ArrayCursor>;
+  query(query: AqlQuery, options?: QueryOptions): Promise<ArrayCursor>;
   query(
     query: string | AqlLiteral,
     bindVars?: AqlQuery["bindVars"],
-    opts?: QueryOptions
+    options?: QueryOptions
   ): Promise<ArrayCursor>;
   query(
     query: string | AqlQuery | AqlLiteral,
     bindVars?: AqlQuery["bindVars"],
-    opts?: QueryOptions
+    options?: QueryOptions
   ): Promise<ArrayCursor> {
     if (isAqlQuery(query)) {
-      opts = bindVars;
+      options = bindVars;
       bindVars = query.bindVars;
       query = query.query;
     } else if (isAqlLiteral(query)) {
       query = query.toAQL();
     }
     const { allowDirtyRead = undefined, timeout = undefined, ...extra } =
-      opts || {};
+      options || {};
     return this._connection.request(
       {
         method: "POST",
@@ -552,20 +638,20 @@ export class Database {
   ): Promise<ExplainResult & ArangoResponseMetadata>;
   explain(
     query: AqlQuery,
-    opts?: ExplainOptions
+    options?: ExplainOptions
   ): Promise<ExplainResult & ArangoResponseMetadata>;
   explain(
     query: string | AqlLiteral,
     bindVars?: AqlQuery["bindVars"],
-    opts?: ExplainOptions
+    options?: ExplainOptions
   ): Promise<ExplainResult & ArangoResponseMetadata>;
   explain(
     query: string | AqlQuery | AqlLiteral,
     bindVars?: AqlQuery["bindVars"],
-    opts?: ExplainOptions
+    options?: ExplainOptions
   ): Promise<ExplainResult & ArangoResponseMetadata> {
     if (isAqlQuery(query)) {
-      opts = bindVars;
+      options = bindVars;
       bindVars = query.bindVars;
       query = query.query;
     } else if (isAqlLiteral(query)) {
@@ -575,7 +661,7 @@ export class Database {
       {
         method: "POST",
         path: "/_api/explain",
-        body: { options: opts, query, bindVars }
+        body: { options: options, query, bindVars }
       },
       res => res.body
     );
@@ -610,12 +696,12 @@ export class Database {
     );
   }
 
-  setQueryTracking(opts?: QueryTrackingOptions): Promise<QueryTracking> {
+  setQueryTracking(options?: QueryTrackingOptions): Promise<QueryTracking> {
     return this._connection.request(
       {
         method: "PUT",
         path: "/_api/query/properties",
-        body: opts
+        body: options
       },
       res => res.body
     );
@@ -663,28 +749,32 @@ export class Database {
   //#endregion
 
   //#region functions
-  listFunctions(): Promise<TODO_any> {
+  listFunctions(): Promise<AqlFunction[]> {
     return this._connection.request(
       { path: "/_api/aqlfunction" },
-      res => res.body
+      res => res.body.result
     );
   }
 
   createFunction(
     name: string,
-    code: string
+    code: string,
+    isDeterministic?: boolean
   ): Promise<ArangoResponseMetadata & { isNewlyCreated: boolean }> {
     return this._connection.request(
       {
         method: "POST",
         path: "/_api/aqlfunction",
-        body: { name, code }
+        body: { name, code, isDeterministic }
       },
       res => res.body
     );
   }
 
-  dropFunction(name: string, group: boolean = false): Promise<TODO_any> {
+  dropFunction(
+    name: string,
+    group: boolean = false
+  ): Promise<ArangoResponseMetadata & { deletedCount: number }> {
     return this._connection.request(
       {
         method: "DELETE",
@@ -704,9 +794,9 @@ export class Database {
   async installService(
     mount: string,
     source: TODO_any,
-    opts: Partial<ServiceOptions> = {}
-  ): Promise<TODO_any> {
-    const { configuration, dependencies, ...qs } = opts;
+    options: InstallServiceOptions = {}
+  ): Promise<ServiceInfo> {
+    const { configuration, dependencies, ...qs } = options;
     const req = await toForm({
       configuration,
       dependencies,
@@ -727,9 +817,9 @@ export class Database {
   async upgradeService(
     mount: string,
     source: TODO_any,
-    opts: Partial<ServiceOptions> = {}
-  ): Promise<TODO_any> {
-    const { configuration, dependencies, ...qs } = opts;
+    options: ReplaceServiceOptions = {}
+  ): Promise<ServiceInfo> {
+    const { configuration, dependencies, ...qs } = options;
     const req = await toForm({
       configuration,
       dependencies,
@@ -750,9 +840,9 @@ export class Database {
   async replaceService(
     mount: string,
     source: TODO_any,
-    opts: Partial<ServiceOptions> = {}
-  ): Promise<TODO_any> {
-    const { configuration, dependencies, ...qs } = opts;
+    options: ReplaceServiceOptions = {}
+  ): Promise<ServiceInfo> {
+    const { configuration, dependencies, ...qs } = options;
     const req = await toForm({
       configuration,
       dependencies,
@@ -770,18 +860,21 @@ export class Database {
     );
   }
 
-  uninstallService(mount: string, opts?: TODO_any): Promise<void> {
+  uninstallService(
+    mount: string,
+    options?: UninstallServiceOptions
+  ): Promise<void> {
     return this._connection.request(
       {
         method: "DELETE",
         path: "/_api/foxx/service",
-        qs: { ...opts, mount }
+        qs: { ...options, mount }
       },
       () => undefined
     );
   }
 
-  getService(mount: string): Promise<TODO_any> {
+  getService(mount: string): Promise<ServiceInfo> {
     return this._connection.request(
       {
         path: "/_api/foxx/service",
@@ -793,8 +886,13 @@ export class Database {
 
   async getServiceConfiguration(
     mount: string,
-    minimal: boolean = false
-  ): Promise<TODO_any> {
+    minimal?: false
+  ): Promise<{ [key: string]: ServiceConfiguration }>;
+  async getServiceConfiguration(
+    mount: string,
+    minimal: true
+  ): Promise<ServiceConfigurationValues>;
+  async getServiceConfiguration(mount: string, minimal: boolean = false) {
     const result = await this._connection.request(
       {
         path: "/_api/foxx/configuration",
@@ -816,9 +914,22 @@ export class Database {
 
   async updateServiceConfiguration(
     mount: string,
-    cfg: ServiceOptions["configuration"],
+    cfg: ServiceConfigurationValues,
+    minimal?: false
+  ): Promise<{ [key: string]: ServiceConfiguration & { warning?: string } }>;
+  async updateServiceConfiguration(
+    mount: string,
+    cfg: ServiceConfigurationValues,
+    minimal: true
+  ): Promise<{
+    values: ServiceConfigurationValues;
+    warnings: { [key: string]: string };
+  }>;
+  async updateServiceConfiguration(
+    mount: string,
+    cfg: ServiceConfigurationValues,
     minimal: boolean = false
-  ): Promise<TODO_any> {
+  ) {
     const result = await this._connection.request(
       {
         method: "PATCH",
@@ -837,7 +948,9 @@ export class Database {
     ) {
       return result;
     }
-    const result2 = await this.getServiceConfiguration(mount, minimal);
+    const result2 = (await this.getServiceConfiguration(mount, false)) as {
+      [key: string]: ServiceConfiguration & { warning?: string };
+    };
     if (result.warnings) {
       for (const key of Object.keys(result2)) {
         result2[key].warning = result.warnings[key];
@@ -848,9 +961,22 @@ export class Database {
 
   async replaceServiceConfiguration(
     mount: string,
-    cfg: ServiceOptions["configuration"],
+    cfg: ServiceConfigurationValues,
+    minimal?: false
+  ): Promise<{ [key: string]: ServiceConfiguration & { warning?: string } }>;
+  async replaceServiceConfiguration(
+    mount: string,
+    cfg: ServiceConfigurationValues,
+    minimal: true
+  ): Promise<{
+    values: ServiceConfigurationValues;
+    warnings: { [key: string]: string };
+  }>;
+  async replaceServiceConfiguration(
+    mount: string,
+    cfg: ServiceConfigurationValues,
     minimal: boolean = false
-  ): Promise<TODO_any> {
+  ) {
     const result = await this._connection.request(
       {
         method: "PUT",
@@ -869,7 +995,9 @@ export class Database {
     ) {
       return result;
     }
-    const result2 = await this.getServiceConfiguration(mount, minimal);
+    const result2 = (await this.getServiceConfiguration(mount, false)) as {
+      [key: string]: ServiceConfiguration & { warning?: string };
+    };
     if (result.warnings) {
       for (const key of Object.keys(result2)) {
         result2[key].warning = result.warnings[key];
@@ -880,8 +1008,13 @@ export class Database {
 
   async getServiceDependencies(
     mount: string,
-    minimal: boolean = false
-  ): Promise<TODO_any> {
+    minimal?: false
+  ): Promise<{ [key: string]: ServiceDependency }>;
+  async getServiceDependencies(
+    mount: string,
+    minimal: true
+  ): Promise<ServiceDependenciesValues>;
+  async getServiceDependencies(mount: string, minimal: boolean = false) {
     const result = await this._connection.request(
       {
         path: "/_api/foxx/dependencies",
@@ -903,9 +1036,22 @@ export class Database {
 
   async updateServiceDependencies(
     mount: string,
-    deps: ServiceOptions["dependencies"],
+    deps: ServiceDependenciesValues,
+    minimal?: false
+  ): Promise<{ [key: string]: ServiceDependency & { warning?: string } }>;
+  async updateServiceDependencies(
+    mount: string,
+    deps: ServiceDependenciesValues,
+    minimal: true
+  ): Promise<{
+    values: ServiceDependenciesValues;
+    warnings: { [key: string]: string };
+  }>;
+  async updateServiceDependencies(
+    mount: string,
+    deps: ServiceDependenciesValues,
     minimal: boolean = false
-  ): Promise<TODO_any> {
+  ) {
     const result = await this._connection.request(
       {
         method: "PATCH",
@@ -925,7 +1071,9 @@ export class Database {
       return result;
     }
     // Work around "minimal" flag not existing in 3.3
-    const result2 = await this.getServiceDependencies(mount, minimal);
+    const result2 = (await this.getServiceDependencies(mount, false)) as {
+      [key: string]: ServiceDependency & { warning?: string };
+    };
     if (result.warnings) {
       for (const key of Object.keys(result2)) {
         result2[key].warning = result.warnings[key];
@@ -936,9 +1084,22 @@ export class Database {
 
   async replaceServiceDependencies(
     mount: string,
-    deps: ServiceOptions["dependencies"],
+    deps: ServiceDependenciesValues,
+    minimal?: false
+  ): Promise<{ [key: string]: ServiceDependency & { warning?: string } }>;
+  async replaceServiceDependencies(
+    mount: string,
+    deps: ServiceDependenciesValues,
+    minimal: true
+  ): Promise<{
+    values: ServiceDependenciesValues;
+    warnings: { [key: string]: string };
+  }>;
+  async replaceServiceDependencies(
+    mount: string,
+    deps: ServiceDependenciesValues,
     minimal: boolean = false
-  ): Promise<TODO_any> {
+  ) {
     const result = await this._connection.request(
       {
         method: "PUT",
@@ -958,16 +1119,18 @@ export class Database {
       return result;
     }
     // Work around "minimal" flag not existing in 3.3
-    const result2 = await this.getServiceDependencies(mount, minimal);
+    const result2 = (await this.getServiceDependencies(mount, false)) as {
+      [key: string]: ServiceDependency & { warning?: string };
+    };
     if (result.warnings) {
       for (const key of Object.keys(result2)) {
-        result2[key].warning = result.warnings[key];
+        (result2[key] as any).warning = result.warnings[key];
       }
     }
     return result2;
   }
 
-  enableServiceDevelopmentMode(mount: string): Promise<TODO_any> {
+  enableServiceDevelopmentMode(mount: string): Promise<ServiceInfo> {
     return this._connection.request(
       {
         method: "POST",
@@ -978,7 +1141,7 @@ export class Database {
     );
   }
 
-  disableServiceDevelopmentMode(mount: string): Promise<TODO_any> {
+  disableServiceDevelopmentMode(mount: string): Promise<ServiceInfo> {
     return this._connection.request(
       {
         method: "DELETE",
@@ -989,7 +1152,7 @@ export class Database {
     );
   }
 
-  listServiceScripts(mount: string): Promise<TODO_any> {
+  listServiceScripts(mount: string): Promise<ServiceScripts> {
     return this._connection.request(
       {
         path: "/_api/foxx/scripts",
@@ -999,11 +1162,7 @@ export class Database {
     );
   }
 
-  runServiceScript(
-    mount: string,
-    name: string,
-    args: TODO_any
-  ): Promise<TODO_any> {
+  runServiceScript(mount: string, name: string, args?: any): Promise<any> {
     return this._connection.request(
       {
         method: "POST",
@@ -1015,13 +1174,19 @@ export class Database {
     );
   }
 
-  runServiceTests(mount: string, opts?: TODO_any): Promise<TODO_any> {
+  runServiceTests(
+    mount: string,
+    options?: {
+      filter?: string;
+      reporter?: "stream" | "suite" | "xunit" | "tap" | "default";
+    }
+  ): Promise<any> {
     return this._connection.request(
       {
         method: "POST",
         path: "/_api/foxx/tests",
         qs: {
-          ...opts,
+          ...options,
           mount
         }
       },
@@ -1039,7 +1204,7 @@ export class Database {
     );
   }
 
-  getServiceDocumentation(mount: string): Promise<TODO_any> {
+  getServiceDocumentation(mount: string): Promise<string | undefined> {
     return this._connection.request(
       {
         path: "/_api/foxx/swagger",

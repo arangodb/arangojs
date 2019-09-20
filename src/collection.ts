@@ -395,10 +395,6 @@ export type CollectionLoadResult = CollectionMetadata & {
   count?: number;
 };
 
-export type CollectionRotateResult = {
-  result: boolean;
-};
-
 export type CollectionImportResult = {
   error: false;
   created: number;
@@ -575,7 +571,7 @@ export interface DocumentCollection<T extends object = any>
   load(count?: boolean): Promise<ArangoResponseMetadata & CollectionLoadResult>;
   unload(): Promise<ArangoResponseMetadata & CollectionMetadata>;
   rename(name: string): Promise<ArangoResponseMetadata & CollectionMetadata>;
-  rotate(): Promise<ArangoResponseMetadata & CollectionRotateResult>;
+  rotate(): Promise<boolean>;
   truncate(): Promise<ArangoResponseMetadata & CollectionMetadata>;
   drop(opts?: CollectionDropOptions): Promise<ArangoResponseMetadata>;
 
@@ -955,7 +951,7 @@ export class Collection<T extends object = any>
   }
 
   rotate() {
-    return this._put("rotate");
+    return this._put("rotate").then(body => body.result);
   }
 
   truncate() {
