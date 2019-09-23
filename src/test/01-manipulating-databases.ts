@@ -97,8 +97,7 @@ describe("Manipulating databases", function() {
       db.useDatabase(name);
       await Promise.all([
         ...nonSystemCollections.map(async name => {
-          let collection = db.collection(name);
-          await collection.create();
+          const collection = await db.createCollection(name);
           return await collection.save({ _key: "example" });
         }),
         ...systemCollections.map(async name => {

@@ -27,8 +27,7 @@ describe("Simple queries", function() {
     }
   });
   beforeEach(async () => {
-    collection = db.collection(`c_${Date.now()}`);
-    await collection.create();
+    collection = await db.createCollection(`c_${Date.now()}`);
     await Promise.all(
       range(10).map(i =>
         collection.save({

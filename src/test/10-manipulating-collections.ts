@@ -24,8 +24,7 @@ describe("Manipulating collections", function() {
     }
   });
   beforeEach(async () => {
-    collection = db.collection(`collection-${Date.now()}`);
-    await collection.create();
+    collection = await db.createCollection(`collection-${Date.now()}`);
   });
   afterEach(async () => {
     try {
@@ -37,8 +36,9 @@ describe("Manipulating collections", function() {
   });
   describe("collection.create", () => {
     it("creates a new document collection", async () => {
-      const collection = db.collection(`document-collection-${Date.now()}`);
-      await collection.create();
+      const collection = await db.createCollection(
+        `document-collection-${Date.now()}`
+      );
       const info = await db.collection(collection.name).get();
       expect(info).to.have.property("name", collection.name);
       expect(info).to.have.property("isSystem", false);
@@ -46,8 +46,9 @@ describe("Manipulating collections", function() {
       expect(info).to.have.property("type", 2); // document collection
     });
     it("creates a new edge collection", async () => {
-      const collection = db.collection(`edge-collection-${Date.now()}`);
-      await collection.create();
+      const collection = await db.createEdgeCollection(
+        `edge-collection-${Date.now()}`
+      );
       const info = await db.collection(collection.name).get();
       expect(info).to.have.property("name", collection.name);
       expect(info).to.have.property("isSystem", false);

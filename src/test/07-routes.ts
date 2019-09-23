@@ -36,8 +36,7 @@ describe("Route API", function() {
     db = new Database({ url: ARANGO_URL, arangoVersion: ARANGO_VERSION });
     await db.createDatabase(name);
     db.useDatabase(name);
-    collection = db.collection(`c_${Date.now()}`);
-    await collection.create();
+    collection = await db.createCollection(`c_${Date.now()}`);
   });
   after(async () => {
     try {

@@ -104,8 +104,7 @@ describeIm("Single-server with follower", function() {
     db = new Database({ url: leader.endpoint });
     conn = (db as any)._connection;
     await db.acquireHostList();
-    collection = db.collection("test");
-    await collection.create();
+    collection = await db.createCollection("test");
     await collection.save({ _key: "abc" });
     await sleep(3000);
   });

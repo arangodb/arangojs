@@ -39,8 +39,7 @@ describe("Transactions", () => {
       await db.dropDatabase(name);
     });
     beforeEach(async () => {
-      collection = db.collection(`collection-${Date.now()}`);
-      await collection.create();
+      collection = await db.createCollection(`collection-${Date.now()}`);
     });
     afterEach(async () => {
       try {

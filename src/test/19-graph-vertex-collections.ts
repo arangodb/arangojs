@@ -121,6 +121,7 @@ describe("GraphVertexCollection API", function() {
     it("replaces the given vertex", async () => {
       const data = { potato: "tomato" };
       const meta = await collection.save(data, { returnNew: true });
+      console.log("Response", require("util").inspect(meta));
       const doc = meta.new!;
       await collection.replace(doc, { sup: "dawg" });
       const newData = await collection.vertex(doc._key);
