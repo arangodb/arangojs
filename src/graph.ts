@@ -1,11 +1,13 @@
 import {
   ArangoCollection,
   Collection,
+  CollectionInsertResult,
+  CollectionRemoveResult,
+  CollectionSaveResult,
   Document,
   DocumentCollection,
   DocumentData,
   documentHandle,
-  DocumentMetadata,
   DocumentSelector,
   Edge,
   EdgeCollection,
@@ -19,31 +21,13 @@ import { Headers } from "./route";
 import { DOCUMENT_NOT_FOUND, GRAPH_NOT_FOUND } from "./util/codes";
 import { Patch } from "./util/types";
 
-export type EdgeCollectionInsertResult<T> = {
-  edge: DocumentMetadata;
-  new?: T;
-};
-
-export type EdgeCollectionRemoveResult<T> = {
-  edge: DocumentMetadata;
-  old?: T;
-};
-
-export type EdgeCollectionSaveResult<T> = EdgeCollectionInsertResult<T> &
-  EdgeCollectionRemoveResult<T>;
-
-export type VertexCollectionInsertResult<T> = {
-  vertex: DocumentMetadata;
-  new?: T;
-};
-
-export type VertexCollectionRemoveResult<T> = {
-  vertex: DocumentMetadata;
-  old?: T;
-};
-
-export type VertexCollectionSaveResult<T> = VertexCollectionInsertResult<T> &
-  VertexCollectionRemoveResult<T>;
+function mungeGharialResponse(body: any, prop: "vertex" | "edge" | "removed") {
+  const { new: newDoc, old: oldDoc, [prop]: doc, ...meta } = body;
+  const result = { ...meta, ...doc };
+  if (typeof newDoc !== "undefined") result.new = newDoc;
+  if (typeof oldDoc !== "undefined") result.old = oldDoc;
+  return result;
+}
 
 type CollectionInsertOptions = {
   waitForSync?: boolean;
@@ -134,7 +118,7 @@ export class GraphVertexCollection<T extends object = any>
   save(
     data: DocumentData<T>,
     options?: CollectionInsertOptions
-  ): Promise<VertexCollectionInsertResult<Document<T>>> {
+  ): Promise<CollectionInsertResult<Document<T>>> {
     return this._connection.request(
       {
         method: "POST",
@@ -142,7 +126,7 @@ export class GraphVertexCollection<T extends object = any>
         body: data,
         qs: options
       },
-      res => res.body
+      res => mungeGharialResponse(res.body, "vertex")
     );
   }
 
@@ -150,7 +134,7 @@ export class GraphVertexCollection<T extends object = any>
     selector: DocumentSelector,
     newValue: DocumentData<T>,
     options: CollectionReplaceOptions = {}
-  ): Promise<VertexCollectionSaveResult<Document<T>>> {
+  ): Promise<CollectionSaveResult<Document<T>>> {
     if (typeof options === "string") {
       options = { rev: options };
     }
@@ -168,7 +152,7 @@ export class GraphVertexCollection<T extends object = any>
         qs,
         headers
       },
-      res => res.body
+      res => mungeGharialResponse(res.body, "vertex")
     );
   }
 
@@ -176,7 +160,7 @@ export class GraphVertexCollection<T extends object = any>
     selector: DocumentSelector,
     newValue: Patch<DocumentData<T>>,
     options: CollectionReplaceOptions = {}
-  ): Promise<VertexCollectionSaveResult<Document<T>>> {
+  ): Promise<CollectionSaveResult<Document<T>>> {
     if (typeof options === "string") {
       options = { rev: options };
     }
@@ -194,14 +178,14 @@ export class GraphVertexCollection<T extends object = any>
         qs,
         headers
       },
-      res => res.body
+      res => mungeGharialResponse(res.body, "vertex")
     );
   }
 
   remove(
     selector: DocumentSelector,
     options: CollectionRemoveOptions = {}
-  ): Promise<VertexCollectionRemoveResult<Document<T>>> {
+  ): Promise<CollectionRemoveResult<Document<T>>> {
     if (typeof options === "string") {
       options = { rev: options };
     }
@@ -218,7 +202,7 @@ export class GraphVertexCollection<T extends object = any>
         qs,
         headers
       },
-      res => res.body.removed
+      res => mungeGharialResponse(res.body, "removed")
     );
   }
 }
@@ -286,7 +270,7 @@ export class GraphEdgeCollection<T extends object = any>
   save(
     data: EdgeData<T>,
     options?: CollectionInsertOptions
-  ): Promise<EdgeCollectionInsertResult<Edge<T>>> {
+  ): Promise<CollectionInsertResult<Edge<T>>> {
     return this._connection.request(
       {
         method: "POST",
@@ -294,7 +278,7 @@ export class GraphEdgeCollection<T extends object = any>
         body: data,
         qs: options
       },
-      res => res.body
+      res => mungeGharialResponse(res.body, "edge")
     );
   }
 
@@ -302,7 +286,7 @@ export class GraphEdgeCollection<T extends object = any>
     selector: DocumentSelector,
     newValue: EdgeData<T>,
     options: CollectionReplaceOptions = {}
-  ): Promise<EdgeCollectionSaveResult<Edge<T>>> {
+  ): Promise<CollectionSaveResult<Edge<T>>> {
     if (typeof options === "string") {
       options = { rev: options };
     }
@@ -320,7 +304,7 @@ export class GraphEdgeCollection<T extends object = any>
         qs,
         headers
       },
-      res => res.body
+      res => mungeGharialResponse(res.body, "edge")
     );
   }
 
@@ -328,7 +312,7 @@ export class GraphEdgeCollection<T extends object = any>
     selector: DocumentSelector,
     newValue: Patch<EdgeData<T>>,
     options: CollectionReplaceOptions = {}
-  ): Promise<EdgeCollectionSaveResult<Edge<T>>> {
+  ): Promise<CollectionSaveResult<Edge<T>>> {
     if (typeof options === "string") {
       options = { rev: options };
     }
@@ -346,14 +330,14 @@ export class GraphEdgeCollection<T extends object = any>
         qs,
         headers
       },
-      res => res.body
+      res => mungeGharialResponse(res.body, "edge")
     );
   }
 
   remove(
     selector: DocumentSelector,
     options: CollectionRemoveOptions = {}
-  ): Promise<EdgeCollectionRemoveResult<Edge<T>>> {
+  ): Promise<CollectionRemoveResult<Edge<T>>> {
     if (typeof options === "string") {
       options = { rev: options };
     }
@@ -370,7 +354,7 @@ export class GraphEdgeCollection<T extends object = any>
         qs,
         headers
       },
-      res => res.body.removed
+      res => mungeGharialResponse(res.body, "removed")
     );
   }
 }

@@ -42,8 +42,7 @@ describe("GraphVertexCollection API", function() {
     const data = { foo: "bar" };
     let meta: DocumentMetadata;
     beforeEach(async () => {
-      const result = await collection.save(data);
-      meta = result.vertex;
+      meta = await collection.save(data);
     });
     it("returns a vertex in the collection", async () => {
       const doc = await collection.vertex(meta._id);
@@ -62,8 +61,7 @@ describe("GraphVertexCollection API", function() {
     const data = { foo: "bar" };
     let meta: DocumentMetadata;
     beforeEach(async () => {
-      const result = await collection.save(data);
-      meta = result.vertex;
+      meta = await collection.save(data);
     });
     it("returns a vertex in the collection", async () => {
       const doc = await collection.vertex(meta._id);
@@ -81,8 +79,7 @@ describe("GraphVertexCollection API", function() {
   describe("graphVertexCollection.save", () => {
     it("creates a vertex in the collection", async () => {
       const data = { foo: "bar" };
-      const result = await collection.save(data);
-      const meta = result.vertex;
+      const meta = await collection.save(data);
       expect(meta).to.be.an("object");
       expect(meta)
         .to.have.property("_id")
@@ -102,8 +99,7 @@ describe("GraphVertexCollection API", function() {
     });
     it("uses the given _key if provided", async () => {
       const data = { potato: "tomato", _key: "banana" };
-      const result = await collection.save(data);
-      const meta = result.vertex;
+      const meta = await collection.save(data);
       expect(meta).to.be.an("object");
       expect(meta)
         .to.have.property("_id")
@@ -125,8 +121,8 @@ describe("GraphVertexCollection API", function() {
   describe("graphVertexCollection.replace", () => {
     it("replaces the given vertex", async () => {
       const data = { potato: "tomato" };
-      const result = await collection.save(data, { returnNew: true });
-      const doc = result.new!;
+      const meta = await collection.save(data, { returnNew: true });
+      const doc = meta.new!;
       await collection.replace(doc, { sup: "dawg" });
       const newData = await collection.vertex(doc._key);
       expect(newData).not.to.have.property("potato");
@@ -138,8 +134,8 @@ describe("GraphVertexCollection API", function() {
   describe("graphVertexCollection.update", () => {
     it("updates the given vertex", async () => {
       const data = { potato: "tomato", empty: false };
-      const result = await collection.save(data, { returnNew: true });
-      const doc = result.new!;
+      const meta = await collection.save(data, { returnNew: true });
+      const doc = meta.new!;
       await collection.update(doc, { sup: "dawg", empty: null });
       const newData = await collection.vertex(doc._key);
       expect(newData)
@@ -154,8 +150,8 @@ describe("GraphVertexCollection API", function() {
     });
     it("removes null values if keepNull is explicitly set to false", async () => {
       const data = { potato: "tomato", empty: false };
-      const result = await collection.save(data, { returnNew: true });
-      const doc = result.new!;
+      const meta = await collection.save(data, { returnNew: true });
+      const doc = meta.new!;
       await collection.update(
         doc,
         { sup: "dawg", empty: null },
