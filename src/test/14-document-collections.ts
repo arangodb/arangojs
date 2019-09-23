@@ -1,5 +1,6 @@
 import { expect } from "chai";
 import { Database, DocumentCollection } from "../arangojs";
+import { DocumentMetadata } from "../collection";
 
 const ARANGO_URL = process.env.TEST_ARANGODB_URL || "http://localhost:8529";
 const ARANGO_VERSION = Number(
@@ -31,7 +32,7 @@ describe("DocumentCollection API", function() {
   });
   describe("documentCollection.document", () => {
     const data = { foo: "bar" };
-    let meta: any;
+    let meta: DocumentMetadata;
     beforeEach(async () => {
       meta = await collection.save(data);
     });
@@ -50,7 +51,7 @@ describe("DocumentCollection API", function() {
   });
   describe("documentCollection.documentExists", () => {
     let data = { foo: "bar" };
-    let meta: any;
+    let meta: DocumentMetadata;
     beforeEach(async () => {
       meta = await collection.save(data);
     });

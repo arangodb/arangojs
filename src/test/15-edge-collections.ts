@@ -1,5 +1,6 @@
 import { expect } from "chai";
 import { Database, EdgeCollection } from "../arangojs";
+import { DocumentMetadata } from "../collection";
 
 const ARANGO_URL = process.env.TEST_ARANGODB_URL || "http://localhost:8529";
 const ARANGO_VERSION = Number(
@@ -36,7 +37,7 @@ describe("EdgeCollection API", function() {
 
   describe("edgeCollection.edge", () => {
     const data = { _from: "d/1", _to: "d/2" };
-    let meta: any;
+    let meta: DocumentMetadata;
     beforeEach(async () => {
       meta = await collection.save(data);
     });
@@ -56,7 +57,7 @@ describe("EdgeCollection API", function() {
   });
   describe("edgeCollection.document", () => {
     const data = { _from: "d/1", _to: "d/2" };
-    let meta: any;
+    let meta: DocumentMetadata;
     beforeEach(async () => {
       meta = await collection.save(data);
     });
@@ -76,7 +77,7 @@ describe("EdgeCollection API", function() {
   });
   describe("edgeCollection.documentExists", () => {
     const data = { _from: "d/1", _to: "d/2" };
-    let meta: any;
+    let meta: DocumentMetadata;
     beforeEach(async () => {
       meta = await collection.save(data);
     });
