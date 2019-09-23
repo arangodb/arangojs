@@ -779,7 +779,7 @@ describe("Foxx service", () => {
       (mount: string) => db.getServiceDependencies(mount)
     ],
     ["listServiceScripts", (mount: string) => db.listServiceScripts(mount)],
-    ["upgradeService", (mount: string) => db.upgradeService(mount, {})],
+    ["upgradeService", (mount: string) => db.upgradeService(mount, {} as any)],
     [
       "updateServiceConfiguration",
       (mount: string) => db.updateServiceConfiguration(mount, {})
@@ -788,7 +788,7 @@ describe("Foxx service", () => {
       "updateServiceDependencies",
       (mount: string) => db.updateServiceDependencies(mount, {})
     ],
-    ["replaceService", (mount: string) => db.replaceService(mount, {})],
+    ["replaceService", (mount: string) => db.replaceService(mount, {} as any)],
     [
       "replaceServiceConfiguration",
       (mount: string) => db.replaceServiceConfiguration(mount, {})

@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { Database, DocumentCollection, EdgeCollection } from "../arangojs";
+import { Database, EdgeCollection } from "../arangojs";
 
 const ARANGO_URL = process.env.TEST_ARANGODB_URL || "http://localhost:8529";
 const ARANGO_VERSION = Number(
@@ -28,8 +28,7 @@ describe("EdgeCollection API", function() {
     }
   });
   beforeEach(async () => {
-    collection = db.collection(`c_${Date.now()}`);
-    await collection.create();
+    collection = await db.createEdgeCollection(`c_${Date.now()}`);
   });
   afterEach(async () => {
     await collection.drop();
@@ -191,9 +190,11 @@ describe("EdgeCollection API", function() {
   describe("edgeCollection.traversal", () => {
     let knows: EdgeCollection<{}>;
     beforeEach(async () => {
-      knows = db.collection("knows");
-      const person: DocumentCollection<{}> = db.collection("person");
-      await Promise.all([person.create(), knows.create()]);
+      let person;
+      [knows, person] = await Promise.all([
+        db.createEdgeCollection("knows"),
+        db.createCollection("person")
+      ]);
       await Promise.all([
         person.import([
           { _key: "Alice" },
@@ -264,7 +265,7 @@ describe("EdgeCollection API", function() {
     });
     it("removes null values if keepNull is explicitly set to false", async () => {
       const data = {
-        potato: "tomato",
+        something: "tomato",
         empty: false,
         _from: "d/1",
         _to: "d/2"

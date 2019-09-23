@@ -6,6 +6,7 @@ import {
   Graph,
   GraphVertexCollection
 } from "../arangojs";
+import { ArangoCollection } from "../collection";
 
 const range = (n: number): number[] => Array.from(Array(n).keys());
 
@@ -19,10 +20,8 @@ async function createCollections(db: Database) {
   const edgeCollectionNames = range(2).map(i => `ec_${Date.now()}_${i}`);
   await Promise.all([
     ...vertexCollectionNames.map(name => db.createCollection(name)),
-    ...edgeCollectionNames.map(
-      name => db.createEdgeCollection(name) as Promise<any>
-    )
-  ]);
+    ...edgeCollectionNames.map(name => db.createEdgeCollection(name))
+  ] as Promise<ArangoCollection>[]);
   return [vertexCollectionNames, edgeCollectionNames];
 }
 
@@ -81,8 +80,7 @@ describe("Manipulating graph vertices", function() {
   describe("graph.addVertexCollection", () => {
     let vertexCollection: DocumentCollection;
     beforeEach(async () => {
-      vertexCollection = db.collection(`xc_${Date.now()}`);
-      await vertexCollection.create();
+      vertexCollection = await db.createCollection(`xc_${Date.now()}`);
     });
     afterEach(async () => {
       await vertexCollection.drop();
@@ -95,8 +93,7 @@ describe("Manipulating graph vertices", function() {
   describe("graph.removeVertexCollection", () => {
     let vertexCollection: DocumentCollection;
     beforeEach(async () => {
-      vertexCollection = db.collection(`xc_${Date.now()}`);
-      await vertexCollection.create();
+      vertexCollection = await db.createCollection(`xc_${Date.now()}`);
       await graph.addVertexCollection(vertexCollection.name);
     });
     it("removes the given vertex collection from the graph", async () => {

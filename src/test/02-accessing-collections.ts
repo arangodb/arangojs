@@ -1,5 +1,6 @@
 import { expect } from "chai";
 import { Database, isArangoCollection } from "../arangojs";
+import { ArangoCollection } from "../collection";
 
 const range = (n: number): number[] => Array.from(Array(n).keys());
 
@@ -43,10 +44,10 @@ describe("Accessing collections", function() {
     before(async () => {
       await Promise.all([
         ...nonSystemCollectionNames.map(name => db.createCollection(name)),
-        ...systemCollectionNames.map(
-          name => db.collection(name).create({ isSystem: true }) as Promise<any>
+        ...systemCollectionNames.map(name =>
+          db.collection(name).create({ isSystem: true })
         )
-      ]);
+      ] as Promise<ArangoCollection>[]);
     });
     after(async () => {
       await Promise.all([
@@ -82,13 +83,11 @@ describe("Accessing collections", function() {
     before(async () => {
       await Promise.all([
         ...documentCollectionNames.map(name => db.createCollection(name)),
-        ...edgeCollectionNames.map(
-          name => db.createEdgeCollection(name) as Promise<any>
-        ),
+        ...edgeCollectionNames.map(name => db.createEdgeCollection(name)),
         ...systemCollectionNames.map(name =>
           db.collection(name).create({ isSystem: true })
         )
-      ]);
+      ] as Promise<ArangoCollection>[]);
     });
     after(async () => {
       await Promise.all([

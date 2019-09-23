@@ -24,8 +24,7 @@ describe("DocumentCollection API", function() {
     }
   });
   beforeEach(async () => {
-    collection = db.collection(`c_${Date.now()}`);
-    await collection.create();
+    collection = await db.createCollection(`c_${Date.now()}`);
   });
   afterEach(async () => {
     await collection.drop();
