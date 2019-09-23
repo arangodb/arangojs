@@ -51,8 +51,7 @@ describe("GraphEdgeCollection API", function() {
     const data = { _from: "person/Bob", _to: "person/Alice" };
     let meta: DocumentMetadata;
     beforeEach(async () => {
-      const result = await collection.save(data);
-      meta = result.edge;
+      meta = await collection.save(data);
     });
     it("returns an edge in the collection", async () => {
       const doc = await collection.edge(meta._id);
@@ -72,8 +71,7 @@ describe("GraphEdgeCollection API", function() {
     const data = { _from: "person/Bob", _to: "person/Alice" };
     let meta: DocumentMetadata;
     beforeEach(async () => {
-      const result = await collection.save(data);
-      meta = result.edge;
+      meta = await collection.save(data);
     });
     it("returns an edge in the collection", async () => {
       const doc = await collection.edge(meta._id);
@@ -92,8 +90,7 @@ describe("GraphEdgeCollection API", function() {
   describe("edgeCollection.save", () => {
     it("creates an edge in the collection", async () => {
       const data = { _from: "person/Bob", _to: "person/Alice" };
-      const result = await collection.save(data);
-      const meta = result.edge;
+      const meta = await collection.save(data);
       expect(meta).to.be.an("object");
       expect(meta)
         .to.have.property("_id")
@@ -114,8 +111,7 @@ describe("GraphEdgeCollection API", function() {
     });
     it("uses the given _key if provided", async () => {
       const data = { _key: "banana", _from: "person/Bob", _to: "person/Alice" };
-      const result = await collection.save(data);
-      const meta = result.edge;
+      const meta = await collection.save(data);
       expect(meta).to.be.an("object");
       expect(meta)
         .to.have.property("_id")
@@ -172,8 +168,8 @@ describe("GraphEdgeCollection API", function() {
         _from: "person/Bob",
         _to: "person/Alice"
       };
-      const result = await collection.save(data, { returnNew: true });
-      const doc = result.new!;
+      const meta = await collection.save(data, { returnNew: true });
+      const doc = meta.new!;
       await collection.replace(doc, {
         sup: "dawg",
         _from: "person/Bob",
@@ -192,8 +188,8 @@ describe("GraphEdgeCollection API", function() {
         _from: "person/Bob",
         _to: "person/Alice"
       };
-      const result = await collection.save(data, { returnNew: true });
-      const doc = result.new!;
+      const meta = await collection.save(data, { returnNew: true });
+      const doc = meta.new!;
       await collection.update(doc, { sup: "dawg", empty: null });
       const newData = await collection.edge(doc._key);
       expect(newData).to.have.property("potato", doc.potato);
@@ -207,8 +203,8 @@ describe("GraphEdgeCollection API", function() {
         _from: "person/Bob",
         _to: "person/Alice"
       };
-      const result = await collection.save(data, { returnNew: true });
-      const doc = result.new!;
+      const meta = await collection.save(data, { returnNew: true });
+      const doc = meta.new!;
       await collection.update(
         doc,
         { sup: "dawg", empty: null },
