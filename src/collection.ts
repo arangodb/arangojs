@@ -20,7 +20,7 @@ export function documentHandle(
     );
   }
   if (selector.includes("/")) {
-    if (selector.startsWith(`${collectionName}/`)) {
+    if (!selector.startsWith(`${collectionName}/`)) {
       throw new Error(
         `Document ID "${selector}" does not match collection name "${collectionName}"`
       );
@@ -951,7 +951,7 @@ export class Collection<T extends object = any>
   }
 
   rotate() {
-    return this._put("rotate").then(body => body.result);
+    return this._put("rotate").then((body) => body.result);
   }
 
   truncate() {
@@ -1063,7 +1063,7 @@ export class Collection<T extends object = any>
     return this._connection.request(
       {
         method: "PUT",
-        path: `/_api/${documentHandle(selector, this._name)}`,
+        path: `/_api/document/${documentHandle(selector, this._name)}`,
         body: newValue,
         qs: opts,
       },
@@ -1078,7 +1078,7 @@ export class Collection<T extends object = any>
     return this._connection.request(
       {
         method: "PUT",
-        path: `/_api/${this._name}`,
+        path: `/_api/document/${this._name}`,
         body: newValues,
         qs: opts,
       },
@@ -1121,7 +1121,7 @@ export class Collection<T extends object = any>
     return this._connection.request(
       {
         method: "DELETE",
-        path: `/_api/${documentHandle(selector, this._name)}`,
+        path: `/_api/document/${documentHandle(selector, this._name)}`,
         qs: opts,
       },
       (res) => res.body
@@ -1135,7 +1135,7 @@ export class Collection<T extends object = any>
     return this._connection.request(
       {
         method: "DELETE",
-        path: `/_api/${this._name}`,
+        path: `/_api/document/${this._name}`,
         body: selectors,
         qs: opts,
       },

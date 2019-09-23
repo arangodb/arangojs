@@ -1,3 +1,4 @@
+import { Readable } from "stream";
 import { AnalyzerDescription, ArangoAnalyzer } from "./analyzer";
 import { AqlLiteral, AqlQuery, isAqlLiteral, isAqlQuery } from "./aql-query";
 import {
@@ -18,6 +19,7 @@ import { Headers, Route } from "./route";
 import { ArangoTransaction } from "./transaction";
 import { btoa } from "./util/btoa";
 import { DATABASE_NOT_FOUND } from "./util/codes";
+import { FoxxManifest } from "./util/foxx-manifest";
 import { toForm } from "./util/multipart";
 import { ArangoResponseMetadata } from "./util/types";
 import {
@@ -26,8 +28,6 @@ import {
   ViewDescription,
   _constructView
 } from "./view";
-
-type TODO_any = any;
 
 function colToString(collection: string | ArangoCollection): string {
   if (isArangoCollection(collection)) {
@@ -225,7 +225,8 @@ type ReplaceServiceOptions = {
 };
 
 type UninstallServiceOptions = {
-  teardown?: false;
+  teardown?: boolean;
+  force?: boolean;
 };
 
 type ServiceInfo = {
@@ -235,7 +236,7 @@ type ServiceInfo = {
   version?: string;
   development: boolean;
   legacy: boolean;
-  manifest: TODO_any;
+  manifest: FoxxManifest;
   checksum: string;
   options: {
     configuration: ServiceConfigurationValues;
@@ -291,6 +292,104 @@ type ServiceDependenciesValues = {
 
 type ServiceScripts = {
   [key: string]: string;
+};
+
+type ServiceTestStats = {
+  tests: number;
+  passes: number;
+  failures: number;
+  pending: number;
+  duration: number;
+};
+
+type ServiceTestStreamTest = {
+  title: string;
+  fullTitle: string;
+  duration: number;
+  err?: string;
+};
+
+type ServiceTestStreamReport = (
+  | ["start", { total: number }]
+  | ["pass", ServiceTestStreamTest]
+  | ["fail", ServiceTestStreamTest]
+  | ["end", ServiceTestStats])[];
+
+type ServiceTestSuiteTest = {
+  result: "pending" | "pass" | "fail";
+  title: string;
+  duration: number;
+  err?: any;
+};
+
+type ServiceTestSuite = {
+  title: string;
+  suites: ServiceTestSuite[];
+  tests: ServiceTestSuiteTest[];
+};
+
+type ServiceTestSuiteReport = {
+  stats: ServiceTestStats;
+  suites: ServiceTestSuite[];
+  tests: ServiceTestSuiteTest[];
+};
+
+type ServiceTestXunitTest =
+  | ["testcase", { classname: string; name: string; time: number }]
+  | [
+      "testcase",
+      { classname: string; name: string; time: number },
+      ["failure", { message: string; type: string }, string]
+    ];
+
+type ServiceTestXunitReport = [
+  "testsuite",
+  {
+    timestamp: number;
+    tests: number;
+    errors: number;
+    failures: number;
+    skip: number;
+    time: number;
+  },
+  ...(ServiceTestXunitTest[])
+];
+
+type ServiceTestTapReport = string[];
+
+type ServiceTestDefaultTest = {
+  title: string;
+  fullTitle: string;
+  duration: number;
+  err?: string;
+};
+
+type ServiceTestDefaultReport = {
+  stats: ServiceTestStats;
+  tests: ServiceTestDefaultTest[];
+  pending: ServiceTestDefaultTest[];
+  failures: ServiceTestDefaultTest[];
+  passes: ServiceTestDefaultTest[];
+};
+
+type DatabaseInfo = {
+  name: string;
+  id: string;
+  path: string;
+  isSystem: boolean;
+};
+
+type SwaggerJson = {
+  info: {
+    title: string;
+    description: string;
+    version: string;
+    license: string;
+  };
+  path: {
+    [key: string]: any;
+  };
+  [key: string]: any;
 };
 
 export class Database {
@@ -370,7 +469,7 @@ export class Database {
     return this;
   }
 
-  get(): Promise<TODO_any> {
+  get(): Promise<DatabaseInfo> {
     return this._connection.request(
       { path: "/_api/database/current" },
       res => res.body.result
@@ -811,7 +910,7 @@ export class Database {
 
   async installService(
     mount: string,
-    source: TODO_any,
+    source: Readable | Buffer | Blob | string,
     options: InstallServiceOptions = {}
   ): Promise<ServiceInfo> {
     const { configuration, dependencies, ...qs } = options;
@@ -834,7 +933,7 @@ export class Database {
 
   async upgradeService(
     mount: string,
-    source: TODO_any,
+    source: Readable | Buffer | Blob | string,
     options: ReplaceServiceOptions = {}
   ): Promise<ServiceInfo> {
     const { configuration, dependencies, ...qs } = options;
@@ -857,7 +956,7 @@ export class Database {
 
   async replaceService(
     mount: string,
-    source: TODO_any,
+    source: Readable | Buffer | Blob | string,
     options: ReplaceServiceOptions = {}
   ): Promise<ServiceInfo> {
     const { configuration, dependencies, ...qs } = options;
@@ -1194,11 +1293,46 @@ export class Database {
 
   runServiceTests(
     mount: string,
+    options: {
+      reporter: "stream";
+      filter?: string;
+    }
+  ): Promise<ServiceTestStreamReport>;
+  runServiceTests(
+    mount: string,
+    options: {
+      reporter: "suite";
+      filter?: string;
+    }
+  ): Promise<ServiceTestSuiteReport>;
+  runServiceTests(
+    mount: string,
+    options: {
+      reporter: "xunit";
+      filter?: string;
+    }
+  ): Promise<ServiceTestXunitReport>;
+  runServiceTests(
+    mount: string,
+    options: {
+      reporter: "tap";
+      filter?: string;
+    }
+  ): Promise<ServiceTestTapReport>;
+  runServiceTests(
+    mount: string,
+    options?: {
+      reporter?: "default";
+      filter?: string;
+    }
+  ): Promise<ServiceTestDefaultReport>;
+  runServiceTests(
+    mount: string,
     options?: {
       filter?: string;
-      reporter?: "stream" | "suite" | "xunit" | "tap" | "default";
+      reporter?: string;
     }
-  ): Promise<any> {
+  ) {
     return this._connection.request(
       {
         method: "POST",
@@ -1222,7 +1356,7 @@ export class Database {
     );
   }
 
-  getServiceDocumentation(mount: string): Promise<string | undefined> {
+  getServiceDocumentation(mount: string): Promise<SwaggerJson> {
     return this._connection.request(
       {
         path: "/_api/foxx/swagger",

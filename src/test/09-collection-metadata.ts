@@ -16,8 +16,7 @@ describe("Collection metadata", function() {
     db = new Database({ url: ARANGO_URL, arangoVersion: ARANGO_VERSION });
     await db.createDatabase(dbName);
     db.useDatabase(dbName);
-    collection = db.collection(collectionName);
-    await collection.create();
+    collection = await db.createCollection(collectionName);
   });
   after(async () => {
     db.useDatabase("_system");
