@@ -11,6 +11,27 @@ import {
 import { Connection } from "./connection";
 import { isArangoError } from "./error";
 
+export interface InsertOptions {
+  waitForSync?: boolean;
+  returnNew?: boolean;
+}
+
+export interface ReplaceOptions extends InsertOptions {
+  waitForSync?: boolean;
+  keepNull?: boolean;
+  returnOld?: boolean;
+  returnNew?: boolean;
+  rev?: string;
+}
+
+export interface RemoveOptions {
+  waitForSync?: boolean;
+  returnOld?: boolean;
+  rev?: string;
+}
+
+export interface UpdateOptions extends ReplaceOptions {}
+
 export class GraphVertexCollection extends BaseCollection {
   type = CollectionType.DOCUMENT_COLLECTION;
 
@@ -67,7 +88,7 @@ export class GraphVertexCollection extends BaseCollection {
     return this.document(documentHandle, opts);
   }
 
-  save(data: Object | Array<Object>, opts?: { waitForSync?: boolean }) {
+  save(data: Object | Array<Object>, opts?: InsertOptions) {
     return this._connection.request(
       {
         method: "POST",
@@ -82,7 +103,7 @@ export class GraphVertexCollection extends BaseCollection {
   replace(
     documentHandle: DocumentHandle,
     newValue: Object | Array<Object>,
-    opts: any = {}
+    opts: ReplaceOptions | string = {}
   ) {
     const headers: { [key: string]: string } = {};
     if (typeof opts === "string") {
@@ -110,7 +131,7 @@ export class GraphVertexCollection extends BaseCollection {
   update(
     documentHandle: DocumentHandle,
     newValue: Object | Array<Object>,
-    opts: any = {}
+    opts: UpdateOptions | string = {}
   ) {
     const headers: { [key: string]: string } = {};
     if (typeof opts === "string") {
@@ -135,7 +156,7 @@ export class GraphVertexCollection extends BaseCollection {
     );
   }
 
-  remove(documentHandle: DocumentHandle, opts: any = {}) {
+  remove(documentHandle: DocumentHandle, opts: RemoveOptions | string = {}) {
     const headers: { [key: string]: string } = {};
     if (typeof opts === "string") {
       opts = { rev: opts };
@@ -203,19 +224,19 @@ export class GraphEdgeCollection extends EdgeCollection {
 
   save(
     data: Object | Array<Object>,
-    opts?: { waitForSync?: boolean }
+    opts?: InsertOptions
   ): Promise<any>;
   save(
     data: Object | Array<Object>,
     fromId: DocumentHandle,
     toId: DocumentHandle,
-    opts?: { waitForSync?: boolean }
+    opts?: InsertOptions
   ): Promise<any>;
   save(
     data: Object | Array<Object>,
-    fromIdOrOpts?: DocumentHandle | { waitForSync?: boolean },
+    fromIdOrOpts?: DocumentHandle | InsertOptions,
     toId?: DocumentHandle,
-    opts?: { waitForSync?: boolean }
+    opts?: InsertOptions
   ) {
     if (toId !== undefined) {
       const fromId = this._documentHandle(fromIdOrOpts as DocumentHandle);
@@ -227,7 +248,7 @@ export class GraphEdgeCollection extends EdgeCollection {
       }
     } else {
       if (fromIdOrOpts !== undefined) {
-        opts = fromIdOrOpts as { waitForSync?: boolean };
+        opts = fromIdOrOpts as InsertOptions;
       }
     }
     return this._connection.request(
@@ -244,7 +265,7 @@ export class GraphEdgeCollection extends EdgeCollection {
   replace(
     documentHandle: DocumentHandle,
     newValue: Object | Array<Object>,
-    opts: any = {}
+    opts: ReplaceOptions | string = {}
   ) {
     const headers: { [key: string]: string } = {};
     if (typeof opts === "string") {
@@ -272,7 +293,7 @@ export class GraphEdgeCollection extends EdgeCollection {
   update(
     documentHandle: DocumentHandle,
     newValue: Object | Array<Object>,
-    opts: any = {}
+    opts: UpdateOptions | string = {}
   ) {
     const headers: { [key: string]: string } = {};
     if (typeof opts === "string") {
@@ -297,7 +318,7 @@ export class GraphEdgeCollection extends EdgeCollection {
     );
   }
 
-  remove(documentHandle: DocumentHandle, opts: any = {}) {
+  remove(documentHandle: DocumentHandle, opts: RemoveOptions | string = {}) {
     const headers: { [key: string]: string } = {};
     if (typeof opts === "string") {
       opts = { rev: opts };
