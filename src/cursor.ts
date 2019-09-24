@@ -68,6 +68,20 @@ export class ArrayCursor {
     return Boolean(this._hasMore || this._result.length);
   }
 
+  async nextBatch(): Promise<T[] | undefined> {
+    if (!this._hasMore) {
+      return undefined;
+    }
+    if (!this._result.length) {
+      await this._more();
+    }
+    return this._result.splice(0, this._result.length);
+  }
+
+  hasNextBatch(): boolean {
+    return this._hasMore;
+  }
+
   async each(
     fn: (value: any, index: number, self: ArrayCursor) => boolean | void
   ): Promise<boolean> {
