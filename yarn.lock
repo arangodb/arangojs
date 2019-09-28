@@ -5774,10 +5774,10 @@ write@^0.2.1:
   dependencies:
     mkdirp "^0.5.1"
 
-x3-linkedlist@0.1.0:
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/x3-linkedlist/-/x3-linkedlist-0.1.0.tgz#1e94847be08c516487865c544b3112006c91ced6"
-  integrity sha512-vb2uBw2TYM8uL4kV4FmEARJxuPoMKY+Jb0rz+VjwfYGOQDhwvsGUTp7jA0y1ZzBUHX5nuQ7C5P8d+QuyovSO4A==
+x3-linkedlist@1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/x3-linkedlist/-/x3-linkedlist-1.0.0.tgz#f5a8c7e742cf3b31d7800e031ab15135387f85d3"
+  integrity sha512-8CwA4XCMtso4G6qJWCzqbWQ9YJjtRiD4rUHFJ77rlAXQUN38Ni9E84y4F9qt4ijxZhfpJVm9tRs8E2vdLC4ZqQ==
 
 xhr@^2.4.1:
   version "2.5.0"

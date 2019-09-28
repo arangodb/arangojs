@@ -8,7 +8,7 @@ import {
 } from "./util/request";
 import { sanitizeUrl } from "./util/sanitizeUrl";
 import { Errback } from "./util/types";
-import LinkedList from "x3-linkedlist";
+import { LinkedList } from "x3-linkedlist";
 
 const MIME_JSON = /\/(json|javascript)(\W|$)/;
 const LEADER_ENDPOINT_HEADER = "x-arango-endpoint";
