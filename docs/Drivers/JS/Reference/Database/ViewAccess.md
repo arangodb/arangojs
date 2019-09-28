@@ -3,14 +3,14 @@
 These functions implement the
 [HTTP API for accessing views](https://docs.arangodb.com/latest/HTTP/Views/Getting.html).
 
+{% hint 'info' %}
+Views were introduced in ArangoDB 3.4 and are not supported by earlier versions
+of ArangoDB.
+{% endhint %}
+
 ## database.arangoSearchView
 
 `database.arangoSearchView(viewName): ArangoSearchView`
-
-{% hint 'info' %}
-This method is only available when targeting ArangoDB 3.4 or later,
-see [Compatibility](../../GettingStarted/README.md#compatibility).
-{% endhint %}
 
 Returns a _ArangoSearchView_ instance for the given view name.
 
@@ -31,11 +31,6 @@ const view = db.arangoSearchView("potatoes");
 
 `async database.listViews(): Array<Object>`
 
-{% hint 'info' %}
-This method is only available when targeting ArangoDB 3.4 or later,
-see [Compatibility](../../GettingStarted/README.md#compatibility).
-{% endhint %}
-
 Fetches all views from the database and returns an array of view
 descriptions.
 
@@ -51,11 +46,6 @@ const views = await db.listViews();
 ## database.views
 
 `async database.views([excludeSystem]): Array<View>`
-
-{% hint 'info' %}
-This method is only available when targeting ArangoDB 3.4 or later,
-see [Compatibility](../../GettingStarted/README.md#compatibility).
-{% endhint %}
 
 Fetches all views from the database and returns an array of
 _ArangoSearchView_ instances for the views.

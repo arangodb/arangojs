@@ -1,14 +1,15 @@
+import { expect } from "chai";
 import * as fs from "fs";
 import * as path from "path";
-
-import { ArangoError } from "../error";
 import { Database } from "../arangojs";
-import { expect } from "chai";
+import { ArangoError } from "../error";
 import { sanitizeUrl } from "../util/sanitizeUrl";
 
-const ARANGO_VERSION = Number(process.env.ARANGO_VERSION || 30400);
 const ARANGO_URL = process.env.TEST_ARANGODB_URL || "http://localhost:8529";
 const ARANGO_URL_SELF_REACHABLE = process.env.TEST_ARANGODB_URL_SELF_REACHABLE;
+const ARANGO_VERSION = Number(
+  process.env.ARANGO_VERSION || process.env.ARANGOJS_DEVEL_VERSION || 30400
+);
 
 const normalizedArangoUrl = sanitizeUrl(ARANGO_URL);
 const localAppsPath = path.resolve(".", "fixtures");
@@ -29,10 +30,7 @@ describe("Foxx service", () => {
   let db: Database;
   let arangoPaths: any;
   before(async () => {
-    db = new Database({
-      url: ARANGO_URL,
-      arangoVersion: ARANGO_VERSION
-    });
+    db = new Database({ url: ARANGO_URL, arangoVersion: ARANGO_VERSION });
     await db.installService(
       serviceServiceMount,
       fs.readFileSync(path.resolve("fixtures", "service-service-service.zip"))

@@ -7,6 +7,7 @@ import {
   RequestFunction
 } from "./util/request";
 import { sanitizeUrl } from "./util/sanitizeUrl";
+import { Errback } from "./util/types";
 import LinkedList from "x3-linkedlist";
 
 const MIME_JSON = /\/(json|javascript)(\W|$)/;
@@ -98,6 +99,7 @@ export class Connection {
   private _urls: string[] = [];
   private _activeHost: number;
   private _activeDirtyHost: number;
+  private _transactionId: string | null = null;
 
   constructor(config: Config = {}) {
     if (typeof config === "string") config = { url: config };
@@ -166,7 +168,7 @@ export class Connection {
       this._activeHost = (this._activeHost + 1) % this._hosts.length;
     }
     this._activeTasks += 1;
-    this._hosts[host](task.options, (err, res) => {
+    const callback: Errback<ArangojsResponse> = (err, res) => {
       this._activeTasks -= 1;
       if (err) {
         if (
@@ -204,12 +206,17 @@ export class Connection {
           }
           this._queue.push(task);
         } else {
-          response.host = host;
+          response.arangojsHostId = host;
           task.resolve(response);
         }
       }
       this._runQueue();
-    });
+    };
+    try {
+      this._hosts[host](task.options, callback);
+    } catch (e) {
+      callback(e);
+    }
   }
 
   private _buildUrl({ absolutePath = false, basePath, path, qs }: UrlInfo) {
@@ -260,6 +267,14 @@ export class Connection {
     this._databaseName = databaseName;
   }
 
+  setTransactionId(transactionId: string) {
+    this._transactionId = transactionId;
+  }
+
+  clearTransactionId() {
+    this._transactionId = null;
+  }
+
   setHeader(key: string, value: string) {
     this._headers[key] = value;
   }
@@ -302,6 +317,10 @@ export class Connection {
         "content-type": contentType,
         "x-arango-version": String(this._arangoVersion)
       };
+
+      if (this._transactionId) {
+        extraHeaders["x-arango-trx-id"] = this._transactionId;
+      }
 
       this._queue.push({
         retries: 0,

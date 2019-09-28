@@ -4,15 +4,17 @@ import { DocumentCollection, EdgeCollection } from "../collection";
 
 const range = (n: number): number[] => Array.from(Array(n).keys());
 
+const ARANGO_URL = process.env.TEST_ARANGODB_URL || "http://localhost:8529";
+const ARANGO_VERSION = Number(
+  process.env.ARANGO_VERSION || process.env.ARANGOJS_DEVEL_VERSION || 30400
+);
+
 describe("Accessing collections", function() {
   const name = `testdb_${Date.now()}`;
   let db: Database;
   let builtinSystemCollections: string[];
   before(async () => {
-    db = new Database({
-      url: process.env.TEST_ARANGODB_URL || "http://localhost:8529",
-      arangoVersion: Number(process.env.ARANGO_VERSION || 30400)
-    });
+    db = new Database({ url: ARANGO_URL, arangoVersion: ARANGO_VERSION });
     await db.createDatabase(name);
     db.useDatabase(name);
     const collections = await db.listCollections(false);

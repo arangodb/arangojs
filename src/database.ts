@@ -1,3 +1,4 @@
+import { AnalyzerDescription, ArangoAnalyzer } from "./analyzer";
 import { AqlLiteral, AqlQuery, isAqlLiteral, isAqlQuery } from "./aql-query";
 import {
   ArangoCollection,
@@ -11,6 +12,7 @@ import { ArrayCursor } from "./cursor";
 import { isArangoError } from "./error";
 import { Graph } from "./graph";
 import { Route } from "./route";
+import { ArangoTransaction } from "./transaction";
 import { btoa } from "./util/btoa";
 import { toForm } from "./util/multipart";
 import { ArangoSearchView, ArangoView, constructView, ViewType } from "./view";
@@ -21,19 +23,29 @@ function colToString(collection: string | ArangoCollection): string {
   } else return String(collection);
 }
 
+export type TransactionCollectionsObject = {
+  exclusive?: string | string[];
+  write?: string | string[];
+  read?: string | string[];
+};
+
 export type TransactionCollections =
   | string
   | ArangoCollection
   | (string | ArangoCollection)[]
   | {
+      exclusive?: string | ArangoCollection | (string | ArangoCollection)[];
       write?: string | ArangoCollection | (string | ArangoCollection)[];
       read?: string | ArangoCollection | (string | ArangoCollection)[];
     };
 
 export type TransactionOptions = {
+  allowImplicit?: boolean;
   lockTimeout?: number;
   maxTransactionSize?: number;
+  /** @deprecated removed in ArangoDB 3.4, RocksDB-only */
   intermediateCommitCount?: number;
+  /** @deprecated removed in ArangoDB 3.4, RocksDB-only */
   intermediateCommitSize?: number;
   waitForSync?: boolean;
 };
@@ -59,9 +71,11 @@ export type QueryOptions = {
     stream?: boolean;
     skipInaccessibleCollections?: boolean;
     maxWarningsCount?: number;
+    /** RocksDB-only */
     intermediateCommitCount?: number;
     satteliteSyncWait?: number;
     fullCount?: boolean;
+    /** RocksDB-only */
     intermediateCommitSize?: number;
     optimizer?: { rules?: string[] };
     maxPlans?: number;
@@ -157,6 +171,17 @@ export class Database {
     return this._connection.getDatabaseName() || null;
   }
 
+  //#region misc
+  version(): Promise<any> {
+    return this._connection.request(
+      {
+        method: "GET",
+        path: "/_api/version"
+      },
+      res => res.body
+    );
+  }
+
   route(path?: string, headers?: Object): Route {
     return new Route(this._connection, path, headers);
   }
@@ -175,12 +200,21 @@ export class Database {
   close(): void {
     this._connection.close();
   }
+  //#endregion
 
-  // Database manipulation
-
-  useDatabase(databaseName: string): this {
-    this._connection.setDatabaseName(databaseName);
-    return this;
+  //#region auth
+  login(username: string = "root", password: string = ""): Promise<string> {
+    return this._connection.request(
+      {
+        method: "POST",
+        path: "/_open/auth",
+        body: { username, password }
+      },
+      res => {
+        this.useBearerAuth(res.body.jwt);
+        return res.body.jwt;
+      }
+    );
   }
 
   useBearerAuth(token: string): this {
@@ -193,6 +227,13 @@ export class Database {
       "authorization",
       `Basic ${btoa(`${username}:${password}`)}`
     );
+    return this;
+  }
+  //#endregion
+
+  //#region databases
+  useDatabase(databaseName: string): this {
+    this._connection.setDatabaseName(databaseName);
     return this;
   }
 
@@ -252,9 +293,9 @@ export class Database {
       res => res.body
     );
   }
+  //#endregion
 
-  // Collection manipulation
-
+  //#region collections
   collection<T extends object = any>(
     collectionName: string
   ): DocumentCollection<T> {
@@ -303,9 +344,9 @@ export class Database {
       )
     );
   }
+  //#endregion
 
-  // Views
-
+  //#region views
   arangoSearchView(viewName: string): ArangoSearchView {
     return new ArangoSearchView(this._connection, viewName);
   }
@@ -321,9 +362,105 @@ export class Database {
     const views = await this.listViews();
     return views.map((data: any) => constructView(this._connection, data));
   }
+  //#endregion
 
-  // Graph manipulation
+  //#region analyzers
+  analyzer(name: string): ArangoAnalyzer {
+    return new ArangoAnalyzer(this._connection, name);
+  }
 
+  listAnalyzers(): Promise<AnalyzerDescription[]> {
+    return this._connection.request(
+      { path: "/_api/analyzer" },
+      res => res.body.result
+    );
+  }
+
+  async analyzers(): Promise<ArangoAnalyzer[]> {
+    const analyzers = await this.listAnalyzers();
+    return analyzers.map(data => this.analyzer(data.name));
+  }
+  //#endregion
+
+  //#region transactions
+  executeTransaction(
+    collections: TransactionCollections,
+    action: string,
+    options?: TransactionOptions & { params?: any }
+  ): Promise<any> {
+    return this._connection.request(
+      {
+        method: "POST",
+        path: "/_api/transaction",
+        body: {
+          collections: coerceTransactionCollections(collections),
+          action,
+          ...options
+        }
+      },
+      res => res.body.result
+    );
+  }
+
+  transaction(transactionId: string): ArangoTransaction;
+  transaction(
+    collections: TransactionCollections,
+    action: string,
+    params?: any,
+    options?: TransactionOptions
+  ): Promise<any>;
+  transaction(
+    collections: TransactionCollections,
+    action: string,
+    lockTimeout?: number
+  ): Promise<any>;
+  transaction(
+    collections: TransactionCollections,
+    action: string,
+    params?: any,
+    lockTimeout?: number
+  ): Promise<any>;
+  transaction(
+    collectionsOrId: TransactionCollections | string,
+    action?: string,
+    params?: any | number,
+    options?: TransactionOptions | number
+  ): Promise<any> | ArangoTransaction {
+    if (arguments.length === 1 && typeof collectionsOrId === "string") {
+      return new ArangoTransaction(this._connection, collectionsOrId);
+    }
+    if (typeof params === "number") {
+      options = params;
+      params = undefined;
+    }
+    if (typeof options === "number") {
+      options = { lockTimeout: options };
+    }
+    return this.executeTransaction(collectionsOrId, action!, {
+      params,
+      ...options
+    });
+  }
+
+  beginTransaction(
+    collections: TransactionCollections,
+    options?: TransactionOptions
+  ): Promise<ArangoTransaction> {
+    return this._connection.request(
+      {
+        method: "POST",
+        path: "/_api/transaction/begin",
+        body: {
+          collections: coerceTransactionCollections(collections),
+          ...options
+        }
+      },
+      res => new ArangoTransaction(this._connection, res.body.result.id)
+    );
+  }
+  //#endregion
+
+  //#region graphs
   graph(graphName: string): Graph {
     return new Graph(this._connection, graphName);
   }
@@ -339,82 +476,9 @@ export class Database {
     const graphs = await this.listGraphs();
     return graphs.map((data: any) => this.graph(data._key));
   }
+  //#endregion
 
-  // Queries
-
-  transaction(
-    collections: TransactionCollections,
-    action: string
-  ): Promise<any>;
-  transaction(
-    collections: TransactionCollections,
-    action: string,
-    params?: Object
-  ): Promise<any>;
-  transaction(
-    collections: TransactionCollections,
-    action: string,
-    params?: Object,
-    options?: TransactionOptions
-  ): Promise<any>;
-  transaction(
-    collections: TransactionCollections,
-    action: string,
-    lockTimeout?: number
-  ): Promise<any>;
-  transaction(
-    collections: TransactionCollections,
-    action: string,
-    params?: Object,
-    lockTimeout?: number
-  ): Promise<any>;
-  transaction(
-    collections: TransactionCollections,
-    action: string,
-    params?: Object | number,
-    options?: TransactionOptions | number
-  ): Promise<any> {
-    if (typeof params === "number") {
-      options = params;
-      params = undefined;
-    }
-    if (typeof options === "number") {
-      options = { lockTimeout: options };
-    }
-    if (typeof collections === "string") {
-      collections = { write: [collections] };
-    } else if (Array.isArray(collections)) {
-      collections = { write: collections.map(colToString) };
-    } else if (isArangoCollection(collections)) {
-      collections = { write: colToString(collections) };
-    } else if (collections && typeof collections === "object") {
-      collections = { ...collections };
-      if (collections.read) {
-        if (!Array.isArray(collections.read)) {
-          collections.read = colToString(collections.read);
-        } else collections.read = collections.read.map(colToString);
-      }
-      if (collections.write) {
-        if (!Array.isArray(collections.write)) {
-          collections.write = colToString(collections.write);
-        } else collections.write = collections.write.map(colToString);
-      }
-    }
-    return this._connection.request(
-      {
-        method: "POST",
-        path: "/_api/transaction",
-        body: {
-          collections,
-          action,
-          params,
-          ...options
-        }
-      },
-      res => res.body.result
-    );
-  }
-
+  //#region queries
   query(query: string | AqlQuery | AqlLiteral): Promise<ArrayCursor>;
   query(query: AqlQuery, opts?: QueryOptions): Promise<ArrayCursor>;
   query(
@@ -445,7 +509,12 @@ export class Database {
         timeout
       },
       res =>
-        new ArrayCursor(this._connection, res.body, res.host, allowDirtyRead)
+        new ArrayCursor(
+          this._connection,
+          res.body,
+          res.arangojsHostId,
+          allowDirtyRead
+        )
     );
   }
 
@@ -557,9 +626,9 @@ export class Database {
       () => undefined
     );
   }
+  //#endregion
 
-  // Function management
-
+  //#region functions
   listFunctions() {
     return this._connection.request(
       { path: "/_api/aqlfunction" },
@@ -588,9 +657,9 @@ export class Database {
       res => res.body
     );
   }
+  //#endregion
 
-  // Service management
-
+  //#region services
   listServices() {
     return this._connection.request({ path: "/_api/foxx" }, res => res.body);
   }
@@ -941,28 +1010,38 @@ export class Database {
       () => undefined
     );
   }
+  //#endregion
+}
 
-  version(): Promise<any> {
-    return this._connection.request(
-      {
-        method: "GET",
-        path: "/_api/version"
-      },
-      res => res.body
-    );
+function coerceTransactionCollections(
+  collections: TransactionCollections
+): TransactionCollectionsObject {
+  if (typeof collections === "string") {
+    return { write: [collections] };
   }
-
-  login(username: string = "root", password: string = ""): Promise<string> {
-    return this._connection.request(
-      {
-        method: "POST",
-        path: "/_open/auth",
-        body: { username, password }
-      },
-      res => {
-        this.useBearerAuth(res.body.jwt);
-        return res.body.jwt;
-      }
-    );
+  if (Array.isArray(collections)) {
+    return { write: collections.map(colToString) };
   }
+  if (isArangoCollection(collections)) {
+    return { write: colToString(collections) };
+  }
+  const cols: TransactionCollectionsObject = {};
+  if (collections) {
+    if (collections.read) {
+      cols.read = Array.isArray(collections.read)
+        ? collections.read.map(colToString)
+        : colToString(collections.read);
+    }
+    if (collections.write) {
+      cols.write = Array.isArray(collections.write)
+        ? collections.write.map(colToString)
+        : colToString(collections.write);
+    }
+    if (collections.exclusive) {
+      cols.exclusive = Array.isArray(collections.exclusive)
+        ? collections.exclusive.map(colToString)
+        : colToString(collections.exclusive);
+    }
+  }
+  return cols;
 }

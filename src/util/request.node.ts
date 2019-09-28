@@ -14,7 +14,7 @@ import { Errback } from "./types";
 export type ArangojsResponse = IncomingMessage & {
   request: ClientRequest;
   body?: any;
-  host?: number;
+  arangojsHostId?: number;
 };
 
 export type ArangojsError = Error & {
@@ -136,7 +136,9 @@ export function createRequest(
       } catch (e) {
         if (called) return;
         called = true;
-        callback(e);
+        setTimeout(() => {
+          callback(e);
+        });
       }
     },
     {

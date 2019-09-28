@@ -17,16 +17,12 @@ describe("AQL helpers", function() {
         [1, 2, 3],
         { a: "b" }
       ];
-      const query = aql`A ${values[0]} B ${values[1]} C ${values[2]} D ${
-        values[3]
-      } E ${values[4]} F ${values[5]} G ${values[6]} H ${values[7]} I ${
-        values[8]
-      } J ${values[9]} K EOF`;
+      const query = aql`A ${values[0]} B ${values[1]} C ${values[2]} D ${values[3]} E ${values[4]} F ${values[5]} G ${values[6]} H ${values[7]} I ${values[8]} J ${values[9]} K EOF`;
       expect(query.query).to.equal(
         `A @value0 B @value1 C @value2 D @value3 E @value4 F @value5 G @value6 H @value7 I @value8 J @value9 K EOF`
       );
-      const bindVarNames = Object.keys(query.bindVars).sort(
-        (a, b) => (+a.substr(5) > +b.substr(5) ? 1 : -1)
+      const bindVarNames = Object.keys(query.bindVars).sort((a, b) =>
+        +a.substr(5) > +b.substr(5) ? 1 : -1
       );
       expect(bindVarNames).to.eql([
         "value0",

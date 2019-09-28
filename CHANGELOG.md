@@ -5,7 +5,53 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [6.11.1] - 2019-08-30
+
+### Fixed
+
+- Fixed view properties not being passed correctly when creating views ([#621](https://github.com/arangodb/arangojs/issues/621))
+
+- Renamed internal `response.host` attribute to `response.arangojsHostId` ([#604](https://github.com/arangodb/arangojs/pull/604))
+
+  In some environments the `host` attribute is already present and read-only.
+  This should avoid a `TypeError` being thrown when a value is assigned by
+  arangojs.
+
+## [6.11.0] - 2019-08-16
+
+### Changed
+
+- Renamed `db.transaction` to `db.executeTransaction`
+
+  The method for executing server-side transactions is now called
+  `executeTransaction` and the `params` argument now must be passed via the
+  `options` object.
+
+  For backwards-compatibility the new `db.transaction` method will continue to
+  behave like before when passed an `action` string as the second argument.
+  Note that this behavior is deprecated and will be removed in arangojs 7.
+
+### Added
+
+- Added support for ArangoDB 3.5 streaming transactions
+
+  New streaming transactions can be created using `db.beginTransaction` and
+  existing streaming transactions can be accessed by passing the transaction ID
+  to `db.transaction`.
+
+  See the documentation of the `transaction.run` method for examples of using
+  streaming transactions with arangojs.
+
+- Added support for ArangoDB 3.5 Analyzers API
+
+  See the documentation of the `database.analyzer` method and the `Analyzer`
+  instances for information on using this API.
+
+- Added `collection.getResponsibleShard` method
+
+- Added support for new ArangoDB 3.5 collection properties
+
+- Added support for new ArangoDB 3.5 view properties
 
 ### Fixed
 
@@ -430,7 +476,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
   Graph methods now only return the relevant part of the response body.
 
-[unreleased]: https://github.com/arangodb/arangojs/compare/v6.10.0...HEAD
+[6.11.1]: https://github.com/arangodb/arangojs/compare/v6.11.0...v6.11.1
+[6.11.0]: https://github.com/arangodb/arangojs/compare/v6.10.0...v6.11.0
 [6.10.0]: https://github.com/arangodb/arangojs/compare/v6.9.0...v6.10.0
 [6.9.0]: https://github.com/arangodb/arangojs/compare/v6.8.0...v6.9.0
 [6.8.0]: https://github.com/arangodb/arangojs/compare/v6.7.0...v6.8.0
