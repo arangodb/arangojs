@@ -115,11 +115,11 @@ function doStuff(value) {
   return VALUE;
 }
 
-const cursor = await db.query(aql`FOR x IN ["a", "b", "c"] RETURN `')
+const cursor = await db.query(aql`FOR x IN ["a", "b", "c"] RETURN x`);
 const last = await cursor.each(doStuff);
-assert.deepEqual(results, ['A', 'B', 'C']);
+assert.deepEqual(results, ["A", "B", "C"]);
 assert.equal(cursor.hasNext(), false);
-assert.equal(last, 'C');
+assert.equal(last, "C");
 ```
 
 ## cursor.every
