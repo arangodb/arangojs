@@ -158,7 +158,7 @@ export class ArrayCursor {
     return this._connection.request(
       {
         method: "DELETE",
-        path: `/_api/query/${this._id}`
+        path: `/_api/cursor/${this._id}`
       },
       () => {
         this._hasMore = false;

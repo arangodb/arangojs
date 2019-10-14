@@ -302,7 +302,7 @@ assert.equal(cursor.hasNext(), false);
 
 `async cursor.kill(): void`
 
-Kills the query associated with the cursor.
+Kills the cursor and frees up associated database resources.
 
 This method has no effect if all result batches have already been fetched.
 
