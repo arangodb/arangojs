@@ -193,4 +193,26 @@ describe("Cursor API", () => {
       expect(result).to.eql(aqlResult.reduce((a, b) => a + b));
     });
   });
+  describe("cursor.kill", () => {
+    it("kills the cursor", async () => {
+      const cursor = await db.query(aql`FOR i IN 1..5 RETURN i`, {
+        batchSize: 2
+      });
+      const { _connection: connection, _host: host, _id: id } = cursor as any;
+      expect(cursor).to.have.property("_hasMore", true);
+      await cursor.kill();
+      expect(cursor).to.have.property("_hasMore", false);
+      try {
+        await connection.request({
+          method: "PUT",
+          path: `/_api/cursor/${id}`,
+          host: host
+        });
+      } catch (e) {
+        expect(e).to.have.property("errorNum", 1600);
+        return;
+      }
+      expect.fail("should not be able to fetch additional result set");
+    });
+  });
 });

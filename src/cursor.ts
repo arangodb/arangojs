@@ -7,7 +7,7 @@ export class ArrayCursor {
   private _connection: Connection;
   private _result: any;
   private _hasMore: boolean;
-  private _id: string;
+  private _id: string | undefined;
   private _host?: number;
   private _allowDirtyRead?: boolean;
 
@@ -20,8 +20,8 @@ export class ArrayCursor {
     this.extra = body.extra;
     this._connection = connection;
     this._result = body.result;
-    this._hasMore = Boolean(body.hasMore);
     this._id = body.id;
+    this._hasMore = Boolean(body.id && body.hasMore);
     this._host = host;
     this.count = body.count;
     this._allowDirtyRead = allowDirtyRead;
@@ -151,5 +151,19 @@ export class ArrayCursor {
       if (this._hasMore) await this._more();
     }
     return accu;
+  }
+
+  async kill(): Promise<void> {
+    if (!this._hasMore) return undefined;
+    return this._connection.request(
+      {
+        method: "DELETE",
+        path: `/_api/cursor/${this._id}`
+      },
+      () => {
+        this._hasMore = false;
+        return undefined;
+      }
+    );
   }
 }
