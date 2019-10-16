@@ -193,6 +193,23 @@ describe("Cursor API", () => {
       expect(result).to.eql(aqlResult.reduce((a, b) => a + b));
     });
   });
+  describe("cursor.nextBatch", () => {
+    beforeEach(async () => {
+      cursor = await db.query(aql`FOR i IN 1..10 RETURN i`, { batchSize: 5 });
+    });
+    it("fetches the next batch when empty", async () => {
+      expect((cursor as any)._result).to.eql([1, 2, 3, 4, 5]);
+      expect(cursor).to.have.property("_hasMore", true);
+      (cursor as any)._result.splice(0, 5);
+      expect(await cursor.nextBatch()).to.eql([6, 7, 8, 9, 10]);
+      expect(cursor).to.have.property("_hasMore", false);
+    });
+    it("returns all fetched values", async () => {
+      expect(await cursor.nextBatch()).to.eql([1, 2, 3, 4, 5]);
+      expect(await cursor.next()).to.equal(6);
+      expect(await cursor.nextBatch()).to.eql([7, 8, 9, 10]);
+    });
+  });
   describe("cursor.kill", () => {
     it("kills the cursor", async () => {
       const cursor = await db.query(aql`FOR i IN 1..5 RETURN i`, {
