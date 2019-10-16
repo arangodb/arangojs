@@ -69,11 +69,11 @@ export class ArrayCursor {
   }
 
   async nextBatch(): Promise<any[] | undefined> {
-    if (!this._hasMore) {
-      return undefined;
+    while (!this._result.length && this._hasMore) {
+      await this._more();
     }
     if (!this._result.length) {
-      await this._more();
+      return undefined;
     }
     return this._result.splice(0, this._result.length);
   }
