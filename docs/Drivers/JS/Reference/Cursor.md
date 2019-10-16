@@ -72,6 +72,25 @@ await cursor.all(); // exhausts the cursor
 assert.equal(cursor.hasNext(), false);
 ```
 
+## cursor.nextBatch
+
+`async cursor.nextBatch(): Object`
+
+Advances the cursor and returns all remaining values in the cursor's current
+batch. If the current batch has already been exhausted, fetches the next batch
+from the server and returns it. If no more batches are available, returns
+`undefined` instead.
+
+**Examples**
+
+```js
+const cursor = await db.query(aql`FOR i IN 1..10 RETURN i`, { batchSize: 5 });
+await cursor.nextBatch(); // [1, 2, 3, 4, 5]
+await cursor.next(); // 6
+await cursor.nextBatch(); // [7, 8, 9, 10]
+cursor.hasNext(); // false
+```
+
 ## cursor.each
 
 `async cursor.each(fn): any`
@@ -165,7 +184,7 @@ const result = await cursor.every(even);
 assert.equal(result, false); // 3 is not even
 assert.equal(cursor.hasNext(), true);
 
-const value = await cursor.next();
+const value = await cursor.nextBatch();
 assert.equal(value, 4); // next value after 3
 ```
 

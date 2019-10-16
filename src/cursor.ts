@@ -64,8 +64,18 @@ export class ArrayCursor {
     return this._result.shift();
   }
 
-  hasNext() {
+  hasNext(): boolean {
     return Boolean(this._hasMore || this._result.length);
+  }
+
+  async nextBatch(): Promise<any[] | undefined> {
+    while (!this._result.length && this._hasMore) {
+      await this._more();
+    }
+    if (!this._result.length) {
+      return undefined;
+    }
+    return this._result.splice(0, this._result.length);
   }
 
   async each(
