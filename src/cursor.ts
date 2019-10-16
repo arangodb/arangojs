@@ -64,11 +64,11 @@ export class ArrayCursor {
     return this._result.shift();
   }
 
-  hasNext() {
+  hasNext(): boolean {
     return Boolean(this._hasMore || this._result.length);
   }
 
-  async nextBatch(): Promise<T[] | undefined> {
+  async nextBatch(): Promise<any[] | undefined> {
     if (!this._hasMore) {
       return undefined;
     }
@@ -76,10 +76,6 @@ export class ArrayCursor {
       await this._more();
     }
     return this._result.splice(0, this._result.length);
-  }
-
-  hasNextBatch(): boolean {
-    return this._hasMore;
   }
 
   async each(
