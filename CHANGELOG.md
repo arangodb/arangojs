@@ -15,6 +15,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   `cursor.kill` method. Note that this method has no effect if the cursor
   is already depleted.
 
+- Added `cursor.nextBatch` method
+
+  Cursors normally fetch additional batches as necessary while iterating
+  over the individual results, this method allows consuming an entire batch
+  at a time.
+
 ## [6.11.1] - 2019-08-30
 
 ### Fixed
