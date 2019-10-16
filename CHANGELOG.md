@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [6.12.0] - 2019-10-16
 
-## Added
+### Added
 
 - Added `cursor.kill` method
 
