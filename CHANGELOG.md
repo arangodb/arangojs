@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Fixed
+
+- Replaced `linkedlist` dependency with `x3-linkedlist` ([#601](https://github.com/arangodb/arangojs/issues/601))
+
+  The `linkedlist` dependency had a memory leak and was no longer maintained. The replacement should fix this issue.
+
 ## [6.12.0] - 2019-10-16
 
 ### Added
