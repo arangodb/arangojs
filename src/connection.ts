@@ -8,8 +8,7 @@ import {
 } from "./util/request";
 import { sanitizeUrl } from "./util/sanitizeUrl";
 import { Errback } from "./util/types";
-
-const LinkedList = require("linkedlist/lib/linkedlist") as typeof Array;
+import { LinkedList } from "x3-linkedlist";
 
 const MIME_JSON = /\/(json|javascript)(\W|$)/;
 const LEADER_ENDPOINT_HEADER = "x-arango-endpoint";
@@ -95,7 +94,7 @@ export class Connection {
   private _shouldRetry: boolean;
   private _maxRetries: number;
   private _maxTasks: number;
-  private _queue: Task[] = new LinkedList();
+  private _queue = new LinkedList<Task>();
   private _hosts: RequestFunction[] = [];
   private _urls: string[] = [];
   private _activeHost: number;
