@@ -1,7 +1,7 @@
 # View API
 
 These functions implement the
-[HTTP API for manipulating views](https://docs.arangodb.com/latest/HTTP/Views/index.html).
+[HTTP API for manipulating views](https://www.arangodb.com/ldocs/stable/http/views.html).
 
 {% hint 'info' %}
 Views were introduced in ArangoDB 3.4 and are not supported by earlier versions
@@ -65,7 +65,7 @@ then returns the server response.
 - **properties**: `Object` (optional)
 
   For more information on the _properties_ object, see the
-  [HTTP API documentation for creating views](https://docs.arangodb.com/latest/HTTP/Views/ArangoSearch.html).
+  [HTTP API documentation for creating views](https://www.arangodb.com/docs/stable/http/views-arangosearch.html).
 
 **Examples**
 
@@ -87,7 +87,7 @@ Updates the properties of the view.
 - **properties**: `Object`
 
   For information on the _properties_ argument see the
-  [HTTP API for modifying views](https://docs.arangodb.com/latest/HTTP/Views/ArangoSearch.html).
+  [HTTP API for modifying views](https://www.arangodb.com/docs/stable/http/views-arangosearch.html).
 
 **Examples**
 
@@ -109,7 +109,7 @@ Replaces the properties of the view.
 - **properties**: `Object`
 
   For information on the _properties_ argument see the
-  [HTTP API for modifying views](https://docs.arangodb.com/latest/HTTP/Views/ArangoSearch.html).
+  [HTTP API for modifying views](https://www.arangodb.com/docs/stable/http/views-arangosearch.html).
 
 **Examples**
 
