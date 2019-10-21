@@ -1,7 +1,7 @@
 # Manipulating databases
 
 These functions implement the
-[HTTP API for manipulating databases](https://docs.arangodb.com/latest/HTTP/Database/index.html).
+[HTTP API for manipulating databases](https://www.arangodb.com/docs/stable/http/database.html).
 
 ## database.createDatabase
 
