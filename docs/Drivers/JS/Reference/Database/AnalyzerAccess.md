@@ -1,7 +1,7 @@
-# Accessing analyzers
+# Accessing Analyzers
 
 These functions implement the
-[HTTP API for accessing analyzers](https://docs.arangodb.com/latest/HTTP/Analyzers/index.html).
+[HTTP API for accessing analyzers](https://www.arangodb.com/docs/stable/http/analyzers.html).
 
 {% hint 'info' %}
 Analyzers were introduced in ArangoDB 3.5 and are not supported by earlier
@@ -12,7 +12,7 @@ versions of ArangoDB.
 
 `database.analyzer(analyzerName): Analyzer`
 
-Returns an _Analyzer_ instance representing the analyzer with the given analyzer
+Returns an _Analyzer_ instance representing the Analyzer with the given Analyzer
 name.
 
 **Examples**
@@ -27,7 +27,7 @@ const info = await analyzer.get();
 
 `async database.listAnalyzers(): Array<Object>`
 
-Fetches all analyzers visible in the database and returns an array of analyzer
+Fetches all Analyzers visible in the database and returns an array of Analyzer
 descriptions.
 
 **Examples**
@@ -42,8 +42,8 @@ const analyzers = await db.listAnalyzers();
 
 `async database.analyzers(): Array<Analyzer>`
 
-Fetches all analyzers visible in the database and returns an array of _Analyzer_
-instances for those analyzers.
+Fetches all Analyzers visible in the database and returns an array of _Analyzer_
+instances for those Analyzers.
 
 **Examples**
 
