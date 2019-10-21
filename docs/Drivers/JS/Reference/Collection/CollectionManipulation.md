@@ -1,7 +1,7 @@
 # Manipulating the collection
 
 These functions implement the
-[HTTP API for modifying collections](https://docs.arangodb.com/latest/HTTP/Collection/Modifying.html).
+[HTTP API for modifying collections](https://www.arangodb.com/docs/stable/http/collection-modifying.html).
 
 ## collection.create
 
@@ -15,7 +15,7 @@ then returns the server response.
 - **properties**: `Object` (optional)
 
   For more information on the _properties_ object, see the
-  [HTTP API documentation for creating collections](https://docs.arangodb.com/latest/HTTP/Collection/Creating.html).
+  [HTTP API documentation for creating collections](https://www.arangodb.com/docs/stable/http/collection-creating.html).
 
 **Examples**
 
@@ -82,7 +82,7 @@ Replaces the properties of the collection.
 - **properties**: `Object`
 
   For information on the _properties_ argument see the
-  [HTTP API for modifying collections](https://docs.arangodb.com/latest/HTTP/Collection/Modifying.html).
+  [HTTP API for modifying collections](https://www.arangodb.com/docs/stable/http/collection-modifying.html).
 
 **Examples**
 
@@ -162,7 +162,7 @@ Deletes the collection from the database.
     This parameter must be set to `true` when dropping a system collection.
 
   For more information on the _properties_ object, see the
-  [HTTP API documentation for dropping collections](https://docs.arangodb.com/latest/HTTP/Collection/Creating.html#drops-a-collection).
+  [HTTP API documentation for dropping collections](https://www.arangodb.com/docs/stable/http/collection-creating.html#drops-a-collection).
 
 **Examples**
 
