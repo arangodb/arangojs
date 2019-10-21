@@ -1,7 +1,7 @@
 # Collection API
 
 These functions implement the
-[HTTP API for manipulating collections](https://docs.arangodb.com/latest/HTTP/Collection/index.html).
+[HTTP API for manipulating collections](https://www.arangodb.com/docs/stable/http/collection.html).
 
 The _Collection API_ is implemented by all _Collection_ instances, regardless of
 their specific type. I.e. it represents a shared subset between instances of
@@ -13,7 +13,7 @@ their specific type. I.e. it represents a shared subset between instances of
 ## Getting information about the collection
 
 See the
-[HTTP API documentation](https://docs.arangodb.com/latest/HTTP/Collection/Getting.html)
+[HTTP API documentation](https://www.arangodb.com/docs/stable/http/collection-getting.html)
 for details.
 
 ## collection.exists
@@ -141,7 +141,7 @@ Retrieves the collection checksum.
 - **opts**: `Object` (optional)
 
   For information on the possible options see the
-  [HTTP API for getting collection information](https://docs.arangodb.com/latest/HTTP/Collection/Getting.html).
+  [HTTP API for getting collection information](https://www.arangodb.com/docs/stable/http/collection-getting.html).
 
 **Examples**
 
