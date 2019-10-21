@@ -1,7 +1,7 @@
 # Bulk importing documents
 
 This function implements the
-[HTTP API for bulk imports](https://docs.arangodb.com/latest/HTTP/BulkImports/index.html).
+[HTTP API for bulk imports](https://www.arangodb.com/docs/stable/http/bulk-imports.html).
 
 ## collection.import
 
@@ -107,7 +107,7 @@ Bulk imports the given _data_ into the collection.
     could not be imported.
 
 For more information on the _opts_ object, see the
-[HTTP API documentation for bulk imports](https://docs.arangodb.com/latest/HTTP/BulkImports/index.html).
+[HTTP API documentation for bulk imports](https://www.arangodb.com/docs/stable/http/bulk-imports.html).
 
 **Examples**
 
