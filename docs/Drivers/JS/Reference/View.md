@@ -1,7 +1,7 @@
 # View API
 
 These functions implement the
-[HTTP API for manipulating views](https://www.arangodb.com/ldocs/stable/http/views.html).
+[HTTP API for manipulating views](https://www.arangodb.com/docs/stable/http/views.html).
 
 {% hint 'info' %}
 Views were introduced in ArangoDB 3.4 and are not supported by earlier versions

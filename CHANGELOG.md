@@ -105,7 +105,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - Added query management API ([#474](https://github.com/arangodb/arangojs/issues/474))
 
-  This implements most endpoints of https://docs.arangodb.com/3.4/HTTP/AqlQuery/.
+  This implements most endpoints of the
+  [HTTP Interface for AQL Queries](https://www.arangodb.com/docs/stable/http/aql-query.html).
 
 ## [6.9.0] - 2018-11-07
 
