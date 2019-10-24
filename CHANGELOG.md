@@ -33,7 +33,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
-- Fixed view properties not being passed correctly when creating views ([#621](https://github.com/arangodb/arangojs/issues/621))
+- Fixed View properties not being passed correctly when creating Views ([#621](https://github.com/arangodb/arangojs/issues/621))
 
 - Renamed internal `response.host` attribute to `response.arangojsHostId` ([#604](https://github.com/arangodb/arangojs/pull/604))
 
@@ -75,14 +75,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - Added support for new ArangoDB 3.5 collection properties
 
-- Added support for new ArangoDB 3.5 view properties
+- Added support for new ArangoDB 3.5 View properties
 
 ### Fixed
 
 - Fixed a problem causing empty nested AQL expressions to be converted to bind variables
 
   Nesting an empty AQL expression like the result of calling `aql.join` with an empty
-  array would previously result in the AQL expression not being recognised and being
+  array would previously result in the AQL expression not being recognized and being
   converted to an object bind variable instead.
 
 ## [6.10.0] - 2018-12-22
