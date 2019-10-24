@@ -25,7 +25,7 @@ const result = await view.exists();
 
 ### view.get
 
-`async view.get(): TODO`
+`async view.get(): object`
 
 Retrieves general information about the View.
 
@@ -40,7 +40,7 @@ const data = await view.get();
 
 ### view.properties
 
-`async view.properties(): TODO`
+`async view.properties(): object`
 
 Retrieves the View's properties.
 
@@ -55,7 +55,7 @@ const data = await view.properties();
 
 ## view.create
 
-`async view.create([properties]): TODO`
+`async view.create([properties]): object`
 
 Creates a View with the given _properties_ for this View's name,
 then returns the server response.
@@ -78,7 +78,7 @@ await view.create();
 
 ## view.setProperties
 
-`async view.setProperties(properties): TODO`
+`async view.setProperties(properties): object`
 
 Updates the properties of the View.
 
@@ -100,7 +100,7 @@ assert.equal(result.consolidationIntervalMsec, 123);
 
 ## view.replaceProperties
 
-`async view.replaceProperties(properties): TODO`
+`async view.replaceProperties(properties): object`
 
 Replaces the properties of the View.
 
@@ -122,7 +122,7 @@ assert.equal(result.consolidationIntervalMsec, 234);
 
 ## view.rename
 
-`async view.rename(name): TODO`
+`async view.rename(name): object`
 
 Renames the View. The _View_ instance will automatically update its
 name when the rename succeeds.
@@ -140,7 +140,7 @@ assert.equal(view.name, result.name);
 
 ## view.drop
 
-`async view.drop(): TODO`
+`async view.drop(): boolean`
 
 Deletes the View from the database.
 
