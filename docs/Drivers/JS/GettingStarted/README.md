@@ -107,12 +107,17 @@ You can also use [unpkg](https://unpkg.com) during development:
 < !-- note the path includes the version number (e.g. 6.0.0) -- >
 <script src="https://unpkg.com/arangojs@6.0.0/lib/web.js"></script>
 <script>
-var db = new arangojs.Database();
-db.listCollections().then(function (collections) {
-  alert("Your collections: " + collections.map(function (collection) {
-    return collection.name;
-  }).join(", "));
-});
+  var db = new arangojs.Database();
+  db.listCollections().then(function(collections) {
+    alert(
+      "Your collections: " +
+        collections
+          .map(function(collection) {
+            return collection.name;
+          })
+          .join(", ")
+    );
+  });
 </script>
 ```
 
@@ -176,8 +181,7 @@ db.useBasicAuth("admin", "maplesyrup");
 
 // Using ArangoDB behind a reverse proxy
 const db = new Database({
-  url: "http://myproxy.local:8000",
-  isAbsolute: true // don't automatically append database path to URL
+  url: "http://myproxy.local:8000"
 });
 ```
 
