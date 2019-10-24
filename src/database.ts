@@ -580,7 +580,7 @@ export class Database {
   //#endregion
 
   //#region views
-  arangoSearchView(viewName: string): ArangoSearchView {
+  view(viewName: string): ArangoSearchView {
     return new ArangoSearchView(this._connection, viewName);
   }
 
