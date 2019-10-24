@@ -10,7 +10,7 @@ of ArangoDB.
 
 ## database.arangoSearchView
 
-`database.arangoSearchView(viewName): ArangoSearchView`
+`database.view(viewName): ArangoSearchView`
 
 Returns a _ArangoSearchView_ instance for the given View name.
 
@@ -24,7 +24,7 @@ Returns a _ArangoSearchView_ instance for the given View name.
 
 ```js
 const db = new Database();
-const view = db.arangoSearchView("potatoes");
+const view = db.view("potatoes");
 ```
 
 ## database.listViews

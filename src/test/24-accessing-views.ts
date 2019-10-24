@@ -28,7 +28,7 @@ describe34("Accessing views", function() {
   describe("database.arangoSearchView", () => {
     it("returns a ArangoSearchView instance for the view", () => {
       let name = "potato";
-      let view = db.arangoSearchView(name);
+      let view = db.view(name);
       expect(view).to.be.an.instanceof(ArangoSearchView);
       expect(view)
         .to.have.property("name")
@@ -38,14 +38,10 @@ describe34("Accessing views", function() {
   describe("database.listViews", () => {
     let viewNames = range(4).map(i => `v_${Date.now()}_${i}`);
     before(async () => {
-      await Promise.all(
-        viewNames.map(name => db.arangoSearchView(name).create())
-      );
+      await Promise.all(viewNames.map(name => db.view(name).create()));
     });
     after(async () => {
-      await Promise.all(
-        viewNames.map(name => db.arangoSearchView(name).drop())
-      );
+      await Promise.all(viewNames.map(name => db.view(name).drop()));
     });
     it("fetches information about all views", async () => {
       const views = await db.listViews();
@@ -57,12 +53,12 @@ describe34("Accessing views", function() {
     let arangoSearchViewNames = range(4).map(i => `asv_${Date.now()}_${i}`);
     before(async () => {
       await Promise.all(
-        arangoSearchViewNames.map(name => db.arangoSearchView(name).create())
+        arangoSearchViewNames.map(name => db.view(name).create())
       );
     });
     after(async () => {
       await Promise.all(
-        arangoSearchViewNames.map(name => db.arangoSearchView(name).drop())
+        arangoSearchViewNames.map(name => db.view(name).drop())
       );
     });
     it("creates ArangoSearchView instances", async () => {
