@@ -219,13 +219,13 @@ await collection.truncate();
 
 ## collection.drop
 
-`async collection.drop([opts]): TODO`
+`async collection.drop([options]): TODO`
 
 Deletes the collection from the database.
 
 **Arguments**
 
-- **opts**: `object` (optional)
+- **options**: `object` (optional)
 
   TODO
 

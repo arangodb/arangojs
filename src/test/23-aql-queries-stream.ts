@@ -81,11 +81,11 @@ describe34("AQL Stream queries", function() {
     it("can access large collection in parallel", async () => {
       let collection = db.collection(cname);
       let query = aql`FOR doc in ${collection} RETURN doc`;
-      const opts = { batchSize: 250, options: { stream: true } };
+      const options = { batchSize: 250, options: { stream: true } };
 
       let count = 0;
       const cursors = await Promise.all(
-        Array.from(Array(25)).map(() => db.query(query, opts))
+        Array.from(Array(25)).map(() => db.query(query, options))
       );
       await Promise.all(
         cursors.map(c =>
@@ -100,11 +100,11 @@ describe34("AQL Stream queries", function() {
       let collection = db.collection(cname);
       let readQ = aql`FOR doc in ${collection} RETURN doc`;
       let writeQ = aql`FOR i in 1..1000 LET y = SLEEP(1) INSERT {forbidden: i} INTO ${collection}`;
-      const opts = { batchSize: 500, ttl: 5, options: { stream: true } };
+      const options = { batchSize: 500, ttl: 5, options: { stream: true } };
 
       // 900s lock timeout + 5s ttl
-      let readCursor = db.query(readQ, opts);
-      let writeCursor = db.query(writeQ, opts);
+      let readCursor = db.query(readQ, options);
+      let writeCursor = db.query(writeQ, options);
 
       // the read cursor should always win
       const c = await Promise.race([readCursor, writeCursor]);

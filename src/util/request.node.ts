@@ -31,7 +31,7 @@ export type RequestOptions = {
 };
 
 export type RequestFunction = {
-  (opts: RequestOptions, cb: Errback<ArangojsResponse>): void;
+  (options: RequestOptions, cb: Errback<ArangojsResponse>): void;
   close?: () => void;
 };
 

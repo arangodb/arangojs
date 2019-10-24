@@ -5,7 +5,7 @@ The _EdgeCollection API_ extends the
 
 ## collection.document
 
-`async collection.document(selector, [opts]): Edge`
+`async collection.document(selector, [options]): Edge`
 
 Alias: `collection.edge`.
 
@@ -19,7 +19,7 @@ Retrieves the edge matching the given _selector_ from the collection.
   of an edge in the collection, or an edge (i.e. an object with an `_id` or
   `_key` property).
 
-- **opts**: `object` (optional)
+- **options**: `object` (optional)
 
   An object with the following properties:
 
@@ -72,7 +72,7 @@ if (edge === null) {
 
 ## collection.save
 
-`async collection.save(data, [opts]): TODO`
+`async collection.save(data, [options]): TODO`
 
 Creates a new edge with the given _data_ between the documents `data._from`
 and `data._to`.
@@ -84,9 +84,9 @@ and `data._to`.
   The data of the new edge. The _data_ must include the properties
   `_from` and `_to`.
 
-- **opts**: `object` (optional)
+- **options**: `object` (optional)
 
-  If _opts_ is set, it must be an object with any of the following properties:
+  If _options_ is set, it must be an object with any of the following properties:
 
   - **waitForSync**: `boolean` (Default: `false`)
 
@@ -301,7 +301,7 @@ assert.deepEqual(edges.map(edge => edge._key), ["x", "y"]);
 
 ## collection.traversal
 
-`async collection.traversal(startVertex, opts): TODO`
+`async collection.traversal(startVertex, options): TODO`
 
 Performs a traversal starting from the given _startVertex_ and following edges
 contained in this edge collection.
@@ -314,7 +314,7 @@ contained in this edge collection.
   the database, the `_key` of an edge in the collection, or a document (i.e. an
   object with an `_id` or `_key` property).
 
-- **opts**: `object`
+- **options**: `object`
 
   An object with the following properties:
 

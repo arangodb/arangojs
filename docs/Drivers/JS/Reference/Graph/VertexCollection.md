@@ -74,9 +74,9 @@ Retrieves the vertex with the given _documentHandle_ from the collection.
   `_key` of a vertex in the collection, or a vertex (i.e. an object with an
   `_id` or `_key` property).
 
-- **opts**: `object` (optional)
+- **options**: `object` (optional)
 
-  If _opts_ is set, it must be an object with any of the following properties:
+  If _options_ is set, it must be an object with any of the following properties:
 
   - **graceful**: `boolean` (Default: `false`)
 

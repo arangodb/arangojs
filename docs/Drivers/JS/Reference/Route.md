@@ -325,13 +325,13 @@ const response = await route.head();
 
 ## route.request
 
-`async route.request([opts]): Response`
+`async route.request([options]): Response`
 
 Performs an arbitrary request to the given URL and returns the server response.
 
 **Arguments**
 
-- **opts**: `object` (optional)
+- **options**: `object` (optional)
 
   An object with any of the following properties:
 

@@ -31,14 +31,14 @@ export class Route {
     });
   }
 
-  request({ method, path, headers = {}, ...opts }: any) {
-    if (!path) opts.path = "";
-    else if (this._path && path.charAt(0) !== "/") opts.path = `/${path}`;
-    else opts.path = path;
-    opts.basePath = this._path;
-    opts.headers = { ...this._headers, ...headers };
-    opts.method = method ? method.toUpperCase() : "GET";
-    return this._connection.request(opts);
+  request({ method, path, headers = {}, ...options }: any) {
+    if (!path) options.path = "";
+    else if (this._path && path.charAt(0) !== "/") options.path = `/${path}`;
+    else options.path = path;
+    options.basePath = this._path;
+    options.headers = { ...this._headers, ...headers };
+    options.method = method ? method.toUpperCase() : "GET";
+    return this._connection.request(options);
   }
 
   private _request1(method: string, ...args: any[]) {
