@@ -226,8 +226,7 @@ Fetches information about the index with the given _indexHandle_ and returns it.
 
   The handle of the index to look up. This can either be a fully-qualified
   identifier or the collection-specific key of the index. If the value is an
-  object, its _id_ property will be used instead. Alternatively, the index
-  may be looked up by name.
+  object, its _id_ property will be used instead.
 
 **Examples**
 
@@ -243,12 +242,6 @@ assert.equal(result.id, index.id);
 
 const result = await collection.index(index.id.split("/")[1]);
 assert.equal(result.id, index.id);
-
-// -- or --
-
-const result = await collection.index(index.name);
-assert.equal(result.id, index.id);
-assert.equal(result.name, index.name);
 // result contains the properties of the index
 ```
 
