@@ -268,50 +268,52 @@ export type TraversalOptions = {
   maxIterations?: number;
 };
 
-export type EnsureHashIndexOptions = {
+export type EnsureIndexHashOptions = {
+  type: "hash";
+  fields: string[];
+  name?: string;
   unique?: boolean;
   sparse?: boolean;
   deduplicate?: boolean;
 };
 
-export type EnsureSkiplistIndexOptions = EnsureHashIndexOptions;
+export type EnsureIndexSkiplistOptions = {
+  type: "skiplist";
+  fields: string[];
+  name?: string;
+  unique?: boolean;
+  sparse?: boolean;
+  deduplicate?: boolean;
+};
 
-export type EnsurePersistentIndexOptions = {
+/** @deprecated ArangoDB 3.4 */
+export type EnsureIndexPersistentOptions = {
+  type: "persistent";
+  fields: string[];
+  name?: string;
   unique?: boolean;
   sparse?: boolean;
 };
 
-export type EnsureGeoIndexOptions = {
+export type EnsureIndexGeoOptions = {
+  type: "geo";
+  fields: [string] | [string, string];
+  name?: string;
   geoJson?: boolean;
 };
 
-export type EnsureFulltextIndexOptions = {
+export type EnsureIndexFulltextOptions = {
+  type: "fulltext";
+  fields: [string];
+  name?: string;
   minLength?: number;
 };
 
-export type EnsureIndexHashOptions = EnsureHashIndexOptions & {
-  type: "hash";
-  fields: string[];
-};
-
-export type EnsureIndexSkiplistOptions = EnsureSkiplistIndexOptions & {
-  type: "skiplist";
-  fields: string[];
-};
-
-export type EnsureIndexPersistentOptions = EnsurePersistentIndexOptions & {
-  type: "persistent";
-  fields: string[];
-};
-
-export type EnsureIndexGeoOptions = EnsureGeoIndexOptions & {
-  type: "geo";
-  fields: [string] | [string, string];
-};
-
-export type EnsureIndexFulltextOptions = EnsureFulltextIndexOptions & {
-  type: "fulltext";
-  fields: string[];
+export type EnsureIndexTtlOptions = {
+  type: "ttl";
+  fields: [string];
+  name?: string;
+  expireAfter: number;
 };
 
 export type EnsureIndexOptions =
@@ -319,7 +321,8 @@ export type EnsureIndexOptions =
   | EnsureIndexSkiplistOptions
   | EnsureIndexPersistentOptions
   | EnsureIndexGeoOptions
-  | EnsureIndexFulltextOptions;
+  | EnsureIndexFulltextOptions
+  | EnsureIndexTtlOptions;
 
 // Results
 
@@ -500,8 +503,7 @@ export type Edge<T extends object = any> = StrictObject<T> &
 // Indexes
 
 export type GenericIndex = {
-  fields: string[];
-  name: string;
+  name?: string;
   id: string;
   sparse: boolean;
   unique: boolean;
@@ -509,24 +511,29 @@ export type GenericIndex = {
 
 export type SkiplistIndex = GenericIndex & {
   type: "skiplist";
+  fields: string[];
 };
 
 export type HashIndex = GenericIndex & {
   type: "hash";
+  fields: string[];
   selectivityEstimate: number;
 };
 
 export type PrimaryIndex = GenericIndex & {
   type: "primary";
+  fields: string[];
   selectivityEstimate: number;
 };
 
 export type PersistentIndex = GenericIndex & {
   type: "persistent";
+  fields: string[];
 };
 
 export type FulltextIndex = GenericIndex & {
   type: "fulltext";
+  fields: [string];
   minLength: number;
 };
 
@@ -539,13 +546,21 @@ export type GeoIndex = GenericIndex & {
   maxNumCoverCells: number;
 };
 
+export type TtlIndex = GenericIndex & {
+  type: "ttl";
+  fields: [string];
+  expireAfter: number;
+  selectivityEstimate: number;
+};
+
 export type Index =
   | GeoIndex
   | FulltextIndex
   | PersistentIndex
   | PrimaryIndex
   | HashIndex
-  | SkiplistIndex;
+  | SkiplistIndex
+  | TtlIndex;
 
 export type IndexSelector = string | Index;
 
@@ -690,37 +705,32 @@ export interface DocumentCollection<T extends object = any>
   indexes(): Promise<Index[]>;
   index(selector: IndexSelector): Promise<Index[]>;
   ensureIndex(
-    details: EnsureIndexOptions
-  ): Promise<ArangoResponseMetadata & Index & { isNewlyCreated: boolean }>;
-  dropIndex(
-    selector: IndexSelector
-  ): Promise<ArangoResponseMetadata & CollectionIndexResult>;
-  ensureHashIndex(
-    fields: string | string[],
-    opts?: EnsureHashIndexOptions
-  ): Promise<ArangoResponseMetadata & HashIndex & { isNewlyCreated: boolean }>;
-  ensureSkiplist(
-    fields: string | string[],
-    opts?: EnsureSkiplistIndexOptions
-  ): Promise<
-    ArangoResponseMetadata & SkiplistIndex & { isNewlyCreated: boolean }
-  >;
-  ensurePersistentIndex(
-    fields: string | string[],
-    opts?: EnsurePersistentIndexOptions
-  ): Promise<
-    ArangoResponseMetadata & PersistentIndex & { isNewlyCreated: boolean }
-  >;
-  ensureGeoIndex(
-    fields: string | [string] | [string, string],
-    opts?: EnsureGeoIndexOptions
-  ): Promise<ArangoResponseMetadata & GeoIndex & { isNewlyCreated: boolean }>;
-  ensureFulltextIndex(
-    fields: string | string[],
-    opts?: EnsureFulltextIndexOptions
+    details: EnsureIndexFulltextOptions
   ): Promise<
     ArangoResponseMetadata & FulltextIndex & { isNewlyCreated: boolean }
   >;
+  ensureIndex(
+    details: EnsureIndexGeoOptions
+  ): Promise<ArangoResponseMetadata & GeoIndex & { isNewlyCreated: boolean }>;
+  ensureIndex(
+    details: EnsureIndexHashOptions
+  ): Promise<ArangoResponseMetadata & HashIndex & { isNewlyCreated: boolean }>;
+  ensureIndex(
+    details: EnsureIndexPersistentOptions
+  ): Promise<
+    ArangoResponseMetadata & PersistentIndex & { isNewlyCreated: boolean }
+  >;
+  ensureIndex(
+    details: EnsureIndexSkiplistOptions
+  ): Promise<
+    ArangoResponseMetadata & SkiplistIndex & { isNewlyCreated: boolean }
+  >;
+  ensureIndex(
+    details: EnsureIndexTtlOptions
+  ): Promise<ArangoResponseMetadata & TtlIndex & { isNewlyCreated: boolean }>;
+  dropIndex(
+    selector: IndexSelector
+  ): Promise<ArangoResponseMetadata & CollectionIndexResult>;
   //#endregion
 }
 
@@ -1403,96 +1413,6 @@ export class Collection<T extends object = any>
       {
         method: "DELETE",
         path: `/_api/index/${indexHandle(selector, this._name)}`,
-      },
-      (res) => res.body
-    );
-  }
-
-  ensureHashIndex(fields: string[] | string, opts?: EnsureHashIndexOptions) {
-    if (typeof fields === "string") {
-      fields = [fields];
-    }
-    if (typeof opts === "boolean") {
-      opts = { unique: opts };
-    }
-    return this._connection.request(
-      {
-        method: "POST",
-        path: "/_api/index",
-        body: { unique: false, ...opts, type: "hash", fields: fields },
-        qs: { collection: this._name },
-      },
-      (res) => res.body
-    );
-  }
-
-  ensureSkiplist(fields: string[] | string, opts?: EnsureSkiplistIndexOptions) {
-    if (typeof fields === "string") {
-      fields = [fields];
-    }
-    if (typeof opts === "boolean") {
-      opts = { unique: opts };
-    }
-    return this._connection.request(
-      {
-        method: "POST",
-        path: "/_api/index",
-        body: { unique: false, ...opts, type: "skiplist", fields: fields },
-        qs: { collection: this._name },
-      },
-      (res) => res.body
-    );
-  }
-
-  ensurePersistentIndex(
-    fields: string[] | string,
-    opts?: EnsurePersistentIndexOptions
-  ) {
-    if (typeof fields === "string") {
-      fields = [fields];
-    }
-    if (typeof opts === "boolean") {
-      opts = { unique: opts };
-    }
-    return this._connection.request(
-      {
-        method: "POST",
-        path: "/_api/index",
-        body: { unique: false, ...opts, type: "persistent", fields: fields },
-        qs: { collection: this._name },
-      },
-      (res) => res.body
-    );
-  }
-
-  ensureGeoIndex(fields: string[] | string, opts?: EnsureGeoIndexOptions) {
-    if (typeof fields === "string") {
-      fields = [fields];
-    }
-    return this._connection.request(
-      {
-        method: "POST",
-        path: "/_api/index",
-        body: { ...opts, fields, type: "geo" },
-        qs: { collection: this._name },
-      },
-      (res) => res.body
-    );
-  }
-
-  ensureFulltextIndex(
-    fields: string | [string] | [string, string],
-    opts?: EnsureFulltextIndexOptions
-  ) {
-    if (typeof fields === "string") {
-      fields = [fields];
-    }
-    return this._connection.request(
-      {
-        method: "POST",
-        path: "/_api/index",
-        body: { ...opts, fields, type: "fulltext" },
-        qs: { collection: this._name },
       },
       (res) => res.body
     );
