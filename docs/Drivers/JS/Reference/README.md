@@ -10,7 +10,6 @@
   - [Graph Access](Database/GraphAccess.md)
   - [Analyzer Access](Database/AnalyzerAccess.md)
   - [Foxx Services](Database/FoxxServices.md)
-  - [HTTP Routes](Database/HttpRoutes.md)
 - [Collection](Collection/README.md)
   - [Collection Manipulation](Collection/CollectionManipulation.md)
   - [Document Manipulation](Collection/DocumentManipulation.md)
