@@ -5,7 +5,7 @@ This function implements the
 
 ## collection.import
 
-`async collection.import(data, [opts]): CollectionImportResult`
+`async collection.import(data, [options]): CollectionImportResult`
 
 Bulk imports the given _data_ into the collection.
 
@@ -66,9 +66,9 @@ Bulk imports the given _data_ into the collection.
     ["peach", "pink"]
     ```
 
-- **opts**: `object` (optional)
+- **options**: `object` (optional)
 
-  If _opts_ is set, it must be an object with any of the following properties:
+  If _options_ is set, it must be an object with any of the following properties:
 
   - **type**: `string | null` (Default: `"auto"`)
 
@@ -108,8 +108,8 @@ Bulk imports the given _data_ into the collection.
     Whether the response should contain additional details about documents that
     could not be imported.
 
-For more information on the _opts_ object, see the
-[HTTP API documentation for bulk imports](https://www.arangodb.com/docs/stable/http/bulk-imports.html).
+For more information on the _options_ object, see the
+[HTTP API documentation for bulk imports](https://docs.arangodb.com/latest/HTTP/BulkImports/index.html).
 
 Returns an object with the following properties:
 

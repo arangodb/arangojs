@@ -71,7 +71,7 @@ if (exists === false) {
 
 ## collection.document
 
-`async collection.document(selector, [opts]): Document`
+`async collection.document(selector, [options]): Document`
 
 Retrieves the document matching the given _selector_ from the collection.
 
@@ -83,7 +83,7 @@ Retrieves the document matching the given _selector_ from the collection.
   `_key` of a document in the collection, or a document (i.e. an object with an
   `_id` or `_key` property).
 
-- **opts**: `object` (optional)
+- **options**: `object` (optional)
 
   An object with the following properties:
 
@@ -146,7 +146,7 @@ if (doc === null) {
 
 ## collection.save
 
-`async collection.save(data, [opts]): CollectionSaveResult`
+`async collection.save(data, [options]): CollectionSaveResult`
 
 Creates a new document with the given _data_.
 
@@ -156,9 +156,9 @@ Creates a new document with the given _data_.
 
   The data of the new document, may include a `_key`.
 
-- **opts**: `object` (optional)
+- **options**: `object` (optional)
 
-  If _opts_ is set, it must be an object with any of the following properties:
+  If _options_ is set, it must be an object with any of the following properties:
 
   - **waitForSync**: `boolean` (Default: `false`)
 
@@ -220,15 +220,15 @@ assert.equal(doc2.some, data.some);
 const db = new Database();
 const collection = db.collection("my-docs");
 const data = { some: "data" };
-const opts = { returnNew: true };
-const doc = await collection.save(data, opts);
+const options = { returnNew: true };
+const doc = await collection.save(data, options);
 assert.equal(doc1._id, "my-docs/" + doc1._key);
 assert.equal(doc1.new.some, data.some);
 ```
 
 ## collection.replace
 
-`async collection.replace(selector, newValue, [opts]): CollectionSaveResult`
+`async collection.replace(selector, newValue, [options]): CollectionSaveResult`
 
 Replaces the content of the document matching the given _selector_ with the
 given _newValue_ and returns an object containing the document's metadata.
@@ -245,9 +245,9 @@ given _newValue_ and returns an object containing the document's metadata.
 
   The new data of the document.
 
-- **opts**: `object` (optional)
+- **options**: `object` (optional)
 
-  If _opts_ is set, it must be an object with any of the following properties:
+  If _options_ is set, it must be an object with any of the following properties:
 
   - **waitForSync**: `boolean` (Default: `false`)
 
@@ -304,7 +304,7 @@ assert.equal(doc.hello, undefined);
 
 ## collection.update
 
-`async collection.update(selector, newValue, [opts]): CollectionSaveResult`
+`async collection.update(selector, newValue, [options]): CollectionSaveResult`
 
 Updates (merges) the content of the document matching the given _selector_
 with the given _newValue_.
@@ -321,9 +321,9 @@ with the given _newValue_.
 
   The new data of the document.
 
-- **opts**: `object` (optional)
+- **options**: `object` (optional)
 
-  If _opts_ is set, it must be an object with any of the following properties:
+  If _options_ is set, it must be an object with any of the following properties:
 
   - **waitForSync**: `boolean` (Default: `false`)
 
@@ -380,7 +380,7 @@ assert.equal(doc3.hello, doc.hello);
 
 ## collection.bulkUpdate
 
-`async collection.bulkUpdate(documents, [opts]): TODO`
+`async collection.bulkUpdate(documents, [options]): TODO`
 
 Updates (merges) the content of the documents with the given _documents_ and
 returns an array containing the documents' metadata.
@@ -392,9 +392,9 @@ returns an array containing the documents' metadata.
   Documents to update. Each object must have either the `_id` or the `_key`
   property.
 
-- **opts**: `object` (optional)
+- **options**: `object` (optional)
 
-  If _opts_ is set, it must be an object with any of the following properties:
+  If _options_ is set, it must be an object with any of the following properties:
 
   - **waitForSync**: `boolean` (Default: `false`)
 
@@ -427,8 +427,8 @@ returns an array containing the documents' metadata.
     given in a body document is taken as a precondition. The document is only
     updated if the current revision is the one specified.
 
-For more information on the _opts_ object, see the
-[HTTP API documentation for working with documents](https://www.arangodb.com/docs/stable/http/document-working-with-documents.html).
+For more information on the _options_ object, see the
+[HTTP API documentation for working with documents](https://docs.arangodb.com/latest/HTTP/Document/WorkingWithDocuments.html).
 
 **Examples**
 
@@ -447,7 +447,7 @@ const result = await collection.bulkUpdate(
 
 ## collection.remove
 
-`async collection.remove(selector, [opts]): CollectionRemoveResult`
+`async collection.remove(selector, [options]): CollectionRemoveResult`
 
 Deletes the document matching the given _selector_ from the collection.
 
@@ -459,9 +459,9 @@ Deletes the document matching the given _selector_ from the collection.
   `_key` of a document in the collection, or a document (i.e. an object with an
   `_id` or `_key` property).
 
-- **opts**: `object` (optional)
+- **options**: `object` (optional)
 
-  If _opts_ is set, it must be an object with any of the following properties:
+  If _options_ is set, it must be an object with any of the following properties:
 
   - **waitForSync**: `boolean` (Default: `false`)
 

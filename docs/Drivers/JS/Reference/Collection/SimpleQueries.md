@@ -5,14 +5,14 @@ These functions implement the
 
 ## collection.all
 
-`async collection.all([opts]): Cursor`
+`async collection.all([options]): Cursor`
 
 Performs a query to fetch all documents in the collection. Returns a
 [new _Cursor_ instance](../Cursor.md) for the query results.
 
 **Arguments**
 
-- **opts**: `object` (optional)
+- **options**: `object` (optional)
 
   TODO
   [HTTP API for returning all documents](https://www.arangodb.com/docs/stable/http/simple-query.html#return-all-documents).
@@ -25,7 +25,7 @@ Fetches a document from the collection at random.
 
 ## collection.byExample
 
-`async collection.byExample(example, [opts]): Cursor`
+`async collection.byExample(example, [options]): Cursor`
 
 Performs a query to fetch all documents in the collection matching the given
 _example_. Returns a [new _Cursor_ instance](../Cursor.md) for the query results.
@@ -36,7 +36,7 @@ _example_. Returns a [new _Cursor_ instance](../Cursor.md) for the query results
 
   An object representing an example for documents to be matched against.
 
-- **opts**: `object` (optional)
+- **options**: `object` (optional)
 
   TODO
   [HTTP API for fetching documents by example](https://www.arangodb.com/docs/stable/http/simple-query.html#find-documents-matching-an-example).
@@ -55,7 +55,7 @@ Fetches the first document in the collection matching the given _example_.
 
 ## collection.removeByExample
 
-`async collection.removeByExample(example, [opts]): SimpleQueryRemoveByExampleResult`
+`async collection.removeByExample(example, [options]): SimpleQueryRemoveByExampleResult`
 
 Removes all documents in the collection matching the given _example_.
 
@@ -65,7 +65,7 @@ Removes all documents in the collection matching the given _example_.
 
   An object representing an example for documents to be matched against.
 
-- **opts**: `object` (optional)
+- **options**: `object` (optional)
 
   TODO
   [HTTP API for removing documents by example](https://www.arangodb.com/docs/stable/http/simple-query.html#remove-documents-by-example).
@@ -78,7 +78,7 @@ Returns an object with the following property:
 
 ## collection.replaceByExample
 
-`async collection.replaceByExample(example, newValue, [opts]): SimpleQueryReplaceByExampleResult`
+`async collection.replaceByExample(example, newValue, [options]): SimpleQueryReplaceByExampleResult`
 
 Replaces all documents in the collection matching the given _example_ with the
 given _newValue_.
@@ -93,7 +93,7 @@ given _newValue_.
 
   The new value to replace matching documents with.
 
-- **opts**: `object` (optional)
+- **options**: `object` (optional)
 
   TODO
   [HTTP API for replacing documents by example](https://www.arangodb.com/docs/stable/http/simple-query.html#replace-documents-by-example).
@@ -106,7 +106,7 @@ Returns an object with the following property:
 
 ## collection.updateByExample
 
-`async collection.updateByExample(example, newValue, [opts]): SimpleQueryUpdateByExampleResult`
+`async collection.updateByExample(example, newValue, [options]): SimpleQueryUpdateByExampleResult`
 
 Updates (patches) all documents in the collection matching the given _example_
 with the given _newValue_.
@@ -121,7 +121,7 @@ with the given _newValue_.
 
   The new value to update matching documents with.
 
-- **opts**: `object` (optional)
+- **options**: `object` (optional)
 
   TODO
   [HTTP API for updating documents by example](https://www.arangodb.com/docs/stable/http/simple-query.html#update-documents-by-example).
@@ -147,7 +147,7 @@ array of the matching documents.
 
 ## collection.removeByKeys
 
-`async collection.removeByKeys(keys, [opts]): Array<Document>`
+`async collection.removeByKeys(keys, [options]): Array<Document>`
 
 Deletes the documents with the given _keys_ from the collection.
 
@@ -157,14 +157,14 @@ Deletes the documents with the given _keys_ from the collection.
 
   An array of document keys to delete.
 
-- **opts**: `object` (optional)
+- **options**: `object` (optional)
 
   TODO
   [HTTP API for removing documents by keys](https://www.arangodb.com/docs/stable/http/simple-query.html#remove-documents-by-their-keys).
 
 ## collection.fulltext
 
-`async collection.fulltext(fieldName, query, [opts]): Cursor`
+`async collection.fulltext(fieldName, query, [options]): Cursor`
 
 Performs a fulltext query in the given _fieldName_ on the collection.
 
@@ -178,7 +178,7 @@ Performs a fulltext query in the given _fieldName_ on the collection.
 
   Fulltext query string to search for.
 
-- **opts**: `object` (optional)
+- **options**: `object` (optional)
 
   TODO
   [HTTP API for fulltext queries](https://www.arangodb.com/docs/stable/http/indexes-fulltext.html).

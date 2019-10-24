@@ -377,13 +377,13 @@ const data = await collection.revision();
 
 ## collection.checksum
 
-`async collection.checksum([opts]): CollectionChecksum`
+`async collection.checksum([options]): CollectionChecksum`
 
 Retrieves the collection checksum.
 
 **Arguments**
 
-- **opts**: `object` (optional)
+- **options**: `object` (optional)
 
   - **withRevisions**: `boolean` (optional)
 

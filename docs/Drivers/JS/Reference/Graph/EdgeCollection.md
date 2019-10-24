@@ -60,7 +60,7 @@ if (exists === false) {
 
 ## graphEdgeCollection.document
 
-`async graphEdgeCollection.document(documentHandle, [opts]): TODO`
+`async graphEdgeCollection.document(documentHandle, [options]): TODO`
 
 Alias: `graphEdgeCollection.edge`.
 
@@ -74,9 +74,9 @@ Retrieves the edge with the given _documentHandle_ from the collection.
   of an edge in the collection, or an edge (i.e. an object with an `_id` or
   `_key` property).
 
-- **opts**: `object` (optional)
+- **options**: `object` (optional)
 
-  If _opts_ is set, it must be an object with any of the following properties:
+  If _options_ is set, it must be an object with any of the following properties:
 
   - **graceful**: `boolean` (Default: `false`)
 
@@ -263,7 +263,7 @@ assert.deepEqual(edges.map(edge => edge._key), ["x", "y"]);
 
 ## graphEdgeCollection.traversal
 
-`async graphEdgeCollection.traversal(startVertex, opts): TODO`
+`async graphEdgeCollection.traversal(startVertex, options): TODO`
 
 Performs a traversal starting from the given _startVertex_ and following edges
 contained in this edge collection.
@@ -276,14 +276,14 @@ contained in this edge collection.
   the database, the `_key` of an edge in the collection, or a document (i.e. an
   object with an `_id` or `_key` property).
 
-- **opts**: `object`
+- **options**: `object`
 
   See
   [the HTTP API documentation](https://www.arangodb.com/docs/stable/http/traversal.html)
   for details on the additional arguments.
 
-  Please note that while _opts.filter_, _opts.visitor_, _opts.init_,
-  _opts.expander_ and _opts.sort_ should be strings evaluating to well-formed
+  Please note that while _options.filter_, _options.visitor_, _options.init_,
+  _options.expander_ and _options.sort_ should be strings evaluating to well-formed
   JavaScript code, it's not possible to pass in JavaScript functions directly
   because the code needs to be evaluated on the server and will be transmitted
   in plain text.

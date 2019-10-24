@@ -111,10 +111,10 @@ describe("DocumentCollection API", function() {
       expect(doc._key).to.equal(data._key);
       expect(doc.potato).to.equal(data.potato);
     });
-    it("returns the document if opts.returnNew is set", async () => {
+    it("returns the document if options.returnNew is set", async () => {
       const data = { potato: "tomato" };
-      const opts = { returnNew: true };
-      const meta = await collection.save(data, opts);
+      const options = { returnNew: true };
+      const meta = await collection.save(data, options);
       expect(meta).to.be.an("object");
       expect(meta)
         .to.have.property("_id")
@@ -137,7 +137,7 @@ describe("DocumentCollection API", function() {
         .that.is.a("string");
       expect(meta.new!.potato).to.equal(data.potato);
     });
-    it("interprets opts as returnNew if it is a boolean", async () => {
+    it("interprets options as returnNew if it is a boolean", async () => {
       const data = { potato: "tomato" };
       const meta = await collection.save(data, { returnNew: true });
       expect(meta).to.be.an("object");

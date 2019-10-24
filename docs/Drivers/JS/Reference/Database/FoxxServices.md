@@ -578,8 +578,8 @@ Runs the tests of a given service and returns a formatted report.
 **Examples**
 
 ```js
-const opts = { reporter: "xunit", idiomatic: true };
-const result = await db.runServiceTests("/my-service", opts);
+const options = { reporter: "xunit", idiomatic: true };
+const result = await db.runServiceTests("/my-service", options);
 // result contains the XUnit report as a string
 ```
 

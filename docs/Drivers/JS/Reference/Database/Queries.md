@@ -9,7 +9,7 @@ For collection-specific queries see [Simple Queries](../Collection/SimpleQueries
 
 ## database.query
 
-`async database.query(query, [bindVars,] [opts]): Cursor`
+`async database.query(query, [bindVars,] [options]): Cursor`
 
 Performs a database query using the given _query_ and _bindVars_, then returns a
 [new _Cursor_ instance](../Cursor.md) for the result list.
@@ -22,26 +22,26 @@ Performs a database query using the given _query_ and _bindVars_, then returns a
   [AQL query object](../Aql.md#aql) or
   [AQL literal](../Aql.md#aqlliteral).
   If the query is an AQL query object, the second argument is treated as the
-  _opts_ argument instead of _bindVars_.
+  _options_ argument instead of _bindVars_.
 
 - **bindVars**: `object` (optional)
 
   An object defining the variables to bind the query to.
 
-- **opts**: `object` (optional)
+- **options**: `object` (optional)
 
   Additional parameter object that will be passed to the query API.
   Possible keys are _count_ and _options_ (explained below)
 
-If _opts.count_ is set to `true`, the cursor will have a _count_ property set to
+If _options.count_ is set to `true`, the cursor will have a _count_ property set to
 the query result count.
 
-Possible key options in _opts.options_ include: _failOnWarning_, _cache_,
+Possible key options in _options.options_ include: _failOnWarning_, _cache_,
 profile or _skipInaccessibleCollections_.
 For a complete list of query settings please reference the
 [setting options](https://www.arangodb.com/docs/stable/aql/invocation-with-arangosh.html#setting-options).
 
-Additionally if _opts.allowDirtyRead_ is set to `true`, the request will
+Additionally if _options.allowDirtyRead_ is set to `true`, the request will
 explicitly permit ArangoDB to return a potentially dirty or stale result and
 arangojs will load balance the request without distinguishing between leaders
 and followers. Note that dirty reads are only supported for read-only queries
@@ -52,7 +52,7 @@ Dirty reads were introduced in ArangoDB 3.4 and are not supported by earlier
 versions of ArangoDB.
 {% endhint %}
 
-Additionally _opts.timeout_ can be set to a non-negative number to force the
+Additionally _options.timeout_ can be set to a non-negative number to force the
 request to be cancelled after that amount of milliseconds. Note that this will
 simply close the connection and not result in the actual query being cancelled
 in ArangoDB, the query will still be executed to completion and continue to
@@ -147,7 +147,7 @@ const query = aql`
 
 ## database.explain
 
-`async database.explain(query, [bindVars,] [opts]): ExplainResult`
+`async database.explain(query, [bindVars,] [options]): ExplainResult`
 
 Explains a database query using the given _query_ and _bindVars_ and
 returns one or more plans.
@@ -160,13 +160,13 @@ returns one or more plans.
   [AQL query object](../Aql.md#aql) or
   [AQL literal](../Aql.md#aqlliteral).
   If the query is an AQL query object, the second argument is treated as the
-  _opts_ argument instead of _bindVars_.
+  _options_ argument instead of _bindVars_.
 
 - **bindVars**: `object` (optional)
 
   An object defining the variables to bind the query to.
 
-- **opts**: `object` (optional)
+- **options**: `object` (optional)
 
   - **optimizer**: `object` (optional)
 
