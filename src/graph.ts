@@ -74,6 +74,26 @@ export class GraphVertexCollection<T extends object = any>
     return this._name;
   }
 
+  vertexExists(selector: DocumentSelector): Promise<boolean> {
+    return this._connection
+      .request(
+        {
+          method: "HEAD",
+          path: `/_api/gharial/${this.graph.name}/vertex/${documentHandle(
+            selector,
+            this._name
+          )}`
+        },
+        () => true
+      )
+      .catch(err => {
+        if (err.statusCode === 404) {
+          return false;
+        }
+        throw err;
+      });
+  }
+
   vertex(
     selector: DocumentSelector,
     options?: CollectionReadOptions
@@ -225,6 +245,26 @@ export class GraphEdgeCollection<T extends object = any>
 
   get name() {
     return this._name;
+  }
+
+  edgeExists(selector: DocumentSelector): Promise<boolean> {
+    return this._connection
+      .request(
+        {
+          method: "HEAD",
+          path: `/_api/gharial/${this.graph.name}/edge/${documentHandle(
+            selector,
+            this._name
+          )}`
+        },
+        () => true
+      )
+      .catch(err => {
+        if (err.statusCode === 404) {
+          return false;
+        }
+        throw err;
+      });
   }
 
   edge(selector: DocumentSelector, graceful: boolean): Promise<Edge<T>>;
