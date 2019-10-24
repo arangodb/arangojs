@@ -581,14 +581,14 @@ export interface DocumentCollection<T extends object = any>
   figures(): Promise<ArangoResponseMetadata & CollectionPropertiesAndFigures>;
   revision(): Promise<ArangoResponseMetadata & CollectionPropertiesAndRevision>;
   checksum(
-    opts?: CollectionChecksumOptions
+    options?: CollectionChecksumOptions
   ): Promise<ArangoResponseMetadata & CollectionChecksum>;
   load(count?: boolean): Promise<ArangoResponseMetadata & CollectionLoadResult>;
   unload(): Promise<ArangoResponseMetadata & CollectionMetadata>;
   rename(name: string): Promise<ArangoResponseMetadata & CollectionMetadata>;
   rotate(): Promise<boolean>;
   truncate(): Promise<ArangoResponseMetadata & CollectionMetadata>;
-  drop(opts?: CollectionDropOptions): Promise<ArangoResponseMetadata>;
+  drop(options?: CollectionDropOptions): Promise<ArangoResponseMetadata>;
 
   //#region crud
   getResponsibleShard(document: Partial<Document<T>>): Promise<string>;
@@ -596,54 +596,54 @@ export interface DocumentCollection<T extends object = any>
   documentExists(selector: DocumentSelector): Promise<boolean>;
   document(
     selector: DocumentSelector,
-    opts?: CollectionReadOptions
+    options?: CollectionReadOptions
   ): Promise<Document<T>>;
   document(selector: DocumentSelector, graceful: boolean): Promise<Document<T>>;
   save(
     data: DocumentData<T>,
-    opts?: CollectionInsertOptions
+    options?: CollectionInsertOptions
   ): Promise<CollectionSaveResult<Document<T>>>;
   saveAll(
     data: Array<DocumentData<T>>,
-    opts?: CollectionInsertOptions
+    options?: CollectionInsertOptions
   ): Promise<CollectionSaveResult<Document<T>>[]>;
   replace(
     selector: DocumentSelector,
     newValue: DocumentData<T>,
-    opts?: CollectionReplaceOptions
+    options?: CollectionReplaceOptions
   ): Promise<CollectionSaveResult<Document<T>>>;
   replaceAll(
     newValues: Array<DocumentData<T> & DocumentLike>,
-    opts?: CollectionReplaceOptions
+    options?: CollectionReplaceOptions
   ): Promise<CollectionSaveResult<Document<T>>[]>;
   update(
     selector: DocumentSelector,
     newValue: Patch<DocumentData<T>>,
-    opts?: CollectionUpdateOptions
+    options?: CollectionUpdateOptions
   ): Promise<CollectionSaveResult<Document<T>>>;
   updateAll(
     newValues: Array<Patch<DocumentData<T>> & DocumentLike>,
-    opts?: CollectionUpdateOptions
+    options?: CollectionUpdateOptions
   ): Promise<CollectionSaveResult<Document<T>>[]>;
   remove(
     selector: DocumentSelector,
-    opts?: CollectionRemoveOptions
+    options?: CollectionRemoveOptions
   ): Promise<CollectionRemoveResult<Document<T>>>;
   removeAll(
     selector: Array<DocumentSelector>,
-    opts?: CollectionRemoveOptions
+    options?: CollectionRemoveOptions
   ): Promise<CollectionRemoveResult<Document<T>>[]>;
   import(
     data: Buffer | Blob | string,
-    opts?: CollectionImportOptions
+    options?: CollectionImportOptions
   ): Promise<CollectionImportResult>;
   import(
     data: string[][],
-    opts?: CollectionImportOptions
+    options?: CollectionImportOptions
   ): Promise<CollectionImportResult>;
   import(
     data: Array<DocumentData<T>>,
-    opts?: CollectionImportOptions
+    options?: CollectionImportOptions
   ): Promise<CollectionImportResult>;
   //#endregion
 
@@ -651,53 +651,53 @@ export interface DocumentCollection<T extends object = any>
   /** @deprecated ArangoDB 3.4 */
   list(type?: SimpleQueryAllKeys): Promise<ArrayCursor<string>>;
   /** @deprecated ArangoDB 3.4 */
-  all(opts?: SimpleQueryAllOptions): Promise<ArrayCursor<Document<T>>>;
+  all(options?: SimpleQueryAllOptions): Promise<ArrayCursor<Document<T>>>;
   /** @deprecated ArangoDB 3.4 */
   any(): Promise<Document<T>>;
   /** @deprecated ArangoDB 3.4 */
   byExample(
     example: Partial<DocumentData<T>>,
-    opts?: SimpleQueryByExampleOptions
+    options?: SimpleQueryByExampleOptions
   ): Promise<ArrayCursor<Document<T>>>;
   /** @deprecated ArangoDB 3.4 */
   firstExample(example: Partial<DocumentData<T>>): Promise<Document<T>>;
   /** @deprecated ArangoDB 3.4 */
   removeByExample(
     example: Partial<DocumentData<T>>,
-    opts?: SimpleQueryRemoveByExampleOptions
+    options?: SimpleQueryRemoveByExampleOptions
   ): Promise<ArangoResponseMetadata & SimpleQueryRemoveByExampleResult>;
   /** @deprecated ArangoDB 3.4 */
   replaceByExample(
     example: Partial<DocumentData<T>>,
     newValue: DocumentData<T>,
-    opts?: SimpleQueryReplaceByExampleOptions
+    options?: SimpleQueryReplaceByExampleOptions
   ): Promise<ArangoResponseMetadata & SimpleQueryReplaceByExampleResult>;
   /** @deprecated ArangoDB 3.4 */
   updateByExample(
     example: Partial<DocumentData<T>>,
     newValue: Patch<DocumentData<T>>,
-    opts?: SimpleQueryUpdateByExampleOptions
+    options?: SimpleQueryUpdateByExampleOptions
   ): Promise<ArangoResponseMetadata & SimpleQueryUpdateByExampleResult>;
   remove(
     selector: DocumentSelector,
-    opts?: CollectionRemoveOptions
+    options?: CollectionRemoveOptions
   ): Promise<CollectionRemoveResult<Edge<T>>>;
   removeAll(
     selector: Array<DocumentSelector>,
-    opts?: CollectionRemoveOptions
+    options?: CollectionRemoveOptions
   ): Promise<CollectionRemoveResult<Edge<T>>[]>;
   /** @deprecated ArangoDB 3.4 */
   lookupByKeys(keys: string[]): Promise<Document<T>[]>;
   /** @deprecated ArangoDB 3.4 */
   removeByKeys(
     keys: string[],
-    opts?: SimpleQueryRemoveByKeysOptions
+    options?: SimpleQueryRemoveByKeysOptions
   ): Promise<ArangoResponseMetadata & SimpleQueryRemoveByKeysResult<T>>;
   /** @deprecated ArangoDB 3.4 */
   fulltext(
     attribute: string,
     query: string,
-    opts?: SimpleQueryFulltextOptions
+    options?: SimpleQueryFulltextOptions
   ): Promise<ArrayCursor<Document<T>>>;
   //#endregion
 
@@ -739,63 +739,63 @@ export interface EdgeCollection<T extends object = any>
   //#region crud
   edge(
     selector: DocumentSelector,
-    opts?: CollectionReadOptions
+    options?: CollectionReadOptions
   ): Promise<Edge<T>>;
   edge(selector: DocumentSelector, graceful: boolean): Promise<Edge<T>>;
   document(
     selector: DocumentSelector,
-    opts?: CollectionReadOptions
+    options?: CollectionReadOptions
   ): Promise<Edge<T>>;
   document(selector: DocumentSelector, graceful: boolean): Promise<Edge<T>>;
   save(
     data: EdgeData<T>,
-    opts?: CollectionInsertOptions
+    options?: CollectionInsertOptions
   ): Promise<CollectionSaveResult<Edge<T>>>;
   saveAll(
     data: Array<EdgeData<T>>,
-    opts?: CollectionInsertOptions
+    options?: CollectionInsertOptions
   ): Promise<CollectionSaveResult<Edge<T>>[]>;
   replace(
     selector: DocumentSelector,
     newValue: DocumentData<T>,
-    opts?: CollectionReplaceOptions
+    options?: CollectionReplaceOptions
   ): Promise<CollectionSaveResult<Edge<T>>>;
   replaceAll(
     newValues: Array<DocumentData<T> & DocumentLike>,
-    opts?: CollectionReplaceOptions
+    options?: CollectionReplaceOptions
   ): Promise<CollectionSaveResult<Edge<T>>[]>;
   update(
     selector: DocumentSelector,
     newValue: Patch<DocumentData<T>>,
-    opts?: CollectionUpdateOptions
+    options?: CollectionUpdateOptions
   ): Promise<CollectionSaveResult<Edge<T>>>;
   updateAll(
     newValues: Array<Patch<DocumentData<T>> & DocumentLike>,
-    opts?: CollectionUpdateOptions
+    options?: CollectionUpdateOptions
   ): Promise<CollectionSaveResult<Edge<T>>[]>;
   import(
     data: Buffer | Blob | string,
-    opts?: CollectionImportOptions
+    options?: CollectionImportOptions
   ): Promise<CollectionImportResult>;
   import(
     data: string[][],
-    opts?: CollectionImportOptions
+    options?: CollectionImportOptions
   ): Promise<CollectionImportResult>;
   import(
     data: Array<EdgeData<T>>,
-    opts?: CollectionImportOptions
+    options?: CollectionImportOptions
   ): Promise<CollectionImportResult>;
   //#endregion
 
   //#region simple queries
   /** @deprecated ArangoDB 3.4 */
-  all(opts?: SimpleQueryAllOptions): Promise<ArrayCursor<Edge<T>>>;
+  all(options?: SimpleQueryAllOptions): Promise<ArrayCursor<Edge<T>>>;
   /** @deprecated ArangoDB 3.4 */
   any(): Promise<Edge<T>>;
   /** @deprecated ArangoDB 3.4 */
   byExample(
     example: Partial<DocumentData<T>>,
-    opts?: SimpleQueryByExampleOptions
+    options?: SimpleQueryByExampleOptions
   ): Promise<ArrayCursor<Edge<T>>>;
   /** @deprecated ArangoDB 3.4 */
   firstExample(example: Partial<DocumentData<T>>): Promise<Edge<T>>;
@@ -805,7 +805,7 @@ export interface EdgeCollection<T extends object = any>
   fulltext(
     attribute: string,
     query: string,
-    opts?: SimpleQueryFulltextOptions
+    options?: SimpleQueryFulltextOptions
   ): Promise<ArrayCursor<Edge<T>>>;
   //#endregion
 
@@ -822,7 +822,7 @@ export interface EdgeCollection<T extends object = any>
   /** @deprecated ArangoDB 3.4 */
   traversal(
     startVertex: DocumentSelector,
-    opts?: TraversalOptions
+    options?: TraversalOptions
   ): Promise<any>;
   //#endregion
 }
@@ -931,8 +931,8 @@ export class Collection<T extends object = any>
     return this._get("revision");
   }
 
-  checksum(opts?: CollectionChecksumOptions) {
-    return this._get("checksum", opts);
+  checksum(options?: CollectionChecksumOptions) {
+    return this._get("checksum", options);
   }
 
   load(count?: boolean) {
@@ -968,12 +968,12 @@ export class Collection<T extends object = any>
     return this._put("truncate");
   }
 
-  drop(opts?: CollectionDropOptions) {
+  drop(options?: CollectionDropOptions) {
     return this._connection.request(
       {
         method: "DELETE",
         path: `/_api/collection/${this._name}`,
-        qs: opts,
+        qs: options,
       },
       (res) => res.body
     );
@@ -1015,12 +1015,12 @@ export class Collection<T extends object = any>
 
   document(
     selector: DocumentSelector,
-    opts: boolean | CollectionReadOptions = {}
+    options: boolean | CollectionReadOptions = {}
   ) {
-    if (typeof opts === "boolean") {
-      opts = { graceful: opts };
+    if (typeof options === "boolean") {
+      options = { graceful: options };
     }
-    const { allowDirtyRead = undefined, graceful = false } = opts;
+    const { allowDirtyRead = undefined, graceful = false } = options;
     const result = this._connection.request(
       {
         path: `/_api/document/${documentHandle(selector, this._name)}`,
@@ -1037,29 +1037,32 @@ export class Collection<T extends object = any>
     });
   }
 
-  edge(selector: DocumentSelector, opts: boolean | CollectionReadOptions = {}) {
-    return this.document(selector, opts) as Promise<Edge<T>>;
+  edge(
+    selector: DocumentSelector,
+    options: boolean | CollectionReadOptions = {}
+  ) {
+    return this.document(selector, options) as Promise<Edge<T>>;
   }
 
-  save(data: DocumentData<T>, opts?: CollectionInsertOptions) {
+  save(data: DocumentData<T>, options?: CollectionInsertOptions) {
     return this._connection.request(
       {
         method: "POST",
         path: `/_api/document/${this._name}`,
         body: data,
-        qs: opts,
+        qs: options,
       },
       (res) => res.body
     );
   }
 
-  saveAll(data: Array<DocumentData<T>>, opts?: CollectionInsertOptions) {
+  saveAll(data: Array<DocumentData<T>>, options?: CollectionInsertOptions) {
     return this._connection.request(
       {
         method: "POST",
         path: `/_api/document/${this._name}`,
         body: data,
-        qs: opts,
+        qs: options,
       },
       (res) => res.body
     );
@@ -1068,14 +1071,14 @@ export class Collection<T extends object = any>
   replace(
     selector: DocumentSelector,
     newValue: DocumentData<T>,
-    opts?: CollectionReplaceOptions
+    options?: CollectionReplaceOptions
   ) {
     return this._connection.request(
       {
         method: "PUT",
         path: `/_api/document/${documentHandle(selector, this._name)}`,
         body: newValue,
-        qs: opts,
+        qs: options,
       },
       (res) => res.body
     );
@@ -1083,14 +1086,14 @@ export class Collection<T extends object = any>
 
   replaceAll(
     newValues: Array<DocumentData<T> & DocumentLike>,
-    opts?: CollectionReplaceOptions
+    options?: CollectionReplaceOptions
   ) {
     return this._connection.request(
       {
         method: "PUT",
         path: `/_api/document/${this._name}`,
         body: newValues,
-        qs: opts,
+        qs: options,
       },
       (res) => res.body
     );
@@ -1099,14 +1102,14 @@ export class Collection<T extends object = any>
   update(
     selector: DocumentSelector,
     newValue: Patch<DocumentData<T>>,
-    opts?: CollectionUpdateOptions
+    options?: CollectionUpdateOptions
   ) {
     return this._connection.request(
       {
         method: "PATCH",
         path: `/_api/document/${documentHandle(selector, this._name)}`,
         body: newValue,
-        qs: opts,
+        qs: options,
       },
       (res) => res.body
     );
@@ -1114,25 +1117,25 @@ export class Collection<T extends object = any>
 
   updateAll(
     newValues: Array<Patch<DocumentData<T>> & DocumentLike>,
-    opts?: CollectionUpdateOptions
+    options?: CollectionUpdateOptions
   ) {
     return this._connection.request(
       {
         method: "PATCH",
         path: `/_api/document/${this._name}`,
         body: newValues,
-        qs: opts,
+        qs: options,
       },
       (res) => res.body
     );
   }
 
-  remove(selector: DocumentSelector, opts?: CollectionRemoveOptions) {
+  remove(selector: DocumentSelector, options?: CollectionRemoveOptions) {
     return this._connection.request(
       {
         method: "DELETE",
         path: `/_api/document/${documentHandle(selector, this._name)}`,
-        qs: opts,
+        qs: options,
       },
       (res) => res.body
     );
@@ -1140,14 +1143,14 @@ export class Collection<T extends object = any>
 
   removeAll(
     selectors: Array<DocumentSelector>,
-    opts?: CollectionRemoveOptions
+    options?: CollectionRemoveOptions
   ) {
     return this._connection.request(
       {
         method: "DELETE",
         path: `/_api/document/${this._name}`,
         body: selectors,
-        qs: opts,
+        qs: options,
       },
       (res) => res.body
     );
@@ -1155,7 +1158,7 @@ export class Collection<T extends object = any>
 
   import(
     data: Buffer | Blob | string | any[],
-    { type = "auto", ...opts }: CollectionImportOptions = {}
+    { type = "auto", ...options }: CollectionImportOptions = {}
   ): Promise<CollectionImportResult> {
     if (Array.isArray(data)) {
       data =
@@ -1170,7 +1173,7 @@ export class Collection<T extends object = any>
         isBinary: true,
         qs: {
           type: type === null ? undefined : type,
-          ...opts,
+          ...options,
           collection: this._name,
         },
       },
@@ -1205,13 +1208,13 @@ export class Collection<T extends object = any>
     return this._edges(vertex, "out");
   }
 
-  traversal(startVertex: DocumentSelector, opts?: TraversalOptions) {
+  traversal(startVertex: DocumentSelector, options?: TraversalOptions) {
     return this._connection.request(
       {
         method: "POST",
         path: "/_api/traversal",
         body: {
-          ...opts,
+          ...options,
           startVertex,
           edgeCollection: this._name,
         },
@@ -1233,13 +1236,13 @@ export class Collection<T extends object = any>
     );
   }
 
-  all(opts?: SimpleQueryAllOptions) {
+  all(options?: SimpleQueryAllOptions) {
     return this._connection.request(
       {
         method: "PUT",
         path: "/_api/simple/all",
         body: {
-          ...opts,
+          ...options,
           collection: this._name,
         },
       },
@@ -1260,14 +1263,14 @@ export class Collection<T extends object = any>
 
   byExample(
     example: Partial<DocumentData<T>>,
-    opts?: SimpleQueryByExampleOptions
+    options?: SimpleQueryByExampleOptions
   ) {
     return this._connection.request(
       {
         method: "PUT",
         path: "/_api/simple/by-example",
         body: {
-          ...opts,
+          ...options,
           example,
           collection: this._name,
         },
@@ -1292,14 +1295,14 @@ export class Collection<T extends object = any>
 
   removeByExample(
     example: Partial<DocumentData<T>>,
-    opts?: SimpleQueryRemoveByExampleOptions
+    options?: SimpleQueryRemoveByExampleOptions
   ) {
     return this._connection.request(
       {
         method: "PUT",
         path: "/_api/simple/remove-by-example",
         body: {
-          ...opts,
+          ...options,
           example,
           collection: this._name,
         },
@@ -1311,14 +1314,14 @@ export class Collection<T extends object = any>
   replaceByExample(
     example: Partial<DocumentData<T>>,
     newValue: DocumentData<T>,
-    opts?: SimpleQueryReplaceByExampleOptions
+    options?: SimpleQueryReplaceByExampleOptions
   ) {
     return this._connection.request(
       {
         method: "PUT",
         path: "/_api/simple/replace-by-example",
         body: {
-          ...opts,
+          ...options,
           example,
           newValue,
           collection: this._name,
@@ -1331,14 +1334,14 @@ export class Collection<T extends object = any>
   updateByExample(
     example: Partial<DocumentData<T>>,
     newValue: Patch<DocumentData<T>>,
-    opts?: SimpleQueryUpdateByExampleOptions
+    options?: SimpleQueryUpdateByExampleOptions
   ) {
     return this._connection.request(
       {
         method: "PUT",
         path: "/_api/simple/update-by-example",
         body: {
-          ...opts,
+          ...options,
           example,
           newValue,
           collection: this._name,
@@ -1362,13 +1365,13 @@ export class Collection<T extends object = any>
     );
   }
 
-  removeByKeys(keys: string[], opts?: SimpleQueryRemoveByKeysOptions) {
+  removeByKeys(keys: string[], options?: SimpleQueryRemoveByKeysOptions) {
     return this._connection.request(
       {
         method: "PUT",
         path: "/_api/simple/remove-by-keys",
         body: {
-          options: opts,
+          options: options,
           keys,
           collection: this._name,
         },
@@ -1421,14 +1424,14 @@ export class Collection<T extends object = any>
   fulltext(
     attribute: string,
     query: string,
-    { index, ...opts }: SimpleQueryFulltextOptions = {}
+    { index, ...options }: SimpleQueryFulltextOptions = {}
   ) {
     return this._connection.request(
       {
         method: "PUT",
         path: "/_api/simple/fulltext",
         body: {
-          ...opts,
+          ...options,
           index: index ? indexHandle(index, this._name) : undefined,
           attribute,
           query,

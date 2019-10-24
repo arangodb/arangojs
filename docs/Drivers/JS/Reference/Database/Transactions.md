@@ -53,7 +53,7 @@ Performs a server-side transaction and returns its return value.
   [`@arangodb` module in ArangoDB](https://www.arangodb.com/docs/stable/appendix-java-script-modules-arango-db.html).
   {% endhint %}
 
-- **options**: `Object` (optional)
+- **options**: `object` (optional)
 
   An object with any of the following properties:
 
@@ -144,7 +144,7 @@ Begins a new streaming transaction for the given collections, then returns a
 
 **Arguments**
 
-- **collections**: `Object`
+- **collections**: `object`
 
   An object with the following properties:
 
@@ -174,7 +174,7 @@ Begins a new streaming transaction for the given collections, then returns a
     written to or read from during the transaction. Write access will be
     exclusive to the collection, i.e. no other writes will be run in parallel.
 
-- **options**: `Object` (optional)
+- **options**: `object` (optional)
 
   An object with the following properties:
 

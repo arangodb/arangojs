@@ -74,9 +74,9 @@ describe("Configuring the driver", () => {
     });
     before(() => {
       let Agent = (ptcl: any) =>
-        function(opts: any) {
+        function(options: any) {
           protocol = ptcl;
-          options = opts;
+          options = options;
           return () => null;
         };
       (http as any).Agent = Agent("http");
@@ -110,9 +110,9 @@ describe("Configuring the driver", () => {
       options = undefined;
     });
     before(() => {
-      let Request = (ptcl: any) => (opts: any) => {
+      let Request = (ptcl: any) => (options: any) => {
         protocol = ptcl;
-        options = opts;
+        options = options;
         return {
           on() {
             return this;

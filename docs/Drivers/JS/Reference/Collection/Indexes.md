@@ -23,13 +23,13 @@ Returns an index by name or `id` if it exists.
 
 ## collection.ensureIndex
 
-`async collection.ensureIndex(opts): Index`
+`async collection.ensureIndex(options): Index`
 
 Creates an index on the collection if it does not already exist.
 
 **Arguments**
 
-- **opts**: `object`
+- **options**: `object`
 
   An object with the following properties:
 

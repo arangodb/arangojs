@@ -119,7 +119,7 @@ await graph.removeEdgeDefinition("edges", true);
 
 ## graph.traversal
 
-`async graph.traversal(startVertex, opts): TODO`
+`async graph.traversal(startVertex, options): TODO`
 
 Performs a traversal starting from the given _startVertex_ and following edges
 contained in any of the edge collections of this graph.
@@ -131,14 +131,14 @@ contained in any of the edge collections of this graph.
   The handle of the start vertex. This can be either the `_id` of a document in
   the graph or a document (i.e. an object with an `_id` property).
 
-- **opts**: `object`
+- **options**: `object`
 
   See
   [the HTTP API documentation](https://www.arangodb.com/docs/stable/http/traversal.html)
   for details on the additional arguments.
 
-  Please note that while _opts.filter_, _opts.visitor_, _opts.init_,
-  _opts.expander_ and _opts.sort_ should be strings evaluating to well-formed
+  Please note that while _options.filter_, _options.visitor_, _options.init_,
+  _options.expander_ and _options.sort_ should be strings evaluating to well-formed
   JavaScript functions, it's not possible to pass in JavaScript functions
   directly because the functions need to be evaluated on the server and will be
   transmitted in plain text.
