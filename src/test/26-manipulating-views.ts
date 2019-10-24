@@ -25,7 +25,7 @@ describe34("Manipulating views", function() {
     }
   });
   beforeEach(async () => {
-    view = db.arangoSearchView(`v-${Date.now()}`);
+    view = db.view(`v-${Date.now()}`);
     await view.create();
   });
   afterEach(async () => {
@@ -38,7 +38,7 @@ describe34("Manipulating views", function() {
   });
   describe("view.create", () => {
     it("creates a new arangosearch view", async () => {
-      const view = db.arangoSearchView(`asv-${Date.now()}`);
+      const view = db.view(`asv-${Date.now()}`);
       await view.create();
       const info = await view.get();
       expect(info).to.have.property("name", view.name);
