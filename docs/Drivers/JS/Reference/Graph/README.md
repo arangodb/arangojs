@@ -20,7 +20,7 @@ const result = await graph.exists();
 
 ## graph.get
 
-`async graph.get(): TODO`
+`async graph.get(): object`
 
 Retrieves general information about the graph.
 
@@ -35,7 +35,7 @@ const data = await graph.get();
 
 ## graph.create
 
-`async graph.create(properties): TODO`
+`async graph.create(properties): object`
 
 Creates a graph with the given _properties_ for this graph's name, then returns
 the server response.
@@ -66,7 +66,7 @@ const info = await graph.create({
 
 ## graph.drop
 
-`async graph.drop([dropCollections]): TODO`
+`async graph.drop([dropCollections]): boolean`
 
 Deletes the graph from the database.
 

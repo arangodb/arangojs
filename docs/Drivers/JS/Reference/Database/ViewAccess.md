@@ -29,7 +29,7 @@ const view = db.arangoSearchView("potatoes");
 
 ## database.listViews
 
-`async database.listViews(): Array<TODO>`
+`async database.listViews(): Array<object>`
 
 Fetches all Views from the database and returns an array of View
 descriptions.
@@ -45,7 +45,7 @@ const views = await db.listViews();
 
 ## database.views
 
-`async database.views([excludeSystem]): Array<View>`
+`async database.views([excludeSystem]): Array<ArangoSearchView>`
 
 Fetches all Views from the database and returns an array of
 _ArangoSearchView_ instances for the Views.
