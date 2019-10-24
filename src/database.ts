@@ -57,9 +57,9 @@ export type TransactionOptions = {
   allowImplicit?: boolean;
   lockTimeout?: number;
   maxTransactionSize?: number;
-  /** @deprecated removed in ArangoDB 3.4, RocksDB-only */
+  /** @deprecated removed in ArangoDB 3.4, RocksDB only */
   intermediateCommitCount?: number;
-  /** @deprecated removed in ArangoDB 3.4, RocksDB-only */
+  /** @deprecated removed in ArangoDB 3.4, RocksDB only */
   intermediateCommitSize?: number;
   waitForSync?: boolean;
 };
@@ -88,11 +88,11 @@ export type QueryOptions = {
     stream?: boolean;
     skipInaccessibleCollections?: boolean;
     maxWarningsCount?: number;
-    /** RocksDB-only */
+    /** RocksDB only */
     intermediateCommitCount?: number;
     satteliteSyncWait?: number;
     fullCount?: boolean;
-    /** RocksDB-only */
+    /** RocksDB only */
     intermediateCommitSize?: number;
     optimizer?: { rules?: string[] };
     maxPlans?: number;
@@ -536,6 +536,18 @@ export class Database {
 
   async createCollection<T extends object = any>(
     collectionName: string,
+    properties: CreateCollectionOptions & {
+      type: CollectionType.EDGE_COLLECTION;
+    }
+  ): Promise<EdgeCollection<T>>;
+  async createCollection<T extends object = any>(
+    collectionName: string,
+    properties?: CreateCollectionOptions & {
+      type?: CollectionType.DOCUMENT_COLLECTION;
+    }
+  ): Promise<DocumentCollection<T>>;
+  async createCollection<T extends object = any>(
+    collectionName: string,
     properties?: CreateCollectionOptions & { type?: CollectionType }
   ): Promise<DocumentCollection<T> & EdgeCollection<T>> {
     const collection = new Collection(this._connection, collectionName);
@@ -547,12 +559,10 @@ export class Database {
     collectionName: string,
     properties?: CreateCollectionOptions
   ): Promise<EdgeCollection<T>> {
-    const collection = new Collection(this._connection, collectionName);
-    await collection.create({
+    return this.createCollection(collectionName, {
       ...properties,
       type: CollectionType.EDGE_COLLECTION
     });
-    return collection;
   }
 
   listCollections(
@@ -572,23 +582,6 @@ export class Database {
   ): Promise<Array<DocumentCollection & EdgeCollection>> {
     const collections = await this.listCollections(excludeSystem);
     return collections.map(data => new Collection(this._connection, data.name));
-  }
-
-  async truncate(
-    excludeSystem: boolean = true
-  ): Promise<Array<ListCollectionResult & ArangoResponseMetadata>> {
-    const collections = await this.listCollections(excludeSystem);
-    return await Promise.all(
-      collections.map(data =>
-        this._connection.request(
-          {
-            method: "PUT",
-            path: `/_api/collection/${data.name}/truncate`
-          },
-          res => res.body
-        )
-      )
-    );
   }
   //#endregion
 

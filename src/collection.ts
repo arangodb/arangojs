@@ -142,9 +142,8 @@ export type CollectionDropOptions = {
 
 export type CreateCollectionOptions = {
   waitForSync?: boolean;
-  journalSize?: number;
-  isVolatile?: boolean;
   isSystem?: boolean;
+  indexBuckets?: number;
   keyOptions?: {
     type?: KeyGenerator;
     allowUserKeys?: boolean;
@@ -154,6 +153,17 @@ export type CreateCollectionOptions = {
   numberOfShards?: number;
   shardKeys?: string[];
   replicationFactor?: number;
+  shardingStrategy?: ShardingStrategy;
+  /** MMFiles only */
+  doCompact?: boolean;
+  /** MMFiles only */
+  journalSize?: number;
+  /** MMFiles only */
+  isVolatile?: boolean;
+  /** Enterprise Edition only */
+  distributeShardsLike?: string;
+  /** Enterprise Edition only */
+  smartJoinAttribute?: string;
 };
 
 export type CollectionCreateOptions = CreateCollectionOptions & {

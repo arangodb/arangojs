@@ -9,67 +9,9 @@ These functions implement the
 
 Creates a collection with the given _properties_ for this collection's name.
 
-**Arguments**
-
-- **properties**: `object` (optional)
-
-  - **type**: `CollectionType` (Default: `CollectionType.DOCUMENT_COLLECTION`)
-
-    Type of the collection to create.
-
-  - **waitForSync**: `boolean` (optional)
-
-    TODO
-
-  - **journalSize**: `number` (optional)
-
-    TODO
-
-  - **isVolatile**: `boolean` (optional)
-
-    TODO
-
-  - **isSystem**: `boolean` (optional)
-
-    TODO
-
-  - **keyOptions**: `object` (optional)
-
-    TODO
-
-    An object with the following properties:
-
-    - **type**: `string` (optional)
-
-      TODO
-
-      One of: `"traditional"`, `"autoincrement"`, `"uuid"`, `"padded"`.
-
-    - **allowUserKeys**: `boolean` (optional)
-
-      TODO
-
-    - **increment**: `number` (optional)
-
-      TODO
-
-    - **offset**: `number` (optional)
-
-      TODO
-
-  - **numberOfShards**: `number` (optional)
-
-    TODO
-
-  - **shardKeys**: `Array<string>` (optional)
-
-    TODO
-
-  - **replicationFactor**: `number` (optional)
-
-    TODO
-
-Returns an object with all properties returned by `collection.properties()`.
+This is a shorthand for calling `database.createCollection` with this
+collection's name and the given _properties_, but returning the collection
+properties instead of a new _Collection_ instance.
 
 **Examples**
 
@@ -137,15 +79,13 @@ await collection.unload();
 
 `async collection.properties(properties): CollectionProperties`
 
-FIXME update this
-
 Replaces the properties of the collection.
 
 **Arguments**
 
 - **properties**: `object`
 
-  For information on the _properties_ argument see the
+  TODO
   [HTTP API for modifying collections](https://www.arangodb.com/docs/stable/http/collection-modifying.html).
 
 **Examples**
@@ -227,15 +167,13 @@ Deletes the collection from the database.
 
 - **options**: `object` (optional)
 
-  TODO
-
   An object with the following properties:
 
   - **isSystem**: `Boolean` (Default: `false`)
 
     Whether the collection should be dropped even if it is a system collection. If not set to `true`, the server will refuse to drop system collections even if the user has the necessary permissions.
 
-FIXME Returns an object.
+TODO Returns an object.
 [HTTP API documentation for dropping collections](https://www.arangodb.com/docs/stable/http/collection-creating.html#drops-a-collection).
 
 **Examples**
