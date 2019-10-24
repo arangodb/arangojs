@@ -435,6 +435,24 @@ export class Database {
   //#endregion
 
   //#region auth
+  useDatabase(databaseName: string): this {
+    this._connection.setDatabaseName(databaseName);
+    return this;
+  }
+
+  useBasicAuth(username: string = "root", password: string = ""): this {
+    this._connection.setHeader(
+      "authorization",
+      `Basic ${btoa(`${username}:${password}`)}`
+    );
+    return this;
+  }
+
+  useBearerAuth(token: string): this {
+    this._connection.setHeader("authorization", `Bearer ${token}`);
+    return this;
+  }
+
   login(username: string = "root", password: string = ""): Promise<string> {
     return this._connection.request(
       {
@@ -448,27 +466,9 @@ export class Database {
       }
     );
   }
-
-  useBearerAuth(token: string): this {
-    this._connection.setHeader("authorization", `Bearer ${token}`);
-    return this;
-  }
-
-  useBasicAuth(username: string = "root", password: string = ""): this {
-    this._connection.setHeader(
-      "authorization",
-      `Basic ${btoa(`${username}:${password}`)}`
-    );
-    return this;
-  }
   //#endregion
 
   //#region databases
-  useDatabase(databaseName: string): this {
-    this._connection.setDatabaseName(databaseName);
-    return this;
-  }
-
   get(): Promise<DatabaseInfo> {
     return this._connection.request(
       { path: "/_api/database/current" },
