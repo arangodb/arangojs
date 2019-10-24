@@ -387,7 +387,7 @@ returns an array containing the documents' metadata.
 
 **Arguments**
 
-- **documents**: `Array<TODO>`
+- **documents**: `Array<object>`
 
   Documents to update. Each object must have either the `_id` or the `_key`
   property.

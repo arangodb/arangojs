@@ -43,7 +43,7 @@ const collection = db.collection("potatoes");
 
 ## database.listCollections
 
-`async database.listCollections([excludeSystem]): Array<TODO>`
+`async database.listCollections([excludeSystem]): Array<object>`
 
 Fetches all collections from the database and returns an array of collection
 descriptions.

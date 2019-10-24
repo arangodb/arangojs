@@ -32,9 +32,9 @@ await collection.remove("edges/some-key");
 // document 'edges/some-key' no longer exists
 ```
 
-## graphEdgeCollection.documentExists
+## graphEdgeCollection.edgeExists
 
-`async graphEdgeCollection.documentExists(documentHandle): boolean`
+`async graphEdgeCollection.edgeExists(documentHandle): boolean`
 
 Checks whether the edge with the given _documentHandle_ exists.
 
@@ -52,17 +52,15 @@ Checks whether the edge with the given _documentHandle_ exists.
 const graph = db.graph("some-graph");
 const collection = graph.edgeCollection("edges");
 
-const exists = await collection.documentExists("some-key");
+const exists = await collection.edgeExists("some-key");
 if (exists === false) {
   // the edge does not exist
 }
 ```
 
-## graphEdgeCollection.document
+## graphEdgeCollection.edge
 
-`async graphEdgeCollection.document(documentHandle, [options]): TODO`
-
-Alias: `graphEdgeCollection.edge`.
+`async graphEdgeCollection.edge(documentHandle, [options]): TODO`
 
 Retrieves the edge with the given _documentHandle_ from the collection.
 
@@ -103,21 +101,21 @@ the _graceful_ option.
 const graph = db.graph("some-graph");
 const collection = graph.edgeCollection("edges");
 
-const edge = await collection.document("some-key");
+const edge = await collection.edge("some-key");
 // the edge exists
 assert.equal(edge._key, "some-key");
 assert.equal(edge._id, "edges/some-key");
 
 // -- or --
 
-const edge = await collection.document("edges/some-key");
+const edge = await collection.edge("edges/some-key");
 // the edge exists
 assert.equal(edge._key, "some-key");
 assert.equal(edge._id, "edges/some-key");
 
 // -- or --
 
-const edge = await collection.document("some-key", true);
+const edge = await collection.edge("some-key", true);
 if (edge === null) {
   // the edge does not exist
 }

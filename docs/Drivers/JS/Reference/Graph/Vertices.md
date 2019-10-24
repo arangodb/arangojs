@@ -25,7 +25,7 @@ assert.equal(collection.name, "vertices");
 
 ## graph.listVertexCollections
 
-`async graph.listVertexCollections([excludeOrphans]): Array<TODO>`
+`async graph.listVertexCollections([excludeOrphans]): Array<object>`
 
 Fetches all vertex collections from the graph and returns an array of collection descriptions.
 
@@ -81,7 +81,7 @@ const collections = await graph.vertexCollections(true);
 
 ## graph.addVertexCollection
 
-`async graph.addVertexCollection(collectionName): TODO`
+`async graph.addVertexCollection(collectionName): object`
 
 Adds the collection with the given _collectionName_ to the graph's vertex
 collections.
@@ -103,7 +103,7 @@ await graph.addVertexCollection("vertices");
 
 ## graph.removeVertexCollection
 
-`async graph.removeVertexCollection(collectionName, [dropCollection]): TODO`
+`async graph.removeVertexCollection(collectionName, [dropCollection]): object`
 
 Removes the vertex collection with the given _collectionName_ from the graph.
 
