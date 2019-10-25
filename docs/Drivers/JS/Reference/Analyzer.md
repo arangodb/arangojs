@@ -58,7 +58,8 @@ definition.
   - **type**: `string`
 
     The type of Analyzer to create.
-    Can be `"identity"`, `"delimiter"`, `"stem"`, `"norm"`, `"ngram"` or
+
+    One of `"identity"`, `"delimiter"`, `"stem"`, `"norm"`, `"ngram"` or
     `"text"`.
 
   - **properties**: `any`
@@ -151,7 +152,7 @@ definition.
 const db = new Database();
 const analyzer = db.analyzer("potatoes");
 await analyzer.create({ type: "identity" });
-// the identity analyzer "potatoes" now exists
+// the identity Analyzer "potatoes" now exists
 ```
 
 ## analyzer.drop

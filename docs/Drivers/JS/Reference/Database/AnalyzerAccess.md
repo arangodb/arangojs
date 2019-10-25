@@ -12,7 +12,7 @@ versions of ArangoDB.
 
 `database.analyzer(analyzerName): Analyzer`
 
-Returns an _Analyzer_ instance representing the Analyzer with the given Analyzer
+Returns an `Analyzer` instance representing the Analyzer with the given Analyzer
 name.
 
 **Examples**
@@ -42,7 +42,7 @@ const analyzers = await db.listAnalyzers();
 
 `async database.analyzers(): Array<Analyzer>`
 
-Fetches all Analyzers visible in the database and returns an array of _Analyzer_
+Fetches all Analyzers visible in the database and returns an array of `Analyzer`
 instances for those Analyzers.
 
 **Examples**
