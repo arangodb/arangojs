@@ -141,6 +141,8 @@ export type CollectionDropOptions = {
 };
 
 export type CreateCollectionOptions = {
+  waitForSyncReplication?: boolean;
+  enforceReplicationFactor?: boolean;
   waitForSync?: boolean;
   isSystem?: boolean;
   indexBuckets?: number;
@@ -164,12 +166,6 @@ export type CreateCollectionOptions = {
   distributeShardsLike?: string;
   /** Enterprise Edition only */
   smartJoinAttribute?: string;
-};
-
-export type CollectionCreateOptions = CreateCollectionOptions & {
-  type?: CollectionType;
-  waitForSyncReplication?: boolean;
-  enforceReplicationFactor?: boolean;
 };
 
 export type CollectionReadOptions = {
@@ -581,7 +577,9 @@ export interface DocumentCollection<T extends object = any>
   exists(): Promise<boolean>;
   get(): Promise<ArangoResponseMetadata & CollectionMetadata>;
   create(
-    properties?: CollectionCreateOptions
+    options?: CreateCollectionOptions & {
+      type?: CollectionType;
+    }
   ): Promise<ArangoResponseMetadata & CollectionProperties>;
   properties(): Promise<ArangoResponseMetadata & CollectionProperties>;
   properties(
@@ -897,12 +895,16 @@ export class Collection<T extends object = any>
     );
   }
 
-  create(properties?: CollectionCreateOptions) {
+  create(
+    options?: CreateCollectionOptions & {
+      type?: CollectionType;
+    }
+  ) {
     const {
       waitForSyncReplication = undefined,
       enforceReplicationFactor = undefined,
-      ...options
-    } = properties || {};
+      ...opts
+    } = options || {};
     const qs: RequestOptions["qs"] = {};
     if (typeof waitForSyncReplication === "boolean") {
       qs.waitForSyncReplication = waitForSyncReplication ? 1 : 0;
@@ -916,7 +918,7 @@ export class Collection<T extends object = any>
         path: "/_api/collection",
         qs,
         body: {
-          ...options,
+          ...opts,
           name: this.name,
         },
       },

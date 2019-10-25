@@ -377,7 +377,7 @@ const data = await collection.revision();
 
 ## collection.checksum
 
-`async collection.checksum([options]): CollectionChecksum`
+`async collection.checksum(options?): CollectionChecksum`
 
 Retrieves the collection checksum.
 

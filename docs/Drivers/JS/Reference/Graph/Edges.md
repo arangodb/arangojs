@@ -85,7 +85,7 @@ await graph.replaceEdgeDefinition("edges", {
 
 ## graph.removeEdgeDefinition
 
-`async graph.removeEdgeDefinition(definitionName, [dropCollection]): TODO`
+`async graph.removeEdgeDefinition(definitionName, dropCollection?): TODO`
 
 Removes the edge definition with the given _definitionName_ form the graph.
 

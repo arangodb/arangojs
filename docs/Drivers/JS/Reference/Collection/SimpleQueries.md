@@ -5,10 +5,10 @@ These functions implement the
 
 ## collection.all
 
-`async collection.all([options]): Cursor`
+`async collection.all(options?): Cursor`
 
 Performs a query to fetch all documents in the collection. Returns a
-[new _Cursor_ instance](../Cursor.md) for the query results.
+[new `Cursor` instance](../Cursor.md) for the query results.
 
 **Arguments**
 
@@ -25,10 +25,10 @@ Fetches a document from the collection at random.
 
 ## collection.byExample
 
-`async collection.byExample(example, [options]): Cursor`
+`async collection.byExample(example, options?): Cursor`
 
 Performs a query to fetch all documents in the collection matching the given
-_example_. Returns a [new _Cursor_ instance](../Cursor.md) for the query results.
+_example_. Returns a [new `Cursor` instance](../Cursor.md) for the query results.
 
 **Arguments**
 
@@ -55,7 +55,7 @@ Fetches the first document in the collection matching the given _example_.
 
 ## collection.removeByExample
 
-`async collection.removeByExample(example, [options]): SimpleQueryRemoveByExampleResult`
+`async collection.removeByExample(example, options?): SimpleQueryRemoveByExampleResult`
 
 Removes all documents in the collection matching the given _example_.
 
@@ -78,7 +78,7 @@ Returns an object with the following property:
 
 ## collection.replaceByExample
 
-`async collection.replaceByExample(example, newValue, [options]): SimpleQueryReplaceByExampleResult`
+`async collection.replaceByExample(example, newValue, options?): SimpleQueryReplaceByExampleResult`
 
 Replaces all documents in the collection matching the given _example_ with the
 given _newValue_.
@@ -106,7 +106,7 @@ Returns an object with the following property:
 
 ## collection.updateByExample
 
-`async collection.updateByExample(example, newValue, [options]): SimpleQueryUpdateByExampleResult`
+`async collection.updateByExample(example, newValue, options?): SimpleQueryUpdateByExampleResult`
 
 Updates (patches) all documents in the collection matching the given _example_
 with the given _newValue_.
@@ -147,7 +147,7 @@ array of the matching documents.
 
 ## collection.removeByKeys
 
-`async collection.removeByKeys(keys, [options]): Array<Document>`
+`async collection.removeByKeys(keys, options?): Array<Document>`
 
 Deletes the documents with the given _keys_ from the collection.
 
@@ -164,7 +164,7 @@ Deletes the documents with the given _keys_ from the collection.
 
 ## collection.fulltext
 
-`async collection.fulltext(fieldName, query, [options]): Cursor`
+`async collection.fulltext(fieldName, query, options?): Cursor`
 
 Performs a fulltext query in the given _fieldName_ on the collection.
 
@@ -182,3 +182,22 @@ Performs a fulltext query in the given _fieldName_ on the collection.
 
   TODO
   [HTTP API for fulltext queries](https://www.arangodb.com/docs/stable/http/indexes-fulltext.html).
+
+## collection.list
+
+`async collection.list(type?): Cursor<string>`
+
+Retrieves a list of references for all documents in the collection.
+
+**Arguments**
+
+- **type**: `string` (Default: `"id"`)
+
+  The format of the document references:
+
+  - if _type_ is set to `"id"`, each reference will be the `_id` of the
+    document.
+  - if _type_ is set to `"key"`, each reference will be the `_key` of the
+    document.
+  - if _type_ is set to `"path"`, each reference will be the URI path of the
+    document.

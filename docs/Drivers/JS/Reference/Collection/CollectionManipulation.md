@@ -5,12 +5,12 @@ These functions implement the
 
 ## collection.create
 
-`async collection.create([properties]): CollectionProperties`
+`async collection.create(options?): CollectionProperties`
 
-Creates a collection with the given _properties_ for this collection's name.
+Creates a collection with the given _options_ and this instance's name.
 
 This is a shorthand for calling `database.createCollection` with this
-collection's name and the given _properties_, but returning the collection
+collection's name and the given _options_, but returning the collection
 properties instead of a new _Collection_ instance.
 
 **Examples**
@@ -32,7 +32,7 @@ await collection.create({
 
 ## collection.load
 
-`async collection.load([count]): CollectionLoadResult`
+`async collection.load(count?): CollectionLoadResult`
 
 Tells the server to load the collection into memory.
 
@@ -159,7 +159,7 @@ await collection.truncate();
 
 ## collection.drop
 
-`async collection.drop([options]): TODO`
+`async collection.drop(options?): TODO`
 
 Deletes the collection from the database.
 

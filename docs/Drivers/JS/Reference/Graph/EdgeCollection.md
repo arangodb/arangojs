@@ -60,7 +60,7 @@ if (exists === false) {
 
 ## graphEdgeCollection.edge
 
-`async graphEdgeCollection.edge(documentHandle, [options]): TODO`
+`async graphEdgeCollection.edge(documentHandle, options?): TODO`
 
 Retrieves the edge with the given _documentHandle_ from the collection.
 
@@ -123,7 +123,9 @@ if (edge === null) {
 
 ## graphEdgeCollection.save
 
-`async graphEdgeCollection.save(data, [fromId, toId]): TODO`
+`async graphEdgeCollection.save(data, fromId, toId): TODO`
+
+`async graphEdgeCollection.save(data): TODO`
 
 Creates a new edge between the vertices _fromId_ and _toId_ with the given
 _data_.

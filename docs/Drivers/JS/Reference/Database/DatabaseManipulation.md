@@ -5,7 +5,7 @@ These functions implement the
 
 ## database.get
 
-`async database.get(): TODO`
+`async database.get(): object`
 
 Fetches the database description for the active database from the server.
 
@@ -33,7 +33,7 @@ const result = await db.exists();
 
 ## database.createDatabase
 
-`async database.createDatabase(databaseName, [users]): boolean`
+`async database.createDatabase(databaseName, users?): boolean`
 
 Creates a new database with the given _databaseName_ and optionally creates
 the given _users_ for the new database.
@@ -105,7 +105,7 @@ const names = await db.listUserDatabases();
 
 ## database.dropDatabase
 
-`async database.dropDatabase(databaseName): TODO`
+`async database.dropDatabase(databaseName): boolean`
 
 Deletes the database with the given _databaseName_ from the server.
 

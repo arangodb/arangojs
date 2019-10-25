@@ -5,7 +5,7 @@ The _EdgeCollection API_ extends the
 
 ## collection.document
 
-`async collection.document(selector, [options]): Edge`
+`async collection.document(selector, options?): Edge`
 
 Alias: `collection.edge`.
 
@@ -72,7 +72,7 @@ if (edge === null) {
 
 ## collection.save
 
-`async collection.save(data, [options]): TODO`
+`async collection.save(data, options?): TODO`
 
 Creates a new edge with the given _data_ between the documents `data._from`
 and `data._to`.
