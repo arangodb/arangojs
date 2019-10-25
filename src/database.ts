@@ -1,5 +1,5 @@
 import { Readable } from "stream";
-import { AnalyzerDescription, ArangoAnalyzer } from "./analyzer";
+import { Analyzer, AnalyzerDescription } from "./analyzer";
 import { AqlLiteral, AqlQuery, isAqlLiteral, isAqlQuery } from "./aql-query";
 import {
   ArangoCollection,
@@ -22,7 +22,13 @@ import { DATABASE_NOT_FOUND } from "./util/codes";
 import { FoxxManifest } from "./util/foxx-manifest";
 import { toForm } from "./util/multipart";
 import { ArangoResponseMetadata } from "./util/types";
-import { ArangoSearchView, ViewDescription } from "./view";
+import {
+  ArangoSearchView,
+  ArangoSearchViewPropertiesOptions,
+  View,
+  ViewDescription,
+  ViewType
+} from "./view";
 
 function colToString(collection: string | ArangoCollection): string {
   if (isArangoCollection(collection)) {
@@ -610,7 +616,16 @@ export class Database {
 
   //#region views
   view(viewName: string): ArangoSearchView {
-    return new ArangoSearchView(this._connection, viewName);
+    return new View(this._connection, viewName);
+  }
+
+  async createArangoSearchView(
+    viewName: string,
+    properties?: ArangoSearchViewPropertiesOptions
+  ): Promise<ArangoSearchView> {
+    const view = new View(this._connection, viewName);
+    await view.create({ ...properties, type: ViewType.ARANGOSEARCH_VIEW });
+    return view;
   }
 
   listViews(): Promise<ViewDescription[]> {
@@ -622,13 +637,13 @@ export class Database {
 
   async views(): Promise<ArangoSearchView[]> {
     const views = await this.listViews();
-    return views.map(data => new ArangoSearchView(this._connection, data.name));
+    return views.map(data => new View(this._connection, data.name));
   }
   //#endregion
 
   //#region analyzers
-  analyzer(name: string): ArangoAnalyzer {
-    return new ArangoAnalyzer(this._connection, name);
+  analyzer(name: string): Analyzer {
+    return new Analyzer(this._connection, name);
   }
 
   listAnalyzers(): Promise<AnalyzerDescription[]> {
@@ -638,7 +653,7 @@ export class Database {
     );
   }
 
-  async analyzers(): Promise<ArangoAnalyzer[]> {
+  async analyzers(): Promise<Analyzer[]> {
     const analyzers = await this.listAnalyzers();
     return analyzers.map(data => this.analyzer(data.name));
   }
