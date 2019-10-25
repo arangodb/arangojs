@@ -26,15 +26,13 @@ describe("Manipulating graph edges", function() {
   });
   beforeEach(async () => {
     graph = db.graph(graphName);
-    await graph.create({
-      edgeDefinitions: [
-        {
-          collection: "knows",
-          from: ["person"],
-          to: ["person"]
-        }
-      ]
-    });
+    await graph.create([
+      {
+        collection: "knows",
+        from: ["person"],
+        to: ["person"]
+      }
+    ]);
   });
   afterEach(async () => {
     await graph.drop();

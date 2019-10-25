@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { ArangoAnalyzer } from "../analyzer";
+import { Analyzer } from "../analyzer";
 import { Database } from "../arangojs";
 
 const range = (n: number): number[] => Array.from(Array(n).keys());
@@ -30,10 +30,10 @@ describe35("Accessing analyzers", function() {
     }
   });
   describe("database.arangoAnalyzer", () => {
-    it("returns a ArangoAnalyzer instance for the analyzer", () => {
+    it("returns a Analyzer instance for the analyzer", () => {
       let name = "potato";
       let analyzer = db.analyzer(name);
-      expect(analyzer).to.be.an.instanceof(ArangoAnalyzer);
+      expect(analyzer).to.be.an.instanceof(Analyzer);
       expect(analyzer)
         .to.have.property("name")
         .that.equals(name);
@@ -80,10 +80,10 @@ describe35("Accessing analyzers", function() {
         )
       );
     });
-    it("creates ArangoAnalyzer instances", async () => {
+    it("creates Analyzer instances", async () => {
       const analyzers = await db.analyzers();
       for (const analyzer of analyzers) {
-        expect(analyzer).to.be.instanceOf(ArangoAnalyzer);
+        expect(analyzer).to.be.instanceOf(Analyzer);
       }
       expect(analyzers.map(a => a.name).sort()).to.eql(allNames);
     });
