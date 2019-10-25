@@ -65,7 +65,7 @@ then returns the server response.
 - **options**: `object` (optional)
 
   For more information on the _options_ object, see the
-  [HTTP API documentation for creating Views](https://docs.arangodb.com/latest/HTTP/Views/ArangoSearch.html).
+  [HTTP API documentation for creating Views](https://www.arangodb.com/docs/stable/http/views-arangosearch.html).
 
 **Examples**
 

@@ -1,7 +1,7 @@
 # Accessing Views
 
 These functions implement the
-[HTTP API for accessing Views](https://www.arangodb.com/docs/stable/http/views.html).
+[HTTP API for accessing Views](https://www.arangodb.com/docs/stable/http/views-arangosearch.html).
 
 {% hint 'info' %}
 Views were introduced in ArangoDB 3.4 and are not supported by earlier versions

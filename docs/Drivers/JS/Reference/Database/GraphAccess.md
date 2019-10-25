@@ -11,7 +11,9 @@ Returns a `Graph` instance representing the graph with the given graph name.
 
 ## database.createGraph
 
-`async database.createGraph(graphName, edgeDefinitions, options?): Graph`
+`async database.createGraph(graphName, edgeDefinitions?, options?): Graph`
+
+`async database.createGraph(graphName, options?): Graph`
 
 Creates a graph with the given _graphName_ and _edgeDefinitions_, then returns
 a `Graph` instance for the new graph.
