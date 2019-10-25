@@ -279,7 +279,7 @@ contained in this edge collection.
 - **options**: `object`
 
   See
-  [the HTTP API documentation](https://docs.arangodb.com/latest/HTTP/Traversal/index.html)
+  [the HTTP API documentation](https://www.arangodb.com/docs/stable/http/traversal.html)
   for details on the additional arguments.
 
   Please note that while _options.filter_, _options.visitor_, _options.init_,

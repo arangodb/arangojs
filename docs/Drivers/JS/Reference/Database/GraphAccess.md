@@ -1,7 +1,7 @@
 # Accessing graphs
 
 These functions implement the
-[HTTP API for accessing general graphs](https://docs.arangodb.com/latest/HTTP/Gharial/index.html).
+[HTTP API for accessing general graphs](https://www.arangodb.com/docs/stable/http/gharial.html).
 
 ## database.graph
 
@@ -11,7 +11,9 @@ Returns a `Graph` instance representing the graph with the given graph name.
 
 ## database.createGraph
 
-`async database.createGraph(graphName, edgeDefinitions, options?): Graph`
+`async database.createGraph(graphName, edgeDefinitions?, options?): Graph`
+
+`async database.createGraph(graphName, options?): Graph`
 
 Creates a graph with the given _graphName_ and _edgeDefinitions_, then returns
 a `Graph` instance for the new graph.

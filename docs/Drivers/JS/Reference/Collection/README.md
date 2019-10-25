@@ -1,7 +1,7 @@
 # Collection API
 
 These functions implement the
-[HTTP API for manipulating collections](https://docs.arangodb.com/latest/HTTP/Collection/index.html).
+[HTTP API for manipulating collections](https://www.arangodb.com/docs/stable/http/collection.html).
 
 The _Collection_ API is implemented by _DocumentCollection_ and _EdgeCollection_
 instances. For the additional methods available on edge collections, see

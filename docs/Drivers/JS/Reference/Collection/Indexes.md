@@ -1,7 +1,7 @@
 # Manipulating indexes
 
 These functions implement the
-[HTTP API for manipulating indexes](https://docs.arangodb.com/latest/HTTP/Indexes/index.html).
+[HTTP API for manipulating indexes](https://www.arangodb.com/docs/stable/http/indexes.html).
 
 ## collection.indexes
 

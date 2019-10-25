@@ -1,7 +1,7 @@
 # Manipulating documents
 
 These functions implement the
-[HTTP API for manipulating documents](https://docs.arangodb.com/latest/HTTP/Document/index.html).
+[HTTP API for manipulating documents](https://www.arangodb.com/docs/stable/http/document.html).
 
 Note that passing a document or `_id` from a different collection as a _selector_
 for a document in the current collection will result in an error being thrown.
@@ -428,7 +428,7 @@ returns an array containing the documents' metadata.
     updated if the current revision is the one specified.
 
 For more information on the _options_ object, see the
-[HTTP API documentation for working with documents](https://docs.arangodb.com/latest/HTTP/Document/WorkingWithDocuments.html).
+[HTTP API documentation for working with documents](https://www.arangodb.com/docs/stable/http/document-working-with-documents.html).
 
 **Examples**
 

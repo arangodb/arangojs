@@ -1,7 +1,7 @@
 # Accessing analyzers
 
 These functions implement the
-[HTTP API for accessing analyzers](https://docs.arangodb.com/latest/HTTP/Analyzers/index.html).
+[HTTP API for accessing analyzers](https://www.arangodb.com/docs/stable/http/analyzers.html).
 
 {% hint 'info' %}
 Analyzers were introduced in ArangoDB 3.5 and are not supported by earlier

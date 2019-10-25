@@ -1,7 +1,7 @@
 # Simple queries
 
 These functions implement the
-[HTTP API for simple queries](https://docs.arangodb.com/latest/HTTP/SimpleQuery/index.html).
+[HTTP API for simple queries](https://www.arangodb.com/docs/stable/http/simple-query.html).
 
 ## collection.all
 
@@ -15,7 +15,7 @@ Performs a query to fetch all documents in the collection. Returns a
 - **options**: `object` (optional)
 
   TODO
-  [HTTP API for returning all documents](https://docs.arangodb.com/latest/HTTP/SimpleQuery/index.html#return-all-documents).
+  [HTTP API for returning all documents](https://www.arangodb.com/docs/stable/http/simple-query.html#return-all-documents).
 
 ## collection.any
 
@@ -39,7 +39,7 @@ _example_. Returns a [new `Cursor` instance](../Cursor.md) for the query results
 - **options**: `object` (optional)
 
   TODO
-  [HTTP API for fetching documents by example](https://docs.arangodb.com/latest/HTTP/SimpleQuery/index.html#find-documents-matching-an-example).
+  [HTTP API for fetching documents by example](https://www.arangodb.com/docs/stable/http/simple-query.html#find-documents-matching-an-example).
 
 ## collection.firstExample
 
@@ -68,7 +68,7 @@ Removes all documents in the collection matching the given _example_.
 - **options**: `object` (optional)
 
   TODO
-  [HTTP API for removing documents by example](https://docs.arangodb.com/latest/HTTP/SimpleQuery/index.html#remove-documents-by-example).
+  [HTTP API for removing documents by example](https://www.arangodb.com/docs/stable/http/simple-query.html#remove-documents-by-example).
 
 Returns an object with the following property:
 
@@ -96,7 +96,7 @@ given _newValue_.
 - **options**: `object` (optional)
 
   TODO
-  [HTTP API for replacing documents by example](https://docs.arangodb.com/latest/HTTP/SimpleQuery/index.html#replace-documents-by-example).
+  [HTTP API for replacing documents by example](https://www.arangodb.com/docs/stable/http/simple-query.html#replace-documents-by-example).
 
 Returns an object with the following property:
 
@@ -124,7 +124,7 @@ with the given _newValue_.
 - **options**: `object` (optional)
 
   TODO
-  [HTTP API for updating documents by example](https://docs.arangodb.com/latest/HTTP/SimpleQuery/index.html#update-documents-by-example).
+  [HTTP API for updating documents by example](https://www.arangodb.com/docs/stable/http/simple-query.html#update-documents-by-example).
 
 Returns an object with the following property:
 
@@ -160,7 +160,7 @@ Deletes the documents with the given _keys_ from the collection.
 - **options**: `object` (optional)
 
   TODO
-  [HTTP API for removing documents by keys](https://docs.arangodb.com/latest/HTTP/SimpleQuery/index.html#remove-documents-by-their-keys).
+  [HTTP API for removing documents by keys](https://www.arangodb.com/docs/stable/http/simple-query.html#remove-documents-by-their-keys).
 
 ## collection.fulltext
 
@@ -181,7 +181,7 @@ Performs a fulltext query in the given _fieldName_ on the collection.
 - **options**: `object` (optional)
 
   TODO
-  [HTTP API for fulltext queries](https://docs.arangodb.com/latest/HTTP/Indexes/Fulltext.html).
+  [HTTP API for fulltext queries](https://www.arangodb.com/docs/stable/http/indexes-fulltext.html).
 
 ## collection.list
 

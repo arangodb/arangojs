@@ -1,7 +1,7 @@
 # Managing AQL user functions
 
 These functions implement the
-[HTTP API for managing AQL user functions](https://docs.arangodb.com/latest/HTTP/AqlUserFunctions/index.html).
+[HTTP API for managing AQL user functions](https://www.arangodb.com/docs/stable/http/aql-user-functions.html).
 
 ## database.listFunctions
 

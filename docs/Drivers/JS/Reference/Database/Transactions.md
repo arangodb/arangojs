@@ -1,12 +1,12 @@
 # Transactions
 
 These functions implement the
-[HTTP API for transactions](https://docs.arangodb.com/latest/HTTP/Transaction/index.html).
-Also see [ArangoDB Transactions](https://docs.arangodb.com/latest/Manual/Transactions/index.html).
+[HTTP API for transactions](https://www.arangodb.com/docs/stable/http/transaction.html).
+Also see [ArangoDB Transactions](https://www.arangodb.com/docs/stable/transactions.html).
 
 ## database.executeTransaction
 
-`async database.executeTransaction(collections, action, options?): TODO`
+`async database.executeTransaction(collections, action, options?): any`
 
 Performs a server-side transaction and returns its return value.
 
@@ -50,7 +50,7 @@ Performs a server-side transaction and returns its return value.
   This function will be executed on the server inside ArangoDB and can not use
   the arangojs driver or any values other than those passed as _params_.
   For accessing the database from within ArangoDB, see the documentation for the
-  [`@arangodb` module in ArangoDB](https://docs.arangodb.com/latest/Manual/Appendix/JavaScriptModules/ArangoDB.html).
+  [`@arangodb` module in ArangoDB](https://www.arangodb.com/docs/stable/appendix-java-script-modules-arango-db.html).
   {% endhint %}
 
 - **options**: `object` (optional)
