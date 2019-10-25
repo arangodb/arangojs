@@ -1,39 +1,44 @@
 import { Connection } from "./connection";
 import { isArangoError } from "./error";
 
-export type AnalyzerDescription = AnyAnalyzer & {
+export interface ArangoAnalyzer {
+  isArangoAnalyzer: true;
+  name: string;
+}
+
+export type AnalyzerDescription = AnalyzerInfo & {
   name: string;
   features: string[];
 };
 
-export type CreateAnalyzerOptions = AnyAnalyzer & {
+export type CreateAnalyzerOptions = AnalyzerInfo & {
   features?: string[];
 };
 
-export type AnyAnalyzer =
-  | IdentityAnalyzer
-  | DelimiterAnalyzer
-  | StemAnalyzer
-  | NormAnalyzer
-  | NgramAnalyzer
-  | TextAnalyzer;
+export type AnalyzerInfo =
+  | IdentityAnalyzerInfo
+  | DelimiterAnalyzerInfo
+  | StemAnalyzerInfo
+  | NormAnalyzerInfo
+  | NgramAnalyzerInfo
+  | TextAnalyzerInfo;
 
-export type IdentityAnalyzer = {
+export type IdentityAnalyzerInfo = {
   type: "identity";
   properties?: null;
 };
 
-export type DelimiterAnalyzer = {
+export type DelimiterAnalyzerInfo = {
   type: "delimiter";
   properties: string | { delimiter: string };
 };
 
-export type StemAnalyzer = {
+export type StemAnalyzerInfo = {
   type: "stem";
   properties: { locale: string };
 };
 
-export type NormAnalyzer = {
+export type NormAnalyzerInfo = {
   type: "norm";
   properties: {
     locale: string;
@@ -42,7 +47,7 @@ export type NormAnalyzer = {
   };
 };
 
-export type NgramAnalyzer = {
+export type NgramAnalyzerInfo = {
   type: "ngram";
   properties: {
     max: number;
@@ -51,7 +56,7 @@ export type NgramAnalyzer = {
   };
 };
 
-export type TextAnalyzer = {
+export type TextAnalyzerInfo = {
   type: "text";
   properties: {
     locale: string;
@@ -64,11 +69,10 @@ export type TextAnalyzer = {
 };
 
 const ANALYZER_NOT_FOUND = 1202;
-export class ArangoAnalyzer {
-  private _connection: Connection;
-
-  isArangoAnalyzer = true;
+export class Analyzer implements ArangoAnalyzer {
+  isArangoAnalyzer: true = true;
   name: string;
+  protected _connection: Connection;
 
   constructor(connection: Connection, name: string) {
     this._connection = connection;
