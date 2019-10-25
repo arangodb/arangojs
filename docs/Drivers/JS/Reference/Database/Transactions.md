@@ -6,7 +6,7 @@ Also see [ArangoDB Transactions](https://www.arangodb.com/docs/stable/transactio
 
 ## database.executeTransaction
 
-`async database.executeTransaction(collections, action, [options]): TODO`
+`async database.executeTransaction(collections, action, options?): TODO`
 
 Performs a server-side transaction and returns its return value.
 
@@ -137,7 +137,7 @@ await trx2.commit();
 
 ## database.beginTransaction
 
-`async database.beginTransaction(collections, [options]): Transaction`
+`async database.beginTransaction(collections, options?): Transaction`
 
 Begins a new streaming transaction for the given collections, then returns a
 `Transaction` instance for the transaction.

@@ -2,9 +2,9 @@
 
 ## new Database
 
-`new Database([config]): Database`
+`new Database(config?): Database`
 
-Creates a new _Database_ instance.
+Creates a new `Database` instance.
 
 If _config_ is a string, it will be interpreted as _config.url_.
 
@@ -168,9 +168,11 @@ const version = await db.version();
 
 ## database.route
 
-`database.route([path,] [headers]): Route`
+`database.route(path?, headers?): Route`
 
-Returns a new _Route_ instance for the given path (relative to the database)
+`database.route(headers?): Route`
+
+Returns a new `Route` instance for the given path (relative to the database)
 that can be used to perform arbitrary HTTP requests.
 
 **Arguments**
@@ -185,7 +187,7 @@ that can be used to perform arbitrary HTTP requests.
 
 If _path_ is missing, the route will refer to the base URL of the database.
 
-For more information on _Route_ instances see the
+For more information on `Route` instances see the
 [_Route API_](../Route.md).
 
 **Examples**
@@ -244,7 +246,7 @@ setInterval(async () => {
 
 `database.useDatabase(databaseName): this`
 
-Updates the _Database_ instance and its connection string to use the given
+Updates the `Database` instance and its connection string to use the given
 _databaseName_, then returns itself.
 
 **Arguments**
@@ -263,9 +265,11 @@ db.useDatabase("test");
 
 ## database.useBasicAuth
 
-`database.useBasicAuth([username, [password]]): this`
+`database.useBasicAuth(username, password?): this`
 
-Updates the _Database_ instance's `authorization` header to use Basic
+`database.useBasicAuth(username?): this`
+
+Updates the `Database` instance's `authorization` header to use Basic
 authentication with the given _username_ and _password_, then returns itself.
 
 **Arguments**
@@ -292,7 +296,7 @@ db.useBasicAuth("admin", "hunter2");
 
 `database.useBearerAuth(token): this`
 
-Updates the _Database_ instance's `authorization` header to use Bearer
+Updates the `Database` instance's `authorization` header to use Bearer
 authentication with the given authentication _token_, then returns itself.
 
 **Arguments**
@@ -311,7 +315,9 @@ db.useBearerAuth("keyboardcat");
 
 ## database.login
 
-`async database.login([username, [password]]): string`
+`async database.login(username, password?): string`
+
+`async database.login(username?): string`
 
 Validates the given database credentials and exchanges them for an
 authentication token, then uses the authentication token for future

@@ -8,7 +8,7 @@ Views were introduced in ArangoDB 3.4 and are not supported by earlier versions
 of ArangoDB.
 {% endhint %}
 
-## database.arangoSearchView
+## database.view
 
 `database.view(viewName): ArangoSearchView`
 
@@ -45,7 +45,7 @@ const views = await db.listViews();
 
 ## database.views
 
-`async database.views([excludeSystem]): Array<ArangoSearchView>`
+`async database.views(excludeSystem?): Array<ArangoSearchView>`
 
 Fetches all Views from the database and returns an array of
 _ArangoSearchView_ instances for the Views.

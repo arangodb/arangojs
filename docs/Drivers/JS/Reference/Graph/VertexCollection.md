@@ -5,7 +5,7 @@ The _GraphVertexCollection API_ extends the
 
 ## graphVertexCollection.remove
 
-`async graphVertexCollection.remove(documentHandle, [options]): object`
+`async graphVertexCollection.remove(documentHandle, options?): object`
 
 Deletes the vertex with the given _documentHandle_ from the collection.
 
@@ -64,7 +64,7 @@ if (exists === false) {
 
 ## graphVertexCollection.vertex
 
-`async graphVertexCollection.vertex(documentHandle, [graceful]): object`
+`async graphVertexCollection.vertex(documentHandle, graceful?): object`
 
 Retrieves the vertex with the given _documentHandle_ from the collection.
 

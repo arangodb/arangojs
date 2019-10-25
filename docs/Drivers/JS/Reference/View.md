@@ -55,17 +55,17 @@ const data = await view.properties();
 
 ## view.create
 
-`async view.create([properties]): object`
+`async view.create(options?): object`
 
-Creates a View with the given _properties_ for this View's name,
+Creates a View with the given _options_ for this instance's name,
 then returns the server response.
 
 **Arguments**
 
-- **properties**: `object` (optional)
+- **options**: `object` (optional)
 
-  For more information on the _properties_ object, see the
-  [HTTP API documentation for creating Views](https://www.arangodb.com/docs/stable/http/views-arangosearch.html).
+  For more information on the _options_ object, see the
+  [HTTP API documentation for creating Views](https://docs.arangodb.com/latest/HTTP/Views/ArangoSearch.html).
 
 **Examples**
 

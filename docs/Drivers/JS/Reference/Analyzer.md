@@ -40,7 +40,7 @@ const definition = await analyzer.get();
 
 ## analyzer.create
 
-`async analyzer.create([options]): Object`
+`async analyzer.create(options?): Object`
 
 Creates an Analyzer with the given _options_, then returns the new Analyzer
 definition.

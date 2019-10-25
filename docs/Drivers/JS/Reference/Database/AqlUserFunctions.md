@@ -58,7 +58,7 @@ const cursor = await db.query(aql`
 
 ## database.dropFunction
 
-`async database.dropFunction(name, [group]): TODO`
+`async database.dropFunction(name, group?): TODO`
 
 Deletes the AQL user function with the given name from the database.
 

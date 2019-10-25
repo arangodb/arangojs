@@ -7,7 +7,7 @@ not supported by earlier versions of ArangoDB.
 
 ## database.listServices
 
-`async database.listServices([excludeSystem]): Array<TODO>`
+`async database.listServices(excludeSystem?): Array<TODO>`
 
 Fetches a list of all installed service.
 
@@ -29,7 +29,7 @@ const services = await db.listServices(false);
 
 ## database.installService
 
-`async database.installService(mount, source, [options]): TODO`
+`async database.installService(mount, source, options?): TODO`
 
 Installs a new service.
 
@@ -89,7 +89,7 @@ const info = await db.installService("/hello", source);
 
 ## database.replaceService
 
-`async database.replaceService(mount, source, [options]): TODO`
+`async database.replaceService(mount, source, options?): TODO`
 
 Replaces an existing service with a new service by completely removing the old
 service and installing a new service at the same mount point.
@@ -158,7 +158,7 @@ const info = await db.replaceService("/hello", source);
 
 ## database.upgradeService
 
-`async database.upgradeService(mount, source, [options]): TODO`
+`async database.upgradeService(mount, source, options?): TODO`
 
 Replaces an existing service with a new service while retaining the old
 service's configuration and dependencies.
@@ -227,7 +227,7 @@ const info = await db.upgradeService("/hello", source);
 
 ## database.uninstallService
 
-`async database.uninstallService(mount, [options]): void`
+`async database.uninstallService(mount, options?): void`
 
 Completely removes a service from the database.
 
@@ -273,7 +273,7 @@ const info = await db.getService("/my-service");
 
 ## database.getServiceConfiguration
 
-`async database.getServiceConfiguration(mount, [minimal]): TODO`
+`async database.getServiceConfiguration(mount, minimal?): TODO`
 
 Retrieves an object with information about the service's configuration options
 and their current values.
@@ -297,7 +297,7 @@ const config = await db.getServiceConfiguration("/my-service");
 
 ## database.replaceServiceConfiguration
 
-`async database.replaceServiceConfiguration(mount, configuration, [minimal]): TODO`
+`async database.replaceServiceConfiguration(mount, configuration, minimal?): TODO`
 
 Replaces the configuration of the given service.
 
@@ -329,7 +329,7 @@ const info = await db.replaceServiceConfiguration("/my-service", config);
 
 ## database.updateServiceConfiguration
 
-`async database.updateServiceConfiguration(mount, configuration, [minimal]): TODO`
+`async database.updateServiceConfiguration(mount, configuration, minimal?): TODO`
 
 Updates the configuration of the given service my merging the new values into
 the existing ones.
@@ -362,7 +362,7 @@ const info = await db.updateServiceConfiguration("/my-service", config);
 
 ## database.getServiceDependencies
 
-`async database.getServiceDependencies(mount, [minimal]): TODO`
+`async database.getServiceDependencies(mount, minimal?): TODO`
 
 Retrieves an object with information about the service's dependencies and their
 current mount points.
@@ -386,7 +386,7 @@ const deps = await db.getServiceDependencies("/my-service");
 
 ## database.replaceServiceDependencies
 
-`async database.replaceServiceDependencies(mount, dependencies, [minimal]): TODO`
+`async database.replaceServiceDependencies(mount, dependencies, minimal?): TODO`
 
 Replaces the dependencies for the given service.
 
@@ -418,7 +418,7 @@ const info = await db.replaceServiceDependencies("/my-service", deps);
 
 ## database.updateServiceDependencies
 
-`async database.updateServiceDependencies(mount, dependencies, [minimal]): TODO`
+`async database.updateServiceDependencies(mount, dependencies, minimal?): TODO`
 
 Updates the dependencies for the given service by merging the new values into
 the existing ones.
@@ -513,7 +513,7 @@ const scripts = await db.listServiceScripts("/my-service");
 
 ## database.runServiceScript
 
-`async database.runServiceScript(mount, name, [scriptArg]): any`
+`async database.runServiceScript(mount, name, scriptArg?): any`
 
 Runs a service script and returns the result.
 
@@ -540,7 +540,7 @@ const result = await db.runServiceScript("/my-service", "setup");
 
 ## database.runServiceTests
 
-`async database.runServiceTests(mount, [reporter]): any`
+`async database.runServiceTests(mount, reporter?): any`
 
 Runs the tests of a given service and returns a formatted report.
 
@@ -648,7 +648,7 @@ const spec = await db.getServiceDocumentation("/my-service");
 
 ## database.commitLocalServiceState
 
-`async database.commitLocalServiceState([replace]): void`
+`async database.commitLocalServiceState(replace?): void`
 
 Writes all locally available services to the database and updates any service
 bundles missing in the database.

@@ -71,7 +71,7 @@ if (exists === false) {
 
 ## collection.document
 
-`async collection.document(selector, [options]): Document`
+`async collection.document(selector, options?): Document`
 
 Retrieves the document matching the given _selector_ from the collection.
 
@@ -146,7 +146,7 @@ if (doc === null) {
 
 ## collection.save
 
-`async collection.save(data, [options]): CollectionSaveResult`
+`async collection.save(data, options?): CollectionSaveResult`
 
 Creates a new document with the given _data_.
 
@@ -228,7 +228,7 @@ assert.equal(doc1.new.some, data.some);
 
 ## collection.replace
 
-`async collection.replace(selector, newValue, [options]): CollectionSaveResult`
+`async collection.replace(selector, newValue, options?): CollectionSaveResult`
 
 Replaces the content of the document matching the given _selector_ with the
 given _newValue_ and returns an object containing the document's metadata.
@@ -304,7 +304,7 @@ assert.equal(doc.hello, undefined);
 
 ## collection.update
 
-`async collection.update(selector, newValue, [options]): CollectionSaveResult`
+`async collection.update(selector, newValue, options?): CollectionSaveResult`
 
 Updates (merges) the content of the document matching the given _selector_
 with the given _newValue_.
@@ -380,7 +380,7 @@ assert.equal(doc3.hello, doc.hello);
 
 ## collection.bulkUpdate
 
-`async collection.bulkUpdate(documents, [options]): TODO`
+`async collection.bulkUpdate(documents, options?): TODO`
 
 Updates (merges) the content of the documents with the given _documents_ and
 returns an array containing the documents' metadata.
@@ -447,7 +447,7 @@ const result = await collection.bulkUpdate(
 
 ## collection.remove
 
-`async collection.remove(selector, [options]): CollectionRemoveResult`
+`async collection.remove(selector, options?): CollectionRemoveResult`
 
 Deletes the document matching the given _selector_ from the collection.
 

@@ -204,16 +204,3 @@ export class ArangoSearchView extends BaseView {
     );
   }
 }
-
-/**
- * @private
- */
-export function _constructView(
-  connection: Connection,
-  data: ViewDescription
-): ArangoView {
-  if (data.type && data.type !== ViewType.ARANGOSEARCH_VIEW) {
-    throw new Error(`Unknown view type "${data.type}"`);
-  }
-  return new ArangoSearchView(connection, data.name);
-}

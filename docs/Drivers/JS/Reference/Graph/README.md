@@ -66,7 +66,7 @@ const info = await graph.create({
 
 ## graph.drop
 
-`async graph.drop([dropCollections]): boolean`
+`async graph.drop(dropCollections?): boolean`
 
 Deletes the graph from the database.
 
