@@ -16,15 +16,13 @@ describe("GraphEdgeCollection API", function() {
     await db.createDatabase(dbName);
     db.useDatabase(dbName);
     const graph = db.graph(`testgraph_${Date.now()}`);
-    await graph.create({
-      edgeDefinitions: [
-        {
-          collection: "knows",
-          from: ["person"],
-          to: ["person"]
-        }
-      ]
-    });
+    await graph.create([
+      {
+        collection: "knows",
+        from: ["person"],
+        to: ["person"]
+      }
+    ]);
     collection = graph.edgeCollection("knows");
     await graph
       .vertexCollection("person")

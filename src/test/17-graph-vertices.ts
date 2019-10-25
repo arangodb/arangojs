@@ -30,13 +30,13 @@ async function createGraph(
   vertexCollectionNames: string[],
   edgeCollectionNames: string[]
 ) {
-  return await graph.create({
-    edgeDefinitions: edgeCollectionNames.map(name => ({
+  return await graph.create(
+    edgeCollectionNames.map(name => ({
       collection: name,
       from: vertexCollectionNames,
       to: vertexCollectionNames
     }))
-  });
+  );
 }
 
 describe("Manipulating graph vertices", function() {

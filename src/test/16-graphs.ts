@@ -24,13 +24,13 @@ async function createGraph(
   vertexCollectionNames: string[],
   edgeCollectionNames: string[]
 ) {
-  return await graph.create({
-    edgeDefinitions: edgeCollectionNames.map(name => ({
+  return await graph.create(
+    edgeCollectionNames.map(name => ({
       collection: name,
       from: vertexCollectionNames,
       to: vertexCollectionNames
     }))
-  });
+  );
 }
 
 describe("Graph API", function() {
@@ -86,13 +86,13 @@ describe("Graph API", function() {
     });
     it("creates the graph", async () => {
       const graph = db.graph(`g_${Date.now()}`);
-      await graph.create({
-        edgeDefinitions: edgeCollectionNames.map(name => ({
+      await graph.create(
+        edgeCollectionNames.map(name => ({
           collection: name,
           from: vertexCollectionNames,
           to: vertexCollectionNames
         }))
-      });
+      );
       const data = await graph.get();
       expect(data).to.have.property("name", graph.name);
     });

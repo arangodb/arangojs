@@ -46,13 +46,13 @@ describe("Accessing graphs", function() {
       ] as Promise<ArangoCollection>[]);
       await Promise.all([
         ...graphNames.map(name =>
-          db.graph(name).create({
-            edgeDefinitions: edgeCollectionNames.map(name => ({
+          db.graph(name).create(
+            edgeCollectionNames.map(name => ({
               collection: name,
               from: vertexCollectionNames,
               to: vertexCollectionNames
             }))
-          })
+          )
         )
       ]);
     });
@@ -81,13 +81,13 @@ describe("Accessing graphs", function() {
       ] as Promise<ArangoCollection>[]);
       await Promise.all([
         ...graphNames.map(name =>
-          db.graph(name).create({
-            edgeDefinitions: edgeCollectionNames.map(name => ({
+          db.graph(name).create(
+            edgeCollectionNames.map(name => ({
               collection: name,
               from: vertexCollectionNames,
               to: vertexCollectionNames
             }))
-          })
+          )
         )
       ]);
     });
