@@ -16,7 +16,7 @@ import { ArrayCursor } from "./cursor";
 import { isArangoError } from "./error";
 import { EdgeDefinition, Graph, GraphCreateOptions } from "./graph";
 import { Headers, Route } from "./route";
-import { ArangoTransaction } from "./transaction";
+import { Transaction } from "./transaction";
 import { btoa } from "./util/btoa";
 import { DATABASE_NOT_FOUND } from "./util/codes";
 import { FoxxManifest } from "./util/foxx-manifest";
@@ -477,16 +477,16 @@ export class Database {
     );
   }
 
-  exists(): Promise<boolean> {
-    return this.get().then(
-      () => true,
-      err => {
-        if (isArangoError(err) && err.errorNum === DATABASE_NOT_FOUND) {
-          return false;
-        }
-        throw err;
+  async exists(): Promise<boolean> {
+    try {
+      await this.get();
+      return true;
+    } catch (err) {
+      if (isArangoError(err) && err.errorNum === DATABASE_NOT_FOUND) {
+        return false;
       }
-    );
+      throw err;
+    }
   }
 
   createDatabase(
@@ -679,14 +679,14 @@ export class Database {
     );
   }
 
-  transaction(transactionId: string): ArangoTransaction {
-    return new ArangoTransaction(this._connection, transactionId);
+  transaction(transactionId: string): Transaction {
+    return new Transaction(this._connection, transactionId);
   }
 
   beginTransaction(
     collections: TransactionCollections,
     options?: TransactionOptions
-  ): Promise<ArangoTransaction> {
+  ): Promise<Transaction> {
     return this._connection.request(
       {
         method: "POST",
@@ -696,7 +696,7 @@ export class Database {
           ...options
         }
       },
-      res => new ArangoTransaction(this._connection, res.body.result.id)
+      res => new Transaction(this._connection, res.body.result.id)
     );
   }
 
