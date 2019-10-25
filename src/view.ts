@@ -113,29 +113,16 @@ export class View<
     );
   }
 
-  exists(): Promise<boolean> {
-    return this.get().then(
-      () => true,
-      err => {
-        if (isArangoError(err) && err.errorNum === VIEW_NOT_FOUND) {
-          return false;
-        }
-        throw err;
+  async exists(): Promise<boolean> {
+    try {
+      await this.get();
+      return true;
+    } catch (err) {
+      if (isArangoError(err) && err.errorNum === VIEW_NOT_FOUND) {
+        return false;
       }
-    );
-  }
-
-  async rename(name: string): Promise<ViewResponse & ArangoResponseMetadata> {
-    const result = await this._connection.request(
-      {
-        method: "PUT",
-        path: `/_api/view/${this.name}/rename`,
-        body: { name }
-      },
-      res => res.body
-    );
-    this.name = name;
-    return result;
+      throw err;
+    }
   }
 
   create(options?: PropertiesOptions): Promise<PropertiesResponse> {
@@ -151,6 +138,19 @@ export class View<
       },
       res => res.body
     );
+  }
+
+  async rename(name: string): Promise<ViewResponse & ArangoResponseMetadata> {
+    const result = await this._connection.request(
+      {
+        method: "PUT",
+        path: `/_api/view/${this.name}/rename`,
+        body: { name }
+      },
+      res => res.body
+    );
+    this.name = name;
+    return result;
   }
 
   properties(): Promise<PropertiesResponse & ArangoResponseMetadata> {

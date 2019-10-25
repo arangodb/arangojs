@@ -86,16 +86,16 @@ export class Analyzer implements ArangoAnalyzer {
     );
   }
 
-  exists() {
-    return this.get().then(
-      () => true,
-      err => {
-        if (isArangoError(err) && err.errorNum === ANALYZER_NOT_FOUND) {
-          return false;
-        }
-        throw err;
+  async exists() {
+    try {
+      await this.get();
+      return true;
+    } catch (err) {
+      if (isArangoError(err) && err.errorNum === ANALYZER_NOT_FOUND) {
+        return false;
       }
-    );
+      throw err;
+    }
   }
 
   create(options: CreateAnalyzerOptions): Promise<AnalyzerDescription> {

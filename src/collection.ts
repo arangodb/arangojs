@@ -883,16 +883,16 @@ export class Collection<T extends object = any>
     );
   }
 
-  exists() {
-    return this.get().then(
-      () => true,
-      (err) => {
-        if (isArangoError(err) && err.errorNum === COLLECTION_NOT_FOUND) {
-          return false;
-        }
-        throw err;
+  async exists() {
+    try {
+      await this.get();
+      return true;
+    } catch (err) {
+      if (isArangoError(err) && err.errorNum === COLLECTION_NOT_FOUND) {
+        return false;
       }
-    );
+      throw err;
+    }
   }
 
   create(
@@ -972,8 +972,9 @@ export class Collection<T extends object = any>
     return result;
   }
 
-  rotate() {
-    return this._put("rotate").then((body) => body.result);
+  async rotate() {
+    const body = await this._put("rotate");
+    return body.result;
   }
 
   truncate() {

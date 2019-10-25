@@ -451,16 +451,16 @@ export class Graph {
     );
   }
 
-  exists(): Promise<boolean> {
-    return this.get().then(
-      () => true,
-      err => {
-        if (isArangoError(err) && err.errorNum === GRAPH_NOT_FOUND) {
-          return false;
-        }
-        throw err;
+  async exists(): Promise<boolean> {
+    try {
+      await this.get();
+      return true;
+    } catch (err) {
+      if (isArangoError(err) && err.errorNum === GRAPH_NOT_FOUND) {
+        return false;
       }
-    );
+      throw err;
+    }
   }
 
   create(

@@ -1,13 +1,18 @@
 import { Connection } from "./connection";
 import { isArangoError } from "./error";
 
-interface TransactionStatus {
+export interface ArangoTransaction {
+  isArangoTransaction: true;
+  id: string;
+}
+
+export interface TransactionStatus {
   id: string;
   status: "running" | "committed" | "aborted";
 }
 
 const TRANSACTION_NOT_FOUND = 10;
-export class ArangoTransaction {
+export class Transaction implements ArangoTransaction {
   isArangoTransaction: true = true;
   private _connection: Connection;
   id: string;
@@ -17,16 +22,16 @@ export class ArangoTransaction {
     this.id = id;
   }
 
-  exists(): Promise<boolean> {
-    return this.get().then(
-      () => true,
-      err => {
-        if (isArangoError(err) && err.errorNum === TRANSACTION_NOT_FOUND) {
-          return false;
-        }
-        throw err;
+  async exists(): Promise<boolean> {
+    try {
+      await this.get();
+      return true;
+    } catch (err) {
+      if (isArangoError(err) && err.errorNum === TRANSACTION_NOT_FOUND) {
+        return false;
       }
-    );
+      throw err;
+    }
   }
 
   get(): Promise<TransactionStatus> {
