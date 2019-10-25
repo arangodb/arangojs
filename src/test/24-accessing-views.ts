@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { ArangoSearchView, Database } from "../arangojs";
+import { Database, View } from "../arangojs";
 
 const range = (n: number): number[] => Array.from(Array(n).keys());
 
@@ -26,10 +26,10 @@ describe34("Accessing views", function() {
     }
   });
   describe("database.arangoSearchView", () => {
-    it("returns a ArangoSearchView instance for the view", () => {
+    it("returns a View instance for the view", () => {
       let name = "potato";
       let view = db.view(name);
-      expect(view).to.be.an.instanceof(ArangoSearchView);
+      expect(view).to.be.an.instanceof(View);
       expect(view)
         .to.have.property("name")
         .that.equals(name);
@@ -61,11 +61,9 @@ describe34("Accessing views", function() {
         arangoSearchViewNames.map(name => db.view(name).drop())
       );
     });
-    it("creates ArangoSearchView instances", async () => {
+    it("creates View instances", async () => {
       const views = await db.views();
-      let arangoSearchViews = views
-        .filter(v => v instanceof ArangoSearchView)
-        .sort();
+      let arangoSearchViews = views.filter(v => v instanceof View).sort();
       expect(arangoSearchViews.length).to.equal(arangoSearchViewNames.length);
       expect(arangoSearchViews.map(v => v.name).sort()).to.eql(
         arangoSearchViewNames

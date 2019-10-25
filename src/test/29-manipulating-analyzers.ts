@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { ArangoAnalyzer } from "../analyzer";
+import { Analyzer } from "../analyzer";
 import { Database } from "../arangojs";
 
 const ARANGO_URL = process.env.TEST_ARANGODB_URL || "http://localhost:8529";
@@ -33,7 +33,7 @@ describe35("Manipulating analyzers", function() {
     });
   });
   describe("analyzer.get", () => {
-    let analyzer: ArangoAnalyzer;
+    let analyzer: Analyzer;
     before(async () => {
       analyzer = db.analyzer(`a_${Date.now()}`);
       await analyzer.create({ type: "identity" });
@@ -56,7 +56,7 @@ describe35("Manipulating analyzers", function() {
     });
   });
   describe("analyzer.drop", () => {
-    let analyzer: ArangoAnalyzer;
+    let analyzer: Analyzer;
     beforeEach(async () => {
       analyzer = db.analyzer(`a_${Date.now()}`);
       await analyzer.create({ type: "identity" });
