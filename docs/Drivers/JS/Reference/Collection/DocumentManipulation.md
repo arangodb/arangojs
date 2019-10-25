@@ -428,7 +428,7 @@ returns an array containing the documents' metadata.
     updated if the current revision is the one specified.
 
 For more information on the _options_ object, see the
-[HTTP API documentation for working with documents](https://docs.arangodb.com/latest/HTTP/Document/WorkingWithDocuments.html).
+[HTTP API documentation for working with documents](https://www.arangodb.com/docs/stable/http/document-working-with-documents.html).
 
 **Examples**
 

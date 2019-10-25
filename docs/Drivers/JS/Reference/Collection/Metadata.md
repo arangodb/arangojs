@@ -1,7 +1,7 @@
 # Getting information about the collection
 
 These methods implement the
-[HTTP API for getting information about a collection](https://docs.arangodb.com/latest/HTTP/Collection/Getting.html).
+[HTTP API for getting information about a collection](https://www.arangodb.com/docs/stable/http/collection-getting.html).
 
 ## collection.exists
 

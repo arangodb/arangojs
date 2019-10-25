@@ -1,12 +1,14 @@
 # Transactions
 
 These functions implement the
+[HTTP API for transactions](https://www.arangodb.com/docs/stable/http/transaction.html)
+and the
 [HTTP API for JS transactions](https://www.arangodb.com/docs/stable/http/transaction-js-transaction.html).
 Also see [ArangoDB Transactions](https://www.arangodb.com/docs/stable/transactions.html).
 
 ## database.executeTransaction
 
-`async database.executeTransaction(collections, action, options?): TODO`
+`async database.executeTransaction(collections, action, options?): any`
 
 Performs a server-side transaction and returns its return value.
 
