@@ -12,7 +12,7 @@ of ArangoDB.
 
 `database.view(viewName): ArangoSearchView`
 
-Returns a _ArangoSearchView_ instance for the given View name.
+Returns a `ArangoSearchView` instance for the given View name.
 
 **Arguments**
 
@@ -31,8 +31,7 @@ const view = db.view("potatoes");
 
 `async database.listViews(): Array<object>`
 
-Fetches all Views from the database and returns an array of View
-descriptions.
+Fetches all Views from the database and returns an array of View descriptions.
 
 **Examples**
 
@@ -48,7 +47,7 @@ const views = await db.listViews();
 `async database.views(excludeSystem?): Array<ArangoSearchView>`
 
 Fetches all Views from the database and returns an array of
-_ArangoSearchView_ instances for the Views.
+`ArangoSearchView` instances for the Views.
 
 **Examples**
 
