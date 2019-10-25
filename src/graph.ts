@@ -419,19 +419,15 @@ export type GraphInfo = {
   replicationFactor: number;
 };
 
-export type GraphCreateProperties = {
-  edgeDefinitions?: EdgeDefinition[];
-  isSmart?: boolean;
-  options?: {
-    smartGraphAttribute?: string;
-    numberOfShards?: number;
-    replicationFactor?: number;
-    minReplicationFactor?: number;
-  };
-};
-
 export type GraphCreateOptions = {
   waitForSync?: boolean;
+  /** Enterprise Edition only */
+  isSmart?: boolean;
+  /** Enterprise Edition only */
+  smartGraphAttribute?: string;
+  numberOfShards?: number;
+  replicationFactor?: number;
+  minReplicationFactor?: number;
 };
 
 export class Graph {
@@ -468,18 +464,20 @@ export class Graph {
   }
 
   create(
-    properties: GraphCreateProperties,
+    edgeDefinitions: EdgeDefinition[],
     options?: GraphCreateOptions
   ): Promise<GraphInfo> {
+    const { waitForSync, isSmart, ...opts } = options || {};
     return this._connection.request(
       {
         method: "POST",
         path: "/_api/gharial",
         body: {
-          ...properties,
-          name: this._name
+          properties: { edgeDefinitions, isSmart },
+          name: this._name,
+          options: opts
         },
-        qs: options
+        qs: { waitForSync }
       },
       res => res.body.graph
     );

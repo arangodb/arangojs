@@ -14,7 +14,7 @@ import {
 import { Config, Connection } from "./connection";
 import { ArrayCursor } from "./cursor";
 import { isArangoError } from "./error";
-import { Graph, GraphCreateOptions, GraphCreateProperties } from "./graph";
+import { EdgeDefinition, Graph, GraphCreateOptions } from "./graph";
 import { Headers, Route } from "./route";
 import { ArangoTransaction } from "./transaction";
 import { btoa } from "./util/btoa";
@@ -22,12 +22,7 @@ import { DATABASE_NOT_FOUND } from "./util/codes";
 import { FoxxManifest } from "./util/foxx-manifest";
 import { toForm } from "./util/multipart";
 import { ArangoResponseMetadata } from "./util/types";
-import {
-  ArangoSearchView,
-  ArangoView,
-  ViewDescription,
-  _constructView
-} from "./view";
+import { ArangoSearchView, ViewDescription } from "./view";
 
 function colToString(collection: string | ArangoCollection): string {
   if (isArangoCollection(collection)) {
@@ -530,31 +525,31 @@ export class Database {
 
   async createCollection<T extends object = any>(
     collectionName: string,
-    properties: CreateCollectionOptions & {
+    options: CreateCollectionOptions & {
       type: CollectionType.EDGE_COLLECTION;
     }
   ): Promise<EdgeCollection<T>>;
   async createCollection<T extends object = any>(
     collectionName: string,
-    properties?: CreateCollectionOptions & {
+    options?: CreateCollectionOptions & {
       type?: CollectionType.DOCUMENT_COLLECTION;
     }
   ): Promise<DocumentCollection<T>>;
   async createCollection<T extends object = any>(
     collectionName: string,
-    properties?: CreateCollectionOptions & { type?: CollectionType }
+    options?: CreateCollectionOptions & { type?: CollectionType }
   ): Promise<DocumentCollection<T> & EdgeCollection<T>> {
     const collection = new Collection(this._connection, collectionName);
-    await collection.create(properties);
+    await collection.create(options);
     return collection;
   }
 
   async createEdgeCollection<T extends object = any>(
     collectionName: string,
-    properties?: CreateCollectionOptions
+    options?: CreateCollectionOptions
   ): Promise<EdgeCollection<T>> {
     return this.createCollection(collectionName, {
-      ...properties,
+      ...options,
       type: CollectionType.EDGE_COLLECTION
     });
   }
@@ -579,6 +574,34 @@ export class Database {
   }
   //#endregion
 
+  //#region graphs
+  graph(graphName: string): Graph {
+    return new Graph(this._connection, graphName);
+  }
+
+  async createGraph(
+    graphName: string,
+    edgeDefinitions: EdgeDefinition[],
+    options?: GraphCreateOptions
+  ): Promise<Graph> {
+    const graph = new Graph(this._connection, graphName);
+    await graph.create(edgeDefinitions, options);
+    return graph;
+  }
+
+  listGraphs() {
+    return this._connection.request(
+      { path: "/_api/gharial" },
+      res => res.body.graphs
+    );
+  }
+
+  async graphs(): Promise<Graph[]> {
+    const graphs = await this.listGraphs();
+    return graphs.map((data: any) => this.graph(data._key));
+  }
+  //#endregion
+
   //#region views
   view(viewName: string): ArangoSearchView {
     return new ArangoSearchView(this._connection, viewName);
@@ -591,9 +614,9 @@ export class Database {
     );
   }
 
-  async views(): Promise<ArangoView[]> {
+  async views(): Promise<ArangoSearchView[]> {
     const views = await this.listViews();
-    return views.map((data: any) => _constructView(this._connection, data));
+    return views.map(data => new ArangoSearchView(this._connection, data.name));
   }
   //#endregion
 
@@ -654,34 +677,6 @@ export class Database {
       },
       res => new ArangoTransaction(this._connection, res.body.result.id)
     );
-  }
-  //#endregion
-
-  //#region graphs
-  graph(graphName: string): Graph {
-    return new Graph(this._connection, graphName);
-  }
-
-  async createGraph(
-    graphName: string,
-    properties: GraphCreateProperties,
-    options?: GraphCreateOptions
-  ): Promise<Graph> {
-    const graph = new Graph(this._connection, graphName);
-    await graph.create(properties, options);
-    return graph;
-  }
-
-  listGraphs() {
-    return this._connection.request(
-      { path: "/_api/gharial" },
-      res => res.body.graphs
-    );
-  }
-
-  async graphs(): Promise<Graph[]> {
-    const graphs = await this.listGraphs();
-    return graphs.map((data: any) => this.graph(data._key));
   }
   //#endregion
 

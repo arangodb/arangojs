@@ -9,10 +9,12 @@ For collection-specific queries see [Simple Queries](../Collection/SimpleQueries
 
 ## database.query
 
-`async database.query(query, [bindVars,] [options]): Cursor`
+`async database.query(query, bindVars, options?): Cursor`
+
+`async database.query(query, options?): Cursor`
 
 Performs a database query using the given _query_ and _bindVars_, then returns a
-[new _Cursor_ instance](../Cursor.md) for the result list.
+[new `Cursor` instance](../Cursor.md) for the result list.
 
 **Arguments**
 
@@ -21,6 +23,7 @@ Performs a database query using the given _query_ and _bindVars_, then returns a
   An AQL query as a string or
   [AQL query object](../Aql.md#aql) or
   [AQL literal](../Aql.md#aqlliteral).
+
   If the query is an AQL query object, the second argument is treated as the
   _options_ argument instead of _bindVars_.
 
@@ -150,7 +153,9 @@ const query = aql`
 
 ## database.explain
 
-`async database.explain(query, [bindVars,] [options]): ExplainResult`
+`async database.explain(query, bindVars, options?): ExplainResult`
+
+`async database.explain(query, options?): ExplainResult`
 
 Explains a database query using the given _query_ and _bindVars_ and
 returns one or more plans.
@@ -162,6 +167,7 @@ returns one or more plans.
   An AQL query as a string or
   [AQL query object](../Aql.md#aql) or
   [AQL literal](../Aql.md#aqlliteral).
+
   If the query is an AQL query object, the second argument is treated as the
   _options_ argument instead of _bindVars_.
 

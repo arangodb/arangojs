@@ -5,7 +5,7 @@ This function implements the
 
 ## collection.import
 
-`async collection.import(data, [options]): CollectionImportResult`
+`async collection.import(data, options?): CollectionImportResult`
 
 Bulk imports the given _data_ into the collection.
 

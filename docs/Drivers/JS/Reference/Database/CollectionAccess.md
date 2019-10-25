@@ -7,7 +7,7 @@ These functions implement the
 
 `database.collection(collectionName): Collection`
 
-Returns a _Collection_ instance for the given collection name.
+Returns a `Collection` instance for the given collection name.
 
 **Arguments**
 
@@ -22,8 +22,8 @@ const db = new Database();
 const collection = db.collection("potatoes");
 ```
 
-When using TypeScript the result can be cast to a _DocumentCollection_ or
-_EdgeCollection_ for stricter type safety:
+When using TypeScript the result can be cast to a `DocumentCollection` or
+`EdgeCollection` for stricter type safety:
 
 ```ts
 interface Person {
@@ -40,13 +40,13 @@ const edges = db.collection("spouse") as EdgeCollection<Spouse>;
 
 ## database.createCollection
 
-`async database.createCollection(collectionName, [properties]): Collection`
+`async database.createCollection(collectionName, options?): Collection`
 
-Creates a new collection with the given _collectionName_ and _properties_,
-then returns a _Collection_ instance for the new collection.
+Creates a new collection with the given _collectionName_ and _options_,
+then returns a `Collection` instance for the new collection.
 
-When using TypeScript, a _DocumentCollection_ or _EdgeCollection_ object
-will be returned depending on the value of _properties.type_.
+When using TypeScript, a `DocumentCollection` or `EdgeCollection` object
+will be returned depending on the value of _options.type_.
 
 **Arguments**
 
@@ -54,7 +54,7 @@ will be returned depending on the value of _properties.type_.
 
   Name of the new collection.
 
-- **properties**: `object` (optional)
+- **options**: `object` (optional)
 
   An object with the following properties:
 
@@ -111,6 +111,16 @@ will be returned depending on the value of _properties.type_.
   If ArangoDB is running in a cluster configuration, the object has the
   following additional properties:
 
+  - **waitForSyncReplication**: `boolean` (Default: `true`)
+
+    Unless set to `false`, the server will wait for all replicas to create the
+    collection before returning.
+
+  - **enforceReplicationFactor**: `boolean` (Default: `true`)
+
+    Unless set to `false`, the server will check whether enough replicas are
+    available at creation time and bail out otherwise.
+
   - **numberOfShards**: `number` (Default: `1`)
 
     Number of shards to distribute the collection across.
@@ -127,9 +137,8 @@ will be returned depending on the value of _properties.type_.
 
     Sharding strategy to use.
 
-    One of `"community-compat"`, `"enterprise-compat"`,
-    `"enterprise-smart-edge-compat"`, `"hash"` or
-    `"enterprise-hash-smart-edge"`.
+    One of `"community-compat"`, `"hash"`, `"enterprise-compat"`,
+    `"enterprise-smart-edge-compat"` or `"enterprise-hash-smart-edge"`.
 
   If ArangoDB is running in an Enterprise Edition cluster configuration, the
   object has the following additional properties:
@@ -165,17 +174,17 @@ will be returned depending on the value of _properties.type_.
 
 ## database.createEdgeCollection
 
-`async database.createEdgeCollection(collectionName, [properties]): EdgeCollection`
+`async database.createEdgeCollection(collectionName, options?): EdgeCollection`
 
-Creates a new edge collection with the given _collectionName_ and _properties_,
-then returns an _EdgeCollection_ object for the new collection.
+Creates a new edge collection with the given _collectionName_ and _options_,
+then returns an `EdgeCollection` object for the new collection.
 
 This is a shorthand for calling `database.createCollection` with
-_properties.type_ set to `CollectionType.EDGE_COLLECTION`.
+_options.type_ set to `CollectionType.EDGE_COLLECTION`.
 
 ## database.listCollections
 
-`async database.listCollections([excludeSystem]): Array<object>`
+`async database.listCollections(excludeSystem?): Array<object>`
 
 Fetches all collections from the database and returns an array of collection
 descriptions.
@@ -204,10 +213,10 @@ const collections = await db.listCollections(false);
 
 ## database.collections
 
-`async database.collections([excludeSystem]): Array<Collection>`
+`async database.collections(excludeSystem?): Array<Collection>`
 
 Fetches all collections from the database and returns an array of
-_DocumentCollection_ and _EdgeCollection_ instances for the collections.
+`DocumentCollection` and `EdgeCollection` instances for the collections.
 
 **Arguments**
 
@@ -232,3 +241,8 @@ const collections = await db.collections(false);
 // and EdgeCollection instances
 // including system collections
 ```
+
+When using TypeScript, the `Collection` instances can be cast to more specific
+`DocumentCollection` and `EdgeCollection` types individually for stricter type
+safety. Check the examples for the _database.collection_ method for more
+information.
