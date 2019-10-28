@@ -44,29 +44,30 @@ returns an `ArangoSearchView` instance for the new View.
 
   An object with the following properties:
 
-  - **cleanupIntervalStep**: `number` (optional)
+  - **cleanupIntervalStep**: `number` (Default: `2`)
 
-    TODO
+    How many commits to wait between removing unused files.
 
-  - **consolidationIntervalMsec**: `number` (optional)
+  - **consolidationIntervalMsec**: `number` (Default: `10000`)
 
-    TODO
+    How long to wait between applying the _consolidationPolicy_.
 
-  - **commitIntervalMsec**: `number` (optional)
+  - **commitIntervalMsec**: `number` (Default: `1000`)
 
-    TODO
+    How long to wait between commiting View data store changes and making
+    documents visible to queries.
 
-  - **writebufferIdle**: `number` (optional)
+  - **writebufferIdle**: `number` (Default: `64`)
 
-    TODO
+    Maximum number of writers cached in the pool.
 
-  - **writebufferActive**: `number` (optional)
+  - **writebufferActive**: `number` (Default: `0`)
 
-    TODO
+    Maximum number of concurrent active writers that perform a transaction.
 
-  - **writebufferSizeMax**: `number` (optional)
+  - **writebufferSizeMax**: `number` (Default: `33554432`, i.e. 32 MiB)
 
-    TODO
+    Maximum memory byte size per writer before a writer flush is triggered.
 
   - **consolidationPolicy**: `object` (optional)
 
@@ -79,20 +80,42 @@ returns an `ArangoSearchView` instance for the new View.
     If the type is `"bytes_accum"`, the object has the following additional
     properties:
 
-    TODO
+    - **threshold**: `number` (optional)
+
+      Must be in the range of `0.0` to `1.0`.
 
     If the type is `"tier"`, the object has the following additional
     properties:
 
-    TODO
+    - **segmentsBytesFloor**: `number` (Default: `2097152`, i.e. 2 MiB)
 
-  - **primarySort**: `object` (optional)
+      Defines the value to treat all smaller segments as equal for consolidation selection.
 
-    An object with the following properties:
+    - **segmentsBytesMax**: `number` (Default: `5368709120`, i.e. 5 GiB)
+
+      Maximum allowed size of all consolidated segments.
+
+    - **segmentsMax**: `number` (Default: `10`)
+
+      The maximum number of segments that will be evaluated as candidates for
+      consolidation.
+
+    - **segmentsMin**: `number` (Default: `1`)
+
+      The minimum number of segments that will be evaluated as candidates for
+      consolidation
+
+    - **minScore**: `number` (Default: `0`)
+
+      The minimum score.
+
+  - **primarySort**: `Array<object>` (optional)
+
+    An array of objects with the following properties:
 
     - **field**: `string`
 
-      TODO
+      The attribute path for the value of each document to use for sorting.
 
     - **asc**: `boolean` or **direction**: `string`
 
@@ -104,7 +127,34 @@ returns an `ArangoSearchView` instance for the new View.
 
   - **links**: `object` (optional)
 
-    An object TODO
+    An object mapping names of linked collections to link definitions as
+    objects with the following format:
+
+    - **analyzers**: `Array<string>` (Default: `["identity"]`)
+
+      A list of names of Analyzers to apply to values of processed document
+      attributes.
+
+    - **fields**: `object` (optional)
+
+      An object mapping names of attributes to process for each document to
+      link definitions.
+
+    - **includeAllFields**: `boolean` (Default: `false`)
+
+      If set to `true`, all document attributes will be processed, otherwise
+      only the attributes in _fields_ will be processed.
+
+    - **trackListPositions**: `boolean` (Default: `false`)
+
+      If set to `true`, the position of values in array values will be tracked,
+      otherwise all values in an array will be treated as equal alternatives.
+
+    - **storeValues**: `string` (Default: `"none"`)
+
+      Controls how the view should keep track of the attribute values.
+
+      One of `"none"` or `"id"`.
 
 ## database.listViews
 
