@@ -69,7 +69,7 @@ definition.
     If the type is `"identity"`, the _properties_ are optional or can be
     `undefined` or `null`.
 
-    If the type is `"delimiter"`, the _properties_ must be an object with the
+    If the type is `"delimiter"`, the _properties_ is an object with the
     following property:
 
     - **delimiter**: `string`
@@ -77,14 +77,14 @@ definition.
       Delimiter to use to split text into tokens as specified in RFC 4180,
       without starting new records on newlines.
 
-    If the type is `"stem"`, the _properties_ must be an object with the
+    If the type is `"stem"`, the _properties_ is an object with the
     following property:
 
     - **locale**: `string`
 
       Text locale. Format: `language[_COUNTRY][.encoding][@variant]`.
 
-    If the type is `"norm"`, the _properties_ must be an object with the
+    If the type is `"norm"`, the _properties_ is an object with the
     following properties:
 
     - **locale**: `string`
@@ -99,7 +99,7 @@ definition.
 
       Preserve accent in returned words.
 
-    If the type is `"ngram"`, the _properties_ must be an object with the
+    If the type is `"ngram"`, the _properties_ is an object with the
     following properties:
 
     - **max**: `number`
@@ -114,7 +114,7 @@ definition.
 
       Output the original value as well.
 
-    If the type is `"text"`, the _properties_ must be an object with the
+    If the type is `"text"`, the _properties_ is an object with the
     following properties:
 
     - **locale**: `string`
