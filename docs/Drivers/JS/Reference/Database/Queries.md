@@ -1,9 +1,9 @@
 # Queries
 
 These functions implements the
-[HTTP API for single round-trip AQL queries](https://docs.arangodb.com/latest/HTTP/AqlQueryCursor/QueryResults.html)
+[HTTP API for single round-trip AQL queries](https://www.arangodb.com/docs/stable/http/aql-query-cursor-query-results.html)
 as well as the
-[HTTP API for managing queries](https://docs.arangodb.com/latest/HTTP/AqlQuery/index.html).
+[HTTP API for managing queries](https://www.arangodb.com/docs/stable/http/aql-query.html).
 
 For collection-specific queries see [Simple Queries](../Collection/SimpleQueries.md).
 
@@ -39,7 +39,7 @@ the query result count.
 Possible key options in _opts.options_ include: _failOnWarning_, _cache_,
 profile or _skipInaccessibleCollections_.
 For a complete list of query settings please reference the
-[setting options](https://docs.arangodb.com/latest/AQL/Invocation/WithArangosh.html#setting-options).
+[setting options](https://www.arangodb.com/docs/stable/aql/invocation-with-arangosh.html#setting-options).
 
 Additionally if _opts.allowDirtyRead_ is set to `true`, the request will
 explicitly permit ArangoDB to return a potentially dirty or stale result and

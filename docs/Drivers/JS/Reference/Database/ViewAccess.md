@@ -1,7 +1,7 @@
-# Accessing views
+# Accessing Views
 
 These functions implement the
-[HTTP API for accessing views](https://docs.arangodb.com/latest/HTTP/Views/Getting.html).
+[HTTP API for accessing Views](https://www.arangodb.com/docs/stable/http/views.html).
 
 {% hint 'info' %}
 Views were introduced in ArangoDB 3.4 and are not supported by earlier versions
@@ -12,13 +12,13 @@ of ArangoDB.
 
 `database.arangoSearchView(viewName): ArangoSearchView`
 
-Returns a _ArangoSearchView_ instance for the given view name.
+Returns a _ArangoSearchView_ instance for the given View name.
 
 **Arguments**
 
 - **viewName**: `string`
 
-  Name of the arangosearch view.
+  Name of the ArangoSearch View.
 
 **Examples**
 
@@ -31,7 +31,7 @@ const view = db.arangoSearchView("potatoes");
 
 `async database.listViews(): Array<Object>`
 
-Fetches all views from the database and returns an array of view
+Fetches all Views from the database and returns an array of View
 descriptions.
 
 **Examples**
@@ -40,15 +40,15 @@ descriptions.
 const db = new Database();
 
 const views = await db.listViews();
-// views is an array of view descriptions
+// views is an array of View descriptions
 ```
 
 ## database.views
 
 `async database.views([excludeSystem]): Array<View>`
 
-Fetches all views from the database and returns an array of
-_ArangoSearchView_ instances for the views.
+Fetches all Views from the database and returns an array of
+_ArangoSearchView_ instances for the Views.
 
 **Examples**
 
@@ -56,5 +56,5 @@ _ArangoSearchView_ instances for the views.
 const db = new Database();
 
 const views = await db.views();
-// views is an array of ArangoSearchView instances
+// views is an array of ArangoSearch View instances
 ```

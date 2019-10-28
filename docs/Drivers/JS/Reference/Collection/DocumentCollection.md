@@ -157,7 +157,7 @@ If a boolean is passed instead of an options object, it will be interpreted as
 the _returnNew_ option.
 
 For more information on the _opts_ object, see the
-[HTTP API documentation for working with documents](https://docs.arangodb.com/latest/HTTP/Document/WorkingWithDocuments.html).
+[HTTP API documentation for working with documents](https://www.arangodb.com/docs/stable/http/document-working-with-documents.html).
 
 **Examples**
 

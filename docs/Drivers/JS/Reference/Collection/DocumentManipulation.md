@@ -1,7 +1,7 @@
 # Manipulating documents
 
 These functions implement the
-[HTTP API for manipulating documents](https://docs.arangodb.com/latest/HTTP/Document/index.html).
+[HTTP API for manipulating documents](https://www.arangodb.com/docs/stable/http/document.html).
 
 ## collection.replace
 
@@ -51,7 +51,7 @@ If a string is passed instead of an options object, it will be interpreted as
 the _rev_ option.
 
 For more information on the _opts_ object, see the
-[HTTP API documentation for working with documents](https://docs.arangodb.com/latest/HTTP/Document/WorkingWithDocuments.html).
+[HTTP API documentation for working with documents](https://www.arangodb.com/docs/stable/http/document-working-with-documents.html).
 
 **Examples**
 
@@ -146,7 +146,7 @@ If a string is passed instead of an options object, it will be interpreted as
 the _rev_ option.
 
 For more information on the _opts_ object, see the
-[HTTP API documentation for working with documents](https://docs.arangodb.com/latest/HTTP/Document/WorkingWithDocuments.html).
+[HTTP API documentation for working with documents](https://www.arangodb.com/docs/stable/http/document-working-with-documents.html).
 
 **Examples**
 
@@ -220,7 +220,7 @@ see [Compatibility](../../GettingStarted/README.md#compatibility).
     updated if the current revision is the one specified.
 
 For more information on the _opts_ object, see the
-[HTTP API documentation for working with documents](https://docs.arangodb.com/latest/HTTP/Document/WorkingWithDocuments.html).
+[HTTP API documentation for working with documents](https://www.arangodb.com/docs/stable/http/document-working-with-documents.html).
 
 **Examples**
 
@@ -280,7 +280,7 @@ If a string is passed instead of an options object, it will be interpreted as
 the _rev_ option.
 
 For more information on the _opts_ object, see the
-[HTTP API documentation for working with documents](https://docs.arangodb.com/latest/HTTP/Document/WorkingWithDocuments.html).
+[HTTP API documentation for working with documents](https://www.arangodb.com/docs/stable/http/document-working-with-documents.html).
 
 **Examples**
 

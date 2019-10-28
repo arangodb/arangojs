@@ -1,7 +1,7 @@
 # Analyzer API
 
 These functions implement the
-[HTTP API for manipulating analyzers](https://docs.arangodb.com/latest/HTTP/Analyzers.html).
+[HTTP API for manipulating Analyzers](https://www.arangodb.com/docs/stable/http/analyzers.html).
 
 {% hint 'info' %}
 Analyzers were introduced in ArangoDB 3.5 and are not supported by earlier
@@ -12,7 +12,7 @@ versions of ArangoDB.
 
 `async analyzer.exists(): boolean`
 
-Checks whether the analyzer exists.
+Checks whether the Analyzer exists.
 
 **Examples**
 
@@ -20,14 +20,14 @@ Checks whether the analyzer exists.
 const db = new Database();
 const analyzer = db.analyzer("some-analyzer");
 const result = await analyzer.exists();
-// result indicates whether the analyzer exists
+// result indicates whether the Analyzer exists
 ```
 
 ### analyzer.get
 
 `async analyzer.get(): Object`
 
-Retrieves the analyzer definition for the analyzer.
+Retrieves the Analyzer definition for the Analyzer.
 
 **Examples**
 
@@ -35,14 +35,14 @@ Retrieves the analyzer definition for the analyzer.
 const db = new Database();
 const analyzer = db.analyzer("some-analyzer");
 const definition = await analyzer.get();
-// definition contains the analyzer definition
+// definition contains the Analyzer definition
 ```
 
 ## analyzer.create
 
 `async analyzer.create([options]): Object`
 
-Creates an analyzer with the given _options_, then returns the new analyzer
+Creates an Analyzer with the given _options_, then returns the new Analyzer
 definition.
 
 **Arguments**
@@ -53,17 +53,17 @@ definition.
 
   - **features**: `string` (optional)
 
-    The features to enable for this analyzer.
+    The features to enable for this Analyzer.
 
   - **type**: `string`
 
-    The type of analyzer to create.
+    The type of Analyzer to create.
     Can be `"identity"`, `"delimiter"`, `"stem"`, `"norm"`, `"ngram"` or
     `"text"`.
 
   - **properties**: `any`
 
-    Additional properties for the given analyzer type.
+    Additional properties for the given Analyzer type.
 
     If the type is `"identity"`, the _properties_ are optional or can be
     `undefined` or `null`.
@@ -158,8 +158,8 @@ await analyzer.create({ type: "identity" });
 
 `async analyzer.drop(): Object`
 
-Deletes the analyzer from the database, then returns an object with the _name_
-of the analyzer that was dropped.
+Deletes the Analyzer from the database, then returns an object with the _name_
+of the Analyzer that was dropped.
 
 **Examples**
 
@@ -167,5 +167,5 @@ of the analyzer that was dropped.
 const db = new Database();
 const analyzer = db.analyzer("some-analyzer");
 await analyzer.drop();
-// the analyzer "some-analyzer" no longer exists
+// the Analyzer "some-analyzer" no longer exists
 ```

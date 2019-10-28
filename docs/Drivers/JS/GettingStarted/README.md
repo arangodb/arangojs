@@ -189,7 +189,7 @@ AQL queries without making your code vulnerable to injection attacks.
 ## Error responses
 
 If arangojs encounters an API error, it will throw an _ArangoError_ with an
-[_errorNum_ error code](https://docs.arangodb.com/latest/Manual/Appendix/ErrorCodes.html)
+[_errorNum_ error code](https://www.arangodb.com/docs/stable/appendix-error-codes.html)
 as well as a _code_ and _statusCode_ property indicating the intended and
 actual HTTP status code of the response.
 

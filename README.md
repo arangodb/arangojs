@@ -96,7 +96,7 @@ environment and may need to be explicitly told you are targetting Node instead.
 
 ## Documentation
 
-[Latest Documentation](https://docs.arangodb.com/devel/Drivers/JS/)
+[Latest Documentation](https://www.arangodb.com/docs/stable/drivers/js.html)
 
 ## Testing
 

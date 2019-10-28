@@ -1,7 +1,7 @@
 # Graph API
 
 These functions implement the
-[HTTP API for manipulating graphs](https://docs.arangodb.com/latest/HTTP/Gharial/index.html).
+[HTTP API for manipulating graphs](https://www.arangodb.com/docs/stable/http/gharial.html).
 
 ## graph.exists
 
@@ -45,7 +45,7 @@ the server response.
 - **properties**: `Object`
 
   For more information on the _properties_ object, see
-  [the HTTP API documentation for creating graphs](https://docs.arangodb.com/latest/HTTP/Gharial/Management.html).
+  [the HTTP API documentation for creating graphs](https://www.arangodb.com/docs/stable/http/gharial-management.html).
 
 **Examples**
 
