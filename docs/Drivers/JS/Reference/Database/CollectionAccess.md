@@ -62,7 +62,7 @@ will be returned depending on the value of _options.type_.
 
     Type of collection to create.
 
-    One of: `CollectionType.DOCUMENT_COLLECTION` or
+    One of `CollectionType.DOCUMENT_COLLECTION` or
     `CollectionType.EDGE_COLLECTION`.
 
   - **waitForSync**: `boolean` (Default: `false`)
@@ -90,7 +90,7 @@ will be returned depending on the value of _options.type_.
 
       Type of key generator to use.
 
-      One of: `"traditional"`, `"autoincrement"`, `"uuid"` or `"padded"`.
+      One of `"traditional"`, `"autoincrement"`, `"uuid"` or `"padded"`.
 
     - **allowUserKeys**: `boolean` (Default: `true`)
 

@@ -75,7 +75,7 @@ Bulk imports the given _data_ into the collection.
     Indicates which format the data uses.
     Use `null` to explicitly set no type.
 
-    One of: `"documents"`, `"array"`, `"auto"`.
+    One of `"documents"`, `"array"`, `"auto"`.
 
   - **fromPrefix**: `string` (optional)
 
@@ -97,7 +97,7 @@ Bulk imports the given _data_ into the collection.
 
     Controls behavior when a unique constraint is violated.
 
-    One of: `"error"`, `"update"`, `"replace"`, `"ignore"`.
+    One of `"error"`, `"update"`, `"replace"`, `"ignore"`.
 
   - **complete**: `boolean` (Default: `false`)
 

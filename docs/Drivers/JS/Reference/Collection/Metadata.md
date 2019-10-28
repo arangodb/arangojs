@@ -95,7 +95,7 @@ Returns an object with the following properties:
 
     The type of key generator this collection uses.
 
-    One of: `"traditional"`, `"autoincrement"`, `"uuid"`, `"padded"`.
+    One of `"traditional"`, `"autoincrement"`, `"uuid"`, `"padded"`.
 
   - **lastValue**: `number`
 
@@ -141,7 +141,7 @@ If the server is part of a cluster configuration, the object may also include th
 
   The collection's sharding strategy.
 
-  One of: `"hash"`, `"enterprise-hash-smart-edge"`, `"community-compat"`, `"enterprise-compat"`, `"enterprise-smart-edge-compat"`.
+  One of `"hash"`, `"enterprise-hash-smart-edge"`, `"community-compat"`, `"enterprise-compat"`, `"enterprise-smart-edge-compat"`.
 
 **Examples**
 

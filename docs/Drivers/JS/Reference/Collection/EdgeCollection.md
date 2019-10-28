@@ -372,13 +372,13 @@ contained in this edge collection.
 
       TODO
 
-      One of: `"none"`, `"global"`, `"path"`.
+      One of `"none"`, `"global"`, `"path"`.
 
     - **edges**: `string` (optional)
 
       TODO
 
-      One of: `"none"`, `"global"`, `"path"`.
+      One of `"none"`, `"global"`, `"path"`.
 
   - **minDepth**: `number` (optional)
 
