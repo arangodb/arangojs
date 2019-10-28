@@ -621,10 +621,10 @@ export class Database {
 
   async createArangoSearchView(
     viewName: string,
-    properties?: ArangoSearchViewPropertiesOptions
+    options?: ArangoSearchViewPropertiesOptions
   ): Promise<ArangoSearchView> {
     const view = new View(this._connection, viewName);
-    await view.create({ ...properties, type: ViewType.ARANGOSEARCH_VIEW });
+    await view.create({ ...options, type: ViewType.ARANGOSEARCH_VIEW });
     return view;
   }
 
