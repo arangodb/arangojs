@@ -57,24 +57,9 @@ const data = await view.properties();
 
 `async view.create(options?): object`
 
-Creates a View with the given _options_ for this instance's name,
-then returns the server response.
-
-**Arguments**
-
-- **options**: `object` (optional)
-
-  For more information on the _options_ object, see the
-  [HTTP API documentation for creating Views](https://www.arangodb.com/docs/stable/http/views-arangosearch.html).
-
-**Examples**
-
-```js
-const db = new Database();
-const view = db.view("potatoes");
-await view.create();
-// the ArangoSearch View "potatoes" now exists
-```
+This is a shorthand for calling `database.createArangoSearchView` with this
+View's name and the given _options_, but returning the View properties instead
+of a new _View_ instance.
 
 ## view.setProperties
 

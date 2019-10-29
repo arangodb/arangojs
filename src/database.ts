@@ -1,5 +1,9 @@
 import { Readable } from "stream";
-import { Analyzer, AnalyzerDescription } from "./analyzer";
+import {
+  Analyzer,
+  AnalyzerDescription,
+  CreateAnalyzerOptions
+} from "./analyzer";
 import { AqlLiteral, AqlQuery, isAqlLiteral, isAqlQuery } from "./aql-query";
 import {
   ArangoCollection,
@@ -644,6 +648,15 @@ export class Database {
   //#region analyzers
   analyzer(name: string): Analyzer {
     return new Analyzer(this._connection, name);
+  }
+
+  async createAnalyzer(
+    analyzerName: string,
+    options: CreateAnalyzerOptions
+  ): Promise<Analyzer> {
+    const analyzer = new Analyzer(this._connection, analyzerName);
+    await analyzer.create(options);
+    return analyzer;
   }
 
   listAnalyzers(): Promise<AnalyzerDescription[]> {
