@@ -5,7 +5,7 @@ These functions implement the
 
 ## database.listFunctions
 
-`async database.listFunctions(): Array<TODO>`
+`async database.listFunctions(): Array<object>`
 
 Fetches a list of all AQL user functions registered with the database.
 
@@ -19,7 +19,7 @@ const functions = db.listFunctions();
 
 ## database.createFunction
 
-`async database.createFunction(name, code): TODO`
+`async database.createFunction(name, code): object`
 
 Creates an AQL user function with the given _name_ and _code_ if it does not
 already exist or replaces it if a function with the same name already existed.

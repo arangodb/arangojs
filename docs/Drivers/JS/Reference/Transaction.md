@@ -21,7 +21,7 @@ const result = await transaction.exists();
 
 ## transaction.get
 
-`async transaction.get(): Object`
+`async transaction.get(): object`
 
 Retrieves general information about the transaction.
 
@@ -36,7 +36,7 @@ const result = await transaction.get();
 
 ## transaction.commit
 
-`async transaction.commit(): Object`
+`async transaction.commit(): object`
 
 Attempts to commit the transaction to the database, then returns an object
 indicating the transaction's id and updated status.
@@ -52,7 +52,7 @@ const result = await transaction.commit();
 
 ## transaction.abort
 
-`async transaction.abort(): Object`
+`async transaction.abort(): object`
 
 Attempts to abort the transaction in the database, then returns an object
 indicating the transaction's id and updated status.

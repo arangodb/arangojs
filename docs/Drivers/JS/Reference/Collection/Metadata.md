@@ -20,7 +20,7 @@ const result = await collection.exists();
 
 ## collection.get
 
-`async collection.get(): CollectionMetadata`
+`async collection.get(): object`
 
 Retrieves general information about the collection.
 
@@ -53,7 +53,7 @@ const data = await collection.get();
 
 ## collection.properties
 
-`async collection.properties(): CollectionProperties`
+`async collection.properties(): object`
 
 Retrieves the collection's properties.
 
@@ -155,7 +155,7 @@ const data = await collection.properties();
 
 ## collection.count
 
-`async collection.count(): CollectionPropertiesAndCount`
+`async collection.count(): object`
 
 Retrieves information about the number of documents in a collection.
 
@@ -176,7 +176,7 @@ const data = await collection.count();
 
 ## collection.figures
 
-`async collection.figures(): CollectionPropertiesAndFigures`
+`async collection.figures(): object`
 
 Retrieves statistics for a collection.
 
@@ -357,7 +357,7 @@ const data = await collection.figures();
 
 ## collection.revision
 
-`async collection.revision(): CollectionPropertiesAndRevision`
+`async collection.revision(): object`
 
 Retrieves the collection revision ID.
 
@@ -378,7 +378,7 @@ const data = await collection.revision();
 
 ## collection.checksum
 
-`async collection.checksum(options?): CollectionChecksum`
+`async collection.checksum(options?): object`
 
 Retrieves the collection checksum.
 
