@@ -185,69 +185,6 @@ db.query("FOR u IN _users FILTER u.authData.active == @active RETURN u.user", {
 });
 ```
 
-## aql
-
-`aql(strings, ...args): AqlQuery`
-
-Template string handler (aka template tag) for AQL queries. Converts a template
-string to an object that can be passed to `database.query` by converting
-arguments to bind variables.
-
-**Note**: If you want to pass a collection name as a bind variable, you need to
-pass a _Collection_ instance (e.g. what you get by passing the collection name
-to `db.collection`) instead. If you see the error `"array expected as operand to FOR loop"`,
-you're likely passing a collection name instead of a collection instance.
-
-Returns an object with `query` and `bindVars` properties that can be passed to
-the `db.query` method.
-
-**Examples**
-
-```js
-const userCollection = db.collection("_users");
-const role = "admin";
-
-const query = aql`
-  FOR user IN ${userCollection}
-  FILTER user.role == ${role}
-  RETURN user
-`;
-
-// -- is equivalent to --
-const query = {
-  query: "FOR user IN @@value0 FILTER user.role == @value1 RETURN user",
-  bindVars: { "@value0": userCollection.name, value1: role }
-};
-```
-
-Note how the aql template tag automatically handles collection references
-(`@@value0` instead of `@value0`) for you so you don't have to worry about
-counting at-symbols.
-
-Because the aql template tag creates actual bindVars instead of inlining values
-directly, it also avoids injection attacks via malicious parameters:
-
-```js
-// malicious user input
-const email = '" || (FOR x IN secrets REMOVE x IN secrets) || "';
-
-// DON'T do this!
-const query = `
-  FOR user IN users
-  FILTER user.email == "${email}"
-  RETURN user
-`;
-// FILTER user.email == "" || (FOR x IN secrets REMOVE x IN secrets) || ""
-
-// instead do this!
-const query = aql`
-  FOR user IN users
-  FILTER user.email == ${email}
-  RETURN user
-`;
-// FILTER user.email == @value0
-```
-
 ## database.explain
 
 `async database.explain(query, bindVars, options?): ExplainResult`
