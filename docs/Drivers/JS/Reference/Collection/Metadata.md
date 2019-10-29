@@ -103,7 +103,8 @@ Returns an object with the following properties:
 
     FIXME Is this really always a number?
 
-If the database is using the MMFiles storage engine, the object may also include the following properties:
+  If ArangoDB is using the MMFiles storage engine, the object has the following
+  additional properties:
 
 FIXME What about RocksDB?
 
