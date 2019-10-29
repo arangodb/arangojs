@@ -23,10 +23,11 @@ and regular parameters.
 To use it just prefix a JavaScript template string (the ones with backticks
 instead of quotes) with its import name (e.g. `aql`) and pass in variables
 like you would with a regular template string. The string will automatically
-be converted into an object with `query` and `bindVars` attributes which you
-can pass directly to `db.query` to execute. If you pass in a collection it
-will be automatically recognized as a collection reference
-and handled accordingly.
+be converted into an object with _query_ and _bindVars_ attributes which you
+can pass methods expecting AQL queries.
+
+When using a `Collection` instance in a query, it will be automatically
+converted to a collection bindVar instead of a regular value bindVar.
 
 The `aql` template tag can also be used inside other `aql` template strings,
 allowing arbitrary nesting. Bind parameters of nested queries will be merged
@@ -43,11 +44,26 @@ const result = await db.query(aql`
   RETURN d
 `);
 
-// nested queries
+// Equivalent manual query string and bindVars:
+const result2 = await db.query({
+  query: `
+    FOR d IN @@value0
+    FILTER d.num > @value1
+    RETURN d
+  `,
+  bindVars: {
+    "@value0": mydata.name,
+    value1: filterValue
+  }
+});
+```
 
+Example with nesting:
+
+```js
 const color = "green";
 const filterByColor = aql`FILTER d.color == ${color}'`;
-const result2 = await db.query(aql`
+const result = await db.query(aql`
   FOR d IN ${mydata}
   ${filterByColor}
   RETURN d
@@ -86,6 +102,17 @@ const result = await db.query(aql`
 `);
 ```
 
+Note that the above example could also be written using nested `aql` queries:
+
+```js
+const filterGreen = aql`FILTER d.color == "green"`;
+const result = await db.query(aql`
+  FOR d IN ${mydata}
+  ${filterGreen}
+  RETURN d
+`);
+```
+
 ## aql.join
 
 `aql.join(values)`
@@ -93,6 +120,11 @@ const result = await db.query(aql`
 The `aql.join` helper takes an array of queries generated using the `aql` tag
 and combines them into a single query. The optional second argument will be
 used as literal string to combine the queries.
+
+Note that this is a low-level helper function only useful for joining an
+unknown arbitrary number of query fragments from an array. If the number of
+fragments is known in advance, nested `aql` templates generally result in more
+readable code.
 
 **Arguments**
 
