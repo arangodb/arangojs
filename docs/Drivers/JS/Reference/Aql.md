@@ -70,6 +70,37 @@ const result = await db.query(aql`
 `);
 ```
 
+Using the `aql` template tag to avoid injection attacks:
+
+```js
+// malicious user input
+const evil = '" || (FOR x IN secrets REMOVE x IN secrets) || "';
+
+// BAD: DON'T DO THIS!
+const query = `
+  FOR user IN users
+  FILTER user.email == "${evil}"
+  RETURN user
+`;
+// Query:
+//   FOR user IN users
+//   FILTER user.email == "" || (FOR x IN secrets REMOVE x IN secrets) || ""
+//   RETURN user
+
+// GOOD: DO THIS INSTEAD!
+const query = aql`
+  FOR user IN users
+  FILTER user.email == ${evil}
+  RETURN user
+`;
+// Query:
+//   FOR user IN users
+//   FILTER user.email == @value0
+//   RETURN user
+// Bind parameters:
+//   value0: "\" || (FOR x IN secrets REMOVE x IN secrets) || \""
+```
+
 ## aql.literal
 
 `aql.literal(value): AqlLiteral`
