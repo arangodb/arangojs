@@ -5,15 +5,15 @@ These functions implement the
 
 ## collection.indexes
 
-`async collection.indexes(): Array<Index>`
+`async collection.indexes(): Array<object>`
 
-Returns a list of all indexes for the collection.
+Returns a list of all index descriptions for the collection.
 
 ## collection.index
 
-`async collection.index(selector): Index`
+`async collection.index(selector): object`
 
-Returns an index by name or `id` if it exists.
+Returns an index description by name or `id` if it exists.
 
 **Arguments**
 
@@ -23,7 +23,7 @@ Returns an index by name or `id` if it exists.
 
 ## collection.ensureIndex
 
-`async collection.ensureIndex(options): Index`
+`async collection.ensureIndex(options): object`
 
 Creates an index on the collection if it does not already exist.
 

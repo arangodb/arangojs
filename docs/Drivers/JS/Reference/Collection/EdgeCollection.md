@@ -72,7 +72,7 @@ if (edge === null) {
 
 ## collection.save
 
-`async collection.save(data, options?): TODO`
+`async collection.save(data, options?): object`
 
 Creates a new edge with the given _data_ between the documents `data._from`
 and `data._to`.
@@ -155,7 +155,7 @@ assert.equal(edge.someData, data.someData);
 
 ## collection.edges
 
-`async collection.edges(selector): CollectionEdgesResult`
+`async collection.edges(selector): object`
 
 Retrieves a list of all edges of the documentmatching the given _selector_.
 
@@ -203,7 +203,7 @@ assert.deepEqual(edges.map(edge => edge._key), ["x", "y", "z"]);
 
 ## collection.inEdges
 
-`async collection.inEdges(selector): CollectionEdgesResult`
+`async collection.inEdges(selector): object`
 
 Retrieves a list of all incoming edges of the document with the given
 _selector_.
@@ -252,7 +252,7 @@ assert.equal(edges[0]._key, "z");
 
 ## collection.outEdges
 
-`async collection.outEdges(selector): CollectionEdgesResult`
+`async collection.outEdges(selector): object`
 
 Retrieves a list of all outgoing edges of the document with the given
 _selector_.
@@ -301,7 +301,7 @@ assert.deepEqual(edges.map(edge => edge._key), ["x", "y"]);
 
 ## collection.traversal
 
-`async collection.traversal(startVertex, options): TODO`
+`async collection.traversal(startVertex, options): object`
 
 Performs a traversal starting from the given _startVertex_ and following edges
 contained in this edge collection.

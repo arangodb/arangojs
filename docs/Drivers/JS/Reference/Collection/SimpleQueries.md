@@ -55,7 +55,7 @@ Fetches the first document in the collection matching the given _example_.
 
 ## collection.removeByExample
 
-`async collection.removeByExample(example, options?): SimpleQueryRemoveByExampleResult`
+`async collection.removeByExample(example, options?): object`
 
 Removes all documents in the collection matching the given _example_.
 
@@ -78,7 +78,7 @@ Returns an object with the following property:
 
 ## collection.replaceByExample
 
-`async collection.replaceByExample(example, newValue, options?): SimpleQueryReplaceByExampleResult`
+`async collection.replaceByExample(example, newValue, options?): object`
 
 Replaces all documents in the collection matching the given _example_ with the
 given _newValue_.
@@ -106,7 +106,7 @@ Returns an object with the following property:
 
 ## collection.updateByExample
 
-`async collection.updateByExample(example, newValue, options?): SimpleQueryUpdateByExampleResult`
+`async collection.updateByExample(example, newValue, options?): object`
 
 Updates (patches) all documents in the collection matching the given _example_
 with the given _newValue_.

@@ -187,9 +187,9 @@ db.query("FOR u IN _users FILTER u.authData.active == @active RETURN u.user", {
 
 ## database.explain
 
-`async database.explain(query, bindVars, options?): ExplainResult`
+`async database.explain(query, bindVars, options?): object`
 
-`async database.explain(query, options?): ExplainResult`
+`async database.explain(query, options?): object`
 
 Explains a database query using the given _query_ and _bindVars_ and
 returns one or more plans.
@@ -229,7 +229,7 @@ returns one or more plans.
 
 ## database.parse
 
-`async database.parse(query): ParseResult`
+`async database.parse(query): object`
 
 Parses the given query and returns the result.
 
@@ -244,7 +244,7 @@ Parses the given query and returns the result.
 
 ## database.queryTracking
 
-`async database.queryTracking(): QueryTrackingProperties`
+`async database.queryTracking(): object`
 
 Fetches the query tracking properties.
 
@@ -262,13 +262,13 @@ Modifies the query tracking properties.
 
 ## database.listRunningQueries
 
-`async database.listRunningQueries(): Array<QueryStatus>`
+`async database.listRunningQueries(): Array<object>`
 
 Fetches a list of information for all currently running queries.
 
 ## database.listSlowQueries
 
-`async database.listSlowQueries(): Array<SlowQueryStatus>`
+`async database.listSlowQueries(): Array<object>`
 
 Fetches a list of information for all recent slow queries.
 
