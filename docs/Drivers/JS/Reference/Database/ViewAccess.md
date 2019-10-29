@@ -29,7 +29,7 @@ const view = db.view("potatoes");
 
 ## database.createArangoSearchView
 
-`async database.createArangoSearchView(viewName: string, options?): ArangoSearchView`
+`async database.createArangoSearchView(viewName, options?): ArangoSearchView`
 
 Creates a new ArangoSearch View with the given _viewName_ and _options_, then
 returns an `ArangoSearchView` instance for the new View.
@@ -155,6 +155,14 @@ returns an `ArangoSearchView` instance for the new View.
       Controls how the view should keep track of the attribute values.
 
       One of `"none"` or `"id"`.
+
+**Examples**
+
+```js
+const db = new Database();
+const view = await db.createArangoSearchView("potatoes");
+// the ArangoSearch View "potatoes" now exists
+```
 
 ## database.listViews
 
