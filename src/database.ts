@@ -79,29 +79,30 @@ export type InstallServiceOptions = {
 
 export type QueryOptions = {
   allowDirtyRead?: boolean;
+  timeout?: number;
   count?: boolean;
   batchSize?: number;
   cache?: boolean;
   memoryLimit?: number;
   maxRuntime?: number;
   ttl?: number;
-  timeout?: number;
-  options?: {
-    failOnWarning?: boolean;
-    profile?: boolean;
-    maxTransactionSize?: number;
-    stream?: boolean;
-    skipInaccessibleCollections?: boolean;
-    maxWarningsCount?: number;
-    /** RocksDB only */
-    intermediateCommitCount?: number;
-    satteliteSyncWait?: number;
-    fullCount?: boolean;
-    /** RocksDB only */
-    intermediateCommitSize?: number;
-    optimizer?: { rules?: string[] };
-    maxPlans?: number;
-  };
+  failOnWarning?: boolean;
+  profile?: boolean | number;
+  stream?: boolean;
+  maxWarningsCount?: number;
+  fullCount?: boolean;
+  optimizer?: { rules?: string[] };
+  maxPlans?: number;
+  /** RocksDB only */
+  maxTransactionSize?: number;
+  /** RocksDB only */
+  intermediateCommitCount?: number;
+  /** RocksDB only */
+  intermediateCommitSize?: number;
+  /** Enterprise Edition only */
+  skipInaccessibleCollections?: boolean;
+  /** Enterprise Edition only */
+  satelliteSyncWait?: number;
 };
 
 export type ExplainOptions = {
@@ -746,13 +747,30 @@ export class Database {
     } else if (isAqlLiteral(query)) {
       query = query.toAQL();
     }
-    const { allowDirtyRead = undefined, timeout = undefined, ...extra } =
-      options || {};
+    const {
+      allowDirtyRead,
+      count,
+      batchSize,
+      cache,
+      memoryLimit,
+      ttl,
+      timeout,
+      ...opts
+    } = options || {};
     return this._connection.request(
       {
         method: "POST",
         path: "/_api/cursor",
-        body: { ...extra, query, bindVars },
+        body: {
+          query,
+          bindVars,
+          count,
+          batchSize,
+          cache,
+          memoryLimit,
+          ttl,
+          options: opts
+        },
         allowDirtyRead,
         timeout
       },

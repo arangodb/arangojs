@@ -1,8 +1,13 @@
 import { Connection } from "./connection";
 
 export class ArrayCursor<T = any> {
-  extra: any;
-  count: number;
+  extra: {
+    warnings: any[];
+    plan?: any;
+    profile?: any;
+    stats?: { [key: string]: any };
+  };
+  count?: number;
 
   private _connection: Connection;
   private _result: T[];
