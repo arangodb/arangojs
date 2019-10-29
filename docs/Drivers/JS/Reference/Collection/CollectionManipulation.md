@@ -5,7 +5,7 @@ These functions implement the
 
 ## collection.create
 
-`async collection.create(options?): CollectionProperties`
+`async collection.create(options?): object`
 
 Creates a collection with the given _options_ and this instance's name.
 
@@ -32,7 +32,7 @@ await collection.create({
 
 ## collection.load
 
-`async collection.load(count?): CollectionLoadResult`
+`async collection.load(count?): object`
 
 Tells the server to load the collection into memory.
 
@@ -60,7 +60,7 @@ await collection.load(false);
 
 ## collection.unload
 
-`async collection.unload(): CollectionMetadata`
+`async collection.unload(): object`
 
 Tells the server to remove the collection from memory.
 
@@ -77,7 +77,7 @@ await collection.unload();
 
 ## collection.properties
 
-`async collection.properties(properties): CollectionProperties`
+`async collection.properties(properties): object`
 
 Replaces the properties of the collection.
 
@@ -101,7 +101,7 @@ assert.equal(result.waitForSync, true);
 
 ## collection.rename
 
-`async collection.rename(name): CollectionMetadata`
+`async collection.rename(name): object`
 
 Renames the collection. The _Collection_ instance will automatically update its
 name when the rename succeeds.
@@ -121,7 +121,7 @@ assert.equal(collection.name, result.name);
 
 ## collection.rotate
 
-`async collection.rotate(): CollectionRotateResult`
+`async collection.rotate(): object`
 
 Rotates the journal of the collection.
 
@@ -142,7 +142,7 @@ const data = await collection.rotate();
 
 ## collection.truncate
 
-`async collection.truncate(): CollectionMetadata`
+`async collection.truncate(): object`
 
 Deletes **all documents** in the collection in the database.
 
@@ -159,7 +159,7 @@ await collection.truncate();
 
 ## collection.drop
 
-`async collection.drop(options?): TODO`
+`async collection.drop(options?): object`
 
 Deletes the collection from the database.
 
