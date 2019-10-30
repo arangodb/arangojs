@@ -191,30 +191,37 @@ db.query("FOR u IN _users FILTER u.authData.active == @active RETURN u.user", {
 
 `async database.explain(query, options?): object`
 
-Explains a database query using the given _query_ and _bindVars_ and
-returns one or more plans.
+Explains a database query using the given _query_ and _bindVars_.
 
 **Arguments**
 
 - **query**: `string | AqlQuery | AqlLiteral`
 
-  An AQL query as a string or
-  [AQL query object](../Aql.md#aql) or
-  [AQL literal](../Aql.md#aqlliteral).
-
-  If the query is an AQL query object, the second argument is treated as the
-  _options_ argument instead of _bindVars_.
+  An AQL query as a string,
+  [`AqlQuery` object](../Aql.md#aql) or
+  [`AqlLiteral` object](../Aql.md#aqlliteral).
 
 - **bindVars**: `object` (optional)
 
   An object defining the variables to bind the query to.
 
+  If the _query_ is an `AqlQuery` object or an object with the properties
+  _query_ and _bindVars_, this argument will be treated as the
+  _options_ argument instead.
+
 - **options**: `object` (optional)
+
+  An object with the following properties:
 
   - **optimizer**: `object` (optional)
 
-    An object with a single property **rules**, a string array of optimizer
-    rules to be used for the query.
+    An object with the following property:
+
+    - **rules**: `Array<string>`
+
+      A list of optimizer rules to be included or excluded by the optimizer
+      for this query. Prefix a rule name with `+` to include it, or `-` to
+      exclude it. The name `all` acts as an alias matching all optimizer rules.
 
   - **maxNumberOfPlans**: `number` (optional)
 
@@ -237,10 +244,11 @@ Parses the given query and returns the result.
 
 - **query**: `string | AqlQuery | AqlLiteral`
 
-  An AQL query as a string or
-  [AQL query object](../Aql.md#aql) or
-  [AQL literal](../Aql.md#aqlliteral).
-  If the query is an AQL query object, its bindVars (if any) will be ignored.
+  An AQL query as a string,
+  [`AqlQuery` object](../Aql.md#aql) or
+  [`AqlLiteral` object](../Aql.md#aqlliteral).
+
+  If the query is an `AqlQuery` object, its _bindVars_ will be ignored.
 
 ## database.queryTracking
 
@@ -250,15 +258,53 @@ Fetches the query tracking properties.
 
 ## database.setQueryTracking
 
-`async database.setQueryTracking(props): void`
+`async database.setQueryTracking(options?): void`
 
 Modifies the query tracking properties.
 
 **Arguments**
 
-- **props**: `Partial<QueryTrackingProperties>`
+- **options**: `object` (optional)
 
-  Query tracking properties with new values to set.
+  An object with the following properties:
+
+  - **enabled**: `boolean` (optional)
+
+    If set to `false`, neither queries nor slow queries will be tracked.
+
+  - **maxQueryStringLength**: `number` (optional)
+
+    The maximum query string length in bytes that will be kept in the list.
+
+  - **maxSlowQueries**: `number` (optional)
+
+    The maximum number of slow queries to be kept in the list.
+
+  - **slowQueryThreshold**: `number` (optional)
+
+    The threshold execution time in seconds for when a query will be considered
+    slow.
+
+  - **trackBindVars**: `boolean` (optional)
+
+    If set to `true`, bind parameters will be tracked along with queries.
+
+  - **trackSlowQueries**: `boolean` (optional)
+
+    If set to `true` and _enabled_ is also set to `true`, slow queries will be
+    tracked if their execution time exceeds _slowQueryThreshold_.
+
+**Examples**
+
+```js
+// track up to 5 slow queries exceeding 5 seconds execution time
+await db.setQueryTracking({
+  enabled: true,
+  trackSlowQueries: true,
+  maxSlowQueries: 5,
+  slowQueryThreshold: 5
+});
+```
 
 ## database.listRunningQueries
 

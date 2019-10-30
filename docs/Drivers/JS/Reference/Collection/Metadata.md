@@ -386,6 +386,8 @@ Retrieves the collection checksum.
 
 - **options**: `object` (optional)
 
+  An object with the following properties:
+
   - **withRevisions**: `boolean` (optional)
 
     TODO
