@@ -2,7 +2,7 @@ import { Connection } from "./connection";
 
 export class ArrayCursor<T = any> {
   extra: {
-    warnings: any[];
+    warnings: { code: number; message: string }[];
     plan?: any;
     profile?: any;
     stats?: { [key: string]: any };
