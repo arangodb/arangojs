@@ -91,7 +91,7 @@ export type QueryOptions = {
   stream?: boolean;
   maxWarningsCount?: number;
   fullCount?: boolean;
-  optimizer?: { rules?: string[] };
+  optimizer?: { rules: string[] };
   maxPlans?: number;
   /** RocksDB only */
   maxTransactionSize?: number;
@@ -106,7 +106,7 @@ export type QueryOptions = {
 };
 
 export type ExplainOptions = {
-  optimizer?: { rules?: string[] };
+  optimizer?: { rules: string[] };
   maxNumberOfPlans?: number;
   allPlans?: boolean;
 };
@@ -728,7 +728,6 @@ export class Database {
   //#endregion
 
   //#region queries
-  query(query: string | AqlQuery | AqlLiteral): Promise<ArrayCursor>;
   query(query: AqlQuery, options?: QueryOptions): Promise<ArrayCursor>;
   query(
     query: string | AqlLiteral,
@@ -785,9 +784,6 @@ export class Database {
   }
 
   explain(
-    query: string | AqlQuery | AqlLiteral
-  ): Promise<ExplainResult & ArangoResponseMetadata>;
-  explain(
     query: AqlQuery,
     options?: ExplainOptions
   ): Promise<ExplainResult & ArangoResponseMetadata>;
@@ -818,9 +814,6 @@ export class Database {
     );
   }
 
-  parse(query: string | AqlQuery | AqlLiteral): Promise<ParseResult>;
-  parse(query: AqlQuery): Promise<ParseResult>;
-  parse(query: string | AqlLiteral): Promise<ParseResult>;
   parse(query: string | AqlQuery | AqlLiteral): Promise<ParseResult> {
     if (isAqlQuery(query)) {
       query = query.query;
