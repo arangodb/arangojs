@@ -26,19 +26,11 @@ describe34("AQL Stream queries", function() {
   });
   describe("database.query", () => {
     it("returns a cursor for the query result", async () => {
-      const cursor = await db.query(
-        "RETURN 23",
-        {},
-        { options: { stream: true } }
-      );
+      const cursor = await db.query("RETURN 23", {}, { stream: true });
       expect(cursor).to.be.an.instanceof(ArrayCursor);
     });
     it("supports bindVars", async () => {
-      const cursor = await db.query(
-        "RETURN @x",
-        { x: 5 },
-        { options: { stream: true } }
-      );
+      const cursor = await db.query("RETURN @x", { x: 5 }, { stream: true });
       const value = await cursor.next();
       expect(value).to.equal(5);
     });
@@ -46,7 +38,7 @@ describe34("AQL Stream queries", function() {
       const cursor = await db.query("FOR x IN 1..10 RETURN x", undefined, {
         batchSize: 2,
         count: true, // should be ignored
-        options: { stream: true }
+        stream: true
       });
       expect(cursor.count).to.equal(undefined);
       expect((cursor as any)._hasMore).to.equal(true);
@@ -59,7 +51,7 @@ describe34("AQL Stream queries", function() {
       const cursor = await db.query(query, {
         batchSize: 2,
         count: true,
-        options: { stream: true }
+        stream: true
       });
       expect(cursor.count).to.equal(undefined); // count will be ignored
       expect((cursor as any)._hasMore).to.equal(true);
@@ -81,7 +73,7 @@ describe34("AQL Stream queries", function() {
     it("can access large collection in parallel", async () => {
       let collection = db.collection(cname);
       let query = aql`FOR doc in ${collection} RETURN doc`;
-      const options = { batchSize: 250, options: { stream: true } };
+      const options = { batchSize: 250, stream: true };
 
       let count = 0;
       const cursors = await Promise.all(
@@ -100,7 +92,7 @@ describe34("AQL Stream queries", function() {
       let collection = db.collection(cname);
       let readQ = aql`FOR doc in ${collection} RETURN doc`;
       let writeQ = aql`FOR i in 1..1000 LET y = SLEEP(1) INSERT {forbidden: i} INTO ${collection}`;
-      const options = { batchSize: 500, ttl: 5, options: { stream: true } };
+      const options = { batchSize: 500, ttl: 5, stream: true };
 
       // 900s lock timeout + 5s ttl
       let readCursor = db.query(readQ, options);
