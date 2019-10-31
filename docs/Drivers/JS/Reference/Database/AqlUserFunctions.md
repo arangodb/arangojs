@@ -19,7 +19,7 @@ const functions = db.listFunctions();
 
 ## database.createFunction
 
-`async database.createFunction(name, code): object`
+`async database.createFunction(name, code, isDeterministic?): object`
 
 Creates an AQL user function with the given _name_ and _code_ if it does not
 already exist or replaces it if a function with the same name already existed.
@@ -30,10 +30,19 @@ already exist or replaces it if a function with the same name already existed.
 
   A valid AQL function name, e.g.: `"myfuncs::accounting::calculate_vat"`.
 
+  The function name must consist of at least two alphanumeric identifiers
+  separated with double colons.
+
 - **code**: `string`
 
   A string evaluating to a JavaScript function (not a JavaScript function
   object).
+
+- **isDeterministic**: `boolean` (Default: `false`)
+
+  If set to `true`, the function is expected to always return the same result
+  for equivalent inputs. This option currently has no effect but may allow for
+  optimizations in the future.
 
 **Examples**
 
@@ -41,9 +50,7 @@ already exist or replaces it if a function with the same name already existed.
 const db = new Database();
 await db.createFunction(
   "ACME::ACCOUNTING::CALCULATE_VAT",
-  String(function(price) {
-    return price * 0.19;
-  })
+  "(price) => price * 0.19"
 );
 // Use the new function in an AQL query with template handler:
 const cursor = await db.query(aql`
@@ -58,7 +65,7 @@ const cursor = await db.query(aql`
 
 ## database.dropFunction
 
-`async database.dropFunction(name, group?): TODO`
+`async database.dropFunction(name, group?): object`
 
 Deletes the AQL user function with the given name from the database.
 
