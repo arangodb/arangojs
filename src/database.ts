@@ -194,15 +194,6 @@ export type CreateDatabaseUser = {
   extra?: { [key: string]: any };
 };
 
-export type Service = {
-  mount: string;
-  name?: string;
-  version?: string;
-  provides: { [key: string]: string };
-  development: boolean;
-  legacy: boolean;
-};
-
 type VersionInfo = {
   server: string;
   license: "community" | "enterprise";
@@ -227,6 +218,15 @@ type ReplaceServiceOptions = {
 type UninstallServiceOptions = {
   teardown?: boolean;
   force?: boolean;
+};
+
+export type ServiceSummary = {
+  mount: string;
+  name?: string;
+  version?: string;
+  provides: { [key: string]: string };
+  development: boolean;
+  legacy: boolean;
 };
 
 type ServiceInfo = {
@@ -913,8 +913,14 @@ export class Database {
   //#endregion
 
   //#region services
-  listServices(): Promise<Service[]> {
-    return this._connection.request({ path: "/_api/foxx" }, res => res.body);
+  listServices(excludeSystem?: boolean): Promise<ServiceSummary[]> {
+    return this._connection.request(
+      {
+        path: "/_api/foxx",
+        qs: { excludeSystem }
+      },
+      res => res.body
+    );
   }
 
   async installService(
@@ -1288,12 +1294,12 @@ export class Database {
     );
   }
 
-  runServiceScript(mount: string, name: string, args?: any): Promise<any> {
+  runServiceScript(mount: string, name: string, params?: any): Promise<any> {
     return this._connection.request(
       {
         method: "POST",
         path: `/_api/foxx/scripts/${name}`,
-        body: args,
+        body: params,
         qs: { mount }
       },
       res => res.body
@@ -1304,9 +1310,50 @@ export class Database {
     mount: string,
     options: {
       reporter: "stream";
+      idiomatic: false;
       filter?: string;
     }
   ): Promise<ServiceTestStreamReport>;
+  runServiceTests(
+    mount: string,
+    options: {
+      reporter: "tap";
+      idiomatic: false;
+      filter?: string;
+    }
+  ): Promise<ServiceTestTapReport>;
+  runServiceTests(
+    mount: string,
+    options: {
+      reporter: "xunit";
+      idiomatic: false;
+      filter?: string;
+    }
+  ): Promise<ServiceTestXunitReport>;
+  runServiceTests(
+    mount: string,
+    options: {
+      reporter: "stream";
+      idiomatic?: true;
+      filter?: string;
+    }
+  ): Promise<string[]>;
+  runServiceTests(
+    mount: string,
+    options: {
+      reporter: "tap";
+      idiomatic?: true;
+      filter?: string;
+    }
+  ): Promise<string>;
+  runServiceTests(
+    mount: string,
+    options: {
+      reporter: "xunit";
+      idiomatic?: true;
+      filter?: string;
+    }
+  ): Promise<string>;
   runServiceTests(
     mount: string,
     options: {
@@ -1314,20 +1361,6 @@ export class Database {
       filter?: string;
     }
   ): Promise<ServiceTestSuiteReport>;
-  runServiceTests(
-    mount: string,
-    options: {
-      reporter: "xunit";
-      filter?: string;
-    }
-  ): Promise<ServiceTestXunitReport>;
-  runServiceTests(
-    mount: string,
-    options: {
-      reporter: "tap";
-      filter?: string;
-    }
-  ): Promise<ServiceTestTapReport>;
   runServiceTests(
     mount: string,
     options?: {
@@ -1338,8 +1371,9 @@ export class Database {
   runServiceTests(
     mount: string,
     options?: {
-      filter?: string;
       reporter?: string;
+      idiomatic?: boolean;
+      filter?: string;
     }
   ) {
     return this._connection.request(
@@ -1387,7 +1421,7 @@ export class Database {
     );
   }
 
-  commitLocalServiceState(replace: boolean = false): Promise<void> {
+  commitLocalServiceState(replace?: boolean): Promise<void> {
     return this._connection.request(
       {
         method: "POST",
