@@ -1,19 +1,17 @@
 # Managing Foxx services
 
-{% hint 'info' %}
-The HTTP API for managing Foxx services was introduced in ArangoDB 3.2 and is
-not supported by earlier versions of ArangoDB.
-{% endhint %}
+These functions implement the
+[HTTP API for managing Foxx services](https://www.arangodb.com/docs/stable/http/foxx.html)
 
 ## database.listServices
 
-`async database.listServices(excludeSystem?): Array<TODO>`
+`async database.listServices(excludeSystem?): Array<object>`
 
 Fetches a list of all installed service.
 
 **Arguments**
 
-- **excludeSystem**: `boolean` (Default: `true`)
+- **excludeSystem**: `boolean` (Default: `false`)
 
   Whether system services should be excluded.
 
@@ -29,7 +27,7 @@ const services = await db.listServices(false);
 
 ## database.installService
 
-`async database.installService(mount, source, options?): TODO`
+`async database.installService(mount, source, options?): object`
 
 Installs a new service.
 
@@ -39,9 +37,12 @@ Installs a new service.
 
   The service's mount point, relative to the database.
 
-- **source**: `Buffer | Readable | File | string`
+- **source**: `Buffer | Readable | Blob | string`
 
   The service bundle to install.
+
+  This can be a `string` URL or (server-local) file path, a `Readable` stream,
+  Node `Buffer` or browser `Blob` (e.g. `File`).
 
 - **options**: `object` (optional)
 
@@ -89,7 +90,7 @@ const info = await db.installService("/hello", source);
 
 ## database.replaceService
 
-`async database.replaceService(mount, source, options?): TODO`
+`async database.replaceService(mount, source, options?): object`
 
 Replaces an existing service with a new service by completely removing the old
 service and installing a new service at the same mount point.
@@ -100,9 +101,12 @@ service and installing a new service at the same mount point.
 
   The service's mount point, relative to the database.
 
-- **source**: `Buffer | Readable | File | string`
+- **source**: `Buffer | Readable | Blob | string`
 
-  The service bundle to replace the existing service with.
+  The service bundle to replace the existing service.
+
+  This can be a `string` URL or (server-local) file path, a `Readable` stream,
+  Node `Buffer` or browser `Blob` (e.g. `File`).
 
 - **options**: `object` (optional)
 
@@ -158,7 +162,7 @@ const info = await db.replaceService("/hello", source);
 
 ## database.upgradeService
 
-`async database.upgradeService(mount, source, options?): TODO`
+`async database.upgradeService(mount, source, options?): object`
 
 Replaces an existing service with a new service while retaining the old
 service's configuration and dependencies.
@@ -169,9 +173,12 @@ service's configuration and dependencies.
 
   The service's mount point, relative to the database.
 
-- **source**: `Buffer | Readable | File | string`
+- **source**: `Buffer | Readable | Blob | string`
 
-  The service bundle to replace the existing service with.
+  The service bundle to install.
+
+  This can be a `string` URL or (server-local) file path, a `Readable` stream,
+  Node `Buffer` or browser `Blob` (e.g. `File`).
 
 - **options**: `object` (optional)
 
@@ -254,7 +261,7 @@ await db.uninstallService("/my-service");
 
 ## database.getService
 
-`async database.getService(mount): TODO`
+`async database.getService(mount): object`
 
 Retrieves information about a mounted service.
 
@@ -273,7 +280,7 @@ const info = await db.getService("/my-service");
 
 ## database.getServiceConfiguration
 
-`async database.getServiceConfiguration(mount, minimal?): TODO`
+`async database.getServiceConfiguration(mount, minimal?): object`
 
 Retrieves an object with information about the service's configuration options
 and their current values.
@@ -286,7 +293,9 @@ and their current values.
 
 - **minimal**: `boolean` (Default: `false`)
 
-  Only return the current values.
+  If set to `true`, the result will only include each configuration option's
+  current value and any warnings instead of the full definition of each option
+  including additional information.
 
 **Examples**
 
@@ -297,7 +306,7 @@ const config = await db.getServiceConfiguration("/my-service");
 
 ## database.replaceServiceConfiguration
 
-`async database.replaceServiceConfiguration(mount, configuration, minimal?): TODO`
+`async database.replaceServiceConfiguration(mount, configuration, minimal?): object`
 
 Replaces the configuration of the given service.
 
@@ -313,7 +322,9 @@ Replaces the configuration of the given service.
 
 - **minimal**: `boolean` (Default: `false`)
 
-  Only return the current values and warnings (if any).
+  If set to `true`, the result will only include each configuration option's
+  current value and any warnings instead of the full definition of each option
+  including additional information.
 
   **Note:** when using ArangoDB 3.2.8 or older, enabling this option avoids
   triggering a second request to the database.
@@ -329,7 +340,7 @@ const info = await db.replaceServiceConfiguration("/my-service", config);
 
 ## database.updateServiceConfiguration
 
-`async database.updateServiceConfiguration(mount, configuration, minimal?): TODO`
+`async database.updateServiceConfiguration(mount, configuration, minimal?): object`
 
 Updates the configuration of the given service my merging the new values into
 the existing ones.
@@ -346,7 +357,9 @@ the existing ones.
 
 - **minimal**: `boolean` (Default: `false`)
 
-  Only return the current values and warnings (if any).
+  If set to `true`, the result will only include each configuration option's
+  current value and any warnings instead of the full definition of each option
+  including additional information.
 
   **Note:** when using ArangoDB 3.2.8 or older, enabling this option avoids
   triggering a second request to the database.
@@ -362,7 +375,7 @@ const info = await db.updateServiceConfiguration("/my-service", config);
 
 ## database.getServiceDependencies
 
-`async database.getServiceDependencies(mount, minimal?): TODO`
+`async database.getServiceDependencies(mount, minimal?): object`
 
 Retrieves an object with information about the service's dependencies and their
 current mount points.
@@ -375,7 +388,9 @@ current mount points.
 
 - **minimal**: `boolean` (Default: `false`)
 
-  Only return the current values and warnings (if any).
+  If set to `true`, the result will only include each dependency's current
+  value instead of the full definition of each dependency including additional
+  information.
 
 **Examples**
 
@@ -386,7 +401,7 @@ const deps = await db.getServiceDependencies("/my-service");
 
 ## database.replaceServiceDependencies
 
-`async database.replaceServiceDependencies(mount, dependencies, minimal?): TODO`
+`async database.replaceServiceDependencies(mount, dependencies, minimal?): object`
 
 Replaces the dependencies for the given service.
 
@@ -402,7 +417,9 @@ Replaces the dependencies for the given service.
 
 - **minimal**: `boolean` (Default: `false`)
 
-  Only return the current values and warnings (if any).
+  If set to `true`, the result will only include each dependency's current
+  value instead of the full definition of each dependency including additional
+  information.
 
   **Note:** when using ArangoDB 3.2.8 or older, enabling this option avoids
   triggering a second request to the database.
@@ -418,7 +435,7 @@ const info = await db.replaceServiceDependencies("/my-service", deps);
 
 ## database.updateServiceDependencies
 
-`async database.updateServiceDependencies(mount, dependencies, minimal?): TODO`
+`async database.updateServiceDependencies(mount, dependencies, minimal?): object`
 
 Updates the dependencies for the given service by merging the new values into
 the existing ones.
@@ -435,7 +452,9 @@ the existing ones.
 
 - **minimal**: `boolean` (Default: `false`)
 
-  Only return the current values and warnings (if any).
+  If set to `true`, the result will only include each dependency's current
+  value instead of the full definition of each dependency including additional
+  information.
 
   **Note:** when using ArangoDB 3.2.8 or older, enabling this option avoids
   triggering a second request to the database.
@@ -451,7 +470,7 @@ const info = await db.updateServiceDependencies("/my-service", deps);
 
 ## database.enableServiceDevelopmentMode
 
-`async database.enableServiceDevelopmentMode(mount): TODO`
+`async database.enableServiceDevelopmentMode(mount): object`
 
 Enables development mode for the given service.
 
@@ -471,10 +490,10 @@ const info = await db.enableServiceDevelopmentMode("/my-service");
 
 ## database.disableServiceDevelopmentMode
 
-`async database.disableServiceDevelopmentMode(mount): TODO`
+`async database.disableServiceDevelopmentMode(mount): object`
 
-Disabled development mode for the given service and commits the service state to
-the database.
+Disables development mode for the given service and commits the service state
+to the database.
 
 **Arguments**
 
@@ -492,11 +511,12 @@ const info = await db.disableServiceDevelopmentMode("/my-service");
 
 ## database.listServiceScripts
 
-`async database.listServiceScripts(mount): TODO`
+`async database.listServiceScripts(mount): object`
 
-Retrieves a list of the service's scripts.
+Retrieves a list of scripts defined in the service manifest's _scripts_
+section.
 
-Returns an object mapping each name to a more readable representation.
+Returns an object mapping each name to a more human readable representation.
 
 **Arguments**
 
@@ -513,7 +533,7 @@ const scripts = await db.listServiceScripts("/my-service");
 
 ## database.runServiceScript
 
-`async database.runServiceScript(mount, name, scriptArg?): any`
+`async database.runServiceScript(mount, name, params?): any`
 
 Runs a service script and returns the result.
 
@@ -525,11 +545,13 @@ Runs a service script and returns the result.
 
 - **name**: `string`
 
-  Name of the script to execute.
+  Name of the script to execute. The script must be defined in the service
+  manifest's _scripts_ section.
 
-- **scriptArg**: `any`
+- **params**: `any` (optional)
 
-  Value that will be passed as an argument to the script.
+  Arbitrary value that will be exposed as `module.context.argv[0]` in the
+  script when it is executed. Must be serializable to JSON.
 
 **Examples**
 
@@ -540,7 +562,7 @@ const result = await db.runServiceScript("/my-service", "setup");
 
 ## database.runServiceTests
 
-`async database.runServiceTests(mount, reporter?): any`
+`async database.runServiceTests(mount, options?): any`
 
 Runs the tests of a given service and returns a formatted report.
 
@@ -554,33 +576,46 @@ Runs the tests of a given service and returns a formatted report.
 
   An object with any of the following properties:
 
+  - **filter**: `string` (optional)
+
+    If set, only tests with full names including this string will be executed.
+
   - **reporter**: `string` (Default: `default`)
 
     The reporter to use to process the test results.
 
-    As of ArangoDB 3.2 the following reporters are supported:
+    One of `"default"`, `"stream"`, `"suite"`, `"tap"` or `"xunit"`.
 
-    - **stream**: an array of event objects
-    - **suite**: nested suite objects with test results
-    - **xunit**: JSONML representation of an XUnit report
-    - **tap**: an array of TAP event strings
-    - **default**: an array of test results
+  - **idiomatic**: `boolean` (Default: `true`)
 
-  - **idiomatic**: `boolean` (Default: `false`)
+    If not set to `false`, the results will be converted to the apropriate
+    `string` representation if available.
 
-    Whether the results should be converted to the apropriate `string`
-    representation:
+    If _reporter_ is set to `"xunit"`, the report will be formatted as an XML
+    document.
 
-    - **xunit** reports will be formatted as XML documents
-    - **tap** reports will be formatted as TAP streams
-    - **stream** reports will be formatted as JSON-LD streams
+    If _reporter_ is set to `"tap"`, the report will be formatted as a TAP
+    stream.
+
+    If _reporter_ is set to `"stream"`, the report will be formatted as a
+    JSON-LD stream.
+
+    Otherwise the result will be an object or array representation of the
+    report.
 
 **Examples**
 
 ```js
-const options = { reporter: "xunit", idiomatic: true };
-const result = await db.runServiceTests("/my-service", options);
-// result contains the XUnit report as a string
+const xml = await db.runServiceTests("/my-service", { reporter: "xunit" });
+// xml contains the XUnit report as an XML string
+
+// - or -
+
+const xunitJson = await db.runServiceTests("/my-service", {
+  reporter: "xunit",
+  idiomatic: false
+});
+// xunitJson contains a JSON representation of the XUnit report
 ```
 
 ## database.downloadService
@@ -606,7 +641,7 @@ const bundle = await db.downloadService("/my-service");
 
 ## database.getServiceReadme
 
-`async database.getServiceReadme(mount): string?`
+`async database.getServiceReadme(mount): string | undefined`
 
 Retrieves the text content of the service's `README` or `README.md` file.
 
@@ -628,10 +663,10 @@ const readme = await db.getServiceReadme("/my-service");
 
 ## database.getServiceDocumentation
 
-`async database.getServiceDocumentation(mount): TODO`
+`async database.getServiceDocumentation(mount): object`
 
-Retrieves a Swagger API description object for the service installed at the
-given mount point.
+Retrieves an Opean API 2.0 compatible Swagger API description object for the
+service installed at the given mount point.
 
 **Arguments**
 
@@ -657,7 +692,7 @@ bundles missing in the database.
 
 - **replace**: `boolean` (Default: `false`)
 
-  Also commit outdated services.
+  If set to `true`, outdated services will also be committed.
 
   This can be used to solve some consistency problems when service bundles are
   missing in the database or were deleted manually.
