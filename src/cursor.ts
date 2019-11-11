@@ -1,4 +1,4 @@
-import { Connection } from "./connection";
+import { Database } from "./database";
 
 export class ArrayCursor<T = any> {
   extra: {
@@ -9,7 +9,7 @@ export class ArrayCursor<T = any> {
   };
   count?: number;
 
-  private _connection: Connection;
+  private _db: Database;
   private _result: T[];
   private _hasMore: boolean;
   private _id: string | undefined;
@@ -17,7 +17,7 @@ export class ArrayCursor<T = any> {
   private _allowDirtyRead?: boolean;
 
   constructor(
-    connection: Connection,
+    db: Database,
     body: {
       extra: any;
       result: T[];
@@ -29,7 +29,7 @@ export class ArrayCursor<T = any> {
     allowDirtyRead?: boolean
   ) {
     this.extra = body.extra;
-    this._connection = connection;
+    this._db = db;
     this._result = body.result;
     this._id = body.id;
     this._hasMore = Boolean(body.id && body.hasMore);
@@ -46,7 +46,7 @@ export class ArrayCursor<T = any> {
 
   private async _more(): Promise<void> {
     if (!this._hasMore) return;
-    const res = await this._connection.request({
+    const res = await this._db.request({
       method: "PUT",
       path: `/_api/cursor/${this._id}`,
       host: this._host,
@@ -175,7 +175,7 @@ export class ArrayCursor<T = any> {
 
   async kill(): Promise<void> {
     if (!this._hasMore) return undefined;
-    return this._connection.request(
+    return this._db.request(
       {
         method: "DELETE",
         path: `/_api/cursor/${this._id}`

@@ -1,4 +1,4 @@
-import { Connection } from "./connection";
+import { Database } from "./database";
 import { ArangojsResponse } from "./util/request";
 
 export type Headers = { [key: string]: string };
@@ -6,18 +6,14 @@ export type Headers = { [key: string]: string };
 export type Params = { [key: string]: string | number | boolean };
 
 export class Route {
-  private _connection: Connection;
+  private _db: Database;
   private _path: string;
   private _headers: Headers;
 
-  constructor(
-    connection: Connection,
-    path: string = "",
-    headers: Headers = {}
-  ) {
+  constructor(db: Database, path: string = "", headers: Headers = {}) {
     if (!path) path = "";
     else if (path.charAt(0) !== "/") path = `/${path}`;
-    this._connection = connection;
+    this._db = db;
     this._path = path;
     this._headers = headers;
   }
@@ -25,7 +21,7 @@ export class Route {
   route(path: string, headers?: Headers) {
     if (!path) path = "";
     else if (path.charAt(0) !== "/") path = `/${path}`;
-    return new Route(this._connection, this._path + path, {
+    return new Route(this._db, this._path + path, {
       ...this._headers,
       ...headers
     });
@@ -38,7 +34,7 @@ export class Route {
     options.basePath = this._path;
     options.headers = { ...this._headers, ...headers };
     options.method = method ? method.toUpperCase() : "GET";
-    return this._connection.request(options);
+    return this._db.request(options);
   }
 
   private _request1(method: string, ...args: any[]) {

@@ -1,4 +1,4 @@
-import { Connection } from "./connection";
+import { Database } from "./arangojs";
 import { isArangoError } from "./error";
 import { ArangoResponseMetadata } from "./util/types";
 
@@ -99,15 +99,15 @@ export class View<
 > implements ArangoView {
   isArangoView: true = true;
   name: string;
-  protected _connection: Connection;
+  protected _db: Database;
 
-  constructor(connection: Connection, name: string) {
+  constructor(db: Database, name: string) {
     this.name = name;
-    this._connection = connection;
+    this._db = db;
   }
 
   get(): Promise<ViewResponse & ArangoResponseMetadata> {
-    return this._connection.request(
+    return this._db.request(
       { path: `/_api/view/${this.name}` },
       res => res.body
     );
@@ -126,7 +126,7 @@ export class View<
   }
 
   create(options?: PropertiesOptions): Promise<PropertiesResponse> {
-    return this._connection.request(
+    return this._db.request(
       {
         method: "POST",
         path: "/_api/view",
@@ -141,7 +141,7 @@ export class View<
   }
 
   async rename(name: string): Promise<ViewResponse & ArangoResponseMetadata> {
-    const result = await this._connection.request(
+    const result = await this._db.request(
       {
         method: "PUT",
         path: `/_api/view/${this.name}/rename`,
@@ -154,14 +154,14 @@ export class View<
   }
 
   properties(): Promise<PropertiesResponse & ArangoResponseMetadata> {
-    return this._connection.request(
+    return this._db.request(
       { path: `/_api/view/${this.name}/properties` },
       res => res.body
     );
   }
 
   setProperties(properties?: PropertiesOptions): Promise<PropertiesResponse> {
-    return this._connection.request(
+    return this._db.request(
       {
         method: "PATCH",
         path: `/_api/view/${this.name}/properties`,
@@ -174,7 +174,7 @@ export class View<
   replaceProperties(
     properties?: PropertiesOptions
   ): Promise<PropertiesResponse> {
-    return this._connection.request(
+    return this._db.request(
       {
         method: "PUT",
         path: `/_api/view/${this.name}/properties`,
@@ -185,7 +185,7 @@ export class View<
   }
 
   drop(): Promise<boolean> {
-    return this._connection.request(
+    return this._db.request(
       {
         method: "DELETE",
         path: `/_api/view/${this.name}`

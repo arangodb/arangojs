@@ -51,8 +51,8 @@ describe("Route API", function() {
   });
   describe("route.route", () => {
     it("should concat path", () => {
-      const route = db.route("/api").route("/version");
-      expect(route).to.have.property("_path", "/api/version");
+      const route = db.route("/_api").route("/version");
+      expect(route).to.have.property("_path", "/_api/version");
     });
   });
   describe("route.get", () => {

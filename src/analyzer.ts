@@ -1,4 +1,4 @@
-import { Connection } from "./connection";
+import { Database } from "./database";
 import { isArangoError } from "./error";
 
 export interface ArangoAnalyzer {
@@ -72,15 +72,15 @@ const ANALYZER_NOT_FOUND = 1202;
 export class Analyzer implements ArangoAnalyzer {
   isArangoAnalyzer: true = true;
   name: string;
-  protected _connection: Connection;
+  protected _db: Database;
 
-  constructor(connection: Connection, name: string) {
-    this._connection = connection;
+  constructor(db: Database, name: string) {
+    this._db = db;
     this.name = name;
   }
 
   get(): Promise<AnalyzerDescription> {
-    return this._connection.request(
+    return this._db.request(
       { path: `/_api/analyzer/${this.name}` },
       res => res.body
     );
@@ -99,7 +99,7 @@ export class Analyzer implements ArangoAnalyzer {
   }
 
   create(options: CreateAnalyzerOptions): Promise<AnalyzerDescription> {
-    return this._connection.request(
+    return this._db.request(
       {
         method: "POST",
         path: "/_api/analyzer",
@@ -110,7 +110,7 @@ export class Analyzer implements ArangoAnalyzer {
   }
 
   drop(force?: boolean): Promise<{ name: string }> {
-    return this._connection.request(
+    return this._db.request(
       {
         method: "DELETE",
         path: `/_api/analyzer/${this.name}`,

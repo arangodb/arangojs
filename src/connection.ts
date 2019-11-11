@@ -56,7 +56,6 @@ export type RequestOptions = {
   allowDirtyRead?: boolean;
   headers?: { [key: string]: string };
   timeout?: number;
-  absolutePath?: boolean;
   basePath?: string;
   path?: string;
   qs?: string | { [key: string]: any };
@@ -84,6 +83,7 @@ export type Config =
   | Partial<{
       url: string | string[];
       arangoVersion: number;
+      databaseName: string;
       loadBalancingStrategy: LoadBalancingStrategy;
       maxRetries: false | number;
       agent: any;
@@ -96,7 +96,6 @@ export class Connection {
   private _agent?: any;
   private _agentOptions: { [key: string]: any };
   private _arangoVersion: number = 30400;
-  private _databaseName: string = "_system";
   private _headers: { [key: string]: string };
   private _loadBalancingStrategy: LoadBalancingStrategy;
   private _useFailOver: boolean;
@@ -154,10 +153,6 @@ export class Connection {
       this._activeHost = 0;
       this._activeDirtyHost = 0;
     }
-  }
-
-  private get _databasePath() {
-    return `/_db/${this._databaseName}`;
   }
 
   private _runQueue() {
@@ -225,14 +220,9 @@ export class Connection {
     }
   }
 
-  private _buildUrl({ absolutePath = false, basePath, path, qs }: UrlInfo) {
-    let pathname = "";
+  private _buildUrl({ basePath, path, qs }: UrlInfo) {
+    const pathname = `${basePath || ""}${path || ""}`;
     let search;
-    if (!absolutePath) {
-      pathname = this._databasePath;
-      if (basePath) pathname += basePath;
-    }
-    if (path) pathname += path;
     if (qs) {
       if (typeof qs === "string") search = `?${qs}`;
       else search = `?${querystringify(clean(qs))}`;
@@ -252,14 +242,6 @@ export class Connection {
       )
     );
     return cleanUrls.map(url => this._urls.indexOf(url));
-  }
-
-  getDatabaseName() {
-    return this._databaseName;
-  }
-
-  setDatabaseName(databaseName: string) {
-    this._databaseName = databaseName;
   }
 
   setTransactionId(transactionId: string) {
@@ -292,7 +274,7 @@ export class Connection {
       headers,
       ...urlInfo
     }: RequestOptions,
-    getter?: (res: ArangojsResponse) => T
+    transform?: (res: ArangojsResponse) => T
   ): Promise<T> {
     return new Promise((resolve, reject) => {
       let contentType = "text/plain";
@@ -366,7 +348,7 @@ export class Connection {
             reject(new HttpError(res));
           } else {
             if (!expectBinary) res.body = parsedBody;
-            resolve(getter ? getter(res) : (res as any));
+            resolve(transform ? transform(res) : (res as any));
           }
         }
       });
