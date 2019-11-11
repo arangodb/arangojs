@@ -15,7 +15,7 @@ export interface TransactionStatus {
 const TRANSACTION_NOT_FOUND = 10;
 export class Transaction implements ArangoTransaction {
   isArangoTransaction: true = true;
-  private _db: Database;
+  protected _db: Database;
   id: string;
 
   constructor(db: Database, id: string) {
