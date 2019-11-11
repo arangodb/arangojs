@@ -15,7 +15,7 @@ import {
   isArangoCollection,
   TraversalOptions
 } from "./collection";
-import { Connection } from "./connection";
+import { Database } from "./database";
 import { isArangoError } from "./error";
 import { Headers } from "./route";
 import { DOCUMENT_NOT_FOUND, GRAPH_NOT_FOUND } from "./util/codes";
@@ -29,18 +29,18 @@ function mungeGharialResponse(body: any, prop: "vertex" | "edge" | "removed") {
   return result;
 }
 
-export type CollectionInsertOptions = {
+export type GraphCollectionInsertOptions = {
   waitForSync?: boolean;
   returnNew?: boolean;
 };
 
-export type CollectionReadOptions = {
+export type GraphCollectionReadOptions = {
   rev?: string;
   graceful?: boolean;
   allowDirtyRead?: boolean;
 };
 
-export type CollectionReplaceOptions = {
+export type GraphCollectionReplaceOptions = {
   rev?: string;
   waitForSync?: boolean;
   keepNull?: boolean;
@@ -48,7 +48,7 @@ export type CollectionReplaceOptions = {
   returnNew?: boolean;
 };
 
-export type CollectionRemoveOptions = {
+export type GraphCollectionRemoveOptions = {
   rev?: string;
   waitForSync?: boolean;
   returnOld?: boolean;
@@ -57,17 +57,17 @@ export type CollectionRemoveOptions = {
 export class GraphVertexCollection<T extends object = any>
   implements ArangoCollection {
   isArangoCollection: true = true;
-  private _connection: Connection;
+  private _db: Database;
   private _name: string;
 
   graph: Graph;
   collection: DocumentCollection<T>;
 
-  constructor(connection: Connection, name: string, graph: Graph) {
-    this._connection = connection;
+  constructor(db: Database, name: string, graph: Graph) {
+    this._db = db;
     this._name = name;
     this.graph = graph;
-    this.collection = new Collection(connection, name);
+    this.collection = new Collection(db, name);
   }
 
   get name() {
@@ -75,7 +75,7 @@ export class GraphVertexCollection<T extends object = any>
   }
 
   vertexExists(selector: DocumentSelector): Promise<boolean> {
-    return this._connection
+    return this._db
       .request(
         {
           method: "HEAD",
@@ -96,12 +96,12 @@ export class GraphVertexCollection<T extends object = any>
 
   vertex(
     selector: DocumentSelector,
-    options?: CollectionReadOptions
+    options?: GraphCollectionReadOptions
   ): Promise<Document<T>>;
   vertex(selector: DocumentSelector, graceful: boolean): Promise<Document<T>>;
   vertex(
     selector: DocumentSelector,
-    options: boolean | CollectionReadOptions = {}
+    options: boolean | GraphCollectionReadOptions = {}
   ): Promise<Document<T>> {
     if (typeof options === "boolean") {
       options = { graceful: options };
@@ -114,7 +114,7 @@ export class GraphVertexCollection<T extends object = any>
     } = options;
     const headers: Headers = {};
     if (rev) headers["if-match"] = rev;
-    const result = this._connection.request(
+    const result = this._db.request(
       {
         path: `/_api/gharial/${this.graph.name}/vertex/${documentHandle(
           selector,
@@ -137,9 +137,9 @@ export class GraphVertexCollection<T extends object = any>
 
   save(
     data: DocumentData<T>,
-    options?: CollectionInsertOptions
+    options?: GraphCollectionInsertOptions
   ): Promise<CollectionInsertResult<Document<T>>> {
-    return this._connection.request(
+    return this._db.request(
       {
         method: "POST",
         path: `/_api/gharial/${this.graph.name}/vertex/${this._name}`,
@@ -153,7 +153,7 @@ export class GraphVertexCollection<T extends object = any>
   replace(
     selector: DocumentSelector,
     newValue: DocumentData<T>,
-    options: CollectionReplaceOptions = {}
+    options: GraphCollectionReplaceOptions = {}
   ): Promise<CollectionSaveResult<Document<T>>> {
     if (typeof options === "string") {
       options = { rev: options };
@@ -161,7 +161,7 @@ export class GraphVertexCollection<T extends object = any>
     const { rev, ...qs } = options;
     const headers: Headers = {};
     if (rev) headers["if-match"] = rev;
-    return this._connection.request(
+    return this._db.request(
       {
         method: "PUT",
         path: `/_api/gharial/${this.graph.name}/vertex/${documentHandle(
@@ -179,7 +179,7 @@ export class GraphVertexCollection<T extends object = any>
   update(
     selector: DocumentSelector,
     newValue: Patch<DocumentData<T>>,
-    options: CollectionReplaceOptions = {}
+    options: GraphCollectionReplaceOptions = {}
   ): Promise<CollectionSaveResult<Document<T>>> {
     if (typeof options === "string") {
       options = { rev: options };
@@ -187,7 +187,7 @@ export class GraphVertexCollection<T extends object = any>
     const headers: Headers = {};
     const { rev, ...qs } = options;
     if (rev) headers["if-match"] = rev;
-    return this._connection.request(
+    return this._db.request(
       {
         method: "PATCH",
         path: `/_api/gharial/${this.graph.name}/vertex/${documentHandle(
@@ -204,7 +204,7 @@ export class GraphVertexCollection<T extends object = any>
 
   remove(
     selector: DocumentSelector,
-    options: CollectionRemoveOptions = {}
+    options: GraphCollectionRemoveOptions = {}
   ): Promise<CollectionRemoveResult<Document<T>>> {
     if (typeof options === "string") {
       options = { rev: options };
@@ -212,7 +212,7 @@ export class GraphVertexCollection<T extends object = any>
     const headers: Headers = {};
     const { rev, ...qs } = options;
     if (rev) headers["if-match"] = rev;
-    return this._connection.request(
+    return this._db.request(
       {
         method: "DELETE",
         path: `/_api/gharial/${this.graph.name}/vertex/${documentHandle(
@@ -230,17 +230,17 @@ export class GraphVertexCollection<T extends object = any>
 export class GraphEdgeCollection<T extends object = any>
   implements ArangoCollection {
   isArangoCollection: true = true;
-  private _connection: Connection;
+  private _db: Database;
   private _name: string;
 
   graph: Graph;
   collection: EdgeCollection<T>;
 
-  constructor(connection: Connection, name: string, graph: Graph) {
-    this._connection = connection;
+  constructor(db: Database, name: string, graph: Graph) {
+    this._db = db;
     this._name = name;
     this.graph = graph;
-    this.collection = new Collection(connection, name);
+    this.collection = new Collection(db, name);
   }
 
   get name() {
@@ -248,7 +248,7 @@ export class GraphEdgeCollection<T extends object = any>
   }
 
   edgeExists(selector: DocumentSelector): Promise<boolean> {
-    return this._connection
+    return this._db
       .request(
         {
           method: "HEAD",
@@ -270,11 +270,11 @@ export class GraphEdgeCollection<T extends object = any>
   edge(selector: DocumentSelector, graceful: boolean): Promise<Edge<T>>;
   edge(
     selector: DocumentSelector,
-    options?: CollectionReadOptions
+    options?: GraphCollectionReadOptions
   ): Promise<Edge<T>>;
   edge(
     selector: DocumentSelector,
-    options: boolean | CollectionReadOptions = {}
+    options: boolean | GraphCollectionReadOptions = {}
   ): Promise<Edge<T>> {
     if (typeof options === "boolean") {
       options = { graceful: options };
@@ -287,7 +287,7 @@ export class GraphEdgeCollection<T extends object = any>
     } = options;
     const headers: Headers = {};
     if (rev) headers["if-match"] = rev;
-    const result = this._connection.request(
+    const result = this._db.request(
       {
         path: `/_api/gharial/${this.graph.name}/edge/${documentHandle(
           selector,
@@ -309,9 +309,9 @@ export class GraphEdgeCollection<T extends object = any>
 
   save(
     data: EdgeData<T>,
-    options?: CollectionInsertOptions
+    options?: GraphCollectionInsertOptions
   ): Promise<CollectionInsertResult<Edge<T>>> {
-    return this._connection.request(
+    return this._db.request(
       {
         method: "POST",
         path: `/_api/gharial/${this.graph.name}/edge/${this._name}`,
@@ -325,7 +325,7 @@ export class GraphEdgeCollection<T extends object = any>
   replace(
     selector: DocumentSelector,
     newValue: EdgeData<T>,
-    options: CollectionReplaceOptions = {}
+    options: GraphCollectionReplaceOptions = {}
   ): Promise<CollectionSaveResult<Edge<T>>> {
     if (typeof options === "string") {
       options = { rev: options };
@@ -333,7 +333,7 @@ export class GraphEdgeCollection<T extends object = any>
     const { rev, ...qs } = options;
     const headers: Headers = {};
     if (rev) headers["if-match"] = rev;
-    return this._connection.request(
+    return this._db.request(
       {
         method: "PUT",
         path: `/_api/gharial/${this.graph.name}/edge/${documentHandle(
@@ -351,7 +351,7 @@ export class GraphEdgeCollection<T extends object = any>
   update(
     selector: DocumentSelector,
     newValue: Patch<EdgeData<T>>,
-    options: CollectionReplaceOptions = {}
+    options: GraphCollectionReplaceOptions = {}
   ): Promise<CollectionSaveResult<Edge<T>>> {
     if (typeof options === "string") {
       options = { rev: options };
@@ -359,7 +359,7 @@ export class GraphEdgeCollection<T extends object = any>
     const { rev, ...qs } = options;
     const headers: Headers = {};
     if (rev) headers["if-match"] = rev;
-    return this._connection.request(
+    return this._db.request(
       {
         method: "PATCH",
         path: `/_api/gharial/${this.graph.name}/edge/${documentHandle(
@@ -376,7 +376,7 @@ export class GraphEdgeCollection<T extends object = any>
 
   remove(
     selector: DocumentSelector,
-    options: CollectionRemoveOptions = {}
+    options: GraphCollectionRemoveOptions = {}
   ): Promise<CollectionRemoveResult<Edge<T>>> {
     if (typeof options === "string") {
       options = { rev: options };
@@ -384,7 +384,7 @@ export class GraphEdgeCollection<T extends object = any>
     const { rev, ...qs } = options;
     const headers: Headers = {};
     if (rev) headers["if-match"] = rev;
-    return this._connection.request(
+    return this._db.request(
       {
         method: "DELETE",
         path: `/_api/gharial/${this.graph.name}/edge/${documentHandle(
@@ -433,11 +433,11 @@ export type GraphCreateOptions = {
 export class Graph {
   private _name: string;
 
-  private _connection: Connection;
+  private _db: Database;
 
-  constructor(connection: Connection, name: string) {
+  constructor(db: Database, name: string) {
     this._name = name;
-    this._connection = connection;
+    this._db = db;
   }
 
   get name() {
@@ -445,7 +445,7 @@ export class Graph {
   }
 
   get(): Promise<GraphInfo> {
-    return this._connection.request(
+    return this._db.request(
       { path: `/_api/gharial/${this._name}` },
       res => res.body.graph
     );
@@ -468,7 +468,7 @@ export class Graph {
     options?: GraphCreateOptions
   ): Promise<GraphInfo> {
     const { waitForSync, isSmart, ...opts } = options || {};
-    return this._connection.request(
+    return this._db.request(
       {
         method: "POST",
         path: "/_api/gharial",
@@ -484,7 +484,7 @@ export class Graph {
   }
 
   drop(dropCollections: boolean = false): Promise<boolean> {
-    return this._connection.request(
+    return this._db.request(
       {
         method: "DELETE",
         path: `/_api/gharial/${this._name}`,
@@ -497,11 +497,11 @@ export class Graph {
   vertexCollection<T extends object = any>(
     collectionName: string
   ): GraphVertexCollection<T> {
-    return new GraphVertexCollection<T>(this._connection, collectionName, this);
+    return new GraphVertexCollection<T>(this._db, collectionName, this);
   }
 
   listVertexCollections(): Promise<string[]> {
-    return this._connection.request(
+    return this._db.request(
       { path: `/_api/gharial/${this._name}/vertex` },
       res => res.body.collections
     );
@@ -509,9 +509,7 @@ export class Graph {
 
   async vertexCollections(): Promise<GraphVertexCollection[]> {
     const names = await this.listVertexCollections();
-    return names.map(
-      name => new GraphVertexCollection(this._connection, name, this)
-    );
+    return names.map(name => new GraphVertexCollection(this._db, name, this));
   }
 
   addVertexCollection(
@@ -520,7 +518,7 @@ export class Graph {
     if (isArangoCollection(collection)) {
       collection = collection.name;
     }
-    return this._connection.request(
+    return this._db.request(
       {
         method: "POST",
         path: `/_api/gharial/${this._name}/vertex`,
@@ -537,7 +535,7 @@ export class Graph {
     if (isArangoCollection(collection)) {
       collection = collection.name;
     }
-    return this._connection.request(
+    return this._db.request(
       {
         method: "DELETE",
         path: `/_api/gharial/${this._name}/vertex/${collection}`,
@@ -552,11 +550,11 @@ export class Graph {
   edgeCollection<T extends object = any>(
     collectionName: string
   ): GraphEdgeCollection<T> {
-    return new GraphEdgeCollection<T>(this._connection, collectionName, this);
+    return new GraphEdgeCollection<T>(this._db, collectionName, this);
   }
 
   listEdgeCollections(): Promise<string[]> {
-    return this._connection.request(
+    return this._db.request(
       { path: `/_api/gharial/${this._name}/edge` },
       res => res.body.collections
     );
@@ -564,13 +562,11 @@ export class Graph {
 
   async edgeCollections(): Promise<GraphEdgeCollection[]> {
     const names = await this.listEdgeCollections();
-    return names.map(
-      name => new GraphEdgeCollection(this._connection, name, this)
-    );
+    return names.map(name => new GraphEdgeCollection(this._db, name, this));
   }
 
   addEdgeDefinition(definition: EdgeDefinition): Promise<GraphInfo> {
-    return this._connection.request(
+    return this._db.request(
       {
         method: "POST",
         path: `/_api/gharial/${this._name}/edge`,
@@ -593,7 +589,7 @@ export class Graph {
       definition = edgeCollection as EdgeDefinition;
       edgeCollection = definition.collection;
     }
-    return this._connection.request(
+    return this._db.request(
       {
         method: "PUT",
         path: `/_api/gharial/${this._name}/edge/${edgeCollection}`,
@@ -607,7 +603,7 @@ export class Graph {
     edgeCollection: string,
     dropCollection: boolean = false
   ): Promise<GraphInfo> {
-    return this._connection.request(
+    return this._db.request(
       {
         method: "DELETE",
         path: `/_api/gharial/${this._name}/edge/${edgeCollection}`,
@@ -624,7 +620,7 @@ export class Graph {
     startVertex: DocumentSelector,
     options?: TraversalOptions
   ): Promise<any> {
-    return this._connection.request(
+    return this._db.request(
       {
         method: "POST",
         path: `/_api/traversal`,

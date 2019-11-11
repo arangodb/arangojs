@@ -15,7 +15,7 @@ import {
   isArangoCollection,
   ListCollectionResult
 } from "./collection";
-import { Config, Connection } from "./connection";
+import { Config, Connection, RequestOptions } from "./connection";
 import { ArrayCursor } from "./cursor";
 import { isArangoError } from "./error";
 import { EdgeDefinition, Graph, GraphCreateOptions } from "./graph";
@@ -25,6 +25,7 @@ import { btoa } from "./util/btoa";
 import { DATABASE_NOT_FOUND } from "./util/codes";
 import { FoxxManifest } from "./util/foxx-manifest";
 import { toForm } from "./util/multipart";
+import { ArangojsResponse } from "./util/request";
 import { ArangoResponseMetadata } from "./util/types";
 import {
   ArangoSearchView,
@@ -399,19 +400,36 @@ export type SwaggerJson = {
 };
 
 export class Database {
-  private _connection: Connection;
+  protected _connection: Connection;
+  protected _name: string = "_system";
 
-  constructor(config?: Config) {
-    this._connection = new Connection(config);
-  }
-
-  get name(): string {
-    return this._connection.getDatabaseName();
+  constructor(config?: Config);
+  constructor(db: Database, name: string);
+  constructor(dbOrConfig?: Config | Database, name?: string) {
+    if (name) {
+      const db = dbOrConfig as Database;
+      this._connection = db._connection;
+      this._name = name;
+    } else {
+      const config = dbOrConfig as Config;
+      this._connection = new Connection(config);
+      if (
+        typeof config === "object" &&
+        !Array.isArray(config) &&
+        config.databaseName
+      ) {
+        this._name = String(config.databaseName);
+      }
+    }
   }
 
   //#region misc
+  get name() {
+    return this._name;
+  }
+
   version(): Promise<VersionInfo> {
-    return this._connection.request(
+    return this.request(
       {
         method: "GET",
         path: "/_api/version"
@@ -421,14 +439,25 @@ export class Database {
   }
 
   route(path?: string, headers?: Headers): Route {
-    return new Route(this._connection, path, headers);
+    return new Route(this, path, headers);
+  }
+
+  request<T = ArangojsResponse>(
+    {
+      absolutePath = false,
+      basePath,
+      ...opts
+    }: RequestOptions & { absolutePath?: boolean },
+    transform?: (res: ArangojsResponse) => T
+  ): Promise<T> {
+    if (!absolutePath) {
+      basePath = `/_db/${this.name}${basePath || ""}`;
+    }
+    return this.request({ basePath, ...opts }, transform);
   }
 
   async acquireHostList(): Promise<void> {
-    if (!this._connection.getDatabaseName()) {
-      throw new Error("Cannot acquire host list with absolute URL");
-    }
-    const urls: string[] = await this._connection.request(
+    const urls: string[] = await this.request(
       { path: "/_api/cluster/endpoints" },
       res => res.body.endpoints.map((endpoint: any) => endpoint.endpoint)
     );
@@ -442,7 +471,7 @@ export class Database {
 
   //#region auth
   useDatabase(databaseName: string): this {
-    this._connection.setDatabaseName(databaseName);
+    this._name = databaseName;
     return this;
   }
 
@@ -460,7 +489,7 @@ export class Database {
   }
 
   login(username: string = "root", password: string = ""): Promise<string> {
-    return this._connection.request(
+    return this.request(
       {
         method: "POST",
         path: "/_open/auth",
@@ -475,8 +504,13 @@ export class Database {
   //#endregion
 
   //#region databases
+  database(databaseName: string) {
+    const db = new Database(this, databaseName);
+    return db;
+  }
+
   get(): Promise<DatabaseInfo> {
-    return this._connection.request(
+    return this.request(
       { path: "/_api/database/current" },
       res => res.body.result
     );
@@ -498,7 +532,7 @@ export class Database {
     databaseName: string,
     users?: CreateDatabaseUser[]
   ): Promise<boolean> {
-    return this._connection.request(
+    return this.request(
       {
         method: "POST",
         path: "/_api/database",
@@ -509,21 +543,18 @@ export class Database {
   }
 
   listDatabases(): Promise<string[]> {
-    return this._connection.request(
-      { path: "/_api/database" },
-      res => res.body.result
-    );
+    return this.request({ path: "/_api/database" }, res => res.body.result);
   }
 
   listUserDatabases(): Promise<string[]> {
-    return this._connection.request(
+    return this.request(
       { path: "/_api/database/user" },
       res => res.body.result
     );
   }
 
   dropDatabase(databaseName: string): Promise<boolean> {
-    return this._connection.request(
+    return this.request(
       {
         method: "DELETE",
         path: `/_api/database/${databaseName}`
@@ -537,7 +568,7 @@ export class Database {
   collection<T extends object = any>(
     collectionName: string
   ): DocumentCollection<T> & EdgeCollection<T> {
-    return new Collection(this._connection, collectionName);
+    return new Collection(this, collectionName);
   }
 
   async createCollection<T extends object = any>(
@@ -556,7 +587,7 @@ export class Database {
     collectionName: string,
     options?: CreateCollectionOptions & { type?: CollectionType }
   ): Promise<DocumentCollection<T> & EdgeCollection<T>> {
-    const collection = new Collection(this._connection, collectionName);
+    const collection = new Collection(this, collectionName);
     await collection.create(options);
     return collection;
   }
@@ -574,7 +605,7 @@ export class Database {
   listCollections(
     excludeSystem: boolean = true
   ): Promise<ListCollectionResult[]> {
-    return this._connection.request(
+    return this.request(
       {
         path: "/_api/collection",
         qs: { excludeSystem }
@@ -587,13 +618,13 @@ export class Database {
     excludeSystem: boolean = true
   ): Promise<Array<DocumentCollection & EdgeCollection>> {
     const collections = await this.listCollections(excludeSystem);
-    return collections.map(data => new Collection(this._connection, data.name));
+    return collections.map(data => new Collection(this, data.name));
   }
   //#endregion
 
   //#region graphs
   graph(graphName: string): Graph {
-    return new Graph(this._connection, graphName);
+    return new Graph(this, graphName);
   }
 
   async createGraph(
@@ -601,16 +632,13 @@ export class Database {
     edgeDefinitions: EdgeDefinition[],
     options?: GraphCreateOptions
   ): Promise<Graph> {
-    const graph = new Graph(this._connection, graphName);
+    const graph = new Graph(this, graphName);
     await graph.create(edgeDefinitions, options);
     return graph;
   }
 
   listGraphs() {
-    return this._connection.request(
-      { path: "/_api/gharial" },
-      res => res.body.graphs
-    );
+    return this.request({ path: "/_api/gharial" }, res => res.body.graphs);
   }
 
   async graphs(): Promise<Graph[]> {
@@ -621,50 +649,44 @@ export class Database {
 
   //#region views
   view(viewName: string): ArangoSearchView {
-    return new View(this._connection, viewName);
+    return new View(this, viewName);
   }
 
   async createArangoSearchView(
     viewName: string,
     options?: ArangoSearchViewPropertiesOptions
   ): Promise<ArangoSearchView> {
-    const view = new View(this._connection, viewName);
+    const view = new View(this, viewName);
     await view.create({ ...options, type: ViewType.ARANGOSEARCH_VIEW });
     return view;
   }
 
   listViews(): Promise<ViewDescription[]> {
-    return this._connection.request(
-      { path: "/_api/view" },
-      res => res.body.result
-    );
+    return this.request({ path: "/_api/view" }, res => res.body.result);
   }
 
   async views(): Promise<ArangoSearchView[]> {
     const views = await this.listViews();
-    return views.map(data => new View(this._connection, data.name));
+    return views.map(data => new View(this, data.name));
   }
   //#endregion
 
   //#region analyzers
   analyzer(name: string): Analyzer {
-    return new Analyzer(this._connection, name);
+    return new Analyzer(this, name);
   }
 
   async createAnalyzer(
     analyzerName: string,
     options: CreateAnalyzerOptions
   ): Promise<Analyzer> {
-    const analyzer = new Analyzer(this._connection, analyzerName);
+    const analyzer = new Analyzer(this, analyzerName);
     await analyzer.create(options);
     return analyzer;
   }
 
   listAnalyzers(): Promise<AnalyzerDescription[]> {
-    return this._connection.request(
-      { path: "/_api/analyzer" },
-      res => res.body.result
-    );
+    return this.request({ path: "/_api/analyzer" }, res => res.body.result);
   }
 
   async analyzers(): Promise<Analyzer[]> {
@@ -679,7 +701,7 @@ export class Database {
     action: string,
     options?: TransactionOptions & { params?: any }
   ): Promise<any> {
-    return this._connection.request(
+    return this.request(
       {
         method: "POST",
         path: "/_api/transaction",
@@ -694,14 +716,14 @@ export class Database {
   }
 
   transaction(transactionId: string): Transaction {
-    return new Transaction(this._connection, transactionId);
+    return new Transaction(this, transactionId);
   }
 
   beginTransaction(
     collections: TransactionCollections,
     options?: TransactionOptions
   ): Promise<Transaction> {
-    return this._connection.request(
+    return this.request(
       {
         method: "POST",
         path: "/_api/transaction/begin",
@@ -710,7 +732,7 @@ export class Database {
           ...options
         }
       },
-      res => new Transaction(this._connection, res.body.result.id)
+      res => new Transaction(this, res.body.result.id)
     );
   }
 
@@ -756,7 +778,7 @@ export class Database {
       timeout,
       ...opts
     } = options || {};
-    return this._connection.request(
+    return this.request(
       {
         method: "POST",
         path: "/_api/cursor",
@@ -773,13 +795,7 @@ export class Database {
         allowDirtyRead,
         timeout
       },
-      res =>
-        new ArrayCursor(
-          this._connection,
-          res.body,
-          res.arangojsHostId,
-          allowDirtyRead
-        )
+      res => new ArrayCursor(this, res.body, res.arangojsHostId, allowDirtyRead)
     );
   }
 
@@ -804,7 +820,7 @@ export class Database {
     } else if (isAqlLiteral(query)) {
       query = query.toAQL();
     }
-    return this._connection.request(
+    return this.request(
       {
         method: "POST",
         path: "/_api/explain",
@@ -820,7 +836,7 @@ export class Database {
     } else if (isAqlLiteral(query)) {
       query = query.toAQL();
     }
-    return this._connection.request(
+    return this.request(
       {
         method: "POST",
         path: "/_api/query",
@@ -831,7 +847,7 @@ export class Database {
   }
 
   queryTracking(): Promise<QueryTracking> {
-    return this._connection.request(
+    return this.request(
       {
         method: "GET",
         path: "/_api/query/properties"
@@ -841,7 +857,7 @@ export class Database {
   }
 
   setQueryTracking(options?: QueryTrackingOptions): Promise<QueryTracking> {
-    return this._connection.request(
+    return this.request(
       {
         method: "PUT",
         path: "/_api/query/properties",
@@ -852,7 +868,7 @@ export class Database {
   }
 
   listRunningQueries(): Promise<QueryInfo[]> {
-    return this._connection.request(
+    return this.request(
       {
         method: "GET",
         path: "/_api/query/current"
@@ -862,7 +878,7 @@ export class Database {
   }
 
   listSlowQueries(): Promise<QueryInfo[]> {
-    return this._connection.request(
+    return this.request(
       {
         method: "GET",
         path: "/_api/query/slow"
@@ -872,7 +888,7 @@ export class Database {
   }
 
   clearSlowQueries(): Promise<void> {
-    return this._connection.request(
+    return this.request(
       {
         method: "DELETE",
         path: "/_api/query/slow"
@@ -882,7 +898,7 @@ export class Database {
   }
 
   killQuery(queryId: string): Promise<void> {
-    return this._connection.request(
+    return this.request(
       {
         method: "DELETE",
         path: `/_api/query/${queryId}`
@@ -894,10 +910,7 @@ export class Database {
 
   //#region functions
   listFunctions(): Promise<AqlFunction[]> {
-    return this._connection.request(
-      { path: "/_api/aqlfunction" },
-      res => res.body.result
-    );
+    return this.request({ path: "/_api/aqlfunction" }, res => res.body.result);
   }
 
   createFunction(
@@ -905,7 +918,7 @@ export class Database {
     code: string,
     isDeterministic?: boolean
   ): Promise<ArangoResponseMetadata & { isNewlyCreated: boolean }> {
-    return this._connection.request(
+    return this.request(
       {
         method: "POST",
         path: "/_api/aqlfunction",
@@ -919,7 +932,7 @@ export class Database {
     name: string,
     group: boolean = false
   ): Promise<ArangoResponseMetadata & { deletedCount: number }> {
-    return this._connection.request(
+    return this.request(
       {
         method: "DELETE",
         path: `/_api/aqlfunction/${name}`,
@@ -932,7 +945,7 @@ export class Database {
 
   //#region services
   listServices(excludeSystem?: boolean): Promise<ServiceSummary[]> {
-    return this._connection.request(
+    return this.request(
       {
         path: "/_api/foxx",
         qs: { excludeSystem }
@@ -952,7 +965,7 @@ export class Database {
       dependencies,
       source
     });
-    return await this._connection.request(
+    return await this.request(
       {
         ...req,
         method: "POST",
@@ -975,7 +988,7 @@ export class Database {
       dependencies,
       source
     });
-    return await this._connection.request(
+    return await this.request(
       {
         ...req,
         method: "PATCH",
@@ -998,7 +1011,7 @@ export class Database {
       dependencies,
       source
     });
-    return await this._connection.request(
+    return await this.request(
       {
         ...req,
         method: "PUT",
@@ -1014,7 +1027,7 @@ export class Database {
     mount: string,
     options?: UninstallServiceOptions
   ): Promise<void> {
-    return this._connection.request(
+    return this.request(
       {
         method: "DELETE",
         path: "/_api/foxx/service",
@@ -1025,7 +1038,7 @@ export class Database {
   }
 
   getService(mount: string): Promise<ServiceInfo> {
-    return this._connection.request(
+    return this.request(
       {
         path: "/_api/foxx/service",
         qs: { mount }
@@ -1043,7 +1056,7 @@ export class Database {
     minimal: true
   ): Promise<ServiceConfigurationValues>;
   async getServiceConfiguration(mount: string, minimal: boolean = false) {
-    const result = await this._connection.request(
+    const result = await this.request(
       {
         path: "/_api/foxx/configuration",
         qs: { mount, minimal }
@@ -1080,7 +1093,7 @@ export class Database {
     cfg: ServiceConfigurationValues,
     minimal: boolean = false
   ) {
-    const result = await this._connection.request(
+    const result = await this.request(
       {
         method: "PATCH",
         path: "/_api/foxx/configuration",
@@ -1127,7 +1140,7 @@ export class Database {
     cfg: ServiceConfigurationValues,
     minimal: boolean = false
   ) {
-    const result = await this._connection.request(
+    const result = await this.request(
       {
         method: "PUT",
         path: "/_api/foxx/configuration",
@@ -1165,7 +1178,7 @@ export class Database {
     minimal: true
   ): Promise<ServiceDependenciesValues>;
   async getServiceDependencies(mount: string, minimal: boolean = false) {
-    const result = await this._connection.request(
+    const result = await this.request(
       {
         path: "/_api/foxx/dependencies",
         qs: { mount, minimal }
@@ -1202,7 +1215,7 @@ export class Database {
     deps: ServiceDependenciesValues,
     minimal: boolean = false
   ) {
-    const result = await this._connection.request(
+    const result = await this.request(
       {
         method: "PATCH",
         path: "/_api/foxx/dependencies",
@@ -1250,7 +1263,7 @@ export class Database {
     deps: ServiceDependenciesValues,
     minimal: boolean = false
   ) {
-    const result = await this._connection.request(
+    const result = await this.request(
       {
         method: "PUT",
         path: "/_api/foxx/dependencies",
@@ -1281,7 +1294,7 @@ export class Database {
   }
 
   enableServiceDevelopmentMode(mount: string): Promise<ServiceInfo> {
-    return this._connection.request(
+    return this.request(
       {
         method: "POST",
         path: "/_api/foxx/development",
@@ -1292,7 +1305,7 @@ export class Database {
   }
 
   disableServiceDevelopmentMode(mount: string): Promise<ServiceInfo> {
-    return this._connection.request(
+    return this.request(
       {
         method: "DELETE",
         path: "/_api/foxx/development",
@@ -1303,7 +1316,7 @@ export class Database {
   }
 
   listServiceScripts(mount: string): Promise<ServiceScripts> {
-    return this._connection.request(
+    return this.request(
       {
         path: "/_api/foxx/scripts",
         qs: { mount }
@@ -1313,7 +1326,7 @@ export class Database {
   }
 
   runServiceScript(mount: string, name: string, params?: any): Promise<any> {
-    return this._connection.request(
+    return this.request(
       {
         method: "POST",
         path: `/_api/foxx/scripts/${name}`,
@@ -1394,7 +1407,7 @@ export class Database {
       filter?: string;
     }
   ) {
-    return this._connection.request(
+    return this.request(
       {
         method: "POST",
         path: "/_api/foxx/tests",
@@ -1408,7 +1421,7 @@ export class Database {
   }
 
   getServiceReadme(mount: string): Promise<string | undefined> {
-    return this._connection.request(
+    return this.request(
       {
         path: "/_api/foxx/readme",
         qs: { mount }
@@ -1418,7 +1431,7 @@ export class Database {
   }
 
   getServiceDocumentation(mount: string): Promise<SwaggerJson> {
-    return this._connection.request(
+    return this.request(
       {
         path: "/_api/foxx/swagger",
         qs: { mount }
@@ -1428,7 +1441,7 @@ export class Database {
   }
 
   downloadService(mount: string): Promise<Buffer | Blob> {
-    return this._connection.request(
+    return this.request(
       {
         method: "POST",
         path: "/_api/foxx/download",
@@ -1440,7 +1453,7 @@ export class Database {
   }
 
   commitLocalServiceState(replace?: boolean): Promise<void> {
-    return this._connection.request(
+    return this.request(
       {
         method: "POST",
         path: "/_api/foxx/commit",

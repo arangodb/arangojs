@@ -214,12 +214,12 @@ describe("Cursor API", () => {
       const cursor = await db.query(aql`FOR i IN 1..5 RETURN i`, {
         batchSize: 2
       });
-      const { _connection: connection, _host: host, _id: id } = cursor as any;
+      const { _host: host, _id: id } = cursor as any;
       expect(cursor).to.have.property("_hasMore", true);
       await cursor.kill();
       expect(cursor).to.have.property("_hasMore", false);
       try {
-        await connection.request({
+        await db.request({
           method: "PUT",
           path: `/_api/cursor/${id}`,
           host: host
