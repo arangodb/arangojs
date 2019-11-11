@@ -200,19 +200,19 @@ export type CreateDatabaseUser = {
   extra?: { [key: string]: any };
 };
 
-type VersionInfo = {
+export type VersionInfo = {
   server: string;
   license: "community" | "enterprise";
   version: string;
 };
 
-type AqlFunction = {
+export type AqlFunction = {
   name: string;
   code: string;
   isDeterministic: boolean;
 };
 
-type ReplaceServiceOptions = {
+export type ReplaceServiceOptions = {
   configuration?: ServiceConfigurationValues;
   dependencies?: ServiceDependenciesValues;
   teardown?: boolean;
@@ -221,7 +221,7 @@ type ReplaceServiceOptions = {
   force?: boolean;
 };
 
-type UninstallServiceOptions = {
+export type UninstallServiceOptions = {
   teardown?: boolean;
   force?: boolean;
 };
@@ -235,7 +235,7 @@ export type ServiceSummary = {
   legacy: boolean;
 };
 
-type ServiceInfo = {
+export type ServiceInfo = {
   mount: string;
   path: string;
   name?: string;
@@ -250,7 +250,7 @@ type ServiceInfo = {
   };
 };
 
-type ServiceConfiguration = {
+export type ServiceConfiguration = {
   type:
     | "integer"
     | "boolean"
@@ -268,7 +268,7 @@ type ServiceConfiguration = {
   default?: any;
 };
 
-type ServiceDependency =
+export type ServiceDependency =
   | {
       multiple: false;
       current?: string;
@@ -288,19 +288,19 @@ type ServiceDependency =
       required: boolean;
     };
 
-type ServiceConfigurationValues = {
+export type ServiceConfigurationValues = {
   [key: string]: any;
 };
 
-type ServiceDependenciesValues = {
+export type ServiceDependenciesValues = {
   [key: string]: string;
 };
 
-type ServiceScripts = {
+export type ServiceScripts = {
   [key: string]: string;
 };
 
-type ServiceTestStats = {
+export type ServiceTestStats = {
   tests: number;
   passes: number;
   failures: number;
@@ -308,39 +308,39 @@ type ServiceTestStats = {
   duration: number;
 };
 
-type ServiceTestStreamTest = {
+export type ServiceTestStreamTest = {
   title: string;
   fullTitle: string;
   duration: number;
   err?: string;
 };
 
-type ServiceTestStreamReport = (
+export type ServiceTestStreamReport = (
   | ["start", { total: number }]
   | ["pass", ServiceTestStreamTest]
   | ["fail", ServiceTestStreamTest]
   | ["end", ServiceTestStats])[];
 
-type ServiceTestSuiteTest = {
+export type ServiceTestSuiteTest = {
   result: "pending" | "pass" | "fail";
   title: string;
   duration: number;
   err?: any;
 };
 
-type ServiceTestSuite = {
+export type ServiceTestSuite = {
   title: string;
   suites: ServiceTestSuite[];
   tests: ServiceTestSuiteTest[];
 };
 
-type ServiceTestSuiteReport = {
+export type ServiceTestSuiteReport = {
   stats: ServiceTestStats;
   suites: ServiceTestSuite[];
   tests: ServiceTestSuiteTest[];
 };
 
-type ServiceTestXunitTest =
+export type ServiceTestXunitTest =
   | ["testcase", { classname: string; name: string; time: number }]
   | [
       "testcase",
@@ -348,7 +348,7 @@ type ServiceTestXunitTest =
       ["failure", { message: string; type: string }, string]
     ];
 
-type ServiceTestXunitReport = [
+export type ServiceTestXunitReport = [
   "testsuite",
   {
     timestamp: number;
@@ -361,16 +361,16 @@ type ServiceTestXunitReport = [
   ...(ServiceTestXunitTest[])
 ];
 
-type ServiceTestTapReport = string[];
+export type ServiceTestTapReport = string[];
 
-type ServiceTestDefaultTest = {
+export type ServiceTestDefaultTest = {
   title: string;
   fullTitle: string;
   duration: number;
   err?: string;
 };
 
-type ServiceTestDefaultReport = {
+export type ServiceTestDefaultReport = {
   stats: ServiceTestStats;
   tests: ServiceTestDefaultTest[];
   pending: ServiceTestDefaultTest[];
@@ -378,14 +378,14 @@ type ServiceTestDefaultReport = {
   passes: ServiceTestDefaultTest[];
 };
 
-type DatabaseInfo = {
+export type DatabaseInfo = {
   name: string;
   id: string;
   path: string;
   isSystem: boolean;
 };
 
-type SwaggerJson = {
+export type SwaggerJson = {
   info: {
     title: string;
     description: string;
