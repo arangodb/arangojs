@@ -6,9 +6,9 @@ export type Headers = { [key: string]: string };
 export type Params = { [key: string]: string | number | boolean };
 
 export class Route {
-  private _db: Database;
-  private _path: string;
-  private _headers: Headers;
+  protected _db: Database;
+  protected _path: string;
+  protected _headers: Headers;
 
   constructor(db: Database, path: string = "", headers: Headers = {}) {
     if (!path) path = "";
@@ -37,7 +37,7 @@ export class Route {
     return this._db.request(options);
   }
 
-  private _request1(method: string, ...args: any[]) {
+  protected _request1(method: string, ...args: any[]) {
     let path: string = "";
     let qs: Params | undefined;
     let headers: Headers | undefined;
@@ -53,7 +53,7 @@ export class Route {
     return this.request({ method, path, qs, headers });
   }
 
-  private _request2(method: string, ...args: any[]) {
+  protected _request2(method: string, ...args: any[]) {
     let path: string = "";
     let body: any = undefined;
     let qs: Params | undefined;

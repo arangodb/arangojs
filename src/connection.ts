@@ -92,22 +92,22 @@ export type Config =
     }>;
 
 export class Connection {
-  private _activeTasks: number = 0;
-  private _agent?: any;
-  private _agentOptions: { [key: string]: any };
-  private _arangoVersion: number = 30400;
-  private _headers: { [key: string]: string };
-  private _loadBalancingStrategy: LoadBalancingStrategy;
-  private _useFailOver: boolean;
-  private _shouldRetry: boolean;
-  private _maxRetries: number;
-  private _maxTasks: number;
-  private _queue = new LinkedList<Task>();
-  private _hosts: RequestFunction[] = [];
-  private _urls: string[] = [];
-  private _activeHost: number;
-  private _activeDirtyHost: number;
-  private _transactionId: string | null = null;
+  protected _activeTasks: number = 0;
+  protected _agent?: any;
+  protected _agentOptions: { [key: string]: any };
+  protected _arangoVersion: number = 30400;
+  protected _headers: { [key: string]: string };
+  protected _loadBalancingStrategy: LoadBalancingStrategy;
+  protected _useFailOver: boolean;
+  protected _shouldRetry: boolean;
+  protected _maxRetries: number;
+  protected _maxTasks: number;
+  protected _queue = new LinkedList<Task>();
+  protected _hosts: RequestFunction[] = [];
+  protected _urls: string[] = [];
+  protected _activeHost: number;
+  protected _activeDirtyHost: number;
+  protected _transactionId: string | null = null;
 
   constructor(config: Config = {}) {
     if (typeof config === "string") config = { url: config };
@@ -155,7 +155,7 @@ export class Connection {
     }
   }
 
-  private _runQueue() {
+  protected _runQueue() {
     if (!this._queue.length || this._activeTasks >= this._maxTasks) return;
     const task = this._queue.shift()!;
     let host = this._activeHost;
@@ -220,7 +220,7 @@ export class Connection {
     }
   }
 
-  private _buildUrl({ basePath, path, qs }: UrlInfo) {
+  protected _buildUrl({ basePath, path, qs }: UrlInfo) {
     const pathname = `${basePath || ""}${path || ""}`;
     let search;
     if (qs) {
