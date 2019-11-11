@@ -1,4 +1,5 @@
 import { Connection } from "./connection";
+import { Database } from "./database";
 import { isArangoError } from "./error";
 
 export interface ArangoTransaction {
@@ -14,11 +15,11 @@ export interface TransactionStatus {
 const TRANSACTION_NOT_FOUND = 10;
 export class Transaction implements ArangoTransaction {
   isArangoTransaction: true = true;
-  private _connection: Connection;
+  private _db: Database;
   id: string;
 
-  constructor(connection: Connection, id: string) {
-    this._connection = connection;
+  constructor(db: Database, id: string) {
+    this._db = db;
     this.id = id;
   }
 
@@ -35,7 +36,7 @@ export class Transaction implements ArangoTransaction {
   }
 
   get(): Promise<TransactionStatus> {
-    return this._connection.request(
+    return this._db.request(
       {
         path: `/_api/transaction/${this.id}`
       },
@@ -44,7 +45,7 @@ export class Transaction implements ArangoTransaction {
   }
 
   commit(): Promise<TransactionStatus> {
-    return this._connection.request(
+    return this._db.request(
       {
         method: "PUT",
         path: `/_api/transaction/${this.id}`
@@ -54,7 +55,7 @@ export class Transaction implements ArangoTransaction {
   }
 
   abort(): Promise<TransactionStatus> {
-    return this._connection.request(
+    return this._db.request(
       {
         method: "DELETE",
         path: `/_api/transaction/${this.id}`
@@ -64,11 +65,12 @@ export class Transaction implements ArangoTransaction {
   }
 
   run<T>(fn: () => Promise<T>): Promise<T> {
-    this._connection.setTransactionId(this.id);
+    const conn = (this._db as any)._connection as Connection;
+    conn.setTransactionId(this.id);
     try {
       return Promise.resolve(fn());
     } finally {
-      this._connection.clearTransactionId();
+      conn.clearTransactionId();
     }
   }
 }

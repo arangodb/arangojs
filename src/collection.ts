@@ -1,5 +1,6 @@
-import { Connection, RequestOptions } from "./connection";
+import { RequestOptions } from "./connection";
 import { ArrayCursor } from "./cursor";
+import { Database } from "./database";
 import { isArangoError } from "./error";
 import { COLLECTION_NOT_FOUND, DOCUMENT_NOT_FOUND } from "./util/codes";
 import { ArangoResponseMetadata, Patch, StrictObject } from "./util/types";
@@ -841,26 +842,26 @@ export class Collection<T extends object = any>
   isArangoCollection: true = true;
   protected _name: string;
   protected _idPrefix: string;
-  protected _connection: Connection;
+  protected _db: Database;
   //#endregion
 
-  constructor(connection: Connection, name: string) {
+  constructor(db: Database, name: string) {
     this._name = name;
     this._idPrefix = `${this._name}/`;
-    this._connection = connection;
+    this._db = db;
   }
 
   //#region internals
 
   protected _get(path: string, qs?: any) {
-    return this._connection.request(
+    return this._db.request(
       { path: `/_api/collection/${this._name}/${path}`, qs },
       (res) => res.body
     );
   }
 
   protected _put(path: string, body?: any) {
-    return this._connection.request(
+    return this._db.request(
       {
         method: "PUT",
         path: `/_api/collection/${this._name}/${path}`,
@@ -877,7 +878,7 @@ export class Collection<T extends object = any>
   }
 
   get() {
-    return this._connection.request(
+    return this._db.request(
       { path: `/_api/collection/${this._name}` },
       (res) => res.body
     );
@@ -912,7 +913,7 @@ export class Collection<T extends object = any>
     if (typeof enforceReplicationFactor === "boolean") {
       qs.enforceReplicationFactor = enforceReplicationFactor ? 1 : 0;
     }
-    return this._connection.request(
+    return this._db.request(
       {
         method: "POST",
         path: "/_api/collection",
@@ -959,7 +960,7 @@ export class Collection<T extends object = any>
   }
 
   async rename(name: string) {
-    const result = await this._connection.request(
+    const result = await this._db.request(
       {
         method: "PUT",
         path: `/_api/collection/${this._name}/rename`,
@@ -982,7 +983,7 @@ export class Collection<T extends object = any>
   }
 
   drop(options?: CollectionDropOptions) {
-    return this._connection.request(
+    return this._db.request(
       {
         method: "DELETE",
         path: `/_api/collection/${this._name}`,
@@ -995,7 +996,7 @@ export class Collection<T extends object = any>
 
   //#region crud
   getResponsibleShard(document: Partial<Document<T>>): Promise<string> {
-    return this._connection.request(
+    return this._db.request(
       {
         method: "PUT",
         path: `/_api/collection/${this.name}/responsibleShard`,
@@ -1010,7 +1011,7 @@ export class Collection<T extends object = any>
   }
 
   documentExists(selector: DocumentSelector): Promise<boolean> {
-    return this._connection
+    return this._db
       .request(
         {
           method: "HEAD",
@@ -1034,7 +1035,7 @@ export class Collection<T extends object = any>
       options = { graceful: options };
     }
     const { allowDirtyRead = undefined, graceful = false } = options;
-    const result = this._connection.request(
+    const result = this._db.request(
       {
         path: `/_api/document/${documentHandle(selector, this._name)}`,
         allowDirtyRead,
@@ -1058,7 +1059,7 @@ export class Collection<T extends object = any>
   }
 
   save(data: DocumentData<T>, options?: CollectionInsertOptions) {
-    return this._connection.request(
+    return this._db.request(
       {
         method: "POST",
         path: `/_api/document/${this._name}`,
@@ -1070,7 +1071,7 @@ export class Collection<T extends object = any>
   }
 
   saveAll(data: Array<DocumentData<T>>, options?: CollectionInsertOptions) {
-    return this._connection.request(
+    return this._db.request(
       {
         method: "POST",
         path: `/_api/document/${this._name}`,
@@ -1086,7 +1087,7 @@ export class Collection<T extends object = any>
     newValue: DocumentData<T>,
     options?: CollectionReplaceOptions
   ) {
-    return this._connection.request(
+    return this._db.request(
       {
         method: "PUT",
         path: `/_api/document/${documentHandle(selector, this._name)}`,
@@ -1101,7 +1102,7 @@ export class Collection<T extends object = any>
     newValues: Array<DocumentData<T> & DocumentLike>,
     options?: CollectionReplaceOptions
   ) {
-    return this._connection.request(
+    return this._db.request(
       {
         method: "PUT",
         path: `/_api/document/${this._name}`,
@@ -1117,7 +1118,7 @@ export class Collection<T extends object = any>
     newValue: Patch<DocumentData<T>>,
     options?: CollectionUpdateOptions
   ) {
-    return this._connection.request(
+    return this._db.request(
       {
         method: "PATCH",
         path: `/_api/document/${documentHandle(selector, this._name)}`,
@@ -1132,7 +1133,7 @@ export class Collection<T extends object = any>
     newValues: Array<Patch<DocumentData<T>> & DocumentLike>,
     options?: CollectionUpdateOptions
   ) {
-    return this._connection.request(
+    return this._db.request(
       {
         method: "PATCH",
         path: `/_api/document/${this._name}`,
@@ -1144,7 +1145,7 @@ export class Collection<T extends object = any>
   }
 
   remove(selector: DocumentSelector, options?: CollectionRemoveOptions) {
-    return this._connection.request(
+    return this._db.request(
       {
         method: "DELETE",
         path: `/_api/document/${documentHandle(selector, this._name)}`,
@@ -1158,7 +1159,7 @@ export class Collection<T extends object = any>
     selectors: Array<DocumentSelector>,
     options?: CollectionRemoveOptions
   ) {
-    return this._connection.request(
+    return this._db.request(
       {
         method: "DELETE",
         path: `/_api/document/${this._name}`,
@@ -1178,7 +1179,7 @@ export class Collection<T extends object = any>
         (data as any[]).map((line: any) => JSON.stringify(line)).join("\r\n") +
         "\r\n";
     }
-    return this._connection.request(
+    return this._db.request(
       {
         method: "POST",
         path: "/_api/import",
@@ -1197,7 +1198,7 @@ export class Collection<T extends object = any>
 
   //#region edges
   protected _edges(selector: DocumentSelector, direction?: "in" | "out") {
-    return this._connection.request(
+    return this._db.request(
       {
         path: `/_api/edges/${this._name}`,
         qs: {
@@ -1222,7 +1223,7 @@ export class Collection<T extends object = any>
   }
 
   traversal(startVertex: DocumentSelector, options?: TraversalOptions) {
-    return this._connection.request(
+    return this._db.request(
       {
         method: "POST",
         path: "/_api/traversal",
@@ -1239,18 +1240,18 @@ export class Collection<T extends object = any>
 
   //#region simple queries
   list(type: SimpleQueryAllKeys = "id") {
-    return this._connection.request(
+    return this._db.request(
       {
         method: "PUT",
         path: "/_api/simple/all-keys",
         body: { type, collection: this._name },
       },
-      (res) => new ArrayCursor(this._connection, res.body, res.arangojsHostId)
+      (res) => new ArrayCursor(this._db, res.body, res.arangojsHostId)
     );
   }
 
   all(options?: SimpleQueryAllOptions) {
-    return this._connection.request(
+    return this._db.request(
       {
         method: "PUT",
         path: "/_api/simple/all",
@@ -1259,12 +1260,12 @@ export class Collection<T extends object = any>
           collection: this._name,
         },
       },
-      (res) => new ArrayCursor(this._connection, res.body, res.arangojsHostId)
+      (res) => new ArrayCursor(this._db, res.body, res.arangojsHostId)
     );
   }
 
   any() {
-    return this._connection.request(
+    return this._db.request(
       {
         method: "PUT",
         path: "/_api/simple/any",
@@ -1278,7 +1279,7 @@ export class Collection<T extends object = any>
     example: Partial<DocumentData<T>>,
     options?: SimpleQueryByExampleOptions
   ) {
-    return this._connection.request(
+    return this._db.request(
       {
         method: "PUT",
         path: "/_api/simple/by-example",
@@ -1288,12 +1289,12 @@ export class Collection<T extends object = any>
           collection: this._name,
         },
       },
-      (res) => new ArrayCursor(this._connection, res.body, res.arangojsHostId)
+      (res) => new ArrayCursor(this._db, res.body, res.arangojsHostId)
     );
   }
 
   firstExample(example: Partial<DocumentData<T>>) {
-    return this._connection.request(
+    return this._db.request(
       {
         method: "PUT",
         path: "/_api/simple/first-example",
@@ -1310,7 +1311,7 @@ export class Collection<T extends object = any>
     example: Partial<DocumentData<T>>,
     options?: SimpleQueryRemoveByExampleOptions
   ) {
-    return this._connection.request(
+    return this._db.request(
       {
         method: "PUT",
         path: "/_api/simple/remove-by-example",
@@ -1329,7 +1330,7 @@ export class Collection<T extends object = any>
     newValue: DocumentData<T>,
     options?: SimpleQueryReplaceByExampleOptions
   ) {
-    return this._connection.request(
+    return this._db.request(
       {
         method: "PUT",
         path: "/_api/simple/replace-by-example",
@@ -1349,7 +1350,7 @@ export class Collection<T extends object = any>
     newValue: Patch<DocumentData<T>>,
     options?: SimpleQueryUpdateByExampleOptions
   ) {
-    return this._connection.request(
+    return this._db.request(
       {
         method: "PUT",
         path: "/_api/simple/update-by-example",
@@ -1365,7 +1366,7 @@ export class Collection<T extends object = any>
   }
 
   lookupByKeys(keys: string[]) {
-    return this._connection.request(
+    return this._db.request(
       {
         method: "PUT",
         path: "/_api/simple/lookup-by-keys",
@@ -1379,7 +1380,7 @@ export class Collection<T extends object = any>
   }
 
   removeByKeys(keys: string[], options?: SimpleQueryRemoveByKeysOptions) {
-    return this._connection.request(
+    return this._db.request(
       {
         method: "PUT",
         path: "/_api/simple/remove-by-keys",
@@ -1396,7 +1397,7 @@ export class Collection<T extends object = any>
 
   //#region indexes
   indexes() {
-    return this._connection.request(
+    return this._db.request(
       {
         path: "/_api/index",
         qs: { collection: this._name },
@@ -1406,14 +1407,14 @@ export class Collection<T extends object = any>
   }
 
   index(selector: IndexSelector) {
-    return this._connection.request(
+    return this._db.request(
       { path: `/_api/index/${indexHandle(selector, this._name)}` },
       (res) => res.body
     );
   }
 
   ensureIndex(options: EnsureIndexOptions) {
-    return this._connection.request(
+    return this._db.request(
       {
         method: "POST",
         path: "/_api/index",
@@ -1425,7 +1426,7 @@ export class Collection<T extends object = any>
   }
 
   dropIndex(selector: IndexSelector) {
-    return this._connection.request(
+    return this._db.request(
       {
         method: "DELETE",
         path: `/_api/index/${indexHandle(selector, this._name)}`,
@@ -1439,7 +1440,7 @@ export class Collection<T extends object = any>
     query: string,
     { index, ...options }: SimpleQueryFulltextOptions = {}
   ) {
-    return this._connection.request(
+    return this._db.request(
       {
         method: "PUT",
         path: "/_api/simple/fulltext",
@@ -1451,7 +1452,7 @@ export class Collection<T extends object = any>
           collection: this._name,
         },
       },
-      (res) => new ArrayCursor(this._connection, res.body, res.arangojsHostId)
+      (res) => new ArrayCursor(this._db, res.body, res.arangojsHostId)
     );
   }
   //#endregion
