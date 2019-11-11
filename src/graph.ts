@@ -29,18 +29,18 @@ function mungeGharialResponse(body: any, prop: "vertex" | "edge" | "removed") {
   return result;
 }
 
-type CollectionInsertOptions = {
+export type CollectionInsertOptions = {
   waitForSync?: boolean;
   returnNew?: boolean;
 };
 
-type CollectionReadOptions = {
+export type CollectionReadOptions = {
   rev?: string;
   graceful?: boolean;
   allowDirtyRead?: boolean;
 };
 
-type CollectionReplaceOptions = {
+export type CollectionReplaceOptions = {
   rev?: string;
   waitForSync?: boolean;
   keepNull?: boolean;
@@ -48,7 +48,7 @@ type CollectionReplaceOptions = {
   returnNew?: boolean;
 };
 
-type CollectionRemoveOptions = {
+export type CollectionRemoveOptions = {
   rev?: string;
   waitForSync?: boolean;
   returnOld?: boolean;

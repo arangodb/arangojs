@@ -1,4 +1,5 @@
 import { stringify as querystringify } from "querystring";
+import { LinkedList } from "x3-linkedlist";
 import { ArangoError, HttpError } from "./error";
 import {
   ArangojsResponse,
@@ -8,7 +9,6 @@ import {
 } from "./util/request";
 import { sanitizeUrl } from "./util/sanitizeUrl";
 import { Errback } from "./util/types";
-import { LinkedList } from "x3-linkedlist";
 
 const MIME_JSON = /\/(json|javascript)(\W|$)/;
 const LEADER_ENDPOINT_HEADER = "x-arango-endpoint";
@@ -40,7 +40,7 @@ function clean<T>(obj: T) {
   return result;
 }
 
-type UrlInfo = {
+export type UrlInfo = {
   absolutePath?: boolean;
   basePath?: string;
   path?: string;
@@ -62,7 +62,7 @@ export type RequestOptions = {
   qs?: string | { [key: string]: any };
 };
 
-type Task = {
+export type Task = {
   host?: number;
   allowDirtyRead: boolean;
   resolve: Function;
