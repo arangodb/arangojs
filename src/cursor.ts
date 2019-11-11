@@ -9,12 +9,12 @@ export class ArrayCursor<T = any> {
   };
   count?: number;
 
-  private _db: Database;
-  private _result: T[];
-  private _hasMore: boolean;
-  private _id: string | undefined;
-  private _host?: number;
-  private _allowDirtyRead?: boolean;
+  protected _db: Database;
+  protected _result: T[];
+  protected _hasMore: boolean;
+  protected _id: string | undefined;
+  protected _host?: number;
+  protected _allowDirtyRead?: boolean;
 
   constructor(
     db: Database,
@@ -38,13 +38,13 @@ export class ArrayCursor<T = any> {
     this._allowDirtyRead = allowDirtyRead;
   }
 
-  private async _drain(): Promise<ArrayCursor<T>> {
+  protected async _drain(): Promise<ArrayCursor<T>> {
     await this._more();
     if (!this._hasMore) return this;
     return this._drain();
   }
 
-  private async _more(): Promise<void> {
+  protected async _more(): Promise<void> {
     if (!this._hasMore) return;
     const res = await this._db.request({
       method: "PUT",

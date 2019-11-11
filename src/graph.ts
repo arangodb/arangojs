@@ -57,8 +57,8 @@ export type GraphCollectionRemoveOptions = {
 export class GraphVertexCollection<T extends object = any>
   implements ArangoCollection {
   isArangoCollection: true = true;
-  private _db: Database;
-  private _name: string;
+  protected _db: Database;
+  protected _name: string;
 
   graph: Graph;
   collection: DocumentCollection<T>;
@@ -230,8 +230,8 @@ export class GraphVertexCollection<T extends object = any>
 export class GraphEdgeCollection<T extends object = any>
   implements ArangoCollection {
   isArangoCollection: true = true;
-  private _db: Database;
-  private _name: string;
+  protected _db: Database;
+  protected _name: string;
 
   graph: Graph;
   collection: EdgeCollection<T>;
@@ -431,9 +431,9 @@ export type GraphCreateOptions = {
 };
 
 export class Graph {
-  private _name: string;
+  protected _name: string;
 
-  private _db: Database;
+  protected _db: Database;
 
   constructor(db: Database, name: string) {
     this._name = name;
