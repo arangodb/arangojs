@@ -11,11 +11,15 @@ export default Object.assign(
   { ArangoError, CollectionStatus, CollectionType, Database, aql }
 );
 
+export * from "./analyzer";
 export * from "./aql-query";
 export * from "./collection";
+export { Config } from "./connection";
 export * from "./cursor";
+export * from "./database";
+export * from "./error";
 export * from "./graph";
 export * from "./route";
+export * from "./transaction";
 export * from "./util/types";
 export * from "./view";
-export { ArangoError, Config, Database, aql };
