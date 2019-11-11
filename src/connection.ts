@@ -254,16 +254,8 @@ export class Connection {
     return cleanUrls.map(url => this._urls.indexOf(url));
   }
 
-  get arangoMajor() {
-    return Math.floor(this._arangoVersion / 10000);
-  }
-
   getDatabaseName() {
     return this._databaseName;
-  }
-
-  getActiveHost() {
-    return this._activeHost;
   }
 
   setDatabaseName(databaseName: string) {
