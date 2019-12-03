@@ -33,10 +33,11 @@ const result = await db.exists();
 
 ## database.createDatabase
 
+`async database.createDatabase(databaseName, options?): boolean`
+
 `async database.createDatabase(databaseName, users?): boolean`
 
-Creates a new database with the given _databaseName_ and optionally creates
-the given _users_ for the new database.
+Creates a new database with the given _databaseName_ with the given _options_.
 
 **Arguments**
 
@@ -44,25 +45,47 @@ the given _users_ for the new database.
 
   Name of the database to create.
 
-- **users**: `Array<object>` (optional)
+- **options**: `object` (optional)
 
-  If specified, the array must contain objects with the following properties:
+  An object with the following properties:
 
-  - **username**: `string`
+  - **users**: `Array<object>` (optional)
 
-    The username of the user to create for the database.
+    If specified, the array must contain objects with the following properties:
 
-  - **passwd**: `string` (Default: `""`)
+    - **username**: `string`
 
-    The password of the user.
+      The username of the user to create for the database.
 
-  - **active**: `boolean` (Default: `true`)
+    - **passwd**: `string` (Default: `""`)
 
-    Whether the user is active.
+      The password of the user.
 
-  - **extra**: `object` (optional)
+    - **active**: `boolean` (Default: `true`)
 
-    An object containing additional user data.
+      Whether the user is active.
+
+    - **extra**: `object` (optional)
+
+      An object containing additional user data.
+
+  If ArangoDB is running in a cluster configuration, the object has the
+  following additional properties:
+
+  - **sharding**: `string` (optional)
+
+    The sharding method to use for new collections in this database.
+
+    One of `""`, `"flexible"` or `"single"`.
+
+  - **replicationFactor**: `number | "satellite"` (optional)
+
+    Default replication factor for new collections in this database.
+
+    Setting this to `1` disables replication. Setting this to `"satellite"`
+    will replicate to every DBServer.
+
+If _options_ is an array, it will be interpreted as _options.users_.
 
 **Examples**
 
