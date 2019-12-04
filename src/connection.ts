@@ -30,6 +30,16 @@ function isSystemError(err: Error): err is SystemError {
   );
 }
 
+function clean<T>(obj: T) {
+  const result = {} as typeof obj;
+  for (const key of Object.keys(obj)) {
+    const value = (obj as any)[key];
+    if (value === undefined) continue;
+    (result as any)[key] = value;
+  }
+  return result;
+}
+
 type UrlInfo = {
   absolutePath?: boolean;
   basePath?: string;
@@ -229,7 +239,7 @@ export class Connection {
     if (path) pathname += path;
     if (qs) {
       if (typeof qs === "string") search = `?${qs}`;
-      else search = `?${querystringify(qs)}`;
+      else search = `?${querystringify(clean(qs))}`;
     }
     return search ? { pathname, search } : { pathname };
   }
