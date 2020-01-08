@@ -201,6 +201,12 @@ export type CreateDatabaseUser = {
   extra?: { [key: string]: any };
 };
 
+export type CreateDatabaseOptions = {
+  sharding?: "" | "flexible" | "single";
+  replicationFactor?: "satellite" | number;
+  users?: CreateDatabaseUser[];
+};
+
 export type VersionInfo = {
   server: string;
   license: "community" | "enterprise";
@@ -470,6 +476,7 @@ export class Database {
   //#endregion
 
   //#region auth
+  /** @deprecated Use "database" instead */
   useDatabase(databaseName: string): this {
     this._name = databaseName;
     return this;
@@ -530,13 +537,24 @@ export class Database {
 
   createDatabase(
     databaseName: string,
-    users?: CreateDatabaseUser[]
+    options?: CreateDatabaseOptions
+  ): Promise<boolean>;
+  createDatabase(
+    databaseName: string,
+    users: CreateDatabaseUser[]
+  ): Promise<boolean>;
+  createDatabase(
+    databaseName: string,
+    usersOrOptions?: CreateDatabaseUser[] | CreateDatabaseOptions
   ): Promise<boolean> {
+    const options = Array.isArray(usersOrOptions)
+      ? { users: usersOrOptions }
+      : usersOrOptions;
     return this.request(
       {
         method: "POST",
         path: "/_api/database",
-        body: { users, name: databaseName }
+        body: { ...options, name: databaseName }
       },
       res => res.body.result
     );
