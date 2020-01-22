@@ -54,9 +54,11 @@ versions of ArangoDB.
 
 Additionally _opts.timeout_ can be set to a non-negative number to force the
 request to be cancelled after that amount of milliseconds. Note that this will
-simply close the connection and not result in the actual query being cancelled
-in ArangoDB, the query will still be executed to completion and continue to
-consume resources in the database or cluster.
+simply close the connection and cancel the request on the client-side.
+
+Note that this value must be specified in milliseconds. As versions of ArangoDB that
+support this option expect it to be specified in seconds, the value will be converted
+automatically before sending it to the server.
 
 If _query_ is an object with _query_ and _bindVars_ properties, those will be
 used as the values of the respective arguments instead.
