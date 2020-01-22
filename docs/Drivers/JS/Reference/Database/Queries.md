@@ -52,9 +52,16 @@ Dirty reads were introduced in ArangoDB 3.4 and are not supported by earlier
 versions of ArangoDB.
 {% endhint %}
 
-Additionally _opts.timeout_ can be set to a non-negative number to force the
+Additionally _opts.clientTimeout_ can be set to a non-negative number to force the
 request to be cancelled after that amount of milliseconds. Note that this will
 simply close the connection and cancel the request on the client-side.
+
+{% hint 'warning' %}
+Note that for historical reasons if _opts.clientTimeout_ is not set, the value of
+_opts.timeout_ must be specified in milliseconds and will additionally behave like
+_opts.clientTimeout_. To set _opts.timeout_ in seconds without using a client-side
+timeout, you can set _opts.clientTimeout_ to `0`.
+{% endhint %}
 
 Note that this value must be specified in milliseconds. As versions of ArangoDB that
 support this option expect it to be specified in seconds, the value will be converted
