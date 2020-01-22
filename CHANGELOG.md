@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Changed
+
+- The `timeout` option in `db.query` is now passed on to the server
+
+  Arangojs will still cancel the query on the client-side when the request timeout is reached, but this allows
+  ArangoDB to independently kill the query if it doesn't execute in time. Note that if `clientTimeout` is set,
+  the `timeout` option will be interpreted as seconds like ArangoDB expects whereas if `clientTimeout` is
+  omitted, the `timeout` value will be converted from milliseconds for backwards compatibility.
+  
+  Setting `clientTimeout` to zero disables the client-side timeout while resulting in `timeout` being treated
+  as a seconds value query option that will be passed on to ArangoDB unmodified.
+
 ### Added
 
 - Added `clientTimeout` option to `db.query`
@@ -15,13 +27,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   i.e. it will result in the request being cancelled after the timeout is reached but the value will not be
   sent to the server as a query option. If both `clientTimeout` and `timeout` are specified, `clientTimeout`
   will be used to determine when the request should be cancelled and `timeout` will be sent to the server.
-
-### Changed
-
-- The `timeout` option in `db.query` is now passed on to the server
-
-  Arangojs will still cancel the query on the client-side when the request timeout is reached, but this allows
-  ArangoDB to independently kill the query if it doesn't execute in time.
 
 ### Fixed
 
