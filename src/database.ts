@@ -63,6 +63,7 @@ export type QueryOptions = {
   cache?: boolean;
   memoryLimit?: number;
   ttl?: number;
+  clientTimeout?: number;
   timeout?: number;
   options?: {
     failOnWarning?: boolean;
@@ -498,7 +499,7 @@ export class Database {
     } else if (isAqlLiteral(query)) {
       query = query.toAQL();
     }
-    const { allowDirtyRead = undefined, timeout = undefined, ...extra } =
+    const { allowDirtyRead = undefined, timeout = undefined, clientTimeout = undefined, ...extra } =
       opts || {};
     return this._connection.request(
       {
@@ -506,7 +507,7 @@ export class Database {
         path: "/_api/cursor",
         body: { ...extra, query, bindVars, timeout: timeout ? Math.ceil(timeout / 1000) : undefined },
         allowDirtyRead,
-        timeout
+        timeout: clientTimeout === undefined ? timeout : clientTimeout
       },
       res =>
         new ArrayCursor(
