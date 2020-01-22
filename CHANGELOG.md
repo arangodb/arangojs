@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Changed
+
+- The `timeout` options in `db.query` is now passed on to the server
+
+  Arangojs will still cancel the query on the client-side when the request timeout is reached, but this allows
+  ArangoDB to independently kill the query if it doesn't execute in time.
+
 ### Fixed
 
 - Replaced `linkedlist` dependency with `x3-linkedlist` ([#601](https://github.com/arangodb/arangojs/issues/601))
