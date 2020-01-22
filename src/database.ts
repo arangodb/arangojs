@@ -504,7 +504,7 @@ export class Database {
       {
         method: "POST",
         path: "/_api/cursor",
-        body: { ...extra, query, bindVars },
+        body: { ...extra, query, bindVars, timeout },
         allowDirtyRead,
         timeout
       },
