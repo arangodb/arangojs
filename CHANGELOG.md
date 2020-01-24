@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Changed
+
+- Empty querystring parameters are now omitted
+
+  In some cases ArangoDB would be unable to correctly handle querystring
+  parameters without values. Any paremeters set to `undefined` will now
+  no longer be added to the querystring.
+
+  This does not affect parameters set to empty string values.
+
 ### Added
 
 - Added `maxRuntime` option to `db.query` method
@@ -15,7 +25,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - Replaced `linkedlist` dependency with `x3-linkedlist` ([#601](https://github.com/arangodb/arangojs/issues/601))
 
-  The `linkedlist` dependency had a memory leak and was no longer maintained. The replacement should fix this issue.
+  The `linkedlist` dependency had a memory leak and was no longer maintained.
+  The replacement should fix this issue.
 
 ## [6.12.0] - 2019-10-16
 
