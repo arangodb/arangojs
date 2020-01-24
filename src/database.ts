@@ -62,6 +62,7 @@ export type QueryOptions = {
   batchSize?: number;
   cache?: boolean;
   memoryLimit?: number;
+  maxRuntime?: number;
   ttl?: number;
   timeout?: number;
   options?: {
