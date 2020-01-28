@@ -459,7 +459,7 @@ export class Database {
     if (!absolutePath) {
       basePath = `/_db/${this.name}${basePath || ""}`;
     }
-    return this.request({ basePath, ...opts }, transform);
+    return this._connection.request({ basePath, ...opts }, transform);
   }
 
   async acquireHostList(): Promise<void> {
