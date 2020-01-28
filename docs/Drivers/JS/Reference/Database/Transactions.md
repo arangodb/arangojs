@@ -245,6 +245,41 @@ await trx.run(() => edges.save({ _from: start._id, _to: end._id }));
 await trx.commit();
 ```
 
+## database.listTransactions
+
+`async database.listTransactions(): Array<Object>`
+
+Fetches all transactions visible in the database and returns an array of
+transaction descriptions.
+
+**Examples**
+
+```js
+const collection = db.collection("data");
+const trx = await db.beginTransaction(collection);
+const info = await db.listTransactions();
+// [{id: "1234", state: "running"}]
+```
+
+## database.transactions
+
+`async database.transactions(): Array<Transaction>`
+
+Fetches all transactions visible in the database and returns an array of
+_Transaction_ instances for those transactions.
+
+**Examples**
+
+```js
+const collection = db.collection("data");
+await db.beginTransaction(collection);
+const transactions = await db.transactions();
+for (const trx of transactions) {
+  const info = await trx.get();
+  // {id: "1234", status: "running"}
+}
+```
+
 ## transaction.exists
 
 `async transaction.exists(): boolean`

@@ -89,6 +89,11 @@ export type ExplainOptions = {
   allPlans?: boolean;
 };
 
+export type TransactionDetails = {
+  id: string;
+  state: "running" | "committed" | "aborted";
+};
+
 export type ExplainPlan = {
   nodes: any[];
   rules: any[];
@@ -458,6 +463,18 @@ export class Database {
       },
       res => new ArangoTransaction(this._connection, res.body.result.id)
     );
+  }
+
+  listTransactions(): Promise<TransactionDetails[]> {
+    return this._connection.request(
+      { path: "/_api/transaction" },
+      res => res.body.transactions
+    );
+  }
+
+  async transactions(): Promise<ArangoTransaction[]> {
+    const transactions = await this.listTransactions();
+    return transactions.map(data => this.transaction(data.id));
   }
   //#endregion
 
