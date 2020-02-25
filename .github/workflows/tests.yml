@@ -24,7 +24,7 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-    - run: yarn && yarn build
+    - run: yarn && yarn dist
     - run: yarn test
       env:
         TEST_ARANGODB_URL: http://arangodb:8529
