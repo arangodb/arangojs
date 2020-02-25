@@ -9,9 +9,12 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [10.x, 12.x, 13.x]
+        node-version: [10, 12, 13]
         arangodb-version: [3.5, 3.6]
-        
+
+    container:
+      image: node:${{ matrix.node-version }}
+
     services:
       arangodb:
         image: arangodb:${{ matrix.arangodb-version }}
@@ -20,11 +23,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
-      with:
-        node-version: ${{ matrix.node-version }}
-    - run: yarn && yarn dist
+    - run: yarn
     - run: yarn test
       env:
         TEST_ARANGODB_URL: http://arangodb:8529
