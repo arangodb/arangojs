@@ -1,0 +1,16 @@
+name: Resilience & Failover CI
+
+on: [push]
+
+jobs:
+  resilience-test:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - run: yarn
+    - run: yarn test
+      env:
+        RESILIENCE_DOCKER_IMAGE: arangodb:latest
+        CI: true
