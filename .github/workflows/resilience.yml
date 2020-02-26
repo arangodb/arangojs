@@ -4,13 +4,23 @@ on: [push]
 
 jobs:
   resilience-test:
-
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
-    - run: yarn
-    - run: yarn test
-      env:
-        RESILIENCE_DOCKER_IMAGE: arangodb:latest
-        CI: true
+      - uses: actions/checkout@v2
+      - run: |
+          curl -OL https://download.arangodb.com/arangodb36/DEBIAN/Release.key
+          sudo apt-key add - < Release.key
+          echo 'deb https://download.arangodb.com/arangodb36/DEBIAN/ /' | sudo tee /etc/apt/sources.list.d/arangodb.list
+          sudo apt-get install apt-transport-https
+          sudo apt-get update
+          sudo apt-get install arangodb3
+          mkdir -p ./arangodb/build/bin ./share/arangodb3
+          ln -s /usr/bin/arangod ./arangodb/build/bin/arangod
+          ln -s /usr/share/arangodb3/icudtl.dat ./share/arangodb3/
+          ln -s /usr/share/arangodb3/js ./arangodb/js
+      - run: yarn
+      - run: yarn test
+        env:
+          RESILIENCE_ARANGO_BASEPATH: ./arangodb
+          CI: true
