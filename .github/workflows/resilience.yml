@@ -1,6 +1,7 @@
 name: Resilience & Failover CI
 
-on: [pull]
+on: [push]
+
 #  schedule:
 #    - cron: "0 2 * * 0"
 
