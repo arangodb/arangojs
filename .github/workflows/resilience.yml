@@ -8,13 +8,15 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - run: |
+      - name: Install ArangoDB
+        run: |
           curl -OL https://download.arangodb.com/arangodb36/DEBIAN/Release.key
           sudo apt-key add - < Release.key
           echo 'deb https://download.arangodb.com/arangodb36/DEBIAN/ /' | sudo tee /etc/apt/sources.list.d/arangodb.list
           sudo apt-get install apt-transport-https
           sudo apt-get update
           sudo apt-get install arangodb3
+          service arangodb3 stop
           mkdir -p ./arangodb/build/bin ./share/arangodb3
           ln -s /usr/bin/arangod ./arangodb/build/bin/arangod
           ln -s /usr/share/arangodb3/icudtl.dat ./share/arangodb3/
@@ -23,4 +25,5 @@ jobs:
       - run: yarn test
         env:
           RESILIENCE_ARANGO_BASEPATH: ./arangodb
+          LOG_IMMEDIATE: 1
           CI: true
