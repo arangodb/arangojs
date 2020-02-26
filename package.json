@@ -61,8 +61,8 @@
   "dependencies": {
     "@types/node": "*",
     "es6-error": "^4.0.1",
-    "x3-linkedlist": "1.0.0",
     "multi-part": "^2.0.0",
+    "x3-linkedlist": "1.0.0",
     "xhr": "^2.4.1"
   },
   "devDependencies": {
