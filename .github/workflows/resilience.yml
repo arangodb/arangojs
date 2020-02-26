@@ -18,9 +18,9 @@ jobs:
           sudo apt-get install arangodb3
           sudo service arangodb3 stop
           mkdir -p ~/arangodb/build/bin ~/share/arangodb3
-          ln -s /usr/bin/arangod ~/arangodb/build/bin/arangod
-          ln -s /usr/share/arangodb3/icudtl.dat ~/share/arangodb3/
-          ln -s /usr/share/arangodb3/js ~/arangodb/js
+          ln -s $(which arangod) ~/arangodb/build/bin/arangod
+          ln -s $(find / -path '*/arangodb3/icudtl.dat') ~/share/arangodb3/
+          ln -s $(find / -path '*/arangodb3/js') ~/arangodb/js
       - run: yarn
       - run: yarn test
         env:
