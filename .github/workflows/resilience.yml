@@ -17,13 +17,9 @@ jobs:
           sudo apt-get update
           sudo apt-get install arangodb3
           sudo service arangodb3 stop
-          mkdir -p ~/arangodb/build/bin ~/share/arangodb3
-          ln -s $(which arangod) ~/arangodb/build/bin/arangod
-          ln -s $(find / -path '*/arangodb3/icudtl.dat') ~/share/arangodb3/
-          ln -s $(find / -path '*/arangodb3/js') ~/arangodb/js
       - run: yarn
       - run: yarn test
         env:
-          RESILIENCE_ARANGO_BASEPATH: ~/arangodb
+          RESILIENCE_ARANGO_BASEPATH: 1
           LOG_IMMEDIATE: 1
           CI: true
