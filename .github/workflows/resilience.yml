@@ -1,8 +1,8 @@
 name: Resilience & Failover CI
 
-on:
-  schedule:
-    - cron: "0 2 * * 0"
+on: [pull]
+#  schedule:
+#    - cron: "0 2 * * 0"
 
 jobs:
   resilience-test:
@@ -23,4 +23,5 @@ jobs:
       - run: yarn test
         env:
           RESILIENCE_ARANGO_BASEPATH: 1
+          LOG_IMMEDIATE: 1
           CI: true
