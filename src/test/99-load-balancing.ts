@@ -27,7 +27,7 @@ describeIm("Single-server active failover", function() {
   let db: Database;
   let conn: Connection;
   beforeEach(async () => {
-    im = new InstanceManager(ARANGO_PATH, ARANGO_RUNNER);
+    im = new InstanceManager(ARANGO_PATH, ARANGO_RUNNER, "rocksdb");
     await im.startAgency();
     await im.startSingleServer("arangojs", 2);
     await im.waitForAllInstances();
@@ -38,7 +38,8 @@ describeIm("Single-server active failover", function() {
     await db.acquireHostList();
   });
   afterEach(async () => {
-    await im.cleanup();
+    const logs = await im.cleanup();
+    console.log(`IM Logs:\n${logs}`);
   });
   async function getServerId(): Promise<string | undefined> {
     const res = await db.route("_api/replication/server-id").get();
