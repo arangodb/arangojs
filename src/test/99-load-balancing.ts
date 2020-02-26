@@ -32,14 +32,15 @@ describeIm("Single-server active failover", function() {
     await im.startSingleServer("arangojs", 2);
     await im.waitForAllInstances();
     uuid = await im.asyncReplicationLeaderSelected();
-    leader = await im.asyncReplicationLeaderInstance();
+    leader = (await im.resolveUUID(uuid))!;
     db = new Database({ url: leader.endpoint });
     conn = (db as any)._connection;
     await db.acquireHostList();
   });
-  afterEach(async () => {
-    const logs = await im.cleanup();
-    console.log(`IM Logs:\n${logs}`);
+  afterEach(async function() {
+    im.moveServerLogs(this.currentTest);
+    const logs = await im.cleanup(this.currentTest!.isFailed());
+    if (logs) console.error(`IM Logs:\n${logs}`);
   });
   async function getServerId(): Promise<string | undefined> {
     const res = await db.route("_api/replication/server-id").get();
