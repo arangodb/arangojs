@@ -320,7 +320,7 @@ aproba@^1.0.3:
   resolved "https://registry.yarnpkg.com/aproba/-/aproba-1.2.0.tgz#6802e6264efd18c790a1b0d517f0f2627bf2c94a"
   integrity sha512-Y9J6ZjXtoYh8RnXVCMOU/ttDmk1aBjunq9vO0ta5x85WDQiQfUF9sIPBITdbiiIVcBo03Hi3jMxigBtsddlXRw==
 
-arangodb-instance-manager@^1.1.2:
+arangodb-instance-manager@^1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/arangodb-instance-manager/-/arangodb-instance-manager-1.2.0.tgz#7644913ee2ac620ae6dd1e0535118f893b69429a"
   integrity sha512-+LOfFGgr8kM02B7G8LKFYF5KHgo5Glar0R6hJmkDXalZxa1T2sYvYdxqGH5j5XZvtCNbryuzS8Ih5p/FNT6+Uw==
