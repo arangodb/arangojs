@@ -320,10 +320,10 @@ aproba@^1.0.3:
   resolved "https://registry.yarnpkg.com/aproba/-/aproba-1.2.0.tgz#6802e6264efd18c790a1b0d517f0f2627bf2c94a"
   integrity sha512-Y9J6ZjXtoYh8RnXVCMOU/ttDmk1aBjunq9vO0ta5x85WDQiQfUF9sIPBITdbiiIVcBo03Hi3jMxigBtsddlXRw==
 
-arangodb-instance-manager@^1.2.1:
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/arangodb-instance-manager/-/arangodb-instance-manager-1.2.1.tgz#89f970c042222a990b7b626e4f3a70ffd8865ae2"
-  integrity sha512-pAlB1wnJcxgVB4ZVHRz54HhwUbERYh2ci18c/Ekd7DB47eoVc4R+enNGSFN1WYRvjb1hPMQ2Zx4FiLlS1PG15w==
+arangodb-instance-manager@^1.2.2:
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/arangodb-instance-manager/-/arangodb-instance-manager-1.2.2.tgz#fd7919125aea3553111c09cd273170c549bf2e48"
+  integrity sha512-Pq/8hiRZfy2FPIVzndQUF/jzXcKhNKZv8iJ6q49mLmwrEBIuSJX6vOCA17jVNwxeAGUb/BLo3AVMv89ESZO8Lg==
   dependencies:
     "@types/request-promise-native" "^1.0.15"
     arangojs "^6.2.4"
