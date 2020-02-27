@@ -29,10 +29,15 @@ describeIm("Single-server active failover", function() {
   beforeEach(async () => {
     im = new InstanceManager(ARANGO_PATH, ARANGO_RUNNER, "rocksdb");
     await im.startAgency();
+    console.log("agency started");
     await im.startSingleServer("arangojs", 2);
+    console.log("single server started");
     await im.waitForAllInstances();
+    console.log("done waiting for all instances");
     uuid = await im.asyncReplicationLeaderSelected();
+    console.log("replication leader selected", uuid);
     leader = (await im.resolveUUID(uuid))!;
+    console.log("leader resolved", leader.name);
     db = new Database({ url: leader.endpoint });
     conn = (db as any)._connection;
     await db.acquireHostList();
@@ -99,9 +104,13 @@ describeIm("Single-server with follower", function() {
   beforeEach(async () => {
     im = new InstanceManager(ARANGO_PATH, ARANGO_RUNNER);
     await im.startAgency();
+    console.log("agency started");
     await im.startSingleServer("arangojs", 2);
+    console.log("single server started");
     await im.waitForAllInstances();
+    console.log("done waiting for all instances");
     leader = await im.asyncReplicationLeaderInstance();
+    console.log("leader selected & resolved", leader.name);
     db = new Database({ url: leader.endpoint });
     conn = (db as any)._connection;
     await db.acquireHostList();
@@ -171,6 +180,7 @@ describeIm("Cluster round robin", function() {
   beforeEach(async () => {
     im = new InstanceManager(ARANGO_PATH, ARANGO_RUNNER);
     const endpoint = await im.startCluster(1, NUM_COORDINATORS, 2);
+    console.log("cluster started");
     db = new Database({
       url: endpoint,
       loadBalancingStrategy: "ROUND_ROBIN"
