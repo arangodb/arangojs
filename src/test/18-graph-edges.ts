@@ -43,18 +43,24 @@ describe("Manipulating graph edges", function() {
       expect(info).to.have.property("name", graphName);
       expect(info).to.have.property("edgeDefinitions");
       expect(info.edgeDefinitions).to.be.instanceOf(Array);
-      expect(info.edgeDefinitions.length).to.equal(1);
       expect(info.edgeDefinitions.map((e: any) => e.collection)).to.contain(
         "knows"
       );
+      expect(info.edgeDefinitions.length).to.equal(1);
       const edgeDefinition = info.edgeDefinitions.filter(
         (e: any) => e.collection === "knows"
       );
       expect(
-        [].concat.apply([], edgeDefinition.map((e: any) => e.from))
+        [].concat.apply(
+          [],
+          edgeDefinition.map((e: any) => e.from)
+        )
       ).to.contain("person");
       expect(
-        [].concat.apply([], edgeDefinition.map((e: any) => e.to))
+        [].concat.apply(
+          [],
+          edgeDefinition.map((e: any) => e.to)
+        )
       ).to.contain("person");
     });
   });
@@ -62,24 +68,24 @@ describe("Manipulating graph edges", function() {
     it("should contain edge collection", async () => {
       const info = await graph.edgeCollections();
       expect(info).to.be.instanceOf(Array);
-      expect(info.length).to.equal(1);
       expect(info.map((c: any) => c.name)).to.contain("knows");
+      expect(info.length).to.equal(1);
     });
   });
   describe("graph.listEdgeCollections", () => {
     it("should return all edge collection names", async () => {
       const info = await graph.listEdgeCollections();
       expect(info).to.be.instanceOf(Array);
-      expect(info.length).to.equal(1);
       expect(info).to.contain("knows");
+      expect(info.length).to.equal(1);
     });
   });
   describe("graph.listVertexCollections", () => {
     it("should return all vertex collection names", async () => {
       const info = await graph.listVertexCollections();
       expect(info).to.be.instanceOf(Array);
-      expect(info.length).to.equal(1);
       expect(info).to.contain("person");
+      expect(info.length).to.equal(1);
     });
   });
   describe("graph.addEdgeDefinition", () => {
@@ -92,18 +98,24 @@ describe("Manipulating graph edges", function() {
       expect(info).to.have.property("name", graphName);
       expect(info).to.have.property("edgeDefinitions");
       expect(info.edgeDefinitions).to.be.instanceOf(Array);
-      expect(info.edgeDefinitions.length).to.equal(2);
       expect(info.edgeDefinitions.map((e: any) => e.collection)).to.contain(
         "works_in"
       );
+      expect(info.edgeDefinitions.length).to.equal(2);
       const edgeDefinition = info.edgeDefinitions.filter(
         (e: any) => e.collection === "works_in"
       );
       expect(
-        [].concat.apply([], edgeDefinition.map((e: any) => e.from))
+        [].concat.apply(
+          [],
+          edgeDefinition.map((e: any) => e.from)
+        )
       ).to.contain("person");
       expect(
-        [].concat.apply([], edgeDefinition.map((e: any) => e.to))
+        [].concat.apply(
+          [],
+          edgeDefinition.map((e: any) => e.to)
+        )
       ).to.contain("city");
     });
   });
@@ -117,18 +129,24 @@ describe("Manipulating graph edges", function() {
       expect(info).to.have.property("name", graphName);
       expect(info).to.have.property("edgeDefinitions");
       expect(info.edgeDefinitions).to.be.instanceOf(Array);
-      expect(info.edgeDefinitions.length).to.equal(1);
       expect(info.edgeDefinitions.map((e: any) => e.collection)).to.contain(
         "knows"
       );
+      expect(info.edgeDefinitions.length).to.equal(1);
       const edgeDefinition = info.edgeDefinitions.filter(
         (e: any) => e.collection === "knows"
       );
       expect(
-        [].concat.apply([], edgeDefinition.map((e: any) => e.from))
+        [].concat.apply(
+          [],
+          edgeDefinition.map((e: any) => e.from)
+        )
       ).to.contain("person");
       expect(
-        [].concat.apply([], edgeDefinition.map((e: any) => e.to))
+        [].concat.apply(
+          [],
+          edgeDefinition.map((e: any) => e.to)
+        )
       ).to.contain("city");
     });
   });
@@ -171,11 +189,11 @@ describe("Manipulating graph edges", function() {
       expect(visited).to.have.property("vertices");
       const vertices = visited.vertices;
       expect(vertices).to.be.instanceOf(Array);
-      expect(vertices.length).to.equal(4);
       const names = vertices.map((d: any) => d._key);
       for (const name of ["Alice", "Bob", "Charlie", "Dave"]) {
         expect(names).to.contain(name);
       }
+      expect(vertices.length).to.equal(4);
       expect(visited).to.have.property("paths");
       const paths = visited.paths;
       expect(paths).to.be.instanceOf(Array);
