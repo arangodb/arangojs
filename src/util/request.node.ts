@@ -57,10 +57,13 @@ export function createRequest(
     const i = baseUrlParts.pathname.indexOf(":");
     if (i === -1) {
       socketPath = baseUrlParts.pathname;
-      baseUrlParts.pathname = null;
+      delete baseUrlParts.pathname;
     } else {
       socketPath = baseUrlParts.pathname.slice(0, i);
-      baseUrlParts.pathname = baseUrlParts.pathname.slice(i + 1) || null;
+      baseUrlParts.pathname = baseUrlParts.pathname.slice(i + 1);
+      if (baseUrlParts.pathname === "") {
+        delete baseUrlParts.pathname;
+      }
     }
   }
   if (socketPath && !socketPath.replace(/\//g, "").length) {
