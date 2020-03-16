@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import { Database, EdgeCollection } from "../arangojs";
-import { DocumentMetadata } from "../collection";
+import { DocumentCollection, DocumentMetadata } from "../collection";
 
 const ARANGO_URL = process.env.TEST_ARANGODB_URL || "http://localhost:8529";
 const ARANGO_VERSION = Number(
@@ -192,10 +192,10 @@ describe("EdgeCollection API", function() {
     let knows: EdgeCollection<{}>;
     beforeEach(async () => {
       let person;
-      [knows, person] = await Promise.all([
-        db.createEdgeCollection("knows"),
-        db.createCollection("person")
-      ]);
+      [knows, person] = await Promise.all<
+        EdgeCollection<any>,
+        DocumentCollection<any>
+      >([db.createEdgeCollection("knows"), db.createCollection("person")]);
       await Promise.all([
         person.import([
           { _key: "Alice" },
