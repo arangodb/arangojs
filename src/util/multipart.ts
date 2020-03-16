@@ -3,7 +3,7 @@ import { Readable } from "stream";
 declare class MultiPart {
   append(key: string, value: Readable | Buffer | string): void;
   getBoundary(): string;
-  getStream(): Readable;
+  stream(): Readable;
 }
 
 const Multipart = require("multi-part") as typeof MultiPart;
@@ -33,7 +33,7 @@ export function toForm(fields: Fields): Promise<MultipartRequest> {
         }
         form.append(key, value);
       }
-      const stream = form.getStream();
+      const stream = form.stream();
       const bufs: Buffer[] = [];
       stream.on("data", buf => bufs.push(buf as Buffer));
       stream.on("end", () => {
