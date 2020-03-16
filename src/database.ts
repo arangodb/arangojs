@@ -326,7 +326,8 @@ export type ServiceTestStreamReport = (
   | ["start", { total: number }]
   | ["pass", ServiceTestStreamTest]
   | ["fail", ServiceTestStreamTest]
-  | ["end", ServiceTestStats])[];
+  | ["end", ServiceTestStats]
+)[];
 
 export type ServiceTestSuiteTest = {
   result: "pending" | "pass" | "fail";
@@ -365,7 +366,7 @@ export type ServiceTestXunitReport = [
     skip: number;
     time: number;
   },
-  ...(ServiceTestXunitTest[])
+  ...ServiceTestXunitTest[]
 ];
 
 export type ServiceTestTapReport = string[];
@@ -761,7 +762,7 @@ export class Database {
     );
   }
 
-  async transactions(): Promise<ArangoTransaction[]> {
+  async transactions(): Promise<Transaction[]> {
     const transactions = await this.listTransactions();
     return transactions.map(data => this.transaction(data.id));
   }
