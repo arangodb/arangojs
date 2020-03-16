@@ -473,7 +473,8 @@ export class Graph {
         method: "POST",
         path: "/_api/gharial",
         body: {
-          properties: { edgeDefinitions, isSmart },
+          edgeDefinitions,
+          isSmart,
           name: this._name,
           options: opts
         },
