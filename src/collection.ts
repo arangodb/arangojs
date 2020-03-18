@@ -5,16 +5,16 @@ import { isArangoError } from "./error";
 import { COLLECTION_NOT_FOUND, DOCUMENT_NOT_FOUND } from "./util/codes";
 import { ArangoResponseMetadata, Patch, StrictObject } from "./util/types";
 
-export function documentHandle(
+export function _documentHandle(
   selector: DocumentSelector,
   collectionName: string
 ): string {
   if (typeof selector !== "string") {
     if (selector._id) {
-      return documentHandle(selector._id, collectionName);
+      return _documentHandle(selector._id, collectionName);
     }
     if (selector._key) {
-      return documentHandle(selector._key, collectionName);
+      return _documentHandle(selector._key, collectionName);
     }
     throw new Error(
       "Document handle must be a string or an object with a _key or _id attribute"
@@ -31,13 +31,13 @@ export function documentHandle(
   return `${collectionName}/${selector}`;
 }
 
-export function indexHandle(
+export function _indexHandle(
   selector: IndexSelector,
   collectionName: string
 ): string {
   if (typeof selector !== "string") {
     if (selector.id) {
-      return indexHandle(selector.id, collectionName);
+      return _indexHandle(selector.id, collectionName);
     }
     throw new Error(
       "Index handle must be a string or an object with an id attribute"
@@ -1007,7 +1007,7 @@ export class Collection<T extends object = any>
   }
 
   documentId(selector: DocumentSelector): string {
-    return documentHandle(selector, this._name);
+    return _documentHandle(selector, this._name);
   }
 
   documentExists(selector: DocumentSelector): Promise<boolean> {
@@ -1015,7 +1015,7 @@ export class Collection<T extends object = any>
       .request(
         {
           method: "HEAD",
-          path: `/_api/document/${documentHandle(selector, this._name)}`,
+          path: `/_api/document/${_documentHandle(selector, this._name)}`,
         },
         () => true
       )
@@ -1037,7 +1037,7 @@ export class Collection<T extends object = any>
     const { allowDirtyRead = undefined, graceful = false } = options;
     const result = this._db.request(
       {
-        path: `/_api/document/${documentHandle(selector, this._name)}`,
+        path: `/_api/document/${_documentHandle(selector, this._name)}`,
         allowDirtyRead,
       },
       (res) => res.body
@@ -1090,7 +1090,7 @@ export class Collection<T extends object = any>
     return this._db.request(
       {
         method: "PUT",
-        path: `/_api/document/${documentHandle(selector, this._name)}`,
+        path: `/_api/document/${_documentHandle(selector, this._name)}`,
         body: newValue,
         qs: options,
       },
@@ -1121,7 +1121,7 @@ export class Collection<T extends object = any>
     return this._db.request(
       {
         method: "PATCH",
-        path: `/_api/document/${documentHandle(selector, this._name)}`,
+        path: `/_api/document/${_documentHandle(selector, this._name)}`,
         body: newValue,
         qs: options,
       },
@@ -1148,7 +1148,7 @@ export class Collection<T extends object = any>
     return this._db.request(
       {
         method: "DELETE",
-        path: `/_api/document/${documentHandle(selector, this._name)}`,
+        path: `/_api/document/${_documentHandle(selector, this._name)}`,
         qs: options,
       },
       (res) => res.body
@@ -1203,7 +1203,7 @@ export class Collection<T extends object = any>
         path: `/_api/edges/${this._name}`,
         qs: {
           direction,
-          vertex: documentHandle(selector, this._name),
+          vertex: _documentHandle(selector, this._name),
         },
       },
       (res) => res.body
@@ -1408,7 +1408,7 @@ export class Collection<T extends object = any>
 
   index(selector: IndexSelector) {
     return this._db.request(
-      { path: `/_api/index/${indexHandle(selector, this._name)}` },
+      { path: `/_api/index/${_indexHandle(selector, this._name)}` },
       (res) => res.body
     );
   }
@@ -1429,7 +1429,7 @@ export class Collection<T extends object = any>
     return this._db.request(
       {
         method: "DELETE",
-        path: `/_api/index/${indexHandle(selector, this._name)}`,
+        path: `/_api/index/${_indexHandle(selector, this._name)}`,
       },
       (res) => res.body
     );
@@ -1446,7 +1446,7 @@ export class Collection<T extends object = any>
         path: "/_api/simple/fulltext",
         body: {
           ...options,
-          index: index ? indexHandle(index, this._name) : undefined,
+          index: index ? _indexHandle(index, this._name) : undefined,
           attribute,
           query,
           collection: this._name,
