@@ -1,11 +1,11 @@
 import { aql } from "./aql-query";
 import { CollectionStatus, CollectionType } from "./collection";
-import { Config } from "./connection";
+import { Config } from "./config";
 import { Database } from "./database";
 import { ArangoError } from "./error";
 
 export default Object.assign(
-  function arangojs(config: Config) {
+  function arangojs(config?: Config) {
     return new Database(config);
   },
   { ArangoError, CollectionStatus, CollectionType, Database, aql }
@@ -14,7 +14,7 @@ export default Object.assign(
 export * from "./analyzer";
 export * from "./aql-query";
 export * from "./collection";
-export { Config } from "./connection";
+export * from "./config";
 export * from "./cursor";
 export * from "./database";
 export * from "./error";

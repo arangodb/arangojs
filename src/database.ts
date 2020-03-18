@@ -15,7 +15,8 @@ import {
   isArangoCollection,
   ListCollectionResult
 } from "./collection";
-import { Config, Connection, RequestOptions } from "./connection";
+import { Config } from "./config";
+import { Connection, isArangoConnection, RequestOptions } from "./connection";
 import { ArrayCursor } from "./cursor";
 import { isArangoError } from "./error";
 import { EdgeDefinition, Graph, GraphCreateOptions } from "./graph";
@@ -413,25 +414,31 @@ export type SwaggerJson = {
 export class Database {
   isArangoDatabase: true = true;
   protected _connection: Connection;
-  protected _name: string = "_system";
+  protected _name: string;
 
   constructor(config?: Config);
-  constructor(db: Database, name: string);
-  constructor(dbOrConfig?: Config | Database, name?: string) {
-    if (name) {
-      const db = dbOrConfig as Database;
-      this._connection = db._connection;
-      this._name = name;
+  constructor(database: Database, name: string);
+  constructor(connection: Connection, name?: string);
+  constructor(
+    cfgOrDbOrConn: Config | Database | Connection = {},
+    name?: string
+  ) {
+    if (isArangoDatabase(cfgOrDbOrConn)) {
+      const database = cfgOrDbOrConn;
+      this._connection = database._connection;
+      this._name = name || database.name;
+    } else if (isArangoConnection(cfgOrDbOrConn)) {
+      const connection = cfgOrDbOrConn;
+      this._connection = connection;
+      this._name = name || "_system";
     } else {
-      const config = dbOrConfig as Config;
-      this._connection = new Connection(config);
-      if (
-        typeof config === "object" &&
-        !Array.isArray(config) &&
-        config.databaseName
-      ) {
-        this._name = String(config.databaseName);
-      }
+      const config = cfgOrDbOrConn;
+      const { databaseName, ...options } =
+        typeof config === "string" || Array.isArray(config)
+          ? { databaseName: undefined, url: config }
+          : config;
+      this._connection = new Connection(options);
+      this._name = databaseName || "_system";
     }
   }
 

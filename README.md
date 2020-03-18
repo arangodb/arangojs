@@ -45,7 +45,7 @@ const db = new Database();
 
 // or plain old Node-style
 var arangojs = require("arangojs");
-var db = new arangojs.Database();
+var db = arangojs();
 var now = Date.now();
 db.query({
   query: "RETURN @value",
