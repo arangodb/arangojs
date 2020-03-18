@@ -16,6 +16,11 @@ This is a major release and breaks backwards compatibility.
   ArangoDB 2.8 has reached End of Life since mid 2018. Version 7 and above
   of arangojs will no longer support ArangoDB 2.8 and earlier.
 
+- Removed Node.js 8 support
+
+  As of version 7 arangojs now requires language support for async/await.
+  This means arangojs requires Node.js 10 (LTS) or newer to function correctly.
+
 - Removed support for absolute endpoint URLs
 
   This removes the `isAbsolute` option from the arangojs configuration.
@@ -32,6 +37,18 @@ This is a major release and breaks backwards compatibility.
   As arangojs 7 uses the same implementation for document and edge collections,
   this method is no longer necessary. Generic collection objects can still be
   cast to `DocumentCollection` or `EdgeCollection` types in TypeScript.
+
+- Removed `db.truncate` convenience method
+
+  This was a wrapper around `db.listCollections` and `collection.truncate`.
+  The behavior of `db.truncate` can still be emulated by calling these methods
+  directly.
+
+- Removed `save(fromId, toId, edgeData)` method variants
+
+  Methods for creating edges now require the `_to` and `_from` attributes to
+  be specified in the edge (document) data and no longer accept these values
+  as positional arguments.
 
 - Removed generic collection methods from `GraphVertexCollection`
 
@@ -145,6 +162,60 @@ This is a major release and breaks backwards compatibility.
   const doc = await bobCol.document(aliceId); // THROWS
   ```
 
+- Graph `create` method (and `db.createGraph`) signature changed
+
+  The `graph.create` method now takes an array of edge definitions as the
+  first argument and any additional options (not just the `waitForSync`
+  option) as the second argument.
+
+  Before:
+
+  ```js
+  await graph.create(
+    {
+      edgeDefinitions: [{ collection: "edges", from: ["a"], to: ["b"] }],
+      isSmart: true
+    },
+    { waitForSync: true }
+  );
+  ```
+
+  After:
+
+  ```js
+  await graph.create([{ collection: "edges", from: ["a"], to: ["b"] }], {
+    isSmart: true,
+    waitForSync: true
+  });
+  ```
+
+- First argument to `graph.replaceEdgeDefinition` is now optional
+
+  Since the new edge definition already includes the edge collection name
+  that identifies the edge definition, it is now possible to specify only the
+  new edge definition object without additionally specifying the collection
+  name as the first argument.
+
+  Before:
+
+  ```js
+  await graph.replaceEdgeDefinition("edges", {
+    collection: "edges", // This is a bit redundant
+    from: ["a"],
+    to: ["b"]
+  });
+  ```
+
+  After:
+
+  ```js
+  await graph.replaceEdgeDefinition({
+    collection: "edges",
+    from: ["a"],
+    to: ["b"]
+  });
+  ```
+
 - In TypeScript `ArrayCursor` is now a generic type
 
   TypeScript users can now cast cursor instances to use a specific type for
@@ -187,6 +258,10 @@ This is a major release and breaks backwards compatibility.
 - Added `db.createAnalyzer` method
 
   This is a convenience method wrapping `analyzer.create`.
+
+- Added support for `db.createFunction` option `isDeterministic`
+
+- Added support for `db.listServices` option `excludeSystem`
 
 - Added `collection.documentId` method
 
