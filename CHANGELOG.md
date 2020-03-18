@@ -16,7 +16,7 @@ This is a major release and breaks backwards compatibility.
   ArangoDB 2.8 has reached End of Life since mid 2018. Version 7 and above
   of arangojs will no longer support ArangoDB 2.8 and earlier.
 
-- Removed Node.js 8 support
+- Removed Node.js 6/8 support
 
   As of version 7 arangojs now requires language support for async/await.
   This means arangojs requires Node.js 10 (LTS) or newer to function correctly.
@@ -220,6 +220,15 @@ This is a major release and breaks backwards compatibility.
 
   TypeScript users can now cast cursor instances to use a specific type for
   its values rather than `any` to aid type safety.
+
+- Collection `list` method now returns a cursor
+
+- Graph collection return values now contain `old` and `new` properties when
+  `returnOld` or `returnNew` options are used
+
+  This behavior is a compromise with mimicking the behavior of the regular
+  collection method equivalents and remaining compatible with the ArangoDB
+  HTTP API response object quirks.
 
 ### Added
 
