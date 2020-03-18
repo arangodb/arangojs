@@ -77,19 +77,19 @@ export type Task = {
   };
 };
 
-export type Config =
-  | string
-  | string[]
-  | Partial<{
-      url: string | string[];
-      arangoVersion: number;
-      databaseName: string;
-      loadBalancingStrategy: LoadBalancingStrategy;
-      maxRetries: false | number;
-      agent: any;
-      agentOptions: { [key: string]: any };
-      headers: { [key: string]: string };
-    }>;
+export type ConnectionOptions = Partial<{
+  url: string | string[];
+  arangoVersion: number;
+  loadBalancingStrategy: LoadBalancingStrategy;
+  maxRetries: false | number;
+  agent: any;
+  agentOptions: {
+    [key: string]: any;
+  };
+  headers: {
+    [key: string]: string;
+  };
+}>;
 
 export function isArangoConnection(connection: any): connection is Connection {
   return Boolean(connection && connection.isArangoConnection);
@@ -114,10 +114,7 @@ export class Connection {
   protected _activeDirtyHost: number;
   protected _transactionId: string | null = null;
 
-  constructor(config: Config = {}) {
-    if (typeof config === "string") config = { url: config };
-    else if (Array.isArray(config)) config = { url: config };
-
+  constructor(config: ConnectionOptions = {}) {
     if (config.arangoVersion !== undefined) {
       this._arangoVersion = config.arangoVersion;
     }

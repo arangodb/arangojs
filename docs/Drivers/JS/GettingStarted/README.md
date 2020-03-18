@@ -80,7 +80,7 @@ For production use arangojs can be installed with Yarn or NPM like any
 other dependency. Just use arangojs like you would in your server code:
 
 ```js
-import { Database } from "arangojs";
+import { Database, aql } from "arangojs";
 // -- or --
 var arangojs = require("arangojs");
 ```
