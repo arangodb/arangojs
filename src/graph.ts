@@ -1,6 +1,5 @@
 import {
   ArangoCollection,
-  Collection,
   CollectionInsertResult,
   CollectionRemoveResult,
   CollectionSaveResult,
@@ -67,7 +66,7 @@ export class GraphVertexCollection<T extends object = any>
     this._db = db;
     this._name = name;
     this.graph = graph;
-    this.collection = new Collection(db, name);
+    this.collection = db.collection(name);
   }
 
   get name() {
@@ -240,7 +239,7 @@ export class GraphEdgeCollection<T extends object = any>
     this._db = db;
     this._name = name;
     this.graph = graph;
-    this.collection = new Collection(db, name);
+    this.collection = db.collection(name);
   }
 
   get name() {
