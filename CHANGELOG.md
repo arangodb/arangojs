@@ -16,6 +16,23 @@ This is a major release and breaks backwards compatibility.
   ArangoDB 2.8 has reached End of Life since mid 2018. Version 7 and above
   of arangojs will no longer support ArangoDB 2.8 and earlier.
 
+- Removed support for absolute endpoint URLs
+
+  This removes the `isAbsolute` option from the arangojs configuration.
+
+- Removed collection `createCapConstraint`, `createHashIndex`,
+  `createSkipList`, `createPersistentIndex`, `createGeoIndex` and
+  `createFulltextIndex` methods
+
+  These methods are no longer part of the official ArangoDB API and can be
+  replaced by using the `collection.ensureIndex` method.
+
+- Removed `db.edgeCollection` method
+
+  As arangojs 7 uses the same implementation for document and edge collections,
+  this method is no longer necessary. Generic collection objects can still be
+  cast to `DocumentCollection` or `EdgeCollection` types in TypeScript.
+
 - Removed generic collection methods from `GraphVertexCollection`
 
   All methods that are not part of the graph API have been removed.
@@ -28,19 +45,86 @@ This is a major release and breaks backwards compatibility.
   The underlying collection can still be accessed from the `collection`
   property.
 
+### Deprecated
+
+- Deprecated `db.useDatabase`
+
+  Using this method will affect `Collection`, `Graph` and other objects
+  already created for the given database and change which database these
+  refer to, which may cause unexpected behavior.
+
+  As of arangojs 7 the `db.database` method can be used instead to create a
+  new, separate `Database` object using the same connection pool.
+
+- Deprecated `Collection` methods for simple queries: `list`, `all`, `any`,
+  `byExample`, `firstExample`, `removeByExample`, `replaceByExample`,
+  `updateByExample`, `lookupByKeys`, `removeByKeys`, `fulltext`
+
+  These methods were deprecated in ArangoDB 3.4 and should no longer be used.
+  They will still behave correctly with versions of ArangoDB supporting these
+  methods but may be removed in a future ArangoDB release.
+
+  Their behavior can be emulated using AQL queries.
+
+- Deprecated `graph.traversal` and `collection.traversal`
+
+  These methods were deprecated in ArangoDB 3.4 and should no longer be used.
+  They will still behave correctly with versions of ArangoDB supporting these
+  methods but may be removed in a future ArangoDB release.
+
+  Their behavior can be emulated using AQL graph traversal.
+
 ### Changed
 
-- Renamed `createSkipListIndex` to `createSkiplistIndex`
+- Multiple `Database` objects can now share a single `Connection`
+
+  All arangojs objects now reference a `Database` object rather than accessing
+  the underlying `Connection` directly. This allows multiple `Database` objects
+  to be created by using the `db.database` method.
+
+- Renamed `collection.setProperties` to `collection.properties`
+
+  The method will now return the existing properties or set the properties
+  depending on whether an argument is provided.
+
+- Renamed `db.arangoSearchView` to `db.view`
+
+- Renamed types `ArangoAnalyzer`, `ArangoView` and `ArangoTransaction` to
+  `Analyzer`, `View` and `Transaction`
 
 - Merged `DocumentCollection` and `EdgeCollection` APIs
 
-  All collections are now generic `Collection` objects. In TypeScript the
-  generic collection object can still be explicitly cast to
+  All collections are now implemented as generic `Collection` objects.
+  In TypeScript the generic collection object can still be explicitly cast to
   `DocumentCollection` or `EdgeCollection` for stricter type safety.
 
 - Transactions no longer take a positional `params` argument
 
   The argument can still be specified using the `opts.params` argument.
+
+- Flattened database `query` method `options` argument
+
+  The optional `options` argument previously contained an additional `options`
+  object with additional query options. These options are now specified on the
+  `options` argument itself directly.
+
+  Before:
+
+  ```js
+  db.query(aql`FOR doc IN ${collection} RETURN doc`, {
+    cache: false,
+    options: { fullCount: true }
+  });
+  ```
+
+  After:
+
+  ```js
+  db.query(aql`FOR doc IN ${collection} RETURN doc`, {
+    cache: false,
+    fullCount: true
+  });
+  ```
 
 - Collection `save`, `update`, `replace` and `remove` no longer take arrays
 
@@ -48,9 +132,71 @@ This is a major release and breaks backwards compatibility.
   and `removeAll` to reduce the likelihood of mistakes and provide more helpful
   type signatures.
 
+- Collection methods will now throw errors when passed documents or document
+  IDs from different collections where a document key or ID for a document in
+  the same collection is expected
+
+  For example the following code will now result in an error rather than the
+  document from a different collection being returned:
+
+  ```js
+  const aliceId = "alice/123"; // Document from collection "alice"
+  const bobCol = db.collection("bob"); // Collection "bob"
+  const doc = await bobCol.document(aliceId); // THROWS
+  ```
+
+- In TypeScript `ArrayCursor` is now a generic type
+
+  TypeScript users can now cast cursor instances to use a specific type for
+  its values rather than `any` to aid type safety.
+
 ### Added
 
+- Added `db.database` method
+
+- Added `databaseName` option to arangojs config
+
+  Setting this option to a database name will result in the initial `Database`
+  object using this database instead of the default `_system` database.
+
+- Added support for extended options in `db.createDatabase`
+
+  This method now supports passing an extended options object instead of
+  passing the users array directly.
+
+- Added collection `saveAll`, `updateAll`, `replaceAll` and `removeAll` methods
+
+  These methods replace the respective array versions of the collection
+  methods `save`, `update`, `replace` and `remove`, which no longer accept
+  arrays as inputs.
+
+- Added `db.createCollection` and `db.createEdgeCollection` methods
+
+  These are convenience methods wrapping `collection.create`. In TypeScript
+  `createEdgeCollection` will return a collection cast to the `EdgeCollection`
+  type.
+
+- Added `db.createGraph` method
+
+  This is a convenience method wrapping `graph.create`.
+
+- Added `db.createArangoSearchView` method
+
+  This is a convenience method wrapping `view.create`.
+
+- Added `db.createAnalyzer` method
+
+  This is a convenience method wrapping `analyzer.create`.
+
+- Added `collection.documentId` method
+
+  The method takes a document or a document key and returns a fully qualified
+  document ID string for the document in the current collection.
+
 - Exported more types and helper functions
+
+  The driver now exposes more of its internal types and helper functions to
+  make it easier to provide type signatures in your own code.
 
 - Improved type signatures for TypeScript
 
