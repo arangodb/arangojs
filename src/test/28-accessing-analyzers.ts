@@ -29,7 +29,7 @@ describe35("Accessing analyzers", function() {
       db.close();
     }
   });
-  describe("database.arangoAnalyzer", () => {
+  describe("database.analyzer", () => {
     it("returns a Analyzer instance for the analyzer", () => {
       let name = "potato";
       let analyzer = db.analyzer(name);

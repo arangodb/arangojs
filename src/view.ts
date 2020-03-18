@@ -6,9 +6,8 @@ export enum ViewType {
   ARANGOSEARCH_VIEW = "arangosearch"
 }
 
-export interface ArangoView {
-  isArangoView: true;
-  name: string;
+export function isArangoView(view: any): view is View {
+  return Boolean(view && view.isArangoView);
 }
 
 export type ViewDescription = {
@@ -86,7 +85,8 @@ export type ArangoSearchViewPropertiesOptions = {
     | {
         field: string;
         asc: boolean;
-      })[];
+      }
+  )[];
   links?: {
     [key: string]: ArangoSearchViewCollectionLink | undefined;
   };
@@ -96,7 +96,7 @@ const VIEW_NOT_FOUND = 1203;
 export class View<
   PropertiesOptions extends object = any,
   PropertiesResponse extends object = any
-> implements ArangoView {
+> {
   isArangoView: true = true;
   name: string;
   protected _db: Database;

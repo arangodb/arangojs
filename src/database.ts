@@ -41,6 +41,10 @@ function colToString(collection: string | ArangoCollection): string {
   } else return String(collection);
 }
 
+export function isArangoDatabase(database: any): database is Database {
+  return Boolean(database && database.isArangoDatabase);
+}
+
 export type TransactionCollectionsObject = {
   allowImplicit?: boolean;
   exclusive?: string | string[];
@@ -407,6 +411,7 @@ export type SwaggerJson = {
 };
 
 export class Database {
+  isArangoDatabase: true = true;
   protected _connection: Connection;
   protected _name: string = "_system";
 

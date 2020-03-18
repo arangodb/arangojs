@@ -91,7 +91,12 @@ export type Config =
       headers: { [key: string]: string };
     }>;
 
+export function isArangoConnection(connection: any): connection is Connection {
+  return Boolean(connection && connection.isArangoConnection);
+}
+
 export class Connection {
+  isArangoConnection: true = true;
   protected _activeTasks: number = 0;
   protected _agent?: any;
   protected _agentOptions: { [key: string]: any };

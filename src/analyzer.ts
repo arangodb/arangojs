@@ -1,9 +1,8 @@
 import { Database } from "./database";
 import { isArangoError } from "./error";
 
-export interface ArangoAnalyzer {
-  isArangoAnalyzer: true;
-  name: string;
+export function isArangoAnalyzer(analyzer: any): analyzer is Analyzer {
+  return Boolean(analyzer && analyzer.isArangoAnalyzer);
 }
 
 export type AnalyzerDescription = AnalyzerInfo & {
@@ -69,7 +68,7 @@ export type TextAnalyzerInfo = {
 };
 
 const ANALYZER_NOT_FOUND = 1202;
-export class Analyzer implements ArangoAnalyzer {
+export class Analyzer {
   isArangoAnalyzer: true = true;
   name: string;
   protected _db: Database;
