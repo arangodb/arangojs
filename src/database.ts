@@ -618,7 +618,7 @@ export class Database {
     collectionName: string,
     options?: CreateCollectionOptions & { type?: CollectionType }
   ): Promise<DocumentCollection<T> & EdgeCollection<T>> {
-    const collection = new Collection(this, collectionName);
+    const collection = this.collection(collectionName);
     await collection.create(options);
     return collection;
   }
@@ -649,7 +649,7 @@ export class Database {
     excludeSystem: boolean = true
   ): Promise<Array<DocumentCollection & EdgeCollection>> {
     const collections = await this.listCollections(excludeSystem);
-    return collections.map(data => new Collection(this, data.name));
+    return collections.map(data => this.collection(data.name));
   }
   //#endregion
 
@@ -855,7 +855,7 @@ export class Database {
       {
         method: "POST",
         path: "/_api/explain",
-        body: { options: options, query, bindVars }
+        body: { query, bindVars, options }
       },
       res => res.body
     );
