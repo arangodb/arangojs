@@ -2,9 +2,10 @@ import { Connection } from "./connection";
 import { Database } from "./database";
 import { isArangoError } from "./error";
 
-export interface ArangoTransaction {
-  isArangoTransaction: true;
-  id: string;
+export function isArangoTransaction(
+  transaction: any
+): transaction is Transaction {
+  return Boolean(transaction && transaction.isArangoTransaction);
 }
 
 export interface TransactionStatus {
@@ -13,7 +14,7 @@ export interface TransactionStatus {
 }
 
 const TRANSACTION_NOT_FOUND = 10;
-export class Transaction implements ArangoTransaction {
+export class Transaction {
   isArangoTransaction: true = true;
   protected _db: Database;
   id: string;
