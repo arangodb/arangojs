@@ -7,13 +7,13 @@ import {
   Document,
   DocumentCollection,
   DocumentData,
-  documentHandle,
   DocumentSelector,
   Edge,
   EdgeCollection,
   EdgeData,
   isArangoCollection,
-  TraversalOptions
+  TraversalOptions,
+  _documentHandle
 } from "./collection";
 import { Database } from "./database";
 import { isArangoError } from "./error";
@@ -79,7 +79,7 @@ export class GraphVertexCollection<T extends object = any>
       .request(
         {
           method: "HEAD",
-          path: `/_api/gharial/${this.graph.name}/vertex/${documentHandle(
+          path: `/_api/gharial/${this.graph.name}/vertex/${_documentHandle(
             selector,
             this._name
           )}`
@@ -116,7 +116,7 @@ export class GraphVertexCollection<T extends object = any>
     if (rev) headers["if-match"] = rev;
     const result = this._db.request(
       {
-        path: `/_api/gharial/${this.graph.name}/vertex/${documentHandle(
+        path: `/_api/gharial/${this.graph.name}/vertex/${_documentHandle(
           selector,
           this._name
         )}`,
@@ -164,7 +164,7 @@ export class GraphVertexCollection<T extends object = any>
     return this._db.request(
       {
         method: "PUT",
-        path: `/_api/gharial/${this.graph.name}/vertex/${documentHandle(
+        path: `/_api/gharial/${this.graph.name}/vertex/${_documentHandle(
           selector,
           this._name
         )}`,
@@ -190,7 +190,7 @@ export class GraphVertexCollection<T extends object = any>
     return this._db.request(
       {
         method: "PATCH",
-        path: `/_api/gharial/${this.graph.name}/vertex/${documentHandle(
+        path: `/_api/gharial/${this.graph.name}/vertex/${_documentHandle(
           selector,
           this._name
         )}`,
@@ -215,7 +215,7 @@ export class GraphVertexCollection<T extends object = any>
     return this._db.request(
       {
         method: "DELETE",
-        path: `/_api/gharial/${this.graph.name}/vertex/${documentHandle(
+        path: `/_api/gharial/${this.graph.name}/vertex/${_documentHandle(
           selector,
           this._name
         )}`,
@@ -252,7 +252,7 @@ export class GraphEdgeCollection<T extends object = any>
       .request(
         {
           method: "HEAD",
-          path: `/_api/gharial/${this.graph.name}/edge/${documentHandle(
+          path: `/_api/gharial/${this.graph.name}/edge/${_documentHandle(
             selector,
             this._name
           )}`
@@ -289,7 +289,7 @@ export class GraphEdgeCollection<T extends object = any>
     if (rev) headers["if-match"] = rev;
     const result = this._db.request(
       {
-        path: `/_api/gharial/${this.graph.name}/edge/${documentHandle(
+        path: `/_api/gharial/${this.graph.name}/edge/${_documentHandle(
           selector,
           this._name
         )}`,
@@ -336,7 +336,7 @@ export class GraphEdgeCollection<T extends object = any>
     return this._db.request(
       {
         method: "PUT",
-        path: `/_api/gharial/${this.graph.name}/edge/${documentHandle(
+        path: `/_api/gharial/${this.graph.name}/edge/${_documentHandle(
           selector,
           this._name
         )}`,
@@ -362,7 +362,7 @@ export class GraphEdgeCollection<T extends object = any>
     return this._db.request(
       {
         method: "PATCH",
-        path: `/_api/gharial/${this.graph.name}/edge/${documentHandle(
+        path: `/_api/gharial/${this.graph.name}/edge/${_documentHandle(
           selector,
           this._name
         )}`,
@@ -387,7 +387,7 @@ export class GraphEdgeCollection<T extends object = any>
     return this._db.request(
       {
         method: "DELETE",
-        path: `/_api/gharial/${this.graph.name}/edge/${documentHandle(
+        path: `/_api/gharial/${this.graph.name}/edge/${_documentHandle(
           selector,
           this._name
         )}`,
