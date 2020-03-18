@@ -4,7 +4,7 @@
   "license": "Apache-2.0",
   "description": "The official ArangoDB JavaScript driver.",
   "engines": {
-    "node": ">=8"
+    "node": ">=10"
   },
   "homepage": "https://github.com/arangodb/arangojs",
   "bugs": {
