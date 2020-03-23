@@ -1,5 +1,6 @@
 import { expect } from "chai";
-import { aql, Database } from "../arangojs";
+import { aql } from "../aql-query";
+import { Database } from "../database";
 
 describe("AQL helpers", function() {
   describe("aql", () => {

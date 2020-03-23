@@ -11,16 +11,19 @@ import { btoa } from "./btoa";
 import { joinPath } from "./joinPath";
 import { Errback } from "./types";
 
+/** @hidden */
 export type ArangojsResponse = IncomingMessage & {
   request: ClientRequest;
   body?: any;
   arangojsHostId?: number;
 };
 
+/** @hidden */
 export type ArangojsError = Error & {
   request: ClientRequest;
 };
 
+/** @hidden */
 export type RequestOptions = {
   method: string;
   url: { pathname: string; search?: string };
@@ -30,13 +33,16 @@ export type RequestOptions = {
   timeout?: number;
 };
 
+/** @hidden */
 export type RequestFunction = {
   (options: RequestOptions, cb: Errback<ArangojsResponse>): void;
   close?: () => void;
 };
 
+/** @hidden */
 export const isBrowser = false;
 
+/** @hidden */
 export function createRequest(
   baseUrl: string,
   agentOptions: any,

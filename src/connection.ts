@@ -40,7 +40,7 @@ function clean<T>(obj: T) {
   return result;
 }
 
-export type UrlInfo = {
+type UrlInfo = {
   absolutePath?: boolean;
   basePath?: string;
   path?: string;
@@ -61,6 +61,7 @@ export type RequestOptions = {
   qs?: string | { [key: string]: any };
 };
 
+/** @hidden */
 export type Task = {
   host?: number;
   allowDirtyRead: boolean;
@@ -77,24 +78,26 @@ export type Task = {
   };
 };
 
-export type ConnectionOptions = Partial<{
-  url: string | string[];
-  arangoVersion: number;
-  loadBalancingStrategy: LoadBalancingStrategy;
-  maxRetries: false | number;
-  agent: any;
-  agentOptions: {
+export interface ConnectionOptions {
+  url?: string | string[];
+  arangoVersion?: number;
+  loadBalancingStrategy?: LoadBalancingStrategy;
+  maxRetries?: false | number;
+  agent?: any;
+  agentOptions?: {
     [key: string]: any;
   };
-  headers: {
+  headers?: {
     [key: string]: string;
   };
-}>;
+}
 
+/** @hidden */
 export function isArangoConnection(connection: any): connection is Connection {
   return Boolean(connection && connection.isArangoConnection);
 }
 
+/** @hidden */
 export class Connection {
   isArangoConnection: true = true;
   protected _activeTasks: number = 0;

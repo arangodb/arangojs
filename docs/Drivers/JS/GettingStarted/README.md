@@ -88,14 +88,14 @@ var arangojs = require("arangojs");
 Additionally the NPM release comes with a precompiled browser build:
 
 ```js
-var arangojs = require("arangojs/lib/web");
+var arangojs = require("arangojs/web");
 ```
 
 You can also use [unpkg](https://unpkg.com) during development:
 
 ```html
-< !-- note the path includes the version number (e.g. 6.0.0) -- >
-<script src="https://unpkg.com/arangojs@6.0.0/lib/web.js"></script>
+< !-- note the path includes the version number (e.g. 7.0.0) -- >
+<script src="https://unpkg.com/arangojs@7.0.0/web.js"></script>
 <script>
   var db = new arangojs.Database();
   db.listCollections().then(function(collections) {
@@ -120,7 +120,7 @@ When loading the browser build with a script tag make sure to load the polyfill 
 
 ```html
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/6.26.0/polyfill.js"></script>
-<script src="https://unpkg.com/arangojs@6.0.0/lib/web.js"></script>
+<script src="https://unpkg.com/arangojs@7.0.0/web.js"></script>
 ```
 
 ## Basic usage example

@@ -9,6 +9,7 @@ import {
 import { Errback } from "./types";
 import xhr from "./xhr";
 
+/** @hidden */
 export const isBrowser = true;
 
 function omit<T>(obj: T, keys: (keyof T)[]): T {
@@ -20,6 +21,7 @@ function omit<T>(obj: T, keys: (keyof T)[]): T {
   return result;
 }
 
+/** @hidden */
 export function createRequest(baseUrl: string, agentOptions: any) {
   const { auth, ...baseUrlParts } = parseUrl(baseUrl);
   const options = omit(agentOptions, [

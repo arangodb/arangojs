@@ -1,7 +1,8 @@
 import { expect } from "chai";
 import * as fs from "fs";
 import * as path from "path";
-import { ArangoError, Database } from "../arangojs";
+import { Database } from "../database";
+import { ArangoError } from "../error";
 import { sanitizeUrl } from "../util/sanitizeUrl";
 
 const ARANGO_URL = process.env.TEST_ARANGODB_URL || "http://localhost:8529";

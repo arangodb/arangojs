@@ -286,11 +286,6 @@ This is a major release and breaks backwards compatibility.
   The method takes a document or a document key and returns a fully qualified
   document ID string for the document in the current collection.
 
-- Exported more types and helper functions
-
-  The driver now exposes more of its internal types and helper functions to
-  make it easier to provide type signatures in your own code.
-
 - Improved type signatures for TypeScript
 
   Most methods should now provide full type signatures for options and response
@@ -775,6 +770,22 @@ This is a major release and breaks backwards compatibility.
   Use yarn/npm instead.
 
 ### Changed
+
+- Removed `lib` path prefix
+
+  All arangojs files can now be imported directly by name.
+
+  Before:
+
+  ```js
+  import { Collection } from "arangojs/lib/collection";
+  ```
+
+  After:
+
+  ```js
+  import { Collection } from "arangojs/collection";
+  ```
 
 - The `url` config can now also be an array of URLs.
 

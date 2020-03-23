@@ -4,6 +4,7 @@ import { Errback } from "./types";
 declare const FormData: any;
 declare const Blob: any;
 
+/** @hidden */
 export function toForm(fields: Fields, callback: Errback<MultipartRequest>) {
   let form;
   try {

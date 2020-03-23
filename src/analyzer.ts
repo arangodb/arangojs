@@ -73,6 +73,7 @@ export class Analyzer {
   name: string;
   protected _db: Database;
 
+  /** @hidden */
   constructor(db: Database, name: string) {
     this._db = db;
     this.name = name;

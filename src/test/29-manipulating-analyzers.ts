@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import { Analyzer } from "../analyzer";
-import { Database } from "../arangojs";
+import { Database } from "../database";
 
 const ARANGO_URL = process.env.TEST_ARANGODB_URL || "http://localhost:8529";
 const ARANGO_VERSION = Number(
