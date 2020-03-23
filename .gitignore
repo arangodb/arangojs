@@ -1,5 +1,5 @@
 node_modules/
-/lib
+/build
 /.vscode
 yarn-error.log
 yarn.lock
