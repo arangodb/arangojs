@@ -1,4 +1,5 @@
 import { format as formatUrl, parse as parseUrl } from "url";
+import { btoa } from "./btoa";
 import { joinPath } from "./joinPath";
 import {
   ArangojsError,

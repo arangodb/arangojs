@@ -27,7 +27,7 @@ import { DATABASE_NOT_FOUND } from "./util/codes";
 import { FoxxManifest } from "./util/foxx-manifest";
 import { toForm } from "./util/multipart";
 import { ArangojsResponse } from "./util/request";
-import { ArangoResponseMetadata } from "./util/types";
+import { ArangoResponseMetadata, Blob } from "./util/types";
 import {
   ArangoSearchView,
   ArangoSearchViewPropertiesOptions,
@@ -999,7 +999,7 @@ export class Database {
 
   async installService(
     mount: string,
-    source: Readable | Buffer | Blob | string,
+    source: Buffer | Readable | Blob | string,
     options: InstallServiceOptions = {}
   ): Promise<ServiceInfo> {
     const { configuration, dependencies, ...qs } = options;

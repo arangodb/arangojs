@@ -1,6 +1,8 @@
 import { Fields, MultipartRequest } from "./multipart";
-
 import { Errback } from "./types";
+
+declare const FormData: any;
+declare const Blob: any;
 
 export function toForm(fields: Fields, callback: Errback<MultipartRequest>) {
   let form;

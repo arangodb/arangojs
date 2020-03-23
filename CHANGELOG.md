@@ -303,6 +303,11 @@ This is a major release and breaks backwards compatibility.
 - Added `uuid` and `padded` to legal `KeyGeneratorType` values in TypeScript ([#656](https://github.com/arangodb/arangojs/issues/656))
 - Added `overwrite` to `InsertOptions` type in TypeScript ([#657](https://github.com/arangodb/arangojs/issues/657))
 
+- Removed TypeScript dependency on `dom` library
+
+  If you are using arangojs in Node.js, you no longer need to add the `dom`
+  library to your `tsconfig.json` configuration.
+
 ## [6.14.0] - 2020-03-18
 
 ### Added
