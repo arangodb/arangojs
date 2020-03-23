@@ -8,18 +8,18 @@ import { AqlLiteral, AqlQuery, isAqlLiteral, isAqlQuery } from "./aql-query";
 import {
   ArangoCollection,
   Collection,
+  CollectionMetadata,
   CollectionType,
   CreateCollectionOptions,
   DocumentCollection,
   EdgeCollection,
-  isArangoCollection,
-  ListCollectionResult
+  isArangoCollection
 } from "./collection";
 import { Config } from "./config";
 import { Connection, isArangoConnection, RequestOptions } from "./connection";
 import { ArrayCursor } from "./cursor";
 import { isArangoError } from "./error";
-import { EdgeDefinition, Graph, GraphCreateOptions } from "./graph";
+import { EdgeDefinition, Graph, GraphCreateOptions, GraphInfo } from "./graph";
 import { Headers, Route } from "./route";
 import { Transaction } from "./transaction";
 import { btoa } from "./util/btoa";
@@ -207,9 +207,28 @@ export type CreateDatabaseUser = {
 };
 
 export type CreateDatabaseOptions = {
+  users?: CreateDatabaseUser[];
+
+  // Cluster options
   sharding?: "" | "flexible" | "single";
   replicationFactor?: "satellite" | number;
-  users?: CreateDatabaseUser[];
+  writeConcern?: number;
+  /** @deprecated ArangoDB 3.6, use `writeConcern` instead */
+  minReplicationFactor?: number;
+};
+
+export type DatabaseInfo = {
+  name: string;
+  id: string;
+  path: string;
+  isSystem: boolean;
+
+  // Cluster options
+  sharding?: "" | "flexible" | "single";
+  replicationFactor?: "satellite" | number;
+  writeConcern?: number;
+  /** @deprecated ArangoDB 3.6, use `writeConcern` instead */
+  minReplicationFactor?: number;
 };
 
 export type VersionInfo = {
@@ -391,13 +410,6 @@ export type ServiceTestDefaultReport = {
   passes: ServiceTestDefaultTest[];
 };
 
-export type DatabaseInfo = {
-  name: string;
-  id: string;
-  path: string;
-  isSystem: boolean;
-};
-
 export type SwaggerJson = {
   info: {
     title: string;
@@ -560,14 +572,14 @@ export class Database {
     databaseName: string,
     usersOrOptions?: CreateDatabaseUser[] | CreateDatabaseOptions
   ): Promise<boolean> {
-    const options = Array.isArray(usersOrOptions)
+    const { users, ...options } = Array.isArray(usersOrOptions)
       ? { users: usersOrOptions }
-      : usersOrOptions;
+      : usersOrOptions || {};
     return this.request(
       {
         method: "POST",
         path: "/_api/database",
-        body: { ...options, name: databaseName }
+        body: { name: databaseName, users, options }
       },
       res => res.body.result
     );
@@ -635,7 +647,7 @@ export class Database {
 
   listCollections(
     excludeSystem: boolean = true
-  ): Promise<ListCollectionResult[]> {
+  ): Promise<CollectionMetadata[]> {
     return this.request(
       {
         path: "/_api/collection",
@@ -668,7 +680,7 @@ export class Database {
     return graph;
   }
 
-  listGraphs() {
+  listGraphs(): Promise<GraphInfo[]> {
     return this.request({ path: "/_api/gharial" }, res => res.body.graphs);
   }
 
