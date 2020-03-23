@@ -12,9 +12,6 @@ module.exports = {
     library: "arangojs",
     libraryTarget: "umd"
   },
-  optimization: {
-    minimize: true
-  },
   module: {
     rules: [
       // NOTE: these rules apply in reverse order
