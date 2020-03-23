@@ -7,7 +7,7 @@ module.exports = {
   entry: ["regenerator-runtime/runtime", resolve(__dirname, "src/index.js")],
   devtool: "source-map",
   output: {
-    path: resolve(__dirname, "lib"),
+    path: resolve(__dirname, "build"),
     filename: "web.js",
     library: "arangojs",
     libraryTarget: "umd"

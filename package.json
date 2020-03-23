@@ -32,26 +32,26 @@
     "http",
     "rest"
   ],
-  "main": "lib/index.js",
-  "typings": "lib/arangojs.d.ts",
+  "main": "build/index.js",
+  "typings": "build/arangojs.d.ts",
   "browser": {
-    "./lib/util/btoa.js": "./lib/util/btoa.web.js",
-    "./lib/util/bytelength.js": "./lib/util/bytelength.web.js",
-    "./lib/util/joinPath.js": "./lib/util/joinPath.web.js",
-    "./lib/util/multipart.js": "./lib/util/multipart.web.js",
-    "./lib/util/request.js": "./lib/util/request.web.js"
+    "./build/util/btoa.js": "./build/util/btoa.web.js",
+    "./build/util/bytelength.js": "./build/util/bytelength.web.js",
+    "./build/util/joinPath.js": "./build/util/joinPath.web.js",
+    "./build/util/multipart.js": "./build/util/multipart.web.js",
+    "./build/util/request.js": "./build/util/request.web.js"
   },
   "files": [
-    "lib/*.*",
-    "lib/util/*.*"
+    "build/*.*",
+    "build/util/*.*"
   ],
   "scripts": {
-    "jenkins": "mocha --reporter spec --require source-map-support/register --timeout 0 lib/test",
-    "test": "mocha --reporter spec --require source-map-support/register --timeout 10000 lib/test",
+    "jenkins": "mocha --reporter spec --require source-map-support/register --timeout 0 build/test",
+    "test": "mocha --reporter spec --require source-map-support/register --timeout 10000 build/test",
     "pretest": "yarn dist",
-    "dist:cjs": "tsc -p . --outDir ./lib/ --target es2018 --declarationMap true && cpy src/index.js lib/",
+    "dist:cjs": "tsc -p . --outDir ./build/ --target es2018 --declarationMap true && cpy src/index.js build/",
     "dist:web": "webpack",
-    "dist": "rimraf lib && npm-run-all --parallel dist:*",
+    "dist": "rimraf build && npm-run-all --parallel dist:*",
     "prepare": "yarn dist && node -e 'require(\".\");'"
   },
   "dependencies": {

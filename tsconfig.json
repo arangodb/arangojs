@@ -17,7 +17,7 @@
     "noImplicitThis": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "outDir": "./lib/",
+    "outDir": "./build/",
     "preserveConstEnums": true,
     "removeComments": false,
     "rootDir": "./src/",
@@ -26,5 +26,5 @@
     "strictNullChecks": true,
     "target": "es2016"
   },
-  "exclude": ["node_modules", "lib"]
+  "exclude": ["node_modules", "build"]
 }
