@@ -999,7 +999,7 @@ export class Database {
 
   async installService(
     mount: string,
-    source: Buffer | Readable | Blob | string,
+    source: Readable | Buffer | Blob | string,
     options: InstallServiceOptions = {}
   ): Promise<ServiceInfo> {
     const { configuration, dependencies, ...qs } = options;
