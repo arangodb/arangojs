@@ -409,24 +409,41 @@ export type GraphInfo = {
   _key: string;
   _rev: string;
   name: string;
-  isSmart: boolean;
-  smartGraphAttribute?: string;
   edgeDefinitions: EdgeDefinition[];
   orphanCollections: string[];
-  minReplicationFactor: number;
-  numberOfShards: number;
-  replicationFactor: number;
-};
 
-export type GraphCreateOptions = {
-  waitForSync?: boolean;
+  // Cluster options
+  numberOfShards?: number;
+  replicationFactor?: number;
+  writeConcern?: number;
+  /** @deprecated ArangoDB 3.6, use `writeConcern` instead */
+  minReplicationFactor?: number;
+
+  // Extra options
+  /** Enterprise Edition only */
+  isSatellite?: boolean;
   /** Enterprise Edition only */
   isSmart?: boolean;
   /** Enterprise Edition only */
   smartGraphAttribute?: string;
+};
+
+export type GraphCreateOptions = {
+  waitForSync?: boolean;
+  orphanCollections?: string[];
+
+  // Cluster options
   numberOfShards?: number;
-  replicationFactor?: number;
+  replicationFactor?: number | "satellite";
+  writeConcern?: number;
+  /** @deprecated ArangoDB 3.6, use `writeConcern` instead */
   minReplicationFactor?: number;
+
+  // Extra options
+  /** Enterprise Edition only */
+  isSmart?: boolean;
+  /** Enterprise Edition only */
+  smartGraphAttribute?: string;
 };
 
 export class Graph {
@@ -466,12 +483,13 @@ export class Graph {
     edgeDefinitions: EdgeDefinition[],
     options?: GraphCreateOptions
   ): Promise<GraphInfo> {
-    const { waitForSync, isSmart, ...opts } = options || {};
+    const { orphanCollections, waitForSync, isSmart, ...opts } = options || {};
     return this._db.request(
       {
         method: "POST",
         path: "/_api/gharial",
         body: {
+          orphanCollections,
           edgeDefinitions,
           isSmart,
           name: this._name,

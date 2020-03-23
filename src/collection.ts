@@ -91,45 +91,68 @@ export type ShardingStrategy =
 /** @deprecated ArangoDB 3.4 */
 export type SimpleQueryAllKeys = "id" | "key" | "path";
 
+export type ValidationLevel = "none" | "new" | "moderate" | "strict";
+
 export type CollectionMetadata = {
   name: string;
+  globallyUniqueId: string;
   status: CollectionStatus;
   type: CollectionType;
   isSystem: boolean;
-};
-
-export type ListCollectionResult = CollectionMetadata & {
-  id: string;
-  globallyUniqueId: string;
 };
 
 export type CollectionProperties = CollectionMetadata & {
   statusString: string;
   waitForSync: boolean;
   keyOptions: {
-    allowUserKeys: boolean;
     type: KeyGenerator;
+    allowUserKeys: boolean;
+    increment?: number;
+    offset?: number;
     lastValue: number;
   };
+  validation: {
+    rule: any;
+    type: "json";
+    level: ValidationLevel;
+    message: string;
+  } | null;
 
-  cacheEnabled?: boolean;
-  doCompact?: boolean;
-  journalSize?: number;
-  indexBuckets?: number;
-
+  // Cluster options
+  writeConcern: number;
+  /** @deprecated ArangoDB 3.6, use `writeConcern` instead */
+  minReplicationFactor: number;
   numberOfShards?: number;
   shardKeys?: string[];
   replicationFactor?: number;
   shardingStrategy?: ShardingStrategy;
+
+  // Extra options
+  /** MMFiles only */
+  doCompact?: boolean;
+  /** MMFiles only */
+  journalSize?: number;
+  /** MMFiles only */
+  indexBuckets?: number;
+  /** MMFiles only */
+  isVolatile?: boolean;
+  /** Enterprise Edition only */
+  distributeShardsLike?: string;
+  /** Enterprise Edition only */
+  smartJoinAttribute?: string;
 };
 
 // Options
 
 export type CollectionPropertiesOptions = {
   waitForSync?: boolean;
+  validation?: {
+    rule: any;
+    level?: ValidationLevel;
+    message?: string;
+  };
+  /** MMFiles only */
   journalSize?: number;
-  indexBuckets?: number;
-  replicationFactor?: number;
 };
 
 export type CollectionChecksumOptions = {
@@ -142,21 +165,34 @@ export type CollectionDropOptions = {
 };
 
 export type CreateCollectionOptions = {
-  waitForSyncReplication?: boolean;
-  enforceReplicationFactor?: boolean;
   waitForSync?: boolean;
   isSystem?: boolean;
-  indexBuckets?: number;
   keyOptions?: {
     type?: KeyGenerator;
     allowUserKeys?: boolean;
     increment?: number;
     offset?: number;
   };
+  validation?: {
+    rule: any;
+    level?: ValidationLevel;
+    message?: string;
+  };
+
+  // Cluster options
+  waitForSyncReplication?: boolean;
+  enforceReplicationFactor?: boolean;
   numberOfShards?: number;
   shardKeys?: string[];
   replicationFactor?: number;
+  writeConcern?: number;
+  /** @deprecated ArangoDB 3.6, use `writeConcern` instead */
+  minReplicationFactor?: number;
   shardingStrategy?: ShardingStrategy;
+
+  // Extra options
+  /** MMFiles only */
+  indexBuckets?: number;
   /** MMFiles only */
   doCompact?: boolean;
   /** MMFiles only */
@@ -183,6 +219,7 @@ interface CollectionSaveOptions {
 
 export type CollectionInsertOptions = CollectionSaveOptions & {
   overwrite?: boolean;
+  overwriteMode?: "update" | "replace";
 };
 
 export type CollectionReplaceOptions = CollectionSaveOptions & {
