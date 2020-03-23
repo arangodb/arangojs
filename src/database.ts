@@ -987,7 +987,7 @@ export class Database {
   //#endregion
 
   //#region services
-  listServices(excludeSystem?: boolean): Promise<ServiceSummary[]> {
+  listServices(excludeSystem: boolean = true): Promise<ServiceSummary[]> {
     return this.request(
       {
         path: "/_api/foxx",

@@ -11,7 +11,7 @@ Fetches a list of all installed service.
 
 **Arguments**
 
-- **excludeSystem**: `boolean` (Default: `false`)
+- **excludeSystem**: `boolean` (Default: `true`)
 
   Whether system services should be excluded.
 
@@ -22,7 +22,7 @@ const services = await db.listServices();
 
 // -- or --
 
-const services = await db.listServices(false);
+const services = await db.listServices(false); // all services
 ```
 
 ## database.installService
