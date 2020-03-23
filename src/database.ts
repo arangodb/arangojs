@@ -979,7 +979,7 @@ export class Database {
       {
         method: "DELETE",
         path: `/_api/aqlfunction/${name}`,
-        body: { group }
+        qs: { group }
       },
       res => res.body
     );
