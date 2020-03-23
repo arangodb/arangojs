@@ -1,0 +1,52 @@
+{
+  "name": "arangojs",
+  "version": "7.0.0-preview.0",
+  "license": "Apache-2.0",
+  "description": "The official ArangoDB JavaScript driver.",
+  "engines": {
+    "node": ">=10"
+  },
+  "files": ["**/*", "!test/**"],
+  "homepage": "https://github.com/arangodb/arangojs",
+  "bugs": {
+    "url": "https://github.com/arangodb/arangojs/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/arangodb/arangojs.git"
+  },
+  "author": "ArangoDB GmbH",
+  "contributors": [
+    {
+      "name": "Alan Plum",
+      "email": "me@pluma.io"
+    }
+  ],
+  "keywords": [
+    "arango",
+    "arangodb",
+    "aql",
+    "nosql",
+    "client",
+    "driver",
+    "api",
+    "http",
+    "rest"
+  ],
+  "main": "index.js",
+  "typings": "arangojs.d.ts",
+  "browser": {
+    "./util/btoa.js": "./util/btoa.web.js",
+    "./util/bytelength.js": "./util/bytelength.web.js",
+    "./util/joinPath.js": "./util/joinPath.web.js",
+    "./util/multipart.js": "./util/multipart.web.js",
+    "./util/request.js": "./util/request.web.js"
+  },
+  "dependencies": {
+    "@types/node": ">=10",
+    "es6-error": "^4.0.1",
+    "multi-part": "^3.0.0",
+    "x3-linkedlist": "1.1.0",
+    "xhr": "^2.4.1"
+  }
+}

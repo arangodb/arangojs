@@ -1,61 +1,19 @@
 {
-  "name": "arangojs",
-  "version": "6.14.1",
-  "license": "Apache-2.0",
-  "description": "The official ArangoDB JavaScript driver.",
-  "engines": {
-    "node": ">=10"
-  },
-  "homepage": "https://github.com/arangodb/arangojs",
-  "bugs": {
-    "url": "https://github.com/arangodb/arangojs/issues"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/arangodb/arangojs.git"
-  },
-  "author": "ArangoDB GmbH",
-  "contributors": [
-    {
-      "name": "Alan Plum",
-      "email": "me@pluma.io"
-    }
-  ],
-  "keywords": [
-    "arango",
-    "arangodb",
-    "aql",
-    "nosql",
-    "client",
-    "driver",
-    "api",
-    "http",
-    "rest"
-  ],
+  "private": true,
   "main": "build/index.js",
-  "typings": "build/arangojs.d.ts",
-  "browser": {
-    "./build/util/btoa.js": "./build/util/btoa.web.js",
-    "./build/util/bytelength.js": "./build/util/bytelength.web.js",
-    "./build/util/joinPath.js": "./build/util/joinPath.web.js",
-    "./build/util/multipart.js": "./build/util/multipart.web.js",
-    "./build/util/request.js": "./build/util/request.web.js"
-  },
-  "files": [
-    "build/*.*",
-    "build/util/*.*"
-  ],
   "scripts": {
     "jenkins": "mocha --reporter spec --require source-map-support/register --timeout 0 build/test",
     "test": "mocha --reporter spec --require source-map-support/register --timeout 10000 build/test",
-    "pretest": "yarn dist",
-    "dist:cjs": "tsc -p . --outDir ./build/ --target es2018 --declarationMap true && cpy src/index.js build/",
-    "dist:web": "webpack",
-    "dist": "rimraf build && npm-run-all --parallel dist:*",
-    "prepare": "yarn dist && node -e 'require(\".\");'"
+    "pretest": "yarn build",
+    "build:index": "cp src/index.js build/",
+    "build:package": "cp package-public.json build/package.json",
+    "build:cjs": "tsc -p . --outDir ./build/ --target es2018 --declarationMap true",
+    "build:web": "webpack",
+    "build": "rm -rf build && mkdir build && npm-run-all --parallel build:*",
+    "prepare": "yarn build && node -e 'require(\".\");'"
   },
   "dependencies": {
-    "@types/node": ">=8",
+    "@types/node": ">=10",
     "es6-error": "^4.0.1",
     "multi-part": "^3.0.0",
     "x3-linkedlist": "1.1.0",
@@ -74,7 +32,6 @@
     "babel-loader": "^8.0.6",
     "babel-preset-env": "^1.6.1",
     "chai": "^4.0.2",
-    "cpy-cli": "^3.1.0",
     "eslint": "^6.8.0",
     "eslint-config-prettier": "^6.10.0",
     "eslint-plugin-prettier": "^3.1.2",
@@ -82,7 +39,6 @@
     "npm-run-all": "^4.1.2",
     "prettier": "^1.19.1",
     "regenerator-runtime": "^0.13.5",
-    "rimraf": "^3.0.2",
     "source-map-support": "^0.5.16",
     "typescript": "^3.8.3",
     "webpack": "^4.42.0",
