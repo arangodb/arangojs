@@ -220,10 +220,10 @@ This is a major release and breaks backwards compatibility.
   });
   ```
 
-- In TypeScript `ArrayCursor` is now a generic type
+- Changed `db.listServices` option `excludeSystem` default to `true`
 
-  TypeScript users can now cast cursor instances to use a specific type for
-  its values rather than `any` to aid type safety.
+  To be more consistent with the equivalent options in other methods,
+  the default value has been changed from `false` to `true`.
 
 - Collection `list` method now returns a cursor
 
@@ -233,6 +233,11 @@ This is a major release and breaks backwards compatibility.
   This behavior is a compromise with mimicking the behavior of the regular
   collection method equivalents and remaining compatible with the ArangoDB
   HTTP API response object quirks.
+
+- In TypeScript `ArrayCursor` is now a generic type
+
+  TypeScript users can now cast cursor instances to use a specific type for
+  its values rather than `any` to aid type safety.
 
 ### Added
 
