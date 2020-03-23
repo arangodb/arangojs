@@ -3,7 +3,12 @@ import { ArrayCursor } from "./cursor";
 import { Database } from "./database";
 import { isArangoError } from "./error";
 import { COLLECTION_NOT_FOUND, DOCUMENT_NOT_FOUND } from "./util/codes";
-import { ArangoResponseMetadata, Patch, StrictObject } from "./util/types";
+import {
+  ArangoResponseMetadata,
+  Blob,
+  Patch,
+  StrictObject
+} from "./util/types";
 
 export function _documentHandle(
   selector: DocumentSelector,

@@ -14,7 +14,7 @@ export type Fields = {
 
 export type MultipartRequest = {
   headers?: { [key: string]: string };
-  body: Buffer | FormData;
+  body: Buffer;
 };
 
 export function toForm(fields: Fields): Promise<MultipartRequest> {
