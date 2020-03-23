@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import * as http from "http";
 import * as https from "https";
-import arangojs, { Database } from "../arangojs";
+import arangojs, { Database } from "..";
 
 describe("Creating a Database", () => {
   describe("using the factory", () => {

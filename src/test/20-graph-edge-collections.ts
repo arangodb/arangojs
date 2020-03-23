@@ -1,6 +1,7 @@
 import { expect } from "chai";
-import { Database, GraphEdgeCollection } from "../arangojs";
 import { DocumentMetadata } from "../collection";
+import { Database } from "../database";
+import { GraphEdgeCollection } from "../graph";
 
 const ARANGO_URL = process.env.TEST_ARANGODB_URL || "http://localhost:8529";
 const ARANGO_VERSION = Number(

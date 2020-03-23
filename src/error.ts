@@ -66,6 +66,8 @@ export class ArangoError extends ExtendableError {
   code: number;
   statusCode: number;
   response: any;
+
+  /** @hidden */
   constructor(response: any) {
     super();
     this.response = response;
@@ -86,6 +88,8 @@ export class HttpError extends ExtendableError {
   response: any;
   code: number;
   statusCode: number;
+
+  /** @hidden */
   constructor(response: any) {
     super();
     this.response = response;

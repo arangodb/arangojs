@@ -1,4 +1,4 @@
-import { Database } from "./arangojs";
+import { Database } from "./database";
 import { isArangoError } from "./error";
 import { ArangoResponseMetadata } from "./util/types";
 
@@ -101,6 +101,7 @@ export class View<
   name: string;
   protected _db: Database;
 
+  /** @hidden */
   constructor(db: Database, name: string) {
     this.name = name;
     this._db = db;

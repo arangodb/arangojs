@@ -16,6 +16,7 @@ export class ArrayCursor<T = any> {
   protected _host?: number;
   protected _allowDirtyRead?: boolean;
 
+  /** @hidden */
   constructor(
     db: Database,
     body: {
@@ -38,12 +39,14 @@ export class ArrayCursor<T = any> {
     this._allowDirtyRead = allowDirtyRead;
   }
 
+  /** @hidden */
   protected async _drain(): Promise<ArrayCursor<T>> {
     await this._more();
     if (!this._hasMore) return this;
     return this._drain();
   }
 
+  /** @hidden */
   protected async _more(): Promise<void> {
     if (!this._hasMore) return;
     const res = await this._db.request({
@@ -73,8 +76,12 @@ export class ArrayCursor<T = any> {
     return this._result.shift();
   }
 
+  hasMore(): boolean {
+    return this._hasMore;
+  }
+
   hasNext(): boolean {
-    return Boolean(this._hasMore || this._result.length);
+    return this.hasMore() || Boolean(this._result.length);
   }
 
   async nextBatch(): Promise<any[] | undefined> {

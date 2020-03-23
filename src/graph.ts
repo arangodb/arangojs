@@ -62,6 +62,7 @@ export class GraphVertexCollection<T extends object = any>
   graph: Graph;
   collection: DocumentCollection<T>;
 
+  /** @hidden */
   constructor(db: Database, name: string, graph: Graph) {
     this._db = db;
     this._name = name;
@@ -235,6 +236,7 @@ export class GraphEdgeCollection<T extends object = any>
   graph: Graph;
   collection: EdgeCollection<T>;
 
+  /** @hidden */
   constructor(db: Database, name: string, graph: Graph) {
     this._db = db;
     this._name = name;
@@ -451,6 +453,7 @@ export class Graph {
 
   protected _db: Database;
 
+  /** @hidden */
   constructor(db: Database, name: string) {
     this._name = name;
     this._db = db;

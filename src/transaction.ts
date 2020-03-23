@@ -19,6 +19,7 @@ export class Transaction {
   protected _db: Database;
   id: string;
 
+  /** @hidden */
   constructor(db: Database, id: string) {
     this._db = db;
     this.id = id;

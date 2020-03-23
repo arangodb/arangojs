@@ -1,5 +1,6 @@
 import { expect } from "chai";
-import { Database, View } from "../arangojs";
+import { Database } from "../database";
+import { View } from "../view";
 
 const range = (n: number): number[] => Array.from(Array(n).keys());
 

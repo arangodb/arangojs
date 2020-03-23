@@ -1,8 +1,9 @@
 import Instance from "arangodb-instance-manager/lib/Instance";
 import InstanceManager from "arangodb-instance-manager/lib/InstanceManager";
 import { expect } from "chai";
-import { Database, DocumentCollection } from "../arangojs";
+import { DocumentCollection } from "../collection";
 import { Connection } from "../connection";
+import { Database } from "../database";
 
 const sleep = (timeout: number) =>
   new Promise(resolve => setTimeout(resolve, timeout));

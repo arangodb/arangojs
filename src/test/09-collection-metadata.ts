@@ -1,5 +1,6 @@
 import { expect } from "chai";
-import { Database, DocumentCollection } from "../arangojs";
+import { DocumentCollection } from "../collection";
+import { Database } from "../database";
 import { COLLECTION_NOT_FOUND } from "../util/codes";
 
 const ARANGO_URL = process.env.TEST_ARANGODB_URL || "http://localhost:8529";

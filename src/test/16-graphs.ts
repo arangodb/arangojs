@@ -1,6 +1,7 @@
 import { expect } from "chai";
-import { Database, Graph } from "../arangojs";
 import { ArangoCollection } from "../collection";
+import { Database } from "../database";
+import { Graph } from "../graph";
 
 const range = (n: number): number[] => Array.from(Array(n).keys());
 

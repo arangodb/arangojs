@@ -5,7 +5,7 @@
     "jenkins": "mocha --reporter spec --require source-map-support/register --timeout 0 build/test",
     "test": "mocha --reporter spec --require source-map-support/register --timeout 10000 build/test",
     "pretest": "yarn build",
-    "build:index": "cp src/index.js build/",
+    "build:index": "cp index-public.js build/",
     "build:package": "cp package-public.json build/package.json",
     "build:cjs": "tsc -p . --outDir ./build/ --target es2018 --declarationMap true",
     "build:web": "webpack",
