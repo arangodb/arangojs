@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 This is a major release and breaks backwards compatibility.
 
+### Fixed
+
+- Fixed `db.dropFunction` option `group` being ignored
+
 ### Removed
 
 - Removed ArangoDB 2.8 compatibility
@@ -130,7 +134,7 @@ This is a major release and breaks backwards compatibility.
   ```js
   db.query(aql`FOR doc IN ${collection} RETURN doc`, {
     cache: false,
-    options: { fullCount: true }
+    options: { fullCount: true },
   });
   ```
 
@@ -139,7 +143,7 @@ This is a major release and breaks backwards compatibility.
   ```js
   db.query(aql`FOR doc IN ${collection} RETURN doc`, {
     cache: false,
-    fullCount: true
+    fullCount: true,
   });
   ```
 
@@ -174,7 +178,7 @@ This is a major release and breaks backwards compatibility.
   await graph.create(
     {
       edgeDefinitions: [{ collection: "edges", from: ["a"], to: ["b"] }],
-      isSmart: true
+      isSmart: true,
     },
     { waitForSync: true }
   );
@@ -185,7 +189,7 @@ This is a major release and breaks backwards compatibility.
   ```js
   await graph.create([{ collection: "edges", from: ["a"], to: ["b"] }], {
     isSmart: true,
-    waitForSync: true
+    waitForSync: true,
   });
   ```
 
@@ -202,7 +206,7 @@ This is a major release and breaks backwards compatibility.
   await graph.replaceEdgeDefinition("edges", {
     collection: "edges", // This is a bit redundant
     from: ["a"],
-    to: ["b"]
+    to: ["b"],
   });
   ```
 
@@ -212,7 +216,7 @@ This is a major release and breaks backwards compatibility.
   await graph.replaceEdgeDefinition({
     collection: "edges",
     from: ["a"],
-    to: ["b"]
+    to: ["b"],
   });
   ```
 
