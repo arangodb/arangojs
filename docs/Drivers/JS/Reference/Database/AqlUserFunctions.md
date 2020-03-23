@@ -13,8 +13,8 @@ Fetches a list of all AQL user functions registered with the database.
 
 ```js
 const db = new Database();
-const functions = db.listFunctions();
-// functions is a list of function descriptions
+const functions = await db.listFunctions();
+const names = functions.map(fn => fn.name);
 ```
 
 ## database.createFunction
@@ -56,7 +56,7 @@ await db.createFunction(
 const cursor = await db.query(aql`
   FOR product IN products
   RETURN MERGE(
-    {vat: ACME::ACCOUNTING::CALCULATE_VAT(product.price)},
+    { vat: ACME::ACCOUNTING::CALCULATE_VAT(product.price) },
     product
   )
 `);
