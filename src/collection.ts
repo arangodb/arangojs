@@ -633,7 +633,7 @@ export abstract class BaseCollection<T extends object = any>
     );
   }
 
-  createIndex(details: any) {
+  ensureIndex(details: any) {
     return this._connection.request(
       {
         method: "POST",
@@ -643,6 +643,11 @@ export abstract class BaseCollection<T extends object = any>
       },
       res => res.body
     );
+  }
+
+  /** @deprecated use ensureIndex instead */
+  createIndex(details: any) {
+    return this.ensureIndex(details);
   }
 
   dropIndex(indexHandle: IndexHandle) {
