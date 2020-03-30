@@ -7,6 +7,9 @@ as well as the
 
 For collection-specific queries see [Simple Queries](../Collection/SimpleQueries.md).
 
+For AQL please check out the [aql template tag](../Reference/Database/Queries.md#aql) for writing parametrized
+AQL queries without making your code vulnerable to injection attacks.
+
 ## database.query
 
 `async database.query(query, bindVars, options?): Cursor`
