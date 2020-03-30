@@ -1,14 +1,9 @@
-import { RequestOptions } from "./connection";
+import { ArangoResponseMetadata, RequestOptions } from "./connection";
 import { ArrayCursor } from "./cursor";
 import { Database } from "./database";
 import { isArangoError } from "./error";
 import { COLLECTION_NOT_FOUND, DOCUMENT_NOT_FOUND } from "./util/codes";
-import {
-  ArangoResponseMetadata,
-  Blob,
-  Patch,
-  StrictObject
-} from "./util/types";
+import { Blob, Patch, StrictObject } from "./util/types";
 
 export function _documentHandle(
   selector: DocumentSelector,

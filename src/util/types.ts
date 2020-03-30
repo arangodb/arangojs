@@ -8,13 +8,6 @@ export type Patch<T> = { [K in keyof T]?: T[K] | Patch<T[K]> };
 export type StrictObject<T> = { [K in keyof T]: T[K] };
 
 /** @hidden */
-export type ArangoResponseMetadata = {
-  [key: string]: any | undefined;
-  error: false;
-  code: number;
-};
-
-/** @hidden */
 export interface Blob {
   readonly size: number;
   readonly type: string;
