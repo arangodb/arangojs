@@ -1,4 +1,4 @@
-import { aql } from "./aql-query";
+import { aql } from "./aql";
 import { CollectionStatus, CollectionType } from "./collection";
 import { Config } from "./config";
 import { Database } from "./database";

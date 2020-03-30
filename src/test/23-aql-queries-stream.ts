@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { aql } from "../aql-query";
+import { aql } from "../aql";
 import { ArrayCursor } from "../cursor";
 import { Database } from "../database";
 
