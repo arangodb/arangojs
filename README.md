@@ -6,8 +6,9 @@ The official ArangoDB low-level JavaScript client.
 [Foxx](https://foxx.arangodb.com) (or the `arangosh` interactive shell) please
 refer to the documentation about the
 [`@arangodb` module](https://www.arangodb.com/docs/stable/foxx-reference-modules.html#the-arangodb-module)
-instead; specifically the `db` object exported by the `@arangodb` module. The
-JavaScript driver is **only** meant to be used when accessing ArangoDB from
+instead; specifically
+[the `db` object exported by the `@arangodb` module](https://www.arangodb.com/docs/stable/appendix-references-dbobject.html).
+The JavaScript driver is **only** meant to be used when accessing ArangoDB from
 **outside** the database.
 
 [![license - APACHE-2.0](https://img.shields.io/npm/l/arangojs.svg)](http://opensource.org/licenses/APACHE-2.0)
