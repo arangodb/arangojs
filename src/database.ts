@@ -428,16 +428,33 @@ export interface SwaggerJson {
   [key: string]: any;
 }
 
+/**
+ * An object representing a single ArangoDB database. All arangojs collections,
+ * cursors, analyzers and so on are linked to a `Database` object.
+ */
 export class Database {
   isArangoDatabase: true = true;
   protected _connection: Connection;
   protected _name: string;
 
-  constructor(config?: Config);
+  /**
+   * Creates a new `Database` instance.
+   *
+   * If `config` is a string or array of strings, it will be interpreted as
+   * {@link Config.url}.
+   *
+   * **Note**: Every `Database` instance created using the constructor directly
+   * or using the {@link arangojs} helper function will have its own connection
+   * pool. If you want to create a `Database` instance for a different database
+   * sharing the same connection pool, use {@link Database.database} instead.
+   *
+   * @param config An object with configuration options.
+   */
+  constructor(config?: string | string[] | Config);
   constructor(database: Database, name: string);
   constructor(connection: Connection, name?: string);
   constructor(
-    cfgOrDbOrConn: Config | Database | Connection = {},
+    cfgOrDbOrConn: string | string[] | Config | Database | Connection = {},
     name?: string
   ) {
     if (isArangoDatabase(cfgOrDbOrConn)) {
@@ -460,10 +477,26 @@ export class Database {
   }
 
   //#region misc
+  /**
+   * The name of the ArangoDB database this instance represents.
+   */
   get name() {
     return this._name;
   }
 
+  /**
+   * Fetches version information from the ArangoDB server.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const version = await db.version();
+   * // the version object contains the ArangoDB version information.
+   * // license: "community" or "enterprise"
+   * // version: ArangoDB version number
+   * // server: description of the server
+   * ```
+   */
   version(): Promise<VersionInfo> {
     return this.request(
       {
@@ -474,10 +507,46 @@ export class Database {
     );
   }
 
+  /**
+   * Returns a new {@link Route} instance for the given path (relative to the
+   * database) that can be used to perform arbitrary HTTP requests.
+   *
+   * @param path - The database-relative URL of the route. Defaults to the
+   * database API root.
+   * @param headers - Default headers that should be sent with each request to
+   * the route.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const myFoxxService = db.route("my-foxx-service");
+   * const response = await myFoxxService.post("users", {
+   *   username: "admin",
+   *   password: "hunter2"
+   * });
+   * // response.body is the result of
+   * // POST /_db/_system/my-foxx-service/users
+   * // with JSON request body '{"username": "admin", "password": "hunter2"}'
+   * ```
+   */
   route(path?: string, headers?: Headers): Route {
     return new Route(this, path, headers);
   }
 
+  /**
+   * Performs an arbitrary HTTP request against the database.
+   *
+   * @param T - Return type to use. Defaults to the response object type.
+   * @param options - Options for this request.
+   * @param transform - An optional function to transform the low-level
+   * response object to a more useful return value.
+   *
+   * @internal
+   */
+  request<T = ArangojsResponse>(
+    options: RequestOptions & { absolutePath?: boolean },
+    transform?: (res: ArangojsResponse) => T
+  ): Promise<T>;
   request<T = ArangojsResponse>(
     {
       absolutePath = false,
@@ -492,6 +561,16 @@ export class Database {
     return this._connection.request({ basePath, ...opts }, transform);
   }
 
+  /**
+   * Updates the URL list by requesting a list of all coordinators in the
+   * cluster and adding any endpoints not initially specified in
+   * {@link Config.url}.
+   *
+   * For long-running processes communicating with an ArangoDB cluster it is
+   * recommended to run this method periodically (e.g. once per hour) to make
+   * sure new coordinators are picked up correctly and can be used for
+   * fail-over or load balancing.
+   */
   async acquireHostList(): Promise<void> {
     const urls: string[] = await this.request(
       { path: "/_api/cluster/endpoints" },
@@ -500,18 +579,71 @@ export class Database {
     this._connection.addToHostList(urls);
   }
 
+  /**
+   * Closes all active connections of the database instance.
+   *
+   * Can be used to clean up idling connections during longer periods of
+   * inactivity.
+   *
+   * **Note**: This method currently has no effect in the browser version of
+   * arangojs.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const sessions = db.collection("sessions");
+   * // Clean up expired sessions once per hour
+   * setInterval(async () => {
+   *   await db.query(aql`
+   *     FOR session IN ${sessions}
+   *     FILTER session.expires < DATE_NOW()
+   *     REMOVE session IN ${sessions}
+   *   `);
+   *   // Making sure to close the connections because they're no longer used
+   *   db.close();
+   * }, 1000 * 60 * 60);
+   * ```
+   */
   close(): void {
     this._connection.close();
   }
   //#endregion
 
   //#region auth
-  /** @deprecated Use "database" instead */
+  /**
+   * Updates the `Database` instance and its connection string to use the given
+   * `databaseName`, then returns itself.
+   *
+   * **Note**: This also affects all collections, cursors and other arangojs
+   * objects originating from this database object, which may cause unexpected
+   * results.
+   *
+   * @param databaseName - Name of the database to use.
+   *
+   * @deprecated Use {@link Database.database} instead.
+   * */
   useDatabase(databaseName: string): this {
     this._name = databaseName;
     return this;
   }
 
+  /**
+   * Updates the `Database` instance's `authorization` header to use Basic
+   * authentication with the given `username` and `password`, then returns
+   * itself.
+   *
+   * @param username - The username to authenticate with.
+   * @param password - The password to authenticate with.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * db.useDatabase("test");
+   * db.useBasicAuth("admin", "hunter2");
+   * // The database instance now uses the database "test"
+   * // with the username "admin" and password "hunter2".
+   * ```
+   */
   useBasicAuth(username: string = "root", password: string = ""): this {
     this._connection.setHeader(
       "authorization",
@@ -520,11 +652,41 @@ export class Database {
     return this;
   }
 
+  /**
+   * Updates the `Database` instance's `authorization` header to use Bearer
+   * authentication with the given authentication `token`, then returns itself.
+   *
+   * @param token - The token to authenticate with.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * db.useBearerAuth("keyboardcat");
+   * // The database instance now uses Bearer authentication.
+   * ```
+   */
   useBearerAuth(token: string): this {
     this._connection.setHeader("authorization", `Bearer ${token}`);
     return this;
   }
 
+  /**
+   * Validates the given database credentials and exchanges them for an
+   * authentication token, then uses the authentication token for future
+   * requests and returns it.
+   *
+   * @param username - The username to authenticate with.
+   * @param password - The password to authenticate with.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * db.useDatabase("test");
+   * await db.login("admin", "hunter2");
+   * // The database instance now uses the database "test"
+   * // with an authentication token for the "admin" user.
+   * ```
+   */
   login(username: string = "root", password: string = ""): Promise<string> {
     return this.request(
       {

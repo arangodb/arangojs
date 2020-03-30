@@ -207,6 +207,35 @@ to substitute browser-specific implementations for certain modules.
 Build tools like Webpack will respect this field when targetting a browser
 environment and may need to be explicitly told you are targetting Node instead.
 
+### Node.js with self-signed HTTPS certificates
+
+If you need to support self-signed HTTPS certificates, you may have to add
+your certificates to the `agentOptions`, e.g.:
+
+```js
+...
+agentOptions: {
+  ca: [
+    fs.readFileSync(".ssl/sub.class1.server.ca.pem"),
+    fs.readFileSync(".ssl/ca.pem")
+  ]
+}
+```
+
+Although this is **strongly discouraged**, it's also possible to disable
+HTTPS certificate validation entirely, but note this has
+**extremely dangerous** security implications:
+
+```js
+...
+agentOptions: {
+  rejectUnauthorized: false
+}
+```
+
+When using arangojs in the browser, self-signed HTTPS certificates need to
+be trusted by the browser or use a trusted root certificate.
+
 ## Error responses
 
 If arangojs encounters an API error, it will throw an _ArangoError_ with an
