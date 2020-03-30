@@ -1,4 +1,7 @@
 /** @hidden */
+export const ANALYZER_NOT_FOUND = 1202;
+
+/** @hidden */
 export const DOCUMENT_NOT_FOUND = 1202;
 
 /** @hidden */

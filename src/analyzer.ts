@@ -1,5 +1,6 @@
 import { Database } from "./database";
 import { isArangoError } from "./error";
+import { ANALYZER_NOT_FOUND } from "./util/codes";
 
 export function isArangoAnalyzer(analyzer: any): analyzer is Analyzer {
   return Boolean(analyzer && analyzer.isArangoAnalyzer);
@@ -67,7 +68,6 @@ export type TextAnalyzerInfo = {
   };
 };
 
-const ANALYZER_NOT_FOUND = 1202;
 export class Analyzer {
   isArangoAnalyzer: true = true;
   name: string;
