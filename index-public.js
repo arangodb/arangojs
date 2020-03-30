@@ -1,5 +1,5 @@
 "use strict";
-const { aql } = require("./aql-query");
+const { aql } = require("./aql");
 const { CollectionStatus, CollectionType } = require("./collection");
 const { Database } = require("./database");
 const { ArangoError } = require("./error");

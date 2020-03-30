@@ -4,7 +4,7 @@ import {
   AnalyzerDescription,
   CreateAnalyzerOptions
 } from "./analyzer";
-import { AqlLiteral, AqlQuery, isAqlLiteral, isAqlQuery } from "./aql-query";
+import { AqlLiteral, AqlQuery, isAqlLiteral, isAqlQuery } from "./aql";
 import {
   ArangoCollection,
   Collection,
