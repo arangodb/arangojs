@@ -23,40 +23,40 @@ export type AnalyzerInfo =
   | NgramAnalyzerInfo
   | TextAnalyzerInfo;
 
-export type IdentityAnalyzerInfo = {
+export interface IdentityAnalyzerInfo {
   type: "identity";
   properties?: null;
-};
+}
 
-export type DelimiterAnalyzerInfo = {
+export interface DelimiterAnalyzerInfo {
   type: "delimiter";
   properties: string | { delimiter: string };
-};
+}
 
-export type StemAnalyzerInfo = {
+export interface StemAnalyzerInfo {
   type: "stem";
   properties: { locale: string };
-};
+}
 
-export type NormAnalyzerInfo = {
+export interface NormAnalyzerInfo {
   type: "norm";
   properties: {
     locale: string;
     case?: "lower" | "none" | "upper";
     accent?: boolean;
   };
-};
+}
 
-export type NgramAnalyzerInfo = {
+export interface NgramAnalyzerInfo {
   type: "ngram";
   properties: {
     max: number;
     min: number;
     preserveOriginal: boolean;
   };
-};
+}
 
-export type TextAnalyzerInfo = {
+export interface TextAnalyzerInfo {
   type: "text";
   properties: {
     locale: string;
@@ -66,7 +66,7 @@ export type TextAnalyzerInfo = {
     accent?: boolean;
     stemming?: boolean;
   };
-};
+}
 
 export class Analyzer {
   isArangoAnalyzer: true = true;

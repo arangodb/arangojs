@@ -15,11 +15,11 @@ const LEADER_ENDPOINT_HEADER = "x-arango-endpoint";
 
 export type LoadBalancingStrategy = "NONE" | "ROUND_ROBIN" | "ONE_RANDOM";
 
-export type ArangoResponseMetadata = {
+export interface ArangoResponseMetadata {
   [key: string]: any | undefined;
   error: false;
   code: number;
-};
+}
 
 interface SystemError extends Error {
   code: string;
@@ -53,7 +53,7 @@ type UrlInfo = {
   qs?: string | { [key: string]: any };
 };
 
-export type RequestOptions = {
+export interface RequestOptions {
   host?: number;
   method?: string;
   body?: any;
@@ -65,10 +65,10 @@ export type RequestOptions = {
   basePath?: string;
   path?: string;
   qs?: string | { [key: string]: any };
-};
+}
 
 /** @hidden */
-export type Task = {
+export interface Task {
   host?: number;
   allowDirtyRead: boolean;
   resolve: Function;
@@ -82,7 +82,7 @@ export type Task = {
     headers: { [key: string]: string };
     body: any;
   };
-};
+}
 
 export interface ConnectionOptions {
   url?: string | string[];

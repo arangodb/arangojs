@@ -1,17 +1,17 @@
 import { ArangoCollection, isArangoCollection } from "./collection";
 
-export type AqlQuery = {
+export interface AqlQuery {
   query: string;
   bindVars: { [key: string]: any };
-};
+}
 
 interface GeneratedAqlQuery extends AqlQuery {
   _source: () => { strings: string[]; args: AqlValue[] };
 }
 
-export type AqlLiteral = {
+export interface AqlLiteral {
   toAQL: () => string;
-};
+}
 
 export type AqlValue =
   | ArangoCollection
