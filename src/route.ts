@@ -50,7 +50,6 @@ export class Route {
     return this._db.request(options);
   }
 
-  /** @hidden */
   protected _request1(method: string, ...args: any[]) {
     let path: string = "";
     let qs: Params | undefined;
@@ -67,7 +66,6 @@ export class Route {
     return this.request({ method, path, qs, headers });
   }
 
-  /** @hidden */
   protected _request2(method: string, ...args: any[]) {
     let path: string = "";
     let body: any = undefined;

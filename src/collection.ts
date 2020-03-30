@@ -891,7 +891,6 @@ export class Collection<T extends object = any>
   }
 
   //#region internals
-  /** @hidden */
   protected _get(path: string, qs?: any) {
     return this._db.request(
       { path: `/_api/collection/${this._name}/${path}`, qs },
@@ -899,7 +898,6 @@ export class Collection<T extends object = any>
     );
   }
 
-  /** @hidden */
   protected _put(path: string, body?: any) {
     return this._db.request(
       {
@@ -1237,7 +1235,6 @@ export class Collection<T extends object = any>
   //#endregion
 
   //#region edges
-  /** @hidden */
   protected _edges(selector: DocumentSelector, direction?: "in" | "out") {
     return this._db.request(
       {
