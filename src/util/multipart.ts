@@ -9,15 +9,15 @@ declare class MultiPart {
 const Multipart = require("multi-part") as typeof MultiPart;
 
 /** @hidden */
-export type Fields = {
+export interface Fields {
   [key: string]: any;
-};
+}
 
 /** @hidden */
-export type MultipartRequest = {
+export interface MultipartRequest {
   headers?: { [key: string]: string };
   body: Buffer;
-};
+}
 
 /** @hidden */
 export function toForm(fields: Fields): Promise<MultipartRequest> {

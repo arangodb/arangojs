@@ -12,32 +12,32 @@ import { joinPath } from "./joinPath";
 import { Errback } from "./types";
 
 /** @hidden */
-export type ArangojsResponse = IncomingMessage & {
+export interface ArangojsResponse extends IncomingMessage {
   request: ClientRequest;
   body?: any;
   arangojsHostId?: number;
-};
+}
 
 /** @hidden */
-export type ArangojsError = Error & {
+export interface ArangojsError extends Error {
   request: ClientRequest;
-};
+}
 
 /** @hidden */
-export type RequestOptions = {
+export interface RequestOptions {
   method: string;
   url: { pathname: string; search?: string };
   headers: { [key: string]: string };
   body: any;
   expectBinary: boolean;
   timeout?: number;
-};
+}
 
 /** @hidden */
-export type RequestFunction = {
+export interface RequestFunction {
   (options: RequestOptions, cb: Errback<ArangojsResponse>): void;
   close?: () => void;
-};
+}
 
 /** @hidden */
 export const isBrowser = false;

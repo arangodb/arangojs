@@ -10,29 +10,29 @@ export function isArangoView(view: any): view is View {
   return Boolean(view && view.isArangoView);
 }
 
-export type ViewDescription = {
+export interface ViewDescription {
   globallyUniqueId: string;
   id: string;
   name: string;
   type: ViewType;
-};
+}
 
-export type ViewResponse = {
+export interface ViewResponse {
   name: string;
   id: string;
   globallyUniqueId: string;
   type: ViewType;
-};
+}
 
-export type ArangoSearchViewCollectionLink = {
+export interface ArangoSearchViewCollectionLink {
   analyzers?: string[];
   fields?: { [key: string]: ArangoSearchViewCollectionLink | undefined };
   includeAllFields?: boolean;
   trackListPositions?: boolean;
   storeValues?: "none" | "id";
-};
+}
 
-export type ArangoSearchViewProperties = {
+export interface ArangoSearchViewProperties {
   cleanupIntervalStep: number;
   consolidationIntervalMsec: number;
   writebufferIdle: number;
@@ -50,14 +50,15 @@ export type ArangoSearchViewProperties = {
   links: {
     [key: string]: ArangoSearchViewCollectionLink | undefined;
   };
-};
+}
 
-export type ArangoSearchViewPropertiesResponse = ViewResponse &
-  ArangoSearchViewProperties & {
-    type: ViewType.ARANGOSEARCH_VIEW;
-  };
+export interface ArangoSearchViewPropertiesResponse
+  extends ViewResponse,
+    ArangoSearchViewProperties {
+  type: ViewType.ARANGOSEARCH_VIEW;
+}
 
-export type ArangoSearchViewPropertiesOptions = {
+export interface ArangoSearchViewPropertiesOptions {
   cleanupIntervalStep?: number;
   consolidationIntervalMsec?: number;
   commitIntervalMsec?: number;
@@ -90,7 +91,7 @@ export type ArangoSearchViewPropertiesOptions = {
   links?: {
     [key: string]: ArangoSearchViewCollectionLink | undefined;
   };
-};
+}
 
 const VIEW_NOT_FOUND = 1203;
 export class View<

@@ -51,12 +51,12 @@ export function isArangoDatabase(database: any): database is Database {
   return Boolean(database && database.isArangoDatabase);
 }
 
-export type TransactionCollectionsObject = {
+export interface TransactionCollectionsObject {
   allowImplicit?: boolean;
   exclusive?: string | string[];
   write?: string | string[];
   read?: string | string[];
-};
+}
 
 export type TransactionCollections =
   | string
@@ -69,7 +69,7 @@ export type TransactionCollections =
       read?: string | ArangoCollection | (string | ArangoCollection)[];
     };
 
-export type TransactionOptions = {
+export interface TransactionOptions {
   allowImplicit?: boolean;
   lockTimeout?: number;
   maxTransactionSize?: number;
@@ -78,17 +78,17 @@ export type TransactionOptions = {
   /** @deprecated removed in ArangoDB 3.4, RocksDB only */
   intermediateCommitSize?: number;
   waitForSync?: boolean;
-};
+}
 
-export type InstallServiceOptions = {
+export interface InstallServiceOptions {
   configuration?: ServiceConfigurationValues;
   dependencies?: { [key: string]: string };
   development?: boolean;
   setup?: boolean;
   legacy?: boolean;
-};
+}
 
-export type QueryOptions = {
+export interface QueryOptions {
   allowDirtyRead?: boolean;
   timeout?: number;
   count?: boolean;
@@ -114,20 +114,20 @@ export type QueryOptions = {
   skipInaccessibleCollections?: boolean;
   /** Enterprise Edition only */
   satelliteSyncWait?: number;
-};
+}
 
-export type ExplainOptions = {
+export interface ExplainOptions {
   optimizer?: { rules: string[] };
   maxNumberOfPlans?: number;
   allPlans?: boolean;
-};
+}
 
-export type TransactionDetails = {
+export interface TransactionDetails {
   id: string;
   state: "running" | "committed" | "aborted";
-};
+}
 
-export type ExplainPlan = {
+export interface ExplainPlan {
   nodes: {
     [key: string]: any;
     type: string;
@@ -149,9 +149,9 @@ export type ExplainPlan = {
   estimatedNrItems: number;
   initialize: boolean;
   isModificationQuery: boolean;
-};
+}
 
-export type ExplainResult = {
+export interface ExplainResult {
   plan?: ExplainPlan;
   plans?: ExplainPlan[];
   cacheable: boolean;
@@ -161,40 +161,40 @@ export type ExplainResult = {
     rulesSkipped: number;
     plansCreated: number;
   };
-};
+}
 
-export type AstNode = {
+export interface AstNode {
   [key: string]: any;
   type: string;
   subNodes: AstNode[];
-};
+}
 
-export type ParseResult = {
+export interface ParseResult {
   parsed: boolean;
   collections: string[];
   bindVars: string[];
   ast: AstNode[];
-};
+}
 
-export type QueryTracking = {
+export interface QueryTracking {
   enabled: boolean;
   maxQueryStringLength: number;
   maxSlowQueries: number;
   slowQueryThreshold: number;
   trackBindVars: boolean;
   trackSlowQueries: boolean;
-};
+}
 
-export type QueryTrackingOptions = {
+export interface QueryTrackingOptions {
   enabled?: boolean;
   maxQueryStringLength?: number;
   maxSlowQueries?: number;
   slowQueryThreshold?: number;
   trackBindVars?: boolean;
   trackSlowQueries?: boolean;
-};
+}
 
-export type QueryInfo = {
+export interface QueryInfo {
   id: string;
   query: string;
   bindVars: AqlQuery["bindVars"];
@@ -202,16 +202,16 @@ export type QueryInfo = {
   started: string;
   state: "executing" | "finished" | "killed";
   stream: boolean;
-};
+}
 
-export type CreateDatabaseUser = {
+export interface CreateDatabaseUser {
   username: string;
   passwd?: string;
   active?: boolean;
   extra?: { [key: string]: any };
-};
+}
 
-export type CreateDatabaseOptions = {
+export interface CreateDatabaseOptions {
   users?: CreateDatabaseUser[];
 
   // Cluster options
@@ -220,9 +220,9 @@ export type CreateDatabaseOptions = {
   writeConcern?: number;
   /** @deprecated ArangoDB 3.6, use `writeConcern` instead */
   minReplicationFactor?: number;
-};
+}
 
-export type DatabaseInfo = {
+export interface DatabaseInfo {
   name: string;
   id: string;
   path: string;
@@ -234,44 +234,44 @@ export type DatabaseInfo = {
   writeConcern?: number;
   /** @deprecated ArangoDB 3.6, use `writeConcern` instead */
   minReplicationFactor?: number;
-};
+}
 
-export type VersionInfo = {
+export interface VersionInfo {
   server: string;
   license: "community" | "enterprise";
   version: string;
-};
+}
 
-export type AqlFunction = {
+export interface AqlFunction {
   name: string;
   code: string;
   isDeterministic: boolean;
-};
+}
 
-export type ReplaceServiceOptions = {
+export interface ReplaceServiceOptions {
   configuration?: ServiceConfigurationValues;
   dependencies?: ServiceDependenciesValues;
   teardown?: boolean;
   setup?: boolean;
   legacy?: boolean;
   force?: boolean;
-};
+}
 
-export type UninstallServiceOptions = {
+export interface UninstallServiceOptions {
   teardown?: boolean;
   force?: boolean;
-};
+}
 
-export type ServiceSummary = {
+export interface ServiceSummary {
   mount: string;
   name?: string;
   version?: string;
   provides: { [key: string]: string };
   development: boolean;
   legacy: boolean;
-};
+}
 
-export type ServiceInfo = {
+export interface ServiceInfo {
   mount: string;
   path: string;
   name?: string;
@@ -284,9 +284,9 @@ export type ServiceInfo = {
     configuration: ServiceConfigurationValues;
     dependencies: ServiceDependenciesValues;
   };
-};
+}
 
-export type ServiceConfiguration = {
+export interface ServiceConfiguration {
   type:
     | "integer"
     | "boolean"
@@ -302,7 +302,7 @@ export type ServiceConfiguration = {
   description?: string;
   required: boolean;
   default?: any;
-};
+}
 
 export type ServiceDependency =
   | {
@@ -324,32 +324,32 @@ export type ServiceDependency =
       required: boolean;
     };
 
-export type ServiceConfigurationValues = {
+export interface ServiceConfigurationValues {
   [key: string]: any;
-};
+}
 
-export type ServiceDependenciesValues = {
+export interface ServiceDependenciesValues {
   [key: string]: string;
-};
+}
 
-export type ServiceScripts = {
+export interface ServiceScripts {
   [key: string]: string;
-};
+}
 
-export type ServiceTestStats = {
+export interface ServiceTestStats {
   tests: number;
   passes: number;
   failures: number;
   pending: number;
   duration: number;
-};
+}
 
-export type ServiceTestStreamTest = {
+export interface ServiceTestStreamTest {
   title: string;
   fullTitle: string;
   duration: number;
   err?: string;
-};
+}
 
 export type ServiceTestStreamReport = (
   | ["start", { total: number }]
@@ -358,24 +358,24 @@ export type ServiceTestStreamReport = (
   | ["end", ServiceTestStats]
 )[];
 
-export type ServiceTestSuiteTest = {
+export interface ServiceTestSuiteTest {
   result: "pending" | "pass" | "fail";
   title: string;
   duration: number;
   err?: any;
-};
+}
 
-export type ServiceTestSuite = {
+export interface ServiceTestSuite {
   title: string;
   suites: ServiceTestSuite[];
   tests: ServiceTestSuiteTest[];
-};
+}
 
-export type ServiceTestSuiteReport = {
+export interface ServiceTestSuiteReport {
   stats: ServiceTestStats;
   suites: ServiceTestSuite[];
   tests: ServiceTestSuiteTest[];
-};
+}
 
 export type ServiceTestXunitTest =
   | ["testcase", { classname: string; name: string; time: number }]
@@ -400,22 +400,22 @@ export type ServiceTestXunitReport = [
 
 export type ServiceTestTapReport = string[];
 
-export type ServiceTestDefaultTest = {
+export interface ServiceTestDefaultTest {
   title: string;
   fullTitle: string;
   duration: number;
   err?: string;
-};
+}
 
-export type ServiceTestDefaultReport = {
+export interface ServiceTestDefaultReport {
   stats: ServiceTestStats;
   tests: ServiceTestDefaultTest[];
   pending: ServiceTestDefaultTest[];
   failures: ServiceTestDefaultTest[];
   passes: ServiceTestDefaultTest[];
-};
+}
 
-export type SwaggerJson = {
+export interface SwaggerJson {
   info: {
     title: string;
     description: string;
@@ -426,7 +426,7 @@ export type SwaggerJson = {
     [key: string]: any;
   };
   [key: string]: any;
-};
+}
 
 export class Database {
   isArangoDatabase: true = true;

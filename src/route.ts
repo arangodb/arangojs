@@ -1,9 +1,13 @@
 import { Database } from "./database";
 import { ArangojsResponse } from "./util/request";
 
-export type Headers = { [key: string]: string };
+export interface Headers {
+  [key: string]: string;
+}
 
-export type Params = { [key: string]: string | number | boolean };
+export interface Params {
+  [key: string]: string | number | boolean;
+}
 
 export class Route {
   protected _db: Database;
