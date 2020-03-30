@@ -98,14 +98,21 @@ export class View<
   PropertiesOptions extends object = any,
   PropertiesResponse extends object = any
 > {
-  isArangoView: true = true;
-  name: string;
+  protected _name: string;
   protected _db: Database;
 
   /** @hidden */
   constructor(db: Database, name: string) {
-    this.name = name;
     this._db = db;
+    this._name = name;
+  }
+
+  get isArangoView(): true {
+    return true;
+  }
+
+  get name() {
+    return this._name;
   }
 
   get(): Promise<ViewResponse & ArangoResponseMetadata> {
@@ -151,7 +158,7 @@ export class View<
       },
       res => res.body
     );
-    this.name = name;
+    this._name = name;
     return result;
   }
 

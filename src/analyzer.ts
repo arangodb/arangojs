@@ -69,14 +69,21 @@ export interface TextAnalyzerInfo {
 }
 
 export class Analyzer {
-  isArangoAnalyzer: true = true;
-  name: string;
+  protected _name: string;
   protected _db: Database;
 
   /** @hidden */
   constructor(db: Database, name: string) {
     this._db = db;
-    this.name = name;
+    this._name = name;
+  }
+
+  get isArangoAnalyzer(): true {
+    return true;
+  }
+
+  get name() {
+    return this._name;
   }
 
   get(): Promise<AnalyzerDescription> {

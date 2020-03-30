@@ -55,23 +55,33 @@ export interface GraphCollectionRemoveOptions {
 
 export class GraphVertexCollection<T extends object = any>
   implements ArangoCollection {
-  isArangoCollection: true = true;
   protected _db: Database;
   protected _name: string;
-
-  graph: Graph;
-  collection: DocumentCollection<T>;
+  protected _graph: Graph;
+  protected _collection: DocumentCollection<T>;
 
   /** @hidden */
   constructor(db: Database, name: string, graph: Graph) {
     this._db = db;
     this._name = name;
-    this.graph = graph;
-    this.collection = db.collection(name);
+    this._graph = graph;
+    this._collection = db.collection(name);
+  }
+
+  get isArangoCollection(): true {
+    return true;
   }
 
   get name() {
     return this._name;
+  }
+
+  get collection() {
+    return this._collection;
+  }
+
+  get graph() {
+    return this._graph;
   }
 
   vertexExists(selector: DocumentSelector): Promise<boolean> {
@@ -229,23 +239,33 @@ export class GraphVertexCollection<T extends object = any>
 
 export class GraphEdgeCollection<T extends object = any>
   implements ArangoCollection {
-  isArangoCollection: true = true;
   protected _db: Database;
   protected _name: string;
-
-  graph: Graph;
-  collection: EdgeCollection<T>;
+  protected _graph: Graph;
+  protected _collection: EdgeCollection<T>;
 
   /** @hidden */
   constructor(db: Database, name: string, graph: Graph) {
     this._db = db;
     this._name = name;
-    this.graph = graph;
-    this.collection = db.collection(name);
+    this._graph = graph;
+    this._collection = db.collection(name);
+  }
+
+  get isArangoCollection(): true {
+    return true;
   }
 
   get name() {
     return this._name;
+  }
+
+  get collection() {
+    return this._collection;
+  }
+
+  get graph() {
+    return this._graph;
   }
 
   edgeExists(selector: DocumentSelector): Promise<boolean> {

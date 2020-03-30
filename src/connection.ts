@@ -220,7 +220,6 @@ export function isArangoConnection(connection: any): connection is Connection {
 
 /** @hidden */
 export class Connection {
-  isArangoConnection: true = true;
   protected _activeTasks: number = 0;
   protected _agent?: any;
   protected _agentOptions: { [key: string]: any };
@@ -279,6 +278,10 @@ export class Connection {
       this._activeHost = 0;
       this._activeDirtyHost = 0;
     }
+  }
+
+  get isArangoConnection(): true {
+    return true;
   }
 
   protected _runQueue() {
