@@ -15,14 +15,21 @@ export interface TransactionStatus {
 
 const TRANSACTION_NOT_FOUND = 10;
 export class Transaction {
-  isArangoTransaction: true = true;
   protected _db: Database;
-  id: string;
+  protected _id: string;
 
   /** @hidden */
   constructor(db: Database, id: string) {
     this._db = db;
-    this.id = id;
+    this._id = id;
+  }
+
+  get isArangoTransaction(): true {
+    return true;
+  }
+
+  get id() {
+    return this._id;
   }
 
   async exists(): Promise<boolean> {

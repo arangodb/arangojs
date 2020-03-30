@@ -877,7 +877,6 @@ export interface EdgeCollection<T extends object = any>
 export class Collection<T extends object = any>
   implements EdgeCollection<T>, DocumentCollection<T> {
   //#region attributes
-  isArangoCollection: true = true;
   protected _name: string;
   protected _idPrefix: string;
   protected _db: Database;
@@ -911,6 +910,10 @@ export class Collection<T extends object = any>
   //#endregion
 
   //#region metadata
+  get isArangoCollection(): true {
+    return true;
+  }
+
   get name() {
     return this._name;
   }

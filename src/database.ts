@@ -433,7 +433,6 @@ export interface SwaggerJson {
  * cursors, analyzers and so on are linked to a `Database` object.
  */
 export class Database {
-  isArangoDatabase: true = true;
   protected _connection: Connection;
   protected _name: string;
 
@@ -477,6 +476,15 @@ export class Database {
   }
 
   //#region misc
+  /**
+   * Indicates that this object represents an ArangoDB database.
+   *
+   * @internal
+   * */
+  get isArangoDatabase(): true {
+    return true;
+  }
+
   /**
    * The name of the ArangoDB database this instance represents.
    */
