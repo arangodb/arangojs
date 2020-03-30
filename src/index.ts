@@ -9,14 +9,12 @@ export default function arangojs(config?: Config) {
   return new Database(config);
 }
 
-Object.assign(arangojs, {
-  ArangoError,
-  CollectionStatus,
-  CollectionType,
-  ViewType,
-  Database,
-  aql
-});
+arangojs.ArangoError = ArangoError;
+arangojs.CollectionStatus = CollectionStatus;
+arangojs.CollectionType = CollectionType;
+arangojs.ViewType = ViewType;
+arangojs.Database = Database;
+arangojs.aql = aql;
 
 export {
   ArangoError,

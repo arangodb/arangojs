@@ -5,9 +5,8 @@
     "jenkins": "mocha --reporter spec --require source-map-support/register --timeout 0 build/test",
     "test": "mocha --reporter spec --require source-map-support/register --timeout 10000 build/test",
     "pretest": "yarn build",
-    "build:index": "cp index-public.js build/",
     "build:package": "cp package-public.json build/package.json",
-    "build:cjs": "tsc -p . --outDir ./build/ --target es2018 --declarationMap true",
+    "build:cjs": "tsc -p . --outDir ./build/ --target es2018 --declarationMap true && cp src/_public.js build/index.js",
     "build:web": "webpack",
     "build": "rm -rf build && mkdir build && npm-run-all --parallel build:*",
     "prepare": "yarn build && node -e 'require(\".\");'"
