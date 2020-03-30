@@ -39,14 +39,12 @@ export class ArrayCursor<T = any> {
     this._allowDirtyRead = allowDirtyRead;
   }
 
-  /** @hidden */
   protected async _drain(): Promise<ArrayCursor<T>> {
     await this._more();
     if (!this._hasMore) return this;
     return this._drain();
   }
 
-  /** @hidden */
   protected async _more(): Promise<void> {
     if (!this._hasMore) return;
     const res = await this._db.request({
