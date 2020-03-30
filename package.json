@@ -1,11 +1,56 @@
 {
   "private": true,
+  "name": "arangojs",
+  "version": "7.0.0-preview.0",
+  "engines": {
+    "node": ">=10"
+  },
+  "license": "Apache-2.0",
+  "description": "The official ArangoDB JavaScript driver.",
+  "homepage": "https://github.com/arangodb/arangojs",
+  "bugs": {
+    "url": "https://github.com/arangodb/arangojs/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/arangodb/arangojs.git"
+  },
+  "author": "ArangoDB GmbH",
+  "contributors": [
+    {
+      "name": "Alan Plum",
+      "email": "me@pluma.io"
+    }
+  ],
+  "keywords": [
+    "arango",
+    "arangodb",
+    "aql",
+    "nosql",
+    "client",
+    "driver",
+    "api",
+    "http",
+    "rest"
+  ],
   "main": "build/index.js",
+  "typings": "build/arangojs.d.ts",
+  "browser": {
+    "./src/util/btoa.ts": "./src/util/btoa.web.ts",
+    "./src/util/bytelength.ts": "./src/util/bytelength.web.ts",
+    "./src/util/joinPath.ts": "./src/util/joinPath.web.ts",
+    "./src/util/multipart.ts": "./src/util/multipart.web.ts",
+    "./src/util/request.ts": "./src/util/request.web.ts"
+  },
+  "files": [
+    "**/*",
+    "!test/**"
+  ],
   "scripts": {
     "jenkins": "mocha --reporter spec --require source-map-support/register --timeout 0 build/test",
     "test": "mocha --reporter spec --require source-map-support/register --timeout 10000 build/test",
     "pretest": "yarn build",
-    "build:package": "cp package-public.json build/package.json",
+    "build:package": "cat package.json | jq 'delpaths([[\"private\"],[\"scripts\"],[\"devDependencies\"],[\"babel\"],[\"browserslist\"]])' | sed 's/build\\///g' | sed -r 's/src\\/([^\"]+)\\.ts/\\1.js/g' > build/package.json",
     "build:cjs": "tsc -p . --outDir ./build/ --target es2018 --declarationMap true && cp src/_public.js build/index.js",
     "build:web": "webpack",
     "build": "rm -rf build && mkdir build && npm-run-all --parallel build:*",
