@@ -140,18 +140,17 @@ const db = new Database({
 ArangoJS is compatible with the latest stable version of ArangoDB available at
 the time of the driver release.
 
-The [_arangoVersion_ option](../Reference/Database/README.md)
-can be used to tell arangojs to target a specific
+The _arangoVersion_ option can be used to tell arangojs to target a specific
 ArangoDB version. Depending on the version this may enable or disable certain
 methods and change behavior to maintain compatibility with the given version.
 
 **Note**: As of June 2018 ArangoDB 2.8 has reached its End of Life and is no
-longer supported in arangojs 7.0.0 and later. If your code needs to work with
+longer supported in arangojs 7 and later. If your code needs to work with
 ArangoDB 2.8 you can continue using arangojs 6 and enable ArangoDB 2.8
 compatibility mode by setting the option `arangoVersion: 20800`.
 
-The yarn/npm distribution of ArangoJS is compatible with Node.js versions 13.x
-(latest), 12.x (LTS) and 10.x (LTS). Node.js version support follows
+The yarn/npm distribution of arangojs maintains compatibility with the latest
+Node.js version as well as the two most recent LTS releases by following
 [the official Node.js long-term support schedule](https://github.com/nodejs/LTS).
 
 The included browser build is compatible with recent versions of all modern
