@@ -10,9 +10,11 @@ interface GeneratedAqlQuery extends AqlQuery {
 }
 
 export interface AqlLiteral {
+  /** @hidden */
   toAQL: () => string;
 }
 
+/** @hidden */
 export type AqlValue =
   | ArangoCollection
   | GeneratedAqlQuery

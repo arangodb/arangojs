@@ -1,13 +1,21 @@
 import { Database } from "./database";
 import { ArangojsResponse } from "./util/request";
 
-export interface Headers {
+/**
+ * An arbitrary object with string values representing HTTP headers and their
+ * values.
+ */
+export type Headers = {
   [key: string]: string;
-}
+};
 
-export interface Params {
+/**
+ * An arbitrary object with scalar values representing query string parameters
+ * and their values.
+ */
+export type Params = {
   [key: string]: string | number | boolean;
-}
+};
 
 export class Route {
   protected _db: Database;
