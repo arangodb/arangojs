@@ -16,7 +16,12 @@ import {
   isArangoCollection
 } from "./collection";
 import { Config } from "./config";
-import { Connection, isArangoConnection, RequestOptions } from "./connection";
+import {
+  ArangoResponseMetadata,
+  Connection,
+  isArangoConnection,
+  RequestOptions
+} from "./connection";
 import { ArrayCursor } from "./cursor";
 import { isArangoError } from "./error";
 import { EdgeDefinition, Graph, GraphCreateOptions, GraphInfo } from "./graph";
@@ -27,7 +32,7 @@ import { DATABASE_NOT_FOUND } from "./util/codes";
 import { FoxxManifest } from "./util/foxx-manifest";
 import { toForm } from "./util/multipart";
 import { ArangojsResponse } from "./util/request";
-import { ArangoResponseMetadata, Blob } from "./util/types";
+import { Blob } from "./util/types";
 import {
   ArangoSearchView,
   ArangoSearchViewPropertiesOptions,

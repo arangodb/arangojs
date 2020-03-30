@@ -1,6 +1,6 @@
+import { ArangoResponseMetadata } from "./connection";
 import { Database } from "./database";
 import { isArangoError } from "./error";
-import { ArangoResponseMetadata } from "./util/types";
 
 export enum ViewType {
   ARANGOSEARCH_VIEW = "arangosearch"

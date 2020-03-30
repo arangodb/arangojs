@@ -15,6 +15,12 @@ const LEADER_ENDPOINT_HEADER = "x-arango-endpoint";
 
 export type LoadBalancingStrategy = "NONE" | "ROUND_ROBIN" | "ONE_RANDOM";
 
+export type ArangoResponseMetadata = {
+  [key: string]: any | undefined;
+  error: false;
+  code: number;
+};
+
 interface SystemError extends Error {
   code: string;
   errno: number | string;
