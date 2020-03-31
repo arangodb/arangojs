@@ -82,7 +82,14 @@ export type ArangoSearchViewPropertiesResponse = ViewResponse &
     type: ViewType.ARANGOSEARCH_VIEW;
   };
 
+/**
+ * Policy to consolidate based on segment byte size and live document count as
+ * dictated by the customization attributes.
+ */
 export type BytesAccumConsolidationPolicy = {
+  /**
+   * The type of consolidation policy.
+   */
   type: "bytes_accum";
   /**
    * Must be in the range of `0.0` to `1.0`.
@@ -90,36 +97,46 @@ export type BytesAccumConsolidationPolicy = {
   threshold?: number;
 };
 
+/**
+ * Policy to consolidate if the sum of all candidate segment byte size is less
+ * than the total segment byte size multiplied by a given threshold.
+ */
 export type TierConsolidationPolicy = {
+  /**
+   * The type of consolidation policy.
+   */
   type: "tier";
-  lookahead?: number;
   /**
    * Default: `1`
    *
    * The minimum number of segments that will be evaluated as candidates
    * for consolidation.
    */
-  segments_min?: number;
+  segmentsMin?: number;
   /**
    * Default: `10`
    *
    * The maximum number of segments that will be evaluated as candidates
    * for consolidation.
    */
-  segments_max?: number;
+  segmentsMax?: number;
   /**
    * Default: `5368709120`, i.e. 5 GiB
    *
    * Maximum allowed size of all consolidated segments.
    */
-  segments_bytes_max?: number;
+  segmentsBytesMax?: number;
   /**
    * Default: `2097152`, i.e. 2 MiB
    *
    * Defines the value to treat all smaller segments as equal for
    * consolidation selection.
    */
-  segments_bytes_floor?: number;
+  segmentsBytesFloor?: number;
+  /**
+   * Minimum score.
+   */
+  minScore?: number;
 };
 
 export type ArangoSearchViewPropertiesOptions = {
@@ -160,7 +177,10 @@ export type ArangoSearchViewPropertiesOptions = {
    * Maximum memory byte size per writer before a writer flush is triggered.
    */
   writebufferSizeMax?: number;
-  // TODO
+  /**
+   * The consolidation policy to apply for selecting which segments should be
+   * merged.
+   */
   consolidationPolicy?: BytesAccumConsolidationPolicy | TierConsolidationPolicy;
   /**
    * The attribute path (`field`) for the value of each document that will be
