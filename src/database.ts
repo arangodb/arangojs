@@ -455,19 +455,15 @@ export class Database {
    */
   constructor(database: Database, name?: string);
   constructor(
-    cfgOrDbOrConn:
-      | string
-      | string[]
-      | (Config & { databaseName?: string })
-      | Database = {},
+    configOrDatabase: string | string[] | Config | Database = {},
     name?: string
   ) {
-    if (isArangoDatabase(cfgOrDbOrConn)) {
-      const database = cfgOrDbOrConn;
+    if (isArangoDatabase(configOrDatabase)) {
+      const database = configOrDatabase;
       this._connection = database._connection;
       this._name = name || database.name;
     } else {
-      const config = cfgOrDbOrConn;
+      const config = configOrDatabase;
       const { databaseName, ...options } =
         typeof config === "string" || Array.isArray(config)
           ? { databaseName: undefined, url: config }
