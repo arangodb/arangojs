@@ -1,6 +1,7 @@
 import { ArangoResponseMetadata } from "./connection";
 import { Database } from "./database";
 import { isArangoError } from "./error";
+import { VIEW_NOT_FOUND } from "./util/codes";
 
 export enum ViewType {
   ARANGOSEARCH_VIEW = "arangosearch"
@@ -208,7 +209,6 @@ export interface ArangoSearchViewPropertiesOptions {
   };
 }
 
-const VIEW_NOT_FOUND = 1203;
 export class View<
   PropertiesOptions extends object = any,
   PropertiesResponse extends object = any

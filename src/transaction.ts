@@ -1,6 +1,7 @@
 import { Connection } from "./connection";
 import { Database } from "./database";
 import { isArangoError } from "./error";
+import { TRANSACTION_NOT_FOUND } from "./util/codes";
 
 export function isArangoTransaction(
   transaction: any
@@ -13,7 +14,6 @@ export interface TransactionStatus {
   status: "running" | "committed" | "aborted";
 }
 
-const TRANSACTION_NOT_FOUND = 10;
 export class Transaction {
   protected _db: Database;
   protected _id: string;
