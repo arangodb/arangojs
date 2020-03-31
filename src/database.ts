@@ -1,3 +1,13 @@
+/**
+ * `import { Database } from "arangojs/database"`
+ *
+ * The "database" module provides the {@link Database} class and associated
+ * types and interfaces for TypeScript.
+ *
+ * The Database class is also re-exported by the "index" module.
+ *
+ * @packageDocumentation
+ */
 import { Readable } from "stream";
 import {
   Analyzer,
@@ -242,7 +252,7 @@ export interface VersionInfo {
   version: string;
 }
 
-export interface AqlFunction {
+export interface AqlUserFunction {
   name: string;
   code: string;
   isDeterministic: boolean;
@@ -377,7 +387,7 @@ export interface ServiceTestSuiteReport {
   tests: ServiceTestSuiteTest[];
 }
 
-export type ServiceTestXunitTest =
+type ServiceTestXunitTest =
   | ["testcase", { classname: string; name: string; time: number }]
   | [
       "testcase",
@@ -1127,14 +1137,55 @@ export class Database {
   //#endregion
 
   //#region functions
-  listFunctions(): Promise<AqlFunction[]> {
+  /**
+   * Fetches a list of all AQL user functions registered with the database.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const functions = await db.listFunctions();
+   * const names = functions.map(fn => fn.name);
+   * ```
+   */
+  listFunctions(): Promise<AqlUserFunction[]> {
     return this.request({ path: "/_api/aqlfunction" }, res => res.body.result);
   }
 
+  /**
+   * Creates an AQL user function with the given _name_ and _code_ if it does
+   * not already exist or replaces it if a function with the same name already
+   * existed.
+   *
+   * @param name - A valid AQL function name. The function name must consist
+   * of at least two alphanumeric identifiers separated with double colons.
+   * @param code - A string evaluating to a JavaScript function (not a
+   * JavaScript function object).
+   * @param isDeterministic - If set to `true`, the function is expected to
+   * always return the same result for equivalent inputs. This option currently
+   * has no effect but may allow for optimizations in the future.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * await db.createFunction(
+   *   "ACME::ACCOUNTING::CALCULATE_VAT",
+   *   "(price) => price * 0.19"
+   * );
+   * // Use the new function in an AQL query with template handler:
+   * const cursor = await db.query(aql`
+   *   FOR product IN products
+   *   RETURN MERGE(
+   *     { vat: ACME::ACCOUNTING::CALCULATE_VAT(product.price) },
+   *     product
+   *   )
+   * `);
+   * // cursor is a cursor for the query result
+   * ```
+   */
   createFunction(
     name: string,
     code: string,
-    isDeterministic?: boolean
+    isDeterministic: boolean = false
   ): Promise<ArangoResponseMetadata & { isNewlyCreated: boolean }> {
     return this.request(
       {
@@ -1146,6 +1197,21 @@ export class Database {
     );
   }
 
+  /**
+   * Deletes the AQL user function with the given name from the database.
+   *
+   * @param name - The name of the user function to drop.
+   * @param group - If set to `true`, all functions with a name starting with
+   * `name` will be deleted, otherwise only the function with the exact name
+   * will be deleted.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * await db.dropFunction("ACME::ACCOUNTING::CALCULATE_VAT");
+   * // the function no longer exists
+   * ```
+   */
   dropFunction(
     name: string,
     group: boolean = false
