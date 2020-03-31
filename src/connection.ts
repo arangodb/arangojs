@@ -87,7 +87,7 @@ export interface Task {
 /** @hidden */
 export interface ConnectionOptions {
   /**
-    Default: `http://localhost:8529`
+    Default: `"http://localhost:8529"`
 
     Base URL of the ArangoDB server or list of server URLs.
 
@@ -131,18 +131,18 @@ export interface ConnectionOptions {
    */
   arangoVersion?: number;
   /**
-    Default: `NONE`
+    Default: `"NONE"`
 
     Determines the behavior when multiple URLs are provided:
 
-    - `NONE`: No load balancing. All requests will be handled by the first
+    - `"NONE"`: No load balancing. All requests will be handled by the first
       URL in the list until a network error is encountered. On network error,
       arangojs will advance to using the next URL in the list.
 
-    - `ONE_RANDOM`: Randomly picks one URL from the list initially, then
-      behaves like `NONE`.
+    - `"ONE_RANDOM"`: Randomly picks one URL from the list initially, then
+      behaves like `"NONE"`.
 
-    - `ROUND_ROBIN`: Every sequential request uses the next URL in the list.
+    - `"ROUND_ROBIN"`: Every sequential request uses the next URL in the list.
    */
   loadBalancingStrategy?: LoadBalancingStrategy;
   /**
