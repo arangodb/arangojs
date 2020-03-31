@@ -24,11 +24,36 @@ export interface ViewResponse {
   type: ViewType;
 }
 
-export interface ArangoSearchViewCollectionLink {
+export interface ArangoSearchViewLink {
+  /**
+   * Default: `["identity"]`
+   *
+   * A list of names of Analyzers to apply to values of processed document
+   * attributes.
+   */
   analyzers?: string[];
-  fields?: { [key: string]: ArangoSearchViewCollectionLink | undefined };
+  /**
+   * An object mapping names of attributes to process for each document to
+   * {@link ArangoSearchViewLink} definitions.
+   */
+  fields?: { [key: string]: ArangoSearchViewLink | undefined };
+  /**
+   * Default: `false`
+   *
+   * If set to `true`, all document attributes will be processed, otherwise
+   * only the attributes in `fields` will be processed.
+   */
   includeAllFields?: boolean;
+  /**
+   * If set to `true`, the position of values in array values will be tracked,
+   * otherwise all values in an array will be treated as equal alternatives.
+   */
   trackListPositions?: boolean;
+  /**
+   * Default: `"none"`
+   *
+   * Controls how the view should keep track of the attribute values.
+   */
   storeValues?: "none" | "id";
 }
 
@@ -48,7 +73,7 @@ export interface ArangoSearchViewProperties {
     lookahead?: number;
   };
   links: {
-    [key: string]: ArangoSearchViewCollectionLink | undefined;
+    [key: string]: ArangoSearchViewLink | undefined;
   };
 }
 
@@ -58,38 +83,128 @@ export interface ArangoSearchViewPropertiesResponse
   type: ViewType.ARANGOSEARCH_VIEW;
 }
 
+export interface BytesAccumConsolidationPolicy {
+  type: "bytes_accum";
+  /**
+   * Must be in the range of `0.0` to `1.0`.
+   */
+  threshold?: number;
+}
+
+export interface TierConsolidationPolicy {
+  type: "tier";
+  lookahead?: number;
+  /**
+   * Default: `1`
+   *
+   * The minimum number of segments that will be evaluated as candidates
+   * for consolidation.
+   */
+  segments_min?: number;
+  /**
+   * Default: `10`
+   *
+   * The maximum number of segments that will be evaluated as candidates
+   * for consolidation.
+   */
+  segments_max?: number;
+  /**
+   * Default: `5368709120`, i.e. 5 GiB
+   *
+   * Maximum allowed size of all consolidated segments.
+   */
+  segments_bytes_max?: number;
+  /**
+   * Default: `2097152`, i.e. 2 MiB
+   *
+   * Defines the value to treat all smaller segments as equal for
+   * consolidation selection.
+   */
+  segments_bytes_floor?: number;
+}
+
 export interface ArangoSearchViewPropertiesOptions {
+  /**
+   * Default: `2`
+   *
+   * How many commits to wait between removing unused files.
+   */
   cleanupIntervalStep?: number;
+  /**
+   * Default: `10000`
+   *
+   * How long to wait between applying the `consolidationPolicy`.
+   */
   consolidationIntervalMsec?: number;
+  /**
+   * Default: `1000`
+   *
+   * How long to wait between commiting View data store changes and making
+   * documents visible to queries.
+   */
   commitIntervalMsec?: number;
+  /**
+   * Default: `64`
+   *
+   * Maximum number of writers cached in the pool.
+   */
   writebufferIdle?: number;
+  /**
+   * Default: `0`
+   *
+   * Maximum number of concurrent active writers that perform a transaction.
+   */
   writebufferActive?: number;
+  /**
+   * Default: `33554432`, i.e. 32 MiB
+   *
+   * Maximum memory byte size per writer before a writer flush is triggered.
+   */
   writebufferSizeMax?: number;
-  consolidationPolicy?:
-    | {
-        type: "bytes_accum";
-        threshold?: number;
-      }
-    | {
-        type: "tier";
-        lookahead?: number;
-        segments_min?: number;
-        segments_max?: number;
-        segments_bytes_max?: number;
-        segments_bytes_floor?: number;
-      };
+  // TODO
+  consolidationPolicy?: BytesAccumConsolidationPolicy | TierConsolidationPolicy;
+  /**
+   * The attribute path (`field`) for the value of each document that will be
+   * used for sorting.
+   *
+   * If `direction` is set to `"asc"` or `asc` is set to `true`,
+   * the primary sorting order will be ascending.
+   *
+   * If `direction` is set to `"desc"` or `asc` is set to `false`,
+   * the primary sorting order will be descending.
+   */
   primarySort?: (
     | {
+        /**
+         * The attribute path for the value of each document to use for
+         * sorting.
+         */
         field: string;
+        /**
+         * If set to `"asc"`, the primary sorting order will be ascending.
+         * If set to `"desc"`, the primary sorting order will be descending.
+         */
         direction: "desc" | "asc";
       }
     | {
+        /**
+         * The attribute path for the value of each document to use for
+         * sorting.
+         */
         field: string;
+        /**
+         * If set to `true`, the primary sorting order will be ascending.
+         * If set to `false`, the primary sorting order will be descending.
+         */
         asc: boolean;
       }
   )[];
+  /**
+   * An object mapping names of linked collections to
+   * {@link ArangoSearchViewLink} definitions.
+   */
   links?: {
-    [key: string]: ArangoSearchViewCollectionLink | undefined;
+    [key: string]: ArangoSearchViewLink | undefined;
   };
 }
 
