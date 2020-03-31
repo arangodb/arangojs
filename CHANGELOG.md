@@ -101,7 +101,15 @@ This is a major release and breaks backwards compatibility.
 
   All arangojs objects now reference a `Database` object rather than accessing
   the underlying `Connection` directly. This allows multiple `Database` objects
-  to be created by using the `db.database` method.
+  to be created by using the `db.database` method while still allowing the
+  creation of separate database objects with separate connection pools if
+  desired.
+
+- Memoized `Database`, `Collection`, `Graph`, `View` and `Analyzer`
+
+  Database objects are now memoized per-connection and the other object types
+  are memoized per-database. Using `useDatabase` de-memoizes the database
+  object to prevent unexpected behavior.
 
 - Renamed `collection.setProperties` to `collection.properties`
 
