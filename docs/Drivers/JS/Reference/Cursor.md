@@ -35,7 +35,7 @@ const cursor = await db.query(aql`FOR x IN 1..5 RETURN x`);
 const result = await cursor.all();
 // result is an array containing the entire query result
 assert.deepEqual(result, [1, 2, 3, 4, 5]);
-assert.equal(cursor.hasNext(), false);
+assert.equal(cursor.hasNext, false);
 ```
 
 ## cursor.next
@@ -60,7 +60,7 @@ assert.equal(val2, 2);
 
 ## cursor.hasNext
 
-`cursor.hasNext(): boolean`
+`cursor.hasNext: boolean`
 
 Returns `true` if the cursor has more values or `false` if the cursor has been
 exhausted.
@@ -69,7 +69,7 @@ exhausted.
 
 ```js
 await cursor.all(); // exhausts the cursor
-assert.equal(cursor.hasNext(), false);
+assert.equal(cursor.hasNext, false);
 ```
 
 ## cursor.nextBatch
@@ -88,7 +88,7 @@ const cursor = await db.query(aql`FOR i IN 1..10 RETURN i`, { batchSize: 5 });
 await cursor.nextBatch(); // [1, 2, 3, 4, 5]
 await cursor.next(); // 6
 await cursor.nextBatch(); // [7, 8, 9, 10]
-cursor.hasNext(); // false
+cursor.hasNext; // false
 ```
 
 ## cursor.each
@@ -137,7 +137,7 @@ function doStuff(value) {
 const cursor = await db.query(aql`FOR x IN ["a", "b", "c"] RETURN x`);
 const last = await cursor.each(doStuff);
 assert.deepEqual(results, ["A", "B", "C"]);
-assert.equal(cursor.hasNext(), false);
+assert.equal(cursor.hasNext, false);
 assert.equal(last, "C");
 ```
 
@@ -182,7 +182,7 @@ const even = value => value % 2 === 0;
 const cursor = await db.query(aql`FOR x IN 2..5 RETURN x`);
 const result = await cursor.every(even);
 assert.equal(result, false); // 3 is not even
-assert.equal(cursor.hasNext(), true);
+assert.equal(cursor.hasNext, true);
 
 const value = await cursor.nextBatch();
 assert.equal(value, 4); // next value after 3
@@ -209,7 +209,7 @@ const even = value => value % 2 === 0;
 const cursor = await db.query(aql`FOR x IN 1..5 RETURN x`);
 const result = await cursor.some(even);
 assert.equal(result, true); // 2 is even
-assert.equal(cursor.hasNext(), true);
+assert.equal(cursor.hasNext, true);
 
 const value = await cursor.next();
 assert.equal(value, 3); // next value after 2
@@ -258,7 +258,7 @@ const cursor = await db.query(aql`FOR x IN 1..5 RETURN x`);
 const result = await cursor.map(square);
 assert.equal(result.length, 5);
 assert.deepEqual(result, [1, 4, 9, 16, 25]);
-assert.equal(cursor.hasNext(), false);
+assert.equal(cursor.hasNext, false);
 ```
 
 ## cursor.reduce
@@ -308,13 +308,13 @@ const baseline = 1000;
 const cursor = await db.query(aql`FOR x IN 1..5 RETURN x`);
 const result = await cursor.reduce(add, baseline);
 assert.equal(result, baseline + 1 + 2 + 3 + 4 + 5);
-assert.equal(cursor.hasNext(), false);
+assert.equal(cursor.hasNext, false);
 
 // -- or --
 
 const result = await cursor.reduce(add);
 assert.equal(result, 1 + 2 + 3 + 4 + 5);
-assert.equal(cursor.hasNext(), false);
+assert.equal(cursor.hasNext, false);
 ```
 
 ## cursor.kill

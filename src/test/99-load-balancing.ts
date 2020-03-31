@@ -154,9 +154,9 @@ describeIm("Single-server with follower", function() {
         batchSize: 1
       }
     );
-    expect(cursor.hasNext()).to.equal(true);
+    expect(cursor.hasNext).to.equal(true);
     expect(await cursor.next()).to.equal(1);
-    expect(cursor.hasNext()).to.equal(true);
+    expect(cursor.hasNext).to.equal(true);
     expect(await cursor.next()).to.equal(2);
   });
 });
@@ -258,7 +258,7 @@ describeIm("Cluster round robin", function() {
       { batchSize: 1 }
     );
     const result = [];
-    while (cursor.hasNext()) {
+    while (cursor.hasNext) {
       result.push(await cursor.next());
     }
     expect(result).to.have.lengthOf(LENGTH);
