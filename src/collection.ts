@@ -98,7 +98,9 @@ export type CollectionProperties = CollectionMetadata & {
 
   // Cluster options
   writeConcern: number;
-  /** @deprecated ArangoDB 3.6, use `writeConcern` instead */
+  /**
+   * @deprecated Renamed to `writeConcern` in ArangoDB 3.6.
+   */
   minReplicationFactor: number;
   numberOfShards?: number;
   shardKeys?: string[];
@@ -164,7 +166,9 @@ export type CreateCollectionOptions = {
   shardKeys?: string[];
   replicationFactor?: number;
   writeConcern?: number;
-  /** @deprecated ArangoDB 3.6, use `writeConcern` instead */
+  /**
+   * @deprecated Renamed to `writeConcern` in ArangoDB 3.6.
+   */
   minReplicationFactor?: number;
   shardingStrategy?: ShardingStrategy;
 
