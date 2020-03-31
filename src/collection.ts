@@ -5,6 +5,7 @@ import { isArangoError } from "./error";
 import { COLLECTION_NOT_FOUND, DOCUMENT_NOT_FOUND } from "./util/codes";
 import { Blob, Patch, StrictObject } from "./util/types";
 
+/** @hidden @internal */
 export function _documentHandle(
   selector: DocumentSelector,
   collectionName: string
@@ -31,6 +32,7 @@ export function _documentHandle(
   return `${collectionName}/${selector}`;
 }
 
+/** @hidden @internal */
 export function _indexHandle(
   selector: IndexSelector,
   collectionName: string

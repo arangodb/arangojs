@@ -67,7 +67,7 @@ export interface RequestOptions {
   qs?: string | { [key: string]: any };
 }
 
-/** @hidden */
+/** @hidden @internal */
 export interface Task {
   host?: number;
   allowDirtyRead: boolean;
@@ -213,12 +213,12 @@ export interface ConnectionOptions {
   };
 }
 
-/** @hidden */
+/** @hidden @internal */
 export function isArangoConnection(connection: any): connection is Connection {
   return Boolean(connection && connection.isArangoConnection);
 }
 
-/** @hidden */
+/** @hidden @internal */
 export class Connection {
   protected _activeTasks: number = 0;
   protected _agent?: any;
