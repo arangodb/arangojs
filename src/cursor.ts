@@ -4,7 +4,7 @@ import { Dict } from "./util/types";
 
 export class ArrayCursor<T = any> {
   protected _db: Database;
-  protected _result: T[];
+  protected _result: LinkedList<T>;
   protected _count?: number;
   protected _extra: {
     warnings: { code: number; message: string }[];
@@ -31,7 +31,7 @@ export class ArrayCursor<T = any> {
     allowDirtyRead?: boolean
   ) {
     this._db = db;
-    this._result = body.result;
+    this._result = new LinkedList(body.result);
     this._id = body.id;
     this._hasMore = Boolean(body.id && body.hasMore);
     this._host = host;
@@ -76,8 +76,8 @@ export class ArrayCursor<T = any> {
 
   async all(): Promise<T[]> {
     await this._drain();
-    let result = this._result;
-    this._result = [];
+    const result = [...this._result.values()];
+    this._result = new LinkedList();
     return result;
   }
 
@@ -98,7 +98,7 @@ export class ArrayCursor<T = any> {
     if (!this._result.length) {
       return undefined;
     }
-    return this._result.splice(0, this._result.length);
+    return this.all();
   }
 
   async each(
