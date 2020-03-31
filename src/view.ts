@@ -335,7 +335,8 @@ export class View<
   }
 }
 
-export type ArangoSearchView = View<
-  ArangoSearchViewPropertiesOptions,
-  ArangoSearchViewPropertiesResponse
->;
+export interface ArangoSearchView
+  extends View<
+    ArangoSearchViewPropertiesOptions,
+    ArangoSearchViewPropertiesResponse
+  > {}
