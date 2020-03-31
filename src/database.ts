@@ -500,9 +500,12 @@ export class Database {
     name?: string
   ) {
     if (isArangoDatabase(configOrDatabase)) {
-      const database = configOrDatabase;
-      this._connection = database._connection;
-      this._name = name || database.name;
+      const connection = configOrDatabase._connection;
+      const databaseName = name || configOrDatabase.name;
+      this._connection = connection;
+      this._name = databaseName;
+      const database = connection.database(databaseName);
+      if (database) return database;
     } else {
       const config = configOrDatabase;
       const { databaseName, ...options } =
@@ -670,6 +673,7 @@ export class Database {
    * @deprecated Use {@link Database.database} instead.
    * */
   useDatabase(databaseName: string): this {
+    this._connection.database(this._name, null);
     this._name = databaseName;
     return this;
   }
