@@ -30,30 +30,30 @@ function mungeGharialResponse(body: any, prop: "vertex" | "edge" | "removed") {
   return result;
 }
 
-export interface GraphCollectionInsertOptions {
+export type GraphCollectionInsertOptions = {
   waitForSync?: boolean;
   returnNew?: boolean;
-}
+};
 
-export interface GraphCollectionReadOptions {
+export type GraphCollectionReadOptions = {
   rev?: string;
   graceful?: boolean;
   allowDirtyRead?: boolean;
-}
+};
 
-export interface GraphCollectionReplaceOptions {
+export type GraphCollectionReplaceOptions = {
   rev?: string;
   waitForSync?: boolean;
   keepNull?: boolean;
   returnOld?: boolean;
   returnNew?: boolean;
-}
+};
 
-export interface GraphCollectionRemoveOptions {
+export type GraphCollectionRemoveOptions = {
   rev?: string;
   waitForSync?: boolean;
   returnOld?: boolean;
-}
+};
 
 export class GraphVertexCollection<T extends object = any>
   implements ArangoCollection {
@@ -422,13 +422,13 @@ export class GraphEdgeCollection<T extends object = any>
   }
 }
 
-export interface EdgeDefinition {
+export type EdgeDefinition = {
   collection: string;
   from: string[];
   to: string[];
-}
+};
 
-export interface GraphInfo {
+export type GraphInfo = {
   _id: string;
   _key: string;
   _rev: string;
@@ -450,9 +450,9 @@ export interface GraphInfo {
   isSmart?: boolean;
   /** Enterprise Edition only */
   smartGraphAttribute?: string;
-}
+};
 
-export interface GraphCreateOptions {
+export type GraphCreateOptions = {
   waitForSync?: boolean;
   orphanCollections?: string[];
 
@@ -468,7 +468,7 @@ export interface GraphCreateOptions {
   isSmart?: boolean;
   /** Enterprise Edition only */
   smartGraphAttribute?: string;
-}
+};
 
 export class Graph {
   protected _name: string;

@@ -8,7 +8,7 @@
 /**
  * Schema for ArangoDB Foxx service manifests
  */
-export interface FoxxManifest {
+export type FoxxManifest = {
   /**
    * An object defining the configuration options this service requires.
    */
@@ -169,4 +169,4 @@ export interface FoxxManifest {
    */
   version?: string;
   [k: string]: any;
-}
+};

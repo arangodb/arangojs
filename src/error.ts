@@ -59,6 +59,21 @@ export function isArangoError(err: any): err is ArangoError {
   return Boolean(err && err.isArangoError);
 }
 
+export function isSystemError(err: Error): err is SystemError {
+  return (
+    Object.getPrototypeOf(err) === Error.prototype &&
+    err.hasOwnProperty("code") &&
+    err.hasOwnProperty("errno") &&
+    err.hasOwnProperty("syscall")
+  );
+}
+
+export interface SystemError extends Error {
+  code: string;
+  errno: number | string;
+  syscall: string;
+}
+
 export class ArangoError extends ExtendableError {
   name = "ArangoError";
   isArangoError = true;

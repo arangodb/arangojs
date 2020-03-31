@@ -9,9 +9,9 @@ declare class MultiPart {
 
 const Multipart = require("multi-part") as typeof MultiPart;
 
-export interface Fields {
+export type Fields = {
   [key: string]: any;
-}
+};
 
 export interface MultipartRequest {
   headers?: Headers;

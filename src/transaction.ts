@@ -9,10 +9,10 @@ export function isArangoTransaction(
   return Boolean(transaction && transaction.isArangoTransaction);
 }
 
-export interface TransactionStatus {
+export type TransactionStatus = {
   id: string;
   status: "running" | "committed" | "aborted";
-}
+};
 
 export class Transaction {
   protected _db: Database;
