@@ -6,15 +6,26 @@ export function isArangoAnalyzer(analyzer: any): analyzer is Analyzer {
   return Boolean(analyzer && analyzer.isArangoAnalyzer);
 }
 
+/**
+ * Name of a feature enabled for an Analyzer.
+ */
+export type AnalyzerFeature = "frequency" | "norm" | "position";
+
 export type AnalyzerDescription = AnalyzerInfo & {
   name: string;
-  features: string[];
+  features: AnalyzerFeature[];
 };
 
 export type CreateAnalyzerOptions = AnalyzerInfo & {
-  features?: string[];
+  /**
+   * Features to enable for this Analyzer.
+   */
+  features?: AnalyzerFeature[];
 };
 
+/**
+ * Analyzer type and its type-specific properties.
+ */
 export type AnalyzerInfo =
   | IdentityAnalyzerInfo
   | DelimiterAnalyzerInfo
@@ -23,50 +34,157 @@ export type AnalyzerInfo =
   | NgramAnalyzerInfo
   | TextAnalyzerInfo;
 
-export interface IdentityAnalyzerInfo {
+export type IdentityAnalyzerInfo = {
+  /**
+   * The type of the Analyzer.
+   */
   type: "identity";
+  /**
+   * Additional properties for the Analyzer.
+   *
+   * The `identity` Analyzer does not take additional properties.
+   */
   properties?: null;
-}
+};
 
-export interface DelimiterAnalyzerInfo {
+export type DelimiterAnalyzerInfo = {
+  /**
+   * The type of the Analyzer.
+   */
   type: "delimiter";
+  /**
+   * Additional properties for the Analyzer.
+   *
+   * The value will be used as delimiter to split text into tokens as specified
+   * in RFC 4180, without starting new records on newlines.
+   */
   properties: string | { delimiter: string };
-}
+};
 
-export interface StemAnalyzerInfo {
+export type StemAnalyzerInfo = {
+  /**
+   * The type of the Analyzer.
+   */
   type: "stem";
+  /**
+   * Additional properties for the Analyzer.
+   *
+   * The value defines the text locale.
+   *
+   * Format: `language[_COUNTRY][.encoding][@variant]`
+   */
   properties: { locale: string };
-}
+};
 
-export interface NormAnalyzerInfo {
+export type NormAnalyzerProperties = {
+  /**
+   * The text locale.
+   *
+   * Format: `language[_COUNTRY][.encoding][@variant]`
+   */
+  locale: string;
+  /**
+   * Default: `"lower"`
+   *
+   * Case conversion.
+   */
+  case?: "lower" | "none" | "upper";
+  /**
+   * Default: `false`
+   *
+   * Preserve accents in returned words.
+   */
+  accent?: boolean;
+};
+
+export type NormAnalyzerInfo = {
+  /**
+   * The type of the Analyzer.
+   */
   type: "norm";
-  properties: {
-    locale: string;
-    case?: "lower" | "none" | "upper";
-    accent?: boolean;
-  };
-}
+  /**
+   * Additional properties for the Analyzer.
+   */
+  properties: NormAnalyzerProperties;
+};
 
-export interface NgramAnalyzerInfo {
+export type NgramAnalyzerProperties = {
+  /**
+   * Maximum n-gram length.
+   */
+  max: number;
+  /**
+   * Minimum n-gram length.
+   */
+  min: number;
+  /**
+   * Output the original value as well.
+   */
+  preserveOriginal: boolean;
+};
+
+export type NgramAnalyzerInfo = {
+  /**
+   * The type of the Analyzer.
+   */
   type: "ngram";
-  properties: {
-    max: number;
-    min: number;
-    preserveOriginal: boolean;
-  };
-}
+  /**
+   * Additional properties for the Analyzer.
+   */
+  properties: NgramAnalyzerProperties;
+};
 
-export interface TextAnalyzerInfo {
+export type TextAnalyzerProperties = {
+  /**
+   * The text locale.
+   *
+   * Format: `language[_COUNTRY][.encoding][@variant]`
+   */
+  locale: string;
+  /**
+   * Default: `"lower"`
+   *
+   * Case conversion.
+   */
+  case?: "lower" | "none" | "upper";
+  /**
+   * Words to omit from result.
+   *
+   * Defaults to the words loaded from the file at `stopwordsPath`.
+   */
+  stopwords?: string[];
+  /**
+   * Path with a `language` sub-directory containing files with words to omit.
+   *
+   * Defaults to the path specified in the server-side environment variable
+   * `IRESEARCH_TEXT_STOPWORD_PATH` or the current working directory of the
+   * ArangoDB process.
+   */
+  stopwordsPath?: string;
+  /**
+   * Default: `false`
+   *
+   * Preserve accents in returned words.
+   */
+  accent?: boolean;
+  /**
+   * Default: `true`
+   *
+   * Apply stemming on returned words.
+   */
+  stemming?: boolean;
+};
+
+export type TextAnalyzerInfo = {
+  /**
+   * The type of the Analyzer.
+   */
   type: "text";
-  properties: {
-    locale: string;
-    case?: "lower" | "none" | "upper";
-    stopwords?: string[];
-    stopwordsPath?: string;
-    accent?: boolean;
-    stemming?: boolean;
-  };
-}
+  /**
+   * Additional properties for the Analyzer.
+   */
+  properties: TextAnalyzerProperties;
+};
 
 export class Analyzer {
   protected _name: string;

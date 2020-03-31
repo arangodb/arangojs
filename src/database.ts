@@ -948,10 +948,35 @@ export class Database {
   //#endregion
 
   //#region analyzers
+  /**
+   * Returns an `Analyzer` instance representing the Analyzer with the given
+   * `analyzerName`.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const analyzer = db.analyzer("some-analyzer");
+   * const info = await analyzer.get();
+   * ```
+   */
   analyzer(name: string): Analyzer {
     return new Analyzer(this, name);
   }
 
+  /**
+   * Creates a new Analyzer with the given `analyzerName` and `options`, then
+   * returns an {@link Analyzer} instance for the new Analyzer.
+   *
+   * @param analyzerName - Name of the Analyzer.
+   * @param options - An object defining the properties of the Analyzer.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const analyzer = await db.createAnalyzer("potatoes", { type: "identity" });
+   * // the identity Analyzer "potatoes" now exists
+   * ```
+   */
   async createAnalyzer(
     analyzerName: string,
     options: CreateAnalyzerOptions
@@ -961,10 +986,32 @@ export class Database {
     return analyzer;
   }
 
+  /**
+   * Fetches all Analyzers visible in the database and returns an array of
+   * Analyzer descriptions.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const analyzers = await db.listAnalyzers();
+   * // analyzers is an array of Analyzer descriptions
+   * ```
+   */
   listAnalyzers(): Promise<AnalyzerDescription[]> {
     return this.request({ path: "/_api/analyzer" }, res => res.body.result);
   }
 
+  /**
+   * Fetches all Analyzers visible in the database and returns an array of
+   * {@link Analyzer} instances for those Analyzers.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const analyzers = await db.analyzers();
+   * // analyzers is an array of Analyzer instances
+   * ```
+   */
   async analyzers(): Promise<Analyzer[]> {
     const analyzers = await this.listAnalyzers();
     return analyzers.map(data => this.analyzer(data.name));
