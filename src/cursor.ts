@@ -77,7 +77,9 @@ export class ArrayCursor<T = any> {
   async all(): Promise<T[]> {
     await this._drain();
     const result = [...this._result.values()];
-    this._result = new LinkedList();
+    this._result.first = undefined;
+    this._result.last = undefined;
+    this._result.length = 0;
     return result;
   }
 
@@ -98,7 +100,11 @@ export class ArrayCursor<T = any> {
     if (!this._result.length) {
       return undefined;
     }
-    return this.all();
+    const result = [...this._result.values()];
+    this._result.first = undefined;
+    this._result.last = undefined;
+    this._result.length = 0;
+    return result;
   }
 
   async each(
