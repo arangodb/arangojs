@@ -422,9 +422,21 @@ export class GraphEdgeCollection<T extends object = any>
   }
 }
 
+/**
+ * An edge definition used to define a collection of edges in a {@link Graph}.
+ */
 export type EdgeDefinition = {
+  /**
+   * Name of the collection containing the edges.
+   */
   collection: string;
+  /**
+   * Array of names of collections containing the start vertices.
+   */
   from: string[];
+  /**
+   * Array of names of collections containing the end vertices.
+   */
   to: string[];
 };
 
@@ -453,20 +465,55 @@ export type GraphInfo = {
 };
 
 export type GraphCreateOptions = {
+  /**
+   * If set to `true`, the request will wait until everything is synced to
+   * disk before returning successfully.
+   */
   waitForSync?: boolean;
+  // TODO
   orphanCollections?: string[];
 
-  // Cluster options
+  /**
+   * (Cluster only.) Number of shards to distribute each collection in this
+   * graph across.
+   */
   numberOfShards?: number;
+  /**
+   * (Cluster only.) Document attributes to use to determine the target shard
+   * for each document.
+   *
+   * TODO removed?
+   *
+   * Default: `["_key"]`
+   */
+  shardKeys?: string[];
+  /**
+   * (Cluster only.) How many copies of each document should be kept in the
+   * cluster.
+   *
+   * Default: `1`
+   */
   replicationFactor?: number | "satellite";
+  // TODO
   writeConcern?: number;
+  // TODO
   /** @deprecated ArangoDB 3.6, use `writeConcern` instead */
   minReplicationFactor?: number;
 
   // Extra options
-  /** Enterprise Edition only */
+  /**
+   * (Enterprise Edition cluster only.) If set to `true`, the graph will be
+   * created as a SmartGraph.
+   *
+   * Default: `false`
+   */
   isSmart?: boolean;
-  /** Enterprise Edition only */
+  /**
+   * (Enterprise Edition cluster only.) Attribute containing the shard key
+   * value to use for smart sharding.
+   *
+   * **Note**: `isSmart` must be set to `true`.
+   */
   smartGraphAttribute?: string;
 };
 
