@@ -212,20 +212,59 @@ export type QueryInfo = {
 };
 
 export type CreateDatabaseUser = {
+  /**
+   * Username of the user to create.
+   */
   username: string;
+  /**
+   * Password of the user to create.
+   *
+   * Default: `""`
+   */
   passwd?: string;
+  /**
+   * Whether the user is active.
+   *
+   * Default: `true`
+   */
   active?: boolean;
+  /**
+   * Additional data to store with the user object.
+   */
   extra?: Dict<any>;
 };
 
 export type CreateDatabaseOptions = {
+  /**
+   * Database users to create with the database.
+   */
   users?: CreateDatabaseUser[];
 
   // Cluster options
+  /**
+   * (Cluster only.) The sharding method to use for new collections in the
+   * database.
+   */
   sharding?: "" | "flexible" | "single";
+  /**
+   * (Cluster only.) Default replication factor for new collections in this
+   * database.
+   *
+   * Setting this to `1` disables replication. Setting this to `"satellite"`
+   * will replicate to every DBServer.
+   */
   replicationFactor?: "satellite" | number;
+  /**
+   * (Cluster only.) Default write concern for new collections created in this
+   * database.
+   */
   writeConcern?: number;
-  /** @deprecated ArangoDB 3.6, use `writeConcern` instead */
+  /**
+   * (Cluster only.) Default write concern for new collections created in this
+   * database.
+   *
+   * @deprecated Renamed to `writeConcern` in ArangoDB 3.6.
+   */
   minReplicationFactor?: number;
 };
 
@@ -714,6 +753,16 @@ export class Database {
     return db;
   }
 
+  /**
+   * Fetches the database description for the active database from the server.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const info = await db.get();
+   * // the database exists
+   * ```
+   */
   get(): Promise<DatabaseInfo> {
     return this.request(
       { path: "/_api/database/current" },
@@ -721,6 +770,16 @@ export class Database {
     );
   }
 
+  /**
+   * Checks whether the database exists.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const result = await db.exists();
+   * // result indicates whether the database exists
+   * ```
+   */
   async exists(): Promise<boolean> {
     try {
       await this.get();
@@ -733,18 +792,52 @@ export class Database {
     }
   }
 
+  /**
+   * Creates a new database with the given `databaseName` with the given
+   * `options` and returns a `Database` instance for that database.
+   *
+   * @param databaseName - Name of the database to create.
+   * @param options - Options for creating the database.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const info = await db.createDatabase("mydb", {
+   *   users: [{ username: "root" }]
+   * });
+   * // the database has been created
+   * db.useDatabase("mydb");
+   * db.useBasicAuth("root", "");
+   * ```
+   */
   createDatabase(
     databaseName: string,
     options?: CreateDatabaseOptions
-  ): Promise<boolean>;
+  ): Promise<Database>;
+  /**
+   * Creates a new database with the given `databaseName` with the given
+   * `users` and returns a `Database` instance for that database.
+   *
+   * @param databaseName - Name of the database to create.
+   * @param users - Database users to create with the database.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const info = await db.createDatabase("mydb", [{ username: "root" }]);
+   * // the database has been created
+   * db.useDatabase("mydb");
+   * db.useBasicAuth("root", "");
+   * ```
+   */
   createDatabase(
     databaseName: string,
     users: CreateDatabaseUser[]
-  ): Promise<boolean>;
+  ): Promise<Database>;
   createDatabase(
     databaseName: string,
     usersOrOptions?: CreateDatabaseUser[] | CreateDatabaseOptions
-  ): Promise<boolean> {
+  ): Promise<Database> {
     const { users, ...options } = Array.isArray(usersOrOptions)
       ? { users: usersOrOptions }
       : usersOrOptions || {};
@@ -754,14 +847,35 @@ export class Database {
         path: "/_api/database",
         body: { name: databaseName, users, options }
       },
-      res => res.body.result
+      () => new Database(this, databaseName)
     );
   }
 
+  /**
+   * Fetches all databases from the server and returns an array of their names.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const names = await db.listDatabases();
+   * // databases is an array of database names
+   * ```
+   */
   listDatabases(): Promise<string[]> {
     return this.request({ path: "/_api/database" }, res => res.body.result);
   }
 
+  /**
+   * Fetches all databases accessible to the active user from the server and
+   * returns an array of their names.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const names = await db.listUserDatabases();
+   * // databases is an array of database names
+   * ```
+   */
   listUserDatabases(): Promise<string[]> {
     return this.request(
       { path: "/_api/database/user" },
@@ -769,6 +883,52 @@ export class Database {
     );
   }
 
+  /**
+   * Fetches all databases from the server and returns an array of `Database`
+   * instances for those databases.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const names = await db.databases();
+   * // databases is an array of databases
+   * ```
+   */
+  databases(): Promise<Database[]> {
+    return this.request({ path: "/_api/database" }, res =>
+      (res.body.result as string[]).map(name => new Database(this, name))
+    );
+  }
+
+  /**
+   * Fetches all databases accessible to the active user from the server and
+   * returns an array of `Database` instances for those databases.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const names = await db.userDatabases();
+   * // databases is an array of databases
+   * ```
+   */
+  userDatabases(): Promise<Database[]> {
+    return this.request({ path: "/_api/database/user" }, res =>
+      (res.body.result as string[]).map(name => new Database(this, name))
+    );
+  }
+
+  /**
+   * Deletes the database with the given `databaseName` from the server.
+   *
+   * @param databaseName - Name of the database to delete.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * await db.dropDatabase("mydb");
+   * // database "mydb" no longer exists
+   * ```
+   */
   dropDatabase(databaseName: string): Promise<boolean> {
     return this.request(
       {
