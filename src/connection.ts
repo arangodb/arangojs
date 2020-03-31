@@ -1,5 +1,6 @@
 import { stringify as querystringify } from "querystring";
 import { LinkedList } from "x3-linkedlist";
+import { Database } from "./database";
 import { ArangoError, HttpError, isSystemError } from "./error";
 import {
   ArangojsResponse,
@@ -236,6 +237,7 @@ export class Connection {
   protected _maxRetries: number;
   protected _maxTasks: number;
   protected _queue = new LinkedList<Task>();
+  protected _databases = new Map<string, Database>();
   protected _hosts: RequestFunction[] = [];
   protected _urls: string[] = [];
   protected _activeHost: number;
@@ -362,6 +364,24 @@ export class Connection {
       else search = `?${querystringify(clean(qs))}`;
     }
     return search ? { pathname, search } : { pathname };
+  }
+
+  database(databaseName: string): Database | undefined;
+  database(databaseName: string, database: Database): Database;
+  database(databaseName: string, database: null): undefined;
+  database(
+    databaseName: string,
+    database?: Database | null
+  ): Database | undefined {
+    if (database === null) {
+      this._databases.delete(databaseName);
+      return undefined;
+    }
+    if (!database) {
+      return this._databases.get(databaseName);
+    }
+    this._databases.set(databaseName, database);
+    return database;
   }
 
   addToHostList(urls: string | string[]): number[] {
