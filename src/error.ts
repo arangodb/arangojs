@@ -1,4 +1,4 @@
-import ExtendableError from "./lib/error";
+import { ExtendableError } from "./lib/error";
 
 const messages: { [key: number]: string } = {
   0: "Network Error",
@@ -59,7 +59,7 @@ export function isArangoError(err: any): err is ArangoError {
   return Boolean(err && err.isArangoError);
 }
 
-export function isSystemError(err: Error): err is SystemError {
+export function isSystemError(err: any): err is SystemError {
   return (
     Object.getPrototypeOf(err) === Error.prototype &&
     err.hasOwnProperty("code") &&
