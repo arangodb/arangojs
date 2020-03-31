@@ -37,12 +37,13 @@ import { isArangoError } from "./error";
 import { EdgeDefinition, Graph, GraphCreateOptions, GraphInfo } from "./graph";
 import { Headers, Route } from "./route";
 import { Transaction } from "./transaction";
+import { Blob } from "./util/blob";
 import { btoa } from "./util/btoa";
 import { DATABASE_NOT_FOUND } from "./util/codes";
 import { FoxxManifest } from "./util/foxx-manifest";
 import { toForm } from "./util/multipart";
 import { ArangojsResponse } from "./util/request";
-import { Blob } from "./util/types";
+import { Dict } from "./util/types";
 import {
   ArangoSearchView,
   ArangoSearchViewPropertiesOptions,
@@ -1429,7 +1430,7 @@ export class Database {
   async getServiceConfiguration(
     mount: string,
     minimal?: false
-  ): Promise<{ [key: string]: ServiceConfiguration }>;
+  ): Promise<Dict<ServiceConfiguration>>;
   async getServiceConfiguration(
     mount: string,
     minimal: true
@@ -1458,14 +1459,14 @@ export class Database {
     mount: string,
     cfg: ServiceConfigurationValues,
     minimal?: false
-  ): Promise<{ [key: string]: ServiceConfiguration & { warning?: string } }>;
+  ): Promise<Dict<ServiceConfiguration & { warning?: string }>>;
   async updateServiceConfiguration(
     mount: string,
     cfg: ServiceConfigurationValues,
     minimal: true
   ): Promise<{
     values: ServiceConfigurationValues;
-    warnings: { [key: string]: string };
+    warnings: Dict<string>;
   }>;
   async updateServiceConfiguration(
     mount: string,
@@ -1505,14 +1506,14 @@ export class Database {
     mount: string,
     cfg: ServiceConfigurationValues,
     minimal?: false
-  ): Promise<{ [key: string]: ServiceConfiguration & { warning?: string } }>;
+  ): Promise<Dict<ServiceConfiguration & { warning?: string }>>;
   async replaceServiceConfiguration(
     mount: string,
     cfg: ServiceConfigurationValues,
     minimal: true
   ): Promise<{
     values: ServiceConfigurationValues;
-    warnings: { [key: string]: string };
+    warnings: Dict<string>;
   }>;
   async replaceServiceConfiguration(
     mount: string,
@@ -1551,7 +1552,7 @@ export class Database {
   async getServiceDependencies(
     mount: string,
     minimal?: false
-  ): Promise<{ [key: string]: ServiceDependency }>;
+  ): Promise<Dict<ServiceDependency>>;
   async getServiceDependencies(
     mount: string,
     minimal: true
@@ -1580,14 +1581,14 @@ export class Database {
     mount: string,
     deps: ServiceDependenciesValues,
     minimal?: false
-  ): Promise<{ [key: string]: ServiceDependency & { warning?: string } }>;
+  ): Promise<Dict<ServiceDependency & { warning?: string }>>;
   async updateServiceDependencies(
     mount: string,
     deps: ServiceDependenciesValues,
     minimal: true
   ): Promise<{
     values: ServiceDependenciesValues;
-    warnings: { [key: string]: string };
+    warnings: Dict<string>;
   }>;
   async updateServiceDependencies(
     mount: string,
@@ -1628,14 +1629,14 @@ export class Database {
     mount: string,
     deps: ServiceDependenciesValues,
     minimal?: false
-  ): Promise<{ [key: string]: ServiceDependency & { warning?: string } }>;
+  ): Promise<Dict<ServiceDependency & { warning?: string }>>;
   async replaceServiceDependencies(
     mount: string,
     deps: ServiceDependenciesValues,
     minimal: true
   ): Promise<{
     values: ServiceDependenciesValues;
-    warnings: { [key: string]: string };
+    warnings: Dict<string>;
   }>;
   async replaceServiceDependencies(
     mount: string,
