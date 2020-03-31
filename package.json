@@ -36,11 +36,11 @@
   "main": "build/index.js",
   "typings": "build/arangojs.d.ts",
   "browser": {
-    "./src/util/btoa.ts": "./src/util/btoa.web.ts",
-    "./src/util/bytelength.ts": "./src/util/bytelength.web.ts",
-    "./src/util/joinPath.ts": "./src/util/joinPath.web.ts",
-    "./src/util/multipart.ts": "./src/util/multipart.web.ts",
-    "./src/util/request.ts": "./src/util/request.web.ts"
+    "./src/lib/btoa.ts": "./src/lib/btoa.web.ts",
+    "./src/lib/bytelength.ts": "./src/lib/bytelength.web.ts",
+    "./src/lib/joinPath.ts": "./src/lib/joinPath.web.ts",
+    "./src/lib/multipart.ts": "./src/lib/multipart.web.ts",
+    "./src/lib/request.ts": "./src/lib/request.web.ts"
   },
   "files": [
     "**/*",

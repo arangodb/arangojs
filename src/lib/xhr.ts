@@ -1,5 +1,5 @@
 import { ClientRequest } from "http";
-import { Errback } from "./types";
+import { Errback } from "../util/types";
 
 export default require("xhr") as (
   options: any,

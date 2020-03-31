@@ -1,6 +1,6 @@
 import { expect } from "chai";
-import { DocumentMetadata } from "../collection";
 import { Database } from "../database";
+import { DocumentMetadata } from "../documents";
 import { GraphVertexCollection } from "../graph";
 
 const ARANGO_URL = process.env.TEST_ARANGODB_URL || "http://localhost:8529";

@@ -6,14 +6,32 @@ import {
   createRequest,
   isBrowser,
   RequestFunction
-} from "./util/request";
-import { sanitizeUrl } from "./util/sanitizeUrl";
+} from "./lib/request";
+import { sanitizeUrl } from "./lib/sanitizeUrl";
 import { Errback } from "./util/types";
 
 const MIME_JSON = /\/(json|javascript)(\W|$)/;
 const LEADER_ENDPOINT_HEADER = "x-arango-endpoint";
 
 export type LoadBalancingStrategy = "NONE" | "ROUND_ROBIN" | "ONE_RANDOM";
+
+/**
+ * An arbitrary object with string values representing HTTP headers and their
+ * values.
+ *
+ * Header names should always be lowercase.
+ */
+export type Headers = {
+  [key: string]: string;
+};
+
+/**
+ * An arbitrary object with scalar values representing query string parameters
+ * and their values.
+ */
+export type Params = {
+  [key: string]: any;
+};
 
 export interface ArangoResponseMetadata {
   [key: string]: any | undefined;
@@ -50,7 +68,7 @@ type UrlInfo = {
   absolutePath?: boolean;
   basePath?: string;
   path?: string;
-  qs?: string | { [key: string]: any };
+  qs?: string | Params;
 };
 
 export interface RequestOptions {
@@ -60,11 +78,11 @@ export interface RequestOptions {
   expectBinary?: boolean;
   isBinary?: boolean;
   allowDirtyRead?: boolean;
-  headers?: { [key: string]: string };
+  headers?: Headers;
   timeout?: number;
   basePath?: string;
   path?: string;
-  qs?: string | { [key: string]: any };
+  qs?: string | Params;
 }
 
 /** @hidden @internal */
@@ -79,7 +97,7 @@ export interface Task {
     expectBinary: boolean;
     timeout?: number;
     url: { pathname: string; search?: string };
-    headers: { [key: string]: string };
+    headers: Headers;
     body: any;
   };
 }
@@ -204,13 +222,10 @@ export interface ConnectionOptions {
   /**
     An object with additional headers to send with every request.
 
-    Header names should always be lowercase. If an `"authorization"` header is
-    provided, it will be overridden when using
-    {@link Database.useBasicAuth} or {@link Database.useBearerAuth}.
+    If an `"authorization"` header is provided, it will be overridden when
+    using {@link Database.useBasicAuth} or {@link Database.useBearerAuth}.
    */
-  headers?: {
-    [key: string]: string;
-  };
+  headers?: Headers;
 }
 
 /** @hidden @internal */
@@ -224,7 +239,7 @@ export class Connection {
   protected _agent?: any;
   protected _agentOptions: { [key: string]: any };
   protected _arangoVersion: number = 30400;
-  protected _headers: { [key: string]: string };
+  protected _headers: Headers;
   protected _loadBalancingStrategy: LoadBalancingStrategy;
   protected _useFailOver: boolean;
   protected _shouldRetry: boolean;
@@ -418,7 +433,7 @@ export class Connection {
         }
       }
 
-      const extraHeaders: { [key: string]: string } = {
+      const extraHeaders: Headers = {
         ...this._headers,
         "content-type": contentType,
         "x-arango-version": String(this._arangoVersion)

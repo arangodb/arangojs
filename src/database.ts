@@ -29,20 +29,21 @@ import { Config } from "./config";
 import {
   ArangoResponseMetadata,
   Connection,
+  Headers,
   isArangoConnection,
   RequestOptions
 } from "./connection";
 import { ArrayCursor } from "./cursor";
 import { isArangoError } from "./error";
 import { EdgeDefinition, Graph, GraphCreateOptions, GraphInfo } from "./graph";
-import { Headers, Route } from "./route";
+import { Blob } from "./lib/blob";
+import { btoa } from "./lib/btoa";
+import { toForm } from "./lib/multipart";
+import { ArangojsResponse } from "./lib/request";
+import { Route } from "./route";
 import { Transaction } from "./transaction";
-import { Blob } from "./util/blob";
-import { btoa } from "./util/btoa";
 import { DATABASE_NOT_FOUND } from "./util/codes";
 import { FoxxManifest } from "./util/foxx-manifest";
-import { toForm } from "./util/multipart";
-import { ArangojsResponse } from "./util/request";
 import { Dict } from "./util/types";
 import {
   ArangoSearchView,
@@ -93,7 +94,7 @@ export interface TransactionOptions {
 
 export interface InstallServiceOptions {
   configuration?: ServiceConfigurationValues;
-  dependencies?: { [key: string]: string };
+  dependencies?: Dict<string>;
   development?: boolean;
   setup?: boolean;
   legacy?: boolean;
@@ -219,7 +220,7 @@ export interface CreateDatabaseUser {
   username: string;
   passwd?: string;
   active?: boolean;
-  extra?: { [key: string]: any };
+  extra?: Dict<any>;
 }
 
 export interface CreateDatabaseOptions {
@@ -277,7 +278,7 @@ export interface ServiceSummary {
   mount: string;
   name?: string;
   version?: string;
-  provides: { [key: string]: string };
+  provides: Dict<string>;
   development: boolean;
   legacy: boolean;
 }
@@ -427,6 +428,7 @@ export interface ServiceTestDefaultReport {
 }
 
 export interface SwaggerJson {
+  [key: string]: any;
   info: {
     title: string;
     description: string;
@@ -436,7 +438,6 @@ export interface SwaggerJson {
   path: {
     [key: string]: any;
   };
-  [key: string]: any;
 }
 
 /**
@@ -1491,9 +1492,9 @@ export class Database {
     ) {
       return result;
     }
-    const result2 = (await this.getServiceConfiguration(mount, false)) as {
-      [key: string]: ServiceConfiguration & { warning?: string };
-    };
+    const result2 = (await this.getServiceConfiguration(mount, false)) as Dict<
+      ServiceConfiguration & { warning?: string }
+    >;
     if (result.warnings) {
       for (const key of Object.keys(result2)) {
         result2[key].warning = result.warnings[key];
@@ -1538,9 +1539,9 @@ export class Database {
     ) {
       return result;
     }
-    const result2 = (await this.getServiceConfiguration(mount, false)) as {
-      [key: string]: ServiceConfiguration & { warning?: string };
-    };
+    const result2 = (await this.getServiceConfiguration(mount, false)) as Dict<
+      ServiceConfiguration & { warning?: string }
+    >;
     if (result.warnings) {
       for (const key of Object.keys(result2)) {
         result2[key].warning = result.warnings[key];
@@ -1614,9 +1615,9 @@ export class Database {
       return result;
     }
     // Work around "minimal" flag not existing in 3.3
-    const result2 = (await this.getServiceDependencies(mount, false)) as {
-      [key: string]: ServiceDependency & { warning?: string };
-    };
+    const result2 = (await this.getServiceDependencies(mount, false)) as Dict<
+      ServiceDependency & { warning?: string }
+    >;
     if (result.warnings) {
       for (const key of Object.keys(result2)) {
         result2[key].warning = result.warnings[key];
@@ -1662,9 +1663,9 @@ export class Database {
       return result;
     }
     // Work around "minimal" flag not existing in 3.3
-    const result2 = (await this.getServiceDependencies(mount, false)) as {
-      [key: string]: ServiceDependency & { warning?: string };
-    };
+    const result2 = (await this.getServiceDependencies(mount, false)) as Dict<
+      ServiceDependency & { warning?: string }
+    >;
     if (result.warnings) {
       for (const key of Object.keys(result2)) {
         (result2[key] as any).warning = result.warnings[key];

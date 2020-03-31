@@ -3,20 +3,22 @@ import {
   CollectionInsertResult,
   CollectionRemoveResult,
   CollectionSaveResult,
-  Document,
   DocumentCollection,
+  EdgeCollection,
+  isArangoCollection,
+  TraversalOptions
+} from "./collection";
+import { Headers } from "./connection";
+import { Database } from "./database";
+import {
+  Document,
   DocumentData,
   DocumentSelector,
   Edge,
-  EdgeCollection,
   EdgeData,
-  isArangoCollection,
-  TraversalOptions,
   _documentHandle
-} from "./collection";
-import { Database } from "./database";
+} from "./documents";
 import { isArangoError } from "./error";
-import { Headers } from "./route";
 import { DOCUMENT_NOT_FOUND, GRAPH_NOT_FOUND } from "./util/codes";
 import { Patch } from "./util/types";
 

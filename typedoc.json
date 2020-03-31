@@ -2,7 +2,7 @@
   "out": "tsdoc",
   "gitRemote": "https://github.com/arangodb/arangojs",
   "disableSources": true,
-  "exclude": ["**/util/*.ts", "**/test/*.ts"],
+  "exclude": ["**/lib/*.ts", "**/test/*.ts"],
   "excludeNotExported": true,
   "excludeProtected": true,
   "excludePrivate": true,

@@ -3,7 +3,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { Database } from "../database";
 import { ArangoError } from "../error";
-import { sanitizeUrl } from "../util/sanitizeUrl";
+import { sanitizeUrl } from "../lib/sanitizeUrl";
 
 const ARANGO_URL = process.env.TEST_ARANGODB_URL || "http://localhost:8529";
 const ARANGO_URL_SELF_REACHABLE = process.env.TEST_ARANGODB_URL_SELF_REACHABLE;

@@ -1,61 +1,36 @@
 import { ArangoResponseMetadata, RequestOptions } from "./connection";
 import { ArrayCursor } from "./cursor";
 import { Database } from "./database";
+import {
+  Document,
+  DocumentData,
+  DocumentMetadata,
+  DocumentSelector,
+  Edge,
+  EdgeData,
+  _documentHandle
+} from "./documents";
 import { isArangoError } from "./error";
-import { Blob } from "./util/blob";
+import {
+  EnsureIndexFulltextOptions,
+  EnsureIndexGeoOptions,
+  EnsureIndexHashOptions,
+  EnsureIndexPersistentOptions,
+  EnsureIndexSkiplistOptions,
+  EnsureIndexTtlOptions,
+  FulltextIndex,
+  GeoIndex,
+  HashIndex,
+  Index,
+  IndexSelector,
+  PersistentIndex,
+  SkiplistIndex,
+  TtlIndex,
+  _indexHandle
+} from "./indexes";
+import { Blob } from "./lib/blob";
 import { COLLECTION_NOT_FOUND, DOCUMENT_NOT_FOUND } from "./util/codes";
-import { Patch, StrictObject } from "./util/types";
-
-/** @hidden @internal */
-export function _documentHandle(
-  selector: DocumentSelector,
-  collectionName: string
-): string {
-  if (typeof selector !== "string") {
-    if (selector._id) {
-      return _documentHandle(selector._id, collectionName);
-    }
-    if (selector._key) {
-      return _documentHandle(selector._key, collectionName);
-    }
-    throw new Error(
-      "Document handle must be a string or an object with a _key or _id attribute"
-    );
-  }
-  if (selector.includes("/")) {
-    if (!selector.startsWith(`${collectionName}/`)) {
-      throw new Error(
-        `Document ID "${selector}" does not match collection name "${collectionName}"`
-      );
-    }
-    return selector;
-  }
-  return `${collectionName}/${selector}`;
-}
-
-/** @hidden @internal */
-export function _indexHandle(
-  selector: IndexSelector,
-  collectionName: string
-): string {
-  if (typeof selector !== "string") {
-    if (selector.id) {
-      return _indexHandle(selector.id, collectionName);
-    }
-    throw new Error(
-      "Index handle must be a string or an object with an id attribute"
-    );
-  }
-  if (selector.includes("/")) {
-    if (!selector.startsWith(`${collectionName}/`)) {
-      throw new Error(
-        `Index ID "${selector}" does not match collection name "${collectionName}"`
-      );
-    }
-    return selector;
-  }
-  return `${collectionName}/${selector}`;
-}
+import { Patch } from "./util/types";
 
 export function isArangoCollection(
   collection: any
@@ -315,62 +290,6 @@ export interface TraversalOptions {
   maxIterations?: number;
 }
 
-export interface EnsureIndexHashOptions {
-  type: "hash";
-  fields: string[];
-  name?: string;
-  unique?: boolean;
-  sparse?: boolean;
-  deduplicate?: boolean;
-}
-
-export interface EnsureIndexSkiplistOptions {
-  type: "skiplist";
-  fields: string[];
-  name?: string;
-  unique?: boolean;
-  sparse?: boolean;
-  deduplicate?: boolean;
-}
-
-/** @deprecated ArangoDB 3.4 */
-export interface EnsureIndexPersistentOptions {
-  type: "persistent";
-  fields: string[];
-  name?: string;
-  unique?: boolean;
-  sparse?: boolean;
-}
-
-export interface EnsureIndexGeoOptions {
-  type: "geo";
-  fields: [string] | [string, string];
-  name?: string;
-  geoJson?: boolean;
-}
-
-export interface EnsureIndexFulltextOptions {
-  type: "fulltext";
-  fields: [string];
-  name?: string;
-  minLength?: number;
-}
-
-export interface EnsureIndexTtlOptions {
-  type: "ttl";
-  fields: [string];
-  name?: string;
-  expireAfter: number;
-}
-
-export type EnsureIndexOptions =
-  | EnsureIndexHashOptions
-  | EnsureIndexSkiplistOptions
-  | EnsureIndexPersistentOptions
-  | EnsureIndexGeoOptions
-  | EnsureIndexFulltextOptions
-  | EnsureIndexTtlOptions;
-
 // Results
 
 export interface CollectionPropertiesAndCount extends CollectionProperties {
@@ -501,117 +420,6 @@ export interface CollectionIndexResult {
   id: string;
 }
 
-// Document
-
-export interface ObjectWithId {
-  [key: string]: any;
-  _id: string;
-}
-
-export interface ObjectWithKey {
-  [key: string]: any;
-  _id: string;
-}
-
-export type DocumentLike = ObjectWithId | ObjectWithKey;
-
-export type DocumentSelector = DocumentLike | string;
-
-export interface DocumentMetadata {
-  _key: string;
-  _id: string;
-  _rev: string;
-}
-
-export interface UpdateMetadata extends DocumentMetadata {
-  _oldRev: string;
-}
-
-export interface EdgeMetadata {
-  _from: string;
-  _to: string;
-}
-
-export type DocumentData<T extends object = any> = StrictObject<T> &
-  Partial<DocumentMetadata> &
-  Partial<EdgeMetadata>;
-
-export type EdgeData<T extends object = any> = StrictObject<T> &
-  Partial<DocumentMetadata> &
-  EdgeMetadata;
-
-export type Document<T extends object = any> = StrictObject<T> &
-  DocumentMetadata &
-  Partial<EdgeMetadata>;
-
-export type Edge<T extends object = any> = StrictObject<T> &
-  DocumentMetadata &
-  EdgeMetadata;
-
-// Indexes
-
-export interface GenericIndex {
-  name?: string;
-  id: string;
-  sparse: boolean;
-  unique: boolean;
-}
-
-export interface SkiplistIndex extends GenericIndex {
-  type: "skiplist";
-  fields: string[];
-}
-
-export interface HashIndex extends GenericIndex {
-  type: "hash";
-  fields: string[];
-  selectivityEstimate: number;
-}
-
-export interface PrimaryIndex extends GenericIndex {
-  type: "primary";
-  fields: string[];
-  selectivityEstimate: number;
-}
-
-export interface PersistentIndex extends GenericIndex {
-  type: "persistent";
-  fields: string[];
-}
-
-export interface FulltextIndex extends GenericIndex {
-  type: "fulltext";
-  fields: [string];
-  minLength: number;
-}
-
-export interface GeoIndex extends GenericIndex {
-  type: "geo";
-  fields: [string] | [string, string];
-  geoJson: boolean;
-  bestIndexedLevel: number;
-  worstIndexedLevel: number;
-  maxNumCoverCells: number;
-}
-
-export interface TtlIndex extends GenericIndex {
-  type: "ttl";
-  fields: [string];
-  expireAfter: number;
-  selectivityEstimate: number;
-}
-
-export type Index =
-  | GeoIndex
-  | FulltextIndex
-  | PersistentIndex
-  | PrimaryIndex
-  | HashIndex
-  | SkiplistIndex
-  | TtlIndex;
-
-export type IndexSelector = string | Index;
-
 // Collections
 
 export interface DocumentCollection<T extends object = any>
@@ -663,7 +471,7 @@ export interface DocumentCollection<T extends object = any>
     options?: CollectionReplaceOptions
   ): Promise<CollectionSaveResult<Document<T>>>;
   replaceAll(
-    newValues: Array<DocumentData<T> & DocumentLike>,
+    newValues: Array<DocumentData<T> & ({ _key: string } | { _id: string })>,
     options?: CollectionReplaceOptions
   ): Promise<CollectionSaveResult<Document<T>>[]>;
   update(
@@ -672,7 +480,9 @@ export interface DocumentCollection<T extends object = any>
     options?: CollectionUpdateOptions
   ): Promise<CollectionSaveResult<Document<T>>>;
   updateAll(
-    newValues: Array<Patch<DocumentData<T>> & DocumentLike>,
+    newValues: Array<
+      Patch<DocumentData<T>> & ({ _key: string } | { _id: string })
+    >,
     options?: CollectionUpdateOptions
   ): Promise<CollectionSaveResult<Document<T>>[]>;
   remove(
@@ -811,7 +621,7 @@ export interface EdgeCollection<T extends object = any>
     options?: CollectionReplaceOptions
   ): Promise<CollectionSaveResult<Edge<T>>>;
   replaceAll(
-    newValues: Array<DocumentData<T> & DocumentLike>,
+    newValues: Array<DocumentData<T> & ({ _key: string } | { _id: string })>,
     options?: CollectionReplaceOptions
   ): Promise<CollectionSaveResult<Edge<T>>[]>;
   update(
@@ -820,7 +630,9 @@ export interface EdgeCollection<T extends object = any>
     options?: CollectionUpdateOptions
   ): Promise<CollectionSaveResult<Edge<T>>>;
   updateAll(
-    newValues: Array<Patch<DocumentData<T>> & DocumentLike>,
+    newValues: Array<
+      Patch<DocumentData<T>> & ({ _key: string } | { _id: string })
+    >,
     options?: CollectionUpdateOptions
   ): Promise<CollectionSaveResult<Edge<T>>[]>;
   import(
@@ -1143,7 +955,7 @@ export class Collection<T extends object = any>
   }
 
   replaceAll(
-    newValues: Array<DocumentData<T> & DocumentLike>,
+    newValues: Array<DocumentData<T> & ({ _key: string } | { _id: string })>,
     options?: CollectionReplaceOptions
   ) {
     return this._db.request(
@@ -1174,7 +986,9 @@ export class Collection<T extends object = any>
   }
 
   updateAll(
-    newValues: Array<Patch<DocumentData<T>> & DocumentLike>,
+    newValues: Array<
+      Patch<DocumentData<T>> & ({ _key: string } | { _id: string })
+    >,
     options?: CollectionUpdateOptions
   ) {
     return this._db.request(
@@ -1457,7 +1271,15 @@ export class Collection<T extends object = any>
     );
   }
 
-  ensureIndex(options: EnsureIndexOptions) {
+  ensureIndex(
+    options:
+      | EnsureIndexHashOptions
+      | EnsureIndexSkiplistOptions
+      | EnsureIndexPersistentOptions
+      | EnsureIndexGeoOptions
+      | EnsureIndexFulltextOptions
+      | EnsureIndexTtlOptions
+  ) {
     return this._db.request(
       {
         method: "POST",
