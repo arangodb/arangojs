@@ -45,47 +45,47 @@ describe("Cursor API", () => {
   });
   describe("cursor.hasNext", () => {
     it("returns true if the Cursor has more results", async () => {
-      expect(cursor.hasNext()).to.equal(true);
+      expect(cursor.hasNext).to.equal(true);
       const val = await cursor.next();
       expect(val).to.be.a("number");
     });
     it("returns false if the Cursor is empty", async () => {
       await cursor.all();
-      expect(cursor.hasNext()).to.equal(false);
+      expect(cursor.hasNext).to.equal(false);
     });
     it("returns true after first batch is consumed", async () => {
       const cursor = await db.query(aqlQuery, { batchSize: 1 });
       expect((cursor as any)._result.length).to.equal(1);
       cursor.next();
       expect((cursor as any)._result.length).to.equal(0);
-      expect(cursor.hasNext()).to.equal(true);
+      expect(cursor.hasNext).to.equal(true);
     });
     it("returns false after last batch is consumed", async () => {
       const cursor = await db.query(aql`FOR i In 0..1 RETURN i`, {
         batchSize: 1
       });
-      expect(cursor.hasNext()).to.equal(true);
+      expect(cursor.hasNext).to.equal(true);
       expect((cursor as any)._result.length).to.equal(1);
       const val1 = await cursor.next();
       expect(val1).to.equal(0);
-      expect(cursor.hasNext()).to.equal(true);
+      expect(cursor.hasNext).to.equal(true);
       expect((cursor as any)._result.length).to.equal(0);
       const val2 = await cursor.next();
       expect(val2).to.equal(1);
-      expect(cursor.hasNext()).to.equal(false);
+      expect(cursor.hasNext).to.equal(false);
       expect((cursor as any)._result.length).to.equal(0);
     });
     it("returns false after last result is consumed", async () => {
       const cursor = await db.query("FOR i In 0..1 RETURN i");
-      expect(cursor.hasNext()).to.equal(true);
+      expect(cursor.hasNext).to.equal(true);
       expect((cursor as any)._result.length).to.equal(2);
       const val1 = await cursor.next();
       expect(val1).to.equal(0);
-      expect(cursor.hasNext()).to.equal(true);
+      expect(cursor.hasNext).to.equal(true);
       expect((cursor as any)._result.length).to.equal(1);
       const val2 = await cursor.next();
       expect(val2).to.equal(1);
-      expect(cursor.hasNext()).to.equal(false);
+      expect(cursor.hasNext).to.equal(false);
       expect((cursor as any)._result.length).to.equal(0);
     });
     it.skip("returns 404 after timeout", async () => {
@@ -93,11 +93,11 @@ describe("Cursor API", () => {
         batchSize: 1,
         ttl: 1
       });
-      expect(cursor.hasNext()).to.equal(true);
+      expect(cursor.hasNext).to.equal(true);
       expect((cursor as any)._result.length).to.equal(1);
       const val = await cursor.next();
       expect(val).to.equal(0);
-      expect(cursor.hasNext()).to.equal(true);
+      expect(cursor.hasNext).to.equal(true);
       expect((cursor as any)._result.length).to.equal(0);
       await sleep(3000);
       try {
@@ -113,8 +113,8 @@ describe("Cursor API", () => {
       async function loadMore(cursor: ArrayCursor, totalLength: number) {
         await cursor.next();
         totalLength++;
-        expect(cursor.hasNext()).to.equal(totalLength !== EXPECTED_LENGTH);
-        if (cursor.hasNext()) {
+        expect(cursor.hasNext).to.equal(totalLength !== EXPECTED_LENGTH);
+        if (cursor.hasNext) {
           await loadMore(cursor, totalLength);
         }
       }

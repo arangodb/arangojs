@@ -235,6 +235,8 @@ This is a major release and breaks backwards compatibility.
 
 - Collection `list` method now returns a cursor
 
+- Replaced `ArrayCursor` methods `hasNext` and `hasMore` with getters
+
 - Graph collection return values now contain `old` and `new` properties when
   `returnOld` or `returnNew` options are used
 
