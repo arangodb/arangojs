@@ -1,4 +1,5 @@
 import { expect } from "chai";
+import { LinkedList } from "x3-linkedlist";
 import { aql } from "../aql";
 import { ArrayCursor } from "../cursor";
 import { Database } from "../database";
@@ -199,9 +200,12 @@ describe("Cursor API", () => {
       cursor = await db.query(aql`FOR i IN 1..10 RETURN i`, { batchSize: 5 });
     });
     it("fetches the next batch when empty", async () => {
-      expect((cursor as any)._result).to.eql([1, 2, 3, 4, 5]);
+      const result: LinkedList<any> = (cursor as any)._result;
+      expect([...result.values()]).to.eql([1, 2, 3, 4, 5]);
       expect(cursor).to.have.property("_hasMore", true);
-      (cursor as any)._result.splice(0, 5);
+      result.first = undefined;
+      result.last = undefined;
+      result.length = 0;
       expect(await cursor.nextBatch()).to.eql([6, 7, 8, 9, 10]);
       expect(cursor).to.have.property("_hasMore", false);
     });
