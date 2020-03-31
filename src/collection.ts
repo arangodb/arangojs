@@ -2,8 +2,9 @@ import { ArangoResponseMetadata, RequestOptions } from "./connection";
 import { ArrayCursor } from "./cursor";
 import { Database } from "./database";
 import { isArangoError } from "./error";
+import { Blob } from "./util/blob";
 import { COLLECTION_NOT_FOUND, DOCUMENT_NOT_FOUND } from "./util/codes";
-import { Blob, Patch, StrictObject } from "./util/types";
+import { Patch, StrictObject } from "./util/types";
 
 /** @hidden @internal */
 export function _documentHandle(
