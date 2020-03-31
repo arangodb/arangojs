@@ -876,10 +876,35 @@ export class Database {
   //#endregion
 
   //#region views
+  /**
+   * Returns an {@link ArangoSearchView} instance for the given View name.
+   *
+   * @param viewName - Name of the ArangoSearch View.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const view = db.view("potatoes");
+   * ```
+   */
   view(viewName: string): ArangoSearchView {
     return new View(this, viewName);
   }
 
+  /**
+   * Creates a new ArangoSearch View with the given `viewName` and `options`
+   * and returns an {@link ArangoSearchView} instance for the created View.
+   *
+   * @param viewName - Name of the ArangoSearch View.
+   * @param options - An object defining the properties of the View.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const view = await db.createArangoSearchView("potatoes");
+   * // the ArangoSearch View "potatoes" now exists
+   * ```
+   */
   async createArangoSearchView(
     viewName: string,
     options?: ArangoSearchViewPropertiesOptions
@@ -889,10 +914,33 @@ export class Database {
     return view;
   }
 
+  /**
+   * Fetches all Views from the database and returns an array of View
+   * descriptions.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   *
+   * const views = await db.listViews();
+   * // views is an array of View descriptions
+   * ```
+   */
   listViews(): Promise<ViewDescription[]> {
     return this.request({ path: "/_api/view" }, res => res.body.result);
   }
 
+  /**
+   * Fetches all Views from the database and returns an array of
+   * {@link ArangoSearchView} instances for the Views.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const views = await db.views();
+   * // views is an array of ArangoSearch View instances
+   * ```
+   */
   async views(): Promise<ArangoSearchView[]> {
     const views = await this.listViews();
     return views.map(data => new View(this, data.name));
