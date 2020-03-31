@@ -77,7 +77,7 @@ export function aql(
   ...args: AqlValue[]
 ): GeneratedAqlQuery {
   const strings = [...templateStrings];
-  const bindVars: AqlQuery["bindVars"] = {};
+  const bindVars: Dict<any> = {};
   const bindVals = [];
   let query = strings[0];
   for (let i = 0; i < args.length; i++) {

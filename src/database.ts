@@ -62,23 +62,19 @@ export function isArangoDatabase(database: any): database is Database {
   return Boolean(database && database.isArangoDatabase);
 }
 
-export type TransactionCollectionsObject = {
+type CoercedTransactionCollections = {
   allowImplicit?: boolean;
   exclusive?: string | string[];
   write?: string | string[];
   read?: string | string[];
 };
 
-export type TransactionCollections =
-  | string
-  | ArangoCollection
-  | (string | ArangoCollection)[]
-  | {
-      allowImplicit?: boolean;
-      exclusive?: string | ArangoCollection | (string | ArangoCollection)[];
-      write?: string | ArangoCollection | (string | ArangoCollection)[];
-      read?: string | ArangoCollection | (string | ArangoCollection)[];
-    };
+export type TransactionCollections = {
+  allowImplicit?: boolean;
+  exclusive?: string | ArangoCollection | (string | ArangoCollection)[];
+  write?: string | ArangoCollection | (string | ArangoCollection)[];
+  read?: string | ArangoCollection | (string | ArangoCollection)[];
+};
 
 export type TransactionOptions = {
   allowImplicit?: boolean;
@@ -92,7 +88,7 @@ export type TransactionOptions = {
 };
 
 export type InstallServiceOptions = {
-  configuration?: ServiceConfigurationValues;
+  configuration?: Dict<any>;
   dependencies?: Dict<string>;
   development?: boolean;
   setup?: boolean;
@@ -208,7 +204,7 @@ export type QueryTrackingOptions = {
 export type QueryInfo = {
   id: string;
   query: string;
-  bindVars: AqlQuery["bindVars"];
+  bindVars: Dict<any>;
   runTime: number;
   started: string;
   state: "executing" | "finished" | "killed";
@@ -260,8 +256,8 @@ export type AqlUserFunction = {
 };
 
 export type ReplaceServiceOptions = {
-  configuration?: ServiceConfigurationValues;
-  dependencies?: ServiceDependenciesValues;
+  configuration?: Dict<any>;
+  dependencies?: Dict<string>;
   teardown?: boolean;
   setup?: boolean;
   legacy?: boolean;
@@ -292,8 +288,8 @@ export type ServiceInfo = {
   manifest: FoxxManifest;
   checksum: string;
   options: {
-    configuration: ServiceConfigurationValues;
-    dependencies: ServiceDependenciesValues;
+    configuration: Dict<any>;
+    dependencies: Dict<string>;
   };
 };
 
@@ -315,37 +311,27 @@ export type ServiceConfiguration = {
   default?: any;
 };
 
-export type ServiceDependency =
-  | {
-      multiple: false;
-      current?: string;
-      title: string;
-      name: string;
-      version: string;
-      description?: string;
-      required: boolean;
-    }
-  | {
-      multiple: true;
-      current?: string[];
-      title: string;
-      name: string;
-      version: string;
-      description?: string;
-      required: boolean;
-    };
-
-export type ServiceConfigurationValues = {
-  [key: string]: any;
+export type ServiceMonoDependency = {
+  multiple: false;
+  current?: string;
+  title: string;
+  name: string;
+  version: string;
+  description?: string;
+  required: boolean;
 };
 
-export type ServiceDependenciesValues = {
-  [key: string]: string;
+export type ServiceMultiDependency = {
+  multiple: true;
+  current?: string[];
+  title: string;
+  name: string;
+  version: string;
+  description?: string;
+  required: boolean;
 };
 
-export type ServiceScripts = {
-  [key: string]: string;
-};
+export type ServiceDependency = ServiceMonoDependency | ServiceMultiDependency;
 
 export type ServiceTestStats = {
   tests: number;
@@ -1026,7 +1012,11 @@ export class Database {
 
   //#region transactions
   executeTransaction(
-    collections: TransactionCollections,
+    collections:
+      | TransactionCollections
+      | (string | ArangoCollection)[]
+      | string
+      | ArangoCollection,
     action: string,
     options?: TransactionOptions & { params?: any }
   ): Promise<any> {
@@ -1049,7 +1039,11 @@ export class Database {
   }
 
   beginTransaction(
-    collections: TransactionCollections,
+    collections:
+      | TransactionCollections
+      | (string | ArangoCollection)[]
+      | string
+      | ArangoCollection,
     options?: TransactionOptions
   ): Promise<Transaction> {
     return this.request(
@@ -1082,12 +1076,12 @@ export class Database {
   query(query: AqlQuery, options?: QueryOptions): Promise<ArrayCursor>;
   query(
     query: string | AqlLiteral,
-    bindVars?: AqlQuery["bindVars"],
+    bindVars?: Dict<any>,
     options?: QueryOptions
   ): Promise<ArrayCursor>;
   query(
     query: string | AqlQuery | AqlLiteral,
-    bindVars?: AqlQuery["bindVars"],
+    bindVars?: Dict<any>,
     options?: QueryOptions
   ): Promise<ArrayCursor> {
     if (isAqlQuery(query)) {
@@ -1134,12 +1128,12 @@ export class Database {
   ): Promise<ExplainResult & ArangoResponseMetadata>;
   explain(
     query: string | AqlLiteral,
-    bindVars?: AqlQuery["bindVars"],
+    bindVars?: Dict<any>,
     options?: ExplainOptions
   ): Promise<ExplainResult & ArangoResponseMetadata>;
   explain(
     query: string | AqlQuery | AqlLiteral,
-    bindVars?: AqlQuery["bindVars"],
+    bindVars?: Dict<any>,
     options?: ExplainOptions
   ): Promise<ExplainResult & ArangoResponseMetadata> {
     if (isAqlQuery(query)) {
@@ -1439,7 +1433,7 @@ export class Database {
   async getServiceConfiguration(
     mount: string,
     minimal: true
-  ): Promise<ServiceConfigurationValues>;
+  ): Promise<Dict<any>>;
   async getServiceConfiguration(mount: string, minimal: boolean = false) {
     const result = await this.request(
       {
@@ -1462,20 +1456,20 @@ export class Database {
 
   async updateServiceConfiguration(
     mount: string,
-    cfg: ServiceConfigurationValues,
+    cfg: Dict<any>,
     minimal?: false
   ): Promise<Dict<ServiceConfiguration & { warning?: string }>>;
   async updateServiceConfiguration(
     mount: string,
-    cfg: ServiceConfigurationValues,
+    cfg: Dict<any>,
     minimal: true
   ): Promise<{
-    values: ServiceConfigurationValues;
+    values: Dict<any>;
     warnings: Dict<string>;
   }>;
   async updateServiceConfiguration(
     mount: string,
-    cfg: ServiceConfigurationValues,
+    cfg: Dict<any>,
     minimal: boolean = false
   ) {
     const result = await this.request(
@@ -1509,20 +1503,20 @@ export class Database {
 
   async replaceServiceConfiguration(
     mount: string,
-    cfg: ServiceConfigurationValues,
+    cfg: Dict<any>,
     minimal?: false
   ): Promise<Dict<ServiceConfiguration & { warning?: string }>>;
   async replaceServiceConfiguration(
     mount: string,
-    cfg: ServiceConfigurationValues,
+    cfg: Dict<any>,
     minimal: true
   ): Promise<{
-    values: ServiceConfigurationValues;
+    values: Dict<any>;
     warnings: Dict<string>;
   }>;
   async replaceServiceConfiguration(
     mount: string,
-    cfg: ServiceConfigurationValues,
+    cfg: Dict<any>,
     minimal: boolean = false
   ) {
     const result = await this.request(
@@ -1561,7 +1555,7 @@ export class Database {
   async getServiceDependencies(
     mount: string,
     minimal: true
-  ): Promise<ServiceDependenciesValues>;
+  ): Promise<Dict<string>>;
   async getServiceDependencies(mount: string, minimal: boolean = false) {
     const result = await this.request(
       {
@@ -1584,20 +1578,20 @@ export class Database {
 
   async updateServiceDependencies(
     mount: string,
-    deps: ServiceDependenciesValues,
+    deps: Dict<string>,
     minimal?: false
   ): Promise<Dict<ServiceDependency & { warning?: string }>>;
   async updateServiceDependencies(
     mount: string,
-    deps: ServiceDependenciesValues,
+    deps: Dict<string>,
     minimal: true
   ): Promise<{
-    values: ServiceDependenciesValues;
+    values: Dict<string>;
     warnings: Dict<string>;
   }>;
   async updateServiceDependencies(
     mount: string,
-    deps: ServiceDependenciesValues,
+    deps: Dict<string>,
     minimal: boolean = false
   ) {
     const result = await this.request(
@@ -1632,20 +1626,20 @@ export class Database {
 
   async replaceServiceDependencies(
     mount: string,
-    deps: ServiceDependenciesValues,
+    deps: Dict<string>,
     minimal?: false
   ): Promise<Dict<ServiceDependency & { warning?: string }>>;
   async replaceServiceDependencies(
     mount: string,
-    deps: ServiceDependenciesValues,
+    deps: Dict<string>,
     minimal: true
   ): Promise<{
-    values: ServiceDependenciesValues;
+    values: Dict<string>;
     warnings: Dict<string>;
   }>;
   async replaceServiceDependencies(
     mount: string,
-    deps: ServiceDependenciesValues,
+    deps: Dict<string>,
     minimal: boolean = false
   ) {
     const result = await this.request(
@@ -1700,7 +1694,7 @@ export class Database {
     );
   }
 
-  listServiceScripts(mount: string): Promise<ServiceScripts> {
+  listServiceScripts(mount: string): Promise<Dict<string>> {
     return this.request(
       {
         path: "/_api/foxx/scripts",
@@ -1851,8 +1845,12 @@ export class Database {
 }
 
 function coerceTransactionCollections(
-  collections: TransactionCollections
-): TransactionCollectionsObject {
+  collections:
+    | TransactionCollections
+    | (string | ArangoCollection)[]
+    | string
+    | ArangoCollection
+): CoercedTransactionCollections {
   if (typeof collections === "string") {
     return { write: [collections] };
   }
@@ -1862,7 +1860,7 @@ function coerceTransactionCollections(
   if (isArangoCollection(collections)) {
     return { write: colToString(collections) };
   }
-  const cols: TransactionCollectionsObject = {};
+  const cols: CoercedTransactionCollections = {};
   if (collections) {
     cols.allowImplicit = collections.allowImplicit;
     if (collections.read) {

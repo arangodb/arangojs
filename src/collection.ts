@@ -1,4 +1,4 @@
-import { ArangoResponseMetadata, RequestOptions } from "./connection";
+import { ArangoResponseMetadata, Params } from "./connection";
 import { ArrayCursor } from "./cursor";
 import { Database } from "./database";
 import {
@@ -761,7 +761,7 @@ export class Collection<T extends object = any>
       enforceReplicationFactor = undefined,
       ...opts
     } = options || {};
-    const qs: RequestOptions["qs"] = {};
+    const qs: Params = {};
     if (typeof waitForSyncReplication === "boolean") {
       qs.waitForSyncReplication = waitForSyncReplication ? 1 : 0;
     }
