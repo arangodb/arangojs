@@ -4,7 +4,7 @@ import { Dict } from "./util/types";
 
 export class ArrayCursor<T = any> {
   protected _db: Database;
-  protected _result: LinkedList<T>;
+  protected _result: LinkedList<any>;
   protected _count?: number;
   protected _extra: {
     warnings: { code: number; message: string }[];
