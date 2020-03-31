@@ -470,34 +470,33 @@ export type GraphCreateOptions = {
    * disk before returning successfully.
    */
   waitForSync?: boolean;
-  // TODO
+  /**
+   * An array of additional vertex collections. Documents within these
+   * collections do not have edges within this graph.
+   */
   orphanCollections?: string[];
 
   /**
-   * (Cluster only.) Number of shards to distribute each collection in this
-   * graph across.
+   * (Cluster only.) The number of shards that is used for every collection
+   * within this graph.
    */
   numberOfShards?: number;
   /**
-   * (Cluster only.) Document attributes to use to determine the target shard
-   * for each document.
-   *
-   * TODO removed?
-   *
-   * Default: `["_key"]`
-   */
-  shardKeys?: string[];
-  /**
-   * (Cluster only.) How many copies of each document should be kept in the
-   * cluster.
+   * (Cluster only.) The replication factor used when initially creating
+   * collections for this graph.
    *
    * Default: `1`
    */
   replicationFactor?: number | "satellite";
-  // TODO
+  /**
+   * (Cluster only.) Write concern for new collections in the graph.
+   */
   writeConcern?: number;
-  // TODO
-  /** @deprecated ArangoDB 3.6, use `writeConcern` instead */
+  /**
+   * (Cluster only.) Write concern for new collections in the graph.
+   *
+   * @deprecated Renamed to `writeConcern` in ArangoDB 3.6.
+   */
   minReplicationFactor?: number;
 
   // Extra options
