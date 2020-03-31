@@ -1,21 +1,6 @@
+import { Headers, Params } from "./connection";
 import { Database } from "./database";
-import { ArangojsResponse } from "./util/request";
-
-/**
- * An arbitrary object with string values representing HTTP headers and their
- * values.
- */
-export type Headers = {
-  [key: string]: string;
-};
-
-/**
- * An arbitrary object with scalar values representing query string parameters
- * and their values.
- */
-export type Params = {
-  [key: string]: string | number | boolean;
-};
+import { ArangojsResponse } from "./lib/request";
 
 export class Route {
   protected _db: Database;

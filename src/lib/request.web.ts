@@ -1,4 +1,5 @@
 import { format as formatUrl, parse as parseUrl } from "url";
+import { Errback } from "../util/types";
 import { btoa } from "./btoa";
 import { joinPath } from "./joinPath";
 import {
@@ -6,7 +7,6 @@ import {
   ArangojsResponse,
   RequestOptions
 } from "./request.node";
-import { Errback } from "./types";
 import xhr from "./xhr";
 
 export const isBrowser = true;

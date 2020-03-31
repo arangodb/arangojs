@@ -1,11 +1,12 @@
 import { Database } from "./database";
+import { Dict } from "./util/types";
 
 export class ArrayCursor<T = any> {
   extra: {
     warnings: { code: number; message: string }[];
     plan?: any;
     profile?: any;
-    stats?: { [key: string]: any };
+    stats?: Dict<any>;
   };
   count?: number;
 

@@ -1,4 +1,5 @@
 import { Readable } from "stream";
+import { Headers } from "../connection";
 
 declare class MultiPart {
   append(key: string, value: Readable | Buffer | string): void;
@@ -13,7 +14,7 @@ export interface Fields {
 }
 
 export interface MultipartRequest {
-  headers?: { [key: string]: string };
+  headers?: Headers;
   body: Buffer;
 }
 

@@ -1,6 +1,6 @@
-import ExtendableError from "./util/error";
+import ExtendableError from "./lib/error";
 
-const messages: { [key: string]: string } = {
+const messages: { [key: number]: string } = {
   0: "Network Error",
   400: "Bad Request",
   401: "Unauthorized",

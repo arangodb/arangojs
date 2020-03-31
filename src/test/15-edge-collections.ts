@@ -1,10 +1,7 @@
 import { expect } from "chai";
-import {
-  DocumentCollection,
-  DocumentMetadata,
-  EdgeCollection
-} from "../collection";
+import { DocumentCollection, EdgeCollection } from "../collection";
 import { Database } from "../database";
+import { DocumentMetadata } from "../documents";
 
 const ARANGO_URL = process.env.TEST_ARANGODB_URL || "http://localhost:8529";
 const ARANGO_VERSION = Number(

@@ -2,6 +2,7 @@ import { ArangoResponseMetadata } from "./connection";
 import { Database } from "./database";
 import { isArangoError } from "./error";
 import { VIEW_NOT_FOUND } from "./util/codes";
+import { Dict } from "./util/types";
 
 export enum ViewType {
   ARANGOSEARCH_VIEW = "arangosearch"
@@ -37,7 +38,7 @@ export interface ArangoSearchViewLink {
    * An object mapping names of attributes to process for each document to
    * {@link ArangoSearchViewLink} definitions.
    */
-  fields?: { [key: string]: ArangoSearchViewLink | undefined };
+  fields?: Dict<ArangoSearchViewLink | undefined>;
   /**
    * Default: `false`
    *
@@ -73,9 +74,7 @@ export interface ArangoSearchViewProperties {
     segments_bytes_floor?: number;
     lookahead?: number;
   };
-  links: {
-    [key: string]: ArangoSearchViewLink | undefined;
-  };
+  links: Dict<ArangoSearchViewLink | undefined>;
 }
 
 export interface ArangoSearchViewPropertiesResponse
@@ -204,9 +203,7 @@ export interface ArangoSearchViewPropertiesOptions {
    * An object mapping names of linked collections to
    * {@link ArangoSearchViewLink} definitions.
    */
-  links?: {
-    [key: string]: ArangoSearchViewLink | undefined;
-  };
+  links?: Dict<ArangoSearchViewLink | undefined>;
 }
 
 export class View<

@@ -7,9 +7,10 @@ import {
 } from "http";
 import { Agent as HttpsAgent, request as httpsRequest } from "https";
 import { parse as parseUrl } from "url";
+import { Headers } from "../connection";
+import { Errback } from "../util/types";
 import { btoa } from "./btoa";
 import { joinPath } from "./joinPath";
-import { Errback } from "./types";
 
 export interface ArangojsResponse extends IncomingMessage {
   request: ClientRequest;
@@ -24,7 +25,7 @@ export interface ArangojsError extends Error {
 export interface RequestOptions {
   method: string;
   url: { pathname: string; search?: string };
-  headers: { [key: string]: string };
+  headers: Headers;
   body: any;
   expectBinary: boolean;
   timeout?: number;
