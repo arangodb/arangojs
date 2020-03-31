@@ -452,7 +452,9 @@ export type GraphInfo = {
   numberOfShards?: number;
   replicationFactor?: number;
   writeConcern?: number;
-  /** @deprecated ArangoDB 3.6, use `writeConcern` instead */
+  /**
+   * @deprecated Renamed to `writeConcern` in ArangoDB 3.6.
+   */
   minReplicationFactor?: number;
 
   // Extra options
