@@ -25,12 +25,11 @@ import {
   EdgeCollection,
   isArangoCollection
 } from "./collection";
-import { Config } from "./config";
 import {
   ArangoResponseMetadata,
+  Config,
   Connection,
   Headers,
-  isArangoConnection,
   RequestOptions
 } from "./connection";
 import { ArrayCursor } from "./cursor";
@@ -63,12 +62,12 @@ export function isArangoDatabase(database: any): database is Database {
   return Boolean(database && database.isArangoDatabase);
 }
 
-export interface TransactionCollectionsObject {
+export type TransactionCollectionsObject = {
   allowImplicit?: boolean;
   exclusive?: string | string[];
   write?: string | string[];
   read?: string | string[];
-}
+};
 
 export type TransactionCollections =
   | string
@@ -81,7 +80,7 @@ export type TransactionCollections =
       read?: string | ArangoCollection | (string | ArangoCollection)[];
     };
 
-export interface TransactionOptions {
+export type TransactionOptions = {
   allowImplicit?: boolean;
   lockTimeout?: number;
   maxTransactionSize?: number;
@@ -90,17 +89,17 @@ export interface TransactionOptions {
   /** @deprecated removed in ArangoDB 3.4, RocksDB only */
   intermediateCommitSize?: number;
   waitForSync?: boolean;
-}
+};
 
-export interface InstallServiceOptions {
+export type InstallServiceOptions = {
   configuration?: ServiceConfigurationValues;
   dependencies?: Dict<string>;
   development?: boolean;
   setup?: boolean;
   legacy?: boolean;
-}
+};
 
-export interface QueryOptions {
+export type QueryOptions = {
   allowDirtyRead?: boolean;
   timeout?: number;
   count?: boolean;
@@ -126,20 +125,20 @@ export interface QueryOptions {
   skipInaccessibleCollections?: boolean;
   /** Enterprise Edition only */
   satelliteSyncWait?: number;
-}
+};
 
-export interface ExplainOptions {
+export type ExplainOptions = {
   optimizer?: { rules: string[] };
   maxNumberOfPlans?: number;
   allPlans?: boolean;
-}
+};
 
-export interface TransactionDetails {
+export type TransactionDetails = {
   id: string;
   state: "running" | "committed" | "aborted";
-}
+};
 
-export interface ExplainPlan {
+export type ExplainPlan = {
   nodes: {
     [key: string]: any;
     type: string;
@@ -161,9 +160,9 @@ export interface ExplainPlan {
   estimatedNrItems: number;
   initialize: boolean;
   isModificationQuery: boolean;
-}
+};
 
-export interface ExplainResult {
+export type ExplainResult = {
   plan?: ExplainPlan;
   plans?: ExplainPlan[];
   cacheable: boolean;
@@ -173,40 +172,40 @@ export interface ExplainResult {
     rulesSkipped: number;
     plansCreated: number;
   };
-}
+};
 
-export interface AstNode {
+export type AstNode = {
   [key: string]: any;
   type: string;
   subNodes: AstNode[];
-}
+};
 
-export interface ParseResult {
+export type ParseResult = {
   parsed: boolean;
   collections: string[];
   bindVars: string[];
   ast: AstNode[];
-}
+};
 
-export interface QueryTracking {
+export type QueryTracking = {
   enabled: boolean;
   maxQueryStringLength: number;
   maxSlowQueries: number;
   slowQueryThreshold: number;
   trackBindVars: boolean;
   trackSlowQueries: boolean;
-}
+};
 
-export interface QueryTrackingOptions {
+export type QueryTrackingOptions = {
   enabled?: boolean;
   maxQueryStringLength?: number;
   maxSlowQueries?: number;
   slowQueryThreshold?: number;
   trackBindVars?: boolean;
   trackSlowQueries?: boolean;
-}
+};
 
-export interface QueryInfo {
+export type QueryInfo = {
   id: string;
   query: string;
   bindVars: AqlQuery["bindVars"];
@@ -214,16 +213,16 @@ export interface QueryInfo {
   started: string;
   state: "executing" | "finished" | "killed";
   stream: boolean;
-}
+};
 
-export interface CreateDatabaseUser {
+export type CreateDatabaseUser = {
   username: string;
   passwd?: string;
   active?: boolean;
   extra?: Dict<any>;
-}
+};
 
-export interface CreateDatabaseOptions {
+export type CreateDatabaseOptions = {
   users?: CreateDatabaseUser[];
 
   // Cluster options
@@ -232,9 +231,9 @@ export interface CreateDatabaseOptions {
   writeConcern?: number;
   /** @deprecated ArangoDB 3.6, use `writeConcern` instead */
   minReplicationFactor?: number;
-}
+};
 
-export interface DatabaseInfo {
+export type DatabaseInfo = {
   name: string;
   id: string;
   path: string;
@@ -246,44 +245,44 @@ export interface DatabaseInfo {
   writeConcern?: number;
   /** @deprecated ArangoDB 3.6, use `writeConcern` instead */
   minReplicationFactor?: number;
-}
+};
 
-export interface VersionInfo {
+export type VersionInfo = {
   server: string;
   license: "community" | "enterprise";
   version: string;
-}
+};
 
-export interface AqlUserFunction {
+export type AqlUserFunction = {
   name: string;
   code: string;
   isDeterministic: boolean;
-}
+};
 
-export interface ReplaceServiceOptions {
+export type ReplaceServiceOptions = {
   configuration?: ServiceConfigurationValues;
   dependencies?: ServiceDependenciesValues;
   teardown?: boolean;
   setup?: boolean;
   legacy?: boolean;
   force?: boolean;
-}
+};
 
-export interface UninstallServiceOptions {
+export type UninstallServiceOptions = {
   teardown?: boolean;
   force?: boolean;
-}
+};
 
-export interface ServiceSummary {
+export type ServiceSummary = {
   mount: string;
   name?: string;
   version?: string;
   provides: Dict<string>;
   development: boolean;
   legacy: boolean;
-}
+};
 
-export interface ServiceInfo {
+export type ServiceInfo = {
   mount: string;
   path: string;
   name?: string;
@@ -296,9 +295,9 @@ export interface ServiceInfo {
     configuration: ServiceConfigurationValues;
     dependencies: ServiceDependenciesValues;
   };
-}
+};
 
-export interface ServiceConfiguration {
+export type ServiceConfiguration = {
   type:
     | "integer"
     | "boolean"
@@ -314,7 +313,7 @@ export interface ServiceConfiguration {
   description?: string;
   required: boolean;
   default?: any;
-}
+};
 
 export type ServiceDependency =
   | {
@@ -336,32 +335,32 @@ export type ServiceDependency =
       required: boolean;
     };
 
-export interface ServiceConfigurationValues {
+export type ServiceConfigurationValues = {
   [key: string]: any;
-}
+};
 
-export interface ServiceDependenciesValues {
+export type ServiceDependenciesValues = {
   [key: string]: string;
-}
+};
 
-export interface ServiceScripts {
+export type ServiceScripts = {
   [key: string]: string;
-}
+};
 
-export interface ServiceTestStats {
+export type ServiceTestStats = {
   tests: number;
   passes: number;
   failures: number;
   pending: number;
   duration: number;
-}
+};
 
-export interface ServiceTestStreamTest {
+export type ServiceTestStreamTest = {
   title: string;
   fullTitle: string;
   duration: number;
   err?: string;
-}
+};
 
 export type ServiceTestStreamReport = (
   | ["start", { total: number }]
@@ -370,24 +369,24 @@ export type ServiceTestStreamReport = (
   | ["end", ServiceTestStats]
 )[];
 
-export interface ServiceTestSuiteTest {
+export type ServiceTestSuiteTest = {
   result: "pending" | "pass" | "fail";
   title: string;
   duration: number;
   err?: any;
-}
+};
 
-export interface ServiceTestSuite {
+export type ServiceTestSuite = {
   title: string;
   suites: ServiceTestSuite[];
   tests: ServiceTestSuiteTest[];
-}
+};
 
-export interface ServiceTestSuiteReport {
+export type ServiceTestSuiteReport = {
   stats: ServiceTestStats;
   suites: ServiceTestSuite[];
   tests: ServiceTestSuiteTest[];
-}
+};
 
 type ServiceTestXunitTest =
   | ["testcase", { classname: string; name: string; time: number }]
@@ -412,22 +411,22 @@ export type ServiceTestXunitReport = [
 
 export type ServiceTestTapReport = string[];
 
-export interface ServiceTestDefaultTest {
+export type ServiceTestDefaultTest = {
   title: string;
   fullTitle: string;
   duration: number;
   err?: string;
-}
+};
 
-export interface ServiceTestDefaultReport {
+export type ServiceTestDefaultReport = {
   stats: ServiceTestStats;
   tests: ServiceTestDefaultTest[];
   pending: ServiceTestDefaultTest[];
   failures: ServiceTestDefaultTest[];
   passes: ServiceTestDefaultTest[];
-}
+};
 
-export interface SwaggerJson {
+export type SwaggerJson = {
   [key: string]: any;
   info: {
     title: string;
@@ -438,7 +437,7 @@ export interface SwaggerJson {
   path: {
     [key: string]: any;
   };
-}
+};
 
 /**
  * An object representing a single ArangoDB database. All arangojs collections,
@@ -449,33 +448,38 @@ export class Database {
   protected _name: string;
 
   /**
-   * Creates a new `Database` instance.
+   * Creates a new `Database` instance with its own connection pool.
    *
-   * If `config` is a string or array of strings, it will be interpreted as
-   * {@link Config.url}.
-   *
-   * **Note**: Every `Database` instance created using the constructor directly
-   * or using the {@link arangojs} helper function will have its own connection
-   * pool. If you want to create a `Database` instance for a different database
-   * sharing the same connection pool, use {@link Database.database} instead.
-   *
-   * @param config An object with configuration options.
+   * @param config - An object with configuration options.
    */
-  constructor(config?: string | string[] | Config);
-  constructor(database: Database, name: string);
-  constructor(connection: Connection, name?: string);
+  constructor(config?: Config);
+  /**
+   * Creates a new `Database` instance with its own connection pool.
+   *
+   * @param url - Base URL of the ArangoDB server or list of server URLs.
+   * Equivalent to the `url` option in {@link Config}.
+   */
+  constructor(url: string | string[]);
+  /**
+   * Creates a new `Database` instance, reusing the connection pool of an
+   * existing `Database` instance.
+   *
+   * @param database - Existing `Database` instance to reuse the connection of.
+   * @param name - Database name to use. Defaults to the given database's name.
+   */
+  constructor(database: Database, name?: string);
   constructor(
-    cfgOrDbOrConn: string | string[] | Config | Database | Connection = {},
+    cfgOrDbOrConn:
+      | string
+      | string[]
+      | (Config & { databaseName?: string })
+      | Database = {},
     name?: string
   ) {
     if (isArangoDatabase(cfgOrDbOrConn)) {
       const database = cfgOrDbOrConn;
       this._connection = database._connection;
       this._name = name || database.name;
-    } else if (isArangoConnection(cfgOrDbOrConn)) {
-      const connection = cfgOrDbOrConn;
-      this._connection = connection;
-      this._name = name || "_system";
     } else {
       const config = cfgOrDbOrConn;
       const { databaseName, ...options } =
@@ -489,9 +493,9 @@ export class Database {
 
   //#region misc
   /**
-   * Indicates that this object represents an ArangoDB database.
-   *
    * @internal
+   *
+   * Indicates that this object represents an ArangoDB database.
    * */
   get isArangoDatabase(): true {
     return true;
@@ -554,14 +558,14 @@ export class Database {
   }
 
   /**
+   * @internal
+   *
    * Performs an arbitrary HTTP request against the database.
    *
    * @param T - Return type to use. Defaults to the response object type.
    * @param options - Options for this request.
    * @param transform - An optional function to transform the low-level
    * response object to a more useful return value.
-   *
-   * @internal
    */
   request<T = ArangojsResponse>(
     options: RequestOptions & { absolutePath?: boolean },
@@ -583,8 +587,8 @@ export class Database {
 
   /**
    * Updates the URL list by requesting a list of all coordinators in the
-   * cluster and adding any endpoints not initially specified in
-   * {@link Config.url}.
+   * cluster and adding any endpoints not initially specified in the
+   * {@link Config}.
    *
    * For long-running processes communicating with an ArangoDB cluster it is
    * recommended to run this method periodically (e.g. once per hour) to make

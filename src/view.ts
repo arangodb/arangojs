@@ -12,21 +12,21 @@ export function isArangoView(view: any): view is View {
   return Boolean(view && view.isArangoView);
 }
 
-export interface ViewDescription {
+export type ViewDescription = {
   globallyUniqueId: string;
   id: string;
   name: string;
   type: ViewType;
-}
+};
 
-export interface ViewResponse {
+export type ViewResponse = {
   name: string;
   id: string;
   globallyUniqueId: string;
   type: ViewType;
-}
+};
 
-export interface ArangoSearchViewLink {
+export type ArangoSearchViewLink = {
   /**
    * Default: `["identity"]`
    *
@@ -57,9 +57,9 @@ export interface ArangoSearchViewLink {
    * Controls how the view should keep track of the attribute values.
    */
   storeValues?: "none" | "id";
-}
+};
 
-export interface ArangoSearchViewProperties {
+export type ArangoSearchViewProperties = {
   cleanupIntervalStep: number;
   consolidationIntervalMsec: number;
   writebufferIdle: number;
@@ -75,23 +75,22 @@ export interface ArangoSearchViewProperties {
     lookahead?: number;
   };
   links: Dict<ArangoSearchViewLink | undefined>;
-}
+};
 
-export interface ArangoSearchViewPropertiesResponse
-  extends ViewResponse,
-    ArangoSearchViewProperties {
-  type: ViewType.ARANGOSEARCH_VIEW;
-}
+export type ArangoSearchViewPropertiesResponse = ViewResponse &
+  ArangoSearchViewProperties & {
+    type: ViewType.ARANGOSEARCH_VIEW;
+  };
 
-export interface BytesAccumConsolidationPolicy {
+export type BytesAccumConsolidationPolicy = {
   type: "bytes_accum";
   /**
    * Must be in the range of `0.0` to `1.0`.
    */
   threshold?: number;
-}
+};
 
-export interface TierConsolidationPolicy {
+export type TierConsolidationPolicy = {
   type: "tier";
   lookahead?: number;
   /**
@@ -121,9 +120,9 @@ export interface TierConsolidationPolicy {
    * consolidation selection.
    */
   segments_bytes_floor?: number;
-}
+};
 
-export interface ArangoSearchViewPropertiesOptions {
+export type ArangoSearchViewPropertiesOptions = {
   /**
    * Default: `2`
    *
@@ -204,7 +203,7 @@ export interface ArangoSearchViewPropertiesOptions {
    * {@link ArangoSearchViewLink} definitions.
    */
   links?: Dict<ArangoSearchViewLink | undefined>;
-}
+};
 
 export class View<
   PropertiesOptions extends object = any,

@@ -1,101 +1,101 @@
-export interface EnsureIndexHashOptions {
+export type EnsureIndexHashOptions = {
   type: "hash";
   fields: string[];
   name?: string;
   unique?: boolean;
   sparse?: boolean;
   deduplicate?: boolean;
-}
+};
 
-export interface EnsureIndexSkiplistOptions {
+export type EnsureIndexSkiplistOptions = {
   type: "skiplist";
   fields: string[];
   name?: string;
   unique?: boolean;
   sparse?: boolean;
   deduplicate?: boolean;
-}
+};
 
 /** @deprecated ArangoDB 3.4 */
-export interface EnsureIndexPersistentOptions {
+export type EnsureIndexPersistentOptions = {
   type: "persistent";
   fields: string[];
   name?: string;
   unique?: boolean;
   sparse?: boolean;
-}
+};
 
-export interface EnsureIndexGeoOptions {
+export type EnsureIndexGeoOptions = {
   type: "geo";
   fields: [string] | [string, string];
   name?: string;
   geoJson?: boolean;
-}
+};
 
-export interface EnsureIndexFulltextOptions {
+export type EnsureIndexFulltextOptions = {
   type: "fulltext";
   fields: [string];
   name?: string;
   minLength?: number;
-}
+};
 
-export interface EnsureIndexTtlOptions {
+export type EnsureIndexTtlOptions = {
   type: "ttl";
   fields: [string];
   name?: string;
   expireAfter: number;
-}
+};
 
-export interface GenericIndex {
+export type GenericIndex = {
   name?: string;
   id: string;
   sparse: boolean;
   unique: boolean;
-}
+};
 
-export interface SkiplistIndex extends GenericIndex {
+export type SkiplistIndex = GenericIndex & {
   type: "skiplist";
   fields: string[];
-}
+};
 
-export interface HashIndex extends GenericIndex {
+export type HashIndex = GenericIndex & {
   type: "hash";
   fields: string[];
   selectivityEstimate: number;
-}
+};
 
-export interface PrimaryIndex extends GenericIndex {
+export type PrimaryIndex = GenericIndex & {
   type: "primary";
   fields: string[];
   selectivityEstimate: number;
-}
+};
 
-export interface PersistentIndex extends GenericIndex {
+export type PersistentIndex = GenericIndex & {
   type: "persistent";
   fields: string[];
-}
+};
 
-export interface FulltextIndex extends GenericIndex {
+export type FulltextIndex = GenericIndex & {
   type: "fulltext";
   fields: [string];
   minLength: number;
-}
+};
 
-export interface GeoIndex extends GenericIndex {
+export type GeoIndex = GenericIndex & {
   type: "geo";
   fields: [string] | [string, string];
   geoJson: boolean;
   bestIndexedLevel: number;
   worstIndexedLevel: number;
   maxNumCoverCells: number;
-}
+};
 
-export interface TtlIndex extends GenericIndex {
+export type TtlIndex = GenericIndex & {
   type: "ttl";
   fields: [string];
   expireAfter: number;
   selectivityEstimate: number;
-}
+};
 
 export type Index =
   | GeoIndex
