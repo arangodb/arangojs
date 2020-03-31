@@ -843,10 +843,24 @@ export class Database {
   //#endregion
 
   //#region graphs
+  /**
+   * Returns a `Graph` instance representing the graph with the given graph
+   * name.
+   *
+   * @param graphName - Name of the graph.
+   */
   graph(graphName: string): Graph {
     return new Graph(this, graphName);
   }
 
+  /**
+   * Creates a graph with the given `graphName` and `edgeDefinitions`, then
+   * returns a `Graph` instance for the new graph.
+   *
+   * @param graphName - Name of the graph to be created.
+   * @param edgeDefinitions - An array of edge definitions.
+   * @param options - An object defining the properties of the graph.
+   */
   async createGraph(
     graphName: string,
     edgeDefinitions: EdgeDefinition[],
@@ -857,10 +871,32 @@ export class Database {
     return graph;
   }
 
+  /**
+   * Fetches all graphs from the database and returns an array of graph
+   * descriptions.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const graphs = await db.listGraphs();
+   * // graphs is an array of graph descriptions
+   * ```
+   */
   listGraphs(): Promise<GraphInfo[]> {
     return this.request({ path: "/_api/gharial" }, res => res.body.graphs);
   }
 
+  /**
+   * Fetches all graphs from the database and returns an array of {@link Graph}
+   * instances for those graphs.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const graphs = await db.graphs();
+   * // graphs is an array of Graph instances
+   * ```
+   */
   async graphs(): Promise<Graph[]> {
     const graphs = await this.listGraphs();
     return graphs.map((data: any) => this.graph(data._key));
