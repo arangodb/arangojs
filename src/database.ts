@@ -473,6 +473,10 @@ export type SwaggerJson = {
 export class Database {
   protected _connection: Connection;
   protected _name: string;
+  protected _analyzers = new Map<string, Analyzer>();
+  protected _collections = new Map<string, Collection>();
+  protected _graphs = new Map<string, Graph>();
+  protected _views = new Map<string, View>();
 
   /**
    * Creates a new `Database` instance with its own connection pool.
@@ -950,7 +954,13 @@ export class Database {
   collection<T extends object = any>(
     collectionName: string
   ): DocumentCollection<T> & EdgeCollection<T> {
-    return new Collection(this, collectionName);
+    if (!this._collections.has(collectionName)) {
+      this._collections.set(
+        collectionName,
+        new Collection(this, collectionName)
+      );
+    }
+    return this._collections.get(collectionName)!;
   }
 
   async createCollection<T extends object = any>(
@@ -1012,7 +1022,10 @@ export class Database {
    * @param graphName - Name of the graph.
    */
   graph(graphName: string): Graph {
-    return new Graph(this, graphName);
+    if (!this._graphs.has(graphName)) {
+      this._graphs.set(graphName, new Graph(this, graphName));
+    }
+    return this._graphs.get(graphName)!;
   }
 
   /**
@@ -1028,7 +1041,7 @@ export class Database {
     edgeDefinitions: EdgeDefinition[],
     options?: GraphCreateOptions
   ): Promise<Graph> {
-    const graph = new Graph(this, graphName);
+    const graph = this.graph(graphName);
     await graph.create(edgeDefinitions, options);
     return graph;
   }
@@ -1078,7 +1091,10 @@ export class Database {
    * ```
    */
   view(viewName: string): ArangoSearchView {
-    return new View(this, viewName);
+    if (!this._views.has(viewName)) {
+      this._views.set(viewName, new View(this, viewName));
+    }
+    return this._views.get(viewName)!;
   }
 
   /**
@@ -1099,7 +1115,7 @@ export class Database {
     viewName: string,
     options?: ArangoSearchViewPropertiesOptions
   ): Promise<ArangoSearchView> {
-    const view = new View(this, viewName);
+    const view = this.view(viewName) as View;
     await view.create({ ...options, type: ViewType.ARANGOSEARCH_VIEW });
     return view;
   }
@@ -1133,7 +1149,7 @@ export class Database {
    */
   async views(): Promise<ArangoSearchView[]> {
     const views = await this.listViews();
-    return views.map(data => new View(this, data.name));
+    return views.map(data => this.view(data.name));
   }
   //#endregion
 
@@ -1149,8 +1165,11 @@ export class Database {
    * const info = await analyzer.get();
    * ```
    */
-  analyzer(name: string): Analyzer {
-    return new Analyzer(this, name);
+  analyzer(analyzerName: string): Analyzer {
+    if (!this._analyzers.has(analyzerName)) {
+      this._analyzers.set(analyzerName, new Analyzer(this, analyzerName));
+    }
+    return this._analyzers.get(analyzerName)!;
   }
 
   /**
@@ -1171,7 +1190,7 @@ export class Database {
     analyzerName: string,
     options: CreateAnalyzerOptions
   ): Promise<Analyzer> {
-    const analyzer = new Analyzer(this, analyzerName);
+    const analyzer = this.analyzer(analyzerName);
     await analyzer.create(options);
     return analyzer;
   }
