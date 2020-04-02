@@ -82,7 +82,7 @@ for its result.
   {% hint 'warning' %}
   If the given function contains asynchronous logic, only the synchronous part
   of the function will be run in the transaction. E.g. when using async/await
-  only the code up to the first await will run in the transaction.
+  only the code up to and including the first await will run in the transaction.
   Pay attention to the examples below.
   {% endhint %}
 
@@ -116,6 +116,9 @@ await trx.run(() =>
     col2.save({ _from: meta1._id, _to: meta2._id, data: "edge5" })
   ])
 );
+
+// TODO add complex example to demonstrate common mistake and how to fix
+// See https://stackoverflow.com/questions/59844658/trx/59860187
 
 // DANGER! The following examples demonstrate common mistakes!
 
