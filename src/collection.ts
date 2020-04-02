@@ -32,12 +32,23 @@ import { Blob } from "./lib/blob";
 import { COLLECTION_NOT_FOUND, DOCUMENT_NOT_FOUND } from "./util/codes";
 import { Patch } from "./util/types";
 
+/**
+ * Indicates whether the given value represents an {@link ArangoCollection}.
+ *
+ * @param collection - A value that might be a collection.
+ */
 export function isArangoCollection(
   collection: any
 ): collection is ArangoCollection {
   return Boolean(collection && collection.isArangoCollection);
 }
 
+/**
+ * A marker interface identifying objects that can be used in AQL template
+ * strings to create references to ArangoDB collections.
+ *
+ * See {@link aql}.
+ */
 export interface ArangoCollection {
   isArangoCollection: true;
   name: string;
@@ -144,46 +155,153 @@ export type CollectionDropOptions = {
   isSystem?: boolean;
 };
 
-export type CreateCollectionOptions = {
-  waitForSync?: boolean;
-  isSystem?: boolean;
-  keyOptions?: {
-    type?: KeyGenerator;
-    allowUserKeys?: boolean;
-    increment?: number;
-    offset?: number;
-  };
-  validation?: {
-    rule: any;
-    level?: ValidationLevel;
-    message?: string;
-  };
+export type CollectionKeyOptions = {
+  /**
+   * Type of key generator to use.
+   */
+  type?: KeyGenerator;
+  /**
+   * Unless set to `false`, documents can be created with a user-specified
+   * `_key` attribute.
+   *
+   * Default: `true`
+   */
+  allowUserKeys?: boolean;
+  /**
+   * (Autoincrement only.) How many steps to increment the key each time.
+   */
+  increment?: number;
+  /**
+   * (Autoincrement only.) The initial offset for the key.
+   */
+  offset?: number;
+};
 
-  // Cluster options
+export type ValidationOptions = {
+  /**
+   * TODO
+   */
+  rule: any;
+  /**
+   * TODO
+   */
+  level?: ValidationLevel;
+  /**
+   * TODO
+   */
+  message?: string;
+};
+
+export type CreateCollectionOptions = {
+  /**
+   * If set to `true`, data will be synchronized to disk before returning from
+   * a document create, update, replace or removal operation.
+   *
+   * Default: `false`
+   */
+  waitForSync?: boolean;
+  /**
+   * Whether the collection should be created as a system collection.
+   *
+   * Default: `false`
+   *
+   * @internal
+   */
+  isSystem?: boolean;
+  /**
+   * TODO
+   */
+  keyOptions?: CollectionKeyOptions;
+  /**
+   * TODO
+   */
+  validation?: ValidationOptions;
+  /**
+   * (Cluster only.) Unless set to `false`, the server will wait for all
+   * replicas to create the collection before returning.
+   *
+   * Default: `true`
+   */
   waitForSyncReplication?: boolean;
+  /**
+   * (Cluster only.) Unless set to `false`, the server will check whether
+   * enough replicas are available at creation time and bail out otherwise.
+   *
+   * Default: `true`
+   */
   enforceReplicationFactor?: boolean;
+  /**
+   * (Cluster only.) Number of shards to distribute the collection across.
+   *
+   * Default: `1`
+   */
   numberOfShards?: number;
+  /**
+   * (Cluster only.) Document attributes to use to determine the target shard
+   * for each document.
+   *
+   * Default: `["_key"]`
+   */
   shardKeys?: string[];
+  /**
+   * (Cluster only.) How many copies of each document should be kept in the
+   * cluster.
+   *
+   * Default: `1`
+   */
   replicationFactor?: number;
+  /**
+   * (Cluster only.) Write concern for this collection.
+   */
   writeConcern?: number;
   /**
+   * (Cluster only.) Write concern for this collection.
+   *
    * @deprecated Renamed to `writeConcern` in ArangoDB 3.6.
    */
   minReplicationFactor?: number;
+  /**
+   * (Cluster only.) Sharding strategy to use.
+   */
   shardingStrategy?: ShardingStrategy;
-
-  // Extra options
-  /** MMFiles only */
+  /**
+   * (MMFiles only.) Number of buckets into which indexes using hash tables are
+   * split.
+   *
+   * Must be a power of 2 and less than or equal to `1024`.
+   *
+   * Default: `16`
+   */
   indexBuckets?: number;
-  /** MMFiles only */
+  /**
+   * (MMFiles only.) Whether the collection will be compacted.
+   *
+   * Default: `true`
+   */
   doCompact?: boolean;
-  /** MMFiles only */
+  /**
+   * (MMFiles only.) The maximum size for each journal or datafile in bytes.
+   *
+   * Must be a number greater than or equal to `1048576` (1 MiB).
+   */
   journalSize?: number;
-  /** MMFiles only */
+  /**
+   * (MMFiles only.) If set to `true`, the collection will only be kept
+   * in-memory and discarded when unloaded, resulting in full data loss.
+   *
+   * Default: `false`
+   */
   isVolatile?: boolean;
-  /** Enterprise Edition only */
+  /**
+   * (Enterprise Edition cluster only.) If set to a collection name, sharding
+   * of the new collection will follow the rules for that collection. As long
+   * as the new collection exists, the indicated collection can not be dropped.
+   */
   distributeShardsLike?: string;
-  /** Enterprise Edition only */
+  /**
+   * (Enterprise Edition cluster only.) Attribute containing the shard key
+   * value of the referred-to smart join collection.
+   */
   smartJoinAttribute?: string;
 };
 
@@ -425,6 +543,12 @@ export type CollectionIndexResult = {
 
 // Collections
 
+/**
+ * Represents an document collection in a {@link Database}.
+ *
+ * See {@link EdgeCollection} for a variant of this interface more suited for
+ * edge collections.
+ */
 export interface DocumentCollection<T extends object = any>
   extends ArangoCollection {
   exists(): Promise<boolean>;
@@ -597,6 +721,12 @@ export interface DocumentCollection<T extends object = any>
   //#endregion
 }
 
+/**
+ * Represents an edge collection in a {@link Database}.
+ *
+ * See {@link DocumentCollection} for a more generic variant of this interface
+ * more suited for regular document collections.
+ */
 export interface EdgeCollection<T extends object = any>
   extends DocumentCollection<T> {
   //#region crud
@@ -692,6 +822,28 @@ export interface EdgeCollection<T extends object = any>
   //#endregion
 }
 
+/**
+ * The `Collection` type represents a collection in a {@link Database}.
+ *
+ * When using TypeScript, collections can be cast to {@link DocumentCollection}
+ * or {@link EdgeCollection} in order to increase type safety.
+ *
+ * @param T - Type to use for document data. Defaults to `any`.
+ *
+ * @example
+ * ```ts
+ * interface Person {
+ *   name: string;
+ * }
+ * interface Friend {
+ *   startDate: number;
+ *   endDate?: number;
+ * }
+ * const db = new Database();
+ * const documents = db.collection("persons") as DocumentCollection<Person>;
+ * const edges = db.collection("friends") as EdgeCollection<Friend>;
+ * ```
+ */
 export class Collection<T extends object = any>
   implements EdgeCollection<T>, DocumentCollection<T> {
   //#region attributes

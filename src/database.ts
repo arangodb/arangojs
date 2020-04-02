@@ -951,6 +951,41 @@ export class Database {
   //#endregion
 
   //#region collections
+  /**
+   * Returns a {@link Collection} instance for the given collection name.
+   *
+   * @param T - Type to use for document data. Defaults to `any`.
+   * @param collectionName - Name of the edge collection.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collection = db.collection("potatoes");
+   * ```
+   *
+   * @example
+   * ```ts
+   * interface Person {
+   *   name: string;
+   * }
+   * const db = new Database();
+   * const persons = db.collection<Person>("persons");
+   * ```
+   *
+   * @example
+   * ```ts
+   * interface Person {
+   *   name: string;
+   * }
+   * interface Friend {
+   *   startDate: number;
+   *   endDate?: number;
+   * }
+   * const db = new Database();
+   * const documents = db.collection("persons") as DocumentCollection<Person>;
+   * const edges = db.collection("friends") as EdgeCollection<Friend>;
+   * ```
+   */
   collection<T extends object = any>(
     collectionName: string
   ): DocumentCollection<T> & EdgeCollection<T> {
@@ -963,18 +998,70 @@ export class Database {
     return this._collections.get(collectionName)!;
   }
 
-  async createCollection<T extends object = any>(
-    collectionName: string,
-    options: CreateCollectionOptions & {
-      type: CollectionType.EDGE_COLLECTION;
-    }
-  ): Promise<EdgeCollection<T>>;
+  /**
+   * Creates a new collection with the given `collectionName` and `options`,
+   * then returns a {@link DocumentCollection} instance for the new collection.
+   *
+   * @param T - Type to use for document data. Defaults to `any`.
+   * @param collectionName - Name of the new collection.
+   * @param options - Options for creating the collection.
+   *
+   * @example
+   * ```ts
+   * const db = new Database();
+   * const documents = db.createCollection("persons");
+   * ```
+   *
+   * @example
+   * ```ts
+   * interface Person {
+   *   name: string;
+   * }
+   * const db = new Database();
+   * const documents = db.createCollection<Person>("persons");
+   * ```
+   */
   async createCollection<T extends object = any>(
     collectionName: string,
     options?: CreateCollectionOptions & {
       type?: CollectionType.DOCUMENT_COLLECTION;
     }
   ): Promise<DocumentCollection<T>>;
+  /**
+   * Creates a new edge collection with the given `collectionName` and
+   * `options`, then returns an {@link EdgeCollection} instance for the new
+   * edge collection.
+   *
+   * @param T - Type to use for edge document data. Defaults to `any`.
+   * @param collectionName - Name of the new collection.
+   * @param options - Options for creating the collection.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const edges = db.createCollection("friends", {
+   *   type: CollectionType.EDGE_COLLECTION
+   * });
+   * ```
+   *
+   * @example
+   * ```ts
+   * interface Friend {
+   *   startDate: number;
+   *   endDate?: number;
+   * }
+   * const db = new Database();
+   * const edges = db.createCollection<Friend>("friends", {
+   *   type: CollectionType.EDGE_COLLECTION
+   * });
+   * ```
+   */
+  async createCollection<T extends object = any>(
+    collectionName: string,
+    options: CreateCollectionOptions & {
+      type: CollectionType.EDGE_COLLECTION;
+    }
+  ): Promise<EdgeCollection<T>>;
   async createCollection<T extends object = any>(
     collectionName: string,
     options?: CreateCollectionOptions & { type?: CollectionType }
@@ -984,6 +1071,34 @@ export class Database {
     return collection;
   }
 
+  /**
+   * Creates a new edge collection with the given `collectionName` and
+   * `options`, then returns an {@link EdgeCollection} instance for the new
+   * edge collection.
+   *
+   * This is a convenience method for calling {@link Database.createCollection}
+   * with `options.type` set to `EDGE_COLLECTION`.
+   *
+   * @param T - Type to use for edge document data. Defaults to `any`.
+   * @param collectionName - Name of the new collection.
+   * @param options - Options for creating the collection.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const edges = db.createEdgeCollection("friends");
+   * ```
+   *
+   * @example
+   * ```ts
+   * interface Friend {
+   *   startDate: number;
+   *   endDate?: number;
+   * }
+   * const db = new Database();
+   * const edges = db.createEdgeCollection<Friend>("friends");
+   * ```
+   */
   async createEdgeCollection<T extends object = any>(
     collectionName: string,
     options?: CreateCollectionOptions
@@ -994,6 +1109,28 @@ export class Database {
     });
   }
 
+  /**
+   * Fetches all collections from the database and returns an array of
+   * collection descriptions.
+   *
+   * @param excludeSystem - Whether system collections should be excluded.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collections = await db.listCollections();
+   * // collections is an array of collection descriptions
+   * // not including system collections
+   * ```
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collections = await db.listCollections(false);
+   * // collections is an array of collection descriptions
+   * // including system collections
+   * ```
+   */
   listCollections(
     excludeSystem: boolean = true
   ): Promise<CollectionMetadata[]> {
@@ -1006,6 +1143,30 @@ export class Database {
     );
   }
 
+  /**
+   * Fetches all collections from the database and returns an array of
+   * {@link Collection} instances.
+   *
+   * @param excludeSystem - Whether system collections should be excluded.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collections = await db.collections();
+   * // collections is an array of DocumentCollection
+   * // and EdgeCollection instances
+   * // not including system collections
+   * ```
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collections = await db.collections(false);
+   * // collections is an array of DocumentCollection
+   * // and EdgeCollection instances
+   * // including system collections
+   * ```
+   */
   async collections(
     excludeSystem: boolean = true
   ): Promise<Array<DocumentCollection & EdgeCollection>> {
