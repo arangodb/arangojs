@@ -864,6 +864,9 @@ export class Database {
   /**
    * Fetches all databases from the server and returns an array of their names.
    *
+   * See also {@link Database.databases} and
+   * {@link Database.listUserDatabases}.
+   *
    * @example
    * ```js
    * const db = new Database();
@@ -878,6 +881,9 @@ export class Database {
   /**
    * Fetches all databases accessible to the active user from the server and
    * returns an array of their names.
+   *
+   * See also {@link Database.userDatabases} and
+   * {@link Database.listDatabases}.
    *
    * @example
    * ```js
@@ -897,6 +903,9 @@ export class Database {
    * Fetches all databases from the server and returns an array of `Database`
    * instances for those databases.
    *
+   * See also {@link Database.listDatabases} and
+   * {@link Database.userDatabases}.
+   *
    * @example
    * ```js
    * const db = new Database();
@@ -913,6 +922,9 @@ export class Database {
   /**
    * Fetches all databases accessible to the active user from the server and
    * returns an array of `Database` instances for those databases.
+   *
+   * See also {@link Database.listUserDatabases} and
+   * {@link Database.databases}.
    *
    * @example
    * ```js
@@ -1113,6 +1125,8 @@ export class Database {
    * Fetches all collections from the database and returns an array of
    * collection descriptions.
    *
+   * See also {@link Database.collections}.
+   *
    * @param excludeSystem - Whether system collections should be excluded.
    *
    * @example
@@ -1146,6 +1160,8 @@ export class Database {
   /**
    * Fetches all collections from the database and returns an array of
    * {@link Collection} instances.
+   *
+   * See also {@link Database.listCollections}.
    *
    * @param excludeSystem - Whether system collections should be excluded.
    *
@@ -1211,6 +1227,8 @@ export class Database {
    * Fetches all graphs from the database and returns an array of graph
    * descriptions.
    *
+   * See also {@link Database.graphs}.
+   *
    * @example
    * ```js
    * const db = new Database();
@@ -1225,6 +1243,8 @@ export class Database {
   /**
    * Fetches all graphs from the database and returns an array of {@link Graph}
    * instances for those graphs.
+   *
+   * See also {@link Database.listGraphs}.
    *
    * @example
    * ```js
@@ -1285,6 +1305,8 @@ export class Database {
    * Fetches all Views from the database and returns an array of View
    * descriptions.
    *
+   * See also {@link Database.views}.
+   *
    * @example
    * ```js
    * const db = new Database();
@@ -1300,6 +1322,8 @@ export class Database {
   /**
    * Fetches all Views from the database and returns an array of
    * {@link ArangoSearchView} instances for the Views.
+   *
+   * See also {@link Database.listViews}.
    *
    * @example
    * ```js
@@ -1360,6 +1384,8 @@ export class Database {
    * Fetches all Analyzers visible in the database and returns an array of
    * Analyzer descriptions.
    *
+   * See also {@link Database.analyzers}.
+   *
    * @example
    * ```js
    * const db = new Database();
@@ -1374,6 +1400,8 @@ export class Database {
   /**
    * Fetches all Analyzers visible in the database and returns an array of
    * {@link Analyzer} instances for those Analyzers.
+   *
+   * See also {@link Database.listAnalyzers}.
    *
    * @example
    * ```js
