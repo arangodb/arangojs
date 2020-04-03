@@ -144,31 +144,147 @@ export type InstallServiceOptions = {
   legacy?: boolean;
 };
 
+/**
+ * Options for executing a query. See {@link Database.query}.
+ */
 export type QueryOptions = {
+  /**
+   * If set to `true`, the query will be executed with support for dirty reads
+   * enabled, permitting ArangoDB to return a potentially dirty or stale result
+   * and arangojs will load balance the request without distinguishing between
+   * leaders and followers.
+   *
+   * Note that dirty reads are only supported for read-only queries, not data
+   * modification queries (e.g. using `INSERT`, `UPDATE`, `REPLACE` or
+   * `REMOVE`) and only when using ArangoDB 3.4 or later.
+   *
+   * Default: `false`
+   */
   allowDirtyRead?: boolean;
+  /**
+   * Maximum time in milliseconds arangojs will wait for a server response.
+   * Exceeding this value will result in the request being cancelled.
+   *
+   * **Note**: Setting a timeout for the client does not guarantee the query
+   * will be killed by ArangoDB if it is already being executed. See the
+   * `maxRuntime` option for limiting the execution time within ArangoDB.
+   */
   timeout?: number;
+  /**
+   * Unless set to `false`, the number of result values in the result set will
+   * be returned in the `count` attribute. This may be disabled by default in
+   * a future version of ArangoDB if calculating this value has a performance
+   * impact for some queries.
+   *
+   * Default: `true`.
+   */
   count?: boolean;
+  /**
+   * The number of result values to be transferred by the server in each
+   * network roundtrip (or "batch").
+   *
+   * Must be greater than zero.
+   */
   batchSize?: number;
+  /**
+   * If set to `false`, the AQL query results cache lookup will be skipped for
+   * this query.
+   *
+   * Default: `true`
+   */
   cache?: boolean;
+  /**
+   * The maximum memory size in bytes that the query is allowed to use.
+   * Exceeding this value will result in the query failing with an error.
+   *
+   * If set to `0`, the memory limit is disabled.
+   *
+   * Default: `0`
+   */
   memoryLimit?: number;
+  /**
+   * Maximum allowed execution time before the query will be killed in seconds.
+   *
+   * If set to `0`, the query will be allowed to run indefinitely.
+   *
+   * Default: `0`
+   */
   maxRuntime?: number;
+  /**
+   * The time-to-live for the cursor in seconds. The cursor results may be
+   * garbage collected by ArangoDB after this much time has passed.
+   *
+   * Default: `30`
+   */
   ttl?: number;
+  /**
+   * If set to `true`, the query will throw an exception and abort if it would
+    otherwise produce a warning.
+   */
   failOnWarning?: boolean;
+  /**
+   * If set to `1` or `true`, additional query profiling information will be
+   * returned in the `extra.profile` attribute if the query is not served from
+   * the result cache.
+   *
+   * If set to `2`, the query will return execution stats per query plan node
+   * in the `extra.stats.nodes` attribute. Additionally the query plan is
+   * returned in `extra.plan`.
+   */
   profile?: boolean | number;
+  /**
+   * If set to `true`, the query will be executed as a streaming query.
+   */
   stream?: boolean;
+  /**
+   * Limits the maximum number of warnings a query will return.
+   */
   maxWarningsCount?: number;
+  /**
+   * If set to `true` and the query has a `LIMIT` clause, the total number of
+   * values matched before the last top-level `LIMIT` in the query was applied
+   * will be returned in the `extra.stats.fullCount` attribute.
+   */
   fullCount?: boolean;
+  /**
+   * An object with a `rules` property specifying a list of optimizer rules to
+   * be included or excluded by the optimizer for this query. Prefix a rule
+   * name with `+` to include it, or `-` to exclude it. The name `all` acts as
+   * an alias matching all optimizer rules.
+   */
   optimizer?: { rules: string[] };
+  /**
+   * Limits the maximum number of plans that will be created by the AQL query
+   * optimizer.
+   */
   maxPlans?: number;
-  /** RocksDB only */
+  /**
+   * (RocksDB only.) Maximum size of transactions in bytes.
+   */
   maxTransactionSize?: number;
-  /** RocksDB only */
+  /**
+   * (RocksDB only.) Maximum number of operations after which an intermediate
+   * commit is automatically performed.
+   */
   intermediateCommitCount?: number;
-  /** RocksDB only */
+  /**
+   * (RocksDB only.) Maximum total size of operations in bytes after which an
+   * intermediate commit is automatically performed.
+   */
   intermediateCommitSize?: number;
-  /** Enterprise Edition only */
+  /**
+   * (Enterprise Edition cluster only.) If set to `true`, collections
+   * inaccessible to the current user will result in an access error instead
+   * of being treated as empty.
+   */
   skipInaccessibleCollections?: boolean;
-  /** Enterprise Edition only */
+  /**
+   * (Enterprise Edition cluster only.) Limits the maximum time in seconds a
+   * DBServer will wait to bring satellite collections involved in the query
+   * into sync. Exceeding this value will result in the query being stopped.
+   *
+   * Default: `60`
+   */
   satelliteSyncWait?: number;
 };
 
@@ -1814,7 +1930,92 @@ export class Database {
   //#endregion
 
   //#region queries
+  /**
+   * Performs a database query using the given `query`, then returns a new
+   * {@link ArrayCursor} instance for the result set.
+   *
+   * See the {@link aql} template string handler for information about how
+   * to create a query string without manually defining bind parameters nor
+   * having to worry about escaping variables.
+   *
+   * @param query - An object containing an AQL query string and bind
+   * parameters, e.g. the object returned from an {@link aql} template string.
+   * @param options - Options for the query execution.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const active = true;
+   *
+   * // Using an aql template string
+   * const cursor = await db.query(aql`
+   *   FOR u IN _users
+   *   FILTER u.authData.active == ${active}
+   *   RETURN u.user
+   * `);
+   * // cursor is a cursor for the query result
+   * ```
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const active = true;
+   *
+   * // Using an object with a regular multi-line string
+   * const cursor = await db.query({
+   *   query: `
+   *     FOR u IN _users
+   *     FILTER u.authData.active == @active
+   *     RETURN u.user
+   *   `,
+   *   bindVars: { active: active }
+   * });
+   * ```
+   */
   query(query: AqlQuery, options?: QueryOptions): Promise<ArrayCursor>;
+  /**
+   * Performs a database query using the given `query` and `bindVars`, then
+   * returns a new {@link ArrayCursor} instance for the result set.
+   *
+   * See the {@link aql} template string handler for a safer and easier
+   * alternative to passing strings directly.
+   *
+   * @param query - An AQL query string.
+   * @param bindVars - An object defining bind parameters for the query.
+   * @param options - Options for the query execution.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const active = true;
+   *
+   * const cursor = await db.query(
+   *   // A normal multi-line string
+   *   `
+   *     FOR u IN _users
+   *     FILTER u.authData.active == @active
+   *     RETURN u.user
+   *   `,
+   *   { active: active }
+   * );
+   * ```
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const active = true;
+   *
+   * const cursor = await db.query(
+   *   // An AQL literal created from a normal multi-line string
+   *   aql.literal(`
+   *     FOR u IN _users
+   *     FILTER u.authData.active == @active
+   *     RETURN u.user
+   *   `),
+   *   { active: active }
+   * );
+   * ```
+   */
   query(
     query: string | AqlLiteral,
     bindVars?: Dict<any>,
