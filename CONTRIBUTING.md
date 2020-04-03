@@ -55,3 +55,12 @@ This runs only the resilience/failover tests, without running any other tests.
 Note that these tests are generally a lot slower than the regular test suite
 because they involve shutting down and restarting individual ArangoDB server
 instances.
+
+## Releases
+
+Releases of arangojs are manually
+[published on NPM](https://www.npmjs.com/package/arangojs).
+
+Releases can only be published by authorized ArangoDB staff.
+For more information see the internal documentation on
+[Releasing ArangoJS](https://github.com/arangodb/documents/blob/3fc65fd/Driver/JavaScript/ReleasingArangojs.md).
