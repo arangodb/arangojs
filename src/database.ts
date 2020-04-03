@@ -69,22 +69,71 @@ type CoercedTransactionCollections = {
   read?: string | string[];
 };
 
+/**
+ * Collections involved in a transaction.
+ */
 export type TransactionCollections = {
-  allowImplicit?: boolean;
-  exclusive?: string | ArangoCollection | (string | ArangoCollection)[];
-  write?: string | ArangoCollection | (string | ArangoCollection)[];
-  read?: string | ArangoCollection | (string | ArangoCollection)[];
+  /**
+   * An array of collections or a single collection that will be read from or
+   * written to during the transaction with no other writes being able to run
+   * in parallel.
+   */
+  exclusive?: (string | ArangoCollection)[] | string | ArangoCollection;
+  /**
+   * An array of collections or a single collection that will be read from or
+   * written to during the transaction.
+   *
+   * If ArangoDB is using the MMFiles storage engine, this option behaves
+   * exactly like `exclusive`, i.e. no other writes will run in parallel.
+   */
+  write?: (string | ArangoCollection)[] | string | ArangoCollection;
+  /**
+   * An array of collections or a single collection that will be read from
+   * during the transaction.
+   */
+  read?: (string | ArangoCollection)[] | string | ArangoCollection;
 };
 
+/**
+ * Options for how the transaction should be performed.
+ */
 export type TransactionOptions = {
+  /**
+   * Whether the transaction may read from collections not specified for this
+   * transaction. If set to `false`, accessing any collections not specified
+   * will result in the transaction being aborted to avoid potential deadlocks.
+   *
+   * Default: `true`.
+   */
   allowImplicit?: boolean;
-  lockTimeout?: number;
-  maxTransactionSize?: number;
-  /** @deprecated removed in ArangoDB 3.4, RocksDB only */
-  intermediateCommitCount?: number;
-  /** @deprecated removed in ArangoDB 3.4, RocksDB only */
-  intermediateCommitSize?: number;
+  /**
+   * Determines whether to force the transaction to write all data to disk
+   * before returning.
+   */
   waitForSync?: boolean;
+  /**
+   * Determines how long the database will wait while attempting to gain locks
+   * on collections used by the transaction before timing out.
+   */
+  lockTimeout?: number;
+  /**
+   * (RocksDB only.) Determines the transaction size limit in bytes.
+   */
+  maxTransactionSize?: number;
+  /**
+   * (RocksDB only.) Determines the maximum number of operations after which an
+   * intermediate commit is performed automatically.
+   *
+   * @deprecated Removed in ArangoDB 3.4.
+   */
+  intermediateCommitCount?: number;
+  /**
+   * (RocksDB only.) Determine the maximum total size of operations after which
+   * an intermediate commit is performed automatically.
+   *
+   * @deprecated Removed in ArangoDB 3.4.
+   */
+  intermediateCommitSize?: number;
 };
 
 export type InstallServiceOptions = {
@@ -634,7 +683,7 @@ export class Database {
   }
 
   /**
-   * Closes all active connections of the database instance.
+   * Closes all active connections of this database instance.
    *
    * Can be used to clean up idling connections during longer periods of
    * inactivity.
@@ -1193,8 +1242,8 @@ export class Database {
 
   //#region graphs
   /**
-   * Returns a `Graph` instance representing the graph with the given graph
-   * name.
+   * Returns a {@link Graph} instance representing the graph with the given
+   * `graphName`.
    *
    * @param graphName - Name of the graph.
    */
@@ -1207,7 +1256,7 @@ export class Database {
 
   /**
    * Creates a graph with the given `graphName` and `edgeDefinitions`, then
-   * returns a `Graph` instance for the new graph.
+   * returns a {@link Graph} instance for the new graph.
    *
    * @param graphName - Name of the graph to be created.
    * @param edgeDefinitions - An array of edge definitions.
@@ -1261,7 +1310,7 @@ export class Database {
 
   //#region views
   /**
-   * Returns an {@link ArangoSearchView} instance for the given View name.
+   * Returns an {@link ArangoSearchView} instance for the given `viewName`.
    *
    * @param viewName - Name of the ArangoSearch View.
    *
@@ -1340,8 +1389,8 @@ export class Database {
 
   //#region analyzers
   /**
-   * Returns an `Analyzer` instance representing the Analyzer with the given
-   * `analyzerName`.
+   * Returns an {@link Analyzer} instance representing the Analyzer with the
+   * given `analyzerName`.
    *
    * @example
    * ```js
@@ -1417,9 +1466,161 @@ export class Database {
   //#endregion
 
   //#region transactions
+  /**
+   * Performs a server-side JavaScript transaction and returns its return
+   * value.
+   *
+   * If `collections.allowImplicit` is specified, it overrides the value
+   * specified in `options.allowImplicit`.
+   *
+   * Collections can be specified as collection names (strings) or objects
+   * implementing the {@link ArangoCollection} interface: {@link Collection},
+   * {@link GraphVertexCollection}, {@link GraphEdgeCollection} as well as
+   * (in TypeScript) {@link DocumentCollection} and {@link EdgeCollection}.
+   *
+   * **Note**: The `action` function will be evaluated and executed on the
+   * server inside ArangoDB's embedded JavaScript environment and can not
+   * access any values other than those passed via the `params` option.
+   * See the official ArangoDB documentation for
+   * {@link https://www.arangodb.com/docs/stable/appendix-java-script-modules-arango-db.html | the JavaScript `@arangodb` module}
+   * for information about accessing the database from within ArangoDB's
+   * server-side JavaScript environment.
+   *
+   * @param collections - Collections involved in the transaction.
+   * @param action - A string evaluating to a JavaScript function to be
+   * executed on the server.
+   * @param options - Options for the transaction.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   *
+   * const action = `
+   *   function(params) {
+   *     // This code will be executed inside ArangoDB!
+   *     const { query } = require("@arangodb");
+   *     return query\`
+   *         FOR user IN _users
+   *         FILTER user.age > ${params.age}
+   *         RETURN u.user
+   *       \`.toArray();
+   *   }
+   * `);
+   *
+   * const result = await db.executeTransaction({
+   *   read: ["_users"]
+   * }, action, {
+   *   params: { age: 12 }
+   * });
+   * // result contains the return value of the action
+   * ```
+   */
+  executeTransaction(
+    collections: TransactionCollections & { allowImplicit?: boolean },
+    action: string,
+    options?: TransactionOptions & { params?: any }
+  ): Promise<any>;
+  /**
+   * Performs a server-side transaction and returns its return value.
+   *
+   * Collections can be specified as collection names (strings) or objects
+   * implementing the {@link ArangoCollection} interface: {@link Collection},
+   * {@link GraphVertexCollection}, {@link GraphEdgeCollection} as well as
+   * (in TypeScript) {@link DocumentCollection} and {@link EdgeCollection}.
+   *
+   * **Note**: The `action` function will be evaluated and executed on the
+   * server inside ArangoDB's embedded JavaScript environment and can not
+   * access any values other than those passed via the `params` option.
+   * See the official ArangoDB documentation for
+   * {@link https://www.arangodb.com/docs/stable/appendix-java-script-modules-arango-db.html | the JavaScript `@arangodb` module}
+   * for information about accessing the database from within ArangoDB's
+   * server-side JavaScript environment.
+   *
+   * @param collections - Collections that can be read from and written to
+   * during the transaction.
+   * @param action - A string evaluating to a JavaScript function to be
+   * executed on the server.
+   * @param options - Options for the transaction.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   *
+   * const action = `
+   *   function(params) {
+   *     // This code will be executed inside ArangoDB!
+   *     const { query } = require("@arangodb");
+   *     return query\`
+   *         FOR user IN _users
+   *         FILTER user.age > ${params.age}
+   *         RETURN u.user
+   *       \`.toArray();
+   *   }
+   * `);
+   *
+   * const result = await db.executeTransaction(["_users"], action, {
+   *   params: { age: 12 }
+   * });
+   * // result contains the return value of the action
+   * ```
+   */
+  executeTransaction(
+    collections: (string | ArangoCollection)[],
+    action: string,
+    options?: TransactionOptions & { params?: any }
+  ): Promise<any>;
+  /**
+   * Performs a server-side transaction and returns its return value.
+   *
+   * The Collection can be specified as a collection name (string) or an object
+   * implementing the {@link ArangoCollection} interface: {@link Collection},
+   * {@link GraphVertexCollection}, {@link GraphEdgeCollection} as well as
+   * (in TypeScript) {@link DocumentCollection} and {@link EdgeCollection}.
+   *
+   * **Note**: The `action` function will be evaluated and executed on the
+   * server inside ArangoDB's embedded JavaScript environment and can not
+   * access any values other than those passed via the `params` option.
+   * See the official ArangoDB documentation for
+   * {@link https://www.arangodb.com/docs/stable/appendix-java-script-modules-arango-db.html | the JavaScript `@arangodb` module}
+   * for information about accessing the database from within ArangoDB's
+   * server-side JavaScript environment.
+   *
+   * @param collection - A collection that can be read from and written to
+   * during the transaction.
+   * @param action - A string evaluating to a JavaScript function to be
+   * executed on the server.
+   * @param options - Options for the transaction.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   *
+   * const action = `
+   *   function(params) {
+   *     // This code will be executed inside ArangoDB!
+   *     const { query } = require("@arangodb");
+   *     return query\`
+   *         FOR user IN _users
+   *         FILTER user.age > ${params.age}
+   *         RETURN u.user
+   *       \`.toArray();
+   *   }
+   * `);
+   *
+   * const result = await db.executeTransaction("_users", action, {
+   *   params: { age: 12 }
+   * });
+   * // result contains the return value of the action
+   * ```
+   */
+  executeTransaction(
+    collection: string | ArangoCollection,
+    action: string,
+    options?: TransactionOptions & { params?: any }
+  ): Promise<any>;
   executeTransaction(
     collections:
-      | TransactionCollections
+      | (TransactionCollections & { allowImplicit?: boolean })
       | (string | ArangoCollection)[]
       | string
       | ArangoCollection,
@@ -1440,10 +1641,118 @@ export class Database {
     );
   }
 
+  /**
+   * Returns a {@link Transaction} instance for an existing streaming
+   * transaction with the given `id`.
+   *
+   * See also {@link Database.beginTransaction}.
+   *
+   * @param id - The `id` of an existing stream transaction.
+   *
+   * @example
+   * ```js
+   * const trx1 = await db.beginTransaction(collections);
+   * const id = trx1.id;
+   * // later
+   * const trx2 = db.transaction(id);
+   * await trx2.commit();
+   * ```
+   */
   transaction(transactionId: string): Transaction {
     return new Transaction(this, transactionId);
   }
 
+  /**
+   * Begins a new streaming transaction for the given collections, then returns
+   * a {@link Transaction} instance for the transaction.
+   *
+   * Collections can be specified as collection names (strings) or objects
+   * implementing the {@link ArangoCollection} interface: {@link Collection},
+   * {@link GraphVertexCollection}, {@link GraphEdgeCollection} as well as
+   * (in TypeScript) {@link DocumentCollection} and {@link EdgeCollection}.
+   *
+   * @param collections - Collections involved in the transaction.
+   * @param options - Options for the transaction.
+   *
+   * @example
+   * ```js
+   * const vertices = db.collection("vertices");
+   * const edges = db.collection("edges");
+   * const trx = await db.beginTransaction({
+   *   read: ["vertices"],
+   *   write: [edges] // collection instances can be passed directly
+   * });
+   * const start = await trx.run(() => vertices.document("a"));
+   * const end = await trx.run(() => vertices.document("b"));
+   * await trx.run(() => edges.save({ _from: start._id, _to: end._id }));
+   * await trx.commit();
+   * ```
+   */
+  beginTransaction(
+    collections: TransactionCollections,
+    options?: TransactionOptions
+  ): Promise<Transaction>;
+  /**
+   * Begins a new streaming transaction for the given collections, then returns
+   * a {@link Transaction} instance for the transaction.
+   *
+   * Collections can be specified as collection names (strings) or objects
+   * implementing the {@link ArangoCollection} interface: {@link Collection},
+   * {@link GraphVertexCollection}, {@link GraphEdgeCollection} as well as
+   * (in TypeScript) {@link DocumentCollection} and {@link EdgeCollection}.
+   *
+   * @param collections - Collections that can be read from and written to
+   * during the transaction.
+   * @param options - Options for the transaction.
+   *
+   * @example
+   * ```js
+   * const vertices = db.collection("vertices");
+   * const edges = db.collection("edges");
+   * const trx = await db.beginTransaction([
+   *   "vertices",
+   *   edges // collection instances can be passed directly
+   * ]);
+   * const start = await trx.run(() => vertices.document("a"));
+   * const end = await trx.run(() => vertices.document("b"));
+   * await trx.run(() => edges.save({ _from: start._id, _to: end._id }));
+   * await trx.commit();
+   * ```
+   */
+  beginTransaction(
+    collections: (string | ArangoCollection)[],
+    options?: TransactionOptions
+  ): Promise<Transaction>;
+  /**
+   * Begins a new streaming transaction for the given collections, then returns
+   * a {@link Transaction} instance for the transaction.
+   *
+   * The collection can be specified as a collection name (string) or an object
+   * implementing the {@link ArangoCollection} interface: {@link Collection},
+   * {@link GraphVertexCollection}, {@link GraphEdgeCollection} as well as
+   * (in TypeScript) {@link DocumentCollection} and {@link EdgeCollection}.
+   *
+   * @param collections - A collection that can be read from and written to
+   * during the transaction.
+   * @param options - Options for the transaction.
+   *
+   * @example
+   * ```js
+   * const vertices = db.collection("vertices");
+   * const start = vertices.document("a");
+   * const end = vertices.document("b");
+   * const edges = db.collection("edges");
+   * const trx = await db.beginTransaction(
+   *   edges // collection instances can be passed directly
+   * );
+   * await trx.run(() => edges.save({ _from: start._id, _to: end._id }));
+   * await trx.commit();
+   * ```
+   */
+  beginTransaction(
+    collection: string | ArangoCollection,
+    options?: TransactionOptions
+  ): Promise<Transaction>;
   beginTransaction(
     collections:
       | TransactionCollections
@@ -1465,6 +1774,19 @@ export class Database {
     );
   }
 
+  /**
+   * Fetches all active transactions from the database and returns an array of
+   * transaction descriptions.
+   *
+   * See also {@link Database.transactions}.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const transactions = await db.listTransactions();
+   * // transactions is an array of transaction descriptions
+   * ```
+   */
   listTransactions(): Promise<TransactionDetails[]> {
     return this._connection.request(
       { path: "/_api/transaction" },
@@ -1472,6 +1794,19 @@ export class Database {
     );
   }
 
+  /**
+   * Fetches all active transactions from the database and returns an array of
+   * {@link Transaction} instances for those transactions.
+   *
+   * See also {@link Database.listTransactions}.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const transactions = await db.transactions();
+   * // transactions is an array of transactions
+   * ```
+   */
   async transactions(): Promise<Transaction[]> {
     const transactions = await this.listTransactions();
     return transactions.map(data => this.transaction(data.id));
@@ -2124,6 +2459,20 @@ export class Database {
 
   runServiceTests(
     mount: string,
+    options?: {
+      reporter?: "default";
+      filter?: string;
+    }
+  ): Promise<ServiceTestDefaultReport>;
+  runServiceTests(
+    mount: string,
+    options: {
+      reporter: "suite";
+      filter?: string;
+    }
+  ): Promise<ServiceTestSuiteReport>;
+  runServiceTests(
+    mount: string,
     options: {
       reporter: "stream";
       idiomatic: false;
@@ -2170,20 +2519,6 @@ export class Database {
       filter?: string;
     }
   ): Promise<string>;
-  runServiceTests(
-    mount: string,
-    options: {
-      reporter: "suite";
-      filter?: string;
-    }
-  ): Promise<ServiceTestSuiteReport>;
-  runServiceTests(
-    mount: string,
-    options?: {
-      reporter?: "default";
-      filter?: string;
-    }
-  ): Promise<ServiceTestDefaultReport>;
   runServiceTests(
     mount: string,
     options?: {
@@ -2252,7 +2587,7 @@ export class Database {
 
 function coerceTransactionCollections(
   collections:
-    | TransactionCollections
+    | (TransactionCollections & { allowImplicit?: boolean })
     | (string | ArangoCollection)[]
     | string
     | ArangoCollection
@@ -2268,7 +2603,9 @@ function coerceTransactionCollections(
   }
   const cols: CoercedTransactionCollections = {};
   if (collections) {
-    cols.allowImplicit = collections.allowImplicit;
+    if (collections.allowImplicit !== undefined) {
+      cols.allowImplicit = collections.allowImplicit;
+    }
     if (collections.read) {
       cols.read = Array.isArray(collections.read)
         ? collections.read.map(colToString)
