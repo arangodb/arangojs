@@ -233,7 +233,9 @@ This is a major release and breaks backwards compatibility.
   To be more consistent with the equivalent options in other methods,
   the default value has been changed from `false` to `true`.
 
-- Collection `list` method now returns a cursor
+- Changed `collection.list` return type to `ArrayCursor`
+
+- Changed `db.createDatabase` return type to `Database`
 
 - Replaced `ArrayCursor` methods `hasNext` and `hasMore` with getters
 
