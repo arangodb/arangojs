@@ -2,7 +2,14 @@ import { expect } from "chai";
 import { Database } from "../arangojs";
 import { DocumentCollection } from "../collection";
 
-const ARANGO_URL = process.env.TEST_ARANGODB_URL || "http://localhost:8529";
+// TODO: these tests are failing when trying to run them against a cluster
+// here is one for testing: https://gist.github.com/mikestaub/027e8f030130fd2296d3fd985a1748cf
+const ARANGO_URL = [
+  "http://localhost:8529",
+  "http://localhost:8530",
+  "http://localhost:8531",
+];
+// const ARANGO_URL = process.env.TEST_ARANGODB_URL || "http://localhost:8529";
 const ARANGO_VERSION = Number(
   process.env.ARANGO_VERSION || process.env.ARANGOJS_DEVEL_VERSION || 30400
 );
@@ -12,7 +19,11 @@ const itRdb = process.env.ARANGO_STORAGE_ENGINE !== "mmfiles" ? it : it.skip;
 describe("Transactions", () => {
   let db: Database;
   before(() => {
-    db = new Database({ url: ARANGO_URL, arangoVersion: ARANGO_VERSION });
+    db = new Database({
+      url: ARANGO_URL,
+      arangoVersion: ARANGO_VERSION,
+      loadBalancingStrategy: "ROUND_ROBIN",
+    });
   });
   after(() => {
     db.close();
