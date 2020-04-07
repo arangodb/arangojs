@@ -116,6 +116,11 @@ This is a major release and breaks backwards compatibility.
   The method will now return the existing properties or set the properties
   depending on whether an argument is provided.
 
+- Renamed `collection.setQueryTracking` to `collection.queryTracking`
+
+  The method will now return the existing query tracking properties or set the
+  new query tracking properties depending on whether an argument is provided.
+
 - Renamed `db.arangoSearchView` to `db.view`
 
 - Renamed types `ArangoAnalyzer`, `ArangoView` and `ArangoTransaction` to
