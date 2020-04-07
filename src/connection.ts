@@ -14,6 +14,18 @@ import { Errback } from "./util/types";
 const MIME_JSON = /\/(json|javascript)(\W|$)/;
 const LEADER_ENDPOINT_HEADER = "x-arango-endpoint";
 
+/**
+ * Determines the behavior when multiple URLs are used:
+ *
+ * - `"NONE"`: No load balancing. All requests will be handled by the first
+ *   URL in the list until a network error is encountered. On network error,
+ *   arangojs will advance to using the next URL in the list.
+ *
+ * - `"ONE_RANDOM"`: Randomly picks one URL from the list initially, then
+ *   behaves like `"NONE"`.
+ *
+ * - `"ROUND_ROBIN"`: Every sequential request uses the next URL in the list.
+ */
 export type LoadBalancingStrategy = "NONE" | "ROUND_ROBIN" | "ONE_RANDOM";
 
 /**
@@ -34,6 +46,9 @@ export type Params = {
   [key: string]: any;
 };
 
+/**
+ * TODO
+ */
 export type ArangoResponseMetadata = {
   [key: string]: any | undefined;
   error: false;
@@ -57,6 +72,9 @@ type UrlInfo = {
   qs?: string | Params;
 };
 
+/**
+ * TODO
+ */
 export type RequestOptions = {
   host?: number;
   method?: string;
@@ -71,8 +89,7 @@ export type RequestOptions = {
   qs?: string | Params;
 };
 
-/** @hidden @internal */
-export type Task = {
+type Task = {
   host?: number;
   allowDirtyRead: boolean;
   resolve: Function;
@@ -88,6 +105,9 @@ export type Task = {
   };
 };
 
+/**
+ * TODO
+ */
 export type Config = {
   /**
    * Default: `"_system"`
@@ -219,12 +239,22 @@ export type Config = {
   headers?: Headers;
 };
 
-/** @hidden @internal */
+/**
+ * TODO
+ *
+ * @hidden
+ * @internal
+ */
 export function isArangoConnection(connection: any): connection is Connection {
   return Boolean(connection && connection.isArangoConnection);
 }
 
-/** @hidden @internal */
+/**
+ * Represents a connection pool shared by one or more databases.
+ *
+ * @hidden
+ * @internal
+ */
 export class Connection {
   protected _activeTasks: number = 0;
   protected _agent?: any;
@@ -244,6 +274,14 @@ export class Connection {
   protected _activeDirtyHost: number;
   protected _transactionId: string | null = null;
 
+  /**
+   * Creates a new `Connection` instance.
+   *
+   * @param config - An object with configuration options.
+   *
+   * @internal
+   * @hidden
+   */
   constructor(config: Omit<Config, "databaseName"> = {}) {
     if (config.arangoVersion !== undefined) {
       this._arangoVersion = config.arangoVersion;
@@ -287,6 +325,9 @@ export class Connection {
     }
   }
 
+  /**
+   * TODO
+   */
   get isArangoConnection(): true {
     return true;
   }
@@ -366,8 +407,34 @@ export class Connection {
     return search ? { pathname, search } : { pathname };
   }
 
+  /**
+   * Fetches a {@link Database} instance for the given database name from the
+   * internal cache, if available.
+   *
+   * @param databaseName - Name of the database.
+   *
+   * @internal
+   */
   database(databaseName: string): Database | undefined;
+  /**
+   * Adds a {@link Database} instance for the given database name to the
+   * internal cache.
+   *
+   * @param databaseName - Name of the database.
+   * @param database - Database instance to add to the cache.
+   *
+   * @internal
+   */
   database(databaseName: string, database: Database): Database;
+  /**
+   * Clears any {@link Database} instance stored for the given database name
+   * from the internal cache, if present.
+   *
+   * @param databaseName - Name of the database.
+   * @param database - Must be `null`.
+   *
+   * @internal
+   */
   database(databaseName: string, database: null): undefined;
   database(
     databaseName: string,
@@ -384,6 +451,15 @@ export class Connection {
     return database;
   }
 
+  /**
+   * Adds the given URL or URLs to the host list.
+   *
+   * See {@link Connection.acquireHostList}.
+   *
+   * @param urls - URL or URLs to add.
+   *
+   * @internal
+   */
   addToHostList(urls: string | string[]): number[] {
     const cleanUrls = (Array.isArray(urls) ? urls : [urls]).map((url) =>
       sanitizeUrl(url)
@@ -398,24 +474,65 @@ export class Connection {
     return cleanUrls.map((url) => this._urls.indexOf(url));
   }
 
+  /**
+   * Sets the connection's active `transactionId`.
+   *
+   * While set, all requests will use this ID, ensuring the requests are executed
+   * within the transaction if possible. Setting the ID manually may cause
+   * unexpected behavior.
+   *
+   * See {@link Connection.clearTransactionId}.
+   *
+   * @param transactionId - ID of the active transaction.
+   *
+   * @internal
+   */
   setTransactionId(transactionId: string) {
     this._transactionId = transactionId;
   }
 
+  /**
+   * Clears the connection's active `transactionId`.
+   *
+   * @internal
+   */
   clearTransactionId() {
     this._transactionId = null;
   }
 
-  setHeader(key: string, value: string) {
-    this._headers[key] = value;
+  /**
+   * Sets the header `headerName` with the given `value` or clears the header if
+   * `value` is `null`.
+   *
+   * @param headerName - Name of the header to set.
+   * @param value - Value of the header.
+   *
+   * @internal
+   */
+  setHeader(headerName: string, value: string | null) {
+    if (value === null) {
+      delete this._headers[headerName];
+    } else {
+      this._headers[headerName] = value;
+    }
   }
 
+  /**
+   * Closes all open connections.
+   *
+   * See {@link Database.close}.
+   *
+   * @internal
+   */
   close() {
     for (const host of this._hosts) {
       if (host.close) host.close();
     }
   }
 
+  /**
+   * TODO
+   */
   request<T = ArangojsResponse>(
     {
       host,

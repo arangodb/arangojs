@@ -2,6 +2,9 @@ import { LinkedList } from "x3-linkedlist";
 import { Database } from "./database";
 import { Dict } from "./util/types";
 
+/**
+ * TODO
+ */
 export class ArrayCursor<T = any> {
   protected _db: Database;
   protected _result: LinkedList<any>;
@@ -17,7 +20,11 @@ export class ArrayCursor<T = any> {
   protected _host?: number;
   protected _allowDirtyRead?: boolean;
 
-  /** @hidden */
+  /**
+   * TODO
+   *
+   * @hidden
+   */
   constructor(
     db: Database,
     body: {
@@ -58,22 +65,37 @@ export class ArrayCursor<T = any> {
     this._hasMore = res.body.hasMore;
   }
 
+  /**
+   * TODO
+   */
   get extra() {
     return this._extra;
   }
 
+  /**
+   * TODO
+   */
   get count() {
     return this._count;
   }
 
+  /**
+   * TODO
+   */
   get hasMore(): boolean {
     return this._hasMore;
   }
 
+  /**
+   * TODO
+   */
   get hasNext(): boolean {
     return this.hasMore || Boolean(this._result.length);
   }
 
+  /**
+   * TODO
+   */
   async all(): Promise<T[]> {
     await this._drain();
     const result = [...this._result.values()];
@@ -83,6 +105,9 @@ export class ArrayCursor<T = any> {
     return result;
   }
 
+  /**
+   * TODO
+   */
   async next(): Promise<T | undefined> {
     while (!this._result.length && this.hasMore) {
       await this._more();
@@ -93,6 +118,9 @@ export class ArrayCursor<T = any> {
     return this._result.shift();
   }
 
+  /**
+   * TODO
+   */
   async nextBatch(): Promise<any[] | undefined> {
     while (!this._result.length && this.hasMore) {
       await this._more();
@@ -107,6 +135,9 @@ export class ArrayCursor<T = any> {
     return result;
   }
 
+  /**
+   * TODO
+   */
   async each(
     fn: (value: T, index: number, self: ArrayCursor<T>) => boolean | void
   ): Promise<boolean> {
@@ -139,6 +170,9 @@ export class ArrayCursor<T = any> {
     return true;
   }
 
+  /**
+   * TODO
+   */
   async some(
     fn: (value: T, index: number, self: ArrayCursor<T>) => boolean
   ): Promise<boolean> {
@@ -155,6 +189,9 @@ export class ArrayCursor<T = any> {
     return false;
   }
 
+  /**
+   * TODO
+   */
   async map<U = any>(
     fn: (value: T, index: number, self: ArrayCursor<T>) => U
   ): Promise<U[]> {
@@ -170,6 +207,9 @@ export class ArrayCursor<T = any> {
     return result;
   }
 
+  /**
+   * TODO
+   */
   async reduce<U>(
     fn: (accu: U, value: T, index: number, self: ArrayCursor<T>) => U,
     accu?: U
@@ -193,6 +233,9 @@ export class ArrayCursor<T = any> {
     return accu;
   }
 
+  /**
+   * TODO
+   */
   async kill(): Promise<void> {
     if (!this.hasMore) return undefined;
     return this._db.request(

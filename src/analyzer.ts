@@ -2,6 +2,9 @@ import { Database } from "./database";
 import { isArangoError } from "./error";
 import { ANALYZER_NOT_FOUND } from "./util/codes";
 
+/**
+ * TODO
+ */
 export function isArangoAnalyzer(analyzer: any): analyzer is Analyzer {
   return Boolean(analyzer && analyzer.isArangoAnalyzer);
 }
@@ -11,11 +14,17 @@ export function isArangoAnalyzer(analyzer: any): analyzer is Analyzer {
  */
 export type AnalyzerFeature = "frequency" | "norm" | "position";
 
+/**
+ * TODO
+ */
 export type AnalyzerDescription = AnalyzerInfo & {
   name: string;
   features: AnalyzerFeature[];
 };
 
+/**
+ * Options for creating an Analyzer.
+ */
 export type CreateAnalyzerOptions = AnalyzerInfo & {
   /**
    * Features to enable for this Analyzer.
@@ -34,6 +43,9 @@ export type AnalyzerInfo =
   | NgramAnalyzerInfo
   | TextAnalyzerInfo;
 
+/**
+ * TODO
+ */
 export type IdentityAnalyzerInfo = {
   /**
    * The type of the Analyzer.
@@ -47,6 +59,9 @@ export type IdentityAnalyzerInfo = {
   properties?: null;
 };
 
+/**
+ * TODO
+ */
 export type DelimiterAnalyzerInfo = {
   /**
    * The type of the Analyzer.
@@ -61,6 +76,9 @@ export type DelimiterAnalyzerInfo = {
   properties: string | { delimiter: string };
 };
 
+/**
+ * TODO
+ */
 export type StemAnalyzerInfo = {
   /**
    * The type of the Analyzer.
@@ -76,6 +94,9 @@ export type StemAnalyzerInfo = {
   properties: { locale: string };
 };
 
+/**
+ * TODO
+ */
 export type NormAnalyzerProperties = {
   /**
    * The text locale.
@@ -97,6 +118,9 @@ export type NormAnalyzerProperties = {
   accent?: boolean;
 };
 
+/**
+ * TODO
+ */
 export type NormAnalyzerInfo = {
   /**
    * The type of the Analyzer.
@@ -108,6 +132,9 @@ export type NormAnalyzerInfo = {
   properties: NormAnalyzerProperties;
 };
 
+/**
+ * TODO
+ */
 export type NgramAnalyzerProperties = {
   /**
    * Maximum n-gram length.
@@ -123,6 +150,9 @@ export type NgramAnalyzerProperties = {
   preserveOriginal: boolean;
 };
 
+/**
+ * TODO
+ */
 export type NgramAnalyzerInfo = {
   /**
    * The type of the Analyzer.
@@ -134,6 +164,9 @@ export type NgramAnalyzerInfo = {
   properties: NgramAnalyzerProperties;
 };
 
+/**
+ * TODO
+ */
 export type TextAnalyzerProperties = {
   /**
    * The text locale.
@@ -175,6 +208,9 @@ export type TextAnalyzerProperties = {
   stemming?: boolean;
 };
 
+/**
+ * TODO
+ */
 export type TextAnalyzerInfo = {
   /**
    * The type of the Analyzer.
@@ -186,6 +222,9 @@ export type TextAnalyzerInfo = {
   properties: TextAnalyzerProperties;
 };
 
+/**
+ * TODO
+ */
 export class Analyzer {
   protected _name: string;
   protected _db: Database;
@@ -196,14 +235,23 @@ export class Analyzer {
     this._name = name;
   }
 
+  /**
+   * TODO
+   */
   get isArangoAnalyzer(): true {
     return true;
   }
 
+  /**
+   * TODO
+   */
   get name() {
     return this._name;
   }
 
+  /**
+   * TODO
+   */
   get(): Promise<AnalyzerDescription> {
     return this._db.request(
       { path: `/_api/analyzer/${this.name}` },
@@ -211,6 +259,9 @@ export class Analyzer {
     );
   }
 
+  /**
+   * TODO
+   */
   async exists() {
     try {
       await this.get();
@@ -223,6 +274,9 @@ export class Analyzer {
     }
   }
 
+  /**
+   * TODO
+   */
   create(options: CreateAnalyzerOptions): Promise<AnalyzerDescription> {
     return this._db.request(
       {
@@ -234,6 +288,9 @@ export class Analyzer {
     );
   }
 
+  /**
+   * TODO
+   */
   drop(force?: boolean): Promise<{ name: string }> {
     return this._db.request(
       {

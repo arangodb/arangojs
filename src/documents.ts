@@ -1,41 +1,73 @@
+/**
+ * TODO
+ */
 export type DocumentMetadata = {
   _key: string;
   _id: string;
   _rev: string;
 };
 
+/**
+ * TODO
+ */
 export type EdgeMetadata = {
   _from: string;
   _to: string;
 };
 
+/**
+ * TODO
+ */
 export type DocumentData<T extends object = any> = T &
   Partial<DocumentMetadata> &
   Partial<EdgeMetadata>;
 
+/**
+ * TODO
+ */
 export type EdgeData<T extends object = any> = T &
   Partial<DocumentMetadata> &
   EdgeMetadata;
 
+/**
+ * TODO
+ */
 export type Document<T extends object = any> = T &
   DocumentMetadata &
   Partial<EdgeMetadata>;
 
+/**
+ * TODO
+ */
 export type Edge<T extends object = any> = T & DocumentMetadata & EdgeMetadata;
 
+/**
+ * TODO
+ */
 export type ObjectWithId = {
   [key: string]: any;
   _id: string;
 };
 
+/**
+ * TODO
+ */
 export type ObjectWithKey = {
   [key: string]: any;
   _key: string;
 };
 
+/**
+ * TODO
+ */
 export type DocumentSelector = ObjectWithId | ObjectWithKey | string;
 
-/** @hidden @internal */
+/**
+ * TODO
+ *
+ * @hidden
+ * @internal
+ */
 export function _documentHandle(
   selector: DocumentSelector,
   collectionName: string
