@@ -59,6 +59,9 @@ export type AqlValue =
   | object
   | any[];
 
+/**
+ * TODO
+ */
 export function isAqlQuery(query: any): query is AqlQuery {
   return Boolean(query && typeof query.query === "string" && query.bindVars);
 }
@@ -68,10 +71,16 @@ export function isGeneratedAqlQuery(query: any): query is GeneratedAqlQuery {
   return isAqlQuery(query) && typeof (query as any)._source === "function";
 }
 
+/**
+ * TODO
+ */
 export function isAqlLiteral(literal: any): literal is AqlLiteral {
   return Boolean(literal && typeof literal.toAQL === "function");
 }
 
+/**
+ * TODO
+ */
 export function aql(
   templateStrings: TemplateStringsArray,
   ...args: AqlValue[]
@@ -132,9 +141,12 @@ export function aql(
 }
 
 export namespace aql {
-  export const literal = (
+  /**
+   * TODO
+   */
+  export function literal(
     value: string | number | boolean | AqlLiteral | null | undefined
-  ): AqlLiteral => {
+  ): AqlLiteral {
     if (isAqlLiteral(value)) {
       return value;
     }
@@ -146,11 +158,15 @@ export namespace aql {
         return String(value);
       },
     };
-  };
-  export const join = (
+  }
+
+  /**
+   * TODO
+   */
+  export function join(
     values: AqlValue[],
     sep: string = " "
-  ): GeneratedAqlQuery => {
+  ): GeneratedAqlQuery {
     if (!values.length) {
       return aql``;
     }
@@ -161,5 +177,5 @@ export namespace aql {
       ["", ...Array(values.length - 1).fill(sep), ""] as any,
       ...values
     );
-  };
+  }
 }

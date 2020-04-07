@@ -43,7 +43,7 @@ const messages: { [key: number]: string } = {
   508: "Loop Detected",
   510: "Not Extended",
   511: "Network Authentication Required",
-  599: "Network Connect Timeout Error"
+  599: "Network Connect Timeout Error",
 };
 
 const nativeErrorKeys = [
@@ -52,13 +52,19 @@ const nativeErrorKeys = [
   "columnNumber",
   "stack",
   "description",
-  "number"
+  "number",
 ] as (keyof Error)[];
 
+/**
+ * TODO
+ */
 export function isArangoError(err: any): err is ArangoError {
   return Boolean(err && err.isArangoError);
 }
 
+/**
+ * TODO
+ */
 export function isSystemError(err: any): err is SystemError {
   return (
     Object.getPrototypeOf(err) === Error.prototype &&
@@ -68,12 +74,18 @@ export function isSystemError(err: any): err is SystemError {
   );
 }
 
+/**
+ * TODO
+ */
 export interface SystemError extends Error {
   code: string;
   errno: number | string;
   syscall: string;
 }
 
+/**
+ * TODO
+ */
 export class ArangoError extends ExtendableError {
   name = "ArangoError";
   isArangoError = true;
@@ -98,6 +110,9 @@ export class ArangoError extends ExtendableError {
   }
 }
 
+/**
+ * TODO
+ */
 export class HttpError extends ExtendableError {
   name = "HttpError";
   response: any;

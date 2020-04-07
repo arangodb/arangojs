@@ -4,14 +4,23 @@ import { isArangoError } from "./error";
 import { VIEW_NOT_FOUND } from "./util/codes";
 import { Dict } from "./util/types";
 
+/**
+ * TODO
+ */
 export enum ViewType {
   ARANGOSEARCH_VIEW = "arangosearch",
 }
 
+/**
+ * TODO
+ */
 export function isArangoView(view: any): view is View {
   return Boolean(view && view.isArangoView);
 }
 
+/**
+ * TODO
+ */
 export type ViewDescription = {
   globallyUniqueId: string;
   id: string;
@@ -19,6 +28,9 @@ export type ViewDescription = {
   type: ViewType;
 };
 
+/**
+ * TODO
+ */
 export type ViewResponse = {
   name: string;
   id: string;
@@ -26,6 +38,9 @@ export type ViewResponse = {
   type: ViewType;
 };
 
+/**
+ * TODO
+ */
 export type ArangoSearchViewLink = {
   /**
    * Default: `["identity"]`
@@ -59,6 +74,9 @@ export type ArangoSearchViewLink = {
   storeValues?: "none" | "id";
 };
 
+/**
+ * TODO
+ */
 export type ArangoSearchViewProperties = {
   cleanupIntervalStep: number;
   consolidationIntervalMsec: number;
@@ -77,6 +95,9 @@ export type ArangoSearchViewProperties = {
   links: Dict<ArangoSearchViewLink | undefined>;
 };
 
+/**
+ * TODO
+ */
 export type ArangoSearchViewPropertiesResponse = ViewResponse &
   ArangoSearchViewProperties & {
     type: ViewType.ARANGOSEARCH_VIEW;
@@ -139,6 +160,9 @@ export type TierConsolidationPolicy = {
   minScore?: number;
 };
 
+/**
+ * TODO
+ */
 export type ArangoSearchViewPropertiesOptions = {
   /**
    * Default: `2`
@@ -225,6 +249,9 @@ export type ArangoSearchViewPropertiesOptions = {
   links?: Dict<ArangoSearchViewLink | undefined>;
 };
 
+/**
+ * TODO
+ */
 export class View<
   PropertiesOptions extends object = any,
   PropertiesResponse extends object = any
@@ -238,14 +265,23 @@ export class View<
     this._name = name;
   }
 
+  /**
+   * TODO
+   */
   get isArangoView(): true {
     return true;
   }
 
+  /**
+   * TODO
+   */
   get name() {
     return this._name;
   }
 
+  /**
+   * TODO
+   */
   get(): Promise<ViewResponse & ArangoResponseMetadata> {
     return this._db.request(
       { path: `/_api/view/${this.name}` },
@@ -253,6 +289,9 @@ export class View<
     );
   }
 
+  /**
+   * TODO
+   */
   async exists(): Promise<boolean> {
     try {
       await this.get();
@@ -265,6 +304,9 @@ export class View<
     }
   }
 
+  /**
+   * TODO
+   */
   create(options?: PropertiesOptions): Promise<PropertiesResponse> {
     return this._db.request(
       {
@@ -280,6 +322,9 @@ export class View<
     );
   }
 
+  /**
+   * TODO
+   */
   async rename(name: string): Promise<ViewResponse & ArangoResponseMetadata> {
     const result = await this._db.request(
       {
@@ -293,6 +338,9 @@ export class View<
     return result;
   }
 
+  /**
+   * TODO
+   */
   properties(): Promise<PropertiesResponse & ArangoResponseMetadata> {
     return this._db.request(
       { path: `/_api/view/${this.name}/properties` },
@@ -300,6 +348,9 @@ export class View<
     );
   }
 
+  /**
+   * TODO
+   */
   setProperties(properties?: PropertiesOptions): Promise<PropertiesResponse> {
     return this._db.request(
       {
@@ -311,6 +362,9 @@ export class View<
     );
   }
 
+  /**
+   * TODO
+   */
   replaceProperties(
     properties?: PropertiesOptions
   ): Promise<PropertiesResponse> {
@@ -324,6 +378,9 @@ export class View<
     );
   }
 
+  /**
+   * TODO
+   */
   drop(): Promise<boolean> {
     return this._db.request(
       {
@@ -335,6 +392,9 @@ export class View<
   }
 }
 
+/**
+ * TODO
+ */
 export interface ArangoSearchView
   extends View<
     ArangoSearchViewPropertiesOptions,

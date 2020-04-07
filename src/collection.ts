@@ -54,11 +54,17 @@ export interface ArangoCollection {
   name: string;
 }
 
+/**
+ * TODO
+ */
 export enum CollectionType {
   DOCUMENT_COLLECTION = 2,
   EDGE_COLLECTION = 3,
 }
 
+/**
+ * TODO
+ */
 export enum CollectionStatus {
   NEWBORN = 1,
   UNLOADED = 2,
@@ -68,8 +74,14 @@ export enum CollectionStatus {
   LOADING = 6,
 }
 
+/**
+ * TODO
+ */
 export type KeyGenerator = "traditional" | "autoincrement" | "uuid" | "padded";
 
+/**
+ * TODO
+ */
 export type ShardingStrategy =
   | "hash"
   | "enterprise-hash-smart-edge"
@@ -77,11 +89,21 @@ export type ShardingStrategy =
   | "enterprise-compat"
   | "enterprise-smart-edge-compat";
 
-/** @deprecated ArangoDB 3.4 */
+/**
+ * TODO
+ *
+ * @deprecated Deprecated in ArangoDB 3.4.
+ */
 export type SimpleQueryAllKeys = "id" | "key" | "path";
 
+/**
+ * TODO
+ */
 export type ValidationLevel = "none" | "new" | "moderate" | "strict";
 
+/**
+ * TODO
+ */
 export type CollectionMetadata = {
   name: string;
   globallyUniqueId: string;
@@ -90,6 +112,9 @@ export type CollectionMetadata = {
   isSystem: boolean;
 };
 
+/**
+ * TODO
+ */
 export type CollectionProperties = CollectionMetadata & {
   statusString: string;
   waitForSync: boolean;
@@ -135,6 +160,9 @@ export type CollectionProperties = CollectionMetadata & {
 
 // Options
 
+/**
+ * TODO
+ */
 export type CollectionPropertiesOptions = {
   waitForSync?: boolean;
   validation?: {
@@ -146,15 +174,24 @@ export type CollectionPropertiesOptions = {
   journalSize?: number;
 };
 
+/**
+ * TODO
+ */
 export type CollectionChecksumOptions = {
   withRevisions?: boolean;
   withData?: boolean;
 };
 
+/**
+ * TODO
+ */
 export type CollectionDropOptions = {
   isSystem?: boolean;
 };
 
+/**
+ * TODO
+ */
 export type CollectionKeyOptions = {
   /**
    * Type of key generator to use.
@@ -177,6 +214,9 @@ export type CollectionKeyOptions = {
   offset?: number;
 };
 
+/**
+ * TODO
+ */
 export type ValidationOptions = {
   /**
    * TODO
@@ -192,6 +232,12 @@ export type ValidationOptions = {
   message?: string;
 };
 
+/**
+ * Options for creating a collection.
+ *
+ * See {@link Database.createCollection}, {@link Database.createEdgeCollection}
+ * and {@link Collection.create}.
+ */
 export type CreateCollectionOptions = {
   /**
    * If set to `true`, data will be synchronized to disk before returning from
@@ -305,38 +351,59 @@ export type CreateCollectionOptions = {
   smartJoinAttribute?: string;
 };
 
+/**
+ * TODO
+ */
 export type CollectionReadOptions = {
   graceful?: boolean;
   allowDirtyRead?: boolean;
 };
 
-type CollectionSaveOptions = {
+/**
+ * TODO
+ */
+export type CollectionSaveOptions = {
   waitForSync?: boolean;
   silent?: boolean;
   returnNew?: boolean;
   returnOld?: boolean;
 };
 
+/**
+ * TODO
+ */
 export type CollectionInsertOptions = CollectionSaveOptions & {
   overwrite?: boolean;
   overwriteMode?: "update" | "replace";
 };
 
+/**
+ * TODO
+ */
 export type CollectionReplaceOptions = CollectionSaveOptions & {
   ignoreRevs?: boolean;
 };
 
+/**
+ * TODO
+ */
 export type CollectionUpdateOptions = CollectionReplaceOptions & {
   keepNull?: boolean;
   mergeObjects?: boolean;
 };
 
+/**
+ * TODO
+ */
 export type CollectionRemoveOptions = {
   rSync?: boolean;
   returnOld?: boolean;
   silent?: boolean;
 };
 
+/**
+ * TODO
+ */
 export type CollectionImportOptions = {
   type?: null | "auto" | "documents" | "array";
   fromPrefix?: string;
@@ -348,7 +415,11 @@ export type CollectionImportOptions = {
   details?: boolean;
 };
 
-/** @deprecated ArangoDB 3.4 */
+/**
+ * TODO
+ *
+ * @deprecated Deprecated in ArangoDB 3.4.
+ */
 export type SimpleQueryByExampleOptions = {
   skip?: number;
   limit?: number;
@@ -356,12 +427,20 @@ export type SimpleQueryByExampleOptions = {
   ttl?: number;
 };
 
-/** @deprecated ArangoDB 3.4 */
+/**
+ * TODO
+ *
+ * @deprecated Deprecated in ArangoDB 3.4.
+ */
 export type SimpleQueryAllOptions = SimpleQueryByExampleOptions & {
   stream?: boolean;
 };
 
-/** @deprecated ArangoDB 3.4 */
+/**
+ * TODO
+ *
+ * @deprecated Deprecated in ArangoDB 3.4.
+ */
 export type SimpleQueryUpdateByExampleOptions = {
   keepNull?: boolean;
   waitForSync?: boolean;
@@ -369,30 +448,50 @@ export type SimpleQueryUpdateByExampleOptions = {
   mergeObjects?: boolean;
 };
 
-/** @deprecated ArangoDB 3.4 */
+/**
+ * TODO
+ *
+ * @deprecated Deprecated in ArangoDB 3.4.
+ */
 export type SimpleQueryRemoveByExampleOptions = {
   waitForSync?: boolean;
   limit?: number;
 };
 
-/** @deprecated ArangoDB 3.4 */
+/**
+ * TODO
+ *
+ * @deprecated Deprecated in ArangoDB 3.4.
+ */
 export type SimpleQueryReplaceByExampleOptions = SimpleQueryRemoveByExampleOptions;
 
-/** @deprecated ArangoDB 3.4 */
+/**
+ * TODO
+ *
+ * @deprecated Deprecated in ArangoDB 3.4.
+ */
 export type SimpleQueryRemoveByKeysOptions = {
   returnOld?: boolean;
   silent?: boolean;
   waitForSync?: boolean;
 };
 
-/** @deprecated ArangoDB 3.4 */
+/**
+ * TODO
+ *
+ * @deprecated Deprecated in ArangoDB 3.4.
+ */
 export type SimpleQueryFulltextOptions = {
   index?: string;
   limit?: number;
   skip?: number;
 };
 
-/** @deprecated ArangoDB 3.4 */
+/**
+ * TODO
+ *
+ * @deprecated Deprecated in ArangoDB 3.4.
+ */
 export type TraversalOptions = {
   init?: string;
   filter?: string;
@@ -414,10 +513,16 @@ export type TraversalOptions = {
 
 // Results
 
+/**
+ * TODO
+ */
 export type CollectionPropertiesAndCount = CollectionProperties & {
   count: number;
 };
 
+/**
+ * TODO
+ */
 export type CollectionPropertiesAndFigures = CollectionProperties & {
   count: number;
   figures: {
@@ -473,19 +578,31 @@ export type CollectionPropertiesAndFigures = CollectionProperties & {
   };
 };
 
+/**
+ * TODO
+ */
 export type CollectionPropertiesAndRevision = CollectionProperties & {
   revision: string;
 };
 
+/**
+ * TODO
+ */
 export type CollectionChecksum = {
   revision: string;
   checksum: string;
 };
 
+/**
+ * TODO
+ */
 export type CollectionLoadResult = CollectionMetadata & {
   count?: number;
 };
 
+/**
+ * TODO
+ */
 export type CollectionImportResult = {
   error: false;
   created: number;
@@ -496,6 +613,9 @@ export type CollectionImportResult = {
   details?: string[];
 };
 
+/**
+ * TODO
+ */
 export type CollectionEdgesResult<T extends object = any> = {
   edges: Edge<T>[];
   stats: {
@@ -504,39 +624,67 @@ export type CollectionEdgesResult<T extends object = any> = {
   };
 };
 
+/**
+ * TODO
+ */
 export type CollectionInsertResult<T> = DocumentMetadata & {
   new?: T;
 };
 
+/**
+ * TODO
+ */
 export type CollectionRemoveResult<T> = DocumentMetadata & {
   old?: T;
 };
 
+/**
+ * TODO
+ */
 export type CollectionSaveResult<T> = CollectionInsertResult<T> &
   CollectionRemoveResult<T>;
 
-/** @deprecated ArangoDB 3.4 */
+/**
+ * TODO
+ *
+ * @deprecated Deprecated in ArangoDB 3.4.
+ */
 export type SimpleQueryRemoveByExampleResult = {
   deleted: number;
 };
 
-/** @deprecated ArangoDB 3.4 */
+/**
+ * TODO
+ *
+ * @deprecated Deprecated in ArangoDB 3.4.
+ */
 export type SimpleQueryReplaceByExampleResult = {
   replaced: number;
 };
 
-/** @deprecated ArangoDB 3.4 */
+/**
+ * TODO
+ *
+ * @deprecated Deprecated in ArangoDB 3.4.
+ */
 export type SimpleQueryUpdateByExampleResult = {
   updated: number;
 };
 
-/** @deprecated ArangoDB 3.4 */
+/**
+ * TODO
+ *
+ * @deprecated Deprecated in ArangoDB 3.4.
+ */
 export type SimpleQueryRemoveByKeysResult<T extends object = any> = {
   removed: number;
   ignored: number;
   old?: DocumentMetadata[] | Document<T>[];
 };
 
+/**
+ * TODO
+ */
 export type CollectionIndexResult = {
   id: string;
 };
@@ -551,83 +699,179 @@ export type CollectionIndexResult = {
  */
 export interface DocumentCollection<T extends object = any>
   extends ArangoCollection {
+  /**
+   * TODO
+   */
   exists(): Promise<boolean>;
+  /**
+   * TODO
+   */
   get(): Promise<ArangoResponseMetadata & CollectionMetadata>;
+  /**
+   * TODO
+   */
   create(
     options?: CreateCollectionOptions & {
       type?: CollectionType;
     }
   ): Promise<ArangoResponseMetadata & CollectionProperties>;
+  /**
+   * TODO
+   */
   properties(): Promise<ArangoResponseMetadata & CollectionProperties>;
+  /**
+   * TODO
+   */
   properties(
     properties: CollectionPropertiesOptions
   ): Promise<ArangoResponseMetadata & CollectionProperties>;
+  /**
+   * TODO
+   */
   count(): Promise<ArangoResponseMetadata & CollectionPropertiesAndCount>;
+  /**
+   * TODO
+   */
   figures(): Promise<ArangoResponseMetadata & CollectionPropertiesAndFigures>;
+  /**
+   * TODO
+   */
   revision(): Promise<ArangoResponseMetadata & CollectionPropertiesAndRevision>;
+  /**
+   * TODO
+   */
   checksum(
     options?: CollectionChecksumOptions
   ): Promise<ArangoResponseMetadata & CollectionChecksum>;
+  /**
+   * TODO
+   */
   load(count?: boolean): Promise<ArangoResponseMetadata & CollectionLoadResult>;
+  /**
+   * TODO
+   */
   unload(): Promise<ArangoResponseMetadata & CollectionMetadata>;
+  /**
+   * TODO
+   */
   rename(name: string): Promise<ArangoResponseMetadata & CollectionMetadata>;
+  /**
+   * TODO
+   */
   rotate(): Promise<boolean>;
+  /**
+   * TODO
+   */
   truncate(): Promise<ArangoResponseMetadata & CollectionMetadata>;
+  /**
+   * TODO
+   */
   drop(options?: CollectionDropOptions): Promise<ArangoResponseMetadata>;
 
   //#region crud
+  /**
+   * TODO
+   */
   getResponsibleShard(document: Partial<Document<T>>): Promise<string>;
+  /**
+   * TODO
+   */
   documentId(selector: DocumentSelector): string;
+  /**
+   * TODO
+   */
   documentExists(selector: DocumentSelector): Promise<boolean>;
+  /**
+   * TODO
+   */
   document(
     selector: DocumentSelector,
     options?: CollectionReadOptions
-  ): Promise<Document<T>>;
-  document(selector: DocumentSelector, graceful: boolean): Promise<Document<T>>;
+  ): Promise<Document<T> | null>;
+  /**
+   * TODO
+   */
+  document(
+    selector: DocumentSelector,
+    graceful: boolean
+  ): Promise<Document<T> | null>;
+  /**
+   * TODO
+   */
   save(
     data: DocumentData<T>,
     options?: CollectionInsertOptions
   ): Promise<CollectionSaveResult<Document<T>>>;
+  /**
+   * TODO
+   */
   saveAll(
     data: Array<DocumentData<T>>,
     options?: CollectionInsertOptions
   ): Promise<CollectionSaveResult<Document<T>>[]>;
+  /**
+   * TODO
+   */
   replace(
     selector: DocumentSelector,
     newValue: DocumentData<T>,
     options?: CollectionReplaceOptions
   ): Promise<CollectionSaveResult<Document<T>>>;
+  /**
+   * TODO
+   */
   replaceAll(
     newValues: Array<DocumentData<T> & ({ _key: string } | { _id: string })>,
     options?: CollectionReplaceOptions
   ): Promise<CollectionSaveResult<Document<T>>[]>;
+  /**
+   * TODO
+   */
   update(
     selector: DocumentSelector,
     newValue: Patch<DocumentData<T>>,
     options?: CollectionUpdateOptions
   ): Promise<CollectionSaveResult<Document<T>>>;
+  /**
+   * TODO
+   */
   updateAll(
     newValues: Array<
       Patch<DocumentData<T>> & ({ _key: string } | { _id: string })
     >,
     options?: CollectionUpdateOptions
   ): Promise<CollectionSaveResult<Document<T>>[]>;
+  /**
+   * TODO
+   */
   remove(
     selector: DocumentSelector,
     options?: CollectionRemoveOptions
   ): Promise<CollectionRemoveResult<Document<T>>>;
+  /**
+   * TODO
+   */
   removeAll(
     selector: Array<DocumentSelector>,
     options?: CollectionRemoveOptions
   ): Promise<CollectionRemoveResult<Document<T>>[]>;
+  /**
+   * TODO
+   */
   import(
     data: Buffer | Blob | string,
     options?: CollectionImportOptions
   ): Promise<CollectionImportResult>;
+  /**
+   * TODO
+   */
   import(
     data: string[][],
     options?: CollectionImportOptions
   ): Promise<CollectionImportResult>;
+  /**
+   * TODO
+   */
   import(
     data: Array<DocumentData<T>>,
     options?: CollectionImportOptions
@@ -635,52 +879,113 @@ export interface DocumentCollection<T extends object = any>
   //#endregion
 
   //#region simple queries
-  /** @deprecated ArangoDB 3.4 */
+
+  /**
+   * TODO
+   *
+   * @deprecated Deprecated in ArangoDB 3.4.
+   */
   list(type?: SimpleQueryAllKeys): Promise<ArrayCursor<string>>;
-  /** @deprecated ArangoDB 3.4 */
+
+  /**
+   * TODO
+   *
+   * @deprecated Deprecated in ArangoDB 3.4.
+   */
   all(options?: SimpleQueryAllOptions): Promise<ArrayCursor<Document<T>>>;
-  /** @deprecated ArangoDB 3.4 */
+
+  /**
+   * TODO
+   *
+   * @deprecated Deprecated in ArangoDB 3.4.
+   */
   any(): Promise<Document<T>>;
-  /** @deprecated ArangoDB 3.4 */
+
+  /**
+   * TODO
+   *
+   * @deprecated Deprecated in ArangoDB 3.4.
+   */
   byExample(
     example: Partial<DocumentData<T>>,
     options?: SimpleQueryByExampleOptions
   ): Promise<ArrayCursor<Document<T>>>;
-  /** @deprecated ArangoDB 3.4 */
+
+  /**
+   * TODO
+   *
+   * @deprecated Deprecated in ArangoDB 3.4.
+   */
   firstExample(example: Partial<DocumentData<T>>): Promise<Document<T>>;
-  /** @deprecated ArangoDB 3.4 */
+
+  /**
+   * TODO
+   *
+   * @deprecated Deprecated in ArangoDB 3.4.
+   */
   removeByExample(
     example: Partial<DocumentData<T>>,
     options?: SimpleQueryRemoveByExampleOptions
   ): Promise<ArangoResponseMetadata & SimpleQueryRemoveByExampleResult>;
-  /** @deprecated ArangoDB 3.4 */
+
+  /**
+   * TODO
+   *
+   * @deprecated Deprecated in ArangoDB 3.4.
+   */
   replaceByExample(
     example: Partial<DocumentData<T>>,
     newValue: DocumentData<T>,
     options?: SimpleQueryReplaceByExampleOptions
   ): Promise<ArangoResponseMetadata & SimpleQueryReplaceByExampleResult>;
-  /** @deprecated ArangoDB 3.4 */
+
+  /**
+   * TODO
+   *
+   * @deprecated Deprecated in ArangoDB 3.4.
+   */
   updateByExample(
     example: Partial<DocumentData<T>>,
     newValue: Patch<DocumentData<T>>,
     options?: SimpleQueryUpdateByExampleOptions
   ): Promise<ArangoResponseMetadata & SimpleQueryUpdateByExampleResult>;
+  /**
+   * TODO
+   */
   remove(
     selector: DocumentSelector,
     options?: CollectionRemoveOptions
   ): Promise<CollectionRemoveResult<Edge<T>>>;
+  /**
+   * TODO
+   */
   removeAll(
     selector: Array<DocumentSelector>,
     options?: CollectionRemoveOptions
   ): Promise<CollectionRemoveResult<Edge<T>>[]>;
-  /** @deprecated ArangoDB 3.4 */
+
+  /**
+   * TODO
+   *
+   * @deprecated Deprecated in ArangoDB 3.4.
+   */
   lookupByKeys(keys: string[]): Promise<Document<T>[]>;
-  /** @deprecated ArangoDB 3.4 */
+
+  /**
+   * TODO
+   *
+   * @deprecated Deprecated in ArangoDB 3.4.
+   */
   removeByKeys(
     keys: string[],
     options?: SimpleQueryRemoveByKeysOptions
   ): Promise<ArangoResponseMetadata & SimpleQueryRemoveByKeysResult<T>>;
-  /** @deprecated ArangoDB 3.4 */
+
+  /**
+   * TODO
+   *
+   * @deprecated Deprecated in ArangoDB 3.4.
+   */
   fulltext(
     attribute: string,
     query: string,
@@ -689,32 +994,59 @@ export interface DocumentCollection<T extends object = any>
   //#endregion
 
   //#region indexes
+  /**
+   * TODO
+   */
   indexes(): Promise<Index[]>;
+  /**
+   * TODO
+   */
   index(selector: IndexSelector): Promise<Index[]>;
+  /**
+   * TODO
+   */
   ensureIndex(
     details: EnsureIndexFulltextOptions
   ): Promise<
     ArangoResponseMetadata & FulltextIndex & { isNewlyCreated: boolean }
   >;
+  /**
+   * TODO
+   */
   ensureIndex(
     details: EnsureIndexGeoOptions
   ): Promise<ArangoResponseMetadata & GeoIndex & { isNewlyCreated: boolean }>;
+  /**
+   * TODO
+   */
   ensureIndex(
     details: EnsureIndexHashOptions
   ): Promise<ArangoResponseMetadata & HashIndex & { isNewlyCreated: boolean }>;
+  /**
+   * TODO
+   */
   ensureIndex(
     details: EnsureIndexPersistentOptions
   ): Promise<
     ArangoResponseMetadata & PersistentIndex & { isNewlyCreated: boolean }
   >;
+  /**
+   * TODO
+   */
   ensureIndex(
     details: EnsureIndexSkiplistOptions
   ): Promise<
     ArangoResponseMetadata & SkiplistIndex & { isNewlyCreated: boolean }
   >;
+  /**
+   * TODO
+   */
   ensureIndex(
     details: EnsureIndexTtlOptions
   ): Promise<ArangoResponseMetadata & TtlIndex & { isNewlyCreated: boolean }>;
+  /**
+   * TODO
+   */
   dropIndex(
     selector: IndexSelector
   ): Promise<ArangoResponseMetadata & CollectionIndexResult>;
@@ -730,52 +1062,94 @@ export interface DocumentCollection<T extends object = any>
 export interface EdgeCollection<T extends object = any>
   extends DocumentCollection<T> {
   //#region crud
+  /**
+   * TODO
+   */
   edge(
     selector: DocumentSelector,
     options?: CollectionReadOptions
   ): Promise<Edge<T>>;
+  /**
+   * TODO
+   */
   edge(selector: DocumentSelector, graceful: boolean): Promise<Edge<T>>;
+  /**
+   * TODO
+   */
   document(
     selector: DocumentSelector,
     options?: CollectionReadOptions
-  ): Promise<Edge<T>>;
-  document(selector: DocumentSelector, graceful: boolean): Promise<Edge<T>>;
+  ): Promise<Edge<T> | null>;
+  /**
+   * TODO
+   */
+  document(
+    selector: DocumentSelector,
+    graceful: boolean
+  ): Promise<Edge<T> | null>;
+  /**
+   * TODO
+   */
   save(
     data: EdgeData<T>,
     options?: CollectionInsertOptions
   ): Promise<CollectionSaveResult<Edge<T>>>;
+  /**
+   * TODO
+   */
   saveAll(
     data: Array<EdgeData<T>>,
     options?: CollectionInsertOptions
   ): Promise<CollectionSaveResult<Edge<T>>[]>;
+  /**
+   * TODO
+   */
   replace(
     selector: DocumentSelector,
     newValue: DocumentData<T>,
     options?: CollectionReplaceOptions
   ): Promise<CollectionSaveResult<Edge<T>>>;
+  /**
+   * TODO
+   */
   replaceAll(
     newValues: Array<DocumentData<T> & ({ _key: string } | { _id: string })>,
     options?: CollectionReplaceOptions
   ): Promise<CollectionSaveResult<Edge<T>>[]>;
+  /**
+   * TODO
+   */
   update(
     selector: DocumentSelector,
     newValue: Patch<DocumentData<T>>,
     options?: CollectionUpdateOptions
   ): Promise<CollectionSaveResult<Edge<T>>>;
+  /**
+   * TODO
+   */
   updateAll(
     newValues: Array<
       Patch<DocumentData<T>> & ({ _key: string } | { _id: string })
     >,
     options?: CollectionUpdateOptions
   ): Promise<CollectionSaveResult<Edge<T>>[]>;
+  /**
+   * TODO
+   */
   import(
     data: Buffer | Blob | string,
     options?: CollectionImportOptions
   ): Promise<CollectionImportResult>;
+  /**
+   * TODO
+   */
   import(
     data: string[][],
     options?: CollectionImportOptions
   ): Promise<CollectionImportResult>;
+  /**
+   * TODO
+   */
   import(
     data: Array<EdgeData<T>>,
     options?: CollectionImportOptions
@@ -783,20 +1157,50 @@ export interface EdgeCollection<T extends object = any>
   //#endregion
 
   //#region simple queries
-  /** @deprecated ArangoDB 3.4 */
+
+  /**
+   * TODO
+   *
+   * @deprecated Deprecated in ArangoDB 3.4.
+   */
   all(options?: SimpleQueryAllOptions): Promise<ArrayCursor<Edge<T>>>;
-  /** @deprecated ArangoDB 3.4 */
+
+  /**
+   * TODO
+   *
+   * @deprecated Deprecated in ArangoDB 3.4.
+   */
   any(): Promise<Edge<T>>;
-  /** @deprecated ArangoDB 3.4 */
+
+  /**
+   * TODO
+   *
+   * @deprecated Deprecated in ArangoDB 3.4.
+   */
   byExample(
     example: Partial<DocumentData<T>>,
     options?: SimpleQueryByExampleOptions
   ): Promise<ArrayCursor<Edge<T>>>;
-  /** @deprecated ArangoDB 3.4 */
+
+  /**
+   * TODO
+   *
+   * @deprecated Deprecated in ArangoDB 3.4.
+   */
   firstExample(example: Partial<DocumentData<T>>): Promise<Edge<T>>;
-  /** @deprecated ArangoDB 3.4 */
+
+  /**
+   * TODO
+   *
+   * @deprecated Deprecated in ArangoDB 3.4.
+   */
   lookupByKeys(keys: string[]): Promise<Edge<T>[]>;
-  /** @deprecated ArangoDB 3.4 */
+
+  /**
+   * TODO
+   *
+   * @deprecated Deprecated in ArangoDB 3.4.
+   */
   fulltext(
     attribute: string,
     query: string,
@@ -805,16 +1209,30 @@ export interface EdgeCollection<T extends object = any>
   //#endregion
 
   //#region edges
+  /**
+   * TODO
+   */
   edges(
     selector: DocumentSelector
   ): Promise<ArangoResponseMetadata & CollectionEdgesResult<T>>;
+  /**
+   * TODO
+   */
   inEdges(
     selector: DocumentSelector
   ): Promise<ArangoResponseMetadata & CollectionEdgesResult<T>>;
+  /**
+   * TODO
+   */
   outEdges(
     selector: DocumentSelector
   ): Promise<ArangoResponseMetadata & CollectionEdgesResult<T>>;
-  /** @deprecated ArangoDB 3.4 */
+
+  /**
+   * TODO
+   *
+   * @deprecated Deprecated in ArangoDB 3.4.
+   */
   traversal(
     startVertex: DocumentSelector,
     options?: TraversalOptions
@@ -880,10 +1298,16 @@ export class Collection<T extends object = any>
   //#endregion
 
   //#region metadata
+  /**
+   * TODO
+   */
   get isArangoCollection(): true {
     return true;
   }
 
+  /**
+   * TODO
+   */
   get name() {
     return this._name;
   }
@@ -1021,24 +1445,24 @@ export class Collection<T extends object = any>
     return _documentHandle(selector, this._name);
   }
 
-  documentExists(selector: DocumentSelector): Promise<boolean> {
-    return this._db
-      .request(
+  async documentExists(selector: DocumentSelector): Promise<boolean> {
+    try {
+      return this._db.request(
         {
           method: "HEAD",
           path: `/_api/document/${_documentHandle(selector, this._name)}`,
         },
         () => true
-      )
-      .catch((err) => {
-        if (err.statusCode === 404) {
-          return false;
-        }
-        throw err;
-      });
+      );
+    } catch (err) {
+      if (err.statusCode === 404) {
+        return false;
+      }
+      throw err;
+    }
   }
 
-  document(
+  async document(
     selector: DocumentSelector,
     options: boolean | CollectionReadOptions = {}
   ) {
@@ -1054,12 +1478,14 @@ export class Collection<T extends object = any>
       (res) => res.body
     );
     if (!graceful) return result;
-    return result.catch((err) => {
+    try {
+      return await result;
+    } catch (err) {
       if (isArangoError(err) && err.errorNum === DOCUMENT_NOT_FOUND) {
         return null;
       }
       throw err;
-    });
+    }
   }
 
   edge(

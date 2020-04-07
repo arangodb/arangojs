@@ -1,3 +1,6 @@
+/**
+ * TODO
+ */
 export type EnsureIndexHashOptions = {
   type: "hash";
   fields: string[];
@@ -7,6 +10,9 @@ export type EnsureIndexHashOptions = {
   deduplicate?: boolean;
 };
 
+/**
+ * TODO
+ */
 export type EnsureIndexSkiplistOptions = {
   type: "skiplist";
   fields: string[];
@@ -16,7 +22,11 @@ export type EnsureIndexSkiplistOptions = {
   deduplicate?: boolean;
 };
 
-/** @deprecated ArangoDB 3.4 */
+/**
+ * TODO
+ *
+ * @deprecated Deprecated in ArangoDB 3.4.
+ */
 export type EnsureIndexPersistentOptions = {
   type: "persistent";
   fields: string[];
@@ -25,6 +35,9 @@ export type EnsureIndexPersistentOptions = {
   sparse?: boolean;
 };
 
+/**
+ * TODO
+ */
 export type EnsureIndexGeoOptions = {
   type: "geo";
   fields: [string] | [string, string];
@@ -32,6 +45,9 @@ export type EnsureIndexGeoOptions = {
   geoJson?: boolean;
 };
 
+/**
+ * TODO
+ */
 export type EnsureIndexFulltextOptions = {
   type: "fulltext";
   fields: [string];
@@ -39,6 +55,9 @@ export type EnsureIndexFulltextOptions = {
   minLength?: number;
 };
 
+/**
+ * TODO
+ */
 export type EnsureIndexTtlOptions = {
   type: "ttl";
   fields: [string];
@@ -46,6 +65,9 @@ export type EnsureIndexTtlOptions = {
   expireAfter: number;
 };
 
+/**
+ * TODO
+ */
 export type GenericIndex = {
   name?: string;
   id: string;
@@ -53,34 +75,52 @@ export type GenericIndex = {
   unique: boolean;
 };
 
+/**
+ * TODO
+ */
 export type SkiplistIndex = GenericIndex & {
   type: "skiplist";
   fields: string[];
 };
 
+/**
+ * TODO
+ */
 export type HashIndex = GenericIndex & {
   type: "hash";
   fields: string[];
   selectivityEstimate: number;
 };
 
+/**
+ * TODO
+ */
 export type PrimaryIndex = GenericIndex & {
   type: "primary";
   fields: string[];
   selectivityEstimate: number;
 };
 
+/**
+ * TODO
+ */
 export type PersistentIndex = GenericIndex & {
   type: "persistent";
   fields: string[];
 };
 
+/**
+ * TODO
+ */
 export type FulltextIndex = GenericIndex & {
   type: "fulltext";
   fields: [string];
   minLength: number;
 };
 
+/**
+ * TODO
+ */
 export type GeoIndex = GenericIndex & {
   type: "geo";
   fields: [string] | [string, string];
@@ -90,6 +130,9 @@ export type GeoIndex = GenericIndex & {
   maxNumCoverCells: number;
 };
 
+/**
+ * TODO
+ */
 export type TtlIndex = GenericIndex & {
   type: "ttl";
   fields: [string];
@@ -97,6 +140,9 @@ export type TtlIndex = GenericIndex & {
   selectivityEstimate: number;
 };
 
+/**
+ * TODO
+ */
 export type Index =
   | GeoIndex
   | FulltextIndex
@@ -106,9 +152,17 @@ export type Index =
   | SkiplistIndex
   | TtlIndex;
 
+/**
+ * TODO
+ */
 export type IndexSelector = string | Index;
 
-/** @hidden @internal */
+/**
+ * TODO
+ *
+ * @hidden
+ * @internal
+ */
 export function _indexHandle(
   selector: IndexSelector,
   collectionName: string

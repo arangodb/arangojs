@@ -3,17 +3,26 @@ import { Database } from "./database";
 import { isArangoError } from "./error";
 import { TRANSACTION_NOT_FOUND } from "./util/codes";
 
+/**
+ * TODO
+ */
 export function isArangoTransaction(
   transaction: any
 ): transaction is Transaction {
   return Boolean(transaction && transaction.isArangoTransaction);
 }
 
+/**
+ * TODO
+ */
 export type TransactionStatus = {
   id: string;
   status: "running" | "committed" | "aborted";
 };
 
+/**
+ * TODO
+ */
 export class Transaction {
   protected _db: Database;
   protected _id: string;
@@ -24,14 +33,23 @@ export class Transaction {
     this._id = id;
   }
 
+  /**
+   * TODO
+   */
   get isArangoTransaction(): true {
     return true;
   }
 
+  /**
+   * TODO
+   */
   get id() {
     return this._id;
   }
 
+  /**
+   * TODO
+   */
   async exists(): Promise<boolean> {
     try {
       await this.get();
@@ -44,6 +62,9 @@ export class Transaction {
     }
   }
 
+  /**
+   * TODO
+   */
   get(): Promise<TransactionStatus> {
     return this._db.request(
       {
@@ -53,6 +74,9 @@ export class Transaction {
     );
   }
 
+  /**
+   * TODO
+   */
   commit(): Promise<TransactionStatus> {
     return this._db.request(
       {
@@ -63,6 +87,9 @@ export class Transaction {
     );
   }
 
+  /**
+   * TODO
+   */
   abort(): Promise<TransactionStatus> {
     return this._db.request(
       {
@@ -73,6 +100,9 @@ export class Transaction {
     );
   }
 
+  /**
+   * TODO
+   */
   run<T>(fn: () => Promise<T>): Promise<T> {
     const conn = (this._db as any)._connection as Connection;
     conn.setTransactionId(this.id);

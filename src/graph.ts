@@ -30,17 +30,26 @@ function mungeGharialResponse(body: any, prop: "vertex" | "edge" | "removed") {
   return result;
 }
 
+/**
+ * TODO
+ */
 export type GraphCollectionInsertOptions = {
   waitForSync?: boolean;
   returnNew?: boolean;
 };
 
+/**
+ * TODO
+ */
 export type GraphCollectionReadOptions = {
   rev?: string;
   graceful?: boolean;
   allowDirtyRead?: boolean;
 };
 
+/**
+ * TODO
+ */
 export type GraphCollectionReplaceOptions = {
   rev?: string;
   waitForSync?: boolean;
@@ -49,12 +58,18 @@ export type GraphCollectionReplaceOptions = {
   returnNew?: boolean;
 };
 
+/**
+ * TODO
+ */
 export type GraphCollectionRemoveOptions = {
   rev?: string;
   waitForSync?: boolean;
   returnOld?: boolean;
 };
 
+/**
+ * TODO
+ */
 export class GraphVertexCollection<T extends object = any>
   implements ArangoCollection {
   protected _db: Database;
@@ -70,25 +85,40 @@ export class GraphVertexCollection<T extends object = any>
     this._collection = db.collection(name);
   }
 
+  /**
+   * TODO
+   */
   get isArangoCollection(): true {
     return true;
   }
 
+  /**
+   * TODO
+   */
   get name() {
     return this._name;
   }
 
+  /**
+   * TODO
+   */
   get collection() {
     return this._collection;
   }
 
+  /**
+   * TODO
+   */
   get graph() {
     return this._graph;
   }
 
-  vertexExists(selector: DocumentSelector): Promise<boolean> {
-    return this._db
-      .request(
+  /**
+   * TODO
+   */
+  async vertexExists(selector: DocumentSelector): Promise<boolean> {
+    try {
+      return this._db.request(
         {
           method: "HEAD",
           path: `/_api/gharial/${this.graph.name}/vertex/${_documentHandle(
@@ -97,24 +127,33 @@ export class GraphVertexCollection<T extends object = any>
           )}`,
         },
         () => true
-      )
-      .catch((err) => {
-        if (err.statusCode === 404) {
-          return false;
-        }
-        throw err;
-      });
+      );
+    } catch (err) {
+      if (err.statusCode === 404) {
+        return false;
+      }
+      throw err;
+    }
   }
 
-  vertex(
+  /**
+   * TODO
+   */
+  async vertex(
     selector: DocumentSelector,
     options?: GraphCollectionReadOptions
-  ): Promise<Document<T>>;
-  vertex(selector: DocumentSelector, graceful: boolean): Promise<Document<T>>;
-  vertex(
+  ): Promise<Document<T> | null>;
+  /**
+   * TODO
+   */
+  async vertex(
+    selector: DocumentSelector,
+    graceful: boolean
+  ): Promise<Document<T> | null>;
+  async vertex(
     selector: DocumentSelector,
     options: boolean | GraphCollectionReadOptions = {}
-  ): Promise<Document<T>> {
+  ): Promise<Document<T> | null> {
     if (typeof options === "boolean") {
       options = { graceful: options };
     }
@@ -139,14 +178,19 @@ export class GraphVertexCollection<T extends object = any>
       (res) => res.body.vertex
     );
     if (!graceful) return result;
-    return result.catch((err) => {
+    try {
+      return await result;
+    } catch (err) {
       if (isArangoError(err) && err.errorNum === DOCUMENT_NOT_FOUND) {
         return null;
       }
       throw err;
-    });
+    }
   }
 
+  /**
+   * TODO
+   */
   save(
     data: DocumentData<T>,
     options?: GraphCollectionInsertOptions
@@ -162,6 +206,9 @@ export class GraphVertexCollection<T extends object = any>
     );
   }
 
+  /**
+   * TODO
+   */
   replace(
     selector: DocumentSelector,
     newValue: DocumentData<T>,
@@ -188,6 +235,9 @@ export class GraphVertexCollection<T extends object = any>
     );
   }
 
+  /**
+   * TODO
+   */
   update(
     selector: DocumentSelector,
     newValue: Patch<DocumentData<T>>,
@@ -214,6 +264,9 @@ export class GraphVertexCollection<T extends object = any>
     );
   }
 
+  /**
+   * TODO
+   */
   remove(
     selector: DocumentSelector,
     options: GraphCollectionRemoveOptions = {}
@@ -239,6 +292,9 @@ export class GraphVertexCollection<T extends object = any>
   }
 }
 
+/**
+ * TODO
+ */
 export class GraphEdgeCollection<T extends object = any>
   implements ArangoCollection {
   protected _db: Database;
@@ -254,25 +310,40 @@ export class GraphEdgeCollection<T extends object = any>
     this._collection = db.collection(name);
   }
 
+  /**
+   * TODO
+   */
   get isArangoCollection(): true {
     return true;
   }
 
+  /**
+   * TODO
+   */
   get name() {
     return this._name;
   }
 
+  /**
+   * TODO
+   */
   get collection() {
     return this._collection;
   }
 
+  /**
+   * TODO
+   */
   get graph() {
     return this._graph;
   }
 
-  edgeExists(selector: DocumentSelector): Promise<boolean> {
-    return this._db
-      .request(
+  /**
+   * TODO
+   */
+  async edgeExists(selector: DocumentSelector): Promise<boolean> {
+    try {
+      return this._db.request(
         {
           method: "HEAD",
           path: `/_api/gharial/${this.graph.name}/edge/${_documentHandle(
@@ -281,24 +352,33 @@ export class GraphEdgeCollection<T extends object = any>
           )}`,
         },
         () => true
-      )
-      .catch((err) => {
-        if (err.statusCode === 404) {
-          return false;
-        }
-        throw err;
-      });
+      );
+    } catch (err) {
+      if (err.statusCode === 404) {
+        return false;
+      }
+      throw err;
+    }
   }
 
-  edge(selector: DocumentSelector, graceful: boolean): Promise<Edge<T>>;
-  edge(
+  /**
+   * TODO
+   */
+  async edge(
+    selector: DocumentSelector,
+    graceful: boolean
+  ): Promise<Edge<T> | null>;
+  /**
+   * TODO
+   */
+  async edge(
     selector: DocumentSelector,
     options?: GraphCollectionReadOptions
-  ): Promise<Edge<T>>;
-  edge(
+  ): Promise<Edge<T> | null>;
+  async edge(
     selector: DocumentSelector,
     options: boolean | GraphCollectionReadOptions = {}
-  ): Promise<Edge<T>> {
+  ): Promise<Edge<T> | null> {
     if (typeof options === "boolean") {
       options = { graceful: options };
     }
@@ -322,14 +402,19 @@ export class GraphEdgeCollection<T extends object = any>
       (res) => res.body.edge
     );
     if (!graceful) return result;
-    return result.catch((err) => {
+    try {
+      return await result;
+    } catch (err) {
       if (isArangoError(err) && err.errorNum === DOCUMENT_NOT_FOUND) {
         return null;
       }
       throw err;
-    });
+    }
   }
 
+  /**
+   * TODO
+   */
   save(
     data: EdgeData<T>,
     options?: GraphCollectionInsertOptions
@@ -345,6 +430,9 @@ export class GraphEdgeCollection<T extends object = any>
     );
   }
 
+  /**
+   * TODO
+   */
   replace(
     selector: DocumentSelector,
     newValue: EdgeData<T>,
@@ -371,6 +459,9 @@ export class GraphEdgeCollection<T extends object = any>
     );
   }
 
+  /**
+   * TODO
+   */
   update(
     selector: DocumentSelector,
     newValue: Patch<EdgeData<T>>,
@@ -397,6 +488,9 @@ export class GraphEdgeCollection<T extends object = any>
     );
   }
 
+  /**
+   * TODO
+   */
   remove(
     selector: DocumentSelector,
     options: GraphCollectionRemoveOptions = {}
@@ -440,6 +534,9 @@ export type EdgeDefinition = {
   to: string[];
 };
 
+/**
+ * TODO
+ */
 export type GraphInfo = {
   _id: string;
   _key: string;
@@ -466,6 +563,9 @@ export type GraphInfo = {
   smartGraphAttribute?: string;
 };
 
+/**
+ * TODO
+ */
 export type GraphCreateOptions = {
   /**
    * If set to `true`, the request will wait until everything is synced to
@@ -518,6 +618,9 @@ export type GraphCreateOptions = {
   smartGraphAttribute?: string;
 };
 
+/**
+ * TODO
+ */
 export class Graph {
   protected _name: string;
 
@@ -529,10 +632,16 @@ export class Graph {
     this._db = db;
   }
 
+  /**
+   * TODO
+   */
   get name() {
     return this._name;
   }
 
+  /**
+   * TODO
+   */
   get(): Promise<GraphInfo> {
     return this._db.request(
       { path: `/_api/gharial/${this._name}` },
@@ -540,6 +649,9 @@ export class Graph {
     );
   }
 
+  /**
+   * TODO
+   */
   async exists(): Promise<boolean> {
     try {
       await this.get();
@@ -552,6 +664,9 @@ export class Graph {
     }
   }
 
+  /**
+   * TODO
+   */
   create(
     edgeDefinitions: EdgeDefinition[],
     options?: GraphCreateOptions
@@ -574,6 +689,9 @@ export class Graph {
     );
   }
 
+  /**
+   * TODO
+   */
   drop(dropCollections: boolean = false): Promise<boolean> {
     return this._db.request(
       {
@@ -585,12 +703,18 @@ export class Graph {
     );
   }
 
+  /**
+   * TODO
+   */
   vertexCollection<T extends object = any>(
     collectionName: string
   ): GraphVertexCollection<T> {
     return new GraphVertexCollection<T>(this._db, collectionName, this);
   }
 
+  /**
+   * TODO
+   */
   listVertexCollections(): Promise<string[]> {
     return this._db.request(
       { path: `/_api/gharial/${this._name}/vertex` },
@@ -598,11 +722,17 @@ export class Graph {
     );
   }
 
+  /**
+   * TODO
+   */
   async vertexCollections(): Promise<GraphVertexCollection[]> {
     const names = await this.listVertexCollections();
     return names.map((name) => new GraphVertexCollection(this._db, name, this));
   }
 
+  /**
+   * TODO
+   */
   addVertexCollection(
     collection: string | ArangoCollection
   ): Promise<GraphInfo> {
@@ -619,6 +749,9 @@ export class Graph {
     );
   }
 
+  /**
+   * TODO
+   */
   removeVertexCollection(
     collection: string | ArangoCollection,
     dropCollection: boolean = false
@@ -638,12 +771,18 @@ export class Graph {
     );
   }
 
+  /**
+   * TODO
+   */
   edgeCollection<T extends object = any>(
     collectionName: string
   ): GraphEdgeCollection<T> {
     return new GraphEdgeCollection<T>(this._db, collectionName, this);
   }
 
+  /**
+   * TODO
+   */
   listEdgeCollections(): Promise<string[]> {
     return this._db.request(
       { path: `/_api/gharial/${this._name}/edge` },
@@ -651,11 +790,17 @@ export class Graph {
     );
   }
 
+  /**
+   * TODO
+   */
   async edgeCollections(): Promise<GraphEdgeCollection[]> {
     const names = await this.listEdgeCollections();
     return names.map((name) => new GraphEdgeCollection(this._db, name, this));
   }
 
+  /**
+   * TODO
+   */
   addEdgeDefinition(definition: EdgeDefinition): Promise<GraphInfo> {
     return this._db.request(
       {
@@ -667,7 +812,13 @@ export class Graph {
     );
   }
 
+  /**
+   * TODO
+   */
   replaceEdgeDefinition(definition: EdgeDefinition): Promise<GraphInfo>;
+  /**
+   * TODO
+   */
   replaceEdgeDefinition(
     edgeCollection: string,
     definition: EdgeDefinition
@@ -690,6 +841,9 @@ export class Graph {
     );
   }
 
+  /**
+   * TODO
+   */
   removeEdgeDefinition(
     edgeCollection: string,
     dropCollection: boolean = false
@@ -706,7 +860,11 @@ export class Graph {
     );
   }
 
-  /** @deprecated ArangoDB 3.4 */
+  /**
+   * TODO
+   *
+   * @deprecated Deprecated in ArangoDB 3.4.
+   */
   traversal(
     startVertex: DocumentSelector,
     options?: TraversalOptions

@@ -58,6 +58,9 @@ function colToString(collection: string | ArangoCollection): string {
   } else return String(collection);
 }
 
+/**
+ * TODO
+ */
 export function isArangoDatabase(database: any): database is Database {
   return Boolean(database && database.isArangoDatabase);
 }
@@ -314,11 +317,17 @@ export type ExplainOptions = {
   allPlans?: boolean;
 };
 
+/**
+ * TODO
+ */
 export type TransactionDetails = {
   id: string;
   state: "running" | "committed" | "aborted";
 };
 
+/**
+ * TODO
+ */
 export type ExplainPlan = {
   nodes: {
     [key: string]: any;
@@ -343,6 +352,9 @@ export type ExplainPlan = {
   isModificationQuery: boolean;
 };
 
+/**
+ * TODO
+ */
 export type SingleExplainResult = {
   plan: ExplainPlan;
   cacheable: boolean;
@@ -354,6 +366,9 @@ export type SingleExplainResult = {
   };
 };
 
+/**
+ * TODO
+ */
 export type MultiExplainResult = {
   plans: ExplainPlan[];
   warnings: { code: number; message: string }[];
@@ -364,12 +379,18 @@ export type MultiExplainResult = {
   };
 };
 
+/**
+ * TODO
+ */
 export type AstNode = {
   [key: string]: any;
   type: string;
   subNodes: AstNode[];
 };
 
+/**
+ * TODO
+ */
 export type ParseResult = {
   parsed: boolean;
   collections: string[];
@@ -377,6 +398,9 @@ export type ParseResult = {
   ast: AstNode[];
 };
 
+/**
+ * TODO
+ */
 export type QueryTracking = {
   enabled: boolean;
   maxQueryStringLength: number;
@@ -418,6 +442,9 @@ export type QueryTrackingOptions = {
   trackSlowQueries?: boolean;
 };
 
+/**
+ * TODO
+ */
 export type QueryInfo = {
   id: string;
   query: string;
@@ -428,6 +455,9 @@ export type QueryInfo = {
   stream: boolean;
 };
 
+/**
+ * TODO
+ */
 export type CreateDatabaseUser = {
   /**
    * Username of the user to create.
@@ -451,6 +481,9 @@ export type CreateDatabaseUser = {
   extra?: Dict<any>;
 };
 
+/**
+ * Options for creating a database. See {@link Database.createDatabase}.
+ */
 export type CreateDatabaseOptions = {
   /**
    * Database users to create with the database.
@@ -485,6 +518,9 @@ export type CreateDatabaseOptions = {
   minReplicationFactor?: number;
 };
 
+/**
+ * TODO
+ */
 export type DatabaseInfo = {
   name: string;
   id: string;
@@ -501,12 +537,18 @@ export type DatabaseInfo = {
   minReplicationFactor?: number;
 };
 
+/**
+ * TODO
+ */
 export type VersionInfo = {
   server: string;
   license: "community" | "enterprise";
   version: string;
 };
 
+/**
+ * TODO
+ */
 export type AqlUserFunction = {
   name: string;
   code: string;
@@ -527,6 +569,9 @@ export type UninstallServiceOptions = {
   force?: boolean;
 };
 
+/**
+ * TODO
+ */
 export type ServiceSummary = {
   mount: string;
   name?: string;
@@ -536,6 +581,9 @@ export type ServiceSummary = {
   legacy: boolean;
 };
 
+/**
+ * TODO
+ */
 export type ServiceInfo = {
   mount: string;
   path: string;
@@ -551,6 +599,9 @@ export type ServiceInfo = {
   };
 };
 
+/**
+ * TODO
+ */
 export type ServiceConfiguration = {
   type:
     | "integer"
@@ -569,6 +620,9 @@ export type ServiceConfiguration = {
   default?: any;
 };
 
+/**
+ * TODO
+ */
 export type SingleServiceDependency = {
   multiple: false;
   current?: string;
@@ -579,6 +633,9 @@ export type SingleServiceDependency = {
   required: boolean;
 };
 
+/**
+ * TODO
+ */
 export type MultiServiceDependency = {
   multiple: true;
   current?: string[];
@@ -589,10 +646,16 @@ export type MultiServiceDependency = {
   required: boolean;
 };
 
+/**
+ * TODO
+ */
 export type ServiceDependency =
   | SingleServiceDependency
   | MultiServiceDependency;
 
+/**
+ * TODO
+ */
 export type ServiceTestStats = {
   tests: number;
   passes: number;
@@ -601,6 +664,9 @@ export type ServiceTestStats = {
   duration: number;
 };
 
+/**
+ * TODO
+ */
 export type ServiceTestStreamTest = {
   title: string;
   fullTitle: string;
@@ -608,6 +674,9 @@ export type ServiceTestStreamTest = {
   err?: string;
 };
 
+/**
+ * TODO
+ */
 export type ServiceTestStreamReport = (
   | ["start", { total: number }]
   | ["pass", ServiceTestStreamTest]
@@ -615,6 +684,9 @@ export type ServiceTestStreamReport = (
   | ["end", ServiceTestStats]
 )[];
 
+/**
+ * TODO
+ */
 export type ServiceTestSuiteTest = {
   result: "pending" | "pass" | "fail";
   title: string;
@@ -622,18 +694,27 @@ export type ServiceTestSuiteTest = {
   err?: any;
 };
 
+/**
+ * TODO
+ */
 export type ServiceTestSuite = {
   title: string;
   suites: ServiceTestSuite[];
   tests: ServiceTestSuiteTest[];
 };
 
+/**
+ * TODO
+ */
 export type ServiceTestSuiteReport = {
   stats: ServiceTestStats;
   suites: ServiceTestSuite[];
   tests: ServiceTestSuiteTest[];
 };
 
+/**
+ * TODO
+ */
 type ServiceTestXunitTest =
   | ["testcase", { classname: string; name: string; time: number }]
   | [
@@ -642,6 +723,9 @@ type ServiceTestXunitTest =
       ["failure", { message: string; type: string }, string]
     ];
 
+/**
+ * TODO
+ */
 export type ServiceTestXunitReport = [
   "testsuite",
   {
@@ -655,8 +739,14 @@ export type ServiceTestXunitReport = [
   ...ServiceTestXunitTest[]
 ];
 
+/**
+ * TODO
+ */
 export type ServiceTestTapReport = string[];
 
+/**
+ * TODO
+ */
 export type ServiceTestDefaultTest = {
   title: string;
   fullTitle: string;
@@ -664,6 +754,9 @@ export type ServiceTestDefaultTest = {
   err?: string;
 };
 
+/**
+ * TODO
+ */
 export type ServiceTestDefaultReport = {
   stats: ServiceTestStats;
   tests: ServiceTestDefaultTest[];
@@ -672,6 +765,9 @@ export type ServiceTestDefaultReport = {
   passes: ServiceTestDefaultTest[];
 };
 
+/**
+ * TODO
+ */
 export type SwaggerJson = {
   [key: string]: any;
   info: {
@@ -977,6 +1073,9 @@ export class Database {
   //#endregion
 
   //#region databases
+  /**
+   * TODO
+   */
   database(databaseName: string) {
     const db = new Database(this, databaseName);
     return db;
