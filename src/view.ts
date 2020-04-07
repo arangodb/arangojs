@@ -325,16 +325,11 @@ export class View<
   /**
    * TODO
    */
-  async rename(name: string): Promise<ViewResponse & ArangoResponseMetadata> {
-    const result = await this._db.request(
-      {
-        method: "PUT",
-        path: `/_api/view/${this.name}/rename`,
-        body: { name },
-      },
-      (res) => res.body
-    );
-    this._name = name;
+  async rename(
+    newName: string
+  ): Promise<ViewResponse & ArangoResponseMetadata> {
+    const result = this._db.renameView(this._name, newName);
+    this._name = newName;
     return result;
   }
 

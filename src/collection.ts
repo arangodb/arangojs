@@ -754,7 +754,7 @@ export interface DocumentCollection<T extends object = any>
   /**
    * TODO
    */
-  rename(name: string): Promise<ArangoResponseMetadata & CollectionMetadata>;
+  rename(newName: string): Promise<ArangoResponseMetadata & CollectionMetadata>;
   /**
    * TODO
    */
@@ -1296,14 +1296,12 @@ export class Collection<T extends object = any>
   implements EdgeCollection<T>, DocumentCollection<T> {
   //#region attributes
   protected _name: string;
-  protected _idPrefix: string;
   protected _db: Database;
   //#endregion
 
   /** @hidden */
   constructor(db: Database, name: string) {
     this._name = name;
-    this._idPrefix = `${this._name}/`;
     this._db = db;
   }
 
@@ -1424,17 +1422,9 @@ export class Collection<T extends object = any>
     return this._put("unload");
   }
 
-  async rename(name: string) {
-    const result = await this._db.request(
-      {
-        method: "PUT",
-        path: `/_api/collection/${this._name}/rename`,
-        body: { name },
-      },
-      (res) => res.body
-    );
-    this._name = name;
-    this._idPrefix = `${name}/`;
+  async rename(newName: string) {
+    const result = await this._db.renameCollection(this._name, newName);
+    this._name = newName;
     return result;
   }
 
