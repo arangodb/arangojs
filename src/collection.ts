@@ -1414,7 +1414,7 @@ export class Collection<T extends object = any>
   load(count?: boolean) {
     return this._put(
       "load",
-      typeof count === "boolean" ? { count: count } : undefined
+      typeof count === "boolean" ? { count } : undefined
     );
   }
 

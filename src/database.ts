@@ -2276,7 +2276,7 @@ export class Database {
   explain(
     query: AqlQuery,
     options?: ExplainOptions & { allPlans?: false }
-  ): Promise<SingleExplainResult & ArangoResponseMetadata>;
+  ): Promise<ArangoResponseMetadata & SingleExplainResult>;
   /**
    * Explains a database query using the given `query`.
    *
@@ -2291,7 +2291,7 @@ export class Database {
   explain(
     query: AqlQuery,
     options?: ExplainOptions & { allPlans: true }
-  ): Promise<MultiExplainResult & ArangoResponseMetadata>;
+  ): Promise<ArangoResponseMetadata & MultiExplainResult>;
   /**
    * Explains a database query using the given `query` and `bindVars`.
    *
@@ -2306,7 +2306,7 @@ export class Database {
     query: string | AqlLiteral,
     bindVars?: Dict<any>,
     options?: ExplainOptions & { allPlans?: false }
-  ): Promise<SingleExplainResult & ArangoResponseMetadata>;
+  ): Promise<ArangoResponseMetadata & SingleExplainResult>;
   /**
    * Explains a database query using the given `query` and `bindVars`.
    *
@@ -2321,13 +2321,13 @@ export class Database {
     query: string | AqlLiteral,
     bindVars?: Dict<any>,
     options?: ExplainOptions & { allPlans: true }
-  ): Promise<MultiExplainResult & ArangoResponseMetadata>;
+  ): Promise<ArangoResponseMetadata & MultiExplainResult>;
   explain(
     query: string | AqlQuery | AqlLiteral,
     bindVars?: Dict<any>,
     options?: ExplainOptions
   ): Promise<
-    (SingleExplainResult | MultiExplainResult) & ArangoResponseMetadata
+    ArangoResponseMetadata & (SingleExplainResult | MultiExplainResult)
   > {
     if (isAqlQuery(query)) {
       options = bindVars;
