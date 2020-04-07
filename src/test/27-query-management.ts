@@ -135,16 +135,16 @@ describe("Query Management API", function() {
     });
   });
 
-  describe("database.setQueryTracking", () => {
+  describe("database.queryTracking", () => {
     afterEach(async () => {
-      await db.setQueryTracking({
+      await db.queryTracking({
         enabled: true,
         slowQueryThreshold: 5
       });
       await db.clearSlowQueries();
     });
     it("returns the AQL query tracking properties", async () => {
-      const result = await db.setQueryTracking({
+      const result = await db.queryTracking({
         enabled: true,
         maxQueryStringLength: 64,
         maxSlowQueries: 2,
@@ -175,7 +175,7 @@ describe("Query Management API", function() {
 
   describe("database.listSlowQueries", () => {
     beforeEach(async () => {
-      await db.setQueryTracking({
+      await db.queryTracking({
         enabled: true,
         slowQueryThreshold: 0.1,
         trackSlowQueries: true
@@ -183,7 +183,7 @@ describe("Query Management API", function() {
       await db.clearSlowQueries();
     });
     afterEach(async () => {
-      await db.setQueryTracking({
+      await db.queryTracking({
         enabled: true,
         slowQueryThreshold: 5
       });
@@ -200,7 +200,7 @@ describe("Query Management API", function() {
 
   describe("database.clearSlowQueries", () => {
     beforeEach(async () => {
-      await db.setQueryTracking({
+      await db.queryTracking({
         enabled: true,
         slowQueryThreshold: 0.1,
         trackSlowQueries: true
@@ -208,7 +208,7 @@ describe("Query Management API", function() {
       await db.clearSlowQueries();
     });
     afterEach(async () => {
-      await db.setQueryTracking({
+      await db.queryTracking({
         enabled: true,
         slowQueryThreshold: 5
       });

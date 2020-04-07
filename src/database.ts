@@ -12,7 +12,7 @@ import { Readable } from "stream";
 import {
   Analyzer,
   AnalyzerDescription,
-  CreateAnalyzerOptions
+  CreateAnalyzerOptions,
 } from "./analyzer";
 import { AqlLiteral, AqlQuery, isAqlLiteral, isAqlQuery } from "./aql";
 import {
@@ -23,14 +23,14 @@ import {
   CreateCollectionOptions,
   DocumentCollection,
   EdgeCollection,
-  isArangoCollection
+  isArangoCollection,
 } from "./collection";
 import {
   ArangoResponseMetadata,
   Config,
   Connection,
   Headers,
-  RequestOptions
+  RequestOptions,
 } from "./connection";
 import { ArrayCursor } from "./cursor";
 import { isArangoError } from "./error";
@@ -49,7 +49,7 @@ import {
   ArangoSearchViewPropertiesOptions,
   View,
   ViewDescription,
-  ViewType
+  ViewType,
 } from "./view";
 
 function colToString(collection: string | ArangoCollection): string {
@@ -288,9 +288,29 @@ export type QueryOptions = {
   satelliteSyncWait?: number;
 };
 
+/**
+ * Options for explaining a query. See {@link Database.explain}.
+ */
 export type ExplainOptions = {
+  /**
+   * An object with a `rules` property specifying a list of optimizer rules to
+   * be included or excluded by the optimizer for this query. Prefix a rule
+   * name with `+` to include it, or `-` to exclude it. The name `all` acts as
+   * an alias matching all optimizer rules.
+   */
   optimizer?: { rules: string[] };
+  /**
+   * Maximum number of plans that the optimizer is allowed to generate.
+   * Setting this to a low value limits the amount of work the optimizer does.
+   */
   maxNumberOfPlans?: number;
+  /**
+   * If set to true, all possible execution plans will be returned as the
+   * `plans` property. Otherwise only the optimal execution plan will be
+   * returned as the `plan` property.
+   *
+   * Default: `false`
+   */
   allPlans?: boolean;
 };
 
@@ -323,10 +343,19 @@ export type ExplainPlan = {
   isModificationQuery: boolean;
 };
 
-export type ExplainResult = {
-  plan?: ExplainPlan;
-  plans?: ExplainPlan[];
+export type SingleExplainResult = {
+  plan: ExplainPlan;
   cacheable: boolean;
+  warnings: { code: number; message: string }[];
+  stats: {
+    rulesExecuted: number;
+    rulesSkipped: number;
+    plansCreated: number;
+  };
+};
+
+export type MultiExplainResult = {
+  plans: ExplainPlan[];
   warnings: { code: number; message: string }[];
   stats: {
     rulesExecuted: number;
@@ -357,12 +386,35 @@ export type QueryTracking = {
   trackSlowQueries: boolean;
 };
 
+/**
+ * Options for query tracking. See {@link Database.queryTracking}.
+ */
 export type QueryTrackingOptions = {
+  /**
+   * If set to `false`, neither queries nor slow queries will be tracked.
+   */
   enabled?: boolean;
+  /**
+   * The maximum query string length in bytes that will be kept in the list.
+   */
   maxQueryStringLength?: number;
+  /**
+   * The maximum number of slow queries to be kept in the list.
+   */
   maxSlowQueries?: number;
+  /**
+   * The threshold execution time in seconds for when a query will be
+   * considered slow.
+   */
   slowQueryThreshold?: number;
+  /**
+   * If set to `true`, bind parameters will be tracked along with queries.
+   */
   trackBindVars?: boolean;
+  /**
+   * If set to `true` and `enabled` is also set to `true`, slow queries will be
+   * tracked if their execution time exceeds `slowQueryThreshold`.
+   */
   trackSlowQueries?: boolean;
 };
 
@@ -517,7 +569,7 @@ export type ServiceConfiguration = {
   default?: any;
 };
 
-export type ServiceMonoDependency = {
+export type SingleServiceDependency = {
   multiple: false;
   current?: string;
   title: string;
@@ -527,7 +579,7 @@ export type ServiceMonoDependency = {
   required: boolean;
 };
 
-export type ServiceMultiDependency = {
+export type MultiServiceDependency = {
   multiple: true;
   current?: string[];
   title: string;
@@ -537,7 +589,9 @@ export type ServiceMultiDependency = {
   required: boolean;
 };
 
-export type ServiceDependency = ServiceMonoDependency | ServiceMultiDependency;
+export type ServiceDependency =
+  | SingleServiceDependency
+  | MultiServiceDependency;
 
 export type ServiceTestStats = {
   tests: number;
@@ -720,9 +774,9 @@ export class Database {
     return this.request(
       {
         method: "GET",
-        path: "/_api/version"
+        path: "/_api/version",
       },
-      res => res.body
+      (res) => res.body
     );
   }
 
@@ -793,7 +847,7 @@ export class Database {
   async acquireHostList(): Promise<void> {
     const urls: string[] = await this.request(
       { path: "/_api/cluster/endpoints" },
-      res => res.body.endpoints.map((endpoint: any) => endpoint.endpoint)
+      (res) => res.body.endpoints.map((endpoint: any) => endpoint.endpoint)
     );
     this._connection.addToHostList(urls);
   }
@@ -912,9 +966,9 @@ export class Database {
       {
         method: "POST",
         path: "/_open/auth",
-        body: { username, password }
+        body: { username, password },
       },
-      res => {
+      (res) => {
         this.useBearerAuth(res.body.jwt);
         return res.body.jwt;
       }
@@ -941,7 +995,7 @@ export class Database {
   get(): Promise<DatabaseInfo> {
     return this.request(
       { path: "/_api/database/current" },
-      res => res.body.result
+      (res) => res.body.result
     );
   }
 
@@ -1020,7 +1074,7 @@ export class Database {
       {
         method: "POST",
         path: "/_api/database",
-        body: { name: databaseName, users, options }
+        body: { name: databaseName, users, options },
       },
       () => new Database(this, databaseName)
     );
@@ -1040,7 +1094,7 @@ export class Database {
    * ```
    */
   listDatabases(): Promise<string[]> {
-    return this.request({ path: "/_api/database" }, res => res.body.result);
+    return this.request({ path: "/_api/database" }, (res) => res.body.result);
   }
 
   /**
@@ -1060,7 +1114,7 @@ export class Database {
   listUserDatabases(): Promise<string[]> {
     return this.request(
       { path: "/_api/database/user" },
-      res => res.body.result
+      (res) => res.body.result
     );
   }
 
@@ -1079,8 +1133,8 @@ export class Database {
    * ```
    */
   databases(): Promise<Database[]> {
-    return this.request({ path: "/_api/database" }, res =>
-      (res.body.result as string[]).map(name => new Database(this, name))
+    return this.request({ path: "/_api/database" }, (res) =>
+      (res.body.result as string[]).map((name) => new Database(this, name))
     );
   }
 
@@ -1099,8 +1153,8 @@ export class Database {
    * ```
    */
   userDatabases(): Promise<Database[]> {
-    return this.request({ path: "/_api/database/user" }, res =>
-      (res.body.result as string[]).map(name => new Database(this, name))
+    return this.request({ path: "/_api/database/user" }, (res) =>
+      (res.body.result as string[]).map((name) => new Database(this, name))
     );
   }
 
@@ -1120,9 +1174,9 @@ export class Database {
     return this.request(
       {
         method: "DELETE",
-        path: `/_api/database/${databaseName}`
+        path: `/_api/database/${databaseName}`,
       },
-      res => res.body.result
+      (res) => res.body.result
     );
   }
   //#endregion
@@ -1282,7 +1336,7 @@ export class Database {
   ): Promise<EdgeCollection<T>> {
     return this.createCollection(collectionName, {
       ...options,
-      type: CollectionType.EDGE_COLLECTION
+      type: CollectionType.EDGE_COLLECTION,
     });
   }
 
@@ -1316,9 +1370,9 @@ export class Database {
     return this.request(
       {
         path: "/_api/collection",
-        qs: { excludeSystem }
+        qs: { excludeSystem },
       },
-      res => res.body.result
+      (res) => res.body.result
     );
   }
 
@@ -1352,7 +1406,7 @@ export class Database {
     excludeSystem: boolean = true
   ): Promise<Array<DocumentCollection & EdgeCollection>> {
     const collections = await this.listCollections(excludeSystem);
-    return collections.map(data => this.collection(data.name));
+    return collections.map((data) => this.collection(data.name));
   }
   //#endregion
 
@@ -1402,7 +1456,7 @@ export class Database {
    * ```
    */
   listGraphs(): Promise<GraphInfo[]> {
-    return this.request({ path: "/_api/gharial" }, res => res.body.graphs);
+    return this.request({ path: "/_api/gharial" }, (res) => res.body.graphs);
   }
 
   /**
@@ -1481,7 +1535,7 @@ export class Database {
    * ```
    */
   listViews(): Promise<ViewDescription[]> {
-    return this.request({ path: "/_api/view" }, res => res.body.result);
+    return this.request({ path: "/_api/view" }, (res) => res.body.result);
   }
 
   /**
@@ -1499,7 +1553,7 @@ export class Database {
    */
   async views(): Promise<ArangoSearchView[]> {
     const views = await this.listViews();
-    return views.map(data => this.view(data.name));
+    return views.map((data) => this.view(data.name));
   }
   //#endregion
 
@@ -1559,7 +1613,7 @@ export class Database {
    * ```
    */
   listAnalyzers(): Promise<AnalyzerDescription[]> {
-    return this.request({ path: "/_api/analyzer" }, res => res.body.result);
+    return this.request({ path: "/_api/analyzer" }, (res) => res.body.result);
   }
 
   /**
@@ -1577,7 +1631,7 @@ export class Database {
    */
   async analyzers(): Promise<Analyzer[]> {
     const analyzers = await this.listAnalyzers();
-    return analyzers.map(data => this.analyzer(data.name));
+    return analyzers.map((data) => this.analyzer(data.name));
   }
   //#endregion
 
@@ -1585,9 +1639,6 @@ export class Database {
   /**
    * Performs a server-side JavaScript transaction and returns its return
    * value.
-   *
-   * If `collections.allowImplicit` is specified, it overrides the value
-   * specified in `options.allowImplicit`.
    *
    * Collections can be specified as collection names (strings) or objects
    * implementing the {@link ArangoCollection} interface: {@link Collection},
@@ -1605,7 +1656,9 @@ export class Database {
    * @param collections - Collections involved in the transaction.
    * @param action - A string evaluating to a JavaScript function to be
    * executed on the server.
-   * @param options - Options for the transaction.
+   * @param options - Options for the transaction. If `options.allowImplicit`
+   * is specified, it will be used if `collections.allowImplicit` was not
+   * specified.
    *
    * @example
    * ```js
@@ -1750,10 +1803,10 @@ export class Database {
         body: {
           collections: coerceTransactionCollections(collections),
           action,
-          ...options
-        }
+          ...options,
+        },
       },
-      res => res.body.result
+      (res) => res.body.result
     );
   }
 
@@ -1883,10 +1936,10 @@ export class Database {
         path: "/_api/transaction/begin",
         body: {
           collections: coerceTransactionCollections(collections),
-          ...options
-        }
+          ...options,
+        },
       },
-      res => new Transaction(this, res.body.result.id)
+      (res) => new Transaction(this, res.body.result.id)
     );
   }
 
@@ -1906,7 +1959,7 @@ export class Database {
   listTransactions(): Promise<TransactionDetails[]> {
     return this._connection.request(
       { path: "/_api/transaction" },
-      res => res.body.transactions
+      (res) => res.body.transactions
     );
   }
 
@@ -1925,7 +1978,7 @@ export class Database {
    */
   async transactions(): Promise<Transaction[]> {
     const transactions = await this.listTransactions();
-    return transactions.map(data => this.transaction(data.id));
+    return transactions.map((data) => this.transaction(data.id));
   }
   //#endregion
 
@@ -2055,29 +2108,83 @@ export class Database {
           cache,
           memoryLimit,
           ttl,
-          options: opts
+          options: opts,
         },
         allowDirtyRead,
-        timeout
+        timeout,
       },
-      res => new ArrayCursor(this, res.body, res.arangojsHostId, allowDirtyRead)
+      (res) =>
+        new ArrayCursor(this, res.body, res.arangojsHostId, allowDirtyRead)
     );
   }
 
+  /**
+   * Explains a database query using the given `query`.
+   *
+   * See the {@link aql} template string handler for information about how
+   * to create a query string without manually defining bind parameters nor
+   * having to worry about escaping variables.
+   *
+   * @param query - An object containing an AQL query string and bind
+   * parameters, e.g. the object returned from an {@link aql} template string.
+   * @param options - Options for explaining the query.
+   */
   explain(
     query: AqlQuery,
-    options?: ExplainOptions
-  ): Promise<ExplainResult & ArangoResponseMetadata>;
+    options?: ExplainOptions & { allPlans?: false }
+  ): Promise<SingleExplainResult & ArangoResponseMetadata>;
+  /**
+   * Explains a database query using the given `query`.
+   *
+   * See the {@link aql} template string handler for information about how
+   * to create a query string without manually defining bind parameters nor
+   * having to worry about escaping variables.
+   *
+   * @param query - An object containing an AQL query string and bind
+   * parameters, e.g. the object returned from an {@link aql} template string.
+   * @param options - Options for explaining the query.
+   */
+  explain(
+    query: AqlQuery,
+    options?: ExplainOptions & { allPlans: true }
+  ): Promise<MultiExplainResult & ArangoResponseMetadata>;
+  /**
+   * Explains a database query using the given `query` and `bindVars`.
+   *
+   * See the {@link aql} template string handler for a safer and easier
+   * alternative to passing strings directly.
+   *
+   * @param query - An AQL query string.
+   * @param bindVars - An object defining bind parameters for the query.
+   * @param options - Options for explaining the query.
+   */
   explain(
     query: string | AqlLiteral,
     bindVars?: Dict<any>,
-    options?: ExplainOptions
-  ): Promise<ExplainResult & ArangoResponseMetadata>;
+    options?: ExplainOptions & { allPlans?: false }
+  ): Promise<SingleExplainResult & ArangoResponseMetadata>;
+  /**
+   * Explains a database query using the given `query` and `bindVars`.
+   *
+   * See the {@link aql} template string handler for a safer and easier
+   * alternative to passing strings directly.
+   *
+   * @param query - An AQL query string.
+   * @param bindVars - An object defining bind parameters for the query.
+   * @param options - Options for explaining the query.
+   */
+  explain(
+    query: string | AqlLiteral,
+    bindVars?: Dict<any>,
+    options?: ExplainOptions & { allPlans: true }
+  ): Promise<MultiExplainResult & ArangoResponseMetadata>;
   explain(
     query: string | AqlQuery | AqlLiteral,
     bindVars?: Dict<any>,
     options?: ExplainOptions
-  ): Promise<ExplainResult & ArangoResponseMetadata> {
+  ): Promise<
+    (SingleExplainResult | MultiExplainResult) & ArangoResponseMetadata
+  > {
     if (isAqlQuery(query)) {
       options = bindVars;
       bindVars = query.bindVars;
@@ -2089,12 +2196,23 @@ export class Database {
       {
         method: "POST",
         path: "/_api/explain",
-        body: { query, bindVars, options }
+        body: { query, bindVars, options },
       },
-      res => res.body
+      (res) => res.body
     );
   }
 
+  /**
+   * Parses the given query and returns the result.
+   *
+   * See the {@link aql} template string handler for information about how
+   * to create a query string without manually defining bind parameters nor
+   * having to worry about escaping variables.
+   *
+   * @param query - An AQL query string or an object containing an AQL query
+   * string and bind parameters, e.g. the object returned from an {@link aql}
+   * template string.
+   */
   parse(query: string | AqlQuery | AqlLiteral): Promise<ParseResult> {
     if (isAqlQuery(query)) {
       query = query.query;
@@ -2105,68 +2223,100 @@ export class Database {
       {
         method: "POST",
         path: "/_api/query",
-        body: { query }
+        body: { query },
       },
-      res => res.body
+      (res) => res.body
     );
   }
 
-  queryTracking(): Promise<QueryTracking> {
+  /**
+   * Fetches the query tracking properties.
+   */
+  queryTracking(): Promise<QueryTracking>;
+  /**
+   * Modifies the query tracking properties.
+   *
+   * @param options - Options for query tracking.
+   *
+   * @example
+   * ```js
+   * // track up to 5 slow queries exceeding 5 seconds execution time
+   * await db.setQueryTracking({
+   *   enabled: true,
+   *   trackSlowQueries: true,
+   *   maxSlowQueries: 5,
+   *   slowQueryThreshold: 5
+   * });
+   * ```
+   */
+  queryTracking(options: QueryTrackingOptions): Promise<QueryTracking>;
+  queryTracking(options?: QueryTrackingOptions): Promise<QueryTracking> {
     return this.request(
-      {
-        method: "GET",
-        path: "/_api/query/properties"
-      },
-      res => res.body
+      options
+        ? {
+            method: "PUT",
+            path: "/_api/query/properties",
+            body: options,
+          }
+        : {
+            method: "GET",
+            path: "/_api/query/properties",
+          },
+      (res) => res.body
     );
   }
 
-  setQueryTracking(options?: QueryTrackingOptions): Promise<QueryTracking> {
-    return this.request(
-      {
-        method: "PUT",
-        path: "/_api/query/properties",
-        body: options
-      },
-      res => res.body
-    );
-  }
-
+  /**
+   * Fetches a list of information for all currently running queries.
+   */
   listRunningQueries(): Promise<QueryInfo[]> {
     return this.request(
       {
         method: "GET",
-        path: "/_api/query/current"
+        path: "/_api/query/current",
       },
-      res => res.body
+      (res) => res.body
     );
   }
 
+  /**
+   * Fetches a list of information for all recent slow queries.
+   */
   listSlowQueries(): Promise<QueryInfo[]> {
     return this.request(
       {
         method: "GET",
-        path: "/_api/query/slow"
+        path: "/_api/query/slow",
       },
-      res => res.body
+      (res) => res.body
     );
   }
 
+  /**
+   * Clears the list of recent slow queries.
+   */
   clearSlowQueries(): Promise<void> {
     return this.request(
       {
         method: "DELETE",
-        path: "/_api/query/slow"
+        path: "/_api/query/slow",
       },
       () => undefined
     );
   }
 
+  /**
+   * Kills a running query with the given `queryId`.
+   *
+   * See also {@link Database.listRunningQueries}.
+   *
+   * @param queryId - The ID of a currently running query.
+   */
   killQuery(queryId: string): Promise<void> {
     return this.request(
       {
         method: "DELETE",
-        path: `/_api/query/${queryId}`
+        path: `/_api/query/${queryId}`,
       },
       () => undefined
     );
@@ -2185,7 +2335,10 @@ export class Database {
    * ```
    */
   listFunctions(): Promise<AqlUserFunction[]> {
-    return this.request({ path: "/_api/aqlfunction" }, res => res.body.result);
+    return this.request(
+      { path: "/_api/aqlfunction" },
+      (res) => res.body.result
+    );
   }
 
   /**
@@ -2228,9 +2381,9 @@ export class Database {
       {
         method: "POST",
         path: "/_api/aqlfunction",
-        body: { name, code, isDeterministic }
+        body: { name, code, isDeterministic },
       },
-      res => res.body
+      (res) => res.body
     );
   }
 
@@ -2257,9 +2410,9 @@ export class Database {
       {
         method: "DELETE",
         path: `/_api/aqlfunction/${name}`,
-        qs: { group }
+        qs: { group },
       },
-      res => res.body
+      (res) => res.body
     );
   }
   //#endregion
@@ -2269,9 +2422,9 @@ export class Database {
     return this.request(
       {
         path: "/_api/foxx",
-        qs: { excludeSystem }
+        qs: { excludeSystem },
       },
-      res => res.body
+      (res) => res.body
     );
   }
 
@@ -2284,7 +2437,7 @@ export class Database {
     const req = await toForm({
       configuration,
       dependencies,
-      source
+      source,
     });
     return await this.request(
       {
@@ -2292,9 +2445,9 @@ export class Database {
         method: "POST",
         path: "/_api/foxx",
         isBinary: true,
-        qs: { ...qs, mount }
+        qs: { ...qs, mount },
       },
-      res => res.body
+      (res) => res.body
     );
   }
 
@@ -2307,7 +2460,7 @@ export class Database {
     const req = await toForm({
       configuration,
       dependencies,
-      source
+      source,
     });
     return await this.request(
       {
@@ -2315,9 +2468,9 @@ export class Database {
         method: "PATCH",
         path: "/_api/foxx/service",
         isBinary: true,
-        qs: { ...qs, mount }
+        qs: { ...qs, mount },
       },
-      res => res.body
+      (res) => res.body
     );
   }
 
@@ -2330,7 +2483,7 @@ export class Database {
     const req = await toForm({
       configuration,
       dependencies,
-      source
+      source,
     });
     return await this.request(
       {
@@ -2338,9 +2491,9 @@ export class Database {
         method: "PUT",
         path: "/_api/foxx/service",
         isBinary: true,
-        qs: { ...qs, mount }
+        qs: { ...qs, mount },
       },
-      res => res.body
+      (res) => res.body
     );
   }
 
@@ -2352,7 +2505,7 @@ export class Database {
       {
         method: "DELETE",
         path: "/_api/foxx/service",
-        qs: { ...options, mount }
+        qs: { ...options, mount },
       },
       () => undefined
     );
@@ -2362,9 +2515,9 @@ export class Database {
     return this.request(
       {
         path: "/_api/foxx/service",
-        qs: { mount }
+        qs: { mount },
       },
-      res => res.body
+      (res) => res.body
     );
   }
 
@@ -2380,9 +2533,9 @@ export class Database {
     const result = await this.request(
       {
         path: "/_api/foxx/configuration",
-        qs: { mount, minimal }
+        qs: { mount, minimal },
       },
-      res => res.body
+      (res) => res.body
     );
     if (
       !minimal ||
@@ -2419,9 +2572,9 @@ export class Database {
         method: "PATCH",
         path: "/_api/foxx/configuration",
         body: cfg,
-        qs: { mount, minimal }
+        qs: { mount, minimal },
       },
-      res => res.body
+      (res) => res.body
     );
     if (
       minimal ||
@@ -2466,9 +2619,9 @@ export class Database {
         method: "PUT",
         path: "/_api/foxx/configuration",
         body: cfg,
-        qs: { mount, minimal }
+        qs: { mount, minimal },
       },
-      res => res.body
+      (res) => res.body
     );
     if (
       minimal ||
@@ -2502,9 +2655,9 @@ export class Database {
     const result = await this.request(
       {
         path: "/_api/foxx/dependencies",
-        qs: { mount, minimal }
+        qs: { mount, minimal },
       },
-      res => res.body
+      (res) => res.body
     );
     if (
       !minimal ||
@@ -2541,9 +2694,9 @@ export class Database {
         method: "PATCH",
         path: "/_api/foxx/dependencies",
         body: deps,
-        qs: { mount, minimal }
+        qs: { mount, minimal },
       },
-      res => res.body
+      (res) => res.body
     );
     if (
       minimal ||
@@ -2589,9 +2742,9 @@ export class Database {
         method: "PUT",
         path: "/_api/foxx/dependencies",
         body: deps,
-        qs: { mount, minimal }
+        qs: { mount, minimal },
       },
-      res => res.body
+      (res) => res.body
     );
     if (
       minimal ||
@@ -2619,9 +2772,9 @@ export class Database {
       {
         method: "POST",
         path: "/_api/foxx/development",
-        qs: { mount }
+        qs: { mount },
       },
-      res => res.body
+      (res) => res.body
     );
   }
 
@@ -2630,9 +2783,9 @@ export class Database {
       {
         method: "DELETE",
         path: "/_api/foxx/development",
-        qs: { mount }
+        qs: { mount },
       },
-      res => res.body
+      (res) => res.body
     );
   }
 
@@ -2640,9 +2793,9 @@ export class Database {
     return this.request(
       {
         path: "/_api/foxx/scripts",
-        qs: { mount }
+        qs: { mount },
       },
-      res => res.body
+      (res) => res.body
     );
   }
 
@@ -2652,9 +2805,9 @@ export class Database {
         method: "POST",
         path: `/_api/foxx/scripts/${name}`,
         body: params,
-        qs: { mount }
+        qs: { mount },
       },
-      res => res.body
+      (res) => res.body
     );
   }
 
@@ -2734,10 +2887,10 @@ export class Database {
         path: "/_api/foxx/tests",
         qs: {
           ...options,
-          mount
-        }
+          mount,
+        },
       },
-      res => res.body
+      (res) => res.body
     );
   }
 
@@ -2745,9 +2898,9 @@ export class Database {
     return this.request(
       {
         path: "/_api/foxx/readme",
-        qs: { mount }
+        qs: { mount },
       },
-      res => res.body
+      (res) => res.body
     );
   }
 
@@ -2755,9 +2908,9 @@ export class Database {
     return this.request(
       {
         path: "/_api/foxx/swagger",
-        qs: { mount }
+        qs: { mount },
       },
-      res => res.body
+      (res) => res.body
     );
   }
 
@@ -2767,9 +2920,9 @@ export class Database {
         method: "POST",
         path: "/_api/foxx/download",
         qs: { mount },
-        expectBinary: true
+        expectBinary: true,
       },
-      res => res.body
+      (res) => res.body
     );
   }
 
@@ -2778,7 +2931,7 @@ export class Database {
       {
         method: "POST",
         path: "/_api/foxx/commit",
-        qs: { replace }
+        qs: { replace },
       },
       () => undefined
     );
