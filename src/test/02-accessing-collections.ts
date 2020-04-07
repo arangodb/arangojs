@@ -39,22 +39,24 @@ describe("Accessing collections", function() {
     });
   });
   describe("database.listCollections", () => {
-    const nonSystemCollectionNames = range(4).map(i => `c_${Date.now()}_${i}`);
-    const systemCollectionNames = range(4).map(i => `_c_${Date.now()}_${i}`);
+    const nonSystemCollectionNames = range(4).map(
+      (i) => `c_${Date.now()}_${i}`
+    );
+    const systemCollectionNames = range(4).map((i) => `_c_${Date.now()}_${i}`);
     before(async () => {
       await Promise.all([
-        ...nonSystemCollectionNames.map(name => db.createCollection(name)),
-        ...systemCollectionNames.map(name =>
+        ...nonSystemCollectionNames.map((name) => db.createCollection(name)),
+        ...systemCollectionNames.map((name) =>
           db.collection(name).create({ isSystem: true })
-        )
+        ),
       ] as Promise<ArangoCollection>[]);
     });
     after(async () => {
       await Promise.all([
-        ...nonSystemCollectionNames.map(name => db.collection(name).drop()),
-        ...systemCollectionNames.map(name =>
+        ...nonSystemCollectionNames.map((name) => db.collection(name).drop()),
+        ...systemCollectionNames.map((name) =>
           db.collection(name).drop({ isSystem: true })
-        )
+        ),
       ]);
     });
     it("fetches information about all non-system collections", async () => {
@@ -77,25 +79,27 @@ describe("Accessing collections", function() {
     });
   });
   describe("database.collections", () => {
-    const documentCollectionNames = range(4).map(i => `dc_${Date.now()}_${i}`);
-    const edgeCollectionNames = range(4).map(i => `ec_${Date.now()}_${i}`);
-    const systemCollectionNames = range(4).map(i => `_c_${Date.now()}_${i}`);
+    const documentCollectionNames = range(4).map(
+      (i) => `dc_${Date.now()}_${i}`
+    );
+    const edgeCollectionNames = range(4).map((i) => `ec_${Date.now()}_${i}`);
+    const systemCollectionNames = range(4).map((i) => `_c_${Date.now()}_${i}`);
     before(async () => {
       await Promise.all([
-        ...documentCollectionNames.map(name => db.createCollection(name)),
-        ...edgeCollectionNames.map(name => db.createEdgeCollection(name)),
-        ...systemCollectionNames.map(name =>
+        ...documentCollectionNames.map((name) => db.createCollection(name)),
+        ...edgeCollectionNames.map((name) => db.createEdgeCollection(name)),
+        ...systemCollectionNames.map((name) =>
           db.collection(name).create({ isSystem: true })
-        )
+        ),
       ] as Promise<ArangoCollection>[]);
     });
     after(async () => {
       await Promise.all([
-        ...documentCollectionNames.map(name => db.collection(name).drop()),
-        ...edgeCollectionNames.map(name => db.collection(name).drop()),
-        ...systemCollectionNames.map(name =>
+        ...documentCollectionNames.map((name) => db.collection(name).drop()),
+        ...edgeCollectionNames.map((name) => db.collection(name).drop()),
+        ...systemCollectionNames.map((name) =>
           db.collection(name).drop({ isSystem: true })
-        )
+        ),
       ]);
     });
     it("creates Collection instances", async () => {
@@ -103,7 +107,7 @@ describe("Accessing collections", function() {
       expect(collections.length).to.equal(
         documentCollectionNames.length + edgeCollectionNames.length
       );
-      expect(collections.map(c => c.name).sort()).to.eql(
+      expect(collections.map((c) => c.name).sort()).to.eql(
         [...documentCollectionNames, ...edgeCollectionNames].sort()
       );
     });
@@ -113,7 +117,7 @@ describe("Accessing collections", function() {
         ...documentCollectionNames,
         ...edgeCollectionNames,
         ...systemCollectionNames,
-        ...builtinSystemCollections
+        ...builtinSystemCollections,
       ].sort();
       expect(collections.map((c: any) => c.name).sort()).to.eql(
         allCollectionNames

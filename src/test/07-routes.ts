@@ -11,7 +11,7 @@ const ARANGO_VERSION = Number(
 describe("Arbitrary HTTP routes", () => {
   const db = new Database({
     url: ARANGO_URL,
-    arangoVersion: ARANGO_VERSION
+    arangoVersion: ARANGO_VERSION,
   });
   describe("database.route", () => {
     it("returns a Route instance", () => {

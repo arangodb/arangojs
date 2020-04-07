@@ -12,11 +12,11 @@ const ARANGO_VERSION = Number(
 );
 
 async function createCollections(db: Database) {
-  const vertexCollectionNames = range(2).map(i => `vc_${Date.now()}_${i}`);
-  const edgeCollectionNames = range(2).map(i => `ec_${Date.now()}_${i}`);
+  const vertexCollectionNames = range(2).map((i) => `vc_${Date.now()}_${i}`);
+  const edgeCollectionNames = range(2).map((i) => `ec_${Date.now()}_${i}`);
   await Promise.all([
-    ...vertexCollectionNames.map(name => db.createCollection(name)),
-    ...edgeCollectionNames.map(name => db.createEdgeCollection(name))
+    ...vertexCollectionNames.map((name) => db.createCollection(name)),
+    ...edgeCollectionNames.map((name) => db.createEdgeCollection(name)),
   ] as Promise<ArangoCollection>[]);
   return [vertexCollectionNames, edgeCollectionNames];
 }
@@ -27,10 +27,10 @@ async function createGraph(
   edgeCollectionNames: string[]
 ) {
   return await graph.create(
-    edgeCollectionNames.map(name => ({
+    edgeCollectionNames.map((name) => ({
       collection: name,
       from: vertexCollectionNames,
-      to: vertexCollectionNames
+      to: vertexCollectionNames,
     }))
   );
 }
@@ -61,7 +61,9 @@ describe("Manipulating graph vertices", function() {
   });
   afterEach(async () => {
     await graph.drop();
-    await Promise.all(collectionNames.map(name => db.collection(name).drop()));
+    await Promise.all(
+      collectionNames.map((name) => db.collection(name).drop())
+    );
   });
   describe("graph.vertexCollection", () => {
     it("returns a GraphVertexCollection instance for the collection", () => {

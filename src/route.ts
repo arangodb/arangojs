@@ -21,7 +21,7 @@ export class Route {
     else if (path.charAt(0) !== "/") path = `/${path}`;
     return new Route(this._db, this._path + path, {
       ...this._headers,
-      ...headers
+      ...headers,
     });
   }
 

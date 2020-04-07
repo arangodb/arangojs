@@ -21,8 +21,8 @@ describe("GraphEdgeCollection API", function() {
       {
         collection: "knows",
         from: ["person"],
-        to: ["person"]
-      }
+        to: ["person"],
+      },
     ]);
     collection = graph.edgeCollection("knows");
     await graph
@@ -32,7 +32,7 @@ describe("GraphEdgeCollection API", function() {
         { _key: "Bob" },
         { _key: "Charlie" },
         { _key: "Dave" },
-        { _key: "Eve" }
+        { _key: "Eve" },
       ]);
   });
   after(async () => {
@@ -137,12 +137,12 @@ describe("GraphEdgeCollection API", function() {
         { _from: "person/Bob", _to: "person/Charlie" },
         { _from: "person/Bob", _to: "person/Dave" },
         { _from: "person/Eve", _to: "person/Alice" },
-        { _from: "person/Eve", _to: "person/Bob" }
+        { _from: "person/Eve", _to: "person/Bob" },
       ]);
     });
     it("executes traversal", async () => {
       const result = await collection.collection.traversal("person/Alice", {
-        direction: "outbound"
+        direction: "outbound",
       });
       expect(result).to.have.property("visited");
       const visited = result.visited;
@@ -165,14 +165,14 @@ describe("GraphEdgeCollection API", function() {
       const data = {
         potato: "tomato",
         _from: "person/Bob",
-        _to: "person/Alice"
+        _to: "person/Alice",
       };
       const meta = await collection.save(data, { returnNew: true });
       const doc = meta.new!;
       await collection.replace(doc, {
         sup: "dawg",
         _from: "person/Bob",
-        _to: "person/Alice"
+        _to: "person/Alice",
       });
       const newData = await collection.edge(doc._key);
       expect(newData).not.to.have.property("potato");
@@ -185,7 +185,7 @@ describe("GraphEdgeCollection API", function() {
         potato: "tomato",
         empty: false,
         _from: "person/Bob",
-        _to: "person/Alice"
+        _to: "person/Alice",
       };
       const meta = await collection.save(data, { returnNew: true });
       const doc = meta.new!;
@@ -200,7 +200,7 @@ describe("GraphEdgeCollection API", function() {
         potato: "tomato",
         empty: false,
         _from: "person/Bob",
-        _to: "person/Alice"
+        _to: "person/Alice",
       };
       const meta = await collection.save(data, { returnNew: true });
       const doc = meta.new!;
@@ -221,7 +221,7 @@ describe("GraphEdgeCollection API", function() {
       await collection.save({
         _key: key,
         _from: "person/Bob",
-        _to: "person/Alice"
+        _to: "person/Alice",
       });
     });
     it("deletes the given edge", async () => {

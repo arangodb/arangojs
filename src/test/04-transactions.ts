@@ -91,7 +91,7 @@ describe("Transactions", () => {
       const [meta1, meta2] = await trx.run(() =>
         Promise.all([
           collection.save({ _key: "test1" }),
-          collection.save({ _key: "test2" })
+          collection.save({ _key: "test2" }),
         ])
       );
       expect(meta1).to.have.property("_key", "test1");
@@ -123,7 +123,7 @@ describe("Transactions", () => {
       await trx.run(() =>
         Promise.all([
           collection.save({ _key: "test1" }),
-          collection.save({ _key: "test2" })
+          collection.save({ _key: "test2" }),
         ])
       );
       let doc: any;

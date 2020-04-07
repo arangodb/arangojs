@@ -6,7 +6,7 @@ import { Connection } from "../connection";
 import { Database } from "../database";
 
 const sleep = (timeout: number) =>
-  new Promise(resolve => setTimeout(resolve, timeout));
+  new Promise((resolve) => setTimeout(resolve, timeout));
 
 let ARANGO_PATH: string;
 let ARANGO_RUNNER: "local" | "docker";
@@ -118,7 +118,7 @@ describeIm("Single-server with follower", function() {
     return await conn.request({
       method: "GET",
       path: "/_api/document/test/abc",
-      allowDirtyRead: dirty
+      allowDirtyRead: dirty,
     });
   }
   it("supports dirty reads", async () => {
@@ -151,7 +151,7 @@ describeIm("Single-server with follower", function() {
       {},
       {
         allowDirtyRead: true,
-        batchSize: 1
+        batchSize: 1,
       }
     );
     expect(cursor.hasNext).to.equal(true);
@@ -172,7 +172,7 @@ describeIm("Cluster round robin", function() {
     const endpoint = await im.startCluster(1, NUM_COORDINATORS, 2);
     db = new Database({
       url: endpoint,
-      loadBalancingStrategy: "ROUND_ROBIN"
+      loadBalancingStrategy: "ROUND_ROBIN",
     });
     conn = (db as any)._connection;
     await db.acquireHostList();

@@ -13,7 +13,7 @@ const aqlQuery = aql`FOR i In 0..10 RETURN i`;
 const aqlResult = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
 async function sleep(ms: number) {
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     setTimeout(() => resolve(), ms);
   });
 }
@@ -63,7 +63,7 @@ describe("Cursor API", () => {
     });
     it("returns false after last batch is consumed", async () => {
       const cursor = await db.query(aql`FOR i In 0..1 RETURN i`, {
-        batchSize: 1
+        batchSize: 1,
       });
       expect(cursor.hasNext).to.equal(true);
       expect((cursor as any)._result.length).to.equal(1);
@@ -92,7 +92,7 @@ describe("Cursor API", () => {
     it.skip("returns 404 after timeout", async () => {
       const cursor = await db.query(aql`FOR i In 0..1 RETURN i`, {
         batchSize: 1,
-        ttl: 1
+        ttl: 1,
       });
       expect(cursor.hasNext).to.equal(true);
       expect((cursor as any)._result.length).to.equal(1);
@@ -126,7 +126,7 @@ describe("Cursor API", () => {
   describe("cursor.each", () => {
     it("invokes the callback for each value", async () => {
       const results: any[] = [];
-      await cursor.each(value => {
+      await cursor.each((value) => {
         results.push(value);
       });
       expect(results).to.eql(aqlResult);
@@ -144,7 +144,7 @@ describe("Cursor API", () => {
   describe("cursor.every", () => {
     it("returns true if the callback returns a truthy value for every item", async () => {
       const results: any[] = [];
-      const result = await cursor.every(value => {
+      const result = await cursor.every((value) => {
         if (results.indexOf(value) !== -1) return false;
         results.push(value);
         return true;
@@ -154,7 +154,7 @@ describe("Cursor API", () => {
     });
     it("returns false if the callback returns a non-truthy value for any item", async () => {
       const results: any[] = [];
-      const result = await cursor.every(value => {
+      const result = await cursor.every((value) => {
         results.push(value);
         return value < 5;
       });
@@ -165,7 +165,7 @@ describe("Cursor API", () => {
   describe("cursor.some", () => {
     it("returns false if the callback returns a non-truthy value for every item", async () => {
       const results: any[] = [];
-      const result = await cursor.some(value => {
+      const result = await cursor.some((value) => {
         if (results.indexOf(value) !== -1) return true;
         results.push(value);
         return false;
@@ -175,7 +175,7 @@ describe("Cursor API", () => {
     });
     it("returns true if the callback returns a truthy value for any item", async () => {
       const results: any[] = [];
-      const result = await cursor.some(value => {
+      const result = await cursor.some((value) => {
         results.push(value);
         return value >= 5;
       });
@@ -185,8 +185,8 @@ describe("Cursor API", () => {
   });
   describe("cursor.map", () => {
     it("maps all result values over the callback", async () => {
-      const results = await cursor.map(value => value * 2);
-      expect(results).to.eql(aqlResult.map(value => value * 2));
+      const results = await cursor.map((value) => value * 2);
+      expect(results).to.eql(aqlResult.map((value) => value * 2));
     });
   });
   describe("cursor.reduce", () => {
@@ -218,7 +218,7 @@ describe("Cursor API", () => {
   describe("cursor.kill", () => {
     it("kills the cursor", async () => {
       const cursor = await db.query(aql`FOR i IN 1..5 RETURN i`, {
-        batchSize: 2
+        batchSize: 2,
       });
       const { _host: host, _id: id } = cursor as any;
       expect(cursor).to.have.property("_hasMore", true);
@@ -228,7 +228,7 @@ describe("Cursor API", () => {
         await db.request({
           method: "PUT",
           path: `/_api/cursor/${id}`,
-          host: host
+          host: host,
         });
       } catch (e) {
         expect(e).to.have.property("errorNum", 1600);

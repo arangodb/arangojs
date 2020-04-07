@@ -33,31 +33,31 @@ describe("Configuring the driver", () => {
     });
   });
   describe("with headers", () => {
-    it("applies the headers", done => {
+    it("applies the headers", (done) => {
       const db = new Database({
         headers: {
           "x-one": "1",
-          "x-two": "2"
-        }
+          "x-two": "2",
+        },
       });
       (db as any)._connection._hosts = [
         ({ headers }: any) => {
           expect(headers).to.have.property("x-one", "1");
           expect(headers).to.have.property("x-two", "2");
           done();
-        }
+        },
       ];
       db.request({ headers: {} }, () => {});
     });
   });
   describe("with an arangoVersion", () => {
-    it("sets the x-arango-version header", done => {
+    it("sets the x-arango-version header", (done) => {
       const db = new Database({ arangoVersion: 99999 });
       (db as any)._connection._hosts = [
         ({ headers }: any) => {
           expect(headers).to.have.property("x-arango-version", "99999");
           done();
-        }
+        },
       ];
       db.request({ headers: {} }, () => {});
     });
@@ -118,7 +118,7 @@ describe("Configuring the driver", () => {
           },
           end() {
             return this;
-          }
+          },
         };
       };
       (http as any).request = Request("http");
@@ -161,7 +161,7 @@ describe("Configuring the driver", () => {
         _destroyed: false,
         destroy() {
           this._destroyed = true;
-        }
+        },
       };
       const db = new Database({ agent });
       expect(agent._destroyed).to.equal(false);

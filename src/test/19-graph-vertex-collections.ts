@@ -21,8 +21,8 @@ describe("GraphVertexCollection API", function() {
       {
         collection: "knows",
         from: ["person"],
-        to: ["person"]
-      }
+        to: ["person"],
+      },
     ]);
     collection = graph.vertexCollection("person");
   });

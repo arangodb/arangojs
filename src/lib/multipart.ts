@@ -36,18 +36,18 @@ export function toForm(fields: Fields): Promise<MultipartRequest> {
       }
       const stream = form.stream();
       const bufs: Buffer[] = [];
-      stream.on("data", buf => bufs.push(buf as Buffer));
+      stream.on("data", (buf) => bufs.push(buf as Buffer));
       stream.on("end", () => {
         bufs.push(Buffer.from("\r\n"));
         const body = Buffer.concat(bufs);
         const boundary = form.getBoundary();
         const headers = {
           "content-type": `multipart/form-data; boundary=${boundary}`,
-          "content-length": String(body.length)
+          "content-length": String(body.length),
         };
         resolve({ body, headers });
       });
-      stream.on("error", e => {
+      stream.on("error", (e) => {
         reject(e);
       });
     } catch (e) {

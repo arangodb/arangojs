@@ -126,7 +126,7 @@ describe("EdgeCollection API", function() {
         something: "chicken",
         _key: "banana",
         _from: "d/1",
-        _to: "d/2"
+        _to: "d/2",
       };
       const meta = await collection.save(data);
       expect(meta).to.be.an("object");
@@ -203,20 +203,20 @@ describe("EdgeCollection API", function() {
           { _key: "Bob" },
           { _key: "Charlie" },
           { _key: "Dave" },
-          { _key: "Eve" }
+          { _key: "Eve" },
         ]),
         knows.import([
           { _from: "person/Alice", _to: "person/Bob" },
           { _from: "person/Bob", _to: "person/Charlie" },
           { _from: "person/Bob", _to: "person/Dave" },
           { _from: "person/Eve", _to: "person/Alice" },
-          { _from: "person/Eve", _to: "person/Bob" }
-        ])
+          { _from: "person/Eve", _to: "person/Bob" },
+        ]),
       ]);
     });
     it("executes traversal", async () => {
       const result = await knows.traversal("person/Alice", {
-        direction: "outbound"
+        direction: "outbound",
       });
       expect(result).to.have.property("visited");
       const visited = result.visited;
@@ -242,7 +242,7 @@ describe("EdgeCollection API", function() {
       await collection.replace(doc, {
         something: "peanuts",
         _from: "d/1",
-        _to: "d/2"
+        _to: "d/2",
       });
       const newData = await collection.edge(doc._key);
       expect(newData).not.to.have.property("potato");
@@ -255,7 +255,7 @@ describe("EdgeCollection API", function() {
         something: "tomato",
         empty: false,
         _from: "d/1",
-        _to: "d/2"
+        _to: "d/2",
       };
       const meta = await collection.save(data, { returnNew: true });
       const doc = meta.new!;
@@ -270,7 +270,7 @@ describe("EdgeCollection API", function() {
         something: "tomato",
         empty: false,
         _from: "d/1",
-        _to: "d/2"
+        _to: "d/2",
       };
       const meta = await collection.save(data, { returnNew: true });
       const doc = meta.new!;

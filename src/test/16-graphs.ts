@@ -11,11 +11,11 @@ const ARANGO_VERSION = Number(
 );
 
 async function createCollections(db: Database) {
-  const vertexCollectionNames = range(2).map(i => `vc_${Date.now()}_${i}`);
-  const edgeCollectionNames = range(2).map(i => `ec_${Date.now()}_${i}`);
+  const vertexCollectionNames = range(2).map((i) => `vc_${Date.now()}_${i}`);
+  const edgeCollectionNames = range(2).map((i) => `ec_${Date.now()}_${i}`);
   await Promise.all([
-    ...vertexCollectionNames.map(name => db.createCollection(name)),
-    ...edgeCollectionNames.map(name => db.createEdgeCollection(name))
+    ...vertexCollectionNames.map((name) => db.createCollection(name)),
+    ...edgeCollectionNames.map((name) => db.createEdgeCollection(name)),
   ] as Promise<ArangoCollection>[]);
   return [vertexCollectionNames, edgeCollectionNames];
 }
@@ -26,10 +26,10 @@ async function createGraph(
   edgeCollectionNames: string[]
 ) {
   return await graph.create(
-    edgeCollectionNames.map(name => ({
+    edgeCollectionNames.map((name) => ({
       collection: name,
       from: vertexCollectionNames,
-      to: vertexCollectionNames
+      to: vertexCollectionNames,
     }))
   );
 }
@@ -62,7 +62,7 @@ describe("Graph API", function() {
     after(async () => {
       await graph.drop();
       await Promise.all(
-        collectionNames.map(name => db.collection(name).drop())
+        collectionNames.map((name) => db.collection(name).drop())
       );
     });
     it("fetches information about the graph", async () => {
@@ -80,7 +80,7 @@ describe("Graph API", function() {
     });
     after(async () => {
       await Promise.all(
-        [...edgeCollectionNames, ...vertexCollectionNames].map(name =>
+        [...edgeCollectionNames, ...vertexCollectionNames].map((name) =>
           db.collection(name).drop()
         )
       );
@@ -88,10 +88,10 @@ describe("Graph API", function() {
     it("creates the graph", async () => {
       const graph = db.graph(`g_${Date.now()}`);
       await graph.create(
-        edgeCollectionNames.map(name => ({
+        edgeCollectionNames.map((name) => ({
           collection: name,
           from: vertexCollectionNames,
-          to: vertexCollectionNames
+          to: vertexCollectionNames,
         }))
       );
       const data = await graph.get();
@@ -111,7 +111,7 @@ describe("Graph API", function() {
     });
     afterEach(async () => {
       await Promise.all(
-        [...edgeCollectionNames, ...vertexCollectionNames].map(name =>
+        [...edgeCollectionNames, ...vertexCollectionNames].map((name) =>
           db
             .collection(name)
             .drop()
@@ -127,7 +127,7 @@ describe("Graph API", function() {
         const collections = await db.listCollections();
         expect(collections.map((c: any) => c.name)).to.include.members([
           ...edgeCollectionNames,
-          ...vertexCollectionNames
+          ...vertexCollectionNames,
         ]);
         return;
       }
@@ -141,7 +141,7 @@ describe("Graph API", function() {
         const collections = await db.listCollections();
         expect(collections.map((c: any) => c.name)).not.to.include.members([
           ...edgeCollectionNames,
-          ...vertexCollectionNames
+          ...vertexCollectionNames,
         ]);
         return;
       }

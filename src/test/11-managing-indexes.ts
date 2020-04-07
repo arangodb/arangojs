@@ -32,7 +32,7 @@ describe("Managing indexes", function() {
     it("should create a hash index", async () => {
       const info = await collection.ensureIndex({
         type: "hash",
-        fields: ["value"]
+        fields: ["value"],
       });
       expect(info).to.have.property("id");
       expect(info).to.have.property("type", "hash");
@@ -45,7 +45,7 @@ describe("Managing indexes", function() {
     it("should create a skiplist index", async () => {
       const info = await collection.ensureIndex({
         type: "skiplist",
-        fields: ["value"]
+        fields: ["value"],
       });
       expect(info).to.have.property("id");
       expect(info).to.have.property("type", "skiplist");
@@ -58,7 +58,7 @@ describe("Managing indexes", function() {
     it("should create a persistent index", async () => {
       const info = await collection.ensureIndex({
         type: "persistent",
-        fields: ["value"]
+        fields: ["value"],
       });
       expect(info).to.have.property("id");
       expect(info).to.have.property("type", "persistent");
@@ -71,7 +71,7 @@ describe("Managing indexes", function() {
     itPre34("should create a geo1 index for one field", async () => {
       const info = await collection.ensureIndex({
         type: "geo",
-        fields: ["value"]
+        fields: ["value"],
       });
       expect(info).to.have.property("id");
       expect(info).to.have.property("type", "geo1");
@@ -82,7 +82,7 @@ describe("Managing indexes", function() {
     itPre34("should create a geo2 index for two fields", async () => {
       const info = await collection.ensureIndex({
         type: "geo",
-        fields: ["value1", "value2"]
+        fields: ["value1", "value2"],
       });
       expect(info).to.have.property("id");
       expect(info).to.have.property("type", "geo2");
@@ -93,7 +93,7 @@ describe("Managing indexes", function() {
     it34("should create a geo index for one field", async () => {
       const info = await collection.ensureIndex({
         type: "geo",
-        fields: ["value"]
+        fields: ["value"],
       });
       expect(info).to.have.property("id");
       expect(info).to.have.property("type", "geo");
@@ -104,7 +104,7 @@ describe("Managing indexes", function() {
     it34("should create a geo index for two fields", async () => {
       const info = await collection.ensureIndex({
         type: "geo",
-        fields: ["value1", "value2"]
+        fields: ["value1", "value2"],
       });
       expect(info).to.have.property("id");
       expect(info).to.have.property("type", "geo");
@@ -117,7 +117,7 @@ describe("Managing indexes", function() {
     it("should create a fulltext index", async () => {
       const info = await collection.ensureIndex({
         type: "fulltext",
-        fields: ["value"]
+        fields: ["value"],
       });
       expect(info).to.have.property("id");
       expect(info).to.have.property("type", "fulltext");
@@ -130,7 +130,7 @@ describe("Managing indexes", function() {
     it("should return information about a index", async () => {
       const info = await collection.ensureIndex({
         type: "hash",
-        fields: ["test"]
+        fields: ["test"],
       });
       const index = await collection.index(info.id);
       expect(index).to.have.property("id", info.id);
@@ -141,7 +141,7 @@ describe("Managing indexes", function() {
     it("should return a list of indexes", async () => {
       const index = await collection.ensureIndex({
         type: "hash",
-        fields: ["test"]
+        fields: ["test"],
       });
       const indexes = await collection.indexes();
       expect(indexes).to.be.instanceof(Array);
@@ -153,7 +153,7 @@ describe("Managing indexes", function() {
     it("should drop existing index", async () => {
       const info = await collection.ensureIndex({
         type: "hash",
-        fields: ["test"]
+        fields: ["test"],
       });
       const index = await collection.dropIndex(info.id);
       expect(index).to.have.property("id", info.id);
