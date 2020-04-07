@@ -2367,6 +2367,8 @@ export class Database {
 
   /**
    * Fetches a list of information for all currently running queries.
+   *
+   * See also {@link Database.listSlowQueries} and {@link Database.killQuery}.
    */
   listRunningQueries(): Promise<QueryInfo[]> {
     return this.request(
@@ -2380,6 +2382,9 @@ export class Database {
 
   /**
    * Fetches a list of information for all recent slow queries.
+   *
+   * See also {@link Database.listRunningQueries} and
+   * {@link Database.clearSlowQueries}.
    */
   listSlowQueries(): Promise<QueryInfo[]> {
     return this.request(
@@ -2393,6 +2398,8 @@ export class Database {
 
   /**
    * Clears the list of recent slow queries.
+   *
+   * See also {@link Database.listSlowQueries}.
    */
   clearSlowQueries(): Promise<void> {
     return this.request(
