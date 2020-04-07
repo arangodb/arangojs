@@ -49,6 +49,7 @@ import {
   ArangoSearchViewPropertiesOptions,
   View,
   ViewDescription,
+  ViewResponse,
   ViewType,
 } from "./view";
 
@@ -1440,6 +1441,28 @@ export class Database {
   }
 
   /**
+   * TODO
+   *
+   * @param collectionName - The current name of the collection.
+   * @param newName - The new name of the collection.
+   */
+  async renameCollection(
+    collectionName: string,
+    newName: string
+  ): Promise<ArangoResponseMetadata & CollectionMetadata> {
+    const result = await this.request(
+      {
+        method: "PUT",
+        path: `/_api/collection/${collectionName}/rename`,
+        body: { name: newName },
+      },
+      (res) => res.body
+    );
+    this._collections.delete(collectionName);
+    return result;
+  }
+
+  /**
    * Fetches all collections from the database and returns an array of
    * collection descriptions.
    *
@@ -1617,6 +1640,28 @@ export class Database {
     const view = this.view(viewName) as View;
     await view.create({ ...options, type: ViewType.ARANGOSEARCH_VIEW });
     return view;
+  }
+
+  /**
+   * TODO
+   *
+   * @param viewName - The current name of the view.
+   * @param newName - The new name of the view.
+   */
+  async renameView(
+    viewName: string,
+    newName: string
+  ): Promise<ArangoResponseMetadata & ViewResponse> {
+    const result = await this.request(
+      {
+        method: "PUT",
+        path: `/_api/view/${viewName}/rename`,
+        body: { name: newName },
+      },
+      (res) => res.body
+    );
+    this._views.delete(viewName);
+    return result;
   }
 
   /**
