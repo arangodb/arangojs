@@ -1467,7 +1467,7 @@ export class Collection<T extends object = any>
 
   async documentExists(selector: DocumentSelector): Promise<boolean> {
     try {
-      return this._db.request(
+      return await this._db.request(
         {
           method: "HEAD",
           path: `/_api/document/${_documentHandle(selector, this._name)}`,
