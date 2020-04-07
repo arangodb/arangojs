@@ -118,7 +118,7 @@ export class GraphVertexCollection<T extends object = any>
    */
   async vertexExists(selector: DocumentSelector): Promise<boolean> {
     try {
-      return this._db.request(
+      return await this._db.request(
         {
           method: "HEAD",
           path: `/_api/gharial/${this.graph.name}/vertex/${_documentHandle(
@@ -357,7 +357,7 @@ export class GraphEdgeCollection<T extends object = any>
    */
   async edgeExists(selector: DocumentSelector): Promise<boolean> {
     try {
-      return this._db.request(
+      return await this._db.request(
         {
           method: "HEAD",
           path: `/_api/gharial/${this.graph.name}/edge/${_documentHandle(
