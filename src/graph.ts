@@ -141,14 +141,28 @@ export class GraphVertexCollection<T extends object = any>
    */
   async vertex(
     selector: DocumentSelector,
-    options?: GraphCollectionReadOptions
+    options?: GraphCollectionReadOptions & { graceful?: false }
+  ): Promise<Document<T>>;
+  /**
+   * TODO
+   */
+  async vertex(
+    selector: DocumentSelector,
+    options: GraphCollectionReadOptions & { graceful: true }
   ): Promise<Document<T> | null>;
   /**
    * TODO
    */
   async vertex(
     selector: DocumentSelector,
-    graceful: boolean
+    graceful: false
+  ): Promise<Document<T>>;
+  /**
+   * TODO
+   */
+  async vertex(
+    selector: DocumentSelector,
+    graceful: true
   ): Promise<Document<T> | null>;
   async vertex(
     selector: DocumentSelector,
@@ -366,14 +380,25 @@ export class GraphEdgeCollection<T extends object = any>
    */
   async edge(
     selector: DocumentSelector,
-    graceful: boolean
-  ): Promise<Edge<T> | null>;
+    options?: GraphCollectionReadOptions & { graceful?: false }
+  ): Promise<Edge<T>>;
   /**
    * TODO
    */
   async edge(
     selector: DocumentSelector,
-    options?: GraphCollectionReadOptions
+    options: GraphCollectionReadOptions & { graceful: true }
+  ): Promise<Edge<T> | null>;
+  /**
+   * TODO
+   */
+  async edge(selector: DocumentSelector, graceful: false): Promise<Edge<T>>;
+  /**
+   * TODO
+   */
+  async edge(
+    selector: DocumentSelector,
+    graceful: true
   ): Promise<Edge<T> | null>;
   async edge(
     selector: DocumentSelector,

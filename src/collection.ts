@@ -786,14 +786,25 @@ export interface DocumentCollection<T extends object = any>
    */
   document(
     selector: DocumentSelector,
-    options?: CollectionReadOptions
-  ): Promise<Document<T> | null>;
+    options?: CollectionReadOptions & { graceful?: false }
+  ): Promise<Document<T>>;
   /**
    * TODO
    */
   document(
     selector: DocumentSelector,
-    graceful: boolean
+    options: CollectionReadOptions & { graceful: true }
+  ): Promise<Document<T> | null>;
+  /**
+   * TODO
+   */
+  document(selector: DocumentSelector, graceful: false): Promise<Document<T>>;
+  /**
+   * TODO
+   */
+  document(
+    selector: DocumentSelector,
+    graceful: true
   ): Promise<Document<T> | null>;
   /**
    * TODO
@@ -1067,26 +1078,45 @@ export interface EdgeCollection<T extends object = any>
    */
   edge(
     selector: DocumentSelector,
-    options?: CollectionReadOptions
+    options?: CollectionReadOptions & { graceful?: false }
   ): Promise<Edge<T>>;
   /**
    * TODO
    */
-  edge(selector: DocumentSelector, graceful: boolean): Promise<Edge<T>>;
+  edge(
+    selector: DocumentSelector,
+    options: CollectionReadOptions & { graceful: true }
+  ): Promise<Edge<T> | null>;
+  /**
+   * TODO
+   */
+  edge(selector: DocumentSelector, graceful: false): Promise<Edge<T>>;
+  /**
+   * TODO
+   */
+  edge(selector: DocumentSelector, graceful: true): Promise<Edge<T> | null>;
   /**
    * TODO
    */
   document(
     selector: DocumentSelector,
-    options?: CollectionReadOptions
-  ): Promise<Edge<T> | null>;
+    options?: CollectionReadOptions & { graceful?: false }
+  ): Promise<Edge<T>>;
   /**
    * TODO
    */
   document(
     selector: DocumentSelector,
-    graceful: boolean
+    options: CollectionReadOptions & { graceful: true }
   ): Promise<Edge<T> | null>;
+  /**
+   * TODO
+   */
+  document(selector: DocumentSelector, graceful?: false): Promise<Edge<T>>;
+  /**
+   * TODO
+   */
+  document(selector: DocumentSelector, graceful: true): Promise<Edge<T> | null>;
   /**
    * TODO
    */
