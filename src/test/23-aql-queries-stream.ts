@@ -40,7 +40,7 @@ describe34("AQL Stream queries", function() {
       const cursor = await db.query("FOR x IN 1..10 RETURN x", undefined, {
         batchSize: 2,
         count: true, // should be ignored
-        stream: true
+        stream: true,
       });
       expect(cursor.count).to.equal(undefined);
       expect((cursor as any)._hasMore).to.equal(true);
@@ -48,12 +48,12 @@ describe34("AQL Stream queries", function() {
     it("supports compact queries with options", async () => {
       let query: any = {
         query: "FOR x IN RANGE(1, @max) RETURN x",
-        bindVars: { max: 10 }
+        bindVars: { max: 10 },
       };
       const cursor = await db.query(query, {
         batchSize: 2,
         count: true,
-        stream: true
+        stream: true,
       });
       expect(cursor.count).to.equal(undefined); // count will be ignored
       expect((cursor as any)._hasMore).to.equal(true);
@@ -82,7 +82,7 @@ describe34("AQL Stream queries", function() {
         Array.from(Array(25)).map(() => db.query(query, options))
       );
       await Promise.all(
-        cursors.map(c =>
+        cursors.map((c) =>
           (c as ArrayCursor).each(() => {
             count++;
           })

@@ -8,7 +8,7 @@ import {
   DocumentSelector,
   Edge,
   EdgeData,
-  _documentHandle
+  _documentHandle,
 } from "./documents";
 import { isArangoError } from "./error";
 import {
@@ -26,7 +26,7 @@ import {
   PersistentIndex,
   SkiplistIndex,
   TtlIndex,
-  _indexHandle
+  _indexHandle,
 } from "./indexes";
 import { Blob } from "./lib/blob";
 import { COLLECTION_NOT_FOUND, DOCUMENT_NOT_FOUND } from "./util/codes";

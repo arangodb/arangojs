@@ -31,11 +31,11 @@ describe("Simple queries", function() {
   beforeEach(async () => {
     collection = await db.createCollection(`c_${Date.now()}`);
     await Promise.all(
-      range(10).map(i =>
+      range(10).map((i) =>
         collection.save({
           _key: alpha(i),
           value: i + 1,
-          group: Math.floor(i / 2) + 1
+          group: Math.floor(i / 2) + 1,
         })
       )
     );
@@ -57,7 +57,7 @@ describe("Simple queries", function() {
       });
       expect(arr.map((d: any) => d.value).sort()).to.eql(
         range(10)
-          .map(i => i + 1)
+          .map((i) => i + 1)
           .sort()
       );
       expect(arr.map((d: any) => d._key).sort()).to.eql(

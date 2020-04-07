@@ -127,7 +127,7 @@ export function aql(
   return {
     query,
     bindVars,
-    _source: () => ({ strings, args })
+    _source: () => ({ strings, args }),
   };
 }
 
@@ -144,7 +144,7 @@ export namespace aql {
           return "";
         }
         return String(value);
-      }
+      },
     };
   };
   export const join = (

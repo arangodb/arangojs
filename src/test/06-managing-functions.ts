@@ -39,7 +39,7 @@ describe("Managing functions", function() {
       expect(result[0]).to.eql({
         name,
         code,
-        isDeterministic: false
+        isDeterministic: false,
       });
     });
     describe("database.createFunction", () => {

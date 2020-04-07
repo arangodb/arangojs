@@ -52,7 +52,7 @@ export class ArrayCursor<T = any> {
       method: "PUT",
       path: `/_api/cursor/${this._id}`,
       host: this._host,
-      allowDirtyRead: this._allowDirtyRead
+      allowDirtyRead: this._allowDirtyRead,
     });
     this._result.push(...res.body.result);
     this._hasMore = res.body.hasMore;
@@ -198,7 +198,7 @@ export class ArrayCursor<T = any> {
     return this._db.request(
       {
         method: "DELETE",
-        path: `/_api/cursor/${this._id}`
+        path: `/_api/cursor/${this._id}`,
       },
       () => {
         this._hasMore = false;

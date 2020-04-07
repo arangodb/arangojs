@@ -5,7 +5,7 @@ import { joinPath } from "./joinPath";
 import {
   ArangojsError,
   ArangojsResponse,
-  RequestOptions
+  RequestOptions,
 } from "./request.node";
 import xhr from "./xhr";
 
@@ -25,7 +25,7 @@ export function createRequest(baseUrl: string, agentOptions: any) {
   const options = omit(agentOptions, [
     "keepAlive",
     "keepAliveMsecs",
-    "maxSockets"
+    "maxSockets",
   ]);
   return function request(
     { method, url, headers, body, timeout, expectBinary }: RequestOptions,
@@ -42,7 +42,7 @@ export function createRequest(baseUrl: string, agentOptions: any) {
         ? baseUrlParts.search
           ? `${baseUrlParts.search}&${url.search.slice(1)}`
           : url.search
-        : baseUrlParts.search
+        : baseUrlParts.search,
     };
     if (!headers["authorization"]) {
       headers["authorization"] = `Basic ${btoa(auth || "root:")}`;
@@ -62,7 +62,7 @@ export function createRequest(baseUrl: string, agentOptions: any) {
         body,
         method,
         headers,
-        timeout
+        timeout,
       },
       (err: Error | null, res?: any) => {
         if (!err) {

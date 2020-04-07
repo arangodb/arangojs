@@ -207,7 +207,7 @@ export class Analyzer {
   get(): Promise<AnalyzerDescription> {
     return this._db.request(
       { path: `/_api/analyzer/${this.name}` },
-      res => res.body
+      (res) => res.body
     );
   }
 
@@ -228,9 +228,9 @@ export class Analyzer {
       {
         method: "POST",
         path: "/_api/analyzer",
-        body: { name: this.name, ...options }
+        body: { name: this.name, ...options },
       },
-      res => res.body
+      (res) => res.body
     );
   }
 
@@ -239,9 +239,9 @@ export class Analyzer {
       {
         method: "DELETE",
         path: `/_api/analyzer/${this.name}`,
-        qs: { force }
+        qs: { force },
       },
-      res => res.body
+      (res) => res.body
     );
   }
 }

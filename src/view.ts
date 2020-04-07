@@ -5,7 +5,7 @@ import { VIEW_NOT_FOUND } from "./util/codes";
 import { Dict } from "./util/types";
 
 export enum ViewType {
-  ARANGOSEARCH_VIEW = "arangosearch"
+  ARANGOSEARCH_VIEW = "arangosearch",
 }
 
 export function isArangoView(view: any): view is View {
@@ -249,7 +249,7 @@ export class View<
   get(): Promise<ViewResponse & ArangoResponseMetadata> {
     return this._db.request(
       { path: `/_api/view/${this.name}` },
-      res => res.body
+      (res) => res.body
     );
   }
 
@@ -273,10 +273,10 @@ export class View<
         body: {
           type: ViewType.ARANGOSEARCH_VIEW,
           ...(options || {}),
-          name: this.name
-        }
+          name: this.name,
+        },
       },
-      res => res.body
+      (res) => res.body
     );
   }
 
@@ -285,9 +285,9 @@ export class View<
       {
         method: "PUT",
         path: `/_api/view/${this.name}/rename`,
-        body: { name }
+        body: { name },
       },
-      res => res.body
+      (res) => res.body
     );
     this._name = name;
     return result;
@@ -296,7 +296,7 @@ export class View<
   properties(): Promise<PropertiesResponse & ArangoResponseMetadata> {
     return this._db.request(
       { path: `/_api/view/${this.name}/properties` },
-      res => res.body
+      (res) => res.body
     );
   }
 
@@ -305,9 +305,9 @@ export class View<
       {
         method: "PATCH",
         path: `/_api/view/${this.name}/properties`,
-        body: properties || {}
+        body: properties || {},
       },
-      res => res.body
+      (res) => res.body
     );
   }
 
@@ -318,9 +318,9 @@ export class View<
       {
         method: "PUT",
         path: `/_api/view/${this.name}/properties`,
-        body: properties || {}
+        body: properties || {},
       },
-      res => res.body
+      (res) => res.body
     );
   }
 
@@ -328,9 +328,9 @@ export class View<
     return this._db.request(
       {
         method: "DELETE",
-        path: `/_api/view/${this.name}`
+        path: `/_api/view/${this.name}`,
       },
-      res => res.body.result
+      (res) => res.body.result
     );
   }
 }

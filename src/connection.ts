@@ -6,7 +6,7 @@ import {
   ArangojsResponse,
   createRequest,
   isBrowser,
-  RequestFunction
+  RequestFunction,
 } from "./lib/request";
 import { sanitizeUrl } from "./lib/sanitizeUrl";
 import { Errback } from "./util/types";
@@ -255,7 +255,7 @@ export class Connection {
           maxSockets: 3,
           keepAlive: true,
           keepAliveMsecs: 1000,
-          ...config.agentOptions
+          ...config.agentOptions,
         };
     this._maxTasks = this._agentOptions.maxSockets || 3;
     if (this._agentOptions.keepAlive) this._maxTasks *= 2;
@@ -385,17 +385,17 @@ export class Connection {
   }
 
   addToHostList(urls: string | string[]): number[] {
-    const cleanUrls = (Array.isArray(urls) ? urls : [urls]).map(url =>
+    const cleanUrls = (Array.isArray(urls) ? urls : [urls]).map((url) =>
       sanitizeUrl(url)
     );
-    const newUrls = cleanUrls.filter(url => this._urls.indexOf(url) === -1);
+    const newUrls = cleanUrls.filter((url) => this._urls.indexOf(url) === -1);
     this._urls.push(...newUrls);
     this._hosts.push(
       ...newUrls.map((url: string) =>
         createRequest(url, this._agentOptions, this._agent)
       )
     );
-    return cleanUrls.map(url => this._urls.indexOf(url));
+    return cleanUrls.map((url) => this._urls.indexOf(url));
   }
 
   setTransactionId(transactionId: string) {
@@ -446,7 +446,7 @@ export class Connection {
       const extraHeaders: Headers = {
         ...this._headers,
         "content-type": contentType,
-        "x-arango-version": String(this._arangoVersion)
+        "x-arango-version": String(this._arangoVersion),
       };
 
       if (this._transactionId) {
@@ -463,7 +463,7 @@ export class Connection {
           timeout,
           method,
           expectBinary,
-          body
+          body,
         },
         reject,
         resolve: (res: ArangojsResponse) => {
@@ -504,7 +504,7 @@ export class Connection {
             if (!expectBinary) res.body = parsedBody;
             resolve(transform ? transform(res) : (res as any));
           }
-        }
+        },
       });
       this._runQueue();
     });

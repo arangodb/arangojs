@@ -33,7 +33,7 @@ describe("Bulk imports", function() {
           ["_key", "data"],
           ["ta1", "banana"],
           ["ta2", "peach"],
-          ["ta3", "apricot"]
+          ["ta3", "apricot"],
         ];
         const info = await collection.import(data, { type: null });
         expect(info).to.eql({
@@ -42,7 +42,7 @@ describe("Bulk imports", function() {
           errors: 0,
           empty: 0,
           updated: 0,
-          ignored: 0
+          ignored: 0,
         });
       });
       it("should accept tuples string", async () => {
@@ -55,7 +55,7 @@ describe("Bulk imports", function() {
           errors: 0,
           empty: 0,
           updated: 0,
-          ignored: 0
+          ignored: 0,
         });
       });
       it("should accept tuples buffer", async () => {
@@ -69,21 +69,21 @@ describe("Bulk imports", function() {
           errors: 0,
           empty: 0,
           updated: 0,
-          ignored: 0
+          ignored: 0,
         });
       });
     });
     for (const type of [
       undefined,
       "auto",
-      "documents"
+      "documents",
     ] as CollectionImportOptions["type"][]) {
       describe(`with type ${JSON.stringify(type)}`, () => {
         it("should accept documents array", async () => {
           const data = [
             { _key: `da1-${type}`, data: "banana" },
             { _key: `da2-${type}`, data: "peach" },
-            { _key: `da3-${type}`, data: "apricot" }
+            { _key: `da3-${type}`, data: "apricot" },
           ];
           const info = await collection.import(data, { type });
           expect(info).to.eql({
@@ -92,7 +92,7 @@ describe("Bulk imports", function() {
             errors: 0,
             empty: 0,
             updated: 0,
-            ignored: 0
+            ignored: 0,
           });
         });
         it("should accept documents string", async () => {
@@ -104,7 +104,7 @@ describe("Bulk imports", function() {
             errors: 0,
             empty: 0,
             updated: 0,
-            ignored: 0
+            ignored: 0,
           });
         });
         it("should accept documents buffer", async () => {
@@ -118,7 +118,7 @@ describe("Bulk imports", function() {
             errors: 0,
             empty: 0,
             updated: 0,
-            ignored: 0
+            ignored: 0,
           });
         });
       });
@@ -126,14 +126,14 @@ describe("Bulk imports", function() {
     for (const type of [
       undefined,
       "auto",
-      "array"
+      "array",
     ] as CollectionImportOptions["type"][]) {
       describe(`with type ${JSON.stringify(type)}`, () => {
         it("should accept JSON string", async () => {
           const data = JSON.stringify([
             { _key: `js1-${String(type)}`, data: "banana" },
             { _key: `js2-${String(type)}`, data: "peach" },
-            { _key: `js3-${String(type)}`, data: "apricot" }
+            { _key: `js3-${String(type)}`, data: "apricot" },
           ]);
           const info = await collection.import(data, { type });
           expect(info).to.eql({
@@ -142,7 +142,7 @@ describe("Bulk imports", function() {
             errors: 0,
             empty: 0,
             updated: 0,
-            ignored: 0
+            ignored: 0,
           });
         });
         it("should accept JSON buffer", async () => {
@@ -150,7 +150,7 @@ describe("Bulk imports", function() {
             JSON.stringify([
               { _key: `jb1-${String(type)}`, data: "banana" },
               { _key: `jb2-${String(type)}`, data: "peach" },
-              { _key: `jb3-${String(type)}`, data: "apricot" }
+              { _key: `jb3-${String(type)}`, data: "apricot" },
             ])
           );
           const info = await collection.import(data, { type });
@@ -160,7 +160,7 @@ describe("Bulk imports", function() {
             errors: 0,
             empty: 0,
             updated: 0,
-            ignored: 0
+            ignored: 0,
           });
         });
       });

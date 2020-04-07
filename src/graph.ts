@@ -6,7 +6,7 @@ import {
   DocumentCollection,
   EdgeCollection,
   isArangoCollection,
-  TraversalOptions
+  TraversalOptions,
 } from "./collection";
 import { Headers } from "./connection";
 import { Database } from "./database";
@@ -16,7 +16,7 @@ import {
   DocumentSelector,
   Edge,
   EdgeData,
-  _documentHandle
+  _documentHandle,
 } from "./documents";
 import { isArangoError } from "./error";
 import { DOCUMENT_NOT_FOUND, GRAPH_NOT_FOUND } from "./util/codes";
@@ -94,11 +94,11 @@ export class GraphVertexCollection<T extends object = any>
           path: `/_api/gharial/${this.graph.name}/vertex/${_documentHandle(
             selector,
             this._name
-          )}`
+          )}`,
         },
         () => true
       )
-      .catch(err => {
+      .catch((err) => {
         if (err.statusCode === 404) {
           return false;
         }
@@ -134,12 +134,12 @@ export class GraphVertexCollection<T extends object = any>
         )}`,
         headers,
         qs,
-        allowDirtyRead
+        allowDirtyRead,
       },
-      res => res.body.vertex
+      (res) => res.body.vertex
     );
     if (!graceful) return result;
-    return result.catch(err => {
+    return result.catch((err) => {
       if (isArangoError(err) && err.errorNum === DOCUMENT_NOT_FOUND) {
         return null;
       }
@@ -156,9 +156,9 @@ export class GraphVertexCollection<T extends object = any>
         method: "POST",
         path: `/_api/gharial/${this.graph.name}/vertex/${this._name}`,
         body: data,
-        qs: options
+        qs: options,
       },
-      res => mungeGharialResponse(res.body, "vertex")
+      (res) => mungeGharialResponse(res.body, "vertex")
     );
   }
 
@@ -182,9 +182,9 @@ export class GraphVertexCollection<T extends object = any>
         )}`,
         body: newValue,
         qs,
-        headers
+        headers,
       },
-      res => mungeGharialResponse(res.body, "vertex")
+      (res) => mungeGharialResponse(res.body, "vertex")
     );
   }
 
@@ -208,9 +208,9 @@ export class GraphVertexCollection<T extends object = any>
         )}`,
         body: newValue,
         qs,
-        headers
+        headers,
       },
-      res => mungeGharialResponse(res.body, "vertex")
+      (res) => mungeGharialResponse(res.body, "vertex")
     );
   }
 
@@ -232,9 +232,9 @@ export class GraphVertexCollection<T extends object = any>
           this._name
         )}`,
         qs,
-        headers
+        headers,
       },
-      res => mungeGharialResponse(res.body, "removed")
+      (res) => mungeGharialResponse(res.body, "removed")
     );
   }
 }
@@ -278,11 +278,11 @@ export class GraphEdgeCollection<T extends object = any>
           path: `/_api/gharial/${this.graph.name}/edge/${_documentHandle(
             selector,
             this._name
-          )}`
+          )}`,
         },
         () => true
       )
-      .catch(err => {
+      .catch((err) => {
         if (err.statusCode === 404) {
           return false;
         }
@@ -317,12 +317,12 @@ export class GraphEdgeCollection<T extends object = any>
           this._name
         )}`,
         qs,
-        allowDirtyRead
+        allowDirtyRead,
       },
-      res => res.body.edge
+      (res) => res.body.edge
     );
     if (!graceful) return result;
-    return result.catch(err => {
+    return result.catch((err) => {
       if (isArangoError(err) && err.errorNum === DOCUMENT_NOT_FOUND) {
         return null;
       }
@@ -339,9 +339,9 @@ export class GraphEdgeCollection<T extends object = any>
         method: "POST",
         path: `/_api/gharial/${this.graph.name}/edge/${this._name}`,
         body: data,
-        qs: options
+        qs: options,
       },
-      res => mungeGharialResponse(res.body, "edge")
+      (res) => mungeGharialResponse(res.body, "edge")
     );
   }
 
@@ -365,9 +365,9 @@ export class GraphEdgeCollection<T extends object = any>
         )}`,
         body: newValue,
         qs,
-        headers
+        headers,
       },
-      res => mungeGharialResponse(res.body, "edge")
+      (res) => mungeGharialResponse(res.body, "edge")
     );
   }
 
@@ -391,9 +391,9 @@ export class GraphEdgeCollection<T extends object = any>
         )}`,
         body: newValue,
         qs,
-        headers
+        headers,
       },
-      res => mungeGharialResponse(res.body, "edge")
+      (res) => mungeGharialResponse(res.body, "edge")
     );
   }
 
@@ -415,9 +415,9 @@ export class GraphEdgeCollection<T extends object = any>
           this._name
         )}`,
         qs,
-        headers
+        headers,
       },
-      res => mungeGharialResponse(res.body, "removed")
+      (res) => mungeGharialResponse(res.body, "removed")
     );
   }
 }
@@ -536,7 +536,7 @@ export class Graph {
   get(): Promise<GraphInfo> {
     return this._db.request(
       { path: `/_api/gharial/${this._name}` },
-      res => res.body.graph
+      (res) => res.body.graph
     );
   }
 
@@ -566,11 +566,11 @@ export class Graph {
           edgeDefinitions,
           isSmart,
           name: this._name,
-          options: opts
+          options: opts,
         },
-        qs: { waitForSync }
+        qs: { waitForSync },
       },
-      res => res.body.graph
+      (res) => res.body.graph
     );
   }
 
@@ -579,9 +579,9 @@ export class Graph {
       {
         method: "DELETE",
         path: `/_api/gharial/${this._name}`,
-        qs: { dropCollections }
+        qs: { dropCollections },
       },
-      res => res.body.removed
+      (res) => res.body.removed
     );
   }
 
@@ -594,13 +594,13 @@ export class Graph {
   listVertexCollections(): Promise<string[]> {
     return this._db.request(
       { path: `/_api/gharial/${this._name}/vertex` },
-      res => res.body.collections
+      (res) => res.body.collections
     );
   }
 
   async vertexCollections(): Promise<GraphVertexCollection[]> {
     const names = await this.listVertexCollections();
-    return names.map(name => new GraphVertexCollection(this._db, name, this));
+    return names.map((name) => new GraphVertexCollection(this._db, name, this));
   }
 
   addVertexCollection(
@@ -613,9 +613,9 @@ export class Graph {
       {
         method: "POST",
         path: `/_api/gharial/${this._name}/vertex`,
-        body: { collection }
+        body: { collection },
       },
-      res => res.body.graph
+      (res) => res.body.graph
     );
   }
 
@@ -631,10 +631,10 @@ export class Graph {
         method: "DELETE",
         path: `/_api/gharial/${this._name}/vertex/${collection}`,
         qs: {
-          dropCollection
-        }
+          dropCollection,
+        },
       },
-      res => res.body.graph
+      (res) => res.body.graph
     );
   }
 
@@ -647,13 +647,13 @@ export class Graph {
   listEdgeCollections(): Promise<string[]> {
     return this._db.request(
       { path: `/_api/gharial/${this._name}/edge` },
-      res => res.body.collections
+      (res) => res.body.collections
     );
   }
 
   async edgeCollections(): Promise<GraphEdgeCollection[]> {
     const names = await this.listEdgeCollections();
-    return names.map(name => new GraphEdgeCollection(this._db, name, this));
+    return names.map((name) => new GraphEdgeCollection(this._db, name, this));
   }
 
   addEdgeDefinition(definition: EdgeDefinition): Promise<GraphInfo> {
@@ -661,9 +661,9 @@ export class Graph {
       {
         method: "POST",
         path: `/_api/gharial/${this._name}/edge`,
-        body: definition
+        body: definition,
       },
-      res => res.body.graph
+      (res) => res.body.graph
     );
   }
 
@@ -684,9 +684,9 @@ export class Graph {
       {
         method: "PUT",
         path: `/_api/gharial/${this._name}/edge/${edgeCollection}`,
-        body: definition
+        body: definition,
       },
-      res => res.body.graph
+      (res) => res.body.graph
     );
   }
 
@@ -699,10 +699,10 @@ export class Graph {
         method: "DELETE",
         path: `/_api/gharial/${this._name}/edge/${edgeCollection}`,
         qs: {
-          dropCollection
-        }
+          dropCollection,
+        },
       },
-      res => res.body.graph
+      (res) => res.body.graph
     );
   }
 
@@ -718,10 +718,10 @@ export class Graph {
         body: {
           ...options,
           startVertex,
-          graphName: this._name
-        }
+          graphName: this._name,
+        },
       },
-      res => res.body.result
+      (res) => res.body.result
     );
   }
 }

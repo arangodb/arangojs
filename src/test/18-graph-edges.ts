@@ -31,8 +31,8 @@ describe("Manipulating graph edges", function() {
       {
         collection: "knows",
         from: ["person"],
-        to: ["person"]
-      }
+        to: ["person"],
+      },
     ]);
   });
   afterEach(async () => {
@@ -94,7 +94,7 @@ describe("Manipulating graph edges", function() {
       const info = await graph.addEdgeDefinition({
         collection: "works_in",
         from: ["person"],
-        to: ["city"]
+        to: ["city"],
       });
       expect(info).to.have.property("name", graphName);
       expect(info).to.have.property("edgeDefinitions");
@@ -125,7 +125,7 @@ describe("Manipulating graph edges", function() {
       const info = await graph.replaceEdgeDefinition("knows", {
         collection: "knows",
         from: ["person"],
-        to: ["city"]
+        to: ["city"],
       });
       expect(info).to.have.property("name", graphName);
       expect(info).to.have.property("edgeDefinitions");
@@ -170,20 +170,20 @@ describe("Manipulating graph edges", function() {
           { _key: "Bob" },
           { _key: "Charlie" },
           { _key: "Dave" },
-          { _key: "Eve" }
+          { _key: "Eve" },
         ]),
         knows.collection.import([
           { _from: "person/Alice", _to: "person/Bob" },
           { _from: "person/Bob", _to: "person/Charlie" },
           { _from: "person/Bob", _to: "person/Dave" },
           { _from: "person/Eve", _to: "person/Alice" },
-          { _from: "person/Eve", _to: "person/Bob" }
-        ])
+          { _from: "person/Eve", _to: "person/Bob" },
+        ]),
       ]);
     });
     it("executes traversal", async () => {
       const result = await graph.traversal("person/Alice", {
-        direction: "outbound"
+        direction: "outbound",
       });
       expect(result).to.have.property("visited");
       const visited = result.visited;

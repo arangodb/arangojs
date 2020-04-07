@@ -37,32 +37,32 @@ describe("Accessing graphs", function() {
     });
   });
   describe("database.listGraphs", () => {
-    const vertexCollectionNames = range(2).map(i => `vc_${Date.now()}_${i}`);
-    const edgeCollectionNames = range(2).map(i => `ec_${Date.now()}_${i}`);
-    const graphNames = range(4).map(i => `g_${Date.now()}_${i}`);
+    const vertexCollectionNames = range(2).map((i) => `vc_${Date.now()}_${i}`);
+    const edgeCollectionNames = range(2).map((i) => `ec_${Date.now()}_${i}`);
+    const graphNames = range(4).map((i) => `g_${Date.now()}_${i}`);
     before(async () => {
       await Promise.all([
-        ...vertexCollectionNames.map(name => db.createCollection(name)),
-        ...edgeCollectionNames.map(name => db.createEdgeCollection(name))
+        ...vertexCollectionNames.map((name) => db.createCollection(name)),
+        ...edgeCollectionNames.map((name) => db.createEdgeCollection(name)),
       ] as Promise<ArangoCollection>[]);
       await Promise.all([
-        ...graphNames.map(name =>
+        ...graphNames.map((name) =>
           db.graph(name).create(
-            edgeCollectionNames.map(name => ({
+            edgeCollectionNames.map((name) => ({
               collection: name,
               from: vertexCollectionNames,
-              to: vertexCollectionNames
+              to: vertexCollectionNames,
             }))
           )
-        )
+        ),
       ]);
     });
     after(async () => {
-      await Promise.all(graphNames.map(name => db.graph(name).drop()));
+      await Promise.all(graphNames.map((name) => db.graph(name).drop()));
       await Promise.all(
         vertexCollectionNames
           .concat(edgeCollectionNames)
-          .map(name => db.collection(name).drop())
+          .map((name) => db.collection(name).drop())
       );
     });
     it("fetches information about all graphs", async () => {
@@ -72,32 +72,32 @@ describe("Accessing graphs", function() {
     });
   });
   describe("database.graphs", () => {
-    const vertexCollectionNames = range(2).map(i => `vc_${Date.now()}_${i}`);
-    const edgeCollectionNames = range(2).map(i => `ec_${Date.now()}_${i}`);
-    const graphNames = range(4).map(i => `g_${Date.now()}_${i}`);
+    const vertexCollectionNames = range(2).map((i) => `vc_${Date.now()}_${i}`);
+    const edgeCollectionNames = range(2).map((i) => `ec_${Date.now()}_${i}`);
+    const graphNames = range(4).map((i) => `g_${Date.now()}_${i}`);
     before(async () => {
       await Promise.all([
-        ...vertexCollectionNames.map(name => db.createCollection(name)),
-        ...edgeCollectionNames.map(name => db.createEdgeCollection(name))
+        ...vertexCollectionNames.map((name) => db.createCollection(name)),
+        ...edgeCollectionNames.map((name) => db.createEdgeCollection(name)),
       ] as Promise<ArangoCollection>[]);
       await Promise.all([
-        ...graphNames.map(name =>
+        ...graphNames.map((name) =>
           db.graph(name).create(
-            edgeCollectionNames.map(name => ({
+            edgeCollectionNames.map((name) => ({
               collection: name,
               from: vertexCollectionNames,
-              to: vertexCollectionNames
+              to: vertexCollectionNames,
             }))
           )
-        )
+        ),
       ]);
     });
     after(async () => {
-      await Promise.all(graphNames.map(name => db.graph(name).drop()));
+      await Promise.all(graphNames.map((name) => db.graph(name).drop()));
       await Promise.all(
         vertexCollectionNames
           .concat(edgeCollectionNames)
-          .map(name => db.collection(name).drop())
+          .map((name) => db.collection(name).drop())
       );
     });
     it("creates Graph instances", async () => {
