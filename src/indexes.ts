@@ -30,8 +30,6 @@ export type EnsureIndexSkiplistOptions = {
 
 /**
  * TODO
- *
- * @deprecated Deprecated in ArangoDB 3.4.
  */
 export type EnsureIndexPersistentOptions = {
   type: "persistent";
