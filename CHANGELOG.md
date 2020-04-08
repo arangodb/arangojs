@@ -563,7 +563,7 @@ This is a major release and breaks backwards compatibility.
 
 ### Changed
 
-- Reimplemented `collection.import`
+- Re-implemented `collection.import`
 
   The previous implementation was broken. The new implementation should be backwards-compatible
   in cases where it previously wasn't broken but is more flexible and also handles buffers.
