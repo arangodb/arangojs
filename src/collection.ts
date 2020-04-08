@@ -253,11 +253,11 @@ export type CreateCollectionOptions = {
    */
   waitForSync?: boolean;
   /**
+   * @internal
+   *
    * Whether the collection should be created as a system collection.
    *
    * Default: `false`
-   *
-   * @internal
    */
   isSystem?: boolean;
   /**

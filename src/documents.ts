@@ -71,8 +71,8 @@ export type DocumentSelector = ObjectWithId | ObjectWithKey | string;
 /**
  * TODO
  *
- * @hidden
  * @internal
+ * @hidden
  */
 export function _documentHandle(
   selector: DocumentSelector,
