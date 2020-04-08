@@ -32,7 +32,10 @@ export interface AqlQuery {
  * @internal
  */
 export interface GeneratedAqlQuery extends AqlQuery {
-  /** @hidden @internal */
+  /**
+   * @internal
+   * @hidden
+   */
   _source: () => { strings: string[]; args: AqlValue[] };
 }
 

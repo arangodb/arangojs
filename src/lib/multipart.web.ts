@@ -12,6 +12,10 @@ import { Fields, MultipartRequest } from "./multipart";
 declare const FormData: any;
 declare const Blob: any;
 
+/**
+ * @internal
+ * @hidden
+ */
 export function toForm(fields: Fields, callback: Errback<MultipartRequest>) {
   let form;
   try {

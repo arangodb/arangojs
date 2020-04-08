@@ -28,6 +28,15 @@ function omit<T>(obj: T, keys: (keyof T)[]): T {
   return result;
 }
 
+/**
+ * TODO
+ *
+ * @param baseUrl
+ * @param agentOptions
+ *
+ * @internal
+ * @hidden
+ */
 export function createRequest(baseUrl: string, agentOptions: any) {
   const { auth, ...baseUrlParts } = parseUrl(baseUrl);
   const options = omit(agentOptions, [

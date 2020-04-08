@@ -1304,7 +1304,10 @@ export class Collection<T extends object = any>
   protected _db: Database;
   //#endregion
 
-  /** @hidden */
+  /**
+   * @internal
+   * @hidden
+   */
   constructor(db: Database, name: string) {
     this._name = name;
     this._db = db;

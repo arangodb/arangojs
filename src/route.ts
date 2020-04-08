@@ -15,7 +15,10 @@ export class Route {
   protected _path: string;
   protected _headers: Headers;
 
-  /** @hidden */
+  /**
+   * @internal
+   * @hidden
+   */
   constructor(db: Database, path: string = "", headers: Headers = {}) {
     if (!path) path = "";
     else if (path.charAt(0) !== "/") path = `/${path}`;
