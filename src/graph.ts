@@ -902,7 +902,8 @@ export class Graph {
   /**
    * TODO
    *
-   * @deprecated Deprecated in ArangoDB 3.4.
+   * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
+   * replaced with AQL queries.
    */
   traversal(
     startVertex: DocumentSelector,

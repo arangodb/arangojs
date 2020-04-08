@@ -97,7 +97,8 @@ export type ShardingStrategy =
 /**
  * TODO
  *
- * @deprecated Deprecated in ArangoDB 3.4.
+ * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
+ * replaced with AQL queries.
  */
 export type SimpleQueryAllKeys = "id" | "key" | "path";
 
@@ -423,7 +424,8 @@ export type CollectionImportOptions = {
 /**
  * TODO
  *
- * @deprecated Deprecated in ArangoDB 3.4.
+ * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
+ * replaced with AQL queries.
  */
 export type SimpleQueryByExampleOptions = {
   skip?: number;
@@ -435,7 +437,8 @@ export type SimpleQueryByExampleOptions = {
 /**
  * TODO
  *
- * @deprecated Deprecated in ArangoDB 3.4.
+ * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
+ * replaced with AQL queries.
  */
 export type SimpleQueryAllOptions = SimpleQueryByExampleOptions & {
   stream?: boolean;
@@ -444,7 +447,8 @@ export type SimpleQueryAllOptions = SimpleQueryByExampleOptions & {
 /**
  * TODO
  *
- * @deprecated Deprecated in ArangoDB 3.4.
+ * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
+ * replaced with AQL queries.
  */
 export type SimpleQueryUpdateByExampleOptions = {
   keepNull?: boolean;
@@ -456,7 +460,8 @@ export type SimpleQueryUpdateByExampleOptions = {
 /**
  * TODO
  *
- * @deprecated Deprecated in ArangoDB 3.4.
+ * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
+ * replaced with AQL queries.
  */
 export type SimpleQueryRemoveByExampleOptions = {
   waitForSync?: boolean;
@@ -466,14 +471,16 @@ export type SimpleQueryRemoveByExampleOptions = {
 /**
  * TODO
  *
- * @deprecated Deprecated in ArangoDB 3.4.
+ * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
+ * replaced with AQL queries.
  */
 export type SimpleQueryReplaceByExampleOptions = SimpleQueryRemoveByExampleOptions;
 
 /**
  * TODO
  *
- * @deprecated Deprecated in ArangoDB 3.4.
+ * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
+ * replaced with AQL queries.
  */
 export type SimpleQueryRemoveByKeysOptions = {
   returnOld?: boolean;
@@ -484,7 +491,8 @@ export type SimpleQueryRemoveByKeysOptions = {
 /**
  * TODO
  *
- * @deprecated Deprecated in ArangoDB 3.4.
+ * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
+ * replaced with AQL queries.
  */
 export type SimpleQueryFulltextOptions = {
   index?: string;
@@ -495,7 +503,8 @@ export type SimpleQueryFulltextOptions = {
 /**
  * TODO
  *
- * @deprecated Deprecated in ArangoDB 3.4.
+ * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
+ * replaced with AQL queries.
  */
 export type TraversalOptions = {
   init?: string;
@@ -652,7 +661,8 @@ export type CollectionSaveResult<T> = CollectionInsertResult<T> &
 /**
  * TODO
  *
- * @deprecated Deprecated in ArangoDB 3.4.
+ * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
+ * replaced with AQL queries.
  */
 export type SimpleQueryRemoveByExampleResult = {
   deleted: number;
@@ -661,7 +671,8 @@ export type SimpleQueryRemoveByExampleResult = {
 /**
  * TODO
  *
- * @deprecated Deprecated in ArangoDB 3.4.
+ * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
+ * replaced with AQL queries.
  */
 export type SimpleQueryReplaceByExampleResult = {
   replaced: number;
@@ -670,7 +681,8 @@ export type SimpleQueryReplaceByExampleResult = {
 /**
  * TODO
  *
- * @deprecated Deprecated in ArangoDB 3.4.
+ * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
+ * replaced with AQL queries.
  */
 export type SimpleQueryUpdateByExampleResult = {
   updated: number;
@@ -679,7 +691,8 @@ export type SimpleQueryUpdateByExampleResult = {
 /**
  * TODO
  *
- * @deprecated Deprecated in ArangoDB 3.4.
+ * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
+ * replaced with AQL queries.
  */
 export type SimpleQueryRemoveByKeysResult<T extends object = any> = {
   removed: number;
@@ -899,28 +912,32 @@ export interface DocumentCollection<T extends object = any>
   /**
    * TODO
    *
-   * @deprecated Deprecated in ArangoDB 3.4.
+   * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
+   * replaced with AQL queries.
    */
   list(type?: SimpleQueryAllKeys): Promise<ArrayCursor<string>>;
 
   /**
    * TODO
    *
-   * @deprecated Deprecated in ArangoDB 3.4.
+   * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
+   * replaced with AQL queries.
    */
   all(options?: SimpleQueryAllOptions): Promise<ArrayCursor<Document<T>>>;
 
   /**
    * TODO
    *
-   * @deprecated Deprecated in ArangoDB 3.4.
+   * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
+   * replaced with AQL queries.
    */
   any(): Promise<Document<T>>;
 
   /**
    * TODO
    *
-   * @deprecated Deprecated in ArangoDB 3.4.
+   * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
+   * replaced with AQL queries.
    */
   byExample(
     example: Partial<DocumentData<T>>,
@@ -930,14 +947,16 @@ export interface DocumentCollection<T extends object = any>
   /**
    * TODO
    *
-   * @deprecated Deprecated in ArangoDB 3.4.
+   * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
+   * replaced with AQL queries.
    */
   firstExample(example: Partial<DocumentData<T>>): Promise<Document<T>>;
 
   /**
    * TODO
    *
-   * @deprecated Deprecated in ArangoDB 3.4.
+   * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
+   * replaced with AQL queries.
    */
   removeByExample(
     example: Partial<DocumentData<T>>,
@@ -947,7 +966,8 @@ export interface DocumentCollection<T extends object = any>
   /**
    * TODO
    *
-   * @deprecated Deprecated in ArangoDB 3.4.
+   * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
+   * replaced with AQL queries.
    */
   replaceByExample(
     example: Partial<DocumentData<T>>,
@@ -958,7 +978,8 @@ export interface DocumentCollection<T extends object = any>
   /**
    * TODO
    *
-   * @deprecated Deprecated in ArangoDB 3.4.
+   * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
+   * replaced with AQL queries.
    */
   updateByExample(
     example: Partial<DocumentData<T>>,
@@ -983,14 +1004,16 @@ export interface DocumentCollection<T extends object = any>
   /**
    * TODO
    *
-   * @deprecated Deprecated in ArangoDB 3.4.
+   * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
+   * replaced with AQL queries.
    */
   lookupByKeys(keys: string[]): Promise<Document<T>[]>;
 
   /**
    * TODO
    *
-   * @deprecated Deprecated in ArangoDB 3.4.
+   * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
+   * replaced with AQL queries.
    */
   removeByKeys(
     keys: string[],
@@ -1000,7 +1023,8 @@ export interface DocumentCollection<T extends object = any>
   /**
    * TODO
    *
-   * @deprecated Deprecated in ArangoDB 3.4.
+   * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
+   * replaced with AQL queries.
    */
   fulltext(
     attribute: string,
@@ -1196,21 +1220,24 @@ export interface EdgeCollection<T extends object = any>
   /**
    * TODO
    *
-   * @deprecated Deprecated in ArangoDB 3.4.
+   * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
+   * replaced with AQL queries.
    */
   all(options?: SimpleQueryAllOptions): Promise<ArrayCursor<Edge<T>>>;
 
   /**
    * TODO
    *
-   * @deprecated Deprecated in ArangoDB 3.4.
+   * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
+   * replaced with AQL queries.
    */
   any(): Promise<Edge<T>>;
 
   /**
    * TODO
    *
-   * @deprecated Deprecated in ArangoDB 3.4.
+   * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
+   * replaced with AQL queries.
    */
   byExample(
     example: Partial<DocumentData<T>>,
@@ -1220,21 +1247,24 @@ export interface EdgeCollection<T extends object = any>
   /**
    * TODO
    *
-   * @deprecated Deprecated in ArangoDB 3.4.
+   * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
+   * replaced with AQL queries.
    */
   firstExample(example: Partial<DocumentData<T>>): Promise<Edge<T>>;
 
   /**
    * TODO
    *
-   * @deprecated Deprecated in ArangoDB 3.4.
+   * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
+   * replaced with AQL queries.
    */
   lookupByKeys(keys: string[]): Promise<Edge<T>[]>;
 
   /**
    * TODO
    *
-   * @deprecated Deprecated in ArangoDB 3.4.
+   * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
+   * replaced with AQL queries.
    */
   fulltext(
     attribute: string,
@@ -1266,7 +1296,8 @@ export interface EdgeCollection<T extends object = any>
   /**
    * TODO
    *
-   * @deprecated Deprecated in ArangoDB 3.4.
+   * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
+   * replaced with AQL queries.
    */
   traversal(
     startVertex: DocumentSelector,
