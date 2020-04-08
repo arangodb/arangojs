@@ -32,7 +32,10 @@ export class Transaction {
   protected _db: Database;
   protected _id: string;
 
-  /** @hidden */
+  /**
+   * @internal
+   * @hidden
+   */
   constructor(db: Database, id: string) {
     this._db = db;
     this._id = id;

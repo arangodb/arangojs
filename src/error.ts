@@ -99,7 +99,10 @@ export class ArangoError extends ExtendableError {
   statusCode: number;
   response: any;
 
-  /** @hidden */
+  /**
+   * @internal
+   * @hidden
+   */
   constructor(response: any) {
     super();
     this.response = response;
@@ -124,7 +127,10 @@ export class HttpError extends ExtendableError {
   code: number;
   statusCode: number;
 
-  /** @hidden */
+  /**
+   * @internal
+   * @hidden
+   */
   constructor(response: any) {
     super();
     this.response = response;

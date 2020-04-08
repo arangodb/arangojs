@@ -17,15 +17,27 @@ declare class MultiPart {
 
 const Multipart = require("multi-part") as typeof MultiPart;
 
+/**
+ * @internal
+ * @hidden
+ */
 export type Fields = {
   [key: string]: any;
 };
 
+/**
+ * @internal
+ * @hidden
+ */
 export interface MultipartRequest {
   headers?: Headers;
   body: Buffer;
 }
 
+/**
+ * @internal
+ * @hidden
+ */
 export function toForm(fields: Fields): Promise<MultipartRequest> {
   return new Promise((resolve, reject) => {
     try {

@@ -20,16 +20,28 @@ import { Errback } from "../util/types";
 import { btoa } from "./btoa";
 import { joinPath } from "./joinPath";
 
+/**
+ * @internal
+ * @hidden
+ */
 export interface ArangojsResponse extends IncomingMessage {
   request: ClientRequest;
   body?: any;
   arangojsHostId?: number;
 }
 
+/**
+ * @internal
+ * @hidden
+ */
 export interface ArangojsError extends Error {
   request: ClientRequest;
 }
 
+/**
+ * @internal
+ * @hidden
+ */
 export type RequestOptions = {
   method: string;
   url: { pathname: string; search?: string };
@@ -39,13 +51,31 @@ export type RequestOptions = {
   timeout?: number;
 };
 
+/**
+ * @internal
+ * @hidden
+ */
 export type RequestFunction = {
   (options: RequestOptions, cb: Errback<ArangojsResponse>): void;
   close?: () => void;
 };
 
+/**
+ * @internal
+ * @hidden
+ */
 export const isBrowser = false;
 
+/**
+ * TODO
+ *
+ * @param baseUrl
+ * @param agentOptions
+ * @param agent
+ *
+ * @internal
+ * @hidden
+ */
 export function createRequest(
   baseUrl: string,
   agentOptions: any,
