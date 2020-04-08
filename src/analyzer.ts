@@ -8,7 +8,9 @@ import { isArangoError } from "./error";
 import { ANALYZER_NOT_FOUND } from "./util/codes";
 
 /**
- * TODO
+ * Indicates whether the given value represents an {@link Analyzer}.
+ *
+ * @param analyzer - A value that might be an Analyzer.
  */
 export function isArangoAnalyzer(analyzer: any): analyzer is Analyzer {
   return Boolean(analyzer && analyzer.isArangoAnalyzer);
@@ -244,7 +246,9 @@ export class Analyzer {
   }
 
   /**
-   * TODO
+   * @internal
+   *
+   * Indicates that this object represents an ArangoDB Analyzer.
    */
   get isArangoAnalyzer(): true {
     return true;

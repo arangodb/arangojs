@@ -60,7 +60,9 @@ function colToString(collection: string | ArangoCollection): string {
 }
 
 /**
- * TODO
+ * Indicates whether the given value represents a {@link Database}.
+ *
+ * @param database - A value that might be a database.
  */
 export function isArangoDatabase(database: any): database is Database {
   return Boolean(database && database.isArangoDatabase);
@@ -936,7 +938,7 @@ export class Database {
    * @internal
    *
    * Indicates that this object represents an ArangoDB database.
-   * */
+   */
   get isArangoDatabase(): true {
     return true;
   }
@@ -1085,7 +1087,7 @@ export class Database {
    * @param databaseName - Name of the database to use.
    *
    * @deprecated Use {@link Database.database} instead.
-   * */
+   */
   useDatabase(databaseName: string): this {
     this._connection.database(this._name, null);
     this._name = databaseName;

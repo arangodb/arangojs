@@ -17,7 +17,9 @@ export enum ViewType {
 }
 
 /**
- * TODO
+ * Indicates whether the given value represents a {@link View}.
+ *
+ * @param view - A value that might be a View.
  */
 export function isArangoView(view: any): view is View {
   return Boolean(view && view.isArangoView);
@@ -274,7 +276,9 @@ export class View<
   }
 
   /**
-   * TODO
+   * @internal
+   *
+   * Indicates that this object represents an ArangoDB View.
    */
   get isArangoView(): true {
     return true;

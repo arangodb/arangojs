@@ -9,7 +9,9 @@ import { isArangoError } from "./error";
 import { TRANSACTION_NOT_FOUND } from "./util/codes";
 
 /**
- * TODO
+ * Indicates whether the given value represents an {@link ArangoTransaction}.
+ *
+ * @param transaction - A value that might be a transaction.
  */
 export function isArangoTransaction(
   transaction: any
@@ -42,7 +44,9 @@ export class Transaction {
   }
 
   /**
-   * TODO
+   * @internal
+   *
+   * Indicates that this object represents an ArangoDB transaction.
    */
   get isArangoTransaction(): true {
     return true;

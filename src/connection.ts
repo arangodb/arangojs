@@ -245,7 +245,9 @@ export type Config = {
 };
 
 /**
- * TODO
+ * Indicates whether the given value represents a {@link Connection}.
+ *
+ * @param connection - A value that might be a connection.
  *
  * @internal
  * @hidden
@@ -331,7 +333,9 @@ export class Connection {
   }
 
   /**
-   * TODO
+   * @internal
+   *
+   * Indicates that this object represents an ArangoDB connection.
    */
   get isArangoConnection(): true {
     return true;
