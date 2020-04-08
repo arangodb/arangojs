@@ -1,5 +1,11 @@
 /**
  * TODO
+ *
+ * @packageDocumentation
+ */
+
+/**
+ * TODO
  */
 export type EnsureIndexHashOptions = {
   type: "hash";

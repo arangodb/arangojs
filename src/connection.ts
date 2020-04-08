@@ -1,3 +1,8 @@
+/**
+ * TODO
+ *
+ * @packageDocumentation
+ */
 import { stringify as querystringify } from "querystring";
 import { LinkedList } from "x3-linkedlist";
 import { Database } from "./database";

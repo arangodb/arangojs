@@ -1,3 +1,8 @@
+/**
+ * TODO
+ *
+ * @packageDocumentation
+ */
 import { ArangoCollection, isArangoCollection } from "./collection";
 import { Dict } from "./util/types";
 

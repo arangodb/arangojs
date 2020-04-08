@@ -1,3 +1,11 @@
+/**
+ * TODO
+ *
+ * @packageDocumentation
+ * @internal
+ * @hidden
+ */
+
 import { Errback } from "../util/types";
 import { Fields, MultipartRequest } from "./multipart";
 

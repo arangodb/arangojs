@@ -1,3 +1,9 @@
+/**
+ * TODO
+ *
+ * @packageDocumentation
+ */
+
 export const TRANSACTION_NOT_FOUND = 10;
 export const ANALYZER_NOT_FOUND = 1202;
 export const DOCUMENT_NOT_FOUND = 1202;

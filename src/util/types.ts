@@ -1,4 +1,10 @@
 /**
+ * TODO
+ *
+ * @packageDocumentation
+ */
+
+/**
  * Type representing a Node.js error-first callback.
  *
  * @param T - Type of the optional result value.

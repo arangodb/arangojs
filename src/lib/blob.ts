@@ -1,3 +1,11 @@
+/**
+ * TODO
+ *
+ * @packageDocumentation
+ * @internal
+ * @hidden
+ */
+
 export interface Blob {
   readonly size: number;
   readonly type: string;

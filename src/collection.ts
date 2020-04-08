@@ -1,3 +1,8 @@
+/**
+ * TODO
+ *
+ * @packageDocumentation
+ */
 import { ArangoResponseMetadata, Params } from "./connection";
 import { ArrayCursor } from "./cursor";
 import { Database } from "./database";

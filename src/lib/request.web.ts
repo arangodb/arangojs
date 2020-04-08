@@ -1,3 +1,11 @@
+/**
+ * TODO
+ *
+ * @packageDocumentation
+ * @internal
+ * @hidden
+ */
+
 import { format as formatUrl, parse as parseUrl } from "url";
 import { Errback } from "../util/types";
 import { btoa } from "./btoa";

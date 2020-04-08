@@ -1,3 +1,11 @@
+/**
+ * TODO
+ *
+ * @packageDocumentation
+ * @internal
+ * @hidden
+ */
+
 import { Readable } from "stream";
 import { Headers } from "../connection";
 

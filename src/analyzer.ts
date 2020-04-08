@@ -1,3 +1,8 @@
+/**
+ * TODO
+ *
+ * @packageDocumentation
+ */
 import { Database } from "./database";
 import { isArangoError } from "./error";
 import { ANALYZER_NOT_FOUND } from "./util/codes";
