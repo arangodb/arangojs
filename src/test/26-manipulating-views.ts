@@ -46,15 +46,15 @@ describe34("Manipulating views", function() {
       expect(info).to.have.property("type", "arangosearch");
     });
   });
-  describe("view.setProperties", () => {
+  describe("view.updateProperties", () => {
     it("should change properties", async () => {
-      const oldProps = await view.setProperties({
+      const oldProps = await view.updateProperties({
         consolidationIntervalMsec: 45000,
         consolidationPolicy: { type: "tier" },
       });
       expect(oldProps.consolidationIntervalMsec).to.equal(45000);
       expect(oldProps.consolidationPolicy).to.have.property("type", "tier");
-      const properties = await view.setProperties({
+      const properties = await view.updateProperties({
         consolidationPolicy: { type: "bytes_accum" },
       });
       expect(properties.consolidationIntervalMsec).to.equal(45000);

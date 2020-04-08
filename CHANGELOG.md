@@ -123,6 +123,8 @@ This is a major release and breaks backwards compatibility.
 
 - Renamed `db.arangoSearchView` to `db.view`
 
+- Renamed `view.setProperties` to `view.updateProperties`
+
 - Renamed types `ArangoAnalyzer`, `ArangoView` and `ArangoTransaction` to
   `Analyzer`, `View` and `Transaction`
 

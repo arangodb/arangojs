@@ -346,7 +346,9 @@ export class View<
   /**
    * TODO
    */
-  setProperties(properties?: PropertiesOptions): Promise<PropertiesResponse> {
+  updateProperties(
+    properties?: PropertiesOptions
+  ): Promise<PropertiesResponse> {
     return this._db.request(
       {
         method: "PATCH",
