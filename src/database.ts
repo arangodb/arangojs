@@ -898,6 +898,8 @@ export class Database {
    */
   constructor(url: string | string[]);
   /**
+   * @internal
+   *
    * Creates a new `Database` instance, reusing the connection pool of an
    * existing `Database` instance.
    *
