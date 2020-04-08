@@ -164,8 +164,8 @@ export type IndexSelector = string | Index;
 /**
  * TODO
  *
- * @hidden
  * @internal
+ * @hidden
  */
 export function _indexHandle(
   selector: IndexSelector,

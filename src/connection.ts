@@ -247,8 +247,8 @@ export type Config = {
 /**
  * TODO
  *
- * @hidden
  * @internal
+ * @hidden
  */
 export function isArangoConnection(connection: any): connection is Connection {
   return Boolean(connection && connection.isArangoConnection);
@@ -257,8 +257,8 @@ export function isArangoConnection(connection: any): connection is Connection {
 /**
  * Represents a connection pool shared by one or more databases.
  *
- * @hidden
  * @internal
+ * @hidden
  */
 export class Connection {
   protected _activeTasks: number = 0;
@@ -284,8 +284,8 @@ export class Connection {
    *
    * @param config - An object with configuration options.
    *
-   * @internal
    * @hidden
+   * @internal
    */
   constructor(config: Omit<Config, "databaseName"> = {}) {
     if (config.arangoVersion !== undefined) {
@@ -413,32 +413,32 @@ export class Connection {
   }
 
   /**
+   * @internal
+   *
    * Fetches a {@link Database} instance for the given database name from the
    * internal cache, if available.
    *
    * @param databaseName - Name of the database.
-   *
-   * @internal
    */
   database(databaseName: string): Database | undefined;
   /**
+   * @internal
+   *
    * Adds a {@link Database} instance for the given database name to the
    * internal cache.
    *
    * @param databaseName - Name of the database.
    * @param database - Database instance to add to the cache.
-   *
-   * @internal
    */
   database(databaseName: string, database: Database): Database;
   /**
+   * @internal
+   *
    * Clears any {@link Database} instance stored for the given database name
    * from the internal cache, if present.
    *
    * @param databaseName - Name of the database.
    * @param database - Must be `null`.
-   *
-   * @internal
    */
   database(databaseName: string, database: null): undefined;
   database(
@@ -457,13 +457,13 @@ export class Connection {
   }
 
   /**
+   * @internal
+   *
    * Adds the given URL or URLs to the host list.
    *
    * See {@link Connection.acquireHostList}.
    *
    * @param urls - URL or URLs to add.
-   *
-   * @internal
    */
   addToHostList(urls: string | string[]): number[] {
     const cleanUrls = (Array.isArray(urls) ? urls : [urls]).map((url) =>
@@ -480,6 +480,8 @@ export class Connection {
   }
 
   /**
+   * @internal
+   *
    * Sets the connection's active `transactionId`.
    *
    * While set, all requests will use this ID, ensuring the requests are executed
@@ -489,30 +491,28 @@ export class Connection {
    * See {@link Connection.clearTransactionId}.
    *
    * @param transactionId - ID of the active transaction.
-   *
-   * @internal
    */
   setTransactionId(transactionId: string) {
     this._transactionId = transactionId;
   }
 
   /**
-   * Clears the connection's active `transactionId`.
-   *
    * @internal
+   *
+   * Clears the connection's active `transactionId`.
    */
   clearTransactionId() {
     this._transactionId = null;
   }
 
   /**
+   * @internal
+   *
    * Sets the header `headerName` with the given `value` or clears the header if
    * `value` is `null`.
    *
    * @param headerName - Name of the header to set.
    * @param value - Value of the header.
-   *
-   * @internal
    */
   setHeader(headerName: string, value: string | null) {
     if (value === null) {
@@ -523,11 +523,11 @@ export class Connection {
   }
 
   /**
+   * @internal
+   *
    * Closes all open connections.
    *
    * See {@link Database.close}.
-   *
-   * @internal
    */
   close() {
     for (const host of this._hosts) {
