@@ -1,3 +1,8 @@
+/**
+ * TODO
+ *
+ * @packageDocumentation
+ */
 import { ExtendableError } from "./lib/error";
 
 const messages: { [key: number]: string } = {

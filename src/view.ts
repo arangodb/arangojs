@@ -1,3 +1,8 @@
+/**
+ * TODO
+ *
+ * @packageDocumentation
+ */
 import { ArangoResponseMetadata } from "./connection";
 import { Database } from "./database";
 import { isArangoError } from "./error";

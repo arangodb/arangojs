@@ -1,3 +1,8 @@
+/**
+ * TODO
+ *
+ * @packageDocumentation
+ */
 import { Headers, Params } from "./connection";
 import { Database } from "./database";
 import { ArangojsResponse } from "./lib/request";

@@ -1,3 +1,8 @@
+/**
+ * TODO
+ *
+ * @packageDocumentation
+ */
 import { LinkedList } from "x3-linkedlist";
 import { Database } from "./database";
 import { Dict } from "./util/types";

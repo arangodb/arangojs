@@ -1,3 +1,11 @@
+/**
+ * TODO
+ *
+ * @packageDocumentation
+ * @internal
+ * @hidden
+ */
+
 import { ClientRequest } from "http";
 import { Errback } from "../util/types";
 

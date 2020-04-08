@@ -1,3 +1,8 @@
+/**
+ * TODO
+ *
+ * @packageDocumentation
+ */
 import {
   ArangoCollection,
   CollectionInsertResult,
