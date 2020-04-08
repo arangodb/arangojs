@@ -61,10 +61,12 @@ const nativeErrorKeys = [
 ] as (keyof Error)[];
 
 /**
- * TODO
+ * Indicates whether the given value represents an {@link ArangoError}.
+ *
+ * @param error - A value that might be an `ArangoError`.
  */
-export function isArangoError(err: any): err is ArangoError {
-  return Boolean(err && err.isArangoError);
+export function isArangoError(error: any): error is ArangoError {
+  return Boolean(error && error.isArangoError);
 }
 
 /**

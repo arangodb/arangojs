@@ -1366,7 +1366,9 @@ export class Collection<T extends object = any>
 
   //#region metadata
   /**
-   * TODO
+   * @internal
+   *
+   * Indicates that this object represents an ArangoDB collection.
    */
   get isArangoCollection(): true {
     return true;

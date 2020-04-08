@@ -94,7 +94,9 @@ export class GraphVertexCollection<T extends object = any>
   }
 
   /**
-   * TODO
+   * @internal
+   *
+   * Indicates that this object represents an ArangoDB collection.
    */
   get isArangoCollection(): true {
     return true;
@@ -336,7 +338,9 @@ export class GraphEdgeCollection<T extends object = any>
   }
 
   /**
-   * TODO
+   * @internal
+   *
+   * Indicates that this object represents an ArangoDB collection.
    */
   get isArangoCollection(): true {
     return true;

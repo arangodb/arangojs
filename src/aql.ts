@@ -47,7 +47,12 @@ export interface GeneratedAqlQuery extends AqlQuery {
  * to the {@link aql.literal} helper function.
  */
 export interface AqlLiteral {
-  /** @hidden @internal */
+  /**
+   * Returns a string representation of this AQL literal that can be inlined
+   * in an AQL template.
+   *
+   * @internal
+   */
   toAQL: () => string;
 }
 
@@ -68,19 +73,30 @@ export type AqlValue =
   | any[];
 
 /**
- * TODO
+ * Indicates whether the given value is an {@link AqlQuery}.
+ *
+ * @param query - A value that might be an `AqlQuery`.
  */
 export function isAqlQuery(query: any): query is AqlQuery {
   return Boolean(query && typeof query.query === "string" && query.bindVars);
 }
 
-/** @hidden @internal */
+/**
+ * Indicates whether the given value is a {@link GeneratedAqlQuery}.
+ *
+ * @param query - A value that might be a `GeneratedAqlQuery`.
+ *
+ * @internal
+ * @hidden
+ */
 export function isGeneratedAqlQuery(query: any): query is GeneratedAqlQuery {
   return isAqlQuery(query) && typeof (query as any)._source === "function";
 }
 
 /**
- * TODO
+ * Indicates whether the given value is an {@link AqlLiteral}.
+ *
+ * @param literal - A value that might be an `AqlLiteral`.
  */
 export function isAqlLiteral(literal: any): literal is AqlLiteral {
   return Boolean(literal && typeof literal.toAQL === "function");
