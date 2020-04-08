@@ -134,6 +134,9 @@ This is a major release and breaks backwards compatibility.
   In TypeScript the generic collection object can still be explicitly cast to
   `DocumentCollection` or `EdgeCollection` for stricter type safety.
 
+- Replaced `db.enableServiceDevelopmentMode` and
+  `db.disableServiceDevelopmentMode` with `db.setServiceDevelopmentMode`
+
 - Transactions no longer take a positional `params` argument
 
   The argument can still be specified using the `opts.params` argument.
@@ -316,6 +319,11 @@ This is a major release and breaks backwards compatibility.
 
 - Added `uuid` and `padded` to legal `KeyGeneratorType` values in TypeScript ([#656](https://github.com/arangodb/arangojs/issues/656))
 - Added `overwrite` to `InsertOptions` type in TypeScript ([#657](https://github.com/arangodb/arangojs/issues/657))
+
+- Fixed documentation of `db.runServiceTests`
+
+  Previously the documentation incorrectly indicated that the default value
+  of the `idiomatic` option is `true`. The correct default value is `false`.
 
 - Removed TypeScript dependency on `dom` library
 
