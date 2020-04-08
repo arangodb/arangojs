@@ -883,11 +883,15 @@ export class Database {
   /**
    * Creates a new `Database` instance with its own connection pool.
    *
+   * See also {@link Database.database}.
+   *
    * @param config - An object with configuration options.
    */
   constructor(config?: Config);
   /**
    * Creates a new `Database` instance with its own connection pool.
+   *
+   * See also {@link Database.database}.
    *
    * @param url - Base URL of the ArangoDB server or list of server URLs.
    * Equivalent to the `url` option in {@link Config}.
@@ -896,6 +900,8 @@ export class Database {
   /**
    * Creates a new `Database` instance, reusing the connection pool of an
    * existing `Database` instance.
+   *
+   * See also {@link Database.database}.
    *
    * @param database - Existing `Database` instance to reuse the connection of.
    * @param name - Database name to use. Defaults to the given database's name.
@@ -1161,7 +1167,12 @@ export class Database {
 
   //#region databases
   /**
-   * TODO
+   * Creates a new `Database` instance for the given `databaseName` that
+   * shares this database's connection pool.
+   *
+   * See also {@link Database.constructor}.
+   *
+   * @param databaseName - Name of the database.
    */
   database(databaseName: string) {
     const db = new Database(this, databaseName);
@@ -1527,7 +1538,13 @@ export class Database {
   }
 
   /**
-   * TODO
+   * Renames the collection `collectionName` to `newName`.
+   *
+   * Additionally removes any stored {@link Collection} instance for
+   * `collectionName` from the `Database` instance's internal cache.
+   *
+   * **Note**: Renaming collections may not be supported when ArangoDB is
+   * running in a cluster configuration.
    *
    * @param collectionName - The current name of the collection.
    * @param newName - The new name of the collection.
@@ -1729,7 +1746,13 @@ export class Database {
   }
 
   /**
-   * TODO
+   * Renames the view `viewName` to `newName`.
+   *
+   * Additionally removes any stored {@link View} instance for `viewName` from
+   * the `Database` instance's internal cache.
+   *
+   * **Note**: Renaming views may not be supported when ArangoDB is running in
+   * a cluster configuration.
    *
    * @param viewName - The current name of the view.
    * @param newName - The new name of the view.
