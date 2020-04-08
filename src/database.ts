@@ -140,14 +140,6 @@ export type TransactionOptions = {
   intermediateCommitSize?: number;
 };
 
-export type InstallServiceOptions = {
-  configuration?: Dict<any>;
-  dependencies?: Dict<string>;
-  development?: boolean;
-  setup?: boolean;
-  legacy?: boolean;
-};
-
 /**
  * Options for executing a query. See {@link Database.query}.
  */
@@ -556,17 +548,111 @@ export type AqlUserFunction = {
   isDeterministic: boolean;
 };
 
-export type ReplaceServiceOptions = {
+/**
+ * Options for installing the service.
+ *
+ * See {@link Database.installService}.
+ */
+export type InstallServiceOptions = {
+  /**
+   * An object mapping configuration option names to values.
+   *
+   * See also {@link Database.getServiceConfiguration}.
+   */
   configuration?: Dict<any>;
+  /**
+   * An object mapping dependency aliases to mount points.
+   *
+   * See also {@link Database.getServiceDependencies}.
+   */
   dependencies?: Dict<string>;
-  teardown?: boolean;
-  setup?: boolean;
+  /**
+   * Whether the service should be installed in development mode.
+   *
+   * See also {@link Database.setServiceDevelopmentMode}.
+   *
+   * Default: `false`
+   */
+  development?: boolean;
+  /**
+   * Whether the service should be installed in legacy compatibility mode
+   *
+   * This overrides the `engines` option in the service manifest (if any).
+   *
+   * Default: `false`
+   */
   legacy?: boolean;
+  /**
+   * Whether the "setup" script should be executed.
+   *
+   * Default: `true`
+   */
+  setup?: boolean;
+};
+
+/**
+ * Options for replacing a service.
+ *
+ * See {@link Database.replaceService}.
+ */
+export type ReplaceServiceOptions = InstallServiceOptions & {
+  /**
+   * Whether the existing service's "teardown" script should be executed
+   * prior to removing that service.
+   *
+   * Default: `true`
+   */
+  teardown?: boolean;
+  /**
+   * If set to `true`, replacing a service that does not already exist will
+   * fall back to installing the new service.
+   *
+   * Default: `false`
+   */
   force?: boolean;
 };
 
-export type UninstallServiceOptions = {
+/**
+ * Options for upgrading a service.
+ *
+ * See {@link Database.upgradeService}.
+ */
+export type UpgradeServiceOptions = InstallServiceOptions & {
+  /**
+   * Whether the existing service's "teardown" script should be executed
+   * prior to upgrading that service.
+   *
+   * Default: `false`
+   */
   teardown?: boolean;
+  /**
+   * Unless set to `true`, upgrading a service that does not already exist will
+   * fall back to installing the new service.
+   *
+   * Default: `false`
+   */
+  force?: boolean;
+};
+
+/**
+ * Options for uninstalling a service.
+ *
+ * See {@link Database.uninstallService}.
+ */
+export type UninstallServiceOptions = {
+  /**
+   * Whether the service's "teardown" script should be executed
+   * prior to removing that service.
+   *
+   * Default: `true`
+   */
+  teardown?: boolean;
+  /**
+   * If set to `true`, uninstalling a service that does not already exist
+   * will be considered successful.
+   *
+   * Default: `false`
+   */
   force?: boolean;
 };
 
@@ -2569,6 +2655,21 @@ export class Database {
   //#endregion
 
   //#region services
+  /**
+   * Fetches a list of all installed service.
+   *
+   * @param excludeSystem - Whether system services should be excluded.
+   *
+   * @example
+   * ```js
+   * const services = await db.listServices();
+   * ```
+   *
+   * @example
+   * ```js
+   * const services = await db.listServices(false); // all services
+   * ```
+   */
   listServices(excludeSystem: boolean = true): Promise<ServiceSummary[]> {
     return this.request(
       {
@@ -2579,6 +2680,35 @@ export class Database {
     );
   }
 
+  /**
+   * Installs a new service.
+   *
+   * @param mount - The service's mount point, relative to the database.
+   * @param source - The service bundle to install.
+   * @param options - Options for installing the service.
+   *
+   * @example
+   * ```js
+   * // Using a node.js file stream as source
+   * const source = fs.createReadStream("./my-foxx-service.zip");
+   * const info = await db.installService("/hello", source);
+   * ```
+   *
+   * @example
+   * ```js
+   * // Using a node.js Buffer as source
+   * const source = fs.readFileSync("./my-foxx-service.zip");
+   * const info = await db.installService("/hello", source);
+   * ```
+   *
+   * @example
+   * ```js
+   * // Using a File (Blob) from a browser file input
+   * const element = document.getElementById("my-file-input");
+   * const source = element.files[0];
+   * const info = await db.installService("/hello", source);
+   * ```
+   */
   async installService(
     mount: string,
     source: Readable | Buffer | Blob | string,
@@ -2602,29 +2732,36 @@ export class Database {
     );
   }
 
-  async upgradeService(
-    mount: string,
-    source: Readable | Buffer | Blob | string,
-    options: ReplaceServiceOptions = {}
-  ): Promise<ServiceInfo> {
-    const { configuration, dependencies, ...qs } = options;
-    const req = await toForm({
-      configuration,
-      dependencies,
-      source,
-    });
-    return await this.request(
-      {
-        ...req,
-        method: "PATCH",
-        path: "/_api/foxx/service",
-        isBinary: true,
-        qs: { ...qs, mount },
-      },
-      (res) => res.body
-    );
-  }
-
+  /**
+   * Replaces an existing service with a new service by completely removing the
+   * old service and installing a new service at the same mount point.
+   *
+   * @param mount - The service's mount point, relative to the database.
+   * @param source - The service bundle to install.
+   * @param options - Options for replacing the service.
+   *
+   * @example
+   * ```js
+   * // Using a node.js file stream as source
+   * const source = fs.createReadStream("./my-foxx-service.zip");
+   * const info = await db.replaceService("/hello", source);
+   * ```
+   *
+   * @example
+   * ```js
+   * // Using a node.js Buffer as source
+   * const source = fs.readFileSync("./my-foxx-service.zip");
+   * const info = await db.replaceService("/hello", source);
+   * ```
+   *
+   * @example
+   * ```js
+   * // Using a File (Blob) from a browser file input
+   * const element = document.getElementById("my-file-input");
+   * const source = element.files[0];
+   * const info = await db.replaceService("/hello", source);
+   * ```
+   */
   async replaceService(
     mount: string,
     source: Readable | Buffer | Blob | string,
@@ -2648,6 +2785,65 @@ export class Database {
     );
   }
 
+  /**
+   * Replaces an existing service with a new service while retaining the old
+   * service's configuration and dependencies.
+   *
+   * @param mount - The service's mount point, relative to the database.
+   * @param source - The service bundle to install.
+   * @param options - Options for upgrading the service.
+   *
+   * @example
+   * ```js
+   * // Using a node.js file stream as source
+   * const source = fs.createReadStream("./my-foxx-service.zip");
+   * const info = await db.upgradeService("/hello", source);
+   * ```
+   *
+   * @example
+   * ```js
+   * // Using a node.js Buffer as source
+   * const source = fs.readFileSync("./my-foxx-service.zip");
+   * const info = await db.upgradeService("/hello", source);
+   * ```
+   *
+   * @example
+   * ```js
+   * // Using a File (Blob) from a browser file input
+   * const element = document.getElementById("my-file-input");
+   * const source = element.files[0];
+   * const info = await db.upgradeService("/hello", source);
+   * ```
+   */
+  async upgradeService(
+    mount: string,
+    source: Readable | Buffer | Blob | string,
+    options: UpgradeServiceOptions = {}
+  ): Promise<ServiceInfo> {
+    const { configuration, dependencies, ...qs } = options;
+    const req = await toForm({
+      configuration,
+      dependencies,
+      source,
+    });
+    return await this.request(
+      {
+        ...req,
+        method: "PATCH",
+        path: "/_api/foxx/service",
+        isBinary: true,
+        qs: { ...qs, mount },
+      },
+      (res) => res.body
+    );
+  }
+
+  /**
+   * Completely removes a service from the database.
+   *
+   * @param mount - The service's mount point, relative to the database.
+   * @param options - Options for uninstalling the service.
+   */
   uninstallService(
     mount: string,
     options?: UninstallServiceOptions
@@ -2662,6 +2858,17 @@ export class Database {
     );
   }
 
+  /**
+   * Retrieves information about a mounted service.
+   *
+   * @param mount - The service's mount point, relative to the database.
+   *
+   * @example
+   * ```js
+   * const info = await db.getService("/my-service");
+   * // info contains detailed information about the service
+   * ```
+   */
   getService(mount: string): Promise<ServiceInfo> {
     return this.request(
       {
@@ -2672,10 +2879,50 @@ export class Database {
     );
   }
 
+  /**
+   * Retrieves information about the service's configuration options and their
+   * current values.
+   *
+   * See also {@link Database.replaceServiceConfiguration} and
+   * {@link Database.updateServiceConfiguration}.
+   *
+   * @param mount - The service's mount point, relative to the database.
+   * @param minimal - If set to `true`, the result will only include each
+   * configuration option's current value. Otherwise it will include the full
+   * definition for each option.
+   *
+   * @example
+   * ```js
+   * const config = await db.getServiceConfiguration("/my-service");
+   * for (const [key, option] of Object.entries(config)) {
+   *   console.log(`${option.title} (${key}): ${option.current}`);
+   * }
+   * ```
+   */
   async getServiceConfiguration(
     mount: string,
     minimal?: false
   ): Promise<Dict<ServiceConfiguration>>;
+  /**
+   * Retrieves information about the service's configuration options and their
+   * current values.
+   *
+   * See also {@link Database.replaceServiceConfiguration} and
+   * {@link Database.updateServiceConfiguration}.
+   *
+   * @param mount - The service's mount point, relative to the database.
+   * @param minimal - If set to `true`, the result will only include each
+   * configuration option's current value. Otherwise it will include the full
+   * definition for each option.
+   *
+   * @example
+   * ```js
+   * const config = await db.getServiceConfiguration("/my-service", true);
+   * for (const [key, value] of Object.entries(config)) {
+   *   console.log(`${key}: ${value}`);
+   * }
+   * ```
+   */
   async getServiceConfiguration(
     mount: string,
     minimal: true
@@ -2691,8 +2938,9 @@ export class Database {
     if (
       !minimal ||
       !Object.keys(result).every((key: string) => result[key].title)
-    )
+    ) {
       return result;
+    }
     const values: any = {};
     for (const key of Object.keys(result)) {
       values[key] = result[key].current;
@@ -2700,65 +2948,70 @@ export class Database {
     return values;
   }
 
-  async updateServiceConfiguration(
-    mount: string,
-    cfg: Dict<any>,
-    minimal?: false
-  ): Promise<Dict<ServiceConfiguration & { warning?: string }>>;
-  async updateServiceConfiguration(
-    mount: string,
-    cfg: Dict<any>,
-    minimal: true
-  ): Promise<{
-    values: Dict<any>;
-    warnings: Dict<string>;
-  }>;
-  async updateServiceConfiguration(
-    mount: string,
-    cfg: Dict<any>,
-    minimal: boolean = false
-  ) {
-    const result = await this.request(
-      {
-        method: "PATCH",
-        path: "/_api/foxx/configuration",
-        body: cfg,
-        qs: { mount, minimal },
-      },
-      (res) => res.body
-    );
-    if (
-      minimal ||
-      !result.values ||
-      !Object.keys(result.values).every(
-        (key: string) => result.values[key].title
-      )
-    ) {
-      return result;
-    }
-    const result2 = (await this.getServiceConfiguration(mount, false)) as Dict<
-      ServiceConfiguration & { warning?: string }
-    >;
-    if (result.warnings) {
-      for (const key of Object.keys(result2)) {
-        result2[key].warning = result.warnings[key];
-      }
-    }
-    return result2;
-  }
-
+  /**
+   * Replaces the configuration of the given service, discarding any existing
+   * values for options not specified.
+   *
+   * See also {@link Database.updateServiceConfiguration} and
+   * {@link Database.getServiceConfiguration}.
+   *
+   * @param mount - The service's mount point, relative to the database.
+   * @param cfg - An object mapping configuration option names to values.
+   * @param minimal - If set to `true`, the result will only include each
+   * configuration option's current value and warning (if any).
+   * Otherwise it will include the full definition for each option.
+   *
+   * **Note**: When using ArangoDB 3.2.8 or older, setting the `minimal` option
+   * to `true` avoids triggering a second request to fetch the full
+   * configuration definitions.
+   *
+   * @example
+   * ```js
+   * const config = { currency: "USD", locale: "en-US" };
+   * const info = await db.replaceServiceConfiguration("/my-service", config);
+   * for (const [key, option] of Object.entries(info)) {
+   *   console.log(`${option.title} (${key}): ${option.value}`);
+   *   if (option.warning) console.warn(`Warning: ${option.warning}`);
+   * }
+   */
   async replaceServiceConfiguration(
     mount: string,
     cfg: Dict<any>,
     minimal?: false
   ): Promise<Dict<ServiceConfiguration & { warning?: string }>>;
+  /**
+   * Replaces the configuration of the given service, discarding any existing
+   * values for options not specified.
+   *
+   * See also {@link Database.updateServiceConfiguration} and
+   * {@link Database.getServiceConfiguration}.
+   *
+   * @param mount - The service's mount point, relative to the database.
+   * @param cfg - An object mapping configuration option names to values.
+   * @param minimal - If set to `true`, the result will only include each
+   * configuration option's current value and warning (if any).
+   * Otherwise it will include the full definition for each option.
+   *
+   * **Note**: When using ArangoDB 3.2.8 or older, setting the `minimal` option
+   * to `true` avoids triggering a second request to fetch the full
+   * configuration definitions.
+   *
+   * @example
+   * ```js
+   * const config = { currency: "USD", locale: "en-US" };
+   * const info = await db.replaceServiceConfiguration("/my-service", config);
+   * for (const [key, value] of Object.entries(info.values)) {
+   *   console.log(`${key}: ${value}`);
+   *   if (info.warnings[key]) console.warn(`Warning: ${info.warnings[key]}`);
+   * }
+   */
   async replaceServiceConfiguration(
     mount: string,
     cfg: Dict<any>,
     minimal: true
   ): Promise<{
     values: Dict<any>;
-    warnings: Dict<string>;
+    warnings: Dict<string | undefined>;
   }>;
   async replaceServiceConfiguration(
     mount: string,
@@ -2794,14 +3047,153 @@ export class Database {
     return result2;
   }
 
+  /**
+   * Updates the configuration of the given service while maintaining any
+   * existing values for options not specified.
+   *
+   * See also {@link Database.replaceServiceConfiguration} and
+   * {@link Database.getServiceConfiguration}.
+   *
+   * @param mount - The service's mount point, relative to the database.
+   * @param cfg - An object mapping configuration option names to values.
+   * @param minimal - If set to `true`, the result will only include each
+   * configuration option's current value and warning (if any).
+   * Otherwise it will include the full definition for each option.
+   *
+   * **Note**: When using ArangoDB 3.2.8 or older, setting the `minimal` option
+   * to `true` avoids triggering a second request to fetch the full
+   * configuration definitions.
+   *
+   * @example
+   * ```js
+   * const config = { currency: "USD", locale: "en-US" };
+   * const info = await db.updateServiceConfiguration("/my-service", config);
+   * for (const [key, option] of Object.entries(info)) {
+   *   console.log(`${option.title} (${key}): ${option.value}`);
+   *   if (option.warning) console.warn(`Warning: ${option.warning}`);
+   * }
+   */
+  async updateServiceConfiguration(
+    mount: string,
+    cfg: Dict<any>,
+    minimal?: false
+  ): Promise<Dict<ServiceConfiguration & { warning?: string }>>;
+  /**
+   * Updates the configuration of the given service while maintaining any
+   * existing values for options not specified.
+   *
+   * See also {@link Database.replaceServiceConfiguration} and
+   * {@link Database.getServiceConfiguration}.
+   *
+   * @param mount - The service's mount point, relative to the database.
+   * @param cfg - An object mapping configuration option names to values.
+   * @param minimal - If set to `true`, the result will only include each
+   * configuration option's current value and warning (if any).
+   * Otherwise it will include the full definition for each option.
+   *
+   * **Note**: When using ArangoDB 3.2.8 or older, setting the `minimal` option
+   * to `true` avoids triggering a second request to fetch the full
+   * configuration definitions.
+   *
+   * @example
+   * ```js
+   * const config = { currency: "USD", locale: "en-US" };
+   * const info = await db.updateServiceConfiguration("/my-service", config);
+   * for (const [key, value] of Object.entries(info.values)) {
+   *   console.log(`${key}: ${value}`);
+   *   if (info.warnings[key]) console.warn(`Warning: ${info.warnings[key]}`);
+   * }
+   */
+  async updateServiceConfiguration(
+    mount: string,
+    cfg: Dict<any>,
+    minimal: true
+  ): Promise<{
+    values: Dict<any>;
+    warnings: Dict<string | undefined>;
+  }>;
+  async updateServiceConfiguration(
+    mount: string,
+    cfg: Dict<any>,
+    minimal: boolean = false
+  ) {
+    const result = await this.request(
+      {
+        method: "PATCH",
+        path: "/_api/foxx/configuration",
+        body: cfg,
+        qs: { mount, minimal },
+      },
+      (res) => res.body
+    );
+    if (
+      minimal ||
+      !result.values ||
+      !Object.keys(result.values).every(
+        (key: string) => result.values[key].title
+      )
+    ) {
+      return result;
+    }
+    const result2 = (await this.getServiceConfiguration(mount, false)) as Dict<
+      ServiceConfiguration & { warning?: string }
+    >;
+    if (result.warnings) {
+      for (const key of Object.keys(result2)) {
+        result2[key].warning = result.warnings[key];
+      }
+    }
+    return result2;
+  }
+
+  /**
+   * Retrieves information about the service's dependencies and their current
+   * mount points.
+   *
+   * See also {@link Database.replaceServiceDependencies} and
+   * {@link Database.updateServiceDependencies}.
+   *
+   * @param mount - The service's mount point, relative to the database.
+   * @param minimal - If set to `true`, the result will only include each
+   * dependency's current mount point. Otherwise it will include the full
+   * definition for each dependency.
+   *
+   * @example
+   * ```js
+   * const deps = await db.getServiceDependencies("/my-service");
+   * for (const [key, dep] of Object.entries(deps)) {
+   *   console.log(`${dep.title} (${key}): ${dep.current}`);
+   * }
+   * ```
+   */
   async getServiceDependencies(
     mount: string,
     minimal?: false
   ): Promise<Dict<ServiceDependency>>;
+  /**
+   * Retrieves information about the service's dependencies and their current
+   * mount points.
+   *
+   * See also {@link Database.replaceServiceDependencies} and
+   * {@link Database.updateServiceDependencies}.
+   *
+   * @param mount - The service's mount point, relative to the database.
+   * @param minimal - If set to `true`, the result will only include each
+   * dependency's current mount point. Otherwise it will include the full
+   * definition for each dependency.
+   *
+   * @example
+   * ```js
+   * const deps = await db.getServiceDependencies("/my-service", true);
+   * for (const [key, value] of Object.entries(deps)) {
+   *   console.log(`${key}: ${value}`);
+   * }
+   * ```
+   */
   async getServiceDependencies(
     mount: string,
     minimal: true
-  ): Promise<Dict<string>>;
+  ): Promise<Dict<string | string[] | undefined>>;
   async getServiceDependencies(mount: string, minimal: boolean = false) {
     const result = await this.request(
       {
@@ -2822,66 +3214,74 @@ export class Database {
     return values;
   }
 
-  async updateServiceDependencies(
-    mount: string,
-    deps: Dict<string>,
-    minimal?: false
-  ): Promise<Dict<ServiceDependency & { warning?: string }>>;
-  async updateServiceDependencies(
-    mount: string,
-    deps: Dict<string>,
-    minimal: true
-  ): Promise<{
-    values: Dict<string>;
-    warnings: Dict<string>;
-  }>;
-  async updateServiceDependencies(
-    mount: string,
-    deps: Dict<string>,
-    minimal: boolean = false
-  ) {
-    const result = await this.request(
-      {
-        method: "PATCH",
-        path: "/_api/foxx/dependencies",
-        body: deps,
-        qs: { mount, minimal },
-      },
-      (res) => res.body
-    );
-    if (
-      minimal ||
-      !result.values ||
-      !Object.keys(result.values).every(
-        (key: string) => result.values[key].title
-      )
-    ) {
-      return result;
-    }
-    // Work around "minimal" flag not existing in 3.3
-    const result2 = (await this.getServiceDependencies(mount, false)) as Dict<
-      ServiceDependency & { warning?: string }
-    >;
-    if (result.warnings) {
-      for (const key of Object.keys(result2)) {
-        result2[key].warning = result.warnings[key];
-      }
-    }
-    return result2;
-  }
-
+  /**
+   * Replaces the dependencies of the given service, discarding any existing
+   * mount points for dependencies not specified.
+   *
+   * See also {@link Database.updateServiceDependencies} and
+   * {@link Database.getServiceDependencies}.
+   *
+   * @param mount - The service's mount point, relative to the database.
+   * @param cfg - An object mapping dependency aliases to mount points.
+   * @param minimal - If set to `true`, the result will only include each
+   * dependency's current mount point. Otherwise it will include the full
+   * definition for each dependency.
+   *
+   * **Note**: When using ArangoDB 3.2.8 or older, setting the `minimal` option
+   * to `true` avoids triggering a second request to fetch the full
+   * dependency definitions.
+   *
+   * @example
+   * ```js
+   * const deps = { mailer: "/mailer-api", auth: "/remote-auth" };
+   * const info = await db.replaceServiceDependencies("/my-service", deps);
+   * for (const [key, dep] of Object.entries(info)) {
+   *   console.log(`${dep.title} (${key}): ${dep.current}`);
+   *   if (dep.warning) console.warn(`Warning: ${dep.warning}`);
+   * }
+   */
   async replaceServiceDependencies(
     mount: string,
     deps: Dict<string>,
     minimal?: false
   ): Promise<Dict<ServiceDependency & { warning?: string }>>;
+  /**
+   * Replaces the dependencies of the given service, discarding any existing
+   * mount points for dependencies not specified.
+   *
+   * See also {@link Database.updateServiceDependencies} and
+   * {@link Database.getServiceDependencies}.
+   *
+   * @param mount - The service's mount point, relative to the database.
+   * @param cfg - An object mapping dependency aliases to mount points.
+   * @param minimal - If set to `true`, the result will only include each
+   * dependency's current mount point. Otherwise it will include the full
+   * definition for each dependency.
+   *
+   * **Note**: When using ArangoDB 3.2.8 or older, setting the `minimal` option
+   * to `true` avoids triggering a second request to fetch the full
+   * dependency definitions.
+   *
+   * @example
+   * ```js
+   * const deps = { mailer: "/mailer-api", auth: "/remote-auth" };
+   * const info = await db.replaceServiceDependencies(
+   *   "/my-service",
+   *   deps,
+   *   true
+   * );
+   * for (const [key, value] of Object.entries(info)) {
+   *   console.log(`${key}: ${value}`);
+   *   if (info.warnings[key]) console.warn(`Warning: ${info.warnings[key]}`);
+   * }
+   */
   async replaceServiceDependencies(
     mount: string,
     deps: Dict<string>,
     minimal: true
   ): Promise<{
     values: Dict<string>;
-    warnings: Dict<string>;
+    warnings: Dict<string | undefined>;
   }>;
   async replaceServiceDependencies(
     mount: string,
@@ -2918,10 +3318,131 @@ export class Database {
     return result2;
   }
 
-  enableServiceDevelopmentMode(mount: string): Promise<ServiceInfo> {
+  /**
+   * Updates the dependencies of the given service while maintaining any
+   * existing mount points for dependencies not specified.
+   *
+   * See also {@link Database.replaceServiceDependencies} and
+   * {@link Database.getServiceDependencies}.
+   *
+   * @param mount - The service's mount point, relative to the database.
+   * @param cfg - An object mapping dependency aliases to mount points.
+   * @param minimal - If set to `true`, the result will only include each
+   * dependency's current mount point. Otherwise it will include the full
+   * definition for each dependency.
+   *
+   * **Note**: When using ArangoDB 3.2.8 or older, setting the `minimal` option
+   * to `true` avoids triggering a second request to fetch the full
+   * dependency definitions.
+   *
+   * @example
+   * ```js
+   * const deps = { mailer: "/mailer-api", auth: "/remote-auth" };
+   * const info = await db.updateServiceDependencies("/my-service", deps);
+   * for (const [key, dep] of Object.entries(info)) {
+   *   console.log(`${dep.title} (${key}): ${dep.current}`);
+   *   if (dep.warning) console.warn(`Warning: ${dep.warning}`);
+   * }
+   */
+  async updateServiceDependencies(
+    mount: string,
+    deps: Dict<string>,
+    minimal?: false
+  ): Promise<Dict<ServiceDependency & { warning?: string }>>;
+  /**
+   * Updates the dependencies of the given service while maintaining any
+   * existing mount points for dependencies not specified.
+   *
+   * See also {@link Database.replaceServiceDependencies} and
+   * {@link Database.getServiceDependencies}.
+   *
+   * @param mount - The service's mount point, relative to the database.
+   * @param cfg - An object mapping dependency aliases to mount points.
+   * @param minimal - If set to `true`, the result will only include each
+   * dependency's current mount point. Otherwise it will include the full
+   * definition for each dependency.
+   *
+   * **Note**: When using ArangoDB 3.2.8 or older, setting the `minimal` option
+   * to `true` avoids triggering a second request to fetch the full
+   * dependency definitions.
+   *
+   * @example
+   * ```js
+   * const deps = { mailer: "/mailer-api", auth: "/remote-auth" };
+   * const info = await db.updateServiceDependencies(
+   *   "/my-service",
+   *   deps,
+   *   true
+   * );
+   * for (const [key, value] of Object.entries(info)) {
+   *   console.log(`${key}: ${value}`);
+   *   if (info.warnings[key]) console.warn(`Warning: ${info.warnings[key]}`);
+   * }
+   */
+  async updateServiceDependencies(
+    mount: string,
+    deps: Dict<string>,
+    minimal: true
+  ): Promise<{
+    values: Dict<string>;
+    warnings: Dict<string | undefined>;
+  }>;
+  async updateServiceDependencies(
+    mount: string,
+    deps: Dict<string>,
+    minimal: boolean = false
+  ) {
+    const result = await this.request(
+      {
+        method: "PATCH",
+        path: "/_api/foxx/dependencies",
+        body: deps,
+        qs: { mount, minimal },
+      },
+      (res) => res.body
+    );
+    if (
+      minimal ||
+      !result.values ||
+      !Object.keys(result.values).every(
+        (key: string) => result.values[key].title
+      )
+    ) {
+      return result;
+    }
+    // Work around "minimal" flag not existing in 3.3
+    const result2 = (await this.getServiceDependencies(mount, false)) as Dict<
+      ServiceDependency & { warning?: string }
+    >;
+    if (result.warnings) {
+      for (const key of Object.keys(result2)) {
+        result2[key].warning = result.warnings[key];
+      }
+    }
+    return result2;
+  }
+
+  /**
+   * Enables or disables development mode for the given service.
+   *
+   * @param mount - The service's mount point, relative to the database.
+   * @param enabled - Whether development mode should be enabled or disabled.
+   *
+   * @example
+   * ```js
+   * await db.setServiceDevelopmentMode("/my-service", true);
+   * // the service is now in development mode
+   * await db.setServiceDevelopmentMode("/my-service", false);
+   * // the service is now in production mode
+   * ```
+   */
+  setServiceDevelopmentMode(
+    mount: string,
+    enabled: boolean = true
+  ): Promise<ServiceInfo> {
     return this.request(
       {
-        method: "POST",
+        method: enabled ? "POST" : "DELETE",
         path: "/_api/foxx/development",
         qs: { mount },
       },
@@ -2929,17 +3450,20 @@ export class Database {
     );
   }
 
-  disableServiceDevelopmentMode(mount: string): Promise<ServiceInfo> {
-    return this.request(
-      {
-        method: "DELETE",
-        path: "/_api/foxx/development",
-        qs: { mount },
-      },
-      (res) => res.body
-    );
-  }
-
+  /**
+   * Retrieves a list of scripts defined in the service manifest's "scripts"
+   * section mapped to their human readable representations.
+   *
+   * @param mount - The service's mount point, relative to the database.
+   *
+   * @example
+   * ```js
+   * const scripts = await db.listServiceScripts("/my-service");
+   * for (const [name, title] of Object.entries(scripts)) {
+   *   console.log(`${name}: ${title}`);
+   * }
+   * ```
+   */
   listServiceScripts(mount: string): Promise<Dict<string>> {
     return this.request(
       {
@@ -2950,6 +3474,29 @@ export class Database {
     );
   }
 
+  /**
+   * Executes a service script and retrieves its result exposed as
+   * `module.exports` (if any).
+   *
+   * @param mount - The service's mount point, relative to the database.
+   * @param name - Name of the service script to execute as defined in the
+   * service manifest.
+   * @param params - Arbitrary value that will be exposed to the script as
+   * `argv[0]` in the service context (e.g. `module.context.argv[0]`).
+   * Must be serializable to JSON.
+   *
+   * @example
+   * ```js
+   * const result = await db.runServiceScript(
+   *   "/my-service",
+   *   "create-user",
+   *   {
+   *     username: "service_admin",
+   *     password: "hunter2"
+   *   }
+   * );
+   * ```
+   */
   runServiceScript(mount: string, name: string, params?: any): Promise<any> {
     return this.request(
       {
@@ -2962,65 +3509,196 @@ export class Database {
     );
   }
 
+  /**
+   * Runs the tests of a given service and returns the results using the
+   * "default" reporter.
+   *
+   * @param mount - The service's mount point, relative to the database.
+   * @param options - Options for running the tests.
+   */
   runServiceTests(
     mount: string,
     options?: {
       reporter?: "default";
+      /**
+       * Whether the reporter should use "idiomatic" mode. Has no effect when
+       * using the "default" or "suite" reporters.
+       */
+      idiomatic?: false;
+      /**
+       * If set, only tests with full names including this exact string will be
+       * executed.
+       */
       filter?: string;
     }
   ): Promise<ServiceTestDefaultReport>;
+  /**
+   * Runs the tests of a given service and returns the results using the
+   * "suite" reporter, which groups the test result by test suite.
+   *
+   * @param mount - The service's mount point, relative to the database.
+   * @param options - Options for running the tests.
+   */
   runServiceTests(
     mount: string,
     options: {
       reporter: "suite";
+      /**
+       * Whether the reporter should use "idiomatic" mode. Has no effect when
+       * using the "default" or "suite" reporters.
+       */
+      idiomatic?: false;
+      /**
+       * If set, only tests with full names including this exact string will be
+       * executed.
+       */
       filter?: string;
     }
   ): Promise<ServiceTestSuiteReport>;
+  /**
+   * Runs the tests of a given service and returns the results using the
+   * "stream" reporter, which represents the results as a sequence of tuples
+   * representing events.
+   *
+   * @param mount - The service's mount point, relative to the database.
+   * @param options - Options for running the tests.
+   */
   runServiceTests(
     mount: string,
     options: {
       reporter: "stream";
-      idiomatic: false;
+      /**
+       * Whether the reporter should use "idiomatic" mode. If set to `true`,
+       * the results will be returned as a formatted string.
+       */
+      idiomatic?: false;
+      /**
+       * If set, only tests with full names including this exact string will be
+       * executed.
+       */
       filter?: string;
     }
   ): Promise<ServiceTestStreamReport>;
+  /**
+   * Runs the tests of a given service and returns the results using the
+   * "tap" reporter, which represents the results as an array of strings using
+   * the "tap" format.
+   *
+   * @param mount - The service's mount point, relative to the database.
+   * @param options - Options for running the tests.
+   */
   runServiceTests(
     mount: string,
     options: {
       reporter: "tap";
-      idiomatic: false;
+      /**
+       * Whether the reporter should use "idiomatic" mode. If set to `true`,
+       * the results will be returned as a formatted string.
+       */
+      idiomatic?: false;
+      /**
+       * If set, only tests with full names including this exact string will be
+       * executed.
+       */
       filter?: string;
     }
   ): Promise<ServiceTestTapReport>;
+  /**
+   * Runs the tests of a given service and returns the results using the
+   * "xunit" reporter, which represents the results as an XML document using
+   * the JSONML exchange format.
+   *
+   * @param mount - The service's mount point, relative to the database.
+   * @param options - Options for running the tests.
+   */
   runServiceTests(
     mount: string,
     options: {
       reporter: "xunit";
-      idiomatic: false;
+      /**
+       * Whether the reporter should use "idiomatic" mode. If set to `true`,
+       * the results will be returned as a formatted string.
+       */
+      idiomatic?: false;
+      /**
+       * If set, only tests with full names including this exact string will be
+       * executed.
+       */
       filter?: string;
     }
   ): Promise<ServiceTestXunitReport>;
+  /**
+   * Runs the tests of a given service and returns the results as a string
+   * using the "stream" reporter in "idiomatic" mode, which represents the
+   * results as a line-delimited JSON stream of tuples representing events.
+   *
+   * @param mount - The service's mount point, relative to the database.
+   * @param options - Options for running the tests.
+   */
   runServiceTests(
     mount: string,
     options: {
       reporter: "stream";
-      idiomatic?: true;
+      /**
+       * Whether the reporter should use "idiomatic" mode. If set to `false`,
+       * the results will be returned as an array of tuples instead of a
+       * string.
+       */
+      idiomatic: true;
+      /**
+       * If set, only tests with full names including this exact string will be
+       * executed.
+       */
       filter?: string;
     }
-  ): Promise<string[]>;
+  ): Promise<string>;
+  /**
+   * Runs the tests of a given service and returns the results as a string
+   * using the "tap" reporter in "idiomatic" mode, which represents the
+   * results using the "tap" format.
+   *
+   * @param mount - The service's mount point, relative to the database.
+   * @param options - Options for running the tests.
+   */
   runServiceTests(
     mount: string,
     options: {
       reporter: "tap";
-      idiomatic?: true;
+      /**
+       * Whether the reporter should use "idiomatic" mode. If set to `false`,
+       * the results will be returned as an array of strings instead of a
+       * single string.
+       */
+      idiomatic: true;
+      /**
+       * If set, only tests with full names including this exact string will be
+       * executed.
+       */
       filter?: string;
     }
   ): Promise<string>;
+  /**
+   * Runs the tests of a given service and returns the results as a string
+   * using the "xunit" reporter in "idiomatic" mode, which represents the
+   * results as an XML document.
+   *
+   * @param mount - The service's mount point, relative to the database.
+   * @param options - Options for running the tests.
+   */
   runServiceTests(
     mount: string,
     options: {
       reporter: "xunit";
-      idiomatic?: true;
+      /**
+       * Whether the reporter should use "idiomatic" mode. If set to `false`,
+       * the results will be returned using the JSONML exchange format
+       * instead of a string.
+       */
+      idiomatic: true;
+      /**
+       * If set, only tests with full names including this exact string will be
+       * executed.
+       */
       filter?: string;
     }
   ): Promise<string>;
@@ -3045,6 +3723,20 @@ export class Database {
     );
   }
 
+  /**
+   * Retrieves the text content of the service's `README` or `README.md` file.
+   *
+   * Returns `undefined` if no such file could be found.
+   *
+   * @param mount - The service's mount point, relative to the database.
+   *
+   * @example
+   * ```js
+   * const readme = await db.getServiceReadme("/my-service");
+   * if (readme !== undefined) console.log(readme);
+   * else console.warn(`No README found.`)
+   * ```
+   */
   getServiceReadme(mount: string): Promise<string | undefined> {
     return this.request(
       {
@@ -3055,6 +3747,18 @@ export class Database {
     );
   }
 
+  /**
+   * Retrieves an Open API compatible Swagger API description object for the
+   * service installed at the given mount point.
+   *
+   * @param mount - The service's mount point, relative to the database.
+   *
+   * @example
+   * ```js
+   * const spec = await db.getServiceDocumentation("/my-service");
+   * // spec is a Swagger API description of the service
+   * ```
+   */
   getServiceDocumentation(mount: string): Promise<SwaggerJson> {
     return this.request(
       {
@@ -3065,6 +3769,13 @@ export class Database {
     );
   }
 
+  /**
+   * Retrieves a zip bundle containing the service files.
+   *
+   * Returns a `Buffer` in node.js or `Blob` in the browser.
+   *
+   * @param mount - The service's mount point, relative to the database.
+   */
   downloadService(mount: string): Promise<Buffer | Blob> {
     return this.request(
       {
@@ -3077,7 +3788,27 @@ export class Database {
     );
   }
 
-  commitLocalServiceState(replace?: boolean): Promise<void> {
+  /**
+   * Writes all locally available services to the database and updates any
+   * service bundles missing in the database.
+   *
+   * @param replace - If set to `true`, outdated services will also be
+   * committed. This can be used to solve some consistency problems when
+   * service bundles are missing in the database or were deleted manually.
+   *
+   * @example
+   * ```js
+   * await db.commitLocalServiceState();
+   * // all services available on the coordinator have been written to the db
+   * ```
+   *
+   * @example
+   * ```js
+   * await db.commitLocalServiceState(true);
+   * // all service conflicts have been resolved in favor of this coordinator
+   * ```
+   */
+  commitLocalServiceState(replace: boolean = false): Promise<void> {
     return this.request(
       {
         method: "POST",

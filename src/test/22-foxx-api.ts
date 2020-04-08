@@ -694,7 +694,7 @@ describe("Foxx service", () => {
     );
     const resp = await db.getService(mount);
     expect(resp.development).to.equal(false);
-    const devResp = await db.enableServiceDevelopmentMode(mount);
+    const devResp = await db.setServiceDevelopmentMode(mount, true);
     expect(devResp.development).to.equal(true);
     const respAfter = await db.getService(mount);
     expect(respAfter.development).to.equal(true);
@@ -710,7 +710,7 @@ describe("Foxx service", () => {
     );
     const resp = await db.getService(mount);
     expect(resp.development).to.equal(true);
-    const devResp = await db.disableServiceDevelopmentMode(mount);
+    const devResp = await db.setServiceDevelopmentMode(mount, false);
     expect(devResp.development).to.equal(false);
     const respAfter = await db.getService(mount);
     expect(respAfter.development).to.equal(false);
@@ -807,11 +807,11 @@ describe("Foxx service", () => {
     ["downloadService", (mount: string) => db.downloadService(mount)],
     [
       "enableServiceDevelopmentMode",
-      (mount: string) => db.enableServiceDevelopmentMode(mount),
+      (mount: string) => db.setServiceDevelopmentMode(mount, true),
     ],
     [
       "disableServiceDevelopmentMode",
-      (mount: string) => db.disableServiceDevelopmentMode(mount),
+      (mount: string) => db.setServiceDevelopmentMode(mount, false),
     ],
     [
       "getServiceDocumentation",
