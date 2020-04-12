@@ -60,7 +60,7 @@ export interface ArangoCollection {
 }
 
 /**
- * TODO
+ * Integer values indicating the collection type.
  */
 export enum CollectionType {
   DOCUMENT_COLLECTION = 2,
@@ -68,7 +68,7 @@ export enum CollectionType {
 }
 
 /**
- * TODO
+ * Integer values indicating the collection loading status.
  */
 export enum CollectionStatus {
   NEWBORN = 1,
