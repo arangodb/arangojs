@@ -55,8 +55,16 @@ export function isArangoCollection(
  * See {@link aql}.
  */
 export interface ArangoCollection {
-  isArangoCollection: true;
-  name: string;
+  /**
+   * @internal
+   *
+   * Indicates that this object represents an ArangoDB collection.
+   */
+  readonly isArangoCollection: true;
+  /**
+   * Name of the collection.
+   */
+  readonly name: string;
 }
 
 /**
@@ -1365,18 +1373,10 @@ export class Collection<T extends object = any>
   //#endregion
 
   //#region metadata
-  /**
-   * @internal
-   *
-   * Indicates that this object represents an ArangoDB collection.
-   */
   get isArangoCollection(): true {
     return true;
   }
 
-  /**
-   * TODO
-   */
   get name() {
     return this._name;
   }
