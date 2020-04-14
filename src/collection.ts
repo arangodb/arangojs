@@ -88,7 +88,7 @@ export enum CollectionStatus {
 }
 
 /**
- * TODO
+ * The type of key generator.
  */
 export type KeyGenerator = "traditional" | "autoincrement" | "uuid" | "padded";
 
@@ -116,59 +116,152 @@ export type SimpleQueryAllKeys = "id" | "key" | "path";
 export type ValidationLevel = "none" | "new" | "moderate" | "strict";
 
 /**
- * TODO
+ * General information about a collection.
  */
 export type CollectionMetadata = {
+  /**
+   * The collection name.
+   */
   name: string;
+  /**
+   * A globally unique identifier for this collection.
+   */
   globallyUniqueId: string;
+  /**
+   * An integer indicating the collection loading status.
+   */
   status: CollectionStatus;
+  /**
+   * An integer indicating the collection type.
+   */
   type: CollectionType;
+  /**
+   * @internal
+   *
+   * Whether the collection is a system collection.
+   */
   isSystem: boolean;
+};
+
+/**
+ * An object defining the collection's key generation.
+ */
+export type CollectionKeyProperties = {
+  /**
+   * Type of key generator to use.
+   */
+  type: KeyGenerator;
+  /**
+   * Whether documents can be created with a user-specified `_key` attribute.
+   */
+  allowUserKeys: boolean;
+  /**
+   * (Autoincrement only.) How many steps to increment the key each time.
+   */
+  increment?: number;
+  /**
+   * (Autoincrement only.) The initial offset for the key.
+   */
+  offset?: number;
+  /**
+   * The most recent key that has been generated.
+   */
+  lastValue: number;
 };
 
 /**
  * TODO
  */
-export type CollectionProperties = CollectionMetadata & {
-  statusString: string;
-  waitForSync: boolean;
-  keyOptions: {
-    type: KeyGenerator;
-    allowUserKeys: boolean;
-    increment?: number;
-    offset?: number;
-    lastValue: number;
-  };
-  validation: {
-    rule: any;
-    type: "json";
-    level: ValidationLevel;
-    message: string;
-  } | null;
+export type ValidationProperties = {
+  /**
+   * TODO
+   */
+  rule: any;
+  /**
+   * TODO
+   */
+  type: "json";
+  /**
+   * TODO
+   */
+  level: ValidationLevel;
+  /**
+   * TODO
+   */
+  message: string;
+};
 
-  // Cluster options
+/**
+ * An object defining the properties of a collection.
+ */
+export type CollectionProperties = CollectionMetadata & {
+  /**
+   * A human-readable representation of the collection loading status.
+   */
+  statusString: string;
+  /**
+   * Whether data should be synchronized to disk before returning from
+   * a document create, update, replace or removal operation.
+   */
+  waitForSync: boolean;
+  /**
+   * An object defining the collection's key generation.
+   */
+  keyOptions: CollectionKeyProperties;
+  /**
+   * TODO
+   */
+  validation: ValidationProperties | null;
+  /**
+   * (Cluster only.) TODO
+   */
   writeConcern: number;
   /**
+   * (Cluster only.) TODO
+   *
    * @deprecated Renamed to `writeConcern` in ArangoDB 3.6.
    */
   minReplicationFactor: number;
+  /**
+   * (Cluster only.) The number of shards of this collection.
+   */
   numberOfShards?: number;
+  /**
+   * (Cluster only.) The keys of this collection that will be used for
+   * sharding.
+   */
   shardKeys?: string[];
+  /**
+   * (Cluster only.) The collection's replication factor.
+   */
   replicationFactor?: number;
+  /**
+   * (Cluster only.) The collection's sharding strategy.
+   */
   shardingStrategy?: ShardingStrategy;
-
-  // Extra options
-  /** MMFiles only */
+  /**
+   * (MMFiles only.) TODO
+   */
   doCompact?: boolean;
-  /** MMFiles only */
+  /**
+   * (MMFiles only.) TODO
+   */
   journalSize?: number;
-  /** MMFiles only */
+  /**
+   * (MMFiles only.) TODO
+   */
   indexBuckets?: number;
-  /** MMFiles only */
+  /**
+   * (MMFiles only.) TODO
+   */
   isVolatile?: boolean;
-  /** Enterprise Edition only */
+  /**
+   * (Enterprise Edition cluster only.) TODO
+   */
   distributeShardsLike?: string;
-  /** Enterprise Edition only */
+  /**
+   * (Enterprise Edition cluster only.) TODO
+   */
   smartJoinAttribute?: string;
 };
 
@@ -177,14 +270,41 @@ export type CollectionProperties = CollectionMetadata & {
 /**
  * TODO
  */
+export type ValidationOptions = {
+  /**
+   * TODO
+   */
+  rule: any;
+  /**
+   * TODO
+   */
+  level?: ValidationLevel;
+  /**
+   * TODO
+   */
+  message?: string;
+};
+
+/**
+ * Options for setting a collection's properties.
+ *
+ * See {@link Collection.properties}.
+ */
 export type CollectionPropertiesOptions = {
+  /**
+   * Whether data should be synchronized to disk before returning from
+   * a document create, update, replace or removal operation.
+   */
   waitForSync?: boolean;
-  validation?: {
-    rule: any;
-    level?: ValidationLevel;
-    message?: string;
-  };
-  /** MMFiles only */
+  /**
+   * TODO
+   */
+  validation?: ValidationOptions;
+  /**
+   * (MMFiles only.) The maximum size for each journal or datafile in bytes.
+   *
+   * Must be a number greater than or equal to `1048576` (1 MiB).
+   */
   journalSize?: number;
 };
 
@@ -192,7 +312,13 @@ export type CollectionPropertiesOptions = {
  * TODO
  */
 export type CollectionChecksumOptions = {
+  /**
+   * TODO
+   */
   withRevisions?: boolean;
+  /**
+   * TODO
+   */
   withData?: boolean;
 };
 
@@ -200,11 +326,14 @@ export type CollectionChecksumOptions = {
  * TODO
  */
 export type CollectionDropOptions = {
+  /**
+   * TODO
+   */
   isSystem?: boolean;
 };
 
 /**
- * TODO
+ * An object defining the collection's key generation.
  */
 export type CollectionKeyOptions = {
   /**
@@ -226,24 +355,6 @@ export type CollectionKeyOptions = {
    * (Autoincrement only.) The initial offset for the key.
    */
   offset?: number;
-};
-
-/**
- * TODO
- */
-export type ValidationOptions = {
-  /**
-   * TODO
-   */
-  rule: any;
-  /**
-   * TODO
-   */
-  level?: ValidationLevel;
-  /**
-   * TODO
-   */
-  message?: string;
 };
 
 /**
@@ -269,7 +380,7 @@ export type CreateCollectionOptions = {
    */
   isSystem?: boolean;
   /**
-   * TODO
+   * An object defining the collection's key generation.
    */
   keyOptions?: CollectionKeyOptions;
   /**
@@ -369,7 +480,13 @@ export type CreateCollectionOptions = {
  * TODO
  */
 export type CollectionReadOptions = {
+  /**
+   * TODO
+   */
   graceful?: boolean;
+  /**
+   * TODO
+   */
   allowDirtyRead?: boolean;
 };
 
@@ -377,9 +494,21 @@ export type CollectionReadOptions = {
  * TODO
  */
 export type CollectionSaveOptions = {
+  /**
+   * TODO
+   */
   waitForSync?: boolean;
+  /**
+   * TODO
+   */
   silent?: boolean;
+  /**
+   * TODO
+   */
   returnNew?: boolean;
+  /**
+   * TODO
+   */
   returnOld?: boolean;
 };
 
@@ -387,7 +516,13 @@ export type CollectionSaveOptions = {
  * TODO
  */
 export type CollectionInsertOptions = CollectionSaveOptions & {
+  /**
+   * TODO
+   */
   overwrite?: boolean;
+  /**
+   * TODO
+   */
   overwriteMode?: "update" | "replace";
 };
 
@@ -395,6 +530,9 @@ export type CollectionInsertOptions = CollectionSaveOptions & {
  * TODO
  */
 export type CollectionReplaceOptions = CollectionSaveOptions & {
+  /**
+   * TODO
+   */
   ignoreRevs?: boolean;
 };
 
@@ -402,7 +540,13 @@ export type CollectionReplaceOptions = CollectionSaveOptions & {
  * TODO
  */
 export type CollectionUpdateOptions = CollectionReplaceOptions & {
+  /**
+   * TODO
+   */
   keepNull?: boolean;
+  /**
+   * TODO
+   */
   mergeObjects?: boolean;
 };
 
@@ -410,8 +554,17 @@ export type CollectionUpdateOptions = CollectionReplaceOptions & {
  * TODO
  */
 export type CollectionRemoveOptions = {
+  /**
+   * TODO
+   */
   rSync?: boolean;
+  /**
+   * TODO
+   */
   returnOld?: boolean;
+  /**
+   * TODO
+   */
   silent?: boolean;
 };
 
@@ -419,13 +572,37 @@ export type CollectionRemoveOptions = {
  * TODO
  */
 export type CollectionImportOptions = {
+  /**
+   * TODO
+   */
   type?: null | "auto" | "documents" | "array";
+  /**
+   * TODO
+   */
   fromPrefix?: string;
+  /**
+   * TODO
+   */
   toPrefix?: string;
+  /**
+   * TODO
+   */
   overwrite?: boolean;
+  /**
+   * TODO
+   */
   waitForSync?: boolean;
+  /**
+   * TODO
+   */
   onDuplicate?: "error" | "update" | "replace" | "ignore";
+  /**
+   * TODO
+   */
   complete?: boolean;
+  /**
+   * TODO
+   */
   details?: boolean;
 };
 
@@ -436,9 +613,21 @@ export type CollectionImportOptions = {
  * replaced with AQL queries.
  */
 export type SimpleQueryByExampleOptions = {
+  /**
+   * TODO
+   */
   skip?: number;
+  /**
+   * TODO
+   */
   limit?: number;
+  /**
+   * TODO
+   */
   batchSize?: number;
+  /**
+   * TODO
+   */
   ttl?: number;
 };
 
@@ -449,6 +638,9 @@ export type SimpleQueryByExampleOptions = {
  * replaced with AQL queries.
  */
 export type SimpleQueryAllOptions = SimpleQueryByExampleOptions & {
+  /**
+   * TODO
+   */
   stream?: boolean;
 };
 
@@ -459,9 +651,21 @@ export type SimpleQueryAllOptions = SimpleQueryByExampleOptions & {
  * replaced with AQL queries.
  */
 export type SimpleQueryUpdateByExampleOptions = {
+  /**
+   * TODO
+   */
   keepNull?: boolean;
+  /**
+   * TODO
+   */
   waitForSync?: boolean;
+  /**
+   * TODO
+   */
   limit?: number;
+  /**
+   * TODO
+   */
   mergeObjects?: boolean;
 };
 
@@ -472,7 +676,13 @@ export type SimpleQueryUpdateByExampleOptions = {
  * replaced with AQL queries.
  */
 export type SimpleQueryRemoveByExampleOptions = {
+  /**
+   * TODO
+   */
   waitForSync?: boolean;
+  /**
+   * TODO
+   */
   limit?: number;
 };
 
@@ -491,8 +701,17 @@ export type SimpleQueryReplaceByExampleOptions = SimpleQueryRemoveByExampleOptio
  * replaced with AQL queries.
  */
 export type SimpleQueryRemoveByKeysOptions = {
+  /**
+   * TODO
+   */
   returnOld?: boolean;
+  /**
+   * TODO
+   */
   silent?: boolean;
+  /**
+   * TODO
+   */
   waitForSync?: boolean;
 };
 
@@ -503,8 +722,17 @@ export type SimpleQueryRemoveByKeysOptions = {
  * replaced with AQL queries.
  */
 export type SimpleQueryFulltextOptions = {
+  /**
+   * TODO
+   */
   index?: string;
+  /**
+   * TODO
+   */
   limit?: number;
+  /**
+   * TODO
+   */
   skip?: number;
 };
 
@@ -515,21 +743,66 @@ export type SimpleQueryFulltextOptions = {
  * replaced with AQL queries.
  */
 export type TraversalOptions = {
+  /**
+   * TODO
+   */
   init?: string;
+  /**
+   * TODO
+   */
   filter?: string;
+  /**
+   * TODO
+   */
   sort?: string;
+  /**
+   * TODO
+   */
   visitor?: string;
+  /**
+   * TODO
+   */
   expander?: string;
+  /**
+   * TODO
+   */
   direction?: "inbound" | "outbound" | "any";
+  /**
+   * TODO
+   */
   itemOrder?: "forward" | "backward";
+  /**
+   * TODO
+   */
   strategy?: "depthfirst" | "breadthfirst";
+  /**
+   * TODO
+   */
   order?: "preorder" | "postorder" | "preorder-expander";
+  /**
+   * TODO
+   */
   uniqueness?: {
+    /**
+     * TODO
+     */
     vertices?: "none" | "global" | "path";
+    /**
+     * TODO
+     */
     edges?: "none" | "global" | "path";
   };
+  /**
+   * TODO
+   */
   minDepth?: number;
+  /**
+   * TODO
+   */
   maxDepth?: number;
+  /**
+   * TODO
+   */
   maxIterations?: number;
 };
 
@@ -538,63 +811,128 @@ export type TraversalOptions = {
 /**
  * TODO
  */
-export type CollectionPropertiesAndCount = CollectionProperties & {
+export type CollectionCount = {
+  /**
+   * The number of documents in this collection.
+   */
   count: number;
 };
 
 /**
  * TODO
  */
-export type CollectionPropertiesAndFigures = CollectionProperties & {
-  count: number;
+export type CollectionFigures = {
+  /**
+   * TODO
+   */
   figures: {
+    /**
+     * TODO
+     */
     alive: {
       count: number;
       size: number;
     };
+    /**
+     * TODO
+     */
     dead: {
       count: number;
       size: number;
       deletion: number;
     };
+    /**
+     * TODO
+     */
     datafiles: {
       count: number;
       fileSize: number;
     };
+    /**
+     * TODO
+     */
     journals: {
       count: number;
       fileSize: number;
     };
+    /**
+     * TODO
+     */
     compactors: {
       count: number;
       fileSize: number;
     };
+    /**
+     * TODO
+     */
     shapefiles: {
       count: number;
       fileSize: number;
     };
+    /**
+     * TODO
+     */
     shapes: {
       count: number;
       size: number;
     };
+    /**
+     * TODO
+     */
     attributes: {
       count: number;
       size: number;
     };
+    /**
+     * TODO
+     */
     indexes: {
       count: number;
       size: number;
     };
+    /**
+     * TODO
+     */
     lastTick: number;
+    /**
+     * TODO
+     */
     uncollectedLogfileEntries: number;
+    /**
+     * TODO
+     */
     documentReferences: number;
+    /**
+     * TODO
+     */
     waitingFor: string;
+    /**
+     * TODO
+     */
     compactionStatus: {
+      /**
+       * TODO
+       */
       time: string;
+      /**
+       * TODO
+       */
       message: string;
+      /**
+       * TODO
+       */
       count: number;
+      /**
+       * TODO
+       */
       filesCombined: number;
+      /**
+       * TODO
+       */
       bytesRead: number;
+      /**
+       * TODO
+       */
       bytesWritten: number;
     };
   };
@@ -603,7 +941,10 @@ export type CollectionPropertiesAndFigures = CollectionProperties & {
 /**
  * TODO
  */
-export type CollectionPropertiesAndRevision = CollectionProperties & {
+export type CollectionRevision = {
+  /**
+   * TODO
+   */
   revision: string;
 };
 
@@ -611,27 +952,43 @@ export type CollectionPropertiesAndRevision = CollectionProperties & {
  * TODO
  */
 export type CollectionChecksum = {
-  revision: string;
+  /**
+   * TODO
+   */
   checksum: string;
 };
 
 /**
  * TODO
  */
-export type CollectionLoadResult = CollectionMetadata & {
-  count?: number;
-};
-
-/**
- * TODO
- */
 export type CollectionImportResult = {
+  /**
+   * TODO
+   */
   error: false;
+  /**
+   * TODO
+   */
   created: number;
+  /**
+   * TODO
+   */
   errors: number;
+  /**
+   * TODO
+   */
   empty: number;
+  /**
+   * TODO
+   */
   updated: number;
+  /**
+   * TODO
+   */
   ignored: number;
+  /**
+   * TODO
+   */
   details?: string[];
 };
 
@@ -639,9 +996,21 @@ export type CollectionImportResult = {
  * TODO
  */
 export type CollectionEdgesResult<T extends object = any> = {
+  /**
+   * TODO
+   */
   edges: Edge<T>[];
+  /**
+   * TODO
+   */
   stats: {
+    /**
+     * TODO
+     */
     scannedIndex: number;
+    /**
+     * TODO
+     */
     filtered: number;
   };
 };
@@ -650,6 +1019,9 @@ export type CollectionEdgesResult<T extends object = any> = {
  * TODO
  */
 export type CollectionInsertResult<T> = DocumentMetadata & {
+  /**
+   * TODO
+   */
   new?: T;
 };
 
@@ -657,6 +1029,9 @@ export type CollectionInsertResult<T> = DocumentMetadata & {
  * TODO
  */
 export type CollectionRemoveResult<T> = DocumentMetadata & {
+  /**
+   * TODO
+   */
   old?: T;
 };
 
@@ -673,6 +1048,9 @@ export type CollectionSaveResult<T> = CollectionInsertResult<T> &
  * replaced with AQL queries.
  */
 export type SimpleQueryRemoveByExampleResult = {
+  /**
+   * TODO
+   */
   deleted: number;
 };
 
@@ -683,6 +1061,9 @@ export type SimpleQueryRemoveByExampleResult = {
  * replaced with AQL queries.
  */
 export type SimpleQueryReplaceByExampleResult = {
+  /**
+   * TODO
+   */
   replaced: number;
 };
 
@@ -693,6 +1074,9 @@ export type SimpleQueryReplaceByExampleResult = {
  * replaced with AQL queries.
  */
 export type SimpleQueryUpdateByExampleResult = {
+  /**
+   * TODO
+   */
   updated: number;
 };
 
@@ -703,8 +1087,17 @@ export type SimpleQueryUpdateByExampleResult = {
  * replaced with AQL queries.
  */
 export type SimpleQueryRemoveByKeysResult<T extends object = any> = {
+  /**
+   * TODO
+   */
   removed: number;
+  /**
+   * TODO
+   */
   ignored: number;
+  /**
+   * TODO
+   */
   old?: DocumentMetadata[] | Document<T>[];
 };
 
@@ -712,6 +1105,9 @@ export type SimpleQueryRemoveByKeysResult<T extends object = any> = {
  * TODO
  */
 export type CollectionIndexResult = {
+  /**
+   * TODO
+   */
   id: string;
 };
 
@@ -726,11 +1122,27 @@ export type CollectionIndexResult = {
 export interface DocumentCollection<T extends object = any>
   extends ArangoCollection {
   /**
-   * TODO
+   * Checks whether the collection exists.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
+   * const result = await collection.exists();
+   * // result indicates whether the collection exists
+   * ```
    */
   exists(): Promise<boolean>;
   /**
-   * TODO
+   * Retrieves general information about the collection.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
+   * const data = await collection.get();
+   * // data contains general information about the collection
+   * ```
    */
   get(): Promise<ArangoResponseMetadata & CollectionMetadata>;
   /**
@@ -742,37 +1154,108 @@ export interface DocumentCollection<T extends object = any>
     }
   ): Promise<ArangoResponseMetadata & CollectionProperties>;
   /**
-   * TODO
+   * Retrieves the collection's properties.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
+   * const data = await collection.properties();
+   * // data contains the collection's properties
+   * ```
    */
   properties(): Promise<ArangoResponseMetadata & CollectionProperties>;
   /**
-   * TODO
+   * Replaces the properties of the collection.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
+   * const result = await collection.setProperties({ waitForSync: true });
+   * // the collection will now wait for data being written to disk
+   * // whenever a document is changed
+   * ```
    */
   properties(
     properties: CollectionPropertiesOptions
   ): Promise<ArangoResponseMetadata & CollectionProperties>;
   /**
-   * TODO
+   * Retrieves information about the number of documents in a collection.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
+   * const data = await collection.count();
+   * // data contains the collection's count
+   * ```
    */
-  count(): Promise<ArangoResponseMetadata & CollectionPropertiesAndCount>;
+  count(): Promise<
+    ArangoResponseMetadata & CollectionProperties & CollectionCount
+  >;
   /**
-   * TODO
+   * Retrieves statistics for a collection.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
+   * const data = await collection.figures();
+   * // data contains the collection's figures
+   * ```
    */
-  figures(): Promise<ArangoResponseMetadata & CollectionPropertiesAndFigures>;
+  figures(): Promise<
+    ArangoResponseMetadata &
+      CollectionProperties &
+      CollectionCount &
+      CollectionFigures
+  >;
   /**
-   * TODO
+   * Retrieves the collection revision ID.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
+   * const data = await collection.revision();
+   * // data contains the collection's revision
+   * ```
    */
-  revision(): Promise<ArangoResponseMetadata & CollectionPropertiesAndRevision>;
+  revision(): Promise<
+    ArangoResponseMetadata & CollectionProperties & CollectionRevision
+  >;
   /**
-   * TODO
+   * Retrieves the collection checksum.
+   *
+   * @param options - TODO
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
+   * const data = await collection.checksum();
+   * // data contains the collection's checksum
+   * ```
    */
   checksum(
     options?: CollectionChecksumOptions
-  ): Promise<ArangoResponseMetadata & CollectionChecksum>;
+  ): Promise<
+    ArangoResponseMetadata &
+      CollectionMetadata &
+      CollectionRevision &
+      CollectionChecksum
+  >;
   /**
    * TODO
    */
-  load(count?: boolean): Promise<ArangoResponseMetadata & CollectionLoadResult>;
+  load(
+    count?: true
+  ): Promise<ArangoResponseMetadata & CollectionMetadata & CollectionCount>;
+  /**
+   * TODO
+   */
+  load(count: false): Promise<ArangoResponseMetadata & CollectionMetadata>;
   /**
    * TODO
    */
