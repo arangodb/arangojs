@@ -52,11 +52,17 @@ export type Params = {
 };
 
 /**
- * TODO
+ * Generic properties shared by all ArangoDB HTTP API responses.
  */
 export type ArangoResponseMetadata = {
   [key: string]: any | undefined;
+  /**
+   * Indicates that the request was successful.
+   */
   error: false;
+  /**
+   * The response status code, typically `200`.
+   */
   code: number;
 };
 

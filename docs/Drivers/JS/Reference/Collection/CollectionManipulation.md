@@ -25,7 +25,7 @@ await collection.create();
 
 const collection = db.collection("friends");
 await collection.create({
-  waitForSync: true // always sync document changes to disk
+  waitForSync: true, // always sync document changes to disk
 });
 // the edge collection "friends" now exists
 ```
@@ -73,30 +73,6 @@ const db = new Database();
 const collection = db.collection("some-collection");
 await collection.unload();
 // the collection has now been unloaded from memory
-```
-
-## collection.properties
-
-`async collection.properties(properties): object`
-
-Replaces the properties of the collection.
-
-**Arguments**
-
-- **properties**: `object`
-
-  TODO
-  [HTTP API for modifying collections](https://www.arangodb.com/docs/stable/http/collection-modifying.html).
-
-**Examples**
-
-```js
-const db = new Database();
-const collection = db.collection("some-collection");
-const result = await collection.setProperties({ waitForSync: true });
-assert.equal(result.waitForSync, true);
-// the collection will now wait for data being written to disk
-// whenever a document is changed
 ```
 
 ## collection.rename
