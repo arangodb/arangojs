@@ -95,7 +95,6 @@ export interface SystemError extends Error {
  */
 export class ArangoError extends ExtendableError {
   name = "ArangoError";
-  isArangoError = true;
   errorNum: number;
   code: number;
   statusCode: number;
@@ -117,6 +116,15 @@ export class ArangoError extends ExtendableError {
     for (const key of nativeErrorKeys) {
       if (err[key]) this[key] = err[key]!;
     }
+  }
+
+  /**
+   * @internal
+   *
+   * Indicates that this object represents an ArangoDB error.
+   */
+  get isArangoError(): true {
+    return true;
   }
 }
 
