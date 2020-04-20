@@ -2,7 +2,7 @@ export type Errback<T> = (err: Error | null, result?: T) => void;
 
 // The following types are based on the official @arangodb types
 
-export type KeyGeneratorType = "traditional" | "autoincrement";
+export type KeyGeneratorType = "traditional" | "autoincrement" | "uuid" | "padded";
 
 export interface CollectionChecksum {
   checksum: string;
