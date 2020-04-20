@@ -528,6 +528,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
   Graph methods now only return the relevant part of the response body.
 
+[unreleased]: https://github.com/arangodb/arangojs/compare/v6.14.0...HEAD
 [6.14.0]: https://github.com/arangodb/arangojs/compare/v6.13.0...v6.14.0
 [6.13.0]: https://github.com/arangodb/arangojs/compare/v6.12.0...v6.13.0
 [6.12.0]: https://github.com/arangodb/arangojs/compare/v6.11.1...v6.12.0
