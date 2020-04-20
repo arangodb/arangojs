@@ -144,11 +144,11 @@ export interface InsertOptions {
   waitForSync?: boolean;
   silent?: boolean;
   returnNew?: boolean;
+  overwrite?: boolean;
 }
 
 export interface ReplaceOptions extends InsertOptions {
   rev?: string;
-  overwrite?: boolean;
   returnOld?: boolean;
 }
 
