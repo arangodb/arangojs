@@ -579,35 +579,42 @@ export type CollectionRemoveOptions = {
  */
 export type CollectionImportOptions = {
   /**
-   * TODO
-   */
-  type?: null | "auto" | "documents" | "array";
-  /**
-   * TODO
+   * (Edge collections only.) Prefix to prepend to `_from` attribute values.
    */
   fromPrefix?: string;
   /**
-   * TODO
+   * (Edge collections only.) Prefix to prepend to `_to` attribute values.
    */
   toPrefix?: string;
   /**
-   * TODO
+   * If set to `true`, the collection is truncated before the data is imported.
+   *
+   * Default: `false`
    */
   overwrite?: boolean;
   /**
-   * TODO
+   * Whether to wait for the documents to have been synced to disk.
    */
   waitForSync?: boolean;
   /**
-   * TODO
+   * Controls behavior when a unique constraint is violated.
+   *
+   * * `"error"`: the document will not be imported.
+   * * `"update`: the document will be merged into the existing document.
+   * * `"replace"`: the document will replace the existing document.
+   * * `"ignore"`: the document will not be imported and the unique constraint
+   *   error will be ignored.
+   *
+   * Default: `"error"`
    */
   onDuplicate?: "error" | "update" | "replace" | "ignore";
   /**
-   * TODO
+   * If set to `true`, the import will abort if any error occurs.
    */
   complete?: boolean;
   /**
-   * TODO
+   * Whether the response should contain additional details about documents
+   * that could not be imported.
    */
   details?: boolean;
 };
@@ -965,35 +972,35 @@ export type CollectionChecksum = {
 };
 
 /**
- * TODO
+ * The result of a collection bulk import.
  */
 export type CollectionImportResult = {
   /**
-   * TODO
+   * Whether the import failed.
    */
   error: false;
   /**
-   * TODO
+   * The number of new documents imported.
    */
   created: number;
   /**
-   * TODO
+   * The number of documents that failed with an error.
    */
   errors: number;
   /**
-   * TODO
+   * The number of empty documents.
    */
   empty: number;
   /**
-   * TODO
+   * The number of documents updated.
    */
   updated: number;
   /**
-   * TODO
+   * The number of documents that failed with an error that is ignored.
    */
   ignored: number;
   /**
-   * TODO
+   * Additional details about any errors encountered during the import.
    */
   details?: string[];
 };
@@ -1528,25 +1535,115 @@ export interface DocumentCollection<T extends object = any>
     options?: CollectionRemoveOptions
   ): Promise<CollectionRemoveResult<Document<T>>[]>;
   /**
-   * TODO
+   * Bulk imports the given `data` into the collection.
+   *
+   * @param data - The data to import, as an array of document data.
+   * @param options - Options for importing the data.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
+   * await collection.import(
+   *   [
+   *     { _key: "jcd", password: "bionicman" },
+   *     { _key: "jreyes", password: "amigo" },
+   *     { _key: "ghermann", password: "zeitgeist" }
+   *   ]
+   * );
+   * ```
+   */
+  import(
+    data: DocumentData<T>[],
+    options?: CollectionImportOptions
+  ): Promise<CollectionImportResult>;
+  /**
+   * Bulk imports the given `data` into the collection.
+   *
+   * @param data - The data to import, as an array containing a single array of
+   * attribute names followed by one or more arrays of attribute values for
+   * each document.
+   * @param options - Options for importing the data.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
+   * await collection.import(
+   *   [
+   *     [ "_key", "password" ],
+   *     [ "jcd", "bionicman" ],
+   *     [ "jreyes", "amigo" ],
+   *     [ "ghermann", "zeitgeist" ]
+   *   ]
+   * );
+   * ```
+   */
+  import(
+    data: any[][],
+    options?: CollectionImportOptions
+  ): Promise<CollectionImportResult>;
+  /**
+   * Bulk imports the given `data` into the collection.
+   *
+   * If `type` is omitted, `data` must contain one JSON array per line with
+   * the first array providing the attribute names and all other arrays
+   * providing attribute values for each document.
+   *
+   * If `type` is set to `"documents"`, `data` must contain one JSON document
+   * per line.
+   *
+   * If `type` is set to `"list"`, `data` must contain a JSON array of
+   * documents.
+   *
+   * If `type` is set to `"auto"`, `data` can be in either of the formats
+   * supported by `"documents"` or `"list"`.
+   *
+   * @param data - The data to import as a Buffer (Node), Blob (browser) or
+   * string.
+   * @param options - Options for importing the data.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
+   * await collection.import(
+   *   '{"_key":"jcd","password":"bionicman"}\r\n' +
+   *   '{"_key":"jreyes","password":"amigo"}\r\n' +
+   *   '{"_key":"ghermann","password":"zeitgeist"}\r\n',
+   *   { type: "documents" } // or "auto"
+   * );
+   * ```
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
+   * await collection.import(
+   *   '[{"_key":"jcd","password":"bionicman"},' +
+   *   '{"_key":"jreyes","password":"amigo"},' +
+   *   '{"_key":"ghermann","password":"zeitgeist"}]',
+   *   { type: "list" } // or "auto"
+   * );
+   * ```
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
+   * await collection.import(
+   *   '["_key","password"]\r\n' +
+   *   '["jcd","bionicman"]\r\n' +
+   *   '["jreyes","amigo"]\r\n' +
+   *   '["ghermann","zeitgeist"]\r\n'
+   * );
+   * ```
    */
   import(
     data: Buffer | Blob | string,
-    options?: CollectionImportOptions
-  ): Promise<CollectionImportResult>;
-  /**
-   * TODO
-   */
-  import(
-    data: string[][],
-    options?: CollectionImportOptions
-  ): Promise<CollectionImportResult>;
-  /**
-   * TODO
-   */
-  import(
-    data: Array<DocumentData<T>>,
-    options?: CollectionImportOptions
+    options?: CollectionImportOptions & {
+      type?: "documents" | "list" | "auto";
+    }
   ): Promise<CollectionImportResult>;
   //#endregion
 
@@ -1836,25 +1933,110 @@ export interface EdgeCollection<T extends object = any>
     options?: CollectionUpdateOptions
   ): Promise<CollectionSaveResult<Edge<T>>[]>;
   /**
-   * TODO
+   * Bulk imports the given `data` into the collection.
+   *
+   * @param data - The data to import, as an array of edge data.
+   * @param options - Options for importing the data.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
+   * await collection.import(
+   *   [
+   *     { _key: "x", _from: "vertices/a", _to: "vertices/b", weight: 1 },
+   *     { _key: "y", _from: "vertices/a", _to: "vertices/c", weight: 2 }
+   *   ]
+   * );
+   * ```
+   */
+  import(
+    data: EdgeData<T>[],
+    options?: CollectionImportOptions
+  ): Promise<CollectionImportResult>;
+  /**
+   * Bulk imports the given `data` into the collection.
+   *
+   * @param data - The data to import, as an array containing a single array of
+   * attribute names followed by one or more arrays of attribute values for
+   * each edge document.
+   * @param options - Options for importing the data.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
+   * await collection.import(
+   *   [
+   *     [ "_key", "_from", "_to", "weight" ],
+   *     [ "x", "vertices/a", "vertices/b", 1 ],
+   *     [ "y", "vertices/a", "vertices/c", 2 ]
+   *   ]
+   * );
+   * ```
+   */
+  import(
+    data: any[][],
+    options?: CollectionImportOptions
+  ): Promise<CollectionImportResult>;
+  /**
+   * Bulk imports the given `data` into the collection.
+   *
+   * If `type` is omitted, `data` must contain one JSON array per line with
+   * the first array providing the attribute names and all other arrays
+   * providing attribute values for each edge document.
+   *
+   * If `type` is set to `"documents"`, `data` must contain one JSON document
+   * per line.
+   *
+   * If `type` is set to `"list"`, `data` must contain a JSON array of
+   * edge documents.
+   *
+   * If `type` is set to `"auto"`, `data` can be in either of the formats
+   * supported by `"documents"` or `"list"`.
+   *
+   * @param data - The data to import as a Buffer (Node), Blob (browser) or
+   * string.
+   * @param options - Options for importing the data.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
+   * await collection.import(
+   *   '{"_key":"x","_from":"vertices/a","_to":"vertices/b","weight":1}\r\n' +
+   *   '{"_key":"y","_from":"vertices/a","_to":"vertices/c","weight":2}\r\n',
+   *   { type: "documents" } // or "auto"
+   * );
+   * ```
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
+   * await collection.import(
+   *   '[{"_key":"x","_from":"vertices/a","_to":"vertices/b","weight":1},' +
+   *   '{"_key":"y","_from":"vertices/a","_to":"vertices/c","weight":2}]',
+   *   { type: "list" } // or "auto"
+   * );
+   * ```
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
+   * await collection.import(
+   *   '["_key","_from","_to","weight"]\r\n' +
+   *   '["x","vertices/a","vertices/b",1]\r\n' +
+   *   '["y","vertices/a","vertices/c",2]\r\n'
+   * );
+   * ```
    */
   import(
     data: Buffer | Blob | string,
-    options?: CollectionImportOptions
-  ): Promise<CollectionImportResult>;
-  /**
-   * TODO
-   */
-  import(
-    data: string[][],
-    options?: CollectionImportOptions
-  ): Promise<CollectionImportResult>;
-  /**
-   * TODO
-   */
-  import(
-    data: Array<EdgeData<T>>,
-    options?: CollectionImportOptions
+    options?: CollectionImportOptions & {
+      type?: "documents" | "list" | "auto";
+    }
   ): Promise<CollectionImportResult>;
   //#endregion
 
@@ -2321,12 +2503,15 @@ export class Collection<T extends object = any>
 
   import(
     data: Buffer | Blob | string | any[],
-    { type = "auto", ...options }: CollectionImportOptions = {}
+    options: CollectionImportOptions & {
+      type?: "documents" | "list" | "auto";
+    } = {}
   ): Promise<CollectionImportResult> {
+    const qs = { ...options, collection: this._name };
     if (Array.isArray(data)) {
-      data =
-        (data as any[]).map((line: any) => JSON.stringify(line)).join("\r\n") +
-        "\r\n";
+      qs.type = Array.isArray(data[0]) ? undefined : "documents";
+      const lines = data as any[];
+      data = lines.map((line) => JSON.stringify(line)).join("\r\n") + "\r\n";
     }
     return this._db.request(
       {
@@ -2334,11 +2519,7 @@ export class Collection<T extends object = any>
         path: "/_api/import",
         body: data,
         isBinary: true,
-        qs: {
-          type: type === null ? undefined : type,
-          ...options,
-          collection: this._name,
-        },
+        qs,
       },
       (res) => res.body
     );
