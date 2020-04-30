@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { CollectionImportOptions, DocumentCollection } from "../collection";
+import { DocumentCollection } from "../collection";
 import { Database } from "../database";
 
 const ARANGO_URL = process.env.TEST_ARANGODB_URL || "http://localhost:8529";
@@ -27,7 +27,7 @@ describe("Bulk imports", function() {
     }
   });
   describe("collection.import", () => {
-    describe("with type null", () => {
+    describe("without type", () => {
       it("should accept tuples array", async () => {
         const data = [
           ["_key", "data"],
@@ -35,7 +35,7 @@ describe("Bulk imports", function() {
           ["ta2", "peach"],
           ["ta3", "apricot"],
         ];
-        const info = await collection.import(data, { type: null });
+        const info = await collection.import(data);
         expect(info).to.eql({
           error: false,
           created: 3,
@@ -45,10 +45,26 @@ describe("Bulk imports", function() {
           ignored: 0,
         });
       });
-      it("should accept tuples string", async () => {
+      it("should accept documents array", async () => {
+        const data = [
+          { _key: "da1", data: "banana" },
+          { _key: "da2", data: "peach" },
+          { _key: "da3", data: "apricot" },
+        ];
+        const info = await collection.import(data);
+        expect(info).to.eql({
+          error: false,
+          created: 3,
+          errors: 0,
+          empty: 0,
+          updated: 0,
+          ignored: 0,
+        });
+      });
+      it("should accept string of LDJSON arrays", async () => {
         const data =
           '["_key", "data"]\r\n["ts1", "banana"]\r\n["ts2", "peach"]\r\n["ts3", "apricot"]\r\n';
-        const info = await collection.import(data, { type: null });
+        const info = await collection.import(data);
         expect(info).to.eql({
           error: false,
           created: 3,
@@ -58,11 +74,11 @@ describe("Bulk imports", function() {
           ignored: 0,
         });
       });
-      it("should accept tuples buffer", async () => {
+      it("should accept buffer of LDJSON arrays", async () => {
         const data = Buffer.from(
           '["_key", "data"]\r\n["tb1", "banana"]\r\n["tb2", "peach"]\r\n["tb3", "apricot"]\r\n'
         );
-        const info = await collection.import(data, { type: null });
+        const info = await collection.import(data);
         expect(info).to.eql({
           error: false,
           created: 3,
@@ -73,29 +89,9 @@ describe("Bulk imports", function() {
         });
       });
     });
-    for (const type of [
-      undefined,
-      "auto",
-      "documents",
-    ] as CollectionImportOptions["type"][]) {
+    for (const type of ["auto", "documents"] as ("auto" | "documents")[]) {
       describe(`with type ${JSON.stringify(type)}`, () => {
-        it("should accept documents array", async () => {
-          const data = [
-            { _key: `da1-${type}`, data: "banana" },
-            { _key: `da2-${type}`, data: "peach" },
-            { _key: `da3-${type}`, data: "apricot" },
-          ];
-          const info = await collection.import(data, { type });
-          expect(info).to.eql({
-            error: false,
-            created: 3,
-            errors: 0,
-            empty: 0,
-            updated: 0,
-            ignored: 0,
-          });
-        });
-        it("should accept documents string", async () => {
+        it("should accept string of LDJSON documents", async () => {
           const data = `{"_key": "ds1-${type}", "data": "banana"}\r\n{"_key": "ds2-${type}", "data": "peach"}\r\n{"_key": "ds3-${type}", "data": "apricot"}\r\n`;
           const info = await collection.import(data, { type });
           expect(info).to.eql({
@@ -107,7 +103,7 @@ describe("Bulk imports", function() {
             ignored: 0,
           });
         });
-        it("should accept documents buffer", async () => {
+        it("should accept buffer of LDJSON documents", async () => {
           const data = Buffer.from(
             `{"_key": "db1-${type}", "data": "banana"}\r\n{"_key": "db2-${type}", "data": "peach"}\r\n{"_key": "db3-${type}", "data": "apricot"}\r\n`
           );
@@ -123,13 +119,9 @@ describe("Bulk imports", function() {
         });
       });
     }
-    for (const type of [
-      undefined,
-      "auto",
-      "array",
-    ] as CollectionImportOptions["type"][]) {
+    for (const type of ["auto", "list"] as ("auto" | "list")[]) {
       describe(`with type ${JSON.stringify(type)}`, () => {
-        it("should accept JSON string", async () => {
+        it("should accept string of JSON documents array", async () => {
           const data = JSON.stringify([
             { _key: `js1-${String(type)}`, data: "banana" },
             { _key: `js2-${String(type)}`, data: "peach" },
@@ -145,7 +137,7 @@ describe("Bulk imports", function() {
             ignored: 0,
           });
         });
-        it("should accept JSON buffer", async () => {
+        it("should accept buffer of JSON documents array", async () => {
           const data = Buffer.from(
             JSON.stringify([
               { _key: `jb1-${String(type)}`, data: "banana" },
