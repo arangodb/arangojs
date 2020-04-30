@@ -323,11 +323,15 @@ export type CollectionChecksumOptions = {
 };
 
 /**
- * TODO
+ * Options for dropping collections.
  */
 export type CollectionDropOptions = {
   /**
-   * TODO
+   * Whether the collection is a system collection. If the collection is a
+   * system collection, this option must be set to `true` or ArangoDB will
+   * refuse to drop the collection.
+   *
+   * Default: `false`
    */
   isSystem?: boolean;
 };
@@ -518,6 +522,8 @@ export type CollectionSaveOptions = {
 export type CollectionInsertOptions = CollectionSaveOptions & {
   /**
    * TODO
+   *
+   * @deprecated ArangoDB 3.7
    */
   overwrite?: boolean;
   /**
@@ -1146,7 +1152,47 @@ export interface DocumentCollection<T extends object = any>
    */
   get(): Promise<ArangoResponseMetadata & CollectionMetadata>;
   /**
-   * TODO
+   * Creates a collection with the given `options` and the instance's name.
+   *
+   * See also {@link Database.createCollection} and
+   * {@link Database.createEdgeCollection}.
+   *
+   * **Note**: When called on an {@link EdgeCollection} instance in TypeScript,
+   * the `type` option must still be set to the correct {@link CollectionType}.
+   * Otherwise this will result in the collection being created with the
+   * default type (i.e. as a document collection).
+   *
+   * @param options - Options for creating the collection.s
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collection = db.collection("potatoes");
+   * await collection.create();
+   * // the document collection "potatoes" now exists
+   * ```
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collection = db.collection("friends");
+   * await collection.create({ type: CollectionType.EDGE_COLLECTION });
+   * // the edge collection "friends" now exists
+   * ```
+   *
+   * @example
+   * ```ts
+   * interface Friend {
+   *   startDate: number;
+   *   endDate?: number;
+   * }
+   * const db = new Database();
+   * const collection = db.collection("friends") as EdgeCollection<Friend>;
+   * // even in TypeScript you still need to indicate the collection type
+   * // if you want to create an edge collection
+   * await collection.create({ type: CollectionType.EDGE_COLLECTION });
+   * // the edge collection "friends" now exists
+   * ```
    */
   create(
     options?: CreateCollectionOptions & {
@@ -1194,6 +1240,22 @@ export interface DocumentCollection<T extends object = any>
   count(): Promise<
     ArangoResponseMetadata & CollectionProperties & CollectionCount
   >;
+  /**
+   * (RocksDB only.) Instructs ArangoDB to recalculate the collection's
+   * document count to fix any inconsistencies.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collection = db.collection("inconsistent-collection");
+   * const badData = await collection.count();
+   * // oh no, the collection count looks wrong -- fix it!
+   * await collection.recalculateCount();
+   * const goodData = await collection.count();
+   * // goodData contains the collection's improved count
+   * ```
+   */
+  recalculateCount(): Promise<boolean>;
   /**
    * Retrieves statistics for a collection.
    *
@@ -1247,33 +1309,123 @@ export interface DocumentCollection<T extends object = any>
       CollectionChecksum
   >;
   /**
-   * TODO
+   * Instructs ArangoDB to load the collection into memory.
+   *
+   * @param count - Whether the number of documents in the collection should
+   * be included in the server response. Disabling this may speed up this
+   * process in future versions of ArangoDB.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
+   * await collection.load();
+   * // the collection has now been loaded into memory
+   * ```
    */
   load(
     count?: true
   ): Promise<ArangoResponseMetadata & CollectionMetadata & CollectionCount>;
   /**
-   * TODO
+   * Instructs ArangoDB to load the collection into memory.
+   *
+   * @param count - Whether the number of documents in the collection should
+   * be included in the server response. Disabling this may speed up this
+   * process in future versions of ArangoDB.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
+   * await collection.load(false);
+   * // the collection has now been loaded into memory
+   * ```
    */
   load(count: false): Promise<ArangoResponseMetadata & CollectionMetadata>;
   /**
-   * TODO
+   * (RocksDB only.) Instructs ArangoDB to load as many indexes of the
+   * collection into memory as permitted by the memory limit.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collection = db.collection("indexed-collection");
+   * await collection.loadIndexes();
+   * // the indexes are now loaded into memory
+   * ```
+   */
+  loadIndexes(): Promise<boolean>;
+  /**
+   * Instructs ArangoDB to remove the collection from memory.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
+   * await collection.unload();
+   * // the collection has now been unloaded from memory
+   * ```
    */
   unload(): Promise<ArangoResponseMetadata & CollectionMetadata>;
   /**
-   * TODO
+   * Renames the collection and updates the instance's `name` to `newName`.
+   *
+   * Additionally removes the instance from the {@link Database}'s internal
+   * cache.
+   *
+   * **Note**: Renaming collections may not be supported when ArangoDB is
+   * running in a cluster configuration.
+   *
+   * @param newName - The new name of the collection.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collection1 = db.collection("some-collection");
+   * await collection1.rename("other-collection");
+   * const collection2 = db.collection("some-collection");
+   * const collection3 = db.collection("other-collection");
+   * // Note all three collection instances are different objects but
+   * // collection1 and collection3 represent the same ArangoDB collection!
+   * ```
    */
   rename(newName: string): Promise<ArangoResponseMetadata & CollectionMetadata>;
   /**
-   * TODO
+   * (MMFiles single-server only.) Rotates the journal of the collection.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
+   * const rotated = await collection.rotate();
+   * ```
    */
   rotate(): Promise<boolean>;
   /**
-   * TODO
+   * Deletes all documents in the collection.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
+   * await collection.truncate();
+   * // millions of documents cry out in terror and are suddenly silenced,
+   * // the collection "some-collection" is now empty
+   * ```
    */
   truncate(): Promise<ArangoResponseMetadata & CollectionMetadata>;
   /**
-   * TODO
+   * Deletes the collection from the database.
+   *
+   * @param options - Options for dropping the collection.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
+   * await collection.drop();
+   * // The collection "some-collection" is now an ex-collection
+   * ```
    */
   drop(options?: CollectionDropOptions): Promise<ArangoResponseMetadata>;
 
@@ -1836,21 +1988,21 @@ export class Collection<T extends object = any>
   }
 
   //#region internals
-  protected _get(path: string, qs?: any) {
+  protected _get<T extends {}>(path: string, qs?: any) {
     return this._db.request(
       { path: `/_api/collection/${this._name}/${path}`, qs },
-      (res) => res.body
+      (res) => res.body as ArangoResponseMetadata & T
     );
   }
 
-  protected _put(path: string, body?: any) {
+  protected _put<T extends {}>(path: string, body?: any) {
     return this._db.request(
       {
         method: "PUT",
         path: `/_api/collection/${this._name}/${path}`,
         body,
       },
-      (res) => res.body
+      (res) => res.body as ArangoResponseMetadata & T
     );
   }
   //#endregion
@@ -1915,35 +2067,49 @@ export class Collection<T extends object = any>
   }
 
   properties(properties?: CollectionPropertiesOptions) {
-    if (!properties) return this._get("properties");
-    return this._put("properties", properties);
+    if (!properties) return this._get<CollectionProperties>("properties");
+    return this._put<CollectionProperties>("properties", properties);
   }
 
   count() {
-    return this._get("count");
+    return this._get<CollectionProperties & CollectionCount>("count");
+  }
+
+  async recalculateCount() {
+    const body = await this._put<{ result: boolean }>("recalculateCount");
+    return body.result;
   }
 
   figures() {
-    return this._get("figures");
+    return this._get<
+      CollectionProperties & CollectionCount & CollectionFigures
+    >("figures");
   }
 
   revision() {
-    return this._get("revision");
+    return this._get<CollectionProperties & CollectionRevision>("revision");
   }
 
   checksum(options?: CollectionChecksumOptions) {
-    return this._get("checksum", options);
+    return this._get<
+      CollectionMetadata & CollectionRevision & CollectionChecksum
+    >("checksum", options);
   }
 
   load(count?: boolean) {
-    return this._put(
+    return this._put<CollectionMetadata & CollectionCount>(
       "load",
       typeof count === "boolean" ? { count } : undefined
     );
   }
 
+  async loadIndexes() {
+    const body = await this._put<{ result: boolean }>("loadIndexesIntoMemory");
+    return body.result;
+  }
+
   unload() {
-    return this._put("unload");
+    return this._put<CollectionMetadata>("unload");
   }
 
   async rename(newName: string) {
@@ -1953,12 +2119,12 @@ export class Collection<T extends object = any>
   }
 
   async rotate() {
-    const body = await this._put("rotate");
+    const body = await this._put<{ result: boolean }>("rotate");
     return body.result;
   }
 
   truncate() {
-    return this._put("truncate");
+    return this._put<CollectionMetadata>("truncate");
   }
 
   drop(options?: CollectionDropOptions) {
