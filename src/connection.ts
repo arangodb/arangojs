@@ -55,7 +55,6 @@ export type Params = {
  * Generic properties shared by all ArangoDB HTTP API responses.
  */
 export type ArangoResponseMetadata = {
-  [key: string]: any | undefined;
   /**
    * Indicates that the request was successful.
    */

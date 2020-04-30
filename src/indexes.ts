@@ -80,7 +80,10 @@ export type GenericIndex = {
 };
 
 /**
- * TODO
+ * (MMFiles only.) TODO
+ *
+ * When using the RocksDB storage engine, this index type behaves identically
+ * to {@link PersistentIndex}.
  */
 export type SkiplistIndex = GenericIndex & {
   type: "skiplist";
@@ -88,7 +91,10 @@ export type SkiplistIndex = GenericIndex & {
 };
 
 /**
- * TODO
+ * (MMFiles only.) TODO
+ *
+ * When using the RocksDB storage engine, this index type behaves identically
+ * to {@link PersistentIndex}.
  */
 export type HashIndex = GenericIndex & {
   type: "hash";
