@@ -9,29 +9,10 @@
  * @packageDocumentation
  */
 import { Readable } from "stream";
-import {
-  Analyzer,
-  AnalyzerDescription,
-  CreateAnalyzerOptions,
-} from "./analyzer";
+import { Analyzer, AnalyzerDescription, CreateAnalyzerOptions } from "./analyzer";
 import { AqlLiteral, AqlQuery, isAqlLiteral, isAqlQuery } from "./aql";
-import {
-  ArangoCollection,
-  Collection,
-  CollectionMetadata,
-  CollectionType,
-  CreateCollectionOptions,
-  DocumentCollection,
-  EdgeCollection,
-  isArangoCollection,
-} from "./collection";
-import {
-  ArangoResponseMetadata,
-  Config,
-  Connection,
-  Headers,
-  RequestOptions,
-} from "./connection";
+import { ArangoCollection, Collection, CollectionMetadata, CollectionType, CreateCollectionOptions, DocumentCollection, EdgeCollection, isArangoCollection } from "./collection";
+import { ArangoResponseMetadata, Config, Connection, Headers, RequestOptions } from "./connection";
 import { ArrayCursor } from "./cursor";
 import { isArangoError } from "./error";
 import { EdgeDefinition, Graph, GraphCreateOptions, GraphInfo } from "./graph";
@@ -44,14 +25,7 @@ import { Transaction } from "./transaction";
 import { DATABASE_NOT_FOUND } from "./util/codes";
 import { FoxxManifest } from "./util/foxx-manifest";
 import { Dict } from "./util/types";
-import {
-  ArangoSearchView,
-  ArangoSearchViewPropertiesOptions,
-  View,
-  ViewDescription,
-  ViewResponse,
-  ViewType,
-} from "./view";
+import { ArangoSearchView, ArangoSearchViewPropertiesOptions, View, ViewDescription, ViewResponse, ViewType } from "./view";
 
 function colToString(collection: string | ArangoCollection): string {
   if (isArangoCollection(collection)) {
@@ -451,7 +425,7 @@ export type QueryInfo = {
 };
 
 /**
- * TODO
+ * Database user to create with a database.
  */
 export type CreateDatabaseUser = {
   /**
@@ -743,7 +717,7 @@ export type ServiceDependency =
   | MultiServiceDependency;
 
 /**
- * TODO
+ * Test stats for a Foxx service's tests.
  */
 export type ServiceTestStats = {
   tests: number;
@@ -754,7 +728,7 @@ export type ServiceTestStats = {
 };
 
 /**
- * TODO
+ * Test results for a single test case using the stream reporter.
  */
 export type ServiceTestStreamTest = {
   title: string;
@@ -764,7 +738,7 @@ export type ServiceTestStreamTest = {
 };
 
 /**
- * TODO
+ * Test results for a Foxx service's tests using the stream reporter.
  */
 export type ServiceTestStreamReport = (
   | ["start", { total: number }]
@@ -774,7 +748,7 @@ export type ServiceTestStreamReport = (
 )[];
 
 /**
- * TODO
+ * Test results for a single test case using the suite reporter.
  */
 export type ServiceTestSuiteTest = {
   result: "pending" | "pass" | "fail";
@@ -784,7 +758,7 @@ export type ServiceTestSuiteTest = {
 };
 
 /**
- * TODO
+ * Test results for a single test suite using the suite reporter.
  */
 export type ServiceTestSuite = {
   title: string;
@@ -793,7 +767,7 @@ export type ServiceTestSuite = {
 };
 
 /**
- * TODO
+ * Test results for a Foxx service's tests using the suite reporter.
  */
 export type ServiceTestSuiteReport = {
   stats: ServiceTestStats;
@@ -802,9 +776,10 @@ export type ServiceTestSuiteReport = {
 };
 
 /**
- * TODO
+ * Test results for a single test case in XUnit format using the JSONML
+ * representation.
  */
-type ServiceTestXunitTest =
+export type ServiceTestXunitTest =
   | ["testcase", { classname: string; name: string; time: number }]
   | [
       "testcase",
@@ -813,7 +788,8 @@ type ServiceTestXunitTest =
     ];
 
 /**
- * TODO
+ * Test results for a Foxx service's tests in XUnit format using the JSONML
+ * representation.
  */
 export type ServiceTestXunitReport = [
   "testsuite",
@@ -829,12 +805,12 @@ export type ServiceTestXunitReport = [
 ];
 
 /**
- * TODO
+ * Test results for a Foxx service's tests in TAP format.
  */
 export type ServiceTestTapReport = string[];
 
 /**
- * TODO
+ * Test results for a single test case using the default reporter.
  */
 export type ServiceTestDefaultTest = {
   title: string;
@@ -844,7 +820,7 @@ export type ServiceTestDefaultTest = {
 };
 
 /**
- * TODO
+ * Test results for a Foxx service's tests using the default reporter.
  */
 export type ServiceTestDefaultReport = {
   stats: ServiceTestStats;
@@ -855,7 +831,7 @@ export type ServiceTestDefaultReport = {
 };
 
 /**
- * TODO
+ * OpenAPI 2.0 description of a Foxx service.
  */
 export type SwaggerJson = {
   [key: string]: any;
