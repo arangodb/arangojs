@@ -258,9 +258,8 @@ export function aql(
 export namespace aql {
   /**
    * Marks an arbitrary scalar value (i.e. a string, number or boolean) as
-   * safe for being inlined directly into AQL queries when used in an
-   * {@link aql} template string, rather than being converted into a bind
-   * parameter.
+   * safe for being inlined directly into AQL queries when used in an `aql`
+   * template string, rather than being converted into a bind parameter.
    *
    * **Note**: Nesting `aql` template strings is a much safer alternative for
    * most use cases. This low-level helper function only exists to help with
@@ -327,7 +326,7 @@ export namespace aql {
   /**
    * Constructs {@link AqlQuery} objects from an array of arbitrary values.
    *
-   * **Note**: Nesting {@link aql} template strings is a much safer alternative
+   * **Note**: Nesting `aql` template strings is a much safer alternative
    * for most use cases. This low-level helper function only exists to
    * complement the `aql` tag when constructing complex queries from dynamic
    * arrays of query fragments.
