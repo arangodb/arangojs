@@ -1,4 +1,6 @@
 /**
+ * `import type { ArrayCursor } from "arangojs/cursor";`
+ *
  * TODO
  *
  * @packageDocumentation

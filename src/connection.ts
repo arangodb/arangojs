@@ -1,4 +1,6 @@
 /**
+ * `import type { Config } from "arangojs/connection";`
+ *
  * TODO
  *
  * @packageDocumentation

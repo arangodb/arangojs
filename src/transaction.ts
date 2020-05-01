@@ -1,4 +1,6 @@
 /**
+ * `import type { Transaction } from "arangojs/transaction";`
+ *
  * TODO
  *
  * @packageDocumentation

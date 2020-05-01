@@ -1,4 +1,6 @@
 /**
+ * `import type { Graph } from "arangojs/graph";`
+ *
  * TODO
  *
  * @packageDocumentation

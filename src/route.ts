@@ -1,4 +1,6 @@
 /**
+ * `import type { Route } from "arangojs/route";`
+ *
  * TODO
  *
  * @packageDocumentation

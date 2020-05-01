@@ -1,5 +1,5 @@
 /**
- * `import arangojs, { aql, Database } from "arangojs"`
+ * `import arangojs, { aql, Database } from "arangojs";`
  *
  * The "index" module is the default entry point when importing the arangojs
  * module or using the web build in the browser.
