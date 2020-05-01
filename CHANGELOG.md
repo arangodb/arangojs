@@ -9,10 +9,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 This is a major release and breaks backwards compatibility.
 
-### Fixed
-
-- Fixed `db.dropFunction` option `group` being ignored
-
 ### Removed
 
 - Removed ArangoDB 2.8 compatibility
@@ -327,7 +323,7 @@ This is a major release and breaks backwards compatibility.
   The method takes a document or a document key and returns a fully qualified
   document ID string for the document in the current collection.
 
-- Added support for `for await` in `ArrayCursor`
+- Added support for `for await` in `ArrayCursor` ([#616](https://github.com/arangodb/arangojs/pull/616))
 
   It is now possible to use `for await` to iterate over each item in a cursor
   asynchronously.
@@ -337,12 +333,9 @@ This is a major release and breaks backwards compatibility.
   Most methods should now provide full type signatures for options and response
   objects.
 
-## [6.14.1] - 2020-05-01
-
 ### Fixed
 
-- Added `uuid` and `padded` to legal `KeyGeneratorType` values in TypeScript ([#656](https://github.com/arangodb/arangojs/issues/656))
-- Added `overwrite` to `InsertOptions` type in TypeScript ([#657](https://github.com/arangodb/arangojs/issues/657))
+- Fixed `db.dropFunction` option `group` being ignored
 
 - Fixed documentation of `db.runServiceTests`
 
@@ -353,6 +346,14 @@ This is a major release and breaks backwards compatibility.
 
   If you are using arangojs in Node.js, you no longer need to add the `dom`
   library to your `tsconfig.json` configuration.
+
+## [6.14.1] - 2020-05-01
+
+### Fixed
+
+- Added `uuid` and `padded` to legal `KeyGeneratorType` values in TypeScript ([#656](https://github.com/arangodb/arangojs/issues/656))
+
+- Added `overwrite` to `InsertOptions` type in TypeScript ([#657](https://github.com/arangodb/arangojs/issues/657))
 
 ## [6.14.0] - 2020-03-18
 
