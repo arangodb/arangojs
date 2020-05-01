@@ -11,7 +11,7 @@ const ARANGO_VERSION = Number(
   process.env.ARANGO_VERSION || process.env.ARANGOJS_DEVEL_VERSION || 30400
 );
 
-describe("Simple queries", function() {
+describe("Simple queries", function () {
   let name = `testdb_${Date.now()}`;
   let db: Database;
   let collection: DocumentCollection;
@@ -61,9 +61,7 @@ describe("Simple queries", function() {
           .sort()
       );
       expect(arr.map((d: any) => d._key).sort()).to.eql(
-        range(10)
-          .map(alpha)
-          .sort()
+        range(10).map(alpha).sort()
       );
     });
   });

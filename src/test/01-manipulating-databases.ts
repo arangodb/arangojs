@@ -7,7 +7,7 @@ const ARANGO_VERSION = Number(
   process.env.ARANGO_VERSION || process.env.ARANGOJS_DEVEL_VERSION || 30400
 );
 
-describe("Manipulating databases", function() {
+describe("Manipulating databases", function () {
   let db: Database;
   beforeEach(() => {
     db = new Database({ url: ARANGO_URL, arangoVersion: ARANGO_VERSION });

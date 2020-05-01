@@ -8,7 +8,7 @@ const ARANGO_VERSION = Number(
 );
 const describe34 = ARANGO_VERSION >= 30400 ? describe : describe.skip;
 
-describe34("View metadata", function() {
+describe34("View metadata", function () {
   const dbName = `testdb_${Date.now()}`;
   const viewName = `view-${Date.now()}`;
   let db: Database;

@@ -73,7 +73,7 @@ describe("Configuring the driver", () => {
     });
     before(() => {
       let Agent = (proto: any) =>
-        function(opts: any) {
+        function (opts: any) {
           protocol = proto;
           options = opts;
           return () => null;

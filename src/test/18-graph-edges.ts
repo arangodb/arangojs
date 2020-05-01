@@ -7,7 +7,7 @@ const ARANGO_VERSION = Number(
   process.env.ARANGO_VERSION || process.env.ARANGOJS_DEVEL_VERSION || 30400
 );
 
-describe("Manipulating graph edges", function() {
+describe("Manipulating graph edges", function () {
   const dbName = `testdb_${Date.now()}`;
   const graphName = `testgraph_${Date.now()}`;
   let db: Database;

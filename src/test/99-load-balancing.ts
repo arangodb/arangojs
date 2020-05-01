@@ -19,7 +19,7 @@ if (process.env.RESILIENCE_ARANGO_BASEPATH) {
 }
 const describeIm = ARANGO_PATH! ? describe.only : describe.skip;
 
-describeIm("Single-server active failover", function() {
+describeIm("Single-server active failover", function () {
   this.timeout(Infinity);
   let im: InstanceManager;
   let uuid: string;
@@ -37,7 +37,7 @@ describeIm("Single-server active failover", function() {
     conn = (db as any)._connection;
     await db.acquireHostList();
   });
-  afterEach(async function() {
+  afterEach(async function () {
     im.moveServerLogs(this.currentTest);
     const logs = await im.cleanup(this.currentTest!.isFailed());
     if (logs) console.error(`IM Logs:\n${logs}`);
@@ -89,7 +89,7 @@ describeIm("Single-server active failover", function() {
   });
 });
 
-describeIm("Single-server with follower", function() {
+describeIm("Single-server with follower", function () {
   this.timeout(Infinity);
   let im: InstanceManager;
   let leader: Instance;
@@ -161,7 +161,7 @@ describeIm("Single-server with follower", function() {
   });
 });
 
-describeIm("Cluster round robin", function() {
+describeIm("Cluster round robin", function () {
   this.timeout(Infinity);
   const NUM_COORDINATORS = 3;
   let im: InstanceManager;

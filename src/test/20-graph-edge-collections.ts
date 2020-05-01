@@ -8,7 +8,7 @@ const ARANGO_VERSION = Number(
   process.env.ARANGO_VERSION || process.env.ARANGOJS_DEVEL_VERSION || 30400
 );
 
-describe("GraphEdgeCollection API", function() {
+describe("GraphEdgeCollection API", function () {
   const dbName = `testdb_${Date.now()}`;
   let db: Database;
   let collection: GraphEdgeCollection;
@@ -91,15 +91,9 @@ describe("GraphEdgeCollection API", function() {
       const data = { _from: "person/Bob", _to: "person/Alice" };
       const meta = await collection.save(data);
       expect(meta).to.be.an("object");
-      expect(meta)
-        .to.have.property("_id")
-        .that.is.a("string");
-      expect(meta)
-        .to.have.property("_rev")
-        .that.is.a("string");
-      expect(meta)
-        .to.have.property("_key")
-        .that.is.a("string");
+      expect(meta).to.have.property("_id").that.is.a("string");
+      expect(meta).to.have.property("_rev").that.is.a("string");
+      expect(meta).to.have.property("_key").that.is.a("string");
       const doc = await collection.edge(meta._id);
       expect(doc).to.have.keys("_key", "_id", "_rev", "_from", "_to");
       expect(doc._id).to.equal(meta._id);
@@ -112,15 +106,9 @@ describe("GraphEdgeCollection API", function() {
       const data = { _key: "banana", _from: "person/Bob", _to: "person/Alice" };
       const meta = await collection.save(data);
       expect(meta).to.be.an("object");
-      expect(meta)
-        .to.have.property("_id")
-        .that.is.a("string");
-      expect(meta)
-        .to.have.property("_rev")
-        .that.is.a("string");
-      expect(meta)
-        .to.have.property("_key")
-        .that.equals(data._key);
+      expect(meta).to.have.property("_id").that.is.a("string");
+      expect(meta).to.have.property("_rev").that.is.a("string");
+      expect(meta).to.have.property("_key").that.equals(data._key);
       const doc = await collection.edge(meta._id);
       expect(doc).to.have.keys("_key", "_id", "_rev", "_from", "_to");
       expect(doc._id).to.equal(meta._id);

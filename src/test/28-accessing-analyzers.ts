@@ -10,7 +10,7 @@ const ARANGO_VERSION = Number(
 );
 const describe35 = ARANGO_VERSION >= 30500 ? describe : describe.skip;
 
-describe35("Accessing analyzers", function() {
+describe35("Accessing analyzers", function () {
   const builtins: string[] = [];
   const name = `testdb_${Date.now()}`;
   let db: Database;
@@ -34,9 +34,7 @@ describe35("Accessing analyzers", function() {
       let name = "potato";
       let analyzer = db.analyzer(name);
       expect(analyzer).to.be.an.instanceof(Analyzer);
-      expect(analyzer)
-        .to.have.property("name")
-        .that.equals(name);
+      expect(analyzer).to.have.property("name").that.equals(name);
     });
   });
   describe("database.listAnalyzers", () => {

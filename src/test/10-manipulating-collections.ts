@@ -7,7 +7,7 @@ const ARANGO_VERSION = Number(
   process.env.ARANGO_VERSION || process.env.ARANGOJS_DEVEL_VERSION || 30400
 );
 
-describe("Manipulating collections", function() {
+describe("Manipulating collections", function () {
   const name = `testdb_${Date.now()}`;
   let db: Database;
   let collection: DocumentCollection;

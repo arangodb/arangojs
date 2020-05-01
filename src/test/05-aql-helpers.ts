@@ -2,7 +2,7 @@ import { expect } from "chai";
 import { aql } from "../aql";
 import { Database } from "../database";
 
-describe("AQL helpers", function() {
+describe("AQL helpers", function () {
   describe("aql", () => {
     const db = new Database();
     it("supports simple parameters", () => {

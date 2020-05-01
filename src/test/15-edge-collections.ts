@@ -8,7 +8,7 @@ const ARANGO_VERSION = Number(
   process.env.ARANGO_VERSION || process.env.ARANGOJS_DEVEL_VERSION || 30400
 );
 
-describe("EdgeCollection API", function() {
+describe("EdgeCollection API", function () {
   const name = `testdb_${Date.now()}`;
   let db: Database;
   let collection: EdgeCollection<{
@@ -96,15 +96,9 @@ describe("EdgeCollection API", function() {
       const data = { something: "chicken", _from: "d/1", _to: "d/2" };
       const meta = await collection.save(data);
       expect(meta).to.be.an("object");
-      expect(meta)
-        .to.have.property("_id")
-        .that.is.a("string");
-      expect(meta)
-        .to.have.property("_rev")
-        .that.is.a("string");
-      expect(meta)
-        .to.have.property("_key")
-        .that.is.a("string");
+      expect(meta).to.have.property("_id").that.is.a("string");
+      expect(meta).to.have.property("_rev").that.is.a("string");
+      expect(meta).to.have.property("_key").that.is.a("string");
       const doc = await collection.edge(meta._id);
       expect(doc).to.have.keys(
         "something",
@@ -130,15 +124,9 @@ describe("EdgeCollection API", function() {
       };
       const meta = await collection.save(data);
       expect(meta).to.be.an("object");
-      expect(meta)
-        .to.have.property("_id")
-        .that.is.a("string");
-      expect(meta)
-        .to.have.property("_rev")
-        .that.is.a("string");
-      expect(meta)
-        .to.have.property("_key")
-        .that.equals(data._key);
+      expect(meta).to.have.property("_id").that.is.a("string");
+      expect(meta).to.have.property("_rev").that.is.a("string");
+      expect(meta).to.have.property("_key").that.equals(data._key);
       const doc = await collection.edge(meta._id);
       expect(doc).to.have.keys(
         "something",
@@ -159,18 +147,10 @@ describe("EdgeCollection API", function() {
       const data = { something: "chicken", _from: "d/1", _to: "d/2" };
       const meta = await collection.save(data, { returnNew: true });
       expect(meta).to.be.an("object");
-      expect(meta)
-        .to.have.property("_id")
-        .that.is.a("string");
-      expect(meta)
-        .to.have.property("_rev")
-        .that.is.a("string");
-      expect(meta)
-        .to.have.property("_key")
-        .that.is.a("string");
-      expect(meta)
-        .to.have.property("new")
-        .that.is.an("object");
+      expect(meta).to.have.property("_id").that.is.a("string");
+      expect(meta).to.have.property("_rev").that.is.a("string");
+      expect(meta).to.have.property("_key").that.is.a("string");
+      expect(meta).to.have.property("new").that.is.an("object");
       expect(meta.new).to.have.property("something", data.something);
       const doc = await collection.edge(meta._id);
       expect(doc).to.have.keys(
