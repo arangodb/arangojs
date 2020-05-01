@@ -30,6 +30,17 @@ describe("Cursor API", () => {
   beforeEach(async () => {
     cursor = await db.query(aqlQuery);
   });
+  describe("for await of cursor", () => {
+    it("returns each next result of the Cursor", async () => {
+      let i = 0;
+      for await (const value of cursor) {
+        expect(value).to.equal(aqlResult[i]);
+        i += 1;
+      }
+      expect(i).to.equal(aqlResult.length);
+      expect(cursor.hasNext).to.equal(false);
+    });
+  });
   describe("cursor.all", () => {
     it("returns an Array of all results", async () => {
       const values = await cursor.all();

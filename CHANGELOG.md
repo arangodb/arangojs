@@ -327,6 +327,11 @@ This is a major release and breaks backwards compatibility.
   The method takes a document or a document key and returns a fully qualified
   document ID string for the document in the current collection.
 
+- Added support for `for await` in `ArrayCursor`
+
+  It is now possible to use `for await` to iterate over each item in a cursor
+  asynchronously.
+
 - Improved type signatures for TypeScript
 
   Most methods should now provide full type signatures for options and response
