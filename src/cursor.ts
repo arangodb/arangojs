@@ -253,6 +253,29 @@ export class ArrayCursor<T = any> {
   /**
    * TODO
    */
+  async flatMap<U = any>(
+    fn: (value: T, index: number, self: ArrayCursor<T>) => U
+  ): Promise<U[]> {
+    let index = 0;
+    let result: any[] = [];
+    while (this._result.length || this.hasMore) {
+      while (this._result.length) {
+        const value = fn(this._result.shift()!, index, this);
+        if (Array.isArray(value)) {
+          result.push(...value);
+        } else {
+          result.push(value);
+        }
+        index++;
+      }
+      if (this.hasMore) await this._more();
+    }
+    return result;
+  }
+
+  /**
+   * TODO
+   */
   async reduce<U>(
     fn: (accu: U, value: T, index: number, self: ArrayCursor<T>) => U,
     accu?: U

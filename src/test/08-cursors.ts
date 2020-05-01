@@ -158,6 +158,23 @@ describe("Cursor API", () => {
       expect(results).to.eql(aqlResult.map((value) => value * 2));
     });
   });
+  describe("cursor.flatMap", () => {
+    it("flat-maps all result values over the callback", async () => {
+      const results = await cursor.flatMap((value) => [value, value * 2]);
+      expect(results).to.eql(
+        aqlResult
+          .map((value) => [value, value * 2])
+          .reduce((acc, next) => {
+            acc.push(...next);
+            return acc;
+          }, [] as number[])
+      );
+    });
+    it("doesn't choke on non-arrays", async () => {
+      const results = await cursor.flatMap((value) => value * 2);
+      expect(results).to.eql(aqlResult.map((value) => value * 2));
+    });
+  });
   describe("cursor.reduce", () => {
     it("reduces the result values with the callback", async () => {
       const result = await cursor.reduce((a, b) => a + b);

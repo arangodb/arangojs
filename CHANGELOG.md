@@ -387,6 +387,11 @@ This is a major release and breaks backwards compatibility.
 
 #### Cursor API
 
+- Added `cursor.flatMap` method
+
+  This method behaves similarly to the `Array` method `flatMap` but operates
+  on the cursor directly like `cursor.map` does.
+
 - Added support for `for await` in `ArrayCursor` ([#616](https://github.com/arangodb/arangojs/pull/616))
 
   It is now possible to use `for await` to iterate over each item in a cursor
