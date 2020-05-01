@@ -273,6 +273,8 @@ This is a major release and breaks backwards compatibility.
 
 - Replaced `ArrayCursor` methods `hasNext` and `hasMore` with getters
 
+- Renamed `ArrayCursor` method `each` to `forEach`
+
 - Graph collection return values now contain `old` and `new` properties when
   `returnOld` or `returnNew` options are used
 

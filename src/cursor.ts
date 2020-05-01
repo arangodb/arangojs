@@ -216,7 +216,7 @@ export class ArrayCursor<T = any> {
   /**
    * TODO
    */
-  async each(
+  async forEach(
     fn: (value: T, index: number, self: ArrayCursor<T>) => boolean | void
   ): Promise<boolean> {
     let index = 0;
