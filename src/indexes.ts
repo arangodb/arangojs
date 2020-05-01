@@ -1,4 +1,6 @@
 /**
+ * `import type { Index } from "arangojs/indexes";`
+ *
  * TODO
  *
  * @packageDocumentation

@@ -1,4 +1,6 @@
 /**
+ * `import type { DocumentCollection, EdgeCollection } from "arangojs/collection";`
+ *
  * TODO
  *
  * @packageDocumentation

@@ -1,5 +1,5 @@
 /**
- * `import { Database } from "arangojs/database"`
+ * `import { Database } from "arangojs/database";`
  *
  * The "database" module provides the {@link Database} class and associated
  * types and interfaces for TypeScript.
@@ -9,10 +9,29 @@
  * @packageDocumentation
  */
 import { Readable } from "stream";
-import { Analyzer, AnalyzerDescription, CreateAnalyzerOptions } from "./analyzer";
+import {
+  Analyzer,
+  AnalyzerDescription,
+  CreateAnalyzerOptions,
+} from "./analyzer";
 import { AqlLiteral, AqlQuery, isAqlLiteral, isAqlQuery } from "./aql";
-import { ArangoCollection, Collection, CollectionMetadata, CollectionType, CreateCollectionOptions, DocumentCollection, EdgeCollection, isArangoCollection } from "./collection";
-import { ArangoResponseMetadata, Config, Connection, Headers, RequestOptions } from "./connection";
+import {
+  ArangoCollection,
+  Collection,
+  CollectionMetadata,
+  CollectionType,
+  CreateCollectionOptions,
+  DocumentCollection,
+  EdgeCollection,
+  isArangoCollection,
+} from "./collection";
+import {
+  ArangoResponseMetadata,
+  Config,
+  Connection,
+  Headers,
+  RequestOptions,
+} from "./connection";
 import { ArrayCursor } from "./cursor";
 import { isArangoError } from "./error";
 import { EdgeDefinition, Graph, GraphCreateOptions, GraphInfo } from "./graph";
@@ -25,7 +44,14 @@ import { Transaction } from "./transaction";
 import { DATABASE_NOT_FOUND } from "./util/codes";
 import { FoxxManifest } from "./util/foxx-manifest";
 import { Dict } from "./util/types";
-import { ArangoSearchView, ArangoSearchViewPropertiesOptions, View, ViewDescription, ViewResponse, ViewType } from "./view";
+import {
+  ArangoSearchView,
+  ArangoSearchViewPropertiesOptions,
+  View,
+  ViewDescription,
+  ViewResponse,
+  ViewType,
+} from "./view";
 
 function colToString(collection: string | ArangoCollection): string {
   if (isArangoCollection(collection)) {

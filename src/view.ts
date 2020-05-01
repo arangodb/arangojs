@@ -1,4 +1,6 @@
 /**
+ * `import type { ArangoSearchView } from "arangojs/view";`
+ *
  * TODO
  *
  * @packageDocumentation
