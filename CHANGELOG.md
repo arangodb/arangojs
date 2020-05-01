@@ -172,17 +172,17 @@ This is a major release and breaks backwards compatibility.
 
 - Changed `db.createDatabase` return type to `Database`
 
+- Renamed `database.setQueryTracking` to `database.queryTracking`
+
+  The method will now return the existing query tracking properties or set the
+  new query tracking properties depending on whether an argument is provided.
+
 #### Collection API
 
 - Renamed `collection.setProperties` to `collection.properties`
 
   The method will now return the existing properties or set the properties
   depending on whether an argument is provided.
-
-- Renamed `collection.setQueryTracking` to `collection.queryTracking`
-
-  The method will now return the existing query tracking properties or set the
-  new query tracking properties depending on whether an argument is provided.
 
 - Merged `DocumentCollection` and `EdgeCollection` APIs
 
