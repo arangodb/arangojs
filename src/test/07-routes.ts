@@ -30,7 +30,7 @@ describe("Arbitrary HTTP routes", () => {
   });
 });
 
-describe("Route API", function() {
+describe("Route API", function () {
   const name = `testdb_${Date.now()}`;
   let db: Database;
   let collection: DocumentCollection;

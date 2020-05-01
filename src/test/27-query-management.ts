@@ -9,7 +9,7 @@ const ARANGO_VERSION = Number(
   process.env.ARANGO_VERSION || process.env.ARANGOJS_DEVEL_VERSION || 30400
 );
 
-describe("Query Management API", function() {
+describe("Query Management API", function () {
   const dbName = `testdb_${Date.now()}`;
   let db: Database;
   before(async () => {

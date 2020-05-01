@@ -10,7 +10,7 @@ const ARANGO_VERSION = Number(
 const describe34 = ARANGO_VERSION >= 30400 ? describe : describe.skip;
 const itRdb = process.env.ARANGO_STORAGE_ENGINE !== "mmfiles" ? it : it.skip;
 
-describe34("AQL Stream queries", function() {
+describe34("AQL Stream queries", function () {
   let name = `testdb_${Date.now()}`;
   let db: Database;
   before(async () => {

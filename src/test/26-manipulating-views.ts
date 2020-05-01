@@ -8,7 +8,7 @@ const ARANGO_VERSION = Number(
 );
 const describe34 = ARANGO_VERSION >= 30400 ? describe : describe.skip;
 
-describe34("Manipulating views", function() {
+describe34("Manipulating views", function () {
   const name = `testdb_${Date.now()}`;
   let db: Database;
   let view: ArangoSearchView;

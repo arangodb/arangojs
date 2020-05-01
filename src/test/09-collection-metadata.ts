@@ -8,7 +8,7 @@ const ARANGO_VERSION = Number(
   process.env.ARANGO_VERSION || process.env.ARANGOJS_DEVEL_VERSION || 30400
 );
 
-describe("Collection metadata", function() {
+describe("Collection metadata", function () {
   let db: Database;
   let collection: DocumentCollection;
   const dbName = `testdb_${Date.now()}`;

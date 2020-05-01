@@ -7,7 +7,7 @@ const ARANGO_VERSION = Number(
   process.env.ARANGO_VERSION || process.env.ARANGOJS_DEVEL_VERSION || 30400
 );
 
-describe("Bulk imports", function() {
+describe("Bulk imports", function () {
   let db: Database;
   let dbName = `testdb_${Date.now()}`;
   let collection: DocumentCollection<{ data: string }>;

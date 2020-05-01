@@ -10,7 +10,7 @@ const ARANGO_VERSION = Number(
 );
 const describe34 = ARANGO_VERSION >= 30400 ? describe : describe.skip;
 
-describe34("Accessing views", function() {
+describe34("Accessing views", function () {
   let name = `testdb_${Date.now()}`;
   let db: Database;
   before(async () => {
@@ -31,9 +31,7 @@ describe34("Accessing views", function() {
       let name = "potato";
       let view = db.view(name);
       expect(view).to.be.an.instanceof(View);
-      expect(view)
-        .to.have.property("name")
-        .that.equals(name);
+      expect(view).to.have.property("name").that.equals(name);
     });
   });
   describe("database.listViews", () => {

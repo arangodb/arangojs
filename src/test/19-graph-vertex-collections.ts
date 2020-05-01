@@ -8,7 +8,7 @@ const ARANGO_VERSION = Number(
   process.env.ARANGO_VERSION || process.env.ARANGOJS_DEVEL_VERSION || 30400
 );
 
-describe("GraphVertexCollection API", function() {
+describe("GraphVertexCollection API", function () {
   const dbName = `testdb_${Date.now()}`;
   let db: Database;
   let collection: GraphVertexCollection;
@@ -80,15 +80,9 @@ describe("GraphVertexCollection API", function() {
       const data = { foo: "bar" };
       const meta = await collection.save(data);
       expect(meta).to.be.an("object");
-      expect(meta)
-        .to.have.property("_id")
-        .that.is.a("string");
-      expect(meta)
-        .to.have.property("_rev")
-        .that.is.a("string");
-      expect(meta)
-        .to.have.property("_key")
-        .that.is.a("string");
+      expect(meta).to.have.property("_id").that.is.a("string");
+      expect(meta).to.have.property("_rev").that.is.a("string");
+      expect(meta).to.have.property("_key").that.is.a("string");
       const doc = await collection.vertex(meta._id);
       expect(doc).to.have.keys("_key", "_id", "_rev", "foo");
       expect(doc._id).to.equal(meta._id);
@@ -100,15 +94,9 @@ describe("GraphVertexCollection API", function() {
       const data = { potato: "tomato", _key: "banana" };
       const meta = await collection.save(data);
       expect(meta).to.be.an("object");
-      expect(meta)
-        .to.have.property("_id")
-        .that.is.a("string");
-      expect(meta)
-        .to.have.property("_rev")
-        .that.is.a("string");
-      expect(meta)
-        .to.have.property("_key")
-        .that.equals(data._key);
+      expect(meta).to.have.property("_id").that.is.a("string");
+      expect(meta).to.have.property("_rev").that.is.a("string");
+      expect(meta).to.have.property("_key").that.equals(data._key);
       const doc = await collection.vertex(meta._id);
       expect(doc).to.have.keys("_key", "_id", "_rev", "potato");
       expect(doc._id).to.equal(meta._id);
@@ -125,9 +113,7 @@ describe("GraphVertexCollection API", function() {
       await collection.replace(doc, { sup: "dawg" });
       const newData = await collection.vertex(doc._key);
       expect(newData).not.to.have.property("potato");
-      expect(newData)
-        .to.have.property("sup")
-        .that.equals("dawg");
+      expect(newData).to.have.property("sup").that.equals("dawg");
     });
   });
   describe("graphVertexCollection.update", () => {
@@ -137,15 +123,9 @@ describe("GraphVertexCollection API", function() {
       const doc = meta.new!;
       await collection.update(doc, { sup: "dawg", empty: null });
       const newData = await collection.vertex(doc._key);
-      expect(newData)
-        .to.have.property("potato")
-        .that.equals(doc.potato);
-      expect(newData)
-        .to.have.property("sup")
-        .that.equals("dawg");
-      expect(newData)
-        .to.have.property("empty")
-        .that.equals(null);
+      expect(newData).to.have.property("potato").that.equals(doc.potato);
+      expect(newData).to.have.property("sup").that.equals("dawg");
+      expect(newData).to.have.property("empty").that.equals(null);
     });
     it("removes null values if keepNull is explicitly set to false", async () => {
       const data = { potato: "tomato", empty: false };
@@ -157,12 +137,8 @@ describe("GraphVertexCollection API", function() {
         { keepNull: false }
       );
       const newData = await collection.vertex(doc._key);
-      expect(newData)
-        .to.have.property("potato")
-        .that.equals(doc.potato);
-      expect(newData)
-        .to.have.property("sup")
-        .that.equals("dawg");
+      expect(newData).to.have.property("potato").that.equals(doc.potato);
+      expect(newData).to.have.property("sup").that.equals("dawg");
       expect(newData).not.to.have.property("empty");
     });
   });

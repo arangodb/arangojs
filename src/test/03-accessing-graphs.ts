@@ -10,7 +10,7 @@ const ARANGO_VERSION = Number(
   process.env.ARANGO_VERSION || process.env.ARANGOJS_DEVEL_VERSION || 30400
 );
 
-describe("Accessing graphs", function() {
+describe("Accessing graphs", function () {
   const name = `testdb_${Date.now()}`;
   let db: Database;
   before(async () => {
@@ -31,9 +31,7 @@ describe("Accessing graphs", function() {
       const name = "potato";
       const graph = db.graph(name);
       expect(graph).to.be.an.instanceof(Graph);
-      expect(graph)
-        .to.have.property("name")
-        .that.equals(name);
+      expect(graph).to.have.property("name").that.equals(name);
     });
   });
   describe("database.listGraphs", () => {

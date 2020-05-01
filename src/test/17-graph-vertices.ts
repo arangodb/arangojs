@@ -35,7 +35,7 @@ async function createGraph(
   );
 }
 
-describe("Manipulating graph vertices", function() {
+describe("Manipulating graph vertices", function () {
   const name = `testdb_${Date.now()}`;
   let db: Database;
   let graph: Graph;
@@ -70,9 +70,7 @@ describe("Manipulating graph vertices", function() {
       const name = "potato";
       const collection = graph.vertexCollection(name);
       expect(collection).to.be.an.instanceof(GraphVertexCollection);
-      expect(collection)
-        .to.have.property("name")
-        .that.equals(name);
+      expect(collection).to.have.property("name").that.equals(name);
     });
   });
   describe("graph.addVertexCollection", () => {

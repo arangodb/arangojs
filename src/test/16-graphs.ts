@@ -34,7 +34,7 @@ async function createGraph(
   );
 }
 
-describe("Graph API", function() {
+describe("Graph API", function () {
   let db: Database;
   const name = `testdb_${Date.now()}`;
   before(async () => {

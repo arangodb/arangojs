@@ -9,7 +9,7 @@ const ARANGO_VERSION = Number(
   process.env.ARANGO_VERSION || process.env.ARANGOJS_DEVEL_VERSION || 30400
 );
 
-describe("Accessing collections", function() {
+describe("Accessing collections", function () {
   const name = `testdb_${Date.now()}`;
   let db: Database;
   let builtinSystemCollections: string[];
@@ -33,9 +33,7 @@ describe("Accessing collections", function() {
       const name = "potato";
       const collection = db.collection(name);
       expect(isArangoCollection(collection)).to.equal(true);
-      expect(collection)
-        .to.have.property("name")
-        .that.equals(name);
+      expect(collection).to.have.property("name").that.equals(name);
     });
   });
   describe("database.listCollections", () => {
