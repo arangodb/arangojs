@@ -106,9 +106,7 @@ export class ArrayCursor<T = any> {
   async all(): Promise<T[]> {
     await this._drain();
     const result = [...this._result.values()];
-    this._result.first = undefined;
-    this._result.last = undefined;
-    this._result.length = 0;
+    this._result.clear();
     return result;
   }
 
@@ -136,9 +134,7 @@ export class ArrayCursor<T = any> {
       return undefined;
     }
     const result = [...this._result.values()];
-    this._result.first = undefined;
-    this._result.last = undefined;
-    this._result.length = 0;
+    this._result.clear();
     return result;
   }
 
