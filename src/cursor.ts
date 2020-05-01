@@ -104,6 +104,11 @@ export class ArrayCursor<T = any> {
    * Enables use with `for await` to exhaust the cursor by asynchronously
    * yielding every value in the cursor's remaining result set.
    *
+   * **Note**: If the result set spans multiple batches, any unfetched batches
+   * will only be fetched on demand. Depending on the cursor's TTL and the
+   * processing speed, this may result in the server discarding the cursor
+   * before it is fully depleted.
+   *
    * @example
    * ```js
    * const cursor = await db.query(aql`
