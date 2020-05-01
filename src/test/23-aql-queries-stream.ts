@@ -83,7 +83,7 @@ describe34("AQL Stream queries", function () {
       );
       await Promise.all(
         cursors.map((c) =>
-          (c as ArrayCursor).each(() => {
+          (c as ArrayCursor).forEach(() => {
             count++;
           })
         )
@@ -103,8 +103,9 @@ describe34("AQL Stream queries", function () {
       // the read cursor should always win
       const c = await Promise.race([readCursor, writeCursor]);
       // therefore no document should have been written here
-      const isOk = await c.every((d: any) => !d.hasOwnProperty("forbidden"));
-      expect(isOk).to.equal(true);
+      for await (const d of c) {
+        expect(d).not.to.haveOwnProperty("forbidden");
+      }
     });
   });
 });
