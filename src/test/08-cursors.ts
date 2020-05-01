@@ -134,64 +134,22 @@ describe("Cursor API", () => {
       await loadMore(cursor, 0);
     });
   });
-  describe("cursor.each", () => {
+  describe("cursor.forEach", () => {
     it("invokes the callback for each value", async () => {
       const results: any[] = [];
-      await cursor.each((value) => {
+      await cursor.forEach((value) => {
         results.push(value);
       });
       expect(results).to.eql(aqlResult);
     });
     it("aborts if the callback returns false", async () => {
       const results: any[] = [];
-      await cursor.each((value: any) => {
+      await cursor.forEach((value: any) => {
         results.push(value);
         if (value === 5) return false;
         return;
       });
       expect(results).to.eql([0, 1, 2, 3, 4, 5]);
-    });
-  });
-  describe("cursor.every", () => {
-    it("returns true if the callback returns a truthy value for every item", async () => {
-      const results: any[] = [];
-      const result = await cursor.every((value) => {
-        if (results.indexOf(value) !== -1) return false;
-        results.push(value);
-        return true;
-      });
-      expect(results).to.eql(aqlResult);
-      expect(result).to.equal(true);
-    });
-    it("returns false if the callback returns a non-truthy value for any item", async () => {
-      const results: any[] = [];
-      const result = await cursor.every((value) => {
-        results.push(value);
-        return value < 5;
-      });
-      expect(results).to.eql([0, 1, 2, 3, 4, 5]);
-      expect(result).to.equal(false);
-    });
-  });
-  describe("cursor.some", () => {
-    it("returns false if the callback returns a non-truthy value for every item", async () => {
-      const results: any[] = [];
-      const result = await cursor.some((value) => {
-        if (results.indexOf(value) !== -1) return true;
-        results.push(value);
-        return false;
-      });
-      expect(results).to.eql(aqlResult);
-      expect(result).to.equal(false);
-    });
-    it("returns true if the callback returns a truthy value for any item", async () => {
-      const results: any[] = [];
-      const result = await cursor.some((value) => {
-        results.push(value);
-        return value >= 5;
-      });
-      expect(results).to.eql([0, 1, 2, 3, 4, 5]);
-      expect(result).to.equal(true);
     });
   });
   describe("cursor.map", () => {
