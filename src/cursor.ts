@@ -78,7 +78,17 @@ export class ArrayCursor {
     return this._result.splice(0, this._result.length);
   }
 
-  async each(
+  /**
+   * @deprecated This method will be removed in arangojs 7.
+   * Use {@link ArrayCursor.forEach} instead.
+   */
+  each(
+    fn: (value: any, index: number, self: ArrayCursor) => boolean | void
+  ): Promise<boolean> {
+    return this.forEach(fn);
+  }
+
+  async forEach(
     fn: (value: any, index: number, self: ArrayCursor) => boolean | void
   ): Promise<boolean> {
     let index = 0;
@@ -110,6 +120,10 @@ export class ArrayCursor {
     return true;
   }
 
+  /**
+   * @deprecated This method will be removed in arangojs 7.
+   * Use {@link ArrayCursor.forEach} instead.
+   */
   async some(
     fn: (value: any, index: number, self: ArrayCursor) => boolean
   ): Promise<boolean> {

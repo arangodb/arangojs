@@ -194,7 +194,12 @@ export abstract class BaseCollection<T extends object = any>
     );
   }
 
-  properties(): Promise<CollectionProperties> {
+  properties(
+    properties?: CollectionPropertiesOptions
+  ): Promise<CollectionProperties> {
+    if (properties) {
+      return this._put("properties", properties);
+    }
     return this._get("properties");
   }
 
@@ -225,6 +230,10 @@ export abstract class BaseCollection<T extends object = any>
     return this._put("unload", undefined);
   }
 
+  /**
+   * @deprecated This method will be removed in arangojs 7.
+   * Use {@link BaseCollection.properties} instead.
+   */
   setProperties(properties: CollectionPropertiesOptions) {
     return this._put("properties", properties);
   }
@@ -645,7 +654,10 @@ export abstract class BaseCollection<T extends object = any>
     );
   }
 
-  /** @deprecated use ensureIndex instead */
+  /**
+   * @deprecated This method will be removed in arangojs 7.
+   * Use {@link BaseCollection.ensureIndex} instead.
+   */
   createIndex(details: any) {
     return this.ensureIndex(details);
   }
@@ -660,6 +672,10 @@ export abstract class BaseCollection<T extends object = any>
     );
   }
 
+  /**
+   * @deprecated This method will be removed in arangojs 7.
+   * Use {@link BaseCollection.ensureIndex} instead.
+   */
   createCapConstraint(opts?: any) {
     if (typeof opts === "number") {
       opts = { size: opts };
@@ -675,6 +691,10 @@ export abstract class BaseCollection<T extends object = any>
     );
   }
 
+  /**
+   * @deprecated This method will be removed in arangojs 7.
+   * Use {@link BaseCollection.ensureIndex} instead.
+   */
   createHashIndex(fields: string[] | string, opts?: any) {
     if (typeof fields === "string") {
       fields = [fields];
@@ -693,6 +713,10 @@ export abstract class BaseCollection<T extends object = any>
     );
   }
 
+  /**
+   * @deprecated This method will be removed in arangojs 7.
+   * Use {@link BaseCollection.ensureIndex} instead.
+   */
   createSkipList(fields: string[] | string, opts?: any) {
     if (typeof fields === "string") {
       fields = [fields];
@@ -711,6 +735,10 @@ export abstract class BaseCollection<T extends object = any>
     );
   }
 
+  /**
+   * @deprecated This method will be removed in arangojs 7.
+   * Use {@link BaseCollection.ensureIndex} instead.
+   */
   createPersistentIndex(fields: string[] | string, opts?: any) {
     if (typeof fields === "string") {
       fields = [fields];
@@ -729,6 +757,10 @@ export abstract class BaseCollection<T extends object = any>
     );
   }
 
+  /**
+   * @deprecated This method will be removed in arangojs 7.
+   * Use {@link BaseCollection.ensureIndex} instead.
+   */
   createGeoIndex(fields: string[] | string, opts?: any) {
     if (typeof fields === "string") {
       fields = [fields];
@@ -744,6 +776,10 @@ export abstract class BaseCollection<T extends object = any>
     );
   }
 
+  /**
+   * @deprecated This method will be removed in arangojs 7.
+   * Use {@link BaseCollection.ensureIndex} instead.
+   */
   createFulltextIndex(fields: string[] | string, minLength?: number) {
     if (typeof fields === "string") {
       fields = [fields];
@@ -849,7 +885,15 @@ export class EdgeCollection<T extends object = any> extends BaseCollection<T> {
     return this.document(documentHandle, opts) as Promise<Edge<T>>;
   }
 
+  /**
+   *
+   */
   save(data: T | Array<T>, opts?: InsertOptions | boolean): Promise<any>;
+  /**
+   * @deprecated This variant of the save method will be removed in arangojs 7.
+   * Pass the `fromId` and `toId` using the `_from` and `_to` properties of
+   * the `data` object instead.
+   */
   save(
     data: T | Array<T>,
     fromId: DocumentHandle,

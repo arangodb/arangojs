@@ -167,7 +167,17 @@ export class ArangoSearchView extends BaseView {
     );
   }
 
+  /**
+   * @deprecated This method will be removed in arangojs 7.
+   * Use {@link ArangoSearchView.updateProperties} instead.
+   */
   setProperties(
+    properties: ArangoSearchViewPropertiesOptions = {}
+  ): Promise<ArangoSearchViewPropertiesResponse> {
+    return this.updateProperties(properties);
+  }
+
+  updateProperties(
     properties: ArangoSearchViewPropertiesOptions = {}
   ): Promise<ArangoSearchViewPropertiesResponse> {
     return this._connection.request(

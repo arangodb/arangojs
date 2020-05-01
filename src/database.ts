@@ -336,6 +336,11 @@ export class Database {
     );
   }
 
+  /**
+   * @deprecated This method will be removed in arangojs 7.
+   * The behavior can be emulated by invoking {@link BaseCollection.truncate}
+   * on each collection explicitly.
+   */
   async truncate(excludeSystem: boolean = true) {
     const collections = await this.listCollections(excludeSystem);
     return await Promise.all(
@@ -353,7 +358,15 @@ export class Database {
   //#endregion
 
   //#region views
+  /**
+   * @deprecated This method will be removed in arangojs 7.
+   * Use {@link Database.view} instead.
+   */
   arangoSearchView(viewName: string): ArangoSearchView {
+    return this.view(viewName);
+  }
+
+  view(viewName: string): ArangoSearchView {
     return new ArangoSearchView(this._connection, viewName);
   }
 
@@ -584,16 +597,21 @@ export class Database {
     );
   }
 
-  queryTracking(): Promise<QueryTracking> {
+  queryTracking(opts?: QueryTrackingOptions): Promise<QueryTracking> {
     return this._connection.request(
       {
-        method: "GET",
-        path: "/_api/query/properties"
+        method: opts ? "PUT" : "GET",
+        path: "/_api/query/properties",
+        body: opts
       },
       res => res.body
     );
   }
 
+  /**
+   * @deprecated This method will be removed in arangojs 7.
+   * Use {@link Database.queryTracking} instead.
+   */
   setQueryTracking(opts?: QueryTrackingOptions): Promise<QueryTracking> {
     return this._connection.request(
       {
@@ -928,10 +946,10 @@ export class Database {
     return result2;
   }
 
-  enableServiceDevelopmentMode(mount: string) {
+  setServiceDevelopmentMode(mount: string, enabled: boolean = true) {
     return this._connection.request(
       {
-        method: "POST",
+        method: enabled ? "POST" : "DELETE",
         path: "/_api/foxx/development",
         qs: { mount }
       },
@@ -939,15 +957,20 @@ export class Database {
     );
   }
 
+  /**
+   * @deprecated This method will be removed in arangojs 7.
+   * Use {@link Database.setServiceDevelopmentMode} instead.
+   */
+  enableServiceDevelopmentMode(mount: string) {
+    return this.setServiceDevelopmentMode(mount, true);
+  }
+
+  /**
+   * @deprecated This method will be removed in arangojs 7.
+   * Use {@link Database.setServiceDevelopmentMode} instead.
+   */
   disableServiceDevelopmentMode(mount: string) {
-    return this._connection.request(
-      {
-        method: "DELETE",
-        path: "/_api/foxx/development",
-        qs: { mount }
-      },
-      res => res.body
-    );
+    return this.setServiceDevelopmentMode(mount, false);
   }
 
   listServiceScripts(mount: string) {

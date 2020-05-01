@@ -42,6 +42,10 @@ export class GraphVertexCollection extends BaseCollection {
     this.graph = graph;
   }
 
+  /**
+   * @deprecated This method will be removed in arangojs 7.
+   * Use {@link GraphVertexCollection.vertex} instead.
+   */
   document(documentHandle: DocumentHandle, graceful: boolean): Promise<any>;
   document(
     documentHandle: DocumentHandle,

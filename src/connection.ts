@@ -1,4 +1,5 @@
 import { stringify as querystringify } from "querystring";
+import { LinkedList } from "x3-linkedlist";
 import { ArangoError, HttpError } from "./error";
 import {
   ArangojsResponse,
@@ -8,7 +9,6 @@ import {
 } from "./util/request";
 import { sanitizeUrl } from "./util/sanitizeUrl";
 import { Errback } from "./util/types";
-import { LinkedList } from "x3-linkedlist";
 
 const MIME_JSON = /\/(json|javascript)(\W|$)/;
 const LEADER_ENDPOINT_HEADER = "x-arango-endpoint";
@@ -83,6 +83,7 @@ export type Config =
   | string[]
   | Partial<{
       url: string | string[];
+      /** @deprecated Support for isAbsolute will be removed in arangojs 7. */
       isAbsolute: boolean;
       arangoVersion: number;
       loadBalancingStrategy: LoadBalancingStrategy;
