@@ -3,10 +3,10 @@ import {
   ClientRequest,
   ClientRequestArgs,
   IncomingMessage,
-  request as httpRequest
+  request as httpRequest,
 } from "http";
 import { Agent as HttpsAgent, request as httpsRequest } from "https";
-import { parse as parseUrl, Url } from "url";
+import { parse as parseUrl } from "url";
 import { btoa } from "./btoa";
 import { joinPath } from "./joinPath";
 import { Errback } from "./types";
@@ -23,7 +23,7 @@ export type ArangojsError = Error & {
 
 export interface RequestOptions {
   method: string;
-  url: Url;
+  url: { pathname: string; search?: string };
   headers: { [key: string]: string };
   body: any;
   expectBinary: boolean;
@@ -57,10 +57,10 @@ export function createRequest(
     const i = baseUrlParts.pathname.indexOf(":");
     if (i === -1) {
       socketPath = baseUrlParts.pathname;
-      baseUrlParts.pathname = undefined;
+      baseUrlParts.pathname = null;
     } else {
       socketPath = baseUrlParts.pathname.slice(0, i);
-      baseUrlParts.pathname = baseUrlParts.pathname.slice(i + 1) || undefined;
+      baseUrlParts.pathname = baseUrlParts.pathname.slice(i + 1) || null;
     }
   }
   if (socketPath && !socketPath.replace(/\//g, "").length) {
@@ -107,7 +107,7 @@ export function createRequest(
           options,
           (res: IncomingMessage) => {
             const data: Buffer[] = [];
-            res.on("data", chunk => data.push(chunk as Buffer));
+            res.on("data", (chunk) => data.push(chunk as Buffer));
             res.on("end", () => {
               const result = res as ArangojsResponse;
               result.request = req;
@@ -124,7 +124,7 @@ export function createRequest(
         req.on("timeout", () => {
           req.abort();
         });
-        req.on("error", err => {
+        req.on("error", (err) => {
           const error = err as ArangojsError;
           error.request = req;
           if (called) return;
@@ -138,13 +138,13 @@ export function createRequest(
         called = true;
         setTimeout(() => {
           callback(e);
-        });
+        }, 0);
       }
     },
     {
       close() {
         agent.destroy();
-      }
+      },
     }
   );
 }
