@@ -78,7 +78,8 @@ export interface ArangoSearchViewPropertiesOptions {
     | {
         field: string;
         asc: boolean;
-      })[];
+      }
+  )[];
   links?: {
     [key: string]: ArangoSearchViewCollectionLink | undefined;
   };

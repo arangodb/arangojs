@@ -222,10 +222,7 @@ export class GraphEdgeCollection extends EdgeCollection {
     });
   }
 
-  save(
-    data: Object | Array<Object>,
-    opts?: InsertOptions
-  ): Promise<any>;
+  save(data: Object | Array<Object>, opts?: InsertOptions): Promise<any>;
   save(
     data: Object | Array<Object>,
     fromId: DocumentHandle,

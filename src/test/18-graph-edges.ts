@@ -54,10 +54,16 @@ describe("Manipulating graph edges", function() {
         (e: any) => e.collection === "knows"
       );
       expect(
-        [].concat.apply([], edgeDefinition.map((e: any) => e.from))
+        [].concat.apply(
+          [],
+          edgeDefinition.map((e: any) => e.from)
+        )
       ).to.contain("person");
       expect(
-        [].concat.apply([], edgeDefinition.map((e: any) => e.to))
+        [].concat.apply(
+          [],
+          edgeDefinition.map((e: any) => e.to)
+        )
       ).to.contain("person");
     });
   });
@@ -103,10 +109,16 @@ describe("Manipulating graph edges", function() {
         (e: any) => e.collection === "works_in"
       );
       expect(
-        [].concat.apply([], edgeDefinition.map((e: any) => e.from))
+        [].concat.apply(
+          [],
+          edgeDefinition.map((e: any) => e.from)
+        )
       ).to.contain("person");
       expect(
-        [].concat.apply([], edgeDefinition.map((e: any) => e.to))
+        [].concat.apply(
+          [],
+          edgeDefinition.map((e: any) => e.to)
+        )
       ).to.contain("city");
     });
   });
@@ -128,10 +140,16 @@ describe("Manipulating graph edges", function() {
         (e: any) => e.collection === "knows"
       );
       expect(
-        [].concat.apply([], edgeDefinition.map((e: any) => e.from))
+        [].concat.apply(
+          [],
+          edgeDefinition.map((e: any) => e.from)
+        )
       ).to.contain("person");
       expect(
-        [].concat.apply([], edgeDefinition.map((e: any) => e.to))
+        [].concat.apply(
+          [],
+          edgeDefinition.map((e: any) => e.to)
+        )
       ).to.contain("city");
     });
   });

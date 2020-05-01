@@ -3,7 +3,7 @@ import {
   ClientRequest,
   ClientRequestArgs,
   IncomingMessage,
-  request as httpRequest,
+  request as httpRequest
 } from "http";
 import { Agent as HttpsAgent, request as httpsRequest } from "https";
 import { parse as parseUrl } from "url";
@@ -107,7 +107,7 @@ export function createRequest(
           options,
           (res: IncomingMessage) => {
             const data: Buffer[] = [];
-            res.on("data", (chunk) => data.push(chunk as Buffer));
+            res.on("data", chunk => data.push(chunk as Buffer));
             res.on("end", () => {
               const result = res as ArangojsResponse;
               result.request = req;
@@ -124,7 +124,7 @@ export function createRequest(
         req.on("timeout", () => {
           req.abort();
         });
-        req.on("error", (err) => {
+        req.on("error", err => {
           const error = err as ArangojsError;
           error.request = req;
           if (called) return;
@@ -144,7 +144,7 @@ export function createRequest(
     {
       close() {
         agent.destroy();
-      },
+      }
     }
   );
 }
