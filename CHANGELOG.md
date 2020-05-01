@@ -62,6 +62,15 @@ This is a major release and breaks backwards compatibility.
   The underlying collection can still be accessed from the `collection`
   property.
 
+- Removed `cursor.some` and `cursor.every`
+
+  These methods encouraged overfetching and should be replaced with more
+  efficient AQL queries.
+
+  The behavior can still be implemented by using the `next` method directly
+  or iterating over the cursor using the `forEach` method or the `for await`
+  syntax.
+
 ### Deprecated
 
 - Deprecated `db.useDatabase`

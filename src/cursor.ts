@@ -232,41 +232,6 @@ export class ArrayCursor<T = any> {
     return true;
   }
 
-  async every(
-    fn: (value: T, index: number, self: ArrayCursor<T>) => boolean
-  ): Promise<boolean> {
-    let index = 0;
-    while (this._result.length || this.hasMore) {
-      let result;
-      while (this._result.length) {
-        result = fn(this._result.shift()!, index, this);
-        index++;
-        if (!result) return false;
-      }
-      if (this.hasMore) await this._more();
-    }
-    return true;
-  }
-
-  /**
-   * TODO
-   */
-  async some(
-    fn: (value: T, index: number, self: ArrayCursor<T>) => boolean
-  ): Promise<boolean> {
-    let index = 0;
-    while (this._result.length || this.hasMore) {
-      let result;
-      while (this._result.length) {
-        result = fn(this._result.shift()!, index, this);
-        index++;
-        if (result) return true;
-      }
-      if (this.hasMore) await this._more();
-    }
-    return false;
-  }
-
   /**
    * TODO
    */
