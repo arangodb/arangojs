@@ -1,7 +1,7 @@
 /**
  * `import type { ArrayCursor } from "arangojs/cursor";`
  *
- * TODO
+ * The "cursor" module provides the {@link ArrayCursor} type for TypeScript.
  *
  * @packageDocumentation
  */
@@ -10,26 +10,46 @@ import { Database } from "./database";
 import { Dict } from "./util/types";
 
 /**
- * TODO
+ * Additional information about the cursor.
+ */
+export interface CursorExtras {
+  warnings: {
+    code: number;
+    message: string;
+  }[];
+  plan?: any;
+  profile?: any;
+  stats?: Dict<any>;
+}
+
+/**
+ * The `ArrayCursor` type represents a cursor returned from a
+ * {@link Database.query}.
+ *
+ * When using TypeScript, cursors can be cast to a specific item type in order
+ * to increase type safety.
+ *
+ * @param T - Type to use for each item. Defaults to `any`.
+ *
+ * @example
+ * ```ts
+ * const db = new Database();
+ * const query = aql`FOR x IN 1..5 RETURN x`;
+ * const result = await db.query(query) as ArrayCursor<number>;
+ * ```
  */
 export class ArrayCursor<T = any> {
   protected _db: Database;
   protected _result: LinkedList<any>;
   protected _count?: number;
-  protected _extra: {
-    warnings: { code: number; message: string }[];
-    plan?: any;
-    profile?: any;
-    stats?: Dict<any>;
-  };
+  protected _extra: CursorExtras;
   protected _hasMore: boolean;
   protected _id: string | undefined;
   protected _host?: number;
   protected _allowDirtyRead?: boolean;
 
   /**
-   * TODO
-   *
+   * @internal
    * @hidden
    */
   constructor(
@@ -73,9 +93,9 @@ export class ArrayCursor<T = any> {
   }
 
   /**
-   * TODO
+   * Additional information about the cursor.
    */
-  get extra() {
+  get extra(): CursorExtras {
     return this._extra;
   }
 
@@ -214,16 +234,49 @@ export class ArrayCursor<T = any> {
   }
 
   /**
-   * TODO
+   * Advances the cursor by applying the `callback` function to each item in
+   * the cursor's remaining result list until the cursor is depleted or
+   * `callback` returns the exact value `false`. Returns a promise that
+   * evalues to `true` unless the function returned `false`.
+   *
+   * **Note**: If the result set spans multiple batches, any remaining batches
+   * will only be fetched on demand. Depending on the cursor's TTL and the
+   * processing speed, this may result in the server discarding the cursor
+   * before it is fully depleted.
+   *
+   * See also: [Array:forEach](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach).
+   *
+   * @param callback - Function to execute on each element.
+   *
+   * @example
+   * ```js
+   * const cursor = await db.query(aql`FOR x IN 1..5 RETURN x`);
+   * const result = await cursor.forEach((currentValue) => {
+   *   console.log(currentValue);
+   * });
+   * console.log(result) // true
+   * console.log(cursor.hasNext); // false
+   * ```
+   *
+   * @example
+   * ```js
+   * const cursor = await db.query(aql`FOR x IN 1..5 RETURN x`);
+   * const result = await cursor.forEach((currentValue) => {
+   *   console.log(currentValue);
+   *   return false; // stop after the first item
+   * });
+   * console.log(result); // false
+   * console.log(cursor.hasNext); // true
+   * ```
    */
   async forEach(
-    fn: (value: T, index: number, self: ArrayCursor<T>) => boolean | void
+    callback: (currentValue: T, index: number, self: this) => false | void
   ): Promise<boolean> {
     let index = 0;
     while (this._result.length || this.hasMore) {
       let result;
       while (this._result.length) {
-        result = fn(this._result.shift()!, index, this);
+        result = callback(this._result.shift()!, index, this);
         index++;
         if (result === false) return result;
       }
@@ -233,16 +286,38 @@ export class ArrayCursor<T = any> {
   }
 
   /**
-   * TODO
+   * Depletes the cursor by applying the `callback` function to each item in
+   * the cursor's remaining result list. Returns an array containing the
+   * return values of `callback` for each item.
+   *
+   * **Note**: This creates an array of all return values, which may impact
+   * memory use when working with very large query result sets. Consider using
+   * {@link ArrayCursor.forEach}, {@link ArrayCursor.reduce} or
+   * {@link ArrayCursor.flatMap} instead.
+   *
+   * See also: [Array:map](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map).
+   *
+   * @param R - Return type of the `callback` function.
+   * @param callback - Function to execute on each element.
+   *
+   * @example
+   * ```js
+   * const cursor = await db.query(aql`FOR x IN 1..5 RETURN x`);
+   * const squares = await cursor.map((currentValue) => {
+   *   return currentValue ** 2;
+   * });
+   * console.log(squares); // [1, 4, 9, 16, 25]
+   * console.log(cursor.hasNext); // false
+   * ```
    */
-  async map<U = any>(
-    fn: (value: T, index: number, self: ArrayCursor<T>) => U
-  ): Promise<U[]> {
+  async map<R>(
+    callback: (currentValue: T, index: number, self: this) => R
+  ): Promise<R[]> {
     let index = 0;
     let result: any[] = [];
     while (this._result.length || this.hasMore) {
       while (this._result.length) {
-        result.push(fn(this._result.shift()!, index, this));
+        result.push(callback(this._result.shift()!, index, this));
         index++;
       }
       if (this.hasMore) await this._more();
@@ -251,16 +326,50 @@ export class ArrayCursor<T = any> {
   }
 
   /**
-   * TODO
+   * Depletes the cursor by applying the `callback` function to each item in
+   * the cursor's remaining result list. Returns an array containing the
+   * return values of `callback` for each item, flattened to a depth of 1.
+   *
+   * **Note**: If the result set spans multiple batches, any remaining batches
+   * will only be fetched on demand. Depending on the cursor's TTL and the
+   * processing speed, this may result in the server discarding the cursor
+   * before it is fully depleted.
+   *
+   * See also: [Array:flatMap](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/flatMap).
+   *
+   * @param R - Return type of the `callback` function.
+   * @param callback - Function to execute on each element.
+   *
+   * @example
+   * ```js
+   * const cursor = await db.query(aql`FOR x IN 1..5 RETURN x`);
+   * const squares = await cursor.flatMap((currentValue) => {
+   *   return [currentValue, currentValue ** 2];
+   * });
+   * console.log(squares); // [1, 1, 2, 4, 3, 9, 4, 16, 5, 25]
+   * console.log(cursor.hasNext); // false
+   * ```
+   *
+   * @example
+   * ```js
+   * const cursor = await db.query(aql`FOR x IN 1..5 RETURN x`);
+   * const odds = await cursor.flatMap((currentValue) => {
+   *   if (currentValue % 2 === 0) {
+   *     return []; // empty array flattens into nothing
+   *   }
+   *   return currentValue; // or [currentValue]
+   * });
+   * console.logs(odds); // [1, 3, 5]
+   * ```
    */
-  async flatMap<U = any>(
-    fn: (value: T, index: number, self: ArrayCursor<T>) => U
-  ): Promise<U[]> {
+  async flatMap<R>(
+    callback: (currentValue: T, index: number, self: this) => R | R[]
+  ): Promise<R[]> {
     let index = 0;
     let result: any[] = [];
     while (this._result.length || this.hasMore) {
       while (this._result.length) {
-        const value = fn(this._result.shift()!, index, this);
+        const value = callback(this._result.shift()!, index, this);
         if (Array.isArray(value)) {
           result.push(...value);
         } else {
@@ -274,33 +383,148 @@ export class ArrayCursor<T = any> {
   }
 
   /**
-   * TODO
+   * Depletes the cursor by applying the `reducer` function to each item in
+   * the cursor's remaining result list. Returns the return value of `reducer`
+   * for the last item.
+   *
+   * **Note**: Most complex uses of the `reduce` method can be replaced with
+   * simpler code using {@link ArrayCursor.forEach} or the `for await` syntax.
+   *
+   * **Note**: If the result set spans multiple batches, any remaining batches
+   * will only be fetched on demand. Depending on the cursor's TTL and the
+   * processing speed, this may result in the server discarding the cursor
+   * before it is fully depleted.
+   *
+   * See also: [Array:reduce](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reduce).
+   *
+   * @param R - Return type of the `reducer` function.
+   * @param reducer - Function to execute on each element.
+   * @param initialValue - Initial value of the `accumulator` value passed to
+   * the `reducer` function.
+   *
+   * @example
+   * ```js
+   * function largestOfTwo(one, two) {
+   *   return Math.max(one, two);
+   * }
+   * const cursor = await db.query(aql`FOR x IN 1..5 RETURN x`);
+   * const result = await cursor.reduce(largestOfTwo, 0);
+   * console.log(result); // 5
+   * console.log(cursor.hasNext); // false
+   * const emptyResult = await cursor.reduce(largestOfTwo, 0);
+   * console.log(emptyResult); // 0
+   * ```
+   *
+   * @example
+   * ```js
+   * // BAD! NEEDLESSLY COMPLEX!
+   * const cursor = await db.query(aql`FOR x IN 1..5 RETURN x`);
+   * const result = await cursor.reduce((accumulator, currentValue) => {
+   *   accumulator[currentValue % 2 === 0 ? "even" : "odd"].push(currentValue);
+   *   return accumulator;
+   * }, { odd: [], even: [] });
+   * console.log(result); // { odd: [1, 3, 5], even: [2, 4] }
+   *
+   * // GOOD! MUCH SIMPLER!
+   * const cursor = await db.query(aql`FOR x IN 1..5 RETURN x`);
+   * const odd = [];
+   * const even = [];
+   * for await (const item of cursor) {
+   *   if (currentValue % 2 === 0) {
+   *     even.push(currentValue);
+   *   } else {
+   *     odd.push(currentValue);
+   *   }
+   * }
+   * console.log({ odd, even }); // { odd: [1, 3, 5], even: [2, 4] }
+   * ```
    */
-  async reduce<U>(
-    fn: (accu: U, value: T, index: number, self: ArrayCursor<T>) => U,
-    accu?: U
-  ): Promise<U | undefined> {
+  async reduce<R>(
+    reducer: (accumulator: R, currentValue: T, index: number, self: this) => R,
+    initialValue: R
+  ): Promise<R>;
+  /**
+   * Depletes the cursor by applying the `reducer` function to each item in
+   * the cursor's remaining result list. Returns the return value of `reducer`
+   * for the last item.
+   *
+   * **Note**: If the result set spans multiple batches, any remaining batches
+   * will only be fetched on demand. Depending on the cursor's TTL and the
+   * processing speed, this may result in the server discarding the cursor
+   * before it is fully depleted.
+   *
+   * See also: [Array:reduce](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reduce).
+   *
+   * @param R - Return type of the `reducer` function.
+   * @param reducer - Function to execute on each element.
+   *
+   * @example
+   * ```js
+   * function largestOfTwo(one, two) {
+   *   return Math.max(one, two);
+   * }
+   * const cursor = await db.query(aql`FOR x IN 1..5 RETURN x`);
+   * const result = await cursor.reduce(largestOfTwo);
+   * console.log(result); // 5
+   * console.log(cursor.hasNext); // false
+   * const emptyResult = await cursor.reduce(largestOfTwo);
+   * console.log(emptyResult); // undefined
+   * ```
+   */
+  async reduce<R>(
+    reducer: (
+      accumulator: T | R,
+      currentValue: T,
+      index: number,
+      self: this
+    ) => R
+  ): Promise<R | undefined>;
+  async reduce<R>(
+    reducer: (accumulator: R, currentValue: T, index: number, self: this) => R,
+    initialValue?: R
+  ): Promise<R | undefined> {
     let index = 0;
-    if (!this._result.length) return accu;
-    if (accu === undefined) {
+    if (!this._result.length) return initialValue;
+    if (initialValue === undefined) {
       if (!this._result.length && !this.hasMore) {
         await this._more();
       }
-      accu = this._result.shift() as any;
+      initialValue = this._result.shift() as any;
       index += 1;
     }
     while (this._result.length || this.hasMore) {
       while (this._result.length) {
-        accu = fn(accu!, this._result.shift()!, index, this);
+        initialValue = reducer(
+          initialValue!,
+          this._result.shift()!,
+          index,
+          this
+        );
         index++;
       }
       if (this.hasMore) await this._more();
     }
-    return accu;
+    return initialValue;
   }
 
   /**
-   * TODO
+   * Kills the cursor and frees up associated database resources.
+   *
+   * This method has no effect if all batches have already been fetched.
+   *
+   * @example
+   * ```js
+   * const cursor1 = await db.query(aql`FOR x IN 1..5 RETURN x`);
+   * console.log(cursor1.hasMore); // false
+   * await cursor1.kill(); // no effect
+   *
+   * const cursor2 = await db.query(
+   *   aql`FOR x IN 1..5 RETURN x`,
+   *   { batchSize: 2 }
+   * );
+   * console.log(cursor2.hasMore); // true
+   * await cursor2.kill(); // cursor is depleted
+   * ```
    */
   async kill(): Promise<void> {
     if (!this.hasMore) return undefined;

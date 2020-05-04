@@ -144,7 +144,7 @@ describe("Cursor API", () => {
     });
     it("aborts if the callback returns false", async () => {
       const results: any[] = [];
-      await cursor.forEach((value: any) => {
+      await cursor.forEach((value) => {
         results.push(value);
         if (value === 5) return false;
         return;
