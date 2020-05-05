@@ -70,6 +70,10 @@ This is a major release and breaks backwards compatibility.
   be specified in the edge (document) data and no longer accept these values
   as positional arguments.
 
+- Removed `collection.bulkUpdate` method
+
+  The new method `collection.updateAll` now provides this functionality.
+
 #### Graph API
 
 - Removed generic collection methods from `GraphVertexCollection`
