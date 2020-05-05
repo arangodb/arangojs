@@ -13,9 +13,6 @@
  */
 import {
   ArangoCollection,
-  CollectionInsertResult,
-  CollectionRemoveResult,
-  CollectionSaveResult,
   DocumentCollection,
   EdgeCollection,
   isArangoCollection,
@@ -26,6 +23,7 @@ import { Database } from "./database";
 import {
   Document,
   DocumentData,
+  DocumentMetadata,
   DocumentSelector,
   Edge,
   EdgeData,
@@ -46,18 +44,18 @@ function mungeGharialResponse(body: any, prop: "vertex" | "edge" | "removed") {
 /**
  * TODO
  */
-export type GraphCollectionInsertOptions = {
-  waitForSync?: boolean;
-  returnNew?: boolean;
+export type GraphCollectionReadOptions = {
+  rev?: string;
+  graceful?: boolean;
+  allowDirtyRead?: boolean;
 };
 
 /**
  * TODO
  */
-export type GraphCollectionReadOptions = {
-  rev?: string;
-  graceful?: boolean;
-  allowDirtyRead?: boolean;
+export type GraphCollectionInsertOptions = {
+  waitForSync?: boolean;
+  returnNew?: boolean;
 };
 
 /**
@@ -224,9 +222,17 @@ export class GraphVertexCollection<T extends object = any>
    * TODO
    */
   save(
-    data: DocumentData<T>,
-    options?: GraphCollectionInsertOptions
-  ): Promise<CollectionInsertResult<Document<T>>> {
+    data: EdgeData<T>,
+    options?: GraphCollectionInsertOptions & { returnNew?: false }
+  ): Promise<DocumentMetadata>;
+  /**
+   * TODO
+   */
+  save(
+    data: EdgeData<T>,
+    options: GraphCollectionInsertOptions & { returnNew: true }
+  ): Promise<DocumentMetadata & { new: Document<T> }>;
+  save(data: DocumentData<T>, options?: GraphCollectionInsertOptions) {
     return this._db.request(
       {
         method: "POST",
@@ -244,8 +250,49 @@ export class GraphVertexCollection<T extends object = any>
   replace(
     selector: DocumentSelector,
     newValue: DocumentData<T>,
+    options?: GraphCollectionReplaceOptions & {
+      returnNew?: false;
+      returnOld?: false;
+    }
+  ): Promise<DocumentMetadata>;
+  /**
+   * TODO
+   */
+  replace(
+    selector: DocumentSelector,
+    newValue: DocumentData<T>,
+    options: GraphCollectionReplaceOptions & {
+      returnNew: true;
+      returnOld?: false;
+    }
+  ): Promise<DocumentMetadata & { new: Document<T> }>;
+  /**
+   * TODO
+   */
+  replace(
+    selector: DocumentSelector,
+    newValue: DocumentData<T>,
+    options: GraphCollectionReplaceOptions & {
+      returnNew?: false;
+      returnOld: true;
+    }
+  ): Promise<DocumentMetadata & { old: Document<T> }>;
+  /**
+   * TODO
+   */
+  replace(
+    selector: DocumentSelector,
+    newValue: DocumentData<T>,
+    options: GraphCollectionReplaceOptions & {
+      returnNew: true;
+      returnOld: true;
+    }
+  ): Promise<DocumentMetadata & { new: Document<T>; old: Document<T> }>;
+  replace(
+    selector: DocumentSelector,
+    newValue: DocumentData<T>,
     options: GraphCollectionReplaceOptions = {}
-  ): Promise<CollectionSaveResult<Document<T>>> {
+  ) {
     if (typeof options === "string") {
       options = { rev: options };
     }
@@ -273,8 +320,49 @@ export class GraphVertexCollection<T extends object = any>
   update(
     selector: DocumentSelector,
     newValue: Patch<DocumentData<T>>,
+    options?: GraphCollectionReplaceOptions & {
+      returnNew?: false;
+      returnOld?: false;
+    }
+  ): Promise<DocumentMetadata>;
+  /**
+   * TODO
+   */
+  update(
+    selector: DocumentSelector,
+    newValue: Patch<DocumentData<T>>,
+    options: GraphCollectionReplaceOptions & {
+      returnNew: true;
+      returnOld?: false;
+    }
+  ): Promise<DocumentMetadata & { new: Document<T> }>;
+  /**
+   * TODO
+   */
+  update(
+    selector: DocumentSelector,
+    newValue: Patch<DocumentData<T>>,
+    options: GraphCollectionReplaceOptions & {
+      returnNew?: false;
+      returnOld: true;
+    }
+  ): Promise<DocumentMetadata & { old: Document<T> }>;
+  /**
+   * TODO
+   */
+  update(
+    selector: DocumentSelector,
+    newValue: Patch<DocumentData<T>>,
+    options: GraphCollectionReplaceOptions & {
+      returnNew: true;
+      returnOld: true;
+    }
+  ): Promise<DocumentMetadata & { new: Document<T>; old: Document<T> }>;
+  update(
+    selector: DocumentSelector,
+    newValue: Patch<DocumentData<T>>,
     options: GraphCollectionReplaceOptions = {}
-  ): Promise<CollectionSaveResult<Document<T>>> {
+  ) {
     if (typeof options === "string") {
       options = { rev: options };
     }
@@ -295,14 +383,24 @@ export class GraphVertexCollection<T extends object = any>
       (res) => mungeGharialResponse(res.body, "vertex")
     );
   }
-
   /**
    * TODO
    */
   remove(
     selector: DocumentSelector,
+    options?: GraphCollectionRemoveOptions & { returnOld?: false }
+  ): Promise<DocumentMetadata>;
+  /**
+   * TODO
+   */
+  remove(
+    selector: DocumentSelector,
+    options: GraphCollectionRemoveOptions & { returnOld: true }
+  ): Promise<DocumentMetadata & { old: Document<T> }>;
+  remove(
+    selector: DocumentSelector,
     options: GraphCollectionRemoveOptions = {}
-  ): Promise<CollectionRemoveResult<Document<T>>> {
+  ) {
     if (typeof options === "string") {
       options = { rev: options };
     }
@@ -465,8 +563,16 @@ export class GraphEdgeCollection<T extends object = any>
    */
   save(
     data: EdgeData<T>,
-    options?: GraphCollectionInsertOptions
-  ): Promise<CollectionInsertResult<Edge<T>>> {
+    options?: GraphCollectionInsertOptions & { returnNew?: false }
+  ): Promise<DocumentMetadata>;
+  /**
+   * TODO
+   */
+  save(
+    data: EdgeData<T>,
+    options: GraphCollectionInsertOptions & { returnNew: true }
+  ): Promise<DocumentMetadata & { new: Edge<T> }>;
+  save(data: EdgeData<T>, options?: GraphCollectionInsertOptions) {
     return this._db.request(
       {
         method: "POST",
@@ -484,8 +590,49 @@ export class GraphEdgeCollection<T extends object = any>
   replace(
     selector: DocumentSelector,
     newValue: EdgeData<T>,
+    options?: GraphCollectionReplaceOptions & {
+      returnNew?: false;
+      returnOld?: false;
+    }
+  ): Promise<DocumentMetadata>;
+  /**
+   * TODO
+   */
+  replace(
+    selector: DocumentSelector,
+    newValue: EdgeData<T>,
+    options: GraphCollectionReplaceOptions & {
+      returnNew: true;
+      returnOld?: false;
+    }
+  ): Promise<DocumentMetadata & { new: Edge<T> }>;
+  /**
+   * TODO
+   */
+  replace(
+    selector: DocumentSelector,
+    newValue: EdgeData<T>,
+    options: GraphCollectionReplaceOptions & {
+      returnNew?: false;
+      returnOld: true;
+    }
+  ): Promise<DocumentMetadata & { old: Edge<T> }>;
+  /**
+   * TODO
+   */
+  replace(
+    selector: DocumentSelector,
+    newValue: EdgeData<T>,
+    options: GraphCollectionReplaceOptions & {
+      returnNew: true;
+      returnOld: true;
+    }
+  ): Promise<DocumentMetadata & { new: Edge<T>; old: Edge<T> }>;
+  replace(
+    selector: DocumentSelector,
+    newValue: EdgeData<T>,
     options: GraphCollectionReplaceOptions = {}
-  ): Promise<CollectionSaveResult<Edge<T>>> {
+  ) {
     if (typeof options === "string") {
       options = { rev: options };
     }
@@ -513,8 +660,49 @@ export class GraphEdgeCollection<T extends object = any>
   update(
     selector: DocumentSelector,
     newValue: Patch<EdgeData<T>>,
+    options?: GraphCollectionReplaceOptions & {
+      returnNew?: false;
+      returnOld?: false;
+    }
+  ): Promise<DocumentMetadata>;
+  /**
+   * TODO
+   */
+  update(
+    selector: DocumentSelector,
+    newValue: Patch<EdgeData<T>>,
+    options: GraphCollectionReplaceOptions & {
+      returnNew: true;
+      returnOld?: false;
+    }
+  ): Promise<DocumentMetadata & { new: Edge<T> }>;
+  /**
+   * TODO
+   */
+  update(
+    selector: DocumentSelector,
+    newValue: Patch<EdgeData<T>>,
+    options: GraphCollectionReplaceOptions & {
+      returnNew?: false;
+      returnOld: true;
+    }
+  ): Promise<DocumentMetadata & { old: Edge<T> }>;
+  /**
+   * TODO
+   */
+  update(
+    selector: DocumentSelector,
+    newValue: Patch<EdgeData<T>>,
+    options: GraphCollectionReplaceOptions & {
+      returnNew: true;
+      returnOld: true;
+    }
+  ): Promise<DocumentMetadata & { new: Edge<T>; old: Edge<T> }>;
+  update(
+    selector: DocumentSelector,
+    newValue: Patch<EdgeData<T>>,
     options: GraphCollectionReplaceOptions = {}
-  ): Promise<CollectionSaveResult<Edge<T>>> {
+  ) {
     if (typeof options === "string") {
       options = { rev: options };
     }
@@ -541,8 +729,19 @@ export class GraphEdgeCollection<T extends object = any>
    */
   remove(
     selector: DocumentSelector,
+    options?: GraphCollectionRemoveOptions & { returnOld?: false }
+  ): Promise<DocumentMetadata>;
+  /**
+   * TODO
+   */
+  remove(
+    selector: DocumentSelector,
+    options: GraphCollectionRemoveOptions & { returnOld: true }
+  ): Promise<DocumentMetadata & { old: Edge<T> }>;
+  remove(
+    selector: DocumentSelector,
     options: GraphCollectionRemoveOptions = {}
-  ): Promise<CollectionRemoveResult<Edge<T>>> {
+  ) {
     if (typeof options === "string") {
       options = { rev: options };
     }

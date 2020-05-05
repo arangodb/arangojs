@@ -3,134 +3,7 @@
 The _EdgeCollection API_ extends the
 [_Collection API_](README.md) with the following methods.
 
-## collection.document
-
-`async collection.document(selector, options?): Edge`
-
-Alias: `collection.edge`.
-
-Retrieves the edge matching the given _selector_ from the collection.
-
-**Arguments**
-
-- **selector**: `string`
-
-  The handle of the edge to retrieve. This can be either the `_id` or the `_key`
-  of an edge in the collection, or an edge (i.e. an object with an `_id` or
-  `_key` property).
-
-- **options**: `object` (optional)
-
-  An object with the following properties:
-
-  - **graceful**: `boolean` (Default: `false`)
-
-    If set to `true`, the method will return `null` instead of throwing an
-    error if the edge does not exist.
-
-  - **allowDirtyRead**: `boolean` (Default: `false`)
-
-    {% hint 'info' %}
-    Dirty reads were introduced in ArangoDB 3.4 and are not supported by
-    earlier versions of ArangoDB.
-    {% endhint %}
-
-    If set to `true`, the request will explicitly permit ArangoDB to return a
-    potentially dirty or stale result and arangojs will load balance the
-    request without distinguishing between leaders and followers.
-
-If a boolean is passed instead of an options object, it will be interpreted as
-the _graceful_ option.
-
-Returns the document.
-
-**Examples**
-
-```js
-const db = new Database();
-const collection = db.collection("edges");
-
-const edge = await collection.document("some-key");
-// the edge exists
-assert.equal(edge._key, "some-key");
-assert.equal(edge._id, "edges/some-key");
-
-// -- or --
-
-const edge = await collection.document("edges/some-key");
-// the edge exists
-assert.equal(edge._key, "some-key");
-assert.equal(edge._id, "edges/some-key");
-
-// -- or --
-
-const edge = await collection.document("some-key", true);
-if (edge === null) {
-  // the edge does not exist
-}
-```
-
 ## collection.save
-
-`async collection.save(data, options?): object`
-
-Creates a new edge with the given _data_ between the documents `data._from`
-and `data._to`.
-
-**Arguments**
-
-- **data**: `object`
-
-  The data of the new edge. The _data_ must include the properties
-  `_from` and `_to`.
-
-- **options**: `object` (optional)
-
-  If _options_ is set, it must be an object with any of the following properties:
-
-  - **waitForSync**: `boolean` (Default: `false`)
-
-    Wait until edge has been synced to disk.
-
-  - **returnNew**: `boolean` (Default: `false`)
-
-    If set to `true`, return additionally the complete new edge under the
-    attribute `new` in the result.
-
-  - **returnOld**: `boolean` (Default: `false`)
-
-    If set to `true`, return additionally the complete old edge under the
-    attribute `old` in the result.
-
-  - **silent**: `boolean` (Default: `false`)
-
-    If set to true, an empty object will be returned as response. No meta-data
-    will be returned for the created edge. This option can be used to save
-    some network traffic.
-
-  - **overwrite**: `boolean` (Default: `false`)
-
-    {% hint 'warning' %}
-    This option is only available when targeting ArangoDB v3.4.0 and later.
-    {% endhint %}
-
-    If set to true, the insert becomes a replace-insert. If a edge with the
-    same `_key` already exists the new edge is not rejected with unique
-    constraint violated but will replace the old edge.
-
-Returns an object.
-
-If **silent** was not set to `true`, the object will include the new edge's
-`_id`, `_key` and `_rev` properties.
-
-If **returnNew** was set to `true`, the object will include a full copy of the
-stored edge in the `new` property.
-
-If **returnOld** and **overwrite** were set to `true` and the inserted edge
-replaced an existing edge, the object will include a full copy of the
-previous edge in the `new` property.
-
-**Examples**
 
 ```js
 const db = new Database();
@@ -138,11 +11,11 @@ const collection = db.collection("edges");
 const info = await collection.save(
   {
     someData: "data",
-    _from: "verticies/start-vertex",
-    _to: "vertices/end-vertex"
+    _from: "vertices/start-vertex",
+    _to: "vertices/end-vertex",
   },
   {
-    returnNew: true
+    returnNew: true,
   }
 );
 
@@ -194,11 +67,14 @@ await collection.import([
   ["_key", "_from", "_to"],
   ["x", "vertices/a", "vertices/b"],
   ["y", "vertices/a", "vertices/c"],
-  ["z", "vertices/d", "vertices/a"]
+  ["z", "vertices/d", "vertices/a"],
 ]);
 const edges = await collection.edges("vertices/a");
 assert.equal(edges.length, 3);
-assert.deepEqual(edges.map(edge => edge._key), ["x", "y", "z"]);
+assert.deepEqual(
+  edges.map((edge) => edge._key),
+  ["x", "y", "z"]
+);
 ```
 
 ## collection.inEdges
@@ -243,7 +119,7 @@ await collection.import([
   ["_key", "_from", "_to"],
   ["x", "vertices/a", "vertices/b"],
   ["y", "vertices/a", "vertices/c"],
-  ["z", "vertices/d", "vertices/a"]
+  ["z", "vertices/d", "vertices/a"],
 ]);
 const edges = await collection.inEdges("vertices/a");
 assert.equal(edges.length, 1);
@@ -292,11 +168,14 @@ await collection.import([
   ["_key", "_from", "_to"],
   ["x", "vertices/a", "vertices/b"],
   ["y", "vertices/a", "vertices/c"],
-  ["z", "vertices/d", "vertices/a"]
+  ["z", "vertices/d", "vertices/a"],
 ]);
 const edges = await collection.outEdges("vertices/a");
 assert.equal(edges.length, 2);
-assert.deepEqual(edges.map(edge => edge._key), ["x", "y"]);
+assert.deepEqual(
+  edges.map((edge) => edge._key),
+  ["x", "y"]
+);
 ```
 
 ## collection.traversal
@@ -404,12 +283,12 @@ await collection.import([
   ["_key", "_from", "_to"],
   ["x", "vertices/a", "vertices/b"],
   ["y", "vertices/b", "vertices/c"],
-  ["z", "vertices/c", "vertices/d"]
+  ["z", "vertices/c", "vertices/d"],
 ]);
 const result = await collection.traversal("vertices/a", {
   direction: "outbound",
   visitor: "result.vertices.push(vertex._key);",
-  init: "result.vertices = [];"
+  init: "result.vertices = [];",
 });
 assert.deepEqual(result.vertices, ["a", "b", "c", "d"]);
 ```

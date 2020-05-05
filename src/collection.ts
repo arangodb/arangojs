@@ -488,101 +488,136 @@ export type CreateCollectionOptions = {
 };
 
 /**
- * TODO
+ * Options for retrieving a document from a collection.
  */
 export type CollectionReadOptions = {
   /**
-   * TODO
+   * If set to `true`, `null` is returned instead of an exception being thrown
+   * if the document does not exist.
    */
   graceful?: boolean;
   /**
-   * TODO
+   * If set to `true`, the request will explicitly permit ArangoDB to return a
+   * potentially dirty or stale result and arangojs will load balance the
+   * request without distinguishing between leaders and followers.
    */
   allowDirtyRead?: boolean;
 };
 
 /**
- * TODO
+ * Options for saving a document in a collection.
  */
 export type CollectionSaveOptions = {
   /**
-   * TODO
+   * If set to `true`, data will be synchronized to disk before returning.
+   *
+   * Default: `false`
    */
   waitForSync?: boolean;
   /**
-   * TODO
+   * If set to `true`, no data will be returned by the server. This option can
+   * be used to reduce network traffic.
+   *
+   * Default: `false`
    */
   silent?: boolean;
   /**
-   * TODO
+   * If set to `true`, the complete new document will be returned as the `new`
+   * property on the result object. Has no effect if `silent` is set to `true`.
+   *
+   * Default: `false`
    */
   returnNew?: boolean;
-  /**
-   * TODO
-   */
-  returnOld?: boolean;
 };
 
 /**
- * TODO
+ * Options for inserting a new document into a collection.
  */
 export type CollectionInsertOptions = CollectionSaveOptions & {
   /**
-   * TODO
+   * If set to `true`, a document with the same `_key` or `_id` already
+   * existing will be overwritten instead of resulting in an exception.
    *
-   * @deprecated ArangoDB 3.7
+   * @deprecated This option has been deprecated in ArangoDB 3.7 and replaced
+   * with the `overwriteMode` option.
    */
   overwrite?: boolean;
   /**
-   * TODO
+   * Defines what should happen if a document with the same `_key` or `_id`
+   * already exists, instead of throwing an exception.
    */
   overwriteMode?: "update" | "replace";
 };
 
 /**
- * TODO
+ * Options for replacing an existing document in a collection.
  */
 export type CollectionReplaceOptions = CollectionSaveOptions & {
   /**
-   * TODO
+   * If set to `false`, the existing document will only be modified if its
+   * `_rev` property matches the same property on the new data.
+   *
+   * Default: `true`
    */
   ignoreRevs?: boolean;
+  /**
+   * If set to `true`, the complete old document will be returned as the `old`
+   * property on the result object. Has no effect if `silent` is set to `true`.
+   *
+   * Default: `false`
+   */
+  returnOld?: boolean;
 };
 
 /**
- * TODO
+ * Options for updating a document in a collection.
  */
 export type CollectionUpdateOptions = CollectionReplaceOptions & {
   /**
-   * TODO
+   * If set to `false`, properties with a value of `null` will be removed from
+   * the new document.
+   *
+   * Default: `true`
    */
   keepNull?: boolean;
   /**
-   * TODO
+   * If set to `false`, object properties that already exist in the old
+   * document will be overwritten rather than merged. This does not affect
+   * arrays.
+   *
+   * Default: `true`
    */
   mergeObjects?: boolean;
 };
 
 /**
- * TODO
+ * Options for removing a document from a collection.
  */
 export type CollectionRemoveOptions = {
   /**
-   * TODO
+   * If set to `true`, changes will be synchronized to disk before returning.
+   *
+   * Default: `false`
    */
-  rSync?: boolean;
+  waitForSync?: boolean;
   /**
-   * TODO
+   * If set to `true`, the complete old document will be returned as the `old`
+   * property on the result object. Has no effect if `silent` is set to `true`.
+   *
+   * Default: `false`
    */
   returnOld?: boolean;
   /**
-   * TODO
+   * If set to `true`, no data will be returned by the server. This option can
+   * be used to reduce network traffic.
+   *
+   * Default: `false`
    */
   silent?: boolean;
 };
 
 /**
- * TODO
+ * Options for bulk importing documents into a collection.
  */
 export type CollectionImportOptions = {
   /**
@@ -1037,32 +1072,6 @@ export type CollectionEdgesResult<T extends object = any> = {
 
 /**
  * TODO
- */
-export type CollectionInsertResult<T> = DocumentMetadata & {
-  /**
-   * TODO
-   */
-  new?: T;
-};
-
-/**
- * TODO
- */
-export type CollectionRemoveResult<T> = DocumentMetadata & {
-  /**
-   * TODO
-   */
-  old?: T;
-};
-
-/**
- * TODO
- */
-export type CollectionSaveResult<T> = CollectionInsertResult<T> &
-  CollectionRemoveResult<T>;
-
-/**
- * TODO
  *
  * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
  * replaced with AQL queries.
@@ -1119,16 +1128,6 @@ export type SimpleQueryRemoveByKeysResult<T extends object = any> = {
    * TODO
    */
   old?: DocumentMetadata[] | Document<T>[];
-};
-
-/**
- * TODO
- */
-export type CollectionIndexResult = {
-  /**
-   * TODO
-   */
-  id: string;
 };
 
 // Collections
@@ -1449,98 +1448,338 @@ export interface DocumentCollection<T extends object = any>
    */
   getResponsibleShard(document: Partial<Document<T>>): Promise<string>;
   /**
-   * TODO
+   * Derives a document `_id` from the given selector for this collection.
+   *
+   * Throws an exception when passed a document or `_id` from a different
+   * collection.
+   *
+   * @param selector - Document `_key`, `_id` or object with either of those
+   * properties (e.g. a document from this collection).
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
+   * const meta = await collection.save({ foo: "bar" }, { returnNew: true });
+   * const doc = meta.new;
+   * console.log(collection.documentId(meta)); // via meta._id
+   * console.log(collection.documentId(doc)); // via doc._id
+   * console.log(collection.documentId(meta._key)); // also works
+   * ```
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collection1 = db.collection("some-collection");
+   * const collection2 = db.collection("other-collection");
+   * const meta = await collection1.save({ foo: "bar" });
+   * // Mixing collections is usually a mistake
+   * console.log(collection1.documentId(meta)); // ok: same collection
+   * console.log(collection2.documentId(meta)); // throws: wrong collection
+   * console.log(collection2.documentId(meta._id)); // also throws
+   * console.log(collection2.documentId(meta._key)); // ok but wrong collection
+   * ```
    */
   documentId(selector: DocumentSelector): string;
   /**
-   * TODO
+   * Checks whether a document matching the given key or id exists in this
+   * collection.
+   *
+   * Throws an exception when passed a document or `_id` from a different
+   * collection.
+   *
+   * @param selector - Document `_key`, `_id` or object with either of those
+   * properties (e.g. a document from this collection).
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
+   * const exists = await collection.documentExists("abc123");
+   * if (!exists) {
+   *   console.log("Document does not exist");
+   * }
+   * ```
    */
   documentExists(selector: DocumentSelector): Promise<boolean>;
   /**
-   * TODO
+   * Retrives the document matching the given key or id.
+   *
+   * Throws an exception when passed a document or `_id` from a different
+   * collection.
+   *
+   * @param selector - Document `_key`, `_id` or object with either of those
+   * properties (e.g. a document from this collection).
+   * @param options - Options for retrieving the document.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
+   * try {
+   *   const document = await collection.document("abc123");
+   *   console.log(document);
+   * } catch (e) {
+   *   console.error("Could not find document");
+   * }
+   * ```
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
+   * const document = await collection.document("abc123", { graceful: true });
+   * if (document) {
+   *   console.log(document);
+   * } else {
+   *   console.error("Could not find document");
+   * }
+   * ```
    */
   document(
     selector: DocumentSelector,
-    options?: CollectionReadOptions & { graceful?: false }
+    options?: CollectionReadOptions
   ): Promise<Document<T>>;
   /**
-   * TODO
+   * Retrives the document matching the given key or id.
+   *
+   * Throws an exception when passed a document or `_id` from a different
+   * collection.
+   *
+   * @param selector - Document `_key`, `_id` or object with either of those
+   * properties (e.g. a document from this collection).
+   * @param graceful - If set to `true`, `null` is returned instead of an
+   * exception being thrown if the document does not exist.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
+   * try {
+   *   const document = await collection.document("abc123");
+   *   console.log(document);
+   * } catch (e) {
+   *   console.error("Could not find document");
+   * }
+   * ```
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
+   * const document = await collection.document("abc123", true);
+   * if (document) {
+   *   console.log(document);
+   * } else {
+   *   console.error("Could not find document");
+   * }
+   * ```
    */
-  document(
-    selector: DocumentSelector,
-    options: CollectionReadOptions & { graceful: true }
-  ): Promise<Document<T> | null>;
+  document(selector: DocumentSelector, graceful: boolean): Promise<Document<T>>;
   /**
-   * TODO
-   */
-  document(selector: DocumentSelector, graceful: false): Promise<Document<T>>;
-  /**
-   * TODO
-   */
-  document(
-    selector: DocumentSelector,
-    graceful: true
-  ): Promise<Document<T> | null>;
-  /**
-   * TODO
+   * Inserts a new document with the given `data` into the collection.
+   *
+   * @param data - The contents of the new document.
+   * @param options - Options for inserting the document.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
+   * const result = await collection.save(
+   *   { _key: "a", color: "blue", count: 1 },
+   *   { returnNew: true }
+   * );
+   * console.log(result.new.color, result.new.count); // "blue" 1
+   * ```
    */
   save(
     data: DocumentData<T>,
     options?: CollectionInsertOptions
-  ): Promise<CollectionSaveResult<Document<T>>>;
+  ): Promise<DocumentMetadata & { new?: Document<T> }>;
   /**
-   * TODO
+   * Inserts new documents with the given `data` into the collection.
+   *
+   * @param data - The contents of the new documents.
+   * @param options - Options for inserting the documents.
    */
   saveAll(
     data: Array<DocumentData<T>>,
     options?: CollectionInsertOptions
-  ): Promise<CollectionSaveResult<Document<T>>[]>;
+  ): Promise<Array<DocumentMetadata & { new?: Document<T> }>>;
   /**
-   * TODO
+   * Replaces an existing document in the collection.
+   *
+   * Throws an exception when passed a document or `_id` from a different
+   * collection.
+   *
+   * @param selector - Document `_key`, `_id` or object with either of those
+   * properties (e.g. a document from this collection).
+   * @param newData - The contents of the new document.
+   * @param options - Options for replacing the document.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
+   * await collection.save({ _key: "a", color: "blue", count: 1 });
+   * const result = await collection.replace(
+   *   "a",
+   *   { color: "red" },
+   *   { returnNew: true }
+   * );
+   * console.log(result.new.color, result.new.count); // "red" undefined
+   * ```
    */
   replace(
     selector: DocumentSelector,
-    newValue: DocumentData<T>,
+    newData: DocumentData<T>,
     options?: CollectionReplaceOptions
-  ): Promise<CollectionSaveResult<Document<T>>>;
+  ): Promise<DocumentMetadata & { new?: Document<T>; old?: Document<T> }>;
   /**
-   * TODO
+   * Replaces existing documents in the collection, identified by the `_key` or
+   * `_id` of each document.
+   *
+   * @param newData - The documents to replace.
+   * @param options - Options for replacing the documents.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
+   * await collection.save({ _key: "a", color: "blue", count: 1 });
+   * await collection.save({ _key: "b", color: "green", count: 3 });
+   * const result = await collection.replaceAll(
+   *   [
+   *     { _key: "a", color: "red" },
+   *     { _key: "b", color: "yellow", count: 2 }
+   *   ],
+   *   { returnNew: true }
+   * );
+   * console.log(result[0].new.color, result[0].new.count); // "red" undefined
+   * console.log(result[1].new.color, result[1].new.count); // "yellow" 2
+   * ```
    */
   replaceAll(
-    newValues: Array<DocumentData<T> & ({ _key: string } | { _id: string })>,
+    newData: Array<DocumentData<T> & ({ _key: string } | { _id: string })>,
     options?: CollectionReplaceOptions
-  ): Promise<CollectionSaveResult<Document<T>>[]>;
+  ): Promise<
+    Array<DocumentMetadata & { new?: Document<T>; old?: Document<T> }>
+  >;
   /**
-   * TODO
+   * Updates an existing document in the collection.
+   *
+   * Throws an exception when passed a document or `_id` from a different
+   * collection.
+   *
+   * @param selector - Document `_key`, `_id` or object with either of those
+   * properties (e.g. a document from this collection).
+   * @param newData - The data for updating the document.
+   * @param options - Options for updating the document.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
+   * await collection.save({ _key: "a", color: "blue", count: 1 });
+   * const result = await collection.update(
+   *   "a",
+   *   { count: 2 },
+   *   { returnNew: true }
+   * );
+   * console.log(result.new.color, result.new.count); // "blue" 2
+   * ```
    */
   update(
     selector: DocumentSelector,
-    newValue: Patch<DocumentData<T>>,
+    newData: Patch<DocumentData<T>>,
     options?: CollectionUpdateOptions
-  ): Promise<CollectionSaveResult<Document<T>>>;
+  ): Promise<DocumentMetadata & { new?: Document<T>; old?: Document<T> }>;
   /**
-   * TODO
+   * Updates existing documents in the collection, identified by the `_key` or
+   * `_id` of each document.
+   *
+   * @param newData - The data for updating the documents.
+   * @param options - Options for updating the documents.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
+   * await collection.save({ _key: "a", color: "blue", count: 1 });
+   * await collection.save({ _key: "b", color: "green", count: 3 });
+   * const result = await collection.updateAll(
+   *   [
+   *     { _key: "a", count: 2 },
+   *     { _key: "b", count: 4 }
+   *   ],
+   *   { returnNew: true }
+   * );
+   * console.log(result[0].new.color, result[0].new.count); // "blue" 2
+   * console.log(result[1].new.color, result[1].new.count); // "green" 4
+   * ```
    */
   updateAll(
-    newValues: Array<
+    newData: Array<
       Patch<DocumentData<T>> & ({ _key: string } | { _id: string })
     >,
     options?: CollectionUpdateOptions
-  ): Promise<CollectionSaveResult<Document<T>>[]>;
+  ): Promise<
+    Array<DocumentMetadata & { new?: Document<T>; old?: Document<T> }>
+  >;
   /**
-   * TODO
+   * Removes an existing document from the collection.
+   *
+   * Throws an exception when passed a document or `_id` from a different
+   * collection.
+   *
+   * @param selector - Document `_key`, `_id` or object with either of those
+   * properties (e.g. a document from this collection).
+   * @param options - Options for removing the document.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
+   * await collection.remove("abc123");
+   * // document with key "abc123" deleted
+   * ```
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
+   * const doc = await collection.document("abc123");
+   * await collection.remove(doc);
+   * // document with key "abc123" deleted
+   * ```
    */
   remove(
     selector: DocumentSelector,
     options?: CollectionRemoveOptions
-  ): Promise<CollectionRemoveResult<Document<T>>>;
+  ): Promise<DocumentMetadata & { old?: Document<T> }>;
   /**
-   * TODO
+   * Removes existing documents from the collection.
+   *
+   * Throws an exception when passed any document or `_id` from a different
+   * collection.
+   *
+   * @param selectors - Documents `_key`, `_id` or objects with either of those
+   * properties (e.g. documents from this collection).
+   * @param options - Options for removing the documents.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
+   * await collection.removeAll(["abc123", "def456"]);
+   * // document with keys "abc123" and "def456" deleted
+   * ```
    */
   removeAll(
-    selector: Array<DocumentSelector>,
+    selectors: DocumentSelector[],
     options?: CollectionRemoveOptions
-  ): Promise<CollectionRemoveResult<Document<T>>[]>;
+  ): Promise<Array<DocumentMetadata & { old?: Document<T> }>>;
   /**
    * Bulk imports the given `data` into the collection.
    *
@@ -1718,7 +1957,7 @@ export interface DocumentCollection<T extends object = any>
    */
   replaceByExample(
     example: Partial<DocumentData<T>>,
-    newValue: DocumentData<T>,
+    newData: DocumentData<T>,
     options?: SimpleQueryReplaceByExampleOptions
   ): Promise<ArangoResponseMetadata & SimpleQueryReplaceByExampleResult>;
 
@@ -1730,23 +1969,9 @@ export interface DocumentCollection<T extends object = any>
    */
   updateByExample(
     example: Partial<DocumentData<T>>,
-    newValue: Patch<DocumentData<T>>,
+    newData: Patch<DocumentData<T>>,
     options?: SimpleQueryUpdateByExampleOptions
   ): Promise<ArangoResponseMetadata & SimpleQueryUpdateByExampleResult>;
-  /**
-   * TODO
-   */
-  remove(
-    selector: DocumentSelector,
-    options?: CollectionRemoveOptions
-  ): Promise<CollectionRemoveResult<Edge<T>>>;
-  /**
-   * TODO
-   */
-  removeAll(
-    selector: Array<DocumentSelector>,
-    options?: CollectionRemoveOptions
-  ): Promise<CollectionRemoveResult<Edge<T>>[]>;
 
   /**
    * TODO
@@ -1929,7 +2154,7 @@ export interface DocumentCollection<T extends object = any>
    */
   dropIndex(
     selector: IndexSelector
-  ): Promise<ArangoResponseMetadata & CollectionIndexResult>;
+  ): Promise<ArangoResponseMetadata & { id: string }>;
   //#endregion
 }
 
@@ -1941,75 +2166,184 @@ export interface DocumentCollection<T extends object = any>
  */
 export interface EdgeCollection<T extends object = any>
   extends DocumentCollection<T> {
-  //#region crud
   /**
-   * TODO
+   * Retrives the document matching the given key or id.
+   *
+   * Throws an exception when passed a document or `_id` from a different
+   * collection, or if the document does not exist.
+   *
+   * @param selector - Document `_key`, `_id` or object with either of those
+   * properties (e.g. a document from this collection).
+   * @param options - Options for retrieving the document.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
+   * try {
+   *   const document = await collection.document("abc123");
+   *   console.log(document);
+   * } catch (e) {
+   *   console.error("Could not find document");
+   * }
+   * ```
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
+   * const document = await collection.document("abc123", { graceful: true });
+   * if (document) {
+   *   console.log(document);
+   * } else {
+   *   console.error("Document does not exist");
+   * }
+   * ```
    */
   document(
     selector: DocumentSelector,
-    options?: CollectionReadOptions & { graceful?: false }
+    options?: CollectionReadOptions
   ): Promise<Edge<T>>;
   /**
-   * TODO
+   * Retrives the document matching the given key or id.
+   *
+   * Throws an exception when passed a document or `_id` from a different
+   * collection, or if the document does not exist.
+   *
+   * @param selector - Document `_key`, `_id` or object with either of those
+   * properties (e.g. a document from this collection).
+   * @param graceful - If set to `true`, `null` is returned instead of an
+   * exception being thrown if the document does not exist.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
+   * try {
+   *   const document = await collection.document("abc123");
+   *   console.log(document);
+   * } catch (e) {
+   *   console.error("Could not find document");
+   * }
+   * ```
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
+   * const document = await collection.document("abc123", true);
+   * if (document) {
+   *   console.log(document);
+   * } else {
+   *   console.error("Document does not exist");
+   * }
+   * ```
    */
-  document(
-    selector: DocumentSelector,
-    options: CollectionReadOptions & { graceful: true }
-  ): Promise<Edge<T> | null>;
+  document(selector: DocumentSelector, graceful: boolean): Promise<Edge<T>>;
   /**
-   * TODO
-   */
-  document(selector: DocumentSelector, graceful?: false): Promise<Edge<T>>;
-  /**
-   * TODO
-   */
-  document(selector: DocumentSelector, graceful: true): Promise<Edge<T> | null>;
-  /**
-   * TODO
+   * Inserts a new document with the given `data` into the collection.
+   *
+   * @param data - The contents of the new document.
+   * @param options - Options for inserting the document.
    */
   save(
     data: EdgeData<T>,
     options?: CollectionInsertOptions
-  ): Promise<CollectionSaveResult<Edge<T>>>;
+  ): Promise<DocumentMetadata & { new?: Edge<T> }>;
   /**
-   * TODO
+   * Inserts new documents with the given `data` into the collection.
+   *
+   * @param data - The contents of the new documents.
+   * @param options - Options for inserting the documents.
    */
   saveAll(
     data: Array<EdgeData<T>>,
     options?: CollectionInsertOptions
-  ): Promise<CollectionSaveResult<Edge<T>>[]>;
+  ): Promise<Array<DocumentMetadata & { new?: Edge<T> }>>;
   /**
-   * TODO
+   * Replaces an existing document in the collection.
+   *
+   * Throws an exception when passed a document or `_id` from a different
+   * collection.
+   *
+   * @param selector - Document `_key`, `_id` or object with either of those
+   * properties (e.g. a document from this collection).
+   * @param newData - The contents of the new document.
+   * @param options - Options for replacing the document.
    */
   replace(
     selector: DocumentSelector,
-    newValue: DocumentData<T>,
+    newData: DocumentData<T>,
     options?: CollectionReplaceOptions
-  ): Promise<CollectionSaveResult<Edge<T>>>;
+  ): Promise<DocumentMetadata & { new?: Edge<T>; old?: Edge<T> }>;
   /**
-   * TODO
+   * Replaces existing documents in the collection, identified by the `_key` or
+   * `_id` of each document.
+   *
+   * @param newData - The documents to replace.
+   * @param options - Options for replacing the documents.
    */
   replaceAll(
-    newValues: Array<DocumentData<T> & ({ _key: string } | { _id: string })>,
+    newData: Array<DocumentData<T> & ({ _key: string } | { _id: string })>,
     options?: CollectionReplaceOptions
-  ): Promise<CollectionSaveResult<Edge<T>>[]>;
+  ): Promise<Array<DocumentMetadata & { new?: Edge<T>; old?: Edge<T> }>>;
   /**
-   * TODO
+   * Updates an existing document in the collection.
+   *
+   * Throws an exception when passed a document or `_id` from a different
+   * collection.
+   *
+   * @param selector - Document `_key`, `_id` or object with either of those
+   * properties (e.g. a document from this collection).
+   * @param newData - The data for updating the document.
+   * @param options - Options for updating the document.
    */
   update(
     selector: DocumentSelector,
-    newValue: Patch<DocumentData<T>>,
+    newData: Patch<DocumentData<T>>,
     options?: CollectionUpdateOptions
-  ): Promise<CollectionSaveResult<Edge<T>>>;
+  ): Promise<DocumentMetadata & { new?: Edge<T>; old?: Edge<T> }>;
   /**
-   * TODO
+   * Updates existing documents in the collection, identified by the `_key` or
+   * `_id` of each document.
+   *
+   * @param newData - The data for updating the documents.
+   * @param options - Options for updating the documents.
    */
   updateAll(
-    newValues: Array<
+    newData: Array<
       Patch<DocumentData<T>> & ({ _key: string } | { _id: string })
     >,
     options?: CollectionUpdateOptions
-  ): Promise<CollectionSaveResult<Edge<T>>[]>;
+  ): Promise<Array<DocumentMetadata & { new?: Edge<T>; old?: Edge<T> }>>;
+  /**
+   * Removes an existing document from the collection.
+   *
+   * Throws an exception when passed a document or `_id` from a different
+   * collection.
+   *
+   * @param selector - Document `_key`, `_id` or object with either of those
+   * properties (e.g. a document from this collection).
+   * @param options - Options for removing the document.
+   */
+  remove(
+    selector: DocumentSelector,
+    options?: CollectionRemoveOptions
+  ): Promise<DocumentMetadata & { old?: Edge<T> }>;
+  /**
+   * Removes existing documents from the collection.
+   *
+   * Throws an exception when passed any document or `_id` from a different
+   * collection.
+   *
+   * @param selectors - Documents `_key`, `_id` or objects with either of those
+   * properties (e.g. documents from this collection).
+   * @param options - Options for removing the documents.
+   */
+  removeAll(
+    selectors: DocumentSelector[],
+    options?: CollectionRemoveOptions
+  ): Promise<Array<DocumentMetadata & { old?: Edge<T> }>>;
   /**
    * Bulk imports the given `data` into the collection.
    *
@@ -2466,7 +2800,7 @@ export class Collection<T extends object = any>
         body: data,
         qs: options,
       },
-      (res) => res.body
+      (res) => (options && options.silent ? undefined : res.body)
     );
   }
 
@@ -2478,59 +2812,59 @@ export class Collection<T extends object = any>
         body: data,
         qs: options,
       },
-      (res) => res.body
+      (res) => (options && options.silent ? undefined : res.body)
     );
   }
 
   replace(
     selector: DocumentSelector,
-    newValue: DocumentData<T>,
+    newData: DocumentData<T>,
     options?: CollectionReplaceOptions
   ) {
     return this._db.request(
       {
         method: "PUT",
         path: `/_api/document/${_documentHandle(selector, this._name)}`,
-        body: newValue,
+        body: newData,
         qs: options,
       },
-      (res) => res.body
+      (res) => (options && options.silent ? undefined : res.body)
     );
   }
 
   replaceAll(
-    newValues: Array<DocumentData<T> & ({ _key: string } | { _id: string })>,
+    newData: Array<DocumentData<T> & ({ _key: string } | { _id: string })>,
     options?: CollectionReplaceOptions
   ) {
     return this._db.request(
       {
         method: "PUT",
         path: `/_api/document/${this._name}`,
-        body: newValues,
+        body: newData,
         qs: options,
       },
-      (res) => res.body
+      (res) => (options && options.silent ? undefined : res.body)
     );
   }
 
   update(
     selector: DocumentSelector,
-    newValue: Patch<DocumentData<T>>,
+    newData: Patch<DocumentData<T>>,
     options?: CollectionUpdateOptions
   ) {
     return this._db.request(
       {
         method: "PATCH",
         path: `/_api/document/${_documentHandle(selector, this._name)}`,
-        body: newValue,
+        body: newData,
         qs: options,
       },
-      (res) => res.body
+      (res) => (options && options.silent ? undefined : res.body)
     );
   }
 
   updateAll(
-    newValues: Array<
+    newData: Array<
       Patch<DocumentData<T>> & ({ _key: string } | { _id: string })
     >,
     options?: CollectionUpdateOptions
@@ -2539,10 +2873,10 @@ export class Collection<T extends object = any>
       {
         method: "PATCH",
         path: `/_api/document/${this._name}`,
-        body: newValues,
+        body: newData,
         qs: options,
       },
-      (res) => res.body
+      (res) => (options && options.silent ? undefined : res.body)
     );
   }
 
@@ -2553,22 +2887,21 @@ export class Collection<T extends object = any>
         path: `/_api/document/${_documentHandle(selector, this._name)}`,
         qs: options,
       },
-      (res) => res.body
+      (res) => (options && options.silent ? undefined : res.body)
     );
   }
 
-  removeAll(
-    selectors: Array<DocumentSelector>,
-    options?: CollectionRemoveOptions
-  ) {
+  removeAll(selectors: DocumentSelector[], options?: CollectionRemoveOptions) {
     return this._db.request(
       {
         method: "DELETE",
         path: `/_api/document/${this._name}`,
-        body: selectors,
+        body: selectors.map((selector) =>
+          _documentHandle(selector, this._name)
+        ),
         qs: options,
       },
-      (res) => res.body
+      (res) => (options && options.silent ? undefined : res.body)
     );
   }
 
@@ -2728,7 +3061,7 @@ export class Collection<T extends object = any>
 
   replaceByExample(
     example: Partial<DocumentData<T>>,
-    newValue: DocumentData<T>,
+    newData: DocumentData<T>,
     options?: SimpleQueryReplaceByExampleOptions
   ) {
     return this._db.request(
@@ -2738,7 +3071,7 @@ export class Collection<T extends object = any>
         body: {
           ...options,
           example,
-          newValue,
+          newData,
           collection: this._name,
         },
       },
@@ -2748,7 +3081,7 @@ export class Collection<T extends object = any>
 
   updateByExample(
     example: Partial<DocumentData<T>>,
-    newValue: Patch<DocumentData<T>>,
+    newData: Patch<DocumentData<T>>,
     options?: SimpleQueryUpdateByExampleOptions
   ) {
     return this._db.request(
@@ -2758,7 +3091,7 @@ export class Collection<T extends object = any>
         body: {
           ...options,
           example,
-          newValue,
+          newData,
           collection: this._name,
         },
       },
