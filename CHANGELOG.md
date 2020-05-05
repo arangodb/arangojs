@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Removed
+
+- Removed `collection.edge` method
+
+  This method was previously an alias for `collection.document`.
+
+  The method `graphEdgeCollection.edge` is unaffected by this change.
+
 ### Fixed
 
 - Changed async return type of `collection.index` from `Index[]` to `Index`

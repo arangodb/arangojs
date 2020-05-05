@@ -43,7 +43,7 @@ describe("EdgeCollection API", function () {
       meta = await collection.save(data);
     });
     it("returns an edge in the collection", async () => {
-      const doc = await collection.edge(meta._id);
+      const doc = await collection.document(meta._id);
       expect(doc).to.have.keys("_key", "_id", "_rev", "_from", "_to");
       expect(doc._id).to.equal(meta._id);
       expect(doc._key).to.equal(meta._key);
@@ -52,7 +52,7 @@ describe("EdgeCollection API", function () {
       expect(doc._to).to.equal(data._to);
     });
     it("does not throw on not found when graceful", async () => {
-      const doc = await collection.edge("does-not-exist", true);
+      const doc = await collection.document("does-not-exist", true);
       expect(doc).to.equal(null);
     });
   });
@@ -99,7 +99,7 @@ describe("EdgeCollection API", function () {
       expect(meta).to.have.property("_id").that.is.a("string");
       expect(meta).to.have.property("_rev").that.is.a("string");
       expect(meta).to.have.property("_key").that.is.a("string");
-      const doc = await collection.edge(meta._id);
+      const doc = await collection.document(meta._id);
       expect(doc).to.have.keys(
         "something",
         "_key",
@@ -127,7 +127,7 @@ describe("EdgeCollection API", function () {
       expect(meta).to.have.property("_id").that.is.a("string");
       expect(meta).to.have.property("_rev").that.is.a("string");
       expect(meta).to.have.property("_key").that.equals(data._key);
-      const doc = await collection.edge(meta._id);
+      const doc = await collection.document(meta._id);
       expect(doc).to.have.keys(
         "something",
         "_key",
@@ -152,7 +152,7 @@ describe("EdgeCollection API", function () {
       expect(meta).to.have.property("_key").that.is.a("string");
       expect(meta).to.have.property("new").that.is.an("object");
       expect(meta.new).to.have.property("something", data.something);
-      const doc = await collection.edge(meta._id);
+      const doc = await collection.document(meta._id);
       expect(doc).to.have.keys(
         "something",
         "_key",
@@ -224,7 +224,7 @@ describe("EdgeCollection API", function () {
         _from: "d/1",
         _to: "d/2",
       });
-      const newData = await collection.edge(doc._key);
+      const newData = await collection.document(doc._key);
       expect(newData).not.to.have.property("potato");
       expect(newData).to.have.property("something", "peanuts");
     });
@@ -240,7 +240,7 @@ describe("EdgeCollection API", function () {
       const meta = await collection.save(data, { returnNew: true });
       const doc = meta.new!;
       await collection.update(doc, { more: "peanuts", empty: null });
-      const newData = await collection.edge(doc._key);
+      const newData = await collection.document(doc._key);
       expect(newData).to.have.property("something", doc.something);
       expect(newData).to.have.property("more", "peanuts");
       expect(newData).to.have.property("empty", null);
@@ -259,7 +259,7 @@ describe("EdgeCollection API", function () {
         { more: "peanuts", empty: null },
         { keepNull: false }
       );
-      const newData = await collection.edge(doc._key);
+      const newData = await collection.document(doc._key);
       expect(newData).to.have.property("something", doc.something);
       expect(newData).to.have.property("more", "peanuts");
       expect(newData).not.to.have.property("empty");
@@ -273,7 +273,7 @@ describe("EdgeCollection API", function () {
     it("deletes the given edge", async () => {
       await collection.remove(key);
       try {
-        await collection.edge(key);
+        await collection.document(key);
       } catch (e) {
         return;
       }

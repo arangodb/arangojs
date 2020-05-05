@@ -1945,28 +1945,6 @@ export interface EdgeCollection<T extends object = any>
   /**
    * TODO
    */
-  edge(
-    selector: DocumentSelector,
-    options?: CollectionReadOptions & { graceful?: false }
-  ): Promise<Edge<T>>;
-  /**
-   * TODO
-   */
-  edge(
-    selector: DocumentSelector,
-    options: CollectionReadOptions & { graceful: true }
-  ): Promise<Edge<T> | null>;
-  /**
-   * TODO
-   */
-  edge(selector: DocumentSelector, graceful: false): Promise<Edge<T>>;
-  /**
-   * TODO
-   */
-  edge(selector: DocumentSelector, graceful: true): Promise<Edge<T> | null>;
-  /**
-   * TODO
-   */
   document(
     selector: DocumentSelector,
     options?: CollectionReadOptions & { graceful?: false }
@@ -2478,13 +2456,6 @@ export class Collection<T extends object = any>
       }
       throw err;
     }
-  }
-
-  edge(
-    selector: DocumentSelector,
-    options: boolean | CollectionReadOptions = {}
-  ) {
-    return this.document(selector, options) as Promise<Edge<T>>;
   }
 
   save(data: DocumentData<T>, options?: CollectionInsertOptions) {
