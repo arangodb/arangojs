@@ -1,5 +1,7 @@
 /**
- * `import type { ArangoError } from "arangojs/error";`
+ * ```ts
+ * import type { ArangoError } from "arangojs/error";
+ * ```
  *
  * TODO
  *

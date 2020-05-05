@@ -1,5 +1,7 @@
 /**
- * `import type { ArangoSearchView } from "arangojs/view";`
+ * ```ts
+ * import type { ArangoSearchView } from "arangojs/view";
+ * ```
  *
  * TODO
  *

@@ -1,5 +1,7 @@
 /**
- * `import type { ArrayCursor } from "arangojs/cursor";`
+ * ```ts
+ * import type { ArrayCursor } from "arangojs/cursor";
+ * ```
  *
  * The "cursor" module provides the {@link ArrayCursor} type for TypeScript.
  *

@@ -1,5 +1,7 @@
 /**
- * `import { Database } from "arangojs/database";`
+ * ```js
+ * import { Database } from "arangojs/database";
+ * ```
  *
  * The "database" module provides the {@link Database} class and associated
  * types and interfaces for TypeScript.

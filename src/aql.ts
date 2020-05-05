@@ -1,5 +1,7 @@
 /**
- * `import { aql } from "arangojs/aql"`
+ * ```js
+ * import { aql } from "arangojs/aql";
+ * ```
  *
  * The "aql" module provides the {@link aql} template string handler and
  * helper functions, as well as associated types and interfaces for TypeScript.

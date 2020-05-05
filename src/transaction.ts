@@ -1,5 +1,7 @@
 /**
- * `import type { Transaction } from "arangojs/transaction";`
+ * ```ts
+ * import type { Transaction } from "arangojs/transaction";
+ * ```
  *
  * TODO
  *

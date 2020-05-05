@@ -1,5 +1,7 @@
 /**
- * `import type { Config } from "arangojs/connection";`
+ * ```ts
+ * import type { Config } from "arangojs/connection";
+ * ```
  *
  * TODO
  *

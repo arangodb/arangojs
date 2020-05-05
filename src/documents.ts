@@ -1,5 +1,7 @@
 /**
- * `import type { Document, Edge } from "arangojs/document";`
+ * ```ts
+ * import type { Document, Edge } from "arangojs/document";
+ * ```
  *
  * TODO
  *

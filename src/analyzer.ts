@@ -1,5 +1,7 @@
 /**
- * `import type { Analyzer } from "arangojs/analyzer";`
+ * ```ts
+ * import type { Analyzer } from "arangojs/analyzer";
+ * ```
  *
  * TODO
  *

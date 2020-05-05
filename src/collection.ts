@@ -1,5 +1,10 @@
 /**
- * `import type { DocumentCollection, EdgeCollection } from "arangojs/collection";`
+ * ```ts
+ * import type {
+ *   DocumentCollection,
+ *   EdgeCollection,
+ * } from "arangojs/collection";
+ * ```
  *
  * TODO
  *

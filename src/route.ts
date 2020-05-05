@@ -1,5 +1,7 @@
 /**
- * `import type { Route } from "arangojs/route";`
+ * ```ts
+ * import type { Route } from "arangojs/route";
+ * ```
  *
  * TODO
  *

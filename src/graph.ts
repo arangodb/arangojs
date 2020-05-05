@@ -1,5 +1,11 @@
 /**
- * `import type { Graph } from "arangojs/graph";`
+ * ```ts
+ * import type {
+ *   Graph,
+ *   GraphVertexCollection,
+ *   GraphEdgeCollection,
+ * } from "arangojs/graph";
+ * ```
  *
  * TODO
  *
