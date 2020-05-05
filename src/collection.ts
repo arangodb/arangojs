@@ -19,12 +19,12 @@ import {
 } from "./documents";
 import { isArangoError } from "./error";
 import {
-  EnsureIndexFulltextOptions,
-  EnsureIndexGeoOptions,
-  EnsureIndexHashOptions,
-  EnsureIndexPersistentOptions,
-  EnsureIndexSkiplistOptions,
-  EnsureIndexTtlOptions,
+  EnsureFulltextIndexOptions,
+  EnsureGeoIndexOptions,
+  EnsureHashIndexOptions,
+  EnsurePersistentIndexOptions,
+  EnsureSkiplistIndexOptions,
+  EnsureTtlIndexOptions,
   FulltextIndex,
   GeoIndex,
   HashIndex,
@@ -1777,57 +1777,150 @@ export interface DocumentCollection<T extends object = any>
 
   //#region indexes
   /**
-   * TODO
+   * Returns a list of all index descriptions for the collection.
    */
   indexes(): Promise<Index[]>;
   /**
-   * TODO
+   * Returns an index description by name or `id` if it exists.
+   *
+   * @param selector - Index name, id or object with either property.
    */
-  index(selector: IndexSelector): Promise<Index[]>;
+  index(selector: IndexSelector): Promise<Index>;
   /**
-   * TODO
+   * Creates a persistent index on the collection if it does not already exist.
+   *
+   * @param details - Options for creating the persistent index.
+   *
+   * @example
+   * ```js
+   * // Create a unique index for looking up documents by username
+   * await collection.ensureIndex({
+   *   type: "persistent",
+   *   fields: ["username"],
+   *   name: "unique-usernames",
+   *   unique: true
+   * });
+   * ```
    */
   ensureIndex(
-    details: EnsureIndexFulltextOptions
-  ): Promise<
-    ArangoResponseMetadata & FulltextIndex & { isNewlyCreated: boolean }
-  >;
-  /**
-   * TODO
-   */
-  ensureIndex(
-    details: EnsureIndexGeoOptions
-  ): Promise<ArangoResponseMetadata & GeoIndex & { isNewlyCreated: boolean }>;
-  /**
-   * TODO
-   */
-  ensureIndex(
-    details: EnsureIndexHashOptions
-  ): Promise<ArangoResponseMetadata & HashIndex & { isNewlyCreated: boolean }>;
-  /**
-   * TODO
-   */
-  ensureIndex(
-    details: EnsureIndexPersistentOptions
+    details: EnsurePersistentIndexOptions
   ): Promise<
     ArangoResponseMetadata & PersistentIndex & { isNewlyCreated: boolean }
   >;
   /**
-   * TODO
+   * Creates a hash index on the collection if it does not already exist.
+   *
+   * When using the RocksDB storage engine, hash indexes behave identically
+   * to persistent indexes.
+   *
+   * @param details - Options for creating the hash index.
+   *
+   * @example
+   * ```js
+   * // Create a unique index for looking up documents by username
+   * await collection.ensureIndex({
+   *   type: "hash",
+   *   fields: ["username"],
+   *   name: "unique-usernames",
+   *   unique: true
+   * });
+   * ```
    */
   ensureIndex(
-    details: EnsureIndexSkiplistOptions
+    details: EnsureHashIndexOptions
+  ): Promise<ArangoResponseMetadata & HashIndex & { isNewlyCreated: boolean }>;
+  /**
+   * Creates a skiplist index on the collection if it does not already exist.
+   *
+   * When using the RocksDB storage engine, skiplist indexes behave identically
+   * to persistent indexes.
+   *
+   * @param details - Options for creating the skiplist index.
+   *
+   * @example
+   * ```js
+   * // Create an index for sorting email addresses
+   * await collection.ensureIndex({
+   *   type: "skiplist",
+   *   fields: ["email"]
+   * });
+   * ```
+   */
+  ensureIndex(
+    details: EnsureSkiplistIndexOptions
   ): Promise<
     ArangoResponseMetadata & SkiplistIndex & { isNewlyCreated: boolean }
   >;
   /**
-   * TODO
+   * Creates a TTL index on the collection if it does not already exist.
+   *
+   * @param details - Options for creating the TTL index.
+   *
+   * @example
+   * ```js
+   * // Expire documents with "createdAt" timestamp one day after creation
+   * await collection.ensureIndex({
+   *   type: "ttl",
+   *   fields: ["createdAt"],
+   *   expireAfter: 60 * 60 * 24 // 24 hours
+   * });
+   * ```
+   *
+   * @example
+   * ```js
+   * // Expire documents with "expiresAt" timestamp according to their value
+   * await collection.ensureIndex({
+   *   type: "ttl",
+   *   fields: ["expiresAt"],
+   *   expireAfter: 0 // when attribute value is exceeded
+   * });
+   * ```
    */
   ensureIndex(
-    details: EnsureIndexTtlOptions
+    details: EnsureTtlIndexOptions
   ): Promise<ArangoResponseMetadata & TtlIndex & { isNewlyCreated: boolean }>;
   /**
-   * TODO
+   * Creates a fulltext index on the collection if it does not already exist.
+   *
+   * @param details - Options for creating the fulltext index.
+   *
+   * @example
+   * ```js
+   * // Create a fulltext index for tokens longer than or equal to 3 characters
+   * await collection.ensureIndex({
+   *   type: "fulltext",
+   *   fields: ["description"],
+   *   minLength: 3
+   * });
+   * ```
+   */
+  ensureIndex(
+    details: EnsureFulltextIndexOptions
+  ): Promise<
+    ArangoResponseMetadata & FulltextIndex & { isNewlyCreated: boolean }
+  >;
+  /**
+   * Creates a geo index on the collection if it does not already exist.
+   *
+   * @param details - Options for creating the geo index.
+   *
+   * @example
+   * ```js
+   * // Create an index for GeoJSON data
+   * await collection.ensureIndex({
+   *   type: "geo",
+   *   fields: ["lngLat"],
+   *   geoJson: true
+   * });
+   * ```
+   */
+  ensureIndex(
+    details: EnsureGeoIndexOptions
+  ): Promise<ArangoResponseMetadata & GeoIndex & { isNewlyCreated: boolean }>;
+  /**
+   * Deletes the index with the given name or `id` from the database.
+   *
+   * @param selector - Index name, id or object with either property.
    */
   dropIndex(
     selector: IndexSelector
@@ -2747,12 +2840,12 @@ export class Collection<T extends object = any>
 
   ensureIndex(
     options:
-      | EnsureIndexHashOptions
-      | EnsureIndexSkiplistOptions
-      | EnsureIndexPersistentOptions
-      | EnsureIndexGeoOptions
-      | EnsureIndexFulltextOptions
-      | EnsureIndexTtlOptions
+      | EnsureHashIndexOptions
+      | EnsureSkiplistIndexOptions
+      | EnsurePersistentIndexOptions
+      | EnsureGeoIndexOptions
+      | EnsureFulltextIndexOptions
+      | EnsureTtlIndexOptions
   ) {
     return this._db.request(
       {
