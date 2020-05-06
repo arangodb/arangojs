@@ -225,8 +225,8 @@ export type Config = {
    * Base URL of the ArangoDB server or list of server URLs.
    *
    * When working with a cluster or a single server with leader/follower
-   * failover, the method `db.acquireHostList` can be used to automatically
-   * pick up additional coordinators/followers at any point.
+   * failover, the method {@link Database.acquireHostList} can be used to
+   * automatically pick up additional coordinators/followers at any point.
    *
    * When running ArangoDB on a unix socket, e.g. `/tmp/arangodb.sock`, the
    * following URL formats are supported for unix sockets:

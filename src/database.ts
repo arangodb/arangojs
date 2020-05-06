@@ -1042,6 +1042,19 @@ export class Database {
    * recommended to run this method periodically (e.g. once per hour) to make
    * sure new coordinators are picked up correctly and can be used for
    * fail-over or load balancing.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const interval = setInterval(
+   *   () => db.acquireHostList(),
+   *   5 * 60 * 1000 // every 5 minutes
+   * );
+   *
+   * // later
+   * clearInterval(interval);
+   * db.close();
+   * ```
    */
   async acquireHostList(): Promise<void> {
     const urls: string[] = await this.request(
