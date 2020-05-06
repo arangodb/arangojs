@@ -102,7 +102,7 @@ describe("DocumentCollection API", function () {
     });
     it("returns the document if options.returnNew is set", async () => {
       const data = { potato: "tomato" };
-      const options = { silent: false };
+      const options = { returnNew: true };
       const meta = await collection.save(data, options);
       expect(meta).to.be.an("object");
       expect(meta).to.have.property("_id").that.is.a("string");
