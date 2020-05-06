@@ -116,15 +116,15 @@ export type NormAnalyzerProperties = {
    */
   locale: string;
   /**
-   * Default: `"lower"`
-   *
    * Case conversion.
+   *
+   * Default: `"lower"`
    */
   case?: "lower" | "none" | "upper";
   /**
-   * Default: `false`
-   *
    * Preserve accents in returned words.
+   *
+   * Default: `false`
    */
   accent?: boolean;
 };
@@ -186,9 +186,9 @@ export type TextAnalyzerProperties = {
    */
   locale: string;
   /**
-   * Default: `"lower"`
-   *
    * Case conversion.
+   *
+   * Default: `"lower"`
    */
   case?: "lower" | "none" | "upper";
   /**
@@ -206,15 +206,15 @@ export type TextAnalyzerProperties = {
    */
   stopwordsPath?: string;
   /**
-   * Default: `false`
-   *
    * Preserve accents in returned words.
+   *
+   * Default: `false`
    */
   accent?: boolean;
   /**
-   * Default: `true`
-   *
    * Apply stemming on returned words.
+   *
+   * Default: `true`
    */
   stemming?: boolean;
 };

@@ -54,10 +54,10 @@ export type ViewResponse = {
  */
 export type ArangoSearchViewLink = {
   /**
-   * Default: `["identity"]`
-   *
    * A list of names of Analyzers to apply to values of processed document
    * attributes.
+   *
+   * Default: `["identity"]`
    */
   analyzers?: string[];
   /**
@@ -66,10 +66,10 @@ export type ArangoSearchViewLink = {
    */
   fields?: Dict<ArangoSearchViewLink | undefined>;
   /**
-   * Default: `false`
-   *
    * If set to `true`, all document attributes will be processed, otherwise
    * only the attributes in `fields` will be processed.
+   *
+   * Default: `false`
    */
   includeAllFields?: boolean;
   /**
@@ -78,9 +78,9 @@ export type ArangoSearchViewLink = {
    */
   trackListPositions?: boolean;
   /**
-   * Default: `"none"`
-   *
    * Controls how the view should keep track of the attribute values.
+   *
+   * Default: `"none"`
    */
   storeValues?: "none" | "id";
 };
@@ -139,30 +139,30 @@ export type TierConsolidationPolicy = {
    */
   type: "tier";
   /**
-   * Default: `1`
-   *
    * The minimum number of segments that will be evaluated as candidates
    * for consolidation.
+   *
+   * Default: `1`
    */
   segmentsMin?: number;
   /**
-   * Default: `10`
-   *
    * The maximum number of segments that will be evaluated as candidates
    * for consolidation.
+   *
+   * Default: `10`
    */
   segmentsMax?: number;
   /**
-   * Default: `5368709120`, i.e. 5 GiB
-   *
    * Maximum allowed size of all consolidated segments.
+   *
+   * Default: `5368709120`, i.e. 5 GiB
    */
   segmentsBytesMax?: number;
   /**
-   * Default: `2097152`, i.e. 2 MiB
-   *
    * Defines the value to treat all smaller segments as equal for
    * consolidation selection.
+   *
+   * Default: `2097152`, i.e. 2 MiB
    */
   segmentsBytesFloor?: number;
   /**
@@ -176,40 +176,40 @@ export type TierConsolidationPolicy = {
  */
 export type ArangoSearchViewPropertiesOptions = {
   /**
-   * Default: `2`
-   *
    * How many commits to wait between removing unused files.
+   *
+   * Default: `2`
    */
   cleanupIntervalStep?: number;
   /**
-   * Default: `10000`
-   *
    * How long to wait between applying the `consolidationPolicy`.
+   *
+   * Default: `10000`
    */
   consolidationIntervalMsec?: number;
   /**
-   * Default: `1000`
-   *
    * How long to wait between commiting View data store changes and making
    * documents visible to queries.
+   *
+   * Default: `1000`
    */
   commitIntervalMsec?: number;
   /**
-   * Default: `64`
-   *
    * Maximum number of writers cached in the pool.
+   *
+   * Default: `64`
    */
   writebufferIdle?: number;
   /**
-   * Default: `0`
-   *
    * Maximum number of concurrent active writers that perform a transaction.
+   *
+   * Default: `0`
    */
   writebufferActive?: number;
   /**
-   * Default: `33554432`, i.e. 32 MiB
-   *
    * Maximum memory byte size per writer before a writer flush is triggered.
+   *
+   * Default: `33554432`, i.e. 32 MiB
    */
   writebufferSizeMax?: number;
   /**

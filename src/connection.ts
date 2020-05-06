@@ -187,14 +187,12 @@ type Task = {
  */
 export type Config = {
   /**
-   * Default: `"_system"`
-   *
    * Name of the database to use.
+   *
+   * Default: `"_system"`
    */
   databaseName?: string;
   /**
-   * Default: `"http://localhost:8529"`
-   *
    * Base URL of the ArangoDB server or list of server URLs.
    *
    * When working with a cluster or a single server with leader/follower
@@ -219,14 +217,13 @@ export type Config = {
    * - `tcp://unix:/tmp/arangodb.sock` and `http://unix:/tmp/arangodb.sock`
    * - `ssl://unix:/tmp/arangodb.sock` and `https://unix:/tmp/arangodb.sock`
    *
-   * If you want to use ArangoDB with authentication, see
-   * {@link Database.useBasicAuth} and
-   * {@link Database.useBearerAuth}.
+   * See also {@link Database.useBasicAuth} and {@link Database.useBearerAuth}
+   * for using authentication.
+   *
+   * Default: `"http://localhost:8529"`
    */
   url?: string | string[];
   /**
-   * Default: `30400`
-   *
    * Numeric representation of the ArangoDB version the driver should expect.
    * The format is defined as `XYYZZ` where `X` is the major version, `Y` is
    * the zero-filled two-digit minor version and `Z` is the zero-filled two-digit
@@ -234,11 +231,11 @@ export type Config = {
    *
    * Depending on this value certain methods may become unavailable or change
    * their behavior to remain compatible with different versions of ArangoDB.
+   *
+   * Default: `30400`
    */
   arangoVersion?: number;
   /**
-   * Default: `"NONE"`
-   *
    * Determines the behavior when multiple URLs are provided:
    *
    * - `"NONE"`: No load balancing. All requests will be handled by the first
@@ -249,11 +246,11 @@ export type Config = {
    *   behaves like `"NONE"`.
    *
    * - `"ROUND_ROBIN"`: Every sequential request uses the next URL in the list.
+   *
+   * Default: `"NONE"`
    */
   loadBalancingStrategy?: LoadBalancingStrategy;
   /**
-   * Default: `0`
-   *
    * Determines the behavior when a request fails because the underlying
    * connection to the server could not be opened
    * (i.e. {@link https://nodejs.org/api/errors.html#errors_common_system_errors | `ECONNREFUSED` in Node.js}):
@@ -275,6 +272,8 @@ export type Config = {
    *
    * **Note**: Requests bound to a specific server (e.g. fetching query results)
    * will never be retried automatically and ignore this setting.
+   *
+   * Default: `0`
    */
   maxRetries?: false | number;
   /**
@@ -290,10 +289,6 @@ export type Config = {
    */
   agent?: any;
   /**
-   * Default (Node.js): `{maxSockets: 3, keepAlive: true, keepAliveMsecs: 1000}`
-   *
-   * Default (Browser): `{maxSockets: 3, keepAlive: false}`
-   *
    * Options used to create that underlying HTTP/HTTPS `Agent` (or the `xhr`
    * module when using arangojs in the browser). This will be ignored if
    * `agent` is also provided.
@@ -310,6 +305,10 @@ export type Config = {
    * See also: {@link https://nodejs.org/api/http.html#http_new_agent_options | `http.Agent`}
    * and {@link https://nodejs.org/api/https.html#https_new_agent_options | `https.Agent`}
    * (when using TLS).
+   *
+   * Default (Node.js): `{ maxSockets: 3, keepAlive: true, keepAliveMsecs: 1000 }`
+   *
+   * Default (browser): `{ maxSockets: 3, useXDR: true, withCredentials: true }`
    */
   agentOptions?: AgentOptions | XhrOptions;
   /**
