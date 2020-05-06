@@ -38,7 +38,6 @@ import { ArrayCursor } from "./cursor";
 import { isArangoError } from "./error";
 import { EdgeDefinition, Graph, GraphCreateOptions, GraphInfo } from "./graph";
 import { Blob } from "./lib/blob";
-import { btoa } from "./lib/btoa";
 import { toForm } from "./lib/multipart";
 import { ArangojsResponse } from "./lib/request";
 import { Route } from "./route";
@@ -1119,10 +1118,7 @@ export class Database {
    * ```
    */
   useBasicAuth(username: string = "root", password: string = ""): this {
-    this._connection.setHeader(
-      "authorization",
-      `Basic ${btoa(`${username}:${password}`)}`
-    );
+    this._connection.setBasicAuth({ username, password });
     return this;
   }
 
@@ -1140,7 +1136,7 @@ export class Database {
    * ```
    */
   useBearerAuth(token: string): this {
-    this._connection.setHeader("authorization", `Bearer ${token}`);
+    this._connection.setBearerAuth({ token });
     return this;
   }
 

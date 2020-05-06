@@ -15,6 +15,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
   The method `graphEdgeCollection.edge` is unaffected by this change.
 
+### Added
+
+- Added `auth` option to configuration
+
+  It is now possible to pass authentication credentials using the `auth`
+  option in addition to calling `db.useBasicAuth` or `db.useBearerAuth`.
+
 ### Fixed
 
 - Changed async return type of `collection.index` from `Index[]` to `Index`

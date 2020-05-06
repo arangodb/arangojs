@@ -13,6 +13,7 @@ import { stringify as querystringify } from "querystring";
 import { LinkedList } from "x3-linkedlist";
 import { Database } from "./database";
 import { ArangoError, HttpError, isSystemError } from "./error";
+import { btoa } from "./lib/btoa";
 import {
   ArangojsResponse,
   createRequest,
@@ -79,6 +80,34 @@ function clean<T>(obj: T) {
     (result as any)[key] = value;
   }
   return result;
+}
+
+/**
+ * Credentials for HTTP Basic authentication.
+ */
+export type BasicAuth = {
+  /**
+   * The username, e.g. `"root"`.
+   */
+  username: string;
+  /**
+   * The password. Defaults to an empty string.
+   */
+  password?: string;
+};
+
+/**
+ * Credentials for HTTP Bearer token authentication.
+ */
+export type BearerAuth = {
+  /**
+   * The Bearer token.
+   */
+  token: string;
+};
+
+function isBearerAuth(auth: any): auth is BearerAuth {
+  return auth.hasOwnProperty("token");
 }
 
 type UrlInfo = {
@@ -149,7 +178,7 @@ export type RequestOptions = {
    * Time in milliseconds after which arangojs will abort the request if the
    * socket has not already timed out.
    *
-   * See also `timeout` in {@link Configuration.agentOptions}.
+   * See also `agentOptions.timeout` in {@link Config}.
    */
   timeout?: number;
   /**
@@ -217,12 +246,19 @@ export type Config = {
    * - `tcp://unix:/tmp/arangodb.sock` and `http://unix:/tmp/arangodb.sock`
    * - `ssl://unix:/tmp/arangodb.sock` and `https://unix:/tmp/arangodb.sock`
    *
-   * See also {@link Database.useBasicAuth} and {@link Database.useBearerAuth}
-   * for using authentication.
+   * See also `auth` for passing authentication credentials.
    *
    * Default: `"http://localhost:8529"`
    */
   url?: string | string[];
+  /**
+   * Credentials to use for authentication.
+   *
+   * See also {@link Database.useBasicAuth} and {@link Database.useBearerAuth}.
+   *
+   * Default: `{ username: "root", password: "" }`
+   */
+  auth?: BasicAuth | BearerAuth;
   /**
    * Numeric representation of the ArangoDB version the driver should expect.
    * The format is defined as `XYYZZ` where `X` is the major version, `Y` is
@@ -315,7 +351,8 @@ export type Config = {
    * An object with additional headers to send with every request.
    *
    * If an `"authorization"` header is provided, it will be overridden when
-   * using {@link Database.useBasicAuth} or {@link Database.useBearerAuth}.
+   * using {@link Database.useBasicAuth}, {@link Database.useBearerAuth} or
+   * the `auth` configuration option.
    */
   headers?: Headers;
 };
@@ -399,6 +436,14 @@ export class Connection {
         : [config.url]
       : ["http://localhost:8529"];
     this.addToHostList(urls);
+
+    if (config.auth) {
+      if (isBearerAuth(config.auth)) {
+        this.setBearerAuth(config.auth);
+      } else {
+        this.setBasicAuth(config.auth);
+      }
+    }
 
     if (this._loadBalancingStrategy === "ONE_RANDOM") {
       this._activeHost = Math.floor(Math.random() * this._hosts.length);
@@ -491,6 +536,17 @@ export class Connection {
       else search = `?${querystringify(clean(qs))}`;
     }
     return search ? { pathname, search } : { pathname };
+  }
+
+  setBearerAuth(auth: BearerAuth) {
+    this.setHeader("authorization", `Bearer ${auth.token}`);
+  }
+
+  setBasicAuth(auth: BasicAuth) {
+    this.setHeader(
+      "authorization",
+      `Basic ${btoa(`${auth.username}:${auth.password}`)}`
+    );
   }
 
   /**
