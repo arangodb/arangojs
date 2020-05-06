@@ -90,13 +90,18 @@ type UrlInfo = {
 
 /**
  * Options of the `xhr` module that can be set using `agentOptions` when using
- * arangojs in the browser.
+ * arangojs in the browser. Additionally `maxSockets` can be used to control
+ * the maximum number of parallel requests.
+ *
+ * See also: {@link https://www.npmjs.com/package/xhr | `xhr` on npm }.
  */
 export type XhrOptions = {
-  sync?: boolean;
+  maxSockets?: number;
   timeout?: number;
   beforeSend?: (xhrObject: any) => void;
   xhr?: any;
+  useXdr?: boolean;
+  withCredentials?: boolean;
 };
 
 /**
@@ -289,13 +294,14 @@ export type Config = {
    *
    * Default (Browser): `{maxSockets: 3, keepAlive: false}`
    *
-   * An object with options used to create that underlying HTTP/HTTPS `Agent`.
-   * This will be ignored if `agent` is also provided.
+   * Options used to create that underlying HTTP/HTTPS `Agent` (or the `xhr`
+   * module when using arangojs in the browser). This will be ignored if
+   * `agent` is also provided.
    *
    * The option `maxSockets` can also be used to limit how many requests
    * arangojs will perform concurrently. The maximum number of requests is
-   * equal to `maxSockets * 2` with `keepAlive: true` or
-   * equal to `maxSockets` with `keepAlive: false`.
+   * equal to `maxSockets * 2` with `keepAlive: true` or equal to `maxSockets`
+   * with `keepAlive: false` (or in the browser).
    *
    * In the browser version of arangojs this option can be used to pass
    * additional options to the underlying calls of the
@@ -367,14 +373,14 @@ export class Connection {
     }
     this._agent = config.agent;
     this._agentOptions = isBrowser
-      ? { ...config.agentOptions! }
+      ? { maxSockets: 3, ...config.agentOptions }
       : {
           maxSockets: 3,
           keepAlive: true,
           keepAliveMsecs: 1000,
           ...config.agentOptions,
         };
-    this._maxTasks = this._agentOptions.maxSockets || 3;
+    this._maxTasks = this._agentOptions.maxSockets;
     if (this._agentOptions.keepAlive) this._maxTasks *= 2;
 
     this._headers = { ...config.headers };

@@ -1,6 +1,4 @@
 /**
- * TODO
- *
  * @packageDocumentation
  * @internal
  * @hidden
@@ -39,11 +37,7 @@ function omit<T>(obj: T, keys: (keyof T)[]): T {
  */
 export function createRequest(baseUrl: string, agentOptions: any) {
   const { auth, ...baseUrlParts } = parseUrl(baseUrl);
-  const options = omit(agentOptions, [
-    "keepAlive",
-    "keepAliveMsecs",
-    "maxSockets",
-  ]);
+  const options = omit(agentOptions, ["maxSockets"]);
   return function request(
     { method, url, headers, body, timeout, expectBinary }: RequestOptions,
     cb: Errback<ArangojsResponse>
@@ -71,11 +65,11 @@ export function createRequest(baseUrl: string, agentOptions: any) {
     };
     const req = xhr(
       {
-        responseType: expectBinary ? "blob" : "text",
-        ...options,
-        url: formatUrl(urlParts),
-        withCredentials: true,
         useXDR: true,
+        withCredentials: true,
+        ...options,
+        responseType: expectBinary ? "blob" : "text",
+        url: formatUrl(urlParts),
         body,
         method,
         headers,
