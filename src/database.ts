@@ -1008,6 +1008,9 @@ export class Database {
    *
    * Performs an arbitrary HTTP request against the database.
    *
+   * If `absolutePath` is set to `true`, the database path will not be
+   * automatically prepended to the `basePath`.
+   *
    * @param T - Return type to use. Defaults to the response object type.
    * @param options - Options for this request.
    * @param transform - An optional function to transform the low-level

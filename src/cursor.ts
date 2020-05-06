@@ -246,7 +246,8 @@ export class ArrayCursor<T = any> {
    * processing speed, this may result in the server discarding the cursor
    * before it is fully depleted.
    *
-   * See also: [Array:forEach](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach).
+   * See also:
+   * {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach | `Array.prototype.forEach`}.
    *
    * @param callback - Function to execute on each element.
    *
@@ -297,7 +298,8 @@ export class ArrayCursor<T = any> {
    * {@link ArrayCursor.forEach}, {@link ArrayCursor.reduce} or
    * {@link ArrayCursor.flatMap} instead.
    *
-   * See also: [Array:map](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map).
+   * See also:
+   * {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map | `Array.prototype.map`}.
    *
    * @param R - Return type of the `callback` function.
    * @param callback - Function to execute on each element.
@@ -337,7 +339,8 @@ export class ArrayCursor<T = any> {
    * processing speed, this may result in the server discarding the cursor
    * before it is fully depleted.
    *
-   * See also: [Array:flatMap](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/flatMap).
+   * See also:
+   * {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/flatMap | `Array.prototype.flatMap`}.
    *
    * @param R - Return type of the `callback` function.
    * @param callback - Function to execute on each element.
@@ -397,7 +400,8 @@ export class ArrayCursor<T = any> {
    * processing speed, this may result in the server discarding the cursor
    * before it is fully depleted.
    *
-   * See also: [Array:reduce](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reduce).
+   * See also:
+   * {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reduce | `Array.prototype.reduce`}.
    *
    * @param R - Return type of the `reducer` function.
    * @param reducer - Function to execute on each element.
@@ -455,7 +459,8 @@ export class ArrayCursor<T = any> {
    * processing speed, this may result in the server discarding the cursor
    * before it is fully depleted.
    *
-   * See also: [Array:reduce](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reduce).
+   * See also:
+   * {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reduce | `Array.prototype.reduce`}.
    *
    * @param R - Return type of the `reducer` function.
    * @param reducer - Function to execute on each element.

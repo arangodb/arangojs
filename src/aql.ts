@@ -55,10 +55,10 @@ export interface GeneratedAqlQuery extends AqlQuery {
  */
 export interface AqlLiteral {
   /**
+   * @internal
+   *
    * Returns a string representation of this AQL literal that can be inlined
    * in an AQL template.
-   *
-   * @internal
    */
   toAQL: () => string;
 }

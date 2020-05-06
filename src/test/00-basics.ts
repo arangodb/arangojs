@@ -86,8 +86,8 @@ describe("Configuring the driver", () => {
       (https as any).Agent = _httpsAgent;
     });
     it("passes the agentOptions to the agent", () => {
-      new Database({ agentOptions: { hello: "world" } }); // eslint-disable-line no-new
-      expect(options).to.have.property("hello", "world");
+      new Database({ agentOptions: { maxSockets: 23 } }); // eslint-disable-line no-new
+      expect(options).to.have.property("maxSockets", 23);
     });
     it("uses the built-in agent for the protocol", () => {
       // default: http
