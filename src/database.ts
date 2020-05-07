@@ -1921,6 +1921,7 @@ export class Database {
    * **Note**: The `action` function will be evaluated and executed on the
    * server inside ArangoDB's embedded JavaScript environment and can not
    * access any values other than those passed via the `params` option.
+   *
    * See the official ArangoDB documentation for
    * {@link https://www.arangodb.com/docs/stable/appendix-java-script-modules-arango-db.html | the JavaScript `@arangodb` module}
    * for information about accessing the database from within ArangoDB's

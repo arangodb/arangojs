@@ -792,71 +792,146 @@ export type SimpleQueryFulltextOptions = {
 };
 
 /**
- * TODO
+ * Options for performing a graph traversal.
  *
  * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
  * replaced with AQL queries.
  */
 export type TraversalOptions = {
   /**
-   * TODO
+   * A string evaluating to the body of a JavaScript function to be executed
+   * on the server to initialize the traversal result object.
+   *
+   * The code has access to two variables: `config`, `result`.
+   * The code may modify the `result` object.
+   *
+   * **Note**: This code will be evaluated and executed on the
+   * server inside ArangoDB's embedded JavaScript environment and can not
+   * access any other variables.
+   *
+   * See the official ArangoDB documentation for
+   * {@link https://www.arangodb.com/docs/stable/appendix-java-script-modules-arango-db.html | the JavaScript `@arangodb` module}
+   * for information about accessing the database from within ArangoDB's
+   * server-side JavaScript environment.
    */
   init?: string;
   /**
-   * TODO
+   * A string evaluating to the body of a JavaScript function to be executed
+   * on the server to filter nodes.
+   *
+   * The code has access to three variables: `config`, `vertex`, `path`.
+   * The code may include a return statement for the following values:
+   *
+   * * `"exclude"`: The vertex will not be visited.
+   * * `"prune"`: The edges of the vertex will not be followed.
+   * * `""` or `undefined`: The vertex will be visited and its edges followed.
+   * * an array including any of the above values.
+   *
+   * **Note**: This code will be evaluated and executed on the
+   * server inside ArangoDB's embedded JavaScript environment and can not
+   * access any other variables.
+   *
+   * See the official ArangoDB documentation for
+   * {@link https://www.arangodb.com/docs/stable/appendix-java-script-modules-arango-db.html | the JavaScript `@arangodb` module}
+   * for information about accessing the database from within ArangoDB's
+   * server-side JavaScript environment.
    */
   filter?: string;
   /**
-   * TODO
+   * A string evaluating to the body of a JavaScript function to be executed
+   * on the server to sort edges if `expander` is not set.
+   *
+   * The code has access to two variables representing edges: `l`, `r`.
+   * The code must return `-1` if `l < r`, `1` if `l > r` or `0` if both
+   * values are equal.
+   *
+   * **Note**: This code will be evaluated and executed on the
+   * server inside ArangoDB's embedded JavaScript environment and can not
+   * access any other variables.
+   *
+   * See the official ArangoDB documentation for
+   * {@link https://www.arangodb.com/docs/stable/appendix-java-script-modules-arango-db.html | the JavaScript `@arangodb` module}
+   * for information about accessing the database from within ArangoDB's
+   * server-side JavaScript environment.
    */
   sort?: string;
   /**
-   * TODO
+   * A string evaluating to the body of a JavaScript function to be executed
+   * on the server when a node is visited.
+   *
+   * The code has access to five variables: `config`, `result`, `vertex`,
+   * `path`, `connected`.
+   * The code may modify the `result` object.
+   *
+   * **Note**: This code will be evaluated and executed on the
+   * server inside ArangoDB's embedded JavaScript environment and can not
+   * access any other variables.
+   *
+   * See the official ArangoDB documentation for
+   * {@link https://www.arangodb.com/docs/stable/appendix-java-script-modules-arango-db.html | the JavaScript `@arangodb` module}
+   * for information about accessing the database from within ArangoDB's
+   * server-side JavaScript environment.
    */
   visitor?: string;
   /**
-   * TODO
+   * A string evaluating to the body of a JavaScript function to be executed
+   * on the server to use when `direction` is not set.
+   *
+   * The code has access to three variables: `config`, `vertex`, `path`.
+   * The code must return an array of objects with `edge` and `vertex`
+   * attributes representing the connections for the vertex.
+   *
+   * **Note**: This code will be evaluated and executed on the
+   * server inside ArangoDB's embedded JavaScript environment and can not
+   * access any other variables.
+   *
+   * See the official ArangoDB documentation for
+   * {@link https://www.arangodb.com/docs/stable/appendix-java-script-modules-arango-db.html | the JavaScript `@arangodb` module}
+   * for information about accessing the database from within ArangoDB's
+   * server-side JavaScript environment.
    */
   expander?: string;
   /**
-   * TODO
+   * Direction of the traversal, relative to the starting vertex if `expander`
+   * is not set.
    */
   direction?: "inbound" | "outbound" | "any";
   /**
-   * TODO
+   * Item iteration order.
    */
   itemOrder?: "forward" | "backward";
   /**
-   * TODO
+   * Traversal strategy.
    */
   strategy?: "depthfirst" | "breadthfirst";
   /**
-   * TODO
+   * Traversal order.
    */
   order?: "preorder" | "postorder" | "preorder-expander";
   /**
-   * TODO
+   * Specifies uniqueness for vertices and edges.
    */
   uniqueness?: {
     /**
-     * TODO
+     * Uniqueness for vertices.
      */
     vertices?: "none" | "global" | "path";
     /**
-     * TODO
+     * Uniqueness for edges.
      */
     edges?: "none" | "global" | "path";
   };
   /**
-   * TODO
+   * If specified, only nodes in at least this depth will be visited.
    */
   minDepth?: number;
   /**
-   * TODO
+   * If specified, only nodes in at most this depth will be visited.
    */
   maxDepth?: number;
   /**
-   * TODO
+   * Maximum number of iterations before a traversal is aborted because of a
+   * potential endless loop.
    */
   maxIterations?: number;
 };
@@ -1602,6 +1677,21 @@ export interface DocumentCollection<T extends object = any>
    *
    * @param data - The contents of the new documents.
    * @param options - Options for inserting the documents.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
+   * const result = await collection.save(
+   *   [
+   *     { _key: "a", color: "blue", count: 1 },
+   *     { _key: "b", color: "red", count: 2 },
+   *   ],
+   *   { returnNew: true }
+   * );
+   * console.log(result[0].new.color, result[0].new.count); // "blue" 1
+   * console.log(result[1].new.color, result[1].new.count); // "red" 2
+   * ```
    */
   saveAll(
     data: Array<DocumentData<T>>,
@@ -2245,6 +2335,16 @@ export interface EdgeCollection<T extends object = any>
    *
    * @param data - The contents of the new document.
    * @param options - Options for inserting the document.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collection = db.collection("friends");
+   * const result = await collection.save(
+   *   { _from: "users/rana", _to: "users/mudasir", active: false },
+   *   { returnNew: true }
+   * );
+   * ```
    */
   save(
     data: EdgeData<T>,
@@ -2255,6 +2355,19 @@ export interface EdgeCollection<T extends object = any>
    *
    * @param data - The contents of the new documents.
    * @param options - Options for inserting the documents.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collection = db.collection("friends");
+   * const result = await collection.saveAll(
+   *   [
+   *     { _from: "users/rana", _to: "users/mudasir", active: false },
+   *     { _from: "users/rana", _to: "users/salman", active: true }
+   *   ],
+   *   { returnNew: true }
+   * );
+   * ```
    */
   saveAll(
     data: Array<EdgeData<T>>,
@@ -2270,6 +2383,27 @@ export interface EdgeCollection<T extends object = any>
    * properties (e.g. a document from this collection).
    * @param newData - The contents of the new document.
    * @param options - Options for replacing the document.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collection = db.collection("friends");
+   * await collection.save(
+   *   {
+   *     _key: "musadir",
+   *     _from: "users/rana",
+   *     _to: "users/mudasir",
+   *     active: true,
+   *     best: true
+   *   }
+   * );
+   * const result = await collection.replace(
+   *   "musadir",
+   *   { active: false },
+   *   { returnNew: true }
+   * );
+   * console.log(result.new.active, result.new.best); // false undefined
+   * ```
    */
   replace(
     selector: DocumentSelector,
@@ -2282,6 +2416,39 @@ export interface EdgeCollection<T extends object = any>
    *
    * @param newData - The documents to replace.
    * @param options - Options for replacing the documents.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collection = db.collection("friends");
+   * await collection.save(
+   *   {
+   *     _key: "musadir",
+   *     _from: "users/rana",
+   *     _to: "users/mudasir",
+   *     active: true,
+   *     best: true
+   *   }
+   * );
+   * await collection.save(
+   *   {
+   *     _key: "salman",
+   *     _from: "users/rana",
+   *     _to: "users/salman",
+   *     active: false,
+   *     best: false
+   *   }
+   * );
+   * const result = await collection.replaceAll(
+   *   [
+   *     { _key: "musadir", active: false },
+   *     { _key: "salman", active: true, best: true }
+   *   ],
+   *   { returnNew: true }
+   * );
+   * console.log(result[0].new.active, result[0].new.best); // false undefined
+   * console.log(result[1].new.active, result[1].new.best); // true true
+   * ```
    */
   replaceAll(
     newData: Array<DocumentData<T> & ({ _key: string } | { _id: string })>,
@@ -2297,6 +2464,26 @@ export interface EdgeCollection<T extends object = any>
    * properties (e.g. a document from this collection).
    * @param newData - The data for updating the document.
    * @param options - Options for updating the document.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collection = db.collection("friends");
+   * await collection.save(
+   *   {
+   *     _key: "musadir",
+   *     _from: "users/rana",
+   *     _to: "users/mudasir",
+   *     active: true,
+   *     best: true
+   *   }
+   * );
+   * const result = await collection.update(
+   *   "musadir",
+   *   { active: false },
+   *   { returnNew: true }
+   * );
+   * console.log(result.new.active, result.new.best); // false true
    */
   update(
     selector: DocumentSelector,
@@ -2309,6 +2496,37 @@ export interface EdgeCollection<T extends object = any>
    *
    * @param newData - The data for updating the documents.
    * @param options - Options for updating the documents.
+   * ```js
+   * const db = new Database();
+   * const collection = db.collection("friends");
+   * await collection.save(
+   *   {
+   *     _key: "musadir",
+   *     _from: "users/rana",
+   *     _to: "users/mudasir",
+   *     active: true,
+   *     best: true
+   *   }
+   * );
+   * await collection.save(
+   *   {
+   *     _key: "salman",
+   *     _from: "users/rana",
+   *     _to: "users/salman",
+   *     active: false,
+   *     best: false
+   *   }
+   * );
+   * const result = await collection.updateAll(
+   *   [
+   *     { _key: "musadir", active: false },
+   *     { _key: "salman", active: true, best: true }
+   *   ],
+   *   { returnNew: true }
+   * );
+   * console.log(result[0].new.active, result[0].new.best); // false true
+   * console.log(result[1].new.active, result[1].new.best); // true true
+   * ```
    */
   updateAll(
     newData: Array<
@@ -2325,6 +2543,15 @@ export interface EdgeCollection<T extends object = any>
    * @param selector - Document `_key`, `_id` or object with either of those
    * properties (e.g. a document from this collection).
    * @param options - Options for removing the document.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collection = db.collection("friends");
+   * const doc = await collection.document("musadir");
+   * await collection.remove(doc);
+   * // document with key "musadir" deleted
+   * ```
    */
   remove(
     selector: DocumentSelector,
@@ -2339,6 +2566,14 @@ export interface EdgeCollection<T extends object = any>
    * @param selectors - Documents `_key`, `_id` or objects with either of those
    * properties (e.g. documents from this collection).
    * @param options - Options for removing the documents.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collection = db.collection("friends");
+   * await collection.removeAll(["musadir", "salman"]);
+   * // document with keys "musadir" and "salman" deleted
+   * ```
    */
   removeAll(
     selectors: DocumentSelector[],
@@ -2512,29 +2747,119 @@ export interface EdgeCollection<T extends object = any>
 
   //#region edges
   /**
-   * TODO
+   * Retrieves a list of all edges of the document matching the given
+   * `selector`.
+   *
+   * Throws an exception when passed a document or `_id` from a different
+   * collection.
+   *
+   * @param selector - Document `_key`, `_id` or object with either of those
+   * properties (e.g. a document from this collection).
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collection = db.collection("edges");
+   * await collection.import([
+   *   ["_key", "_from", "_to"],
+   *   ["x", "vertices/a", "vertices/b"],
+   *   ["y", "vertices/a", "vertices/c"],
+   *   ["z", "vertices/d", "vertices/a"],
+   * ]);
+   * const edges = await collection.edges("vertices/a");
+   * console.log(edges.map((edge) => edge._key)); // ["x", "y", "z"]
+   * ```
    */
   edges(
     selector: DocumentSelector
   ): Promise<ArangoResponseMetadata & CollectionEdgesResult<T>>;
   /**
-   * TODO
+   * Retrieves a list of all incoming edges of the document matching the given
+   * `selector`.
+   *
+   * Throws an exception when passed a document or `_id` from a different
+   * collection.
+   *
+   * @param selector - Document `_key`, `_id` or object with either of those
+   * properties (e.g. a document from this collection).
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collection = db.collection("edges");
+   * await collection.import([
+   *   ["_key", "_from", "_to"],
+   *   ["x", "vertices/a", "vertices/b"],
+   *   ["y", "vertices/a", "vertices/c"],
+   *   ["z", "vertices/d", "vertices/a"],
+   * ]);
+   * const edges = await collection.inEdges("vertices/a");
+   * console.log(edges.map((edge) => edge._key)); // ["z"]
    */
   inEdges(
     selector: DocumentSelector
   ): Promise<ArangoResponseMetadata & CollectionEdgesResult<T>>;
   /**
-   * TODO
+   * Retrieves a list of all outgoing edges of the document matching the given
+   * `selector`.
+   *
+   * Throws an exception when passed a document or `_id` from a different
+   * collection.
+   *
+   * @param selector - Document `_key`, `_id` or object with either of those
+   * properties (e.g. a document from this collection).
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collection = db.collection("edges");
+   * await collection.import([
+   *   ["_key", "_from", "_to"],
+   *   ["x", "vertices/a", "vertices/b"],
+   *   ["y", "vertices/a", "vertices/c"],
+   *   ["z", "vertices/d", "vertices/a"],
+   * ]);
+   * const edges = await collection.outEdges("vertices/a");
+   * console.log(edges.map((edge) => edge._key)); // ["x", "y"]
+   * ```
    */
   outEdges(
     selector: DocumentSelector
   ): Promise<ArangoResponseMetadata & CollectionEdgesResult<T>>;
 
   /**
-   * TODO
+   * Performs a traversal starting from the given `startVertex` and following
+   * edges contained in this edge collection.
+   *
+   * Throws an exception when passed a document or `_id` from a different
+   * collection.
+   *
+   * See also {@link Graph.traversal}.
+   *
+   * @param startVertex - Document `_key`, `_id` or object with either of those
+   * properties (e.g. a document from this collection).
+   * @param options - Options for performing the traversal.
    *
    * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
    * replaced with AQL queries.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collection = db.collection("edges");
+   * await collection.import([
+   *   ["_key", "_from", "_to"],
+   *   ["x", "vertices/a", "vertices/b"],
+   *   ["y", "vertices/b", "vertices/c"],
+   *   ["z", "vertices/c", "vertices/d"],
+   * ]);
+   * const result = await collection.traversal("vertices/a", {
+   *   direction: "outbound",
+   *   init: "result.vertices = [];",
+   *   visitor: "result.vertices.push(vertex._key);",
+   * });
+   * console.log(result.vertices); // ["a", "b", "c", "d"]
+   * ```
    */
   traversal(
     startVertex: DocumentSelector,
