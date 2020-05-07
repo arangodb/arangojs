@@ -157,29 +157,15 @@ export class GraphVertexCollection<T extends object = any>
    */
   async vertex(
     selector: DocumentSelector,
-    options?: GraphCollectionReadOptions & { graceful?: false }
+    options?: GraphCollectionReadOptions
   ): Promise<Document<T>>;
   /**
    * TODO
    */
   async vertex(
     selector: DocumentSelector,
-    options: GraphCollectionReadOptions & { graceful: true }
-  ): Promise<Document<T> | null>;
-  /**
-   * TODO
-   */
-  async vertex(
-    selector: DocumentSelector,
-    graceful: false
+    graceful: boolean
   ): Promise<Document<T>>;
-  /**
-   * TODO
-   */
-  async vertex(
-    selector: DocumentSelector,
-    graceful: true
-  ): Promise<Document<T> | null>;
   async vertex(
     selector: DocumentSelector,
     options: boolean | GraphCollectionReadOptions = {}
@@ -223,15 +209,8 @@ export class GraphVertexCollection<T extends object = any>
    */
   save(
     data: EdgeData<T>,
-    options?: GraphCollectionInsertOptions & { returnNew?: false }
-  ): Promise<DocumentMetadata>;
-  /**
-   * TODO
-   */
-  save(
-    data: EdgeData<T>,
-    options: GraphCollectionInsertOptions & { returnNew: true }
-  ): Promise<DocumentMetadata & { new: Document<T> }>;
+    options?: GraphCollectionInsertOptions
+  ): Promise<DocumentMetadata & { new?: Document<T> }>;
   save(data: DocumentData<T>, options?: GraphCollectionInsertOptions) {
     return this._db.request(
       {
@@ -250,44 +229,8 @@ export class GraphVertexCollection<T extends object = any>
   replace(
     selector: DocumentSelector,
     newValue: DocumentData<T>,
-    options?: GraphCollectionReplaceOptions & {
-      returnNew?: false;
-      returnOld?: false;
-    }
-  ): Promise<DocumentMetadata>;
-  /**
-   * TODO
-   */
-  replace(
-    selector: DocumentSelector,
-    newValue: DocumentData<T>,
-    options: GraphCollectionReplaceOptions & {
-      returnNew: true;
-      returnOld?: false;
-    }
-  ): Promise<DocumentMetadata & { new: Document<T> }>;
-  /**
-   * TODO
-   */
-  replace(
-    selector: DocumentSelector,
-    newValue: DocumentData<T>,
-    options: GraphCollectionReplaceOptions & {
-      returnNew?: false;
-      returnOld: true;
-    }
-  ): Promise<DocumentMetadata & { old: Document<T> }>;
-  /**
-   * TODO
-   */
-  replace(
-    selector: DocumentSelector,
-    newValue: DocumentData<T>,
-    options: GraphCollectionReplaceOptions & {
-      returnNew: true;
-      returnOld: true;
-    }
-  ): Promise<DocumentMetadata & { new: Document<T>; old: Document<T> }>;
+    options?: GraphCollectionReplaceOptions
+  ): Promise<DocumentMetadata & { new?: Document<T>; old?: Document<T> }>;
   replace(
     selector: DocumentSelector,
     newValue: DocumentData<T>,
@@ -320,44 +263,8 @@ export class GraphVertexCollection<T extends object = any>
   update(
     selector: DocumentSelector,
     newValue: Patch<DocumentData<T>>,
-    options?: GraphCollectionReplaceOptions & {
-      returnNew?: false;
-      returnOld?: false;
-    }
-  ): Promise<DocumentMetadata>;
-  /**
-   * TODO
-   */
-  update(
-    selector: DocumentSelector,
-    newValue: Patch<DocumentData<T>>,
-    options: GraphCollectionReplaceOptions & {
-      returnNew: true;
-      returnOld?: false;
-    }
-  ): Promise<DocumentMetadata & { new: Document<T> }>;
-  /**
-   * TODO
-   */
-  update(
-    selector: DocumentSelector,
-    newValue: Patch<DocumentData<T>>,
-    options: GraphCollectionReplaceOptions & {
-      returnNew?: false;
-      returnOld: true;
-    }
-  ): Promise<DocumentMetadata & { old: Document<T> }>;
-  /**
-   * TODO
-   */
-  update(
-    selector: DocumentSelector,
-    newValue: Patch<DocumentData<T>>,
-    options: GraphCollectionReplaceOptions & {
-      returnNew: true;
-      returnOld: true;
-    }
-  ): Promise<DocumentMetadata & { new: Document<T>; old: Document<T> }>;
+    options?: GraphCollectionReplaceOptions
+  ): Promise<DocumentMetadata & { new?: Document<T>; old?: Document<T> }>;
   update(
     selector: DocumentSelector,
     newValue: Patch<DocumentData<T>>,
@@ -388,15 +295,8 @@ export class GraphVertexCollection<T extends object = any>
    */
   remove(
     selector: DocumentSelector,
-    options?: GraphCollectionRemoveOptions & { returnOld?: false }
-  ): Promise<DocumentMetadata>;
-  /**
-   * TODO
-   */
-  remove(
-    selector: DocumentSelector,
-    options: GraphCollectionRemoveOptions & { returnOld: true }
-  ): Promise<DocumentMetadata & { old: Document<T> }>;
+    options?: GraphCollectionRemoveOptions
+  ): Promise<DocumentMetadata & { old?: Document<T> }>;
   remove(
     selector: DocumentSelector,
     options: GraphCollectionRemoveOptions = {}
@@ -501,26 +401,12 @@ export class GraphEdgeCollection<T extends object = any>
    */
   async edge(
     selector: DocumentSelector,
-    options?: GraphCollectionReadOptions & { graceful?: false }
+    options?: GraphCollectionReadOptions
   ): Promise<Edge<T>>;
   /**
    * TODO
    */
-  async edge(
-    selector: DocumentSelector,
-    options: GraphCollectionReadOptions & { graceful: true }
-  ): Promise<Edge<T> | null>;
-  /**
-   * TODO
-   */
-  async edge(selector: DocumentSelector, graceful: false): Promise<Edge<T>>;
-  /**
-   * TODO
-   */
-  async edge(
-    selector: DocumentSelector,
-    graceful: true
-  ): Promise<Edge<T> | null>;
+  async edge(selector: DocumentSelector, graceful: boolean): Promise<Edge<T>>;
   async edge(
     selector: DocumentSelector,
     options: boolean | GraphCollectionReadOptions = {}
@@ -563,15 +449,8 @@ export class GraphEdgeCollection<T extends object = any>
    */
   save(
     data: EdgeData<T>,
-    options?: GraphCollectionInsertOptions & { returnNew?: false }
-  ): Promise<DocumentMetadata>;
-  /**
-   * TODO
-   */
-  save(
-    data: EdgeData<T>,
-    options: GraphCollectionInsertOptions & { returnNew: true }
-  ): Promise<DocumentMetadata & { new: Edge<T> }>;
+    options?: GraphCollectionInsertOptions
+  ): Promise<DocumentMetadata & { new?: Edge<T> }>;
   save(data: EdgeData<T>, options?: GraphCollectionInsertOptions) {
     return this._db.request(
       {
@@ -590,44 +469,8 @@ export class GraphEdgeCollection<T extends object = any>
   replace(
     selector: DocumentSelector,
     newValue: EdgeData<T>,
-    options?: GraphCollectionReplaceOptions & {
-      returnNew?: false;
-      returnOld?: false;
-    }
-  ): Promise<DocumentMetadata>;
-  /**
-   * TODO
-   */
-  replace(
-    selector: DocumentSelector,
-    newValue: EdgeData<T>,
-    options: GraphCollectionReplaceOptions & {
-      returnNew: true;
-      returnOld?: false;
-    }
-  ): Promise<DocumentMetadata & { new: Edge<T> }>;
-  /**
-   * TODO
-   */
-  replace(
-    selector: DocumentSelector,
-    newValue: EdgeData<T>,
-    options: GraphCollectionReplaceOptions & {
-      returnNew?: false;
-      returnOld: true;
-    }
-  ): Promise<DocumentMetadata & { old: Edge<T> }>;
-  /**
-   * TODO
-   */
-  replace(
-    selector: DocumentSelector,
-    newValue: EdgeData<T>,
-    options: GraphCollectionReplaceOptions & {
-      returnNew: true;
-      returnOld: true;
-    }
-  ): Promise<DocumentMetadata & { new: Edge<T>; old: Edge<T> }>;
+    options?: GraphCollectionReplaceOptions
+  ): Promise<DocumentMetadata & { new?: Edge<T>; old?: Edge<T> }>;
   replace(
     selector: DocumentSelector,
     newValue: EdgeData<T>,
@@ -660,44 +503,8 @@ export class GraphEdgeCollection<T extends object = any>
   update(
     selector: DocumentSelector,
     newValue: Patch<EdgeData<T>>,
-    options?: GraphCollectionReplaceOptions & {
-      returnNew?: false;
-      returnOld?: false;
-    }
-  ): Promise<DocumentMetadata>;
-  /**
-   * TODO
-   */
-  update(
-    selector: DocumentSelector,
-    newValue: Patch<EdgeData<T>>,
-    options: GraphCollectionReplaceOptions & {
-      returnNew: true;
-      returnOld?: false;
-    }
-  ): Promise<DocumentMetadata & { new: Edge<T> }>;
-  /**
-   * TODO
-   */
-  update(
-    selector: DocumentSelector,
-    newValue: Patch<EdgeData<T>>,
-    options: GraphCollectionReplaceOptions & {
-      returnNew?: false;
-      returnOld: true;
-    }
-  ): Promise<DocumentMetadata & { old: Edge<T> }>;
-  /**
-   * TODO
-   */
-  update(
-    selector: DocumentSelector,
-    newValue: Patch<EdgeData<T>>,
-    options: GraphCollectionReplaceOptions & {
-      returnNew: true;
-      returnOld: true;
-    }
-  ): Promise<DocumentMetadata & { new: Edge<T>; old: Edge<T> }>;
+    options?: GraphCollectionReplaceOptions
+  ): Promise<DocumentMetadata & { new?: Edge<T>; old?: Edge<T> }>;
   update(
     selector: DocumentSelector,
     newValue: Patch<EdgeData<T>>,
@@ -729,15 +536,8 @@ export class GraphEdgeCollection<T extends object = any>
    */
   remove(
     selector: DocumentSelector,
-    options?: GraphCollectionRemoveOptions & { returnOld?: false }
-  ): Promise<DocumentMetadata>;
-  /**
-   * TODO
-   */
-  remove(
-    selector: DocumentSelector,
-    options: GraphCollectionRemoveOptions & { returnOld: true }
-  ): Promise<DocumentMetadata & { old: Edge<T> }>;
+    options?: GraphCollectionRemoveOptions
+  ): Promise<DocumentMetadata & { old?: Edge<T> }>;
   remove(
     selector: DocumentSelector,
     options: GraphCollectionRemoveOptions = {}
