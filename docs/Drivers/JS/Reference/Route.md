@@ -79,11 +79,7 @@ const response = await route.get("users", { group: "admin" });
 
 `async route.post(path?, body, qs?): Response`
 
-`async route.post(path?, body?): Response`
-
 `async route.post(body, qs?): Response`
-
-`async route.post(body?): Response`
 
 Performs a POST request to the given URL and returns the server response.
 
@@ -122,7 +118,7 @@ const response = await route.post("users");
 
 const response = await route.post("users", {
   username: "admin",
-  password: "hunter2"
+  password: "hunter2",
 });
 // response.body is the response body of calling
 // POST _db/_system/my-foxx-service/users
@@ -134,7 +130,7 @@ const response = await route.post(
   "users",
   {
     username: "admin",
-    password: "hunter2"
+    password: "hunter2",
   },
   { admin: true }
 );
@@ -147,11 +143,7 @@ const response = await route.post(
 
 `async route.put(path?, body, qs?): Response`
 
-`async route.put(path?, body?): Response`
-
 `async route.put(body, qs?): Response`
-
-`async route.put(body?): Response`
 
 Performs a PUT request to the given URL and returns the server response.
 
@@ -190,7 +182,7 @@ const response = await route.put("users/admin");
 
 const response = await route.put("users/admin", {
   username: "admin",
-  password: "hunter2"
+  password: "hunter2",
 });
 // response.body is the response body of calling
 // PUT _db/_system/my-foxx-service/users/admin
@@ -202,7 +194,7 @@ const response = await route.put(
   "users/admin",
   {
     username: "admin",
-    password: "hunter2"
+    password: "hunter2",
   },
   { admin: true }
 );
@@ -215,11 +207,7 @@ const response = await route.put(
 
 `async route.patch(path?, body, qs?): Response`
 
-`async route.patch(path?, body?): Response`
-
 `async route.patch(body, qs?): Response`
-
-`async route.patch(body?): Response`
 
 Performs a PATCH request to the given URL and returns the server response.
 
@@ -257,7 +245,7 @@ const response = await route.patch("users/admin");
 // -- or --
 
 const response = await route.patch("users/admin", {
-  password: "hunter2"
+  password: "hunter2",
 });
 // response.body is the response body of calling
 // PATCH _db/_system/my-foxx-service/users/admin
@@ -268,7 +256,7 @@ const response = await route.patch("users/admin", {
 const response = await route.patch(
   "users/admin",
   {
-    password: "hunter2"
+    password: "hunter2",
   },
   { admin: true }
 );
@@ -403,7 +391,7 @@ const response = await route.request({
   path: "hello-world",
   method: "POST",
   body: { hello: "world" },
-  qs: { admin: true }
+  qs: { admin: true },
 });
 // response.body is the response body of calling
 // POST _db/_system/my-foxx-service/hello-world?admin=true
