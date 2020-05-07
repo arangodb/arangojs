@@ -25,6 +25,7 @@ jobs:
           ref: gh-pages
           path: tsdoc
 
+      - run: yarn
       - run: 'rm -rf tsdoc/*'
       - run: yarn typedoc --disableOutputCheck
 
