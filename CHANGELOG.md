@@ -410,6 +410,21 @@ This is a major release and breaks backwards compatibility.
   The method takes a document or a document key and returns a fully qualified
   document ID string for the document in the current collection.
 
+#### Graph API
+
+- Added `graphVertexCollection.vertexExists` and
+  `graphEdgeCollection.edgeExists` methods
+
+  These mimic the behavior of the `collection.documentExists` method but using
+  the Graph API.
+
+- Added `graphVertexCollection.collection` and `graphEdgeCollection.collection`
+
+  These properties now provide access to regular (non-graph) collection
+  objects for these graph collections. These objects can be used to perform
+  operations not available within the context of a graph (e.g. bulk imports
+  or modifying the collection itself).
+
 #### Cursor API
 
 - Added `cursor.flatMap` method
