@@ -1,0 +1,39 @@
+name: Update docs
+
+on:
+  push:
+    branches:
+      - v7
+      - master
+
+jobs:
+  publish-docs:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v1.4.2
+        with:
+          node-version: ">= 12"
+
+      - uses: actions/checkout@v2
+
+      - name: Checkout gh-pages
+        uses: actions/checkout@v2
+        with:
+          ref: gh-pages
+          path: tsdoc
+
+      - run: 'rm -rf tsdoc/*'
+      - run: yarn typedoc --disableOutputCheck
+
+      - name: Commit to gh-pages
+        uses: EndBug/add-and-commit@v4
+        with:
+          cwd: './tsdoc'
+          ref: gh-pages
+          message: "Update docs via ${GIT_SHA}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GIT_SHA: ${{ github.sha }}
