@@ -1,0 +1,395 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>arangojs - v7.0.0-preview.0</title>
+	<meta name="description" content="Documentation for arangojs - v7.0.0-preview.0">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="assets/css/main.css">
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="assets/js/search.json" data-base=".">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="index.html" class="title">arangojs - v7.0.0-preview.0</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="globals.html">Globals</a>
+				</li>
+			</ul>
+			<h1>arangojs - v7.0.0-preview.0</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<div class="tsd-panel tsd-typography">
+				<a href="#arangodb-javascript-driver" id="arangodb-javascript-driver" style="color: inherit; text-decoration: none;">
+					<h1>ArangoDB JavaScript Driver</h1>
+				</a>
+				<p>The official ArangoDB low-level JavaScript client.</p>
+				<p><strong>Note:</strong> if you are looking for the ArangoDB JavaScript API in
+					<a href="https://foxx.arangodb.com">Foxx</a> (or the <code>arangosh</code> interactive shell) please
+					refer to the documentation about the
+					<a href="https://www.arangodb.com/docs/stable/foxx-reference-modules.html#the-arangodb-module"><code>@arangodb</code> module</a>
+					instead; specifically
+					<a href="https://www.arangodb.com/docs/stable/appendix-references-dbobject.html">the <code>db</code> object exported by the <code>@arangodb</code> module</a>.
+					The JavaScript driver is <strong>only</strong> meant to be used when accessing ArangoDB from
+				<strong>outside</strong> the database.</p>
+				<p><a href="http://opensource.org/licenses/APACHE-2.0"><img src="https://img.shields.io/npm/l/arangojs.svg" alt="license - APACHE-2.0"></a>
+				<a href="https://github.com/arangodb/arangojs/actions?query=workflow:%22Continuous+Integration%22"><img src="https://github.com/arangodb/arangojs/workflows/Continuous%20Integration/badge.svg" alt="Continuous Integration"></a></p>
+				<p><a href="https://npmjs.org/package/arangojs"><img src="https://nodei.co/npm/arangojs.png?downloads=true&stars=true" alt="NPM status"></a></p>
+				<a href="#install" id="install" style="color: inherit; text-decoration: none;">
+					<h2>Install</h2>
+				</a>
+				<a href="#with-yarn-or-npm" id="with-yarn-or-npm" style="color: inherit; text-decoration: none;">
+					<h3>With Yarn or NPM</h3>
+				</a>
+				<pre><code class="language-sh">yarn add arangojs
+<span class="hljs-comment">## - or -</span>
+npm install --save arangojs</code></pre>
+				<a href="#from-source" id="from-source" style="color: inherit; text-decoration: none;">
+					<h3>From source</h3>
+				</a>
+				<pre><code class="language-sh">git <span class="hljs-built_in">clone</span> https://github.com/arangodb/arangojs.git
+<span class="hljs-built_in">cd</span> arangojs
+npm install
+npm run build</code></pre>
+				<a href="#for-browsers" id="for-browsers" style="color: inherit; text-decoration: none;">
+					<h3>For browsers</h3>
+				</a>
+				<p>For production use arangojs can be installed with Yarn or NPM like any
+				other dependency. Just use arangojs like you would in your server code:</p>
+				<pre><code class="language-js"><span class="hljs-keyword">import</span> { Database, aql } <span class="hljs-keyword">from</span> <span class="hljs-string">"arangojs"</span>;
+<span class="hljs-comment">// -- or --</span>
+<span class="hljs-keyword">var</span> arangojs = <span class="hljs-built_in">require</span>(<span class="hljs-string">"arangojs"</span>);</code></pre>
+				<p>Additionally the NPM release comes with a precompiled browser build:</p>
+				<pre><code class="language-js"><span class="hljs-keyword">var</span> arangojs = <span class="hljs-built_in">require</span>(<span class="hljs-string">"arangojs/web"</span>);</code></pre>
+				<p>You can also use <a href="https://unpkg.com">unpkg</a> during development:</p>
+				<pre><code class="language-html"><span class="hljs-tag">&lt; !<span class="hljs-attr">--</span> <span class="hljs-attr">note</span> <span class="hljs-attr">the</span> <span class="hljs-attr">path</span> <span class="hljs-attr">includes</span> <span class="hljs-attr">the</span> <span class="hljs-attr">version</span> <span class="hljs-attr">number</span> (<span class="hljs-attr">e.g.</span> <span class="hljs-attr">7.0.0</span>) <span class="hljs-attr">--</span> &gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/arangojs@7.0.0/web.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="javascript">
+  <span class="hljs-keyword">var</span> db = <span class="hljs-keyword">new</span> arangojs.Database();
+  db.listCollections().then(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">collections</span>) </span>{
+    alert(
+      <span class="hljs-string">"Your collections: "</span> +
+        collections
+          .map(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">collection</span>) </span>{
+            <span class="hljs-keyword">return</span> collection.name;
+          })
+          .join(<span class="hljs-string">", "</span>)
+    );
+  });
+</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
+				<p>If you are targetting browsers older than Internet Explorer 11 you may want to
+					use <a href="https://babeljs.io">babel</a> with a
+					<a href="https://babeljs.io/docs/usage/polyfill">polyfill</a> to provide missing
+				functionality needed to use arangojs.</p>
+				<p>When loading the browser build with a script tag make sure to load the polyfill first:</p>
+				<pre><code class="language-html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/6.26.0/polyfill.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/arangojs@7.0.0/web.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
+				<a href="#basic-usage-example" id="basic-usage-example" style="color: inherit; text-decoration: none;">
+					<h2>Basic usage example</h2>
+				</a>
+				<pre><code class="language-js"><span class="hljs-comment">// Modern JavaScript</span>
+<span class="hljs-keyword">import</span> { Database, aql } <span class="hljs-keyword">from</span> <span class="hljs-string">"arangojs"</span>;
+<span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+(<span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+  <span class="hljs-keyword">const</span> now = <span class="hljs-built_in">Date</span>.now();
+  <span class="hljs-keyword">try</span> {
+    <span class="hljs-keyword">const</span> cursor = <span class="hljs-keyword">await</span> db.query(aql<span class="hljs-string">`
+      RETURN <span class="hljs-subst">${now}</span>
+    `</span>);
+    <span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> cursor.next();
+    <span class="hljs-comment">// ...</span>
+  } <span class="hljs-keyword">catch</span> (err) {
+    <span class="hljs-comment">// ...</span>
+  }
+})();
+
+<span class="hljs-comment">// or plain old Node-style</span>
+<span class="hljs-keyword">var</span> arangojs = <span class="hljs-built_in">require</span>(<span class="hljs-string">"arangojs"</span>);
+<span class="hljs-keyword">var</span> db = <span class="hljs-keyword">new</span> arangojs.Database();
+<span class="hljs-keyword">var</span> now = <span class="hljs-built_in">Date</span>.now();
+db.query({
+  <span class="hljs-attr">query</span>: <span class="hljs-string">"RETURN @value"</span>,
+  <span class="hljs-attr">bindVars</span>: { <span class="hljs-attr">value</span>: now }
+})
+  .then(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">cursor</span>) </span>{
+    <span class="hljs-keyword">return</span> cursor.next().then(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">result</span>) </span>{
+      <span class="hljs-comment">// ...</span>
+    });
+  })
+  .catch(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">err</span>) </span>{
+    <span class="hljs-comment">// ...</span>
+  });
+
+<span class="hljs-comment">// Using different databases</span>
+<span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database({
+  <span class="hljs-attr">url</span>: <span class="hljs-string">"http://localhost:8529"</span>
+});
+db.useDatabase(<span class="hljs-string">"pancakes"</span>);
+db.useBasicAuth(<span class="hljs-string">"root"</span>, <span class="hljs-string">""</span>);
+<span class="hljs-comment">// The database can be swapped at any time</span>
+db.useDatabase(<span class="hljs-string">"waffles"</span>);
+db.useBasicAuth(<span class="hljs-string">"admin"</span>, <span class="hljs-string">"maplesyrup"</span>);
+
+<span class="hljs-comment">// Using ArangoDB behind a reverse proxy</span>
+<span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database({
+  <span class="hljs-attr">url</span>: <span class="hljs-string">"http://arangodb-proxy:1234"</span>
+});</code></pre>
+				<a href="#compatibility" id="compatibility" style="color: inherit; text-decoration: none;">
+					<h2>Compatibility</h2>
+				</a>
+				<p>ArangoJS is compatible with the latest stable version of ArangoDB available at
+				the time of the driver release.</p>
+				<p>The <em>arangoVersion</em> option can be used to tell arangojs to target a specific
+					ArangoDB version. Depending on the version this may enable or disable certain
+				methods and change behavior to maintain compatibility with the given version.</p>
+				<p><strong>Note</strong>: As of June 2018 ArangoDB 2.8 has reached its End of Life and is no
+					longer supported in arangojs 7 and later. If your code needs to work with
+					ArangoDB 2.8 you can continue using arangojs 6 and enable ArangoDB 2.8
+				compatibility mode by setting the option <code>arangoVersion: 20800</code>.</p>
+				<p>The yarn/npm distribution of arangojs maintains compatibility with the latest
+					Node.js version as well as the two most recent LTS releases by following
+				<a href="https://github.com/nodejs/LTS">the official Node.js long-term support schedule</a>.</p>
+				<p>The included browser build is compatible with recent versions of all modern
+				browsers (Edge, Chrome, Firefox and Safari).</p>
+				<p>Versions outside this range may be compatible but are not actively supported.</p>
+				<a href="#versions" id="versions" style="color: inherit; text-decoration: none;">
+					<h2>Versions</h2>
+				</a>
+				<p>The version number of this driver does not indicate supported ArangoDB versions!</p>
+				<p>This driver uses semantic versioning:</p>
+				<ul>
+					<li>A change in the bugfix version (e.g. X.Y.0 -&gt; X.Y.1) indicates internal
+					changes and should always be safe to upgrade.</li>
+					<li>A change in the minor version (e.g. X.1.Z -&gt; X.2.0) indicates additions and
+					backwards-compatible changes that should not affect your code.</li>
+					<li>A change in the major version (e.g. 1.Y.Z -&gt; 2.0.0) indicates <em>breaking</em>
+					changes that require changes in your code to upgrade.</li>
+				</ul>
+				<p>For a list of changes between recent versions, see the
+				<a href="https://github.com/arangodb/arangojs/blob/master/CHANGELOG.md#changelog">changelog</a>.</p>
+				<p>If you are getting unexpected errors or functions seem to be missing, make sure you
+					are using the latest version of the driver and following documentation written
+					for a compatible version. If you are following a tutorial written for an older
+					version of arangojs, you can install that version using the <code>&lt;name&gt;@&lt;version&gt;</code>
+				syntax:</p>
+				<pre><code class="language-sh"><span class="hljs-comment"># for version 6.x.x</span>
+yarn add arangojs@6
+<span class="hljs-comment"># - or -</span>
+npm install --save arangojs@6</code></pre>
+				<a href="#common-issues" id="common-issues" style="color: inherit; text-decoration: none;">
+					<h2>Common issues</h2>
+				</a>
+				<a href="#nodejs-referenceerror-window-is-not-defined" id="nodejs-referenceerror-window-is-not-defined" style="color: inherit; text-decoration: none;">
+					<h3>Node.js <code>ReferenceError: window is not defined</code></h3>
+				</a>
+				<p>If you compile your Node project using a build tool like Webpack, you may need
+					to tell it to
+				<a href="https://webpack.js.org/configuration/target/">target the correct environment</a>:</p>
+				<pre><code class="language-diff">// webpack.config.js
+<span class="hljs-addition">+ "target": "node",</span></code></pre>
+				<p>To support use in both browser and Node environments arangojs uses the
+					<a href="https://github.com/defunctzombie/package-browser-field-spec"><code>package.json</code> <code>browser</code> field</a>,
+					to substitute browser-specific implementations for certain modules.
+					Build tools like Webpack will respect this field when targetting a browser
+				environment and may need to be explicitly told you are targetting Node instead.</p>
+				<a href="#nodejs-with-self-signed-https-certificates" id="nodejs-with-self-signed-https-certificates" style="color: inherit; text-decoration: none;">
+					<h3>Node.js with self-signed HTTPS certificates</h3>
+				</a>
+				<p>If you need to support self-signed HTTPS certificates, you may have to add
+				your certificates to the <code>agentOptions</code>, e.g.:</p>
+				<pre><code class="language-js">...
+agentOptions: {
+  <span class="hljs-attr">ca</span>: [
+    fs.readFileSync(<span class="hljs-string">".ssl/sub.class1.server.ca.pem"</span>),
+    fs.readFileSync(<span class="hljs-string">".ssl/ca.pem"</span>)
+  ]
+}</code></pre>
+				<p>Although this is <strong>strongly discouraged</strong>, it&#39;s also possible to disable
+					HTTPS certificate validation entirely, but note this has
+				<strong>extremely dangerous</strong> security implications:</p>
+				<pre><code class="language-js">...
+agentOptions: {
+  <span class="hljs-attr">rejectUnauthorized</span>: <span class="hljs-literal">false</span>
+}</code></pre>
+				<p>When using arangojs in the browser, self-signed HTTPS certificates need to
+				be trusted by the browser or use a trusted root certificate.</p>
+				<a href="#error-responses" id="error-responses" style="color: inherit; text-decoration: none;">
+					<h2>Error responses</h2>
+				</a>
+				<p>If arangojs encounters an API error, it will throw an <em>ArangoError</em> with an
+					<a href="https://www.arangodb.com/docs/stable/appendix-error-codes.html"><em>errorNum</em> error code</a>
+					as well as a <em>code</em> and <em>statusCode</em> property indicating the intended and
+				actual HTTP status code of the response.</p>
+				<p>For any other error responses (4xx/5xx status code), it will throw an
+				<em>HttpError</em> error with the status code indicated by the <em>code</em> and <em>statusCode</em> properties.</p>
+				<p>If the server response did not indicate an error but the response body could
+				not be parsed, a <em>SyntaxError</em> may be thrown instead.</p>
+				<p>In all of these cases the error object will additionally have a <em>response</em>
+				property containing the server response object.</p>
+				<p>If the request failed at a network level or the connection was closed without
+				receiving a response, the underlying error will be thrown instead.</p>
+				<p><strong>Examples</strong></p>
+				<pre><code class="language-js"><span class="hljs-comment">// Using async/await</span>
+<span class="hljs-keyword">try</span> {
+  <span class="hljs-keyword">const</span> info = <span class="hljs-keyword">await</span> db.createDatabase(<span class="hljs-string">"mydb"</span>);
+  <span class="hljs-comment">// database created</span>
+} <span class="hljs-keyword">catch</span> (err) {
+  <span class="hljs-built_in">console</span>.error(err.stack);
+}
+
+<span class="hljs-comment">// Using promises with arrow functions</span>
+db.createDatabase(<span class="hljs-string">"mydb"</span>).then(
+  <span class="hljs-function"><span class="hljs-params">info</span> =&gt;</span> {
+    <span class="hljs-comment">// database created</span>
+  },
+  err =&gt; <span class="hljs-built_in">console</span>.error(err.stack)
+);</code></pre>
+				<p><strong>Note</strong>: The examples throughout this documentation use <code>async</code>/<code>await</code>
+					and other modern language features like multi-line strings and template tags.
+					When developing for an environment without support for these language features,
+				substitute promises for <code>await</code> syntax as in the above example.</p>
+				<a href="#license" id="license" style="color: inherit; text-decoration: none;">
+					<h2>License</h2>
+				</a>
+				<p>The Apache License, Version 2.0. For more information, see the accompanying
+				LICENSE file.</p>
+			</div>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="globals.html"><em>Globals</em></a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_analyzer_.html">&quot;analyzer&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_aql_.html">&quot;aql&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_collection_.html">&quot;collection&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_connection_.html">&quot;connection&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_cursor_.html">&quot;cursor&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_database_.html">&quot;database&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_documents_.html">&quot;documents&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_error_.html">&quot;error&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_graph_.html">&quot;graph&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_index_.html">&quot;index&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_indexes_.html">&quot;indexes&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_route_.html">&quot;route&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_transaction_.html">&quot;transaction&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_util_codes_.html">&quot;util/codes&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_util_types_.html">&quot;util/types&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/_view_.html">&quot;view&quot;</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-namespace"><span class="tsd-kind-icon">Namespace</span></li>
+				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
+				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
+				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
+				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
+				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="assets/js/main.js"></script>
+<script>if (location.protocol == 'file:') document.write('<script src="assets/js/search.js"><' + '/script>');</script>
+</body>
+</html>
