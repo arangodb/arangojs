@@ -57,9 +57,9 @@ const info = await graph.create({
     {
       collection: "edges",
       from: ["start-vertices"],
-      to: ["end-vertices"]
-    }
-  ]
+      to: ["end-vertices"],
+    },
+  ],
 });
 // graph now exists
 ```

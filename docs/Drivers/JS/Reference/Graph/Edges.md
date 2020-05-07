@@ -46,7 +46,7 @@ const graph = db.graph("some-graph");
 await graph.addEdgeDefinition({
   collection: "edges",
   from: ["vertices"],
-  to: ["vertices"]
+  to: ["vertices"],
 });
 // the edge definition has been added to the graph
 ```
@@ -78,7 +78,7 @@ const graph = db.graph("some-graph");
 await graph.replaceEdgeDefinition("edges", {
   collection: "edges",
   from: ["vertices"],
-  to: ["more-vertices"]
+  to: ["more-vertices"],
 });
 // the edge definition has been modified
 ```
@@ -153,12 +153,12 @@ await collection.import([
   ["_key", "_from", "_to"],
   ["x", "vertices/a", "vertices/b"],
   ["y", "vertices/b", "vertices/c"],
-  ["z", "vertices/c", "vertices/d"]
+  ["z", "vertices/c", "vertices/d"],
 ]);
 const result = await graph.traversal("vertices/a", {
   direction: "outbound",
   visitor: "result.vertices.push(vertex._key);",
-  init: "result.vertices = [];"
+  init: "result.vertices = [];",
 });
 assert.deepEqual(result.vertices, ["a", "b", "c", "d"]);
 ```

@@ -108,12 +108,12 @@ await trx.run(() =>
 // Promise.all can be used to run multiple actions in parallel
 await Promise.all([
   trx.run(() => col2.save({ _from: meta1._id, _to: meta2._id, data: "edge2" })),
-  trx.run(() => col2.save({ _from: meta1._id, _to: meta2._id, data: "edge3" }))
+  trx.run(() => col2.save({ _from: meta1._id, _to: meta2._id, data: "edge3" })),
 ]);
 await trx.run(() =>
   Promise.all([
     col2.save({ _from: meta1._id, _to: meta2._id, data: "edge4" }),
-    col2.save({ _from: meta1._id, _to: meta2._id, data: "edge5" })
+    col2.save({ _from: meta1._id, _to: meta2._id, data: "edge5" }),
   ])
 );
 

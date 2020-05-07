@@ -190,11 +190,14 @@ await collection.import([
   ["_key", "_from", "_to"],
   ["x", "vertices/a", "vertices/b"],
   ["y", "vertices/a", "vertices/c"],
-  ["z", "vertices/d", "vertices/a"]
+  ["z", "vertices/d", "vertices/a"],
 ]);
 const edges = await collection.edges("vertices/a");
 assert.equal(edges.length, 3);
-assert.deepEqual(edges.map(edge => edge._key), ["x", "y", "z"]);
+assert.deepEqual(
+  edges.map((edge) => edge._key),
+  ["x", "y", "z"]
+);
 ```
 
 ## graphEdgeCollection.inEdges
@@ -222,7 +225,7 @@ await collection.import([
   ["_key", "_from", "_to"],
   ["x", "vertices/a", "vertices/b"],
   ["y", "vertices/a", "vertices/c"],
-  ["z", "vertices/d", "vertices/a"]
+  ["z", "vertices/d", "vertices/a"],
 ]);
 const edges = await collection.inEdges("vertices/a");
 assert.equal(edges.length, 1);
@@ -254,11 +257,14 @@ await collection.import([
   ["_key", "_from", "_to"],
   ["x", "vertices/a", "vertices/b"],
   ["y", "vertices/a", "vertices/c"],
-  ["z", "vertices/d", "vertices/a"]
+  ["z", "vertices/d", "vertices/a"],
 ]);
 const edges = await collection.outEdges("vertices/a");
 assert.equal(edges.length, 2);
-assert.deepEqual(edges.map(edge => edge._key), ["x", "y"]);
+assert.deepEqual(
+  edges.map((edge) => edge._key),
+  ["x", "y"]
+);
 ```
 
 ## graphEdgeCollection.traversal
@@ -298,12 +304,12 @@ await collection.import([
   ["_key", "_from", "_to"],
   ["x", "vertices/a", "vertices/b"],
   ["y", "vertices/b", "vertices/c"],
-  ["z", "vertices/c", "vertices/d"]
+  ["z", "vertices/c", "vertices/d"],
 ]);
 const result = await collection.traversal("vertices/a", {
   direction: "outbound",
   visitor: "result.vertices.push(vertex._key);",
-  init: "result.vertices = [];"
+  init: "result.vertices = [];",
 });
 assert.deepEqual(result.vertices, ["a", "b", "c", "d"]);
 ```
