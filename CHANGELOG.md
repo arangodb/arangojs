@@ -15,6 +15,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
   The method `graphEdgeCollection.edge` is unaffected by this change.
 
+- Removed `graphName` option for `edgeCollection.traversal`
+
+  Graph traversals can still be performed via `graph.traversal`.
+
 ### Added
 
 - Added `auth` option to configuration
