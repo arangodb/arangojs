@@ -2,8 +2,10 @@ name: Update docs
 
 on:
   push:
+    tags:
+      - "v7.*.*" # all v7 semver release tags
     branches:
-      - v7
+      - v7 # temporary v7 branch
       - master
 
 jobs:
@@ -22,17 +24,43 @@ jobs:
         uses: actions/checkout@v2
         with:
           ref: gh-pages
-          path: tsdoc
+          path: gh-pages
 
       - run: yarn
-      - run: "rm -rf tsdoc/*"
-      - run: yarn typedoc --disableOutputCheck
+
+      - name: Set tag env to devel
+        if: startsWith( github.event.ref, 'refs/heads/' )
+        run: |
+          echo "::set-env name=tag::devel"
+          echo "::set-env name=latest::0"
+
+      - name: Set tag env to ref tag
+        if: startsWith( github.event.ref, 'refs/tags/v' )
+        run: |
+          echo "::set-env name=tag::$(echo ${{ github.env.ref }} | sed -e 's/^refs\/tags\/v')"
+          echo "::set-env name=latest::$(node -p "Number(require('semver').gt('${tag}','$(cat gh-pages/VERSION)'))")"
+
+      - name: Update versions
+        if: env.latest
+        run: |
+          echo $tag > gh-pages/VERSION
+          node -p 'var all=fs.readdirSync("gh-pages",{withFileTypes:true}).flatMap(f=>f.isDirectory()&&!isNaN(f.name.charAt(0))?[f.name]:[]).sort(require("semver").rcompare);JSON.stringify({all,stable:all.filter(s=>!s.includes("-"))})' > gh-pages/_data/versions.json
+          cd gh-pages && ln -s $tag latest
+
+      - name: Update CHANGELOG
+        run: |
+          echo $'---\npermalink: /CHANGELOG\ntitle: "CHANGELOG"\n---\n'$(cat CHANGELOG.md) > gh-pages/CHANGELOG.md
+
+      - name: Rebuild tag docs
+        run: |
+          rm -rf gh-pages/${tag}
+          yarn typedoc --out $([[ $latest ]] && echo "--includeVersion") gh-pages/${tag}
 
       - name: Commit to gh-pages
         uses: EndBug/add-and-commit@v4
         with:
-          cwd: "./tsdoc"
+          cwd: ./gh-pages
           ref: gh-pages
-          message: Update docs via ${{ github.sha }}
+          message: Update ${{ env.tag }} docs via ${{ github.sha }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
