@@ -6,6 +6,6 @@
   "excludeNotExported": true,
   "excludeProtected": true,
   "excludePrivate": true,
-  "includeVersion": true,
+  "includeVersion": false,
   "inputFiles": "src"
 }
