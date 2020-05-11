@@ -50,10 +50,19 @@ jobs:
         run: |
           echo $'---\npermalink: /CHANGELOG\ntitle: "CHANGELOG"\n---\n'$(cat CHANGELOG.md) > gh-pages/CHANGELOG.md
 
-      - name: Rebuild tag docs
+      - name: Remove old docs
         run: |
           rm -rf gh-pages/${tag}
-          yarn typedoc $([ $latest ] && echo "--includeVersion") --out gh-pages/${tag}
+
+      - name: Rebuild docs for tag
+        if: env.tag != "devel"
+        run: |
+          yarn typedoc --includeVersion --out gh-pages/${tag}
+
+      - name: Rebuild docs for devel
+        if: env.tag == "devel"
+        run: |
+          yarn typedoc --out gh-pages/${tag}
 
       - name: Commit to gh-pages
         uses: EndBug/add-and-commit@v4
