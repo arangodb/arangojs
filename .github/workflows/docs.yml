@@ -55,12 +55,12 @@ jobs:
           rm -rf gh-pages/${tag}
 
       - name: Rebuild docs for tag
-        if: env.tag != "devel"
+        if: env.tag != 'devel'
         run: |
           yarn typedoc --includeVersion --out gh-pages/${tag}
 
       - name: Rebuild docs for devel
-        if: env.tag == "devel"
+        if: env.tag == 'devel'
         run: |
           yarn typedoc --out gh-pages/${tag}
 
