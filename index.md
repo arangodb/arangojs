@@ -14,8 +14,8 @@ The JavaScript driver is **only** meant to be used when accessing ArangoDB from
 ## Versions
 
 <ul>
-{% for version in site.data.versions %}
-<li><a href="{{ version }}/index.html">{{ version }}</a>{% if version == site.data.versions.first %} (latest){% endif %}</li>
+{% for version in site.data.versions.all %}
+<li><a href="{{ version }}/index.html">{{ version }}</a>{% unless site.data.versions.stable contains version %} (pre-release){% elsif version == site.data.versions.stable.first %} (latest){% endunless %}</li>
 {% endfor %}
 <li><a href="devel/index.html">devel</a></li>
 </ul>
