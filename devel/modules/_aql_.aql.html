@@ -1,0 +1,457 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>aql | arangojs</title>
+	<meta name="description" content="Documentation for arangojs">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.json" data-base="..">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="../index.html" class="title">arangojs</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="../globals.html">Globals</a>
+				</li>
+				<li>
+					<a href="_aql_.html">&quot;aql&quot;</a>
+				</li>
+				<li>
+					<a href="_aql_.aql.html">aql</a>
+				</li>
+			</ul>
+			<h1>Namespace aql</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<section class="tsd-panel">
+				<h3 class="tsd-before-signature">Callable</h3>
+				<ul class="tsd-signatures tsd-kind-namespace tsd-parent-kind-module">
+					<li class="tsd-signature tsd-kind-icon">aql<span class="tsd-signature-symbol">(</span>templateStrings<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">TemplateStringsArray</span>, <span class="tsd-signature-symbol">...</span>args<span class="tsd-signature-symbol">: </span><a href="_aql_.html#aqlvalue" class="tsd-signature-type">AqlValue</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/_aql_.generatedaqlquery.html" class="tsd-signature-type">GeneratedAqlQuery</a></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+						</aside>
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>Template string handler (template tag) for AQL queries.</p>
+							</div>
+							<p>The <code>aql</code> tag can be used to write complex AQL queries as multi-line strings
+								without having to worry about <code>bindVars</code> and the distinction between
+							collections and regular parameters.</p>
+							<p>Tagged template strings will return an <a href="../interfaces/_aql_.aqlquery.html">AqlQuery</a> object with
+							<code>query</code> and <code>bindVars</code> attributes reflecting any interpolated values.</p>
+							<p>Any <a href="../interfaces/_collection_.arangocollection.html">ArangoCollection</a> instance used in a query string will be
+								recognized as a collection reference and generate an AQL collection bind
+							parameter instead of a regular AQL value bind parameter.</p>
+							<p><strong>Note</strong>: you should always use the <code>aql</code> template tag when writing
+								dynamic AQL queries instead of using untagged (normal) template strings.
+								Untagged template strings will inline any interpolated values and return
+								a plain string as result. The <code>aql</code> template tag will only inline references
+								to the interpolated values and produce an AQL query object containing both
+								the query and the values. This prevents most injection attacks when using
+							untrusted values in dynamic queries.</p>
+							<dl class="tsd-comment-tags">
+								<dt>example</dt>
+								<dd><pre><code class="language-js"><span class="hljs-comment">// Some user-supplied string that may be malicious</span>
+<span class="hljs-keyword">const</span> untrustedValue = req.body.email;
+
+<span class="hljs-comment">// Without aql tag: BAD! DO NOT DO THIS!</span>
+<span class="hljs-keyword">const</span> badQuery = <span class="hljs-string">`
+  FOR user IN users
+  FILTER user.email == "<span class="hljs-subst">${untrustedValue}</span>"
+  RETURN user
+`</span>;
+<span class="hljs-comment">// e.g. if untrustedValue is '" || user.admin == true || "':</span>
+<span class="hljs-comment">// Query:</span>
+<span class="hljs-comment">//   FOR user IN users</span>
+<span class="hljs-comment">//   FILTER user.email == "" || user.admin == true || ""</span>
+<span class="hljs-comment">//   RETURN user</span>
+
+<span class="hljs-comment">// With the aql tag: GOOD! MUCH SAFER!</span>
+<span class="hljs-keyword">const</span> betterQuery = aql<span class="hljs-string">`
+  FOR user IN users
+  FILTER user.email == <span class="hljs-subst">${untrustedValue}</span>
+  RETURN user
+`</span>;
+<span class="hljs-comment">// Query:</span>
+<span class="hljs-comment">//   FOR user IN users</span>
+<span class="hljs-comment">//   FILTER user.email == @value0</span>
+<span class="hljs-comment">//   RETURN user</span>
+<span class="hljs-comment">// Bind parameters:</span>
+<span class="hljs-comment">//   value0 -&gt; untrustedValue</span></code></pre>
+								</dd>
+								<dt>example</dt>
+								<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">"some-collection"</span>);
+<span class="hljs-keyword">const</span> minValue = <span class="hljs-number">23</span>;
+<span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> db.query(aql<span class="hljs-string">`
+  FOR d IN <span class="hljs-subst">${collection}</span>
+  FILTER d.num &gt; <span class="hljs-subst">${minValue}</span>
+  RETURN d
+`</span>);
+
+<span class="hljs-comment">// Equivalent raw query object</span>
+<span class="hljs-keyword">const</span> result2 = <span class="hljs-keyword">await</span> db.query({
+  <span class="hljs-attr">query</span>: <span class="hljs-string">`
+    FOR d IN @@collection
+    FILTER d.num &gt; @minValue
+    RETURN d
+  `</span>,
+  <span class="hljs-attr">bindVars</span>: {
+    <span class="hljs-string">"@collection"</span>: collection.name,
+    <span class="hljs-attr">minValue</span>: minValue
+  }
+});</code></pre>
+								</dd>
+								<dt>example</dt>
+								<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">"some-collection"</span>);
+<span class="hljs-keyword">const</span> color = <span class="hljs-string">"green"</span>;
+<span class="hljs-keyword">const</span> filter = aql<span class="hljs-string">`FILTER d.color == <span class="hljs-subst">${color}</span>'`</span>;
+<span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> db.query(aql<span class="hljs-string">`
+  FOR d IN <span class="hljs-subst">${collection}</span>
+  <span class="hljs-subst">${filter}</span>
+  RETURN d
+`</span>);</code></pre>
+								</dd>
+							</dl>
+						</div>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>templateStrings: <span class="tsd-signature-type">TemplateStringsArray</span></h5>
+							</li>
+							<li>
+								<h5><span class="tsd-flag ts-flagRest">Rest</span> <span class="tsd-signature-symbol">...</span>args: <a href="_aql_.html#aqlvalue" class="tsd-signature-type">AqlValue</a><span class="tsd-signature-symbol">[]</span></h5>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <a href="../interfaces/_aql_.generatedaqlquery.html" class="tsd-signature-type">GeneratedAqlQuery</a></h4>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel-group tsd-index-group">
+				<h2>Index</h2>
+				<section class="tsd-panel tsd-index-panel">
+					<div class="tsd-index-content">
+						<section class="tsd-index-section ">
+							<h3>Functions</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-function tsd-parent-kind-namespace"><a href="_aql_.aql.html#join" class="tsd-kind-icon">join</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-namespace"><a href="_aql_.aql.html#literal" class="tsd-kind-icon">literal</a></li>
+							</ul>
+						</section>
+					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Functions</h2>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-namespace">
+					<a name="join" class="tsd-anchor"></a>
+					<h3>join</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-namespace">
+						<li class="tsd-signature tsd-kind-icon">join<span class="tsd-signature-symbol">(</span>values<span class="tsd-signature-symbol">: </span><a href="_aql_.html#aqlvalue" class="tsd-signature-type">AqlValue</a><span class="tsd-signature-symbol">[]</span>, sep<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/_aql_.generatedaqlquery.html" class="tsd-signature-type">GeneratedAqlQuery</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Constructs <a href="../interfaces/_aql_.aqlquery.html">AqlQuery</a> objects from an array of arbitrary values.</p>
+								</div>
+								<p><strong>Note</strong>: Nesting <code>aql</code> template strings is a much safer alternative
+									for most use cases. This low-level helper function only exists to
+									complement the <code>aql</code> tag when constructing complex queries from dynamic
+								arrays of query fragments.</p>
+								<dl class="tsd-comment-tags">
+									<dt>example</dt>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> users = db.collection(<span class="hljs-string">"users"</span>);
+<span class="hljs-keyword">const</span> filters = [];
+<span class="hljs-keyword">if</span> (adminsOnly) filters.push(aql<span class="hljs-string">`FILTER user.admin`</span>);
+<span class="hljs-keyword">if</span> (activeOnly) filters.push(aql<span class="hljs-string">`FILTER user.active`</span>);
+<span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> db.query(aql<span class="hljs-string">`
+  FOR user IN <span class="hljs-subst">${users}</span>
+  <span class="hljs-subst">${aql.join(filters)}</span>
+  RETURN user
+`</span>);</code></pre>
+									</dd>
+									<dt>example</dt>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> users = db.collection(<span class="hljs-string">"users"</span>);
+<span class="hljs-keyword">const</span> keys = [<span class="hljs-string">"jreyes"</span>, <span class="hljs-string">"ghermann"</span>];
+
+<span class="hljs-comment">// BAD! NEEDLESSLY COMPLEX!</span>
+<span class="hljs-keyword">const</span> docs = keys.map(<span class="hljs-function"><span class="hljs-params">key</span> =&gt;</span> aql<span class="hljs-string">`DOCUMENT(<span class="hljs-subst">${users}</span>, <span class="hljs-subst">${key}</span>`</span>));
+<span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> db.query(aql<span class="hljs-string">`
+  FOR user IN [
+    <span class="hljs-subst">${aql.join(docs, <span class="hljs-string">", "</span>)}</span>
+  ]
+  RETURN user
+`</span>);
+<span class="hljs-comment">// Query:</span>
+<span class="hljs-comment">//   FOR user IN [</span>
+<span class="hljs-comment">//     DOCUMENT(@@value0, @value1), DOCUMENT(@@value0, @value2)</span>
+<span class="hljs-comment">//   ]</span>
+<span class="hljs-comment">//   RETURN user</span>
+<span class="hljs-comment">// Bind parameters:</span>
+<span class="hljs-comment">//   @value0 -&gt; "users"</span>
+<span class="hljs-comment">//   value1 -&gt; "jreyes"</span>
+<span class="hljs-comment">//   value2 -&gt; "ghermann"</span>
+
+<span class="hljs-comment">// GOOD! MUCH SIMPLER!</span>
+<span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> db.query(aql<span class="hljs-string">`
+  FOR key IN <span class="hljs-subst">${keys}</span>
+  LET user = DOCUMENT(<span class="hljs-subst">${users}</span>, key)
+  RETURN user
+`</span>);
+<span class="hljs-comment">// Query:</span>
+<span class="hljs-comment">//   FOR user IN @value0</span>
+<span class="hljs-comment">//   LET user = DOCUMENT(@@value1, key)</span>
+<span class="hljs-comment">//   RETURN user</span>
+<span class="hljs-comment">// Bind parameters:</span>
+<span class="hljs-comment">//   value0 -&gt; ["jreyes", "ghermann"]</span>
+<span class="hljs-comment">//   @value1 -&gt; "users"</span></code></pre>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>values: <a href="_aql_.html#aqlvalue" class="tsd-signature-type">AqlValue</a><span class="tsd-signature-symbol">[]</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Array of values to join. These values will behave exactly
+										like values interpolated in an <code>aql</code> template string.</p>
+									</div>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> sep: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &quot; &quot;</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Seperator to insert between values. This value will behave
+											exactly like a value passed to <a href="_aql_.aql.html#literal">aql.literal</a>, i.e. it will be
+										inlined as-is, rather than being converted into a bind parameter.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="../interfaces/_aql_.generatedaqlquery.html" class="tsd-signature-type">GeneratedAqlQuery</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-namespace">
+					<a name="literal" class="tsd-anchor"></a>
+					<h3>literal</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-namespace">
+						<li class="tsd-signature tsd-kind-icon">literal<span class="tsd-signature-symbol">(</span>value<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> | </span><a href="../interfaces/_aql_.aqlliteral.html" class="tsd-signature-type">AqlLiteral</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/_aql_.aqlliteral.html" class="tsd-signature-type">AqlLiteral</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Marks an arbitrary scalar value (i.e. a string, number or boolean) as
+										safe for being inlined directly into AQL queries when used in an <code>aql</code>
+									template string, rather than being converted into a bind parameter.</p>
+								</div>
+								<p><strong>Note</strong>: Nesting <code>aql</code> template strings is a much safer alternative for
+									most use cases. This low-level helper function only exists to help with
+									rare edge cases where a trusted AQL query fragment must be read from a
+									string (e.g. when reading query fragments from JSON) and should only be
+								used as a last resort.</p>
+								<dl class="tsd-comment-tags">
+									<dt>example</dt>
+									<dd><pre><code class="language-js"><span class="hljs-comment">// BAD! DO NOT DO THIS!</span>
+<span class="hljs-keyword">const</span> sortDirection = aql.literal(<span class="hljs-string">'ASC'</span>);
+
+<span class="hljs-comment">// GOOD! DO THIS INSTEAD!</span>
+<span class="hljs-keyword">const</span> sortDirection = aql<span class="hljs-string">`ASC`</span>;</code></pre>
+									</dd>
+									<dt>example</dt>
+									<dd><pre><code class="language-js"><span class="hljs-comment">// BAD! DO NOT DO THIS!</span>
+<span class="hljs-keyword">const</span> filterColor = aql.literal(<span class="hljs-string">'FILTER d.color == "green"'</span>);
+<span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> db.query(aql<span class="hljs-string">`
+  FOR d IN some-collection
+  <span class="hljs-subst">${filterColor}</span>
+  RETURN d
+`</span>);
+
+<span class="hljs-comment">// GOOD! DO THIS INSTEAD!</span>
+<span class="hljs-keyword">const</span> color = <span class="hljs-string">"green"</span>;
+<span class="hljs-keyword">const</span> filterColor = aql<span class="hljs-string">`FILTER d.color === <span class="hljs-subst">${color}</span>`</span>;
+<span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> db.query(aql<span class="hljs-string">`
+  FOR d IN some-collection
+  <span class="hljs-subst">${filterColor}</span>
+  RETURN d
+`</span>);</code></pre>
+									</dd>
+									<dt>example</dt>
+									<dd><pre><code class="language-js"><span class="hljs-comment">// WARNING: We explicitly trust the environment variable to be safe!</span>
+<span class="hljs-keyword">const</span> filter = aql.literal(process.env.FILTER_STATEMENT);
+<span class="hljs-keyword">const</span> users = <span class="hljs-keyword">await</span> db.query(aql<span class="hljs-string">`
+  FOR user IN users
+  <span class="hljs-subst">${filter}</span>
+  RETURN user
+`</span>);</code></pre>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>value: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> | </span><a href="../interfaces/_aql_.aqlliteral.html" class="tsd-signature-type">AqlLiteral</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="../interfaces/_aql_.aqlliteral.html" class="tsd-signature-type">AqlLiteral</a></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="../globals.html"><em>Globals</em></a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="_analyzer_.html">&quot;analyzer&quot;</a>
+					</li>
+					<li class="current tsd-kind-module">
+						<a href="_aql_.html">&quot;aql&quot;</a>
+						<ul>
+							<li class="current tsd-kind-namespace tsd-parent-kind-module">
+								<a href="_aql_.aql.html">aql</a>
+							</li>
+						</ul>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="_collection_.html">&quot;collection&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="_connection_.html">&quot;connection&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="_cursor_.html">&quot;cursor&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="_database_.html">&quot;database&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="_documents_.html">&quot;documents&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="_error_.html">&quot;error&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="_graph_.html">&quot;graph&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="_index_.html">&quot;index&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="_indexes_.html">&quot;indexes&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="_route_.html">&quot;route&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="_transaction_.html">&quot;transaction&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="_util_codes_.html">&quot;util/codes&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="_util_types_.html">&quot;util/types&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="_view_.html">&quot;view&quot;</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+					<li class=" tsd-kind-function tsd-parent-kind-namespace">
+						<a href="_aql_.aql.html#join" class="tsd-kind-icon">join</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-namespace">
+						<a href="_aql_.aql.html#literal" class="tsd-kind-icon">literal</a>
+					</li>
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-namespace"><span class="tsd-kind-icon">Namespace</span></li>
+				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
+				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
+				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
+				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
+				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="../assets/js/main.js"></script>
+<script>if (location.protocol == 'file:') document.write('<script src="../assets/js/search.js"><' + '/script>');</script>
+</body>
+</html>

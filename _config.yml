@@ -1,0 +1,2 @@
+versions: ["7.0.0-preview.0/", "devel/"]
+include: ["_*_.html", "_*_.*.html"]
