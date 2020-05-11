@@ -173,7 +173,7 @@ This driver uses semantic versioning:
   changes that require changes in your code to upgrade.
 
 For a list of changes between recent versions, see the
-[changelog](https://github.com/arangodb/arangojs/blob/master/CHANGELOG.md#changelog).
+[CHANGELOG](https://arangodb.github.io/arangojs/CHANGELOG).
 
 If you are getting unexpected errors or functions seem to be missing, make sure you
 are using the latest version of the driver and following documentation written
