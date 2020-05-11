@@ -59,11 +59,11 @@ You can also use [unpkg](https://unpkg.com) during development:
 <script src="https://unpkg.com/arangojs@7.0.0/web.js"></script>
 <script>
   var db = new arangojs.Database();
-  db.listCollections().then(function(collections) {
+  db.listCollections().then(function (collections) {
     alert(
       "Your collections: " +
         collections
-          .map(function(collection) {
+          .map(function (collection) {
             return collection.name;
           })
           .join(", ")
@@ -90,7 +90,7 @@ When loading the browser build with a script tag make sure to load the polyfill 
 // Modern JavaScript
 import { Database, aql } from "arangojs";
 const db = new Database();
-(async function() {
+(async function () {
   const now = Date.now();
   try {
     const cursor = await db.query(aql`
@@ -109,20 +109,20 @@ var db = new arangojs.Database();
 var now = Date.now();
 db.query({
   query: "RETURN @value",
-  bindVars: { value: now }
+  bindVars: { value: now },
 })
-  .then(function(cursor) {
-    return cursor.next().then(function(result) {
+  .then(function (cursor) {
+    return cursor.next().then(function (result) {
       // ...
     });
   })
-  .catch(function(err) {
+  .catch(function (err) {
     // ...
   });
 
 // Using different databases
 const db = new Database({
-  url: "http://localhost:8529"
+  url: "http://localhost:8529",
 });
 db.useDatabase("pancakes");
 db.useBasicAuth("root", "");
@@ -132,7 +132,7 @@ db.useBasicAuth("admin", "maplesyrup");
 
 // Using ArangoDB behind a reverse proxy
 const db = new Database({
-  url: "http://arangodb-proxy:1234"
+  url: "http://arangodb-proxy:1234",
 });
 ```
 
@@ -268,10 +268,10 @@ try {
 
 // Using promises with arrow functions
 db.createDatabase("mydb").then(
-  info => {
+  (info) => {
     // database created
   },
-  err => console.error(err.stack)
+  (err) => console.error(err.stack)
 );
 ```
 
