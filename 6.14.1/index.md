@@ -12,4 +12,4 @@ JavaScript driver is **only** meant to be used when accessing ArangoDB from
 
 - [Getting Started](GettingStarted/index.html)
 - [Reference](Reference/index.html)
-- [Changelog](https://github.com/arangodb/arangojs/blob/master/CHANGELOG.md#readme)
+- [Changelog](../CHANGELOG)
