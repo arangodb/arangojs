@@ -62,11 +62,9 @@ The `aql.literal` helper can be used to mark strings to be inlined into an AQL
 query when using the `aql` template tag, rather than being treated as a bind
 parameter.
 
-{% hint 'danger' %}
-Any value passed to `aql.literal` will be treated as part of the AQL query.
+**Warning:** Any value passed to `aql.literal` will be treated as part of the AQL query.
 To avoid becoming vulnerable to AQL injection attacks you should always prefer
 nested `aql` queries if possible.
-{% endhint %}
 
 **Arguments**
 
@@ -118,7 +116,7 @@ const joined = aql.join(parts, ""); // aql`FILTER`;
 // Real world example: translate keys into document lookups
 const users = db.collection("users");
 const keys = ["abc123", "def456"];
-const docs = keys.map(key => aql`DOCUMENT(${users}, ${key})`);
+const docs = keys.map((key) => aql`DOCUMENT(${users}, ${key})`);
 const aqlArray = aql`[${aql.join(docs, ", ")}]`;
 const result = await db.query(aql`
   FOR d IN ${aqlArray}

@@ -3,10 +3,8 @@
 These functions implement the
 [HTTP API for manipulating Analyzers](https://www.arangodb.com/docs/stable/http/analyzers.html).
 
-{% hint 'info' %}
-Analyzers were introduced in ArangoDB 3.5 and are not supported by earlier
+**Note:** Analyzers were introduced in ArangoDB 3.5 and are not supported by earlier
 versions of ArangoDB.
-{% endhint %}
 
 ## analyzer.exists
 

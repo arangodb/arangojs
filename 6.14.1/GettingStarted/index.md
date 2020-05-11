@@ -230,9 +230,7 @@ db.createDatabase("mydb").then(
 );
 ```
 
-{% hint 'tip' %}
-The examples in the remainder of this documentation use `async`/`await`
+**Note**: The examples in the remainder of this documentation use `async`/`await`
 and other modern language features like multi-line strings and template tags.
 When developing for an environment without support for these language features,
 substitute promises for `await` syntax as in the above example.
-{% endhint %}

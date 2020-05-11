@@ -28,10 +28,8 @@ Retrieves the document with the given _documentHandle_ from the collection.
 
   - **allowDirtyRead**: `boolean` (Default: `false`)
 
-    {% hint 'info' %}
-    Dirty reads were introduced in ArangoDB 3.4 and are not supported by
+    **Note:** Dirty reads were introduced in ArangoDB 3.4 and are not supported by
     earlier versions of ArangoDB.
-    {% endhint %}
 
     If set to `true`, the request will explicitly permit ArangoDB to return a
     potentially dirty or stale result and arangojs will load balance the
@@ -145,9 +143,7 @@ some elements can be error objects if the documents couldn't be saved.
 
   - **overwrite**: `boolean` (Default: `false`)
 
-    {% hint 'warning' %}
-    This option is only available when targeting ArangoDB v3.4.0 and later.
-    {% endhint %}
+    **Warning**: This option is only available when targeting ArangoDB v3.4.0 and later.
 
     If set to true, the insert becomes a replace-insert. If a document with the
     same \_key already exists the new document is not rejected with unique

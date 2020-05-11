@@ -46,12 +46,10 @@ Performs a server-side transaction and returns its return value.
 
   A string evaluating to a JavaScript function to be executed on the server.
 
-  {% hint 'warning ' %}
-  This function will be executed on the server inside ArangoDB and can not use
+  **Warning**: This function will be executed on the server inside ArangoDB and can not use
   the arangojs driver or any values other than those passed as _params_.
   For accessing the database from within ArangoDB, see the documentation for the
   [`@arangodb` module in ArangoDB](https://www.arangodb.com/docs/stable/appendix-java-script-modules-arango-db.html).
-  {% endhint %}
 
 - **options**: `Object` (optional)
 
@@ -98,7 +96,7 @@ in plain text.
 ```js
 const db = new Database();
 
-const action = String(function(params) {
+const action = String(function (params) {
   // This code will be executed inside ArangoDB!
   const { query } = require("@arangodb");
   return query`
@@ -109,7 +107,7 @@ const action = String(function(params) {
 });
 
 const result = await db.executeTransaction("_users", action, {
-  params: { age: 12 }
+  params: { age: 12 },
 });
 // result contains the return value of the action
 ```
@@ -121,8 +119,7 @@ const result = await db.executeTransaction("_users", action, {
 Returns a `Transaction` instance for an existing transaction with the given
 _id_.
 
-{% hint 'warning' %}
-For backwards-compatibility with arangojs 6.10 and earlier, this method will
+**Warning**: For backwards-compatibility with arangojs 6.10 and earlier, this method will
 behave like _executeTransaction_ when passed the following arguments:
 
 - **collections**: `Object`
@@ -145,7 +142,6 @@ If _params_ or _options_ is a `number`, it will be treated as
 _options.lockTimeout_.
 
 This behavior is deprecated and will be removed in arangojs 7.
-{% endhint %}
 
 - **id**: `string`
 
@@ -237,7 +233,7 @@ const vertices = db.collection("vertices");
 const edges = db.collection("edges");
 const trx = await db.beginTransaction({
   read: ["vertices"],
-  write: [edges] // collection instances can be passed directly
+  write: [edges], // collection instances can be passed directly
 });
 const start = await trx.run(() => vertices.document("a"));
 const end = await trx.run(() => vertices.document("b"));
@@ -355,12 +351,10 @@ for its result.
 
   A function to be executed locally as part of the transaction.
 
-  {% hint 'warning' %}
-  If the given function contains asynchronous logic, only the synchronous part
+  **Warning**: If the given function contains asynchronous logic, only the synchronous part
   of the function will be run in the transaction. E.g. when using async/await
   only the code up to the first await will run in the transaction.
   Pay attention to the examples below.
-  {% endhint %}
 
 Unlike _executeTransaction_, functions passed to _run_ will be executed locally
 on the client, not on the server.
@@ -384,12 +378,12 @@ await trx.run(() =>
 // Promise.all can be used to run multiple actions in parallel
 await Promise.all([
   trx.run(() => col2.save({ _from: meta1._id, _to: meta2._id, data: "edge2" })),
-  trx.run(() => col2.save({ _from: meta1._id, _to: meta2._id, data: "edge3" }))
+  trx.run(() => col2.save({ _from: meta1._id, _to: meta2._id, data: "edge3" })),
 ]);
 await trx.run(() =>
   Promise.all([
     col2.save({ _from: meta1._id, _to: meta2._id, data: "edge4" }),
-    col2.save({ _from: meta1._id, _to: meta2._id, data: "edge5" })
+    col2.save({ _from: meta1._id, _to: meta2._id, data: "edge5" }),
   ])
 );
 

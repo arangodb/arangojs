@@ -23,7 +23,7 @@ const db = new Database();
 const collection = db.collection("some-collection");
 const index = await collection.createIndex({
   type: "hash",
-  fields: ["a", "a.b"]
+  fields: ["a", "a.b"],
 });
 // the index has been created with the handle `index.id`
 ```
@@ -297,10 +297,8 @@ await collection.dropIndex(index.id.split("/")[1]);
 
 Creates a cap constraint index on the collection.
 
-{% hint 'warning' %}
-This method is not available when targeting ArangoDB 3.0 or later,
+**Warning**: This method is not available when targeting ArangoDB 3.0 or later,
 see [Compatibility](../../GettingStarted/README.md#compatibility).
-{% endhint %}
 
 **Arguments**
 

@@ -30,10 +30,8 @@ Fetches a document from the collection at random.
 Performs a query to fetch the first documents in the collection. Returns an
 array of the matching documents.
 
-{% hint 'warning' %}
-This method is not available when targeting ArangoDB 3.0 or later,
+**Warning**: This method is not available when targeting ArangoDB 3.0 or later,
 see [Compatibility](../../GettingStarted/README.md#compatibility).
-{% endhint %}
 
 **Arguments**
 
@@ -51,10 +49,8 @@ see [Compatibility](../../GettingStarted/README.md#compatibility).
 Performs a query to fetch the last documents in the collection. Returns an array
 of the matching documents.
 
-{% hint 'warning' %}
-This method is not available when targeting ArangoDB 3.0 or later,
+**Warning**: This method is not available when targeting ArangoDB 3.0 or later,
 see [Compatibility](../../GettingStarted/README.md#compatibility).
-{% endhint %}
 
 **Arguments**
 

@@ -3,10 +3,8 @@
 These functions implement the
 [HTTP API for manipulating Views](https://www.arangodb.com/docs/stable/http/views.html).
 
-{% hint 'info' %}
-Views were introduced in ArangoDB 3.4 and are not supported by earlier versions
+**Note:** Views were introduced in ArangoDB 3.4 and are not supported by earlier versions
 of ArangoDB.
-{% endhint %}
 
 ## view.exists
 

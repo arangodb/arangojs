@@ -36,9 +36,7 @@ given _newValue_ and returns an object containing the document's metadata.
 
   - **policy**: `string` (optional)
 
-    {% hint 'warning' %}
-    This option has no effect in ArangoDB 3.0 and later.
-    {% endhint %}
+    **Warning**: This option has no effect in ArangoDB 3.0 and later.
 
     Determines the behavior when the revision is not matched:
 
@@ -131,9 +129,7 @@ metadata.
 
   - **policy**: `string` (optional)
 
-    {% hint 'warning' %}
-    This option has no effect in ArangoDB 3.0 and later.
-    {% endhint %}
+    **Warning**: This option has no effect in ArangoDB 3.0 and later.
 
     Determines the behavior when the revision is not matched:
 
@@ -172,10 +168,8 @@ assert.equal(doc3.hello, doc.hello);
 Updates (merges) the content of the documents with the given _documents_ and
 returns an array containing the documents' metadata.
 
-{% hint 'info' %}
-This method is only available when targeting ArangoDB 3.0 or later,
+**Note:** This method is only available when targeting ArangoDB 3.0 or later,
 see [Compatibility](../../GettingStarted/README.md#compatibility).
-{% endhint %}
 
 **Arguments**
 
@@ -232,7 +226,10 @@ const info1 = await collection.save(doc1);
 const doc2 = { number: 2, hello: "world2" };
 const info2 = await collection.save(doc2);
 const result = await collection.bulkUpdate(
-  [{ _key: info1._key, number: 3 }, { _key: info2._key, number: 4 }],
+  [
+    { _key: info1._key, number: 3 },
+    { _key: info2._key, number: 4 },
+  ],
   { returnNew: true }
 );
 ```
@@ -265,9 +262,7 @@ Deletes the document with the given _documentHandle_ from the collection.
 
   - **policy**: `string` (optional)
 
-    {% hint 'warning' %}
-    This option has no effect in ArangoDB 3.0 and later.
-    {% endhint %}
+    **Warning**: This option has no effect in ArangoDB 3.0 and later.
 
     Determines the behavior when the revision is not matched:
 
