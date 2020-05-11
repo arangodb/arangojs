@@ -20,4 +20,4 @@ The JavaScript driver is **only** meant to be used when accessing ArangoDB from
 <li><a href="devel/index.html">devel</a></li>
 </ul>
 
-Read the [CHANGELOG](/CHANGELOG) for information about changes between versions.
+Read the [CHANGELOG](CHANGELOG) for information about changes between versions.
