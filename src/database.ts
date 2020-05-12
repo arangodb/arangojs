@@ -1355,7 +1355,7 @@ export class Database {
         path: "/_api/database",
         body: { name: databaseName, users, options },
       },
-      () => new Database(this, databaseName)
+      () => this.database(databaseName)
     );
   }
 
@@ -1413,7 +1413,9 @@ export class Database {
    */
   databases(): Promise<Database[]> {
     return this.request({ path: "/_api/database" }, (res) =>
-      (res.body.result as string[]).map((name) => new Database(this, name))
+      (res.body.result as string[]).map((databaseName) =>
+        this.database(databaseName)
+      )
     );
   }
 
@@ -1433,7 +1435,9 @@ export class Database {
    */
   userDatabases(): Promise<Database[]> {
     return this.request({ path: "/_api/database/user" }, (res) =>
-      (res.body.result as string[]).map((name) => new Database(this, name))
+      (res.body.result as string[]).map((databaseName) =>
+        this.database(databaseName)
+      )
     );
   }
 
