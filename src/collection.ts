@@ -6,40 +6,17 @@
  * } from "arangojs/collection";
  * ```
  *
- * TODO
+ * The "collection" module provides collection related types and interfaces
+ * for TypeScript.
  *
  * @packageDocumentation
  */
 import { ArangoResponseMetadata, Params } from "./connection";
 import { ArrayCursor } from "./cursor";
 import { Database } from "./database";
-import {
-  Document,
-  DocumentData,
-  DocumentMetadata,
-  DocumentSelector,
-  Edge,
-  EdgeData,
-  _documentHandle,
-} from "./documents";
+import { Document, DocumentData, DocumentMetadata, DocumentSelector, Edge, EdgeData, _documentHandle } from "./documents";
 import { isArangoError } from "./error";
-import {
-  EnsureFulltextIndexOptions,
-  EnsureGeoIndexOptions,
-  EnsureHashIndexOptions,
-  EnsurePersistentIndexOptions,
-  EnsureSkiplistIndexOptions,
-  EnsureTtlIndexOptions,
-  FulltextIndex,
-  GeoIndex,
-  HashIndex,
-  Index,
-  IndexSelector,
-  PersistentIndex,
-  SkiplistIndex,
-  TtlIndex,
-  _indexHandle,
-} from "./indexes";
+import { EnsureFulltextIndexOptions, EnsureGeoIndexOptions, EnsureHashIndexOptions, EnsurePersistentIndexOptions, EnsureSkiplistIndexOptions, EnsureTtlIndexOptions, FulltextIndex, GeoIndex, HashIndex, Index, IndexSelector, PersistentIndex, SkiplistIndex, TtlIndex, _indexHandle } from "./indexes";
 import { Blob } from "./lib/blob";
 import { COLLECTION_NOT_FOUND, DOCUMENT_NOT_FOUND } from "./util/codes";
 import { Patch } from "./util/types";
@@ -1336,7 +1313,7 @@ export interface DocumentCollection<T extends object = any>
    * Otherwise this will result in the collection being created with the
    * default type (i.e. as a document collection).
    *
-   * @param options - Options for creating the collection.s
+   * @param options - Options for creating the collection.
    *
    * @example
    * ```js

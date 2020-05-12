@@ -50,7 +50,6 @@ import {
   ArangoSearchViewPropertiesOptions,
   View,
   ViewDescription,
-  ViewResponse,
   ViewType,
 } from "./view";
 
@@ -951,7 +950,7 @@ export class Database {
   protected _analyzers = new Map<string, Analyzer>();
   protected _collections = new Map<string, Collection>();
   protected _graphs = new Map<string, Graph>();
-  protected _views = new Map<string, View>();
+  protected _views = new Map<string, ArangoSearchView>();
 
   /**
    * Creates a new `Database` instance with its own connection pool.
@@ -1826,7 +1825,7 @@ export class Database {
     viewName: string,
     options?: ArangoSearchViewPropertiesOptions
   ): Promise<ArangoSearchView> {
-    const view = this.view(viewName) as View;
+    const view = this.view(viewName);
     await view.create({ ...options, type: ViewType.ARANGOSEARCH_VIEW });
     return view;
   }
@@ -1846,7 +1845,7 @@ export class Database {
   async renameView(
     viewName: string,
     newName: string
-  ): Promise<ArangoResponseMetadata & ViewResponse> {
+  ): Promise<ArangoResponseMetadata & ViewDescription> {
     const result = await this.request(
       {
         method: "PUT",

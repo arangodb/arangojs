@@ -19,6 +19,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
   Graph traversals can still be performed via `graph.traversal`.
 
+- Removed `ViewResponse` type
+
+  The type `ViewDescription` represents the same structure.
+
+- Removed `ArangoSearchViewPropertiesResponse` type
+
+  The type `ArangoSearchViewProperties & ViewDescription` can be used
+  to represent the same structure.
+
 ### Added
 
 - Added `auth` option to configuration

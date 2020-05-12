@@ -3,7 +3,7 @@
  * import type { ArangoSearchView } from "arangojs/view";
  * ```
  *
- * TODO
+ * The "view" module provides View related types and interfaces for TypeScript.
  *
  * @packageDocumentation
  */
@@ -14,7 +14,7 @@ import { VIEW_NOT_FOUND } from "./util/codes";
 import { Dict } from "./util/types";
 
 /**
- * TODO
+ * String values indicating the View type.
  */
 export enum ViewType {
   ARANGOSEARCH_VIEW = "arangosearch",
@@ -30,27 +30,29 @@ export function isArangoView(view: any): view is View {
 }
 
 /**
- * TODO
+ * Generic description of a View.
  */
 export type ViewDescription = {
+  /**
+   * A globally unique identifier for this View.
+   */
   globallyUniqueId: string;
+  /**
+   * An identifier for this View.
+   */
   id: string;
+  /**
+   * The View name.
+   */
   name: string;
+  /**
+   * The type of View.
+   */
   type: ViewType;
 };
 
 /**
- * TODO
- */
-export type ViewResponse = {
-  name: string;
-  id: string;
-  globallyUniqueId: string;
-  type: ViewType;
-};
-
-/**
- * TODO
+ * A link definition for an ArangoSearch View.
  */
 export type ArangoSearchViewLink = {
   /**
@@ -86,33 +88,40 @@ export type ArangoSearchViewLink = {
 };
 
 /**
- * TODO
+ * Properties of an ArangoSearch View.
  */
 export type ArangoSearchViewProperties = {
+  /**
+   * How many commits to wait between removing unused files.
+   */
   cleanupIntervalStep: number;
+  /**
+   * How long to wait between applying the `consolidationPolicy`.
+   */
   consolidationIntervalMsec: number;
+  /**
+   * Maximum number of writers cached in the pool.
+   */
   writebufferIdle: number;
+  /**
+   * Maximum number of concurrent active writers that perform a transaction.
+   */
   writebufferActive: number;
+  /**
+   * Maximum memory byte size per writer before a writer flush is triggered.
+   */
   writebufferSizeMax: number;
-  consolidationPolicy: {
-    type: "bytes_accum" | "tier";
-    threshold?: number;
-    segments_min?: number;
-    segments_max?: number;
-    segments_bytes_max?: number;
-    segments_bytes_floor?: number;
-    lookahead?: number;
-  };
+  /**
+   * The consolidation policy to apply for selecting which segments should be
+   * merged.
+   */
+  consolidationPolicy: BytesAccumConsolidationPolicy | TierConsolidationPolicy;
+  /**
+   * An object mapping names of linked collections to
+   * {@link ArangoSearchViewLink} definitions.
+   */
   links: Dict<ArangoSearchViewLink | undefined>;
 };
-
-/**
- * TODO
- */
-export type ArangoSearchViewPropertiesResponse = ViewResponse &
-  ArangoSearchViewProperties & {
-    type: ViewType.ARANGOSEARCH_VIEW;
-  };
 
 /**
  * Policy to consolidate based on segment byte size and live document count as
@@ -172,7 +181,7 @@ export type TierConsolidationPolicy = {
 };
 
 /**
- * TODO
+ * Properties of an ArangoSearch View.
  */
 export type ArangoSearchViewPropertiesOptions = {
   /**
@@ -261,11 +270,14 @@ export type ArangoSearchViewPropertiesOptions = {
 };
 
 /**
- * TODO
+ * Represents a View in a {@link Database}.
+ *
+ * See {@link ArangoSearchView} for the concrete type representing an
+ * ArangoSearch View.
  */
 export class View<
   PropertiesOptions extends object = any,
-  PropertiesResponse extends object = any
+  Properties extends object = any
 > {
   protected _name: string;
   protected _db: Database;
@@ -289,16 +301,24 @@ export class View<
   }
 
   /**
-   * TODO
+   * Name of the View.
    */
   get name() {
     return this._name;
   }
 
   /**
-   * TODO
+   * Retrieves general information about the View.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const view = db.view("some-view");
+   * const data = await view.get();
+   * // data contains general information about the View
+   * ```
    */
-  get(): Promise<ViewResponse & ArangoResponseMetadata> {
+  get(): Promise<ViewDescription & ArangoResponseMetadata> {
     return this._db.request(
       { path: `/_api/view/${this.name}` },
       (res) => res.body
@@ -306,7 +326,15 @@ export class View<
   }
 
   /**
-   * TODO
+   * Checks whether the View exists.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const view = db.view("some-view");
+   * const exists = await view.exists();
+   * console.log(exists); // indicates whether the View exists
+   * ```
    */
   async exists(): Promise<boolean> {
     try {
@@ -321,9 +349,13 @@ export class View<
   }
 
   /**
-   * TODO
+   * Creates a View with the given `options` and the instance's name.
+   *
+   * See also {@link Database.createArangoSearchView}.
    */
-  create(options?: PropertiesOptions): Promise<PropertiesResponse> {
+  create(
+    options?: PropertiesOptions & { type: ViewType }
+  ): Promise<ViewDescription & Properties> {
     return this._db.request(
       {
         method: "POST",
@@ -339,20 +371,47 @@ export class View<
   }
 
   /**
-   * TODO
+   * Renames the View and updates the instance's `name` to `newName`.
+   *
+   * Additionally removes the instance from the {@link Database}'s internal
+   * cache.
+   *
+   * **Note**: Renaming Views may not be supported when ArangoDB is
+   * running in a cluster configuration.
+   *
+   * @param newName - The new name of the View.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const view1 = db.view("some-view");
+   * await view1.rename("other-view");
+   * const view2 = db.view("some-view");
+   * const view3 = db.view("other-view");
+   * // Note all three View instances are different objects but
+   * // view1 and view3 represent the same ArangoDB view!
+   * ```
    */
   async rename(
     newName: string
-  ): Promise<ViewResponse & ArangoResponseMetadata> {
+  ): Promise<ViewDescription & ArangoResponseMetadata> {
     const result = this._db.renameView(this._name, newName);
     this._name = newName;
     return result;
   }
 
   /**
-   * TODO
+   * Retrieves the View's properties.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const view = db.view("some-view");
+   * const data = await view.properties();
+   * // data contains the View's properties
+   * ```
    */
-  properties(): Promise<PropertiesResponse & ArangoResponseMetadata> {
+  properties(): Promise<ViewDescription & Properties & ArangoResponseMetadata> {
     return this._db.request(
       { path: `/_api/view/${this.name}/properties` },
       (res) => res.body
@@ -360,11 +419,23 @@ export class View<
   }
 
   /**
-   * TODO
+   * Updates the properties of the View.
+   *
+   * @param properties - Properties of the View to update.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const view = db.view("some-view");
+   * const result = await view.updateProperties({
+   *   consolidationIntervalMsec: 234
+   * });
+   * console.log(result.consolidationIntervalMsec); // 234
+   * ```
    */
   updateProperties(
     properties?: PropertiesOptions
-  ): Promise<PropertiesResponse> {
+  ): Promise<ViewDescription & Properties> {
     return this._db.request(
       {
         method: "PATCH",
@@ -376,11 +447,23 @@ export class View<
   }
 
   /**
-   * TODO
+   * Replaces the properties of the View.
+   *
+   * @param properties - New properties of the View.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const view = db.view("some-view");
+   * const result = await view.replaceProperties({
+   *   consolidationIntervalMsec: 234
+   * });
+   * console.log(result.consolidationIntervalMsec); // 234
+   * ```
    */
   replaceProperties(
     properties?: PropertiesOptions
-  ): Promise<PropertiesResponse> {
+  ): Promise<ViewDescription & Properties> {
     return this._db.request(
       {
         method: "PUT",
@@ -392,7 +475,16 @@ export class View<
   }
 
   /**
-   * TODO
+   * Deletes the View from the database.
+   *
+   * @example
+   *
+   * ```js
+   * const db = new Database();
+   * const view = db.view("some-view");
+   * await view.drop();
+   * // the View "some-view" no longer exists
+   * ```
    */
   drop(): Promise<boolean> {
     return this._db.request(
@@ -406,10 +498,10 @@ export class View<
 }
 
 /**
- * TODO
+ * Represents an ArangoSearch View in a {@link Database}.
  */
 export interface ArangoSearchView
   extends View<
     ArangoSearchViewPropertiesOptions,
-    ArangoSearchViewPropertiesResponse
+    ArangoSearchViewProperties & { type: ViewType.ARANGOSEARCH_VIEW }
   > {}
