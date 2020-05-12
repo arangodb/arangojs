@@ -48,7 +48,8 @@ jobs:
 
       - name: Update CHANGELOG
         run: |
-          echo $'---\npermalink: /CHANGELOG\ntitle: "CHANGELOG"\n---\n'$(cat CHANGELOG.md) > gh-pages/CHANGELOG.md
+          echo $'---\npermalink: /CHANGELOG\ntitle: "CHANGELOG"\n---\n' > gh-pages/CHANGELOG.md
+          cat CHANGELOG.md >> gh-pages/CHANGELOG.md
 
       - name: Remove old docs
         run: |
