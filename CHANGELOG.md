@@ -28,6 +28,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   The type `ArangoSearchViewProperties & ViewDescription` can be used
   to represent the same structure.
 
+### Changed
+
+- Removed `CollectionMetadata` fields from `CollectionProperties` type
+
+  Methods that previously returned `CollectionProperties` now return
+  `CollectionMetadata & CollectionProperties`.
+
 ### Added
 
 - Added `auth` option to configuration

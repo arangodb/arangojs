@@ -14,9 +14,33 @@
 import { ArangoResponseMetadata, Params } from "./connection";
 import { ArrayCursor } from "./cursor";
 import { Database } from "./database";
-import { Document, DocumentData, DocumentMetadata, DocumentSelector, Edge, EdgeData, _documentHandle } from "./documents";
+import {
+  Document,
+  DocumentData,
+  DocumentMetadata,
+  DocumentSelector,
+  Edge,
+  EdgeData,
+  _documentHandle,
+} from "./documents";
 import { isArangoError } from "./error";
-import { EnsureFulltextIndexOptions, EnsureGeoIndexOptions, EnsureHashIndexOptions, EnsurePersistentIndexOptions, EnsureSkiplistIndexOptions, EnsureTtlIndexOptions, FulltextIndex, GeoIndex, HashIndex, Index, IndexSelector, PersistentIndex, SkiplistIndex, TtlIndex, _indexHandle } from "./indexes";
+import {
+  EnsureFulltextIndexOptions,
+  EnsureGeoIndexOptions,
+  EnsureHashIndexOptions,
+  EnsurePersistentIndexOptions,
+  EnsureSkiplistIndexOptions,
+  EnsureTtlIndexOptions,
+  FulltextIndex,
+  GeoIndex,
+  HashIndex,
+  Index,
+  IndexSelector,
+  PersistentIndex,
+  SkiplistIndex,
+  TtlIndex,
+  _indexHandle,
+} from "./indexes";
 import { Blob } from "./lib/blob";
 import { COLLECTION_NOT_FOUND, DOCUMENT_NOT_FOUND } from "./util/codes";
 import { Patch } from "./util/types";
@@ -179,28 +203,6 @@ export type ValidationProperties = {
  * An object defining the properties of a collection.
  */
 export type CollectionProperties = {
-  /**
-   * The collection name.
-   */
-  name: string;
-  /**
-   * A globally unique identifier for this collection.
-   */
-  globallyUniqueId: string;
-  /**
-   * An integer indicating the collection loading status.
-   */
-  status: CollectionStatus;
-  /**
-   * An integer indicating the collection type.
-   */
-  type: CollectionType;
-  /**
-   * @internal
-   *
-   * Whether the collection is a system collection.
-   */
-  isSystem: boolean;
   /**
    * A human-readable representation of the collection loading status.
    */
@@ -1349,7 +1351,9 @@ export interface DocumentCollection<T extends object = any>
     options?: CreateCollectionOptions & {
       type?: CollectionType;
     }
-  ): Promise<ArangoResponseMetadata & CollectionProperties>;
+  ): Promise<
+    ArangoResponseMetadata & CollectionMetadata & CollectionProperties
+  >;
   /**
    * Retrieves the collection's properties.
    *
@@ -1361,7 +1365,9 @@ export interface DocumentCollection<T extends object = any>
    * // data contains the collection's properties
    * ```
    */
-  properties(): Promise<ArangoResponseMetadata & CollectionProperties>;
+  properties(): Promise<
+    ArangoResponseMetadata & CollectionMetadata & CollectionProperties
+  >;
   /**
    * Replaces the properties of the collection.
    *
@@ -1376,7 +1382,9 @@ export interface DocumentCollection<T extends object = any>
    */
   properties(
     properties: CollectionPropertiesOptions
-  ): Promise<ArangoResponseMetadata & CollectionProperties>;
+  ): Promise<
+    ArangoResponseMetadata & CollectionMetadata & CollectionProperties
+  >;
   /**
    * Retrieves information about the number of documents in a collection.
    *
@@ -1389,7 +1397,10 @@ export interface DocumentCollection<T extends object = any>
    * ```
    */
   count(): Promise<
-    ArangoResponseMetadata & CollectionProperties & CollectionCount
+    ArangoResponseMetadata &
+      CollectionMetadata &
+      CollectionProperties &
+      CollectionCount
   >;
   /**
    * (RocksDB only.) Instructs ArangoDB to recalculate the collection's
@@ -1420,6 +1431,7 @@ export interface DocumentCollection<T extends object = any>
    */
   figures(): Promise<
     ArangoResponseMetadata &
+      CollectionMetadata &
       CollectionProperties &
       CollectionCount &
       CollectionFigures
@@ -1436,7 +1448,10 @@ export interface DocumentCollection<T extends object = any>
    * ```
    */
   revision(): Promise<
-    ArangoResponseMetadata & CollectionProperties & CollectionRevision
+    ArangoResponseMetadata &
+      CollectionMetadata &
+      CollectionProperties &
+      CollectionRevision
   >;
   /**
    * Retrieves the collection checksum.
@@ -3049,12 +3064,18 @@ export class Collection<T extends object = any>
   }
 
   properties(properties?: CollectionPropertiesOptions) {
-    if (!properties) return this._get<CollectionProperties>("properties");
-    return this._put<CollectionProperties>("properties", properties);
+    if (!properties)
+      return this._get<CollectionMetadata & CollectionProperties>("properties");
+    return this._put<CollectionMetadata & CollectionProperties>(
+      "properties",
+      properties
+    );
   }
 
   count() {
-    return this._get<CollectionProperties & CollectionCount>("count");
+    return this._get<
+      CollectionMetadata & CollectionProperties & CollectionCount
+    >("count");
   }
 
   async recalculateCount() {
@@ -3064,12 +3085,17 @@ export class Collection<T extends object = any>
 
   figures() {
     return this._get<
-      CollectionProperties & CollectionCount & CollectionFigures
+      CollectionMetadata &
+        CollectionProperties &
+        CollectionCount &
+        CollectionFigures
     >("figures");
   }
 
   revision() {
-    return this._get<CollectionProperties & CollectionRevision>("revision");
+    return this._get<
+      CollectionMetadata & CollectionProperties & CollectionRevision
+    >("revision");
   }
 
   checksum(options?: CollectionChecksumOptions) {
