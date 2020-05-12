@@ -970,18 +970,12 @@ export class Database {
    * Equivalent to the `url` option in {@link Config}.
    */
   constructor(url: string | string[]);
-  /**
-   * @internal
-   *
-   * Creates a new `Database` instance, reusing the connection pool of an
-   * existing `Database` instance.
-   *
-   * See also {@link Database.database}.
-   *
-   * @param database - Existing `Database` instance to reuse the connection of.
-   * @param name - Database name to use. Defaults to the given database's name.
-   */
-  constructor(database: Database, name?: string);
+  // There's currently no way to hide a single overload from typedoc
+  // /**
+  //  * @internal
+  //  * @hidden
+  //  */
+  // constructor(database: Database, name?: string);
   constructor(
     configOrDatabase: string | string[] | Config | Database = {},
     name?: string
@@ -1263,7 +1257,7 @@ export class Database {
    * @param databaseName - Name of the database.
    */
   database(databaseName: string) {
-    const db = new Database(this, databaseName);
+    const db = new (Database as any)(this, databaseName) as Database;
     return db;
   }
 
