@@ -598,7 +598,41 @@ export type InstallServiceOptions = {
  *
  * See {@link Database.replaceService}.
  */
-export type ReplaceServiceOptions = InstallServiceOptions & {
+export type ReplaceServiceOptions = {
+  /**
+   * An object mapping configuration option names to values.
+   *
+   * See also {@link Database.getServiceConfiguration}.
+   */
+  configuration?: Dict<any>;
+  /**
+   * An object mapping dependency aliases to mount points.
+   *
+   * See also {@link Database.getServiceDependencies}.
+   */
+  dependencies?: Dict<string>;
+  /**
+   * Whether the service should be installed in development mode.
+   *
+   * See also {@link Database.setServiceDevelopmentMode}.
+   *
+   * Default: `false`
+   */
+  development?: boolean;
+  /**
+   * Whether the service should be installed in legacy compatibility mode
+   *
+   * This overrides the `engines` option in the service manifest (if any).
+   *
+   * Default: `false`
+   */
+  legacy?: boolean;
+  /**
+   * Whether the "setup" script should be executed.
+   *
+   * Default: `true`
+   */
+  setup?: boolean;
   /**
    * Whether the existing service's "teardown" script should be executed
    * prior to removing that service.
@@ -620,7 +654,41 @@ export type ReplaceServiceOptions = InstallServiceOptions & {
  *
  * See {@link Database.upgradeService}.
  */
-export type UpgradeServiceOptions = InstallServiceOptions & {
+export type UpgradeServiceOptions = {
+  /**
+   * An object mapping configuration option names to values.
+   *
+   * See also {@link Database.getServiceConfiguration}.
+   */
+  configuration?: Dict<any>;
+  /**
+   * An object mapping dependency aliases to mount points.
+   *
+   * See also {@link Database.getServiceDependencies}.
+   */
+  dependencies?: Dict<string>;
+  /**
+   * Whether the service should be installed in development mode.
+   *
+   * See also {@link Database.setServiceDevelopmentMode}.
+   *
+   * Default: `false`
+   */
+  development?: boolean;
+  /**
+   * Whether the service should be installed in legacy compatibility mode
+   *
+   * This overrides the `engines` option in the service manifest (if any).
+   *
+   * Default: `false`
+   */
+  legacy?: boolean;
+  /**
+   * Whether the "setup" script should be executed.
+   *
+   * Default: `true`
+   */
+  setup?: boolean;
   /**
    * Whether the existing service's "teardown" script should be executed
    * prior to upgrading that service.

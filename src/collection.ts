@@ -201,7 +201,29 @@ export type ValidationProperties = {
 /**
  * An object defining the properties of a collection.
  */
-export type CollectionProperties = CollectionMetadata & {
+export type CollectionProperties = {
+  /**
+   * The collection name.
+   */
+  name: string;
+  /**
+   * A globally unique identifier for this collection.
+   */
+  globallyUniqueId: string;
+  /**
+   * An integer indicating the collection loading status.
+   */
+  status: CollectionStatus;
+  /**
+   * An integer indicating the collection type.
+   */
+  type: CollectionType;
+  /**
+   * @internal
+   *
+   * Whether the collection is a system collection.
+   */
+  isSystem: boolean;
   /**
    * A human-readable representation of the collection loading status.
    */
@@ -505,9 +527,9 @@ export type CollectionReadOptions = {
 };
 
 /**
- * Options for saving a document in a collection.
+ * Options for inserting a new document into a collection.
  */
-export type CollectionSaveOptions = {
+export type CollectionInsertOptions = {
   /**
    * If set to `true`, data will be synchronized to disk before returning.
    *
@@ -528,12 +550,6 @@ export type CollectionSaveOptions = {
    * Default: `false`
    */
   returnNew?: boolean;
-};
-
-/**
- * Options for inserting a new document into a collection.
- */
-export type CollectionInsertOptions = CollectionSaveOptions & {
   /**
    * If set to `true`, a document with the same `_key` or `_id` already
    * existing will be overwritten instead of resulting in an exception.
@@ -552,7 +568,27 @@ export type CollectionInsertOptions = CollectionSaveOptions & {
 /**
  * Options for replacing an existing document in a collection.
  */
-export type CollectionReplaceOptions = CollectionSaveOptions & {
+export type CollectionReplaceOptions = {
+  /**
+   * If set to `true`, data will be synchronized to disk before returning.
+   *
+   * Default: `false`
+   */
+  waitForSync?: boolean;
+  /**
+   * If set to `true`, no data will be returned by the server. This option can
+   * be used to reduce network traffic.
+   *
+   * Default: `false`
+   */
+  silent?: boolean;
+  /**
+   * If set to `true`, the complete new document will be returned as the `new`
+   * property on the result object. Has no effect if `silent` is set to `true`.
+   *
+   * Default: `false`
+   */
+  returnNew?: boolean;
   /**
    * If set to `false`, the existing document will only be modified if its
    * `_rev` property matches the same property on the new data.
@@ -572,7 +608,41 @@ export type CollectionReplaceOptions = CollectionSaveOptions & {
 /**
  * Options for updating a document in a collection.
  */
-export type CollectionUpdateOptions = CollectionReplaceOptions & {
+export type CollectionUpdateOptions = {
+  /**
+   * If set to `true`, data will be synchronized to disk before returning.
+   *
+   * Default: `false`
+   */
+  waitForSync?: boolean;
+  /**
+   * If set to `true`, no data will be returned by the server. This option can
+   * be used to reduce network traffic.
+   *
+   * Default: `false`
+   */
+  silent?: boolean;
+  /**
+   * If set to `true`, the complete new document will be returned as the `new`
+   * property on the result object. Has no effect if `silent` is set to `true`.
+   *
+   * Default: `false`
+   */
+  returnNew?: boolean;
+  /**
+   * If set to `false`, the existing document will only be modified if its
+   * `_rev` property matches the same property on the new data.
+   *
+   * Default: `true`
+   */
+  ignoreRevs?: boolean;
+  /**
+   * If set to `true`, the complete old document will be returned as the `old`
+   * property on the result object. Has no effect if `silent` is set to `true`.
+   *
+   * Default: `false`
+   */
+  returnOld?: boolean;
   /**
    * If set to `false`, properties with a value of `null` will be removed from
    * the new document.
@@ -692,7 +762,23 @@ export type SimpleQueryByExampleOptions = {
  * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
  * replaced with AQL queries.
  */
-export type SimpleQueryAllOptions = SimpleQueryByExampleOptions & {
+export type SimpleQueryAllOptions = {
+  /**
+   * TODO
+   */
+  skip?: number;
+  /**
+   * TODO
+   */
+  limit?: number;
+  /**
+   * TODO
+   */
+  batchSize?: number;
+  /**
+   * TODO
+   */
+  ttl?: number;
   /**
    * TODO
    */
