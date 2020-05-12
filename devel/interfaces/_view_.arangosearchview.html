@@ -70,7 +70,7 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>TODO</p>
+						<p>Represents an ArangoSearch View in a <a href="../classes/_database_.database.html">Database</a>.</p>
 					</div>
 				</div>
 			</section>
@@ -78,7 +78,7 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<a href="../classes/_view_.view.html" class="tsd-signature-type">View</a><span class="tsd-signature-symbol">&lt;</span><a href="../modules/_view_.html#arangosearchviewpropertiesoptions" class="tsd-signature-type">ArangoSearchViewPropertiesOptions</a><span class="tsd-signature-symbol">, </span><a href="../modules/_view_.html#arangosearchviewpropertiesresponse" class="tsd-signature-type">ArangoSearchViewPropertiesResponse</a><span class="tsd-signature-symbol">&gt;</span>
+						<a href="../classes/_view_.view.html" class="tsd-signature-type">View</a><span class="tsd-signature-symbol">&lt;</span><a href="../modules/_view_.html#arangosearchviewpropertiesoptions" class="tsd-signature-type">ArangoSearchViewPropertiesOptions</a><span class="tsd-signature-symbol">, </span><a href="../modules/_view_.html#arangosearchviewproperties" class="tsd-signature-type">ArangoSearchViewProperties</a><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{ </span>type<span class="tsd-signature-symbol">: </span><a href="../enums/_view_.viewtype.html#arangosearch_view" class="tsd-signature-type">ARANGOSEARCH_VIEW</a><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">&gt;</span>
 						<ul class="tsd-hierarchy">
 							<li>
 								<span class="target">ArangoSearchView</span>
@@ -151,7 +151,7 @@
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>TODO</p>
+									<p>Name of the View.</p>
 								</div>
 							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
@@ -165,7 +165,7 @@
 					<a name="create" class="tsd-anchor"></a>
 					<h3>create</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface tsd-is-inherited">
-						<li class="tsd-signature tsd-kind-icon">create<span class="tsd-signature-symbol">(</span>options<span class="tsd-signature-symbol">?: </span><a href="" class="tsd-signature-type">PropertiesOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/_view_.html#arangosearchviewpropertiesresponse" class="tsd-signature-type">ArangoSearchViewPropertiesResponse</a><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">create<span class="tsd-signature-symbol">(</span>options<span class="tsd-signature-symbol">?: </span><a href="../modules/_view_.html#arangosearchviewpropertiesoptions" class="tsd-signature-type">ArangoSearchViewPropertiesOptions</a><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{ </span>type<span class="tsd-signature-symbol">: </span><a href="../enums/_view_.viewtype.html" class="tsd-signature-type">ViewType</a><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/_view_.html#viewdescription" class="tsd-signature-type">ViewDescription</a><span class="tsd-signature-symbol"> &amp; </span><a href="../modules/_view_.html#arangosearchviewproperties" class="tsd-signature-type">ArangoSearchViewProperties</a><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{ </span>type<span class="tsd-signature-symbol">: </span><a href="../enums/_view_.viewtype.html#arangosearch_view" class="tsd-signature-type">ARANGOSEARCH_VIEW</a><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -174,16 +174,17 @@
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>TODO</p>
+									<p>Creates a View with the given <code>options</code> and the instance&#39;s name.</p>
 								</div>
+								<p>See also <a href="../classes/_database_.database.html#createarangosearchview">Database.createArangoSearchView</a>.</p>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> options: <a href="" class="tsd-signature-type">PropertiesOptions</a></h5>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> options: <a href="../modules/_view_.html#arangosearchviewpropertiesoptions" class="tsd-signature-type">ArangoSearchViewPropertiesOptions</a><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{ </span>type<span class="tsd-signature-symbol">: </span><a href="../enums/_view_.viewtype.html" class="tsd-signature-type">ViewType</a><span class="tsd-signature-symbol"> }</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/_view_.html#arangosearchviewpropertiesresponse" class="tsd-signature-type">ArangoSearchViewPropertiesResponse</a><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/_view_.html#viewdescription" class="tsd-signature-type">ViewDescription</a><span class="tsd-signature-symbol"> &amp; </span><a href="../modules/_view_.html#arangosearchviewproperties" class="tsd-signature-type">ArangoSearchViewProperties</a><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{ </span>type<span class="tsd-signature-symbol">: </span><a href="../enums/_view_.viewtype.html#arangosearch_view" class="tsd-signature-type">ARANGOSEARCH_VIEW</a><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -200,8 +201,16 @@
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>TODO</p>
+									<p>Deletes the View from the database.</p>
 								</div>
+								<dl class="tsd-comment-tags">
+									<dt>example</dt>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> view = db.view(<span class="hljs-string">"some-view"</span>);
+<span class="hljs-keyword">await</span> view.drop();
+<span class="hljs-comment">// the View "some-view" no longer exists</span></code></pre>
+									</dd>
+								</dl>
 							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
@@ -220,8 +229,16 @@
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>TODO</p>
+									<p>Checks whether the View exists.</p>
 								</div>
+								<dl class="tsd-comment-tags">
+									<dt>example</dt>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> view = db.view(<span class="hljs-string">"some-view"</span>);
+<span class="hljs-keyword">const</span> exists = <span class="hljs-keyword">await</span> view.exists();
+<span class="hljs-built_in">console</span>.log(exists); <span class="hljs-comment">// indicates whether the View exists</span></code></pre>
+									</dd>
+								</dl>
 							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
@@ -231,7 +248,7 @@
 					<a name="get" class="tsd-anchor"></a>
 					<h3>get</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface tsd-is-inherited">
-						<li class="tsd-signature tsd-kind-icon">get<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/_view_.html#viewresponse" class="tsd-signature-type">ViewResponse</a><span class="tsd-signature-symbol"> &amp; </span><a href="../modules/_connection_.html#arangoresponsemetadata" class="tsd-signature-type">ArangoResponseMetadata</a><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">get<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/_view_.html#viewdescription" class="tsd-signature-type">ViewDescription</a><span class="tsd-signature-symbol"> &amp; </span><a href="../modules/_connection_.html#arangoresponsemetadata" class="tsd-signature-type">ArangoResponseMetadata</a><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -240,10 +257,18 @@
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>TODO</p>
+									<p>Retrieves general information about the View.</p>
 								</div>
+								<dl class="tsd-comment-tags">
+									<dt>example</dt>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> view = db.view(<span class="hljs-string">"some-view"</span>);
+<span class="hljs-keyword">const</span> data = <span class="hljs-keyword">await</span> view.get();
+<span class="hljs-comment">// data contains general information about the View</span></code></pre>
+									</dd>
+								</dl>
 							</div>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/_view_.html#viewresponse" class="tsd-signature-type">ViewResponse</a><span class="tsd-signature-symbol"> &amp; </span><a href="../modules/_connection_.html#arangoresponsemetadata" class="tsd-signature-type">ArangoResponseMetadata</a><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/_view_.html#viewdescription" class="tsd-signature-type">ViewDescription</a><span class="tsd-signature-symbol"> &amp; </span><a href="../modules/_connection_.html#arangoresponsemetadata" class="tsd-signature-type">ArangoResponseMetadata</a><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -251,7 +276,7 @@
 					<a name="properties" class="tsd-anchor"></a>
 					<h3>properties</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface tsd-is-inherited">
-						<li class="tsd-signature tsd-kind-icon">properties<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/_view_.html#arangosearchviewpropertiesresponse" class="tsd-signature-type">ArangoSearchViewPropertiesResponse</a><span class="tsd-signature-symbol"> &amp; </span><a href="../modules/_connection_.html#arangoresponsemetadata" class="tsd-signature-type">ArangoResponseMetadata</a><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">properties<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/_view_.html#viewdescription" class="tsd-signature-type">ViewDescription</a><span class="tsd-signature-symbol"> &amp; </span><a href="../modules/_view_.html#arangosearchviewproperties" class="tsd-signature-type">ArangoSearchViewProperties</a><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{ </span>type<span class="tsd-signature-symbol">: </span><a href="../enums/_view_.viewtype.html#arangosearch_view" class="tsd-signature-type">ARANGOSEARCH_VIEW</a><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol"> &amp; </span><a href="../modules/_connection_.html#arangoresponsemetadata" class="tsd-signature-type">ArangoResponseMetadata</a><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -260,10 +285,18 @@
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>TODO</p>
+									<p>Retrieves the View&#39;s properties.</p>
 								</div>
+								<dl class="tsd-comment-tags">
+									<dt>example</dt>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> view = db.view(<span class="hljs-string">"some-view"</span>);
+<span class="hljs-keyword">const</span> data = <span class="hljs-keyword">await</span> view.properties();
+<span class="hljs-comment">// data contains the View's properties</span></code></pre>
+									</dd>
+								</dl>
 							</div>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/_view_.html#arangosearchviewpropertiesresponse" class="tsd-signature-type">ArangoSearchViewPropertiesResponse</a><span class="tsd-signature-symbol"> &amp; </span><a href="../modules/_connection_.html#arangoresponsemetadata" class="tsd-signature-type">ArangoResponseMetadata</a><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/_view_.html#viewdescription" class="tsd-signature-type">ViewDescription</a><span class="tsd-signature-symbol"> &amp; </span><a href="../modules/_view_.html#arangosearchviewproperties" class="tsd-signature-type">ArangoSearchViewProperties</a><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{ </span>type<span class="tsd-signature-symbol">: </span><a href="../enums/_view_.viewtype.html#arangosearch_view" class="tsd-signature-type">ARANGOSEARCH_VIEW</a><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol"> &amp; </span><a href="../modules/_connection_.html#arangoresponsemetadata" class="tsd-signature-type">ArangoResponseMetadata</a><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -271,7 +304,7 @@
 					<a name="rename" class="tsd-anchor"></a>
 					<h3>rename</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface tsd-is-inherited">
-						<li class="tsd-signature tsd-kind-icon">rename<span class="tsd-signature-symbol">(</span>newName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/_view_.html#viewresponse" class="tsd-signature-type">ViewResponse</a><span class="tsd-signature-symbol"> &amp; </span><a href="../modules/_connection_.html#arangoresponsemetadata" class="tsd-signature-type">ArangoResponseMetadata</a><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">rename<span class="tsd-signature-symbol">(</span>newName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/_view_.html#viewdescription" class="tsd-signature-type">ViewDescription</a><span class="tsd-signature-symbol"> &amp; </span><a href="../modules/_connection_.html#arangoresponsemetadata" class="tsd-signature-type">ArangoResponseMetadata</a><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -280,16 +313,34 @@
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>TODO</p>
+									<p>Renames the View and updates the instance&#39;s <code>name</code> to <code>newName</code>.</p>
 								</div>
+								<p>Additionally removes the instance from the <a href="../classes/_database_.database.html">Database</a>&#39;s internal
+								cache.</p>
+								<p><strong>Note</strong>: Renaming Views may not be supported when ArangoDB is
+								running in a cluster configuration.</p>
+								<dl class="tsd-comment-tags">
+									<dt>example</dt>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> view1 = db.view(<span class="hljs-string">"some-view"</span>);
+<span class="hljs-keyword">await</span> view1.rename(<span class="hljs-string">"other-view"</span>);
+<span class="hljs-keyword">const</span> view2 = db.view(<span class="hljs-string">"some-view"</span>);
+<span class="hljs-keyword">const</span> view3 = db.view(<span class="hljs-string">"other-view"</span>);
+<span class="hljs-comment">// Note all three View instances are different objects but</span>
+<span class="hljs-comment">// view1 and view3 represent the same ArangoDB view!</span></code></pre>
+									</dd>
+								</dl>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
 									<h5>newName: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The new name of the View.</p>
+									</div>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/_view_.html#viewresponse" class="tsd-signature-type">ViewResponse</a><span class="tsd-signature-symbol"> &amp; </span><a href="../modules/_connection_.html#arangoresponsemetadata" class="tsd-signature-type">ArangoResponseMetadata</a><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/_view_.html#viewdescription" class="tsd-signature-type">ViewDescription</a><span class="tsd-signature-symbol"> &amp; </span><a href="../modules/_connection_.html#arangoresponsemetadata" class="tsd-signature-type">ArangoResponseMetadata</a><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -297,7 +348,7 @@
 					<a name="replaceproperties" class="tsd-anchor"></a>
 					<h3>replace<wbr>Properties</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface tsd-is-inherited">
-						<li class="tsd-signature tsd-kind-icon">replace<wbr>Properties<span class="tsd-signature-symbol">(</span>properties<span class="tsd-signature-symbol">?: </span><a href="" class="tsd-signature-type">PropertiesOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/_view_.html#arangosearchviewpropertiesresponse" class="tsd-signature-type">ArangoSearchViewPropertiesResponse</a><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">replace<wbr>Properties<span class="tsd-signature-symbol">(</span>properties<span class="tsd-signature-symbol">?: </span><a href="" class="tsd-signature-type">PropertiesOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/_view_.html#viewdescription" class="tsd-signature-type">ViewDescription</a><span class="tsd-signature-symbol"> &amp; </span><a href="../modules/_view_.html#arangosearchviewproperties" class="tsd-signature-type">ArangoSearchViewProperties</a><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{ </span>type<span class="tsd-signature-symbol">: </span><a href="../enums/_view_.viewtype.html#arangosearch_view" class="tsd-signature-type">ARANGOSEARCH_VIEW</a><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -306,16 +357,29 @@
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>TODO</p>
+									<p>Replaces the properties of the View.</p>
 								</div>
+								<dl class="tsd-comment-tags">
+									<dt>example</dt>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> view = db.view(<span class="hljs-string">"some-view"</span>);
+<span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> view.replaceProperties({
+  <span class="hljs-attr">consolidationIntervalMsec</span>: <span class="hljs-number">234</span>
+});
+<span class="hljs-built_in">console</span>.log(result.consolidationIntervalMsec); <span class="hljs-comment">// 234</span></code></pre>
+									</dd>
+								</dl>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
 									<h5><span class="tsd-flag ts-flagOptional">Optional</span> properties: <a href="" class="tsd-signature-type">PropertiesOptions</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>New properties of the View.</p>
+									</div>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/_view_.html#arangosearchviewpropertiesresponse" class="tsd-signature-type">ArangoSearchViewPropertiesResponse</a><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/_view_.html#viewdescription" class="tsd-signature-type">ViewDescription</a><span class="tsd-signature-symbol"> &amp; </span><a href="../modules/_view_.html#arangosearchviewproperties" class="tsd-signature-type">ArangoSearchViewProperties</a><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{ </span>type<span class="tsd-signature-symbol">: </span><a href="../enums/_view_.viewtype.html#arangosearch_view" class="tsd-signature-type">ARANGOSEARCH_VIEW</a><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -323,7 +387,7 @@
 					<a name="updateproperties" class="tsd-anchor"></a>
 					<h3>update<wbr>Properties</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface tsd-is-inherited">
-						<li class="tsd-signature tsd-kind-icon">update<wbr>Properties<span class="tsd-signature-symbol">(</span>properties<span class="tsd-signature-symbol">?: </span><a href="" class="tsd-signature-type">PropertiesOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/_view_.html#arangosearchviewpropertiesresponse" class="tsd-signature-type">ArangoSearchViewPropertiesResponse</a><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">update<wbr>Properties<span class="tsd-signature-symbol">(</span>properties<span class="tsd-signature-symbol">?: </span><a href="" class="tsd-signature-type">PropertiesOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/_view_.html#viewdescription" class="tsd-signature-type">ViewDescription</a><span class="tsd-signature-symbol"> &amp; </span><a href="../modules/_view_.html#arangosearchviewproperties" class="tsd-signature-type">ArangoSearchViewProperties</a><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{ </span>type<span class="tsd-signature-symbol">: </span><a href="../enums/_view_.viewtype.html#arangosearch_view" class="tsd-signature-type">ARANGOSEARCH_VIEW</a><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -332,16 +396,29 @@
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>TODO</p>
+									<p>Updates the properties of the View.</p>
 								</div>
+								<dl class="tsd-comment-tags">
+									<dt>example</dt>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> view = db.view(<span class="hljs-string">"some-view"</span>);
+<span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> view.updateProperties({
+  <span class="hljs-attr">consolidationIntervalMsec</span>: <span class="hljs-number">234</span>
+});
+<span class="hljs-built_in">console</span>.log(result.consolidationIntervalMsec); <span class="hljs-comment">// 234</span></code></pre>
+									</dd>
+								</dl>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
 									<h5><span class="tsd-flag ts-flagOptional">Optional</span> properties: <a href="" class="tsd-signature-type">PropertiesOptions</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Properties of the View to update.</p>
+									</div>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/_view_.html#arangosearchviewpropertiesresponse" class="tsd-signature-type">ArangoSearchViewPropertiesResponse</a><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/_view_.html#viewdescription" class="tsd-signature-type">ViewDescription</a><span class="tsd-signature-symbol"> &amp; </span><a href="../modules/_view_.html#arangosearchviewproperties" class="tsd-signature-type">ArangoSearchViewProperties</a><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{ </span>type<span class="tsd-signature-symbol">: </span><a href="../enums/_view_.viewtype.html#arangosearch_view" class="tsd-signature-type">ARANGOSEARCH_VIEW</a><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -460,9 +537,6 @@
 						<a href="../modules/_view_.html#arangosearchviewpropertiesoptions" class="tsd-kind-icon">Arango<wbr>Search<wbr>View<wbr>Properties<wbr>Options</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
-						<a href="../modules/_view_.html#arangosearchviewpropertiesresponse" class="tsd-kind-icon">Arango<wbr>Search<wbr>View<wbr>Properties<wbr>Response</a>
-					</li>
-					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
 						<a href="../modules/_view_.html#bytesaccumconsolidationpolicy" class="tsd-kind-icon">Bytes<wbr>Accum<wbr>Consolidation<wbr>Policy</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
@@ -470,9 +544,6 @@
 					</li>
 					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
 						<a href="../modules/_view_.html#viewdescription" class="tsd-kind-icon">View<wbr>Description</a>
-					</li>
-					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
-						<a href="../modules/_view_.html#viewresponse" class="tsd-kind-icon">View<wbr>Response</a>
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-module">
 						<a href="../modules/_view_.html#isarangoview" class="tsd-kind-icon">is<wbr>Arango<wbr>View</a>
