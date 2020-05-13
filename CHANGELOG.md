@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [7.0.0-preview.1] - 2020-05-13
 
 ### Removed
 
@@ -1016,7 +1016,7 @@ This is a major release and breaks backwards compatibility.
 
   Graph methods now only return the relevant part of the response body.
 
-[unreleased]: https://github.com/arangodb/arangojs/compare/v7.0.0-preview.0...v7
+[7.0.0-preview.1]: https://github.com/arangodb/arangojs/compare/v7.0.0-preview.0...v7.0.0-preview.1
 [7.0.0-preview.0]: https://github.com/arangodb/arangojs/compare/v6.14.1...v7.0.0-preview.0
 [6.14.1]: https://github.com/arangodb/arangojs/compare/v6.14.0...v6.14.1
 [6.14.0]: https://github.com/arangodb/arangojs/compare/v6.13.0...v6.14.0
