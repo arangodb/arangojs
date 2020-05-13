@@ -37,7 +37,7 @@ jobs:
       - name: Set tag env to ref tag
         if: startsWith( github.event.ref, 'refs/tags/v' )
         run: |
-          echo "::set-env name=tag::$(echo ${{ github.event.ref }} | sed -e 's/^refs\/tags\/v')"
+          echo "::set-env name=tag::$(echo ${{ github.event.ref }} | sed -e 's/^refs\/tags\/v//')"
           echo "::set-env name=latest::$(node -p "Number(require('semver').gt('${tag}','$(cat gh-pages/VERSION)'))")"
 
       - name: Update versions
