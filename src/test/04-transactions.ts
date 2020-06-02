@@ -88,12 +88,8 @@ describe("Transactions", () => {
 
     it("can insert two documents at a time", async () => {
       const trx = await db.beginTransaction(collection);
-      const [meta1, meta2] = await trx.run(() =>
-        Promise.all([
-          collection.save({ _key: "test1" }),
-          collection.save({ _key: "test2" }),
-        ])
-      );
+      const meta1 = await trx.run(() => collection.save({ _key: "test1" }));
+      const meta2 = await trx.run(() => collection.save({ _key: "test2" }));
       expect(meta1).to.have.property("_key", "test1");
       expect(meta2).to.have.property("_key", "test2");
       const { id, status } = await trx.commit();
@@ -120,12 +116,8 @@ describe("Transactions", () => {
 
     itRdb("does not leak when inserting two documents at a time", async () => {
       const trx = await db.beginTransaction(collection);
-      await trx.run(() =>
-        Promise.all([
-          collection.save({ _key: "test1" }),
-          collection.save({ _key: "test2" }),
-        ])
-      );
+      await trx.run(() => collection.save({ _key: "test1" }));
+      await trx.run(() => collection.save({ _key: "test2" }));
       let doc: any;
       try {
         doc = await collection.document("test1");

@@ -105,17 +105,9 @@ await trx.run(() =>
   col2.save({ _from: meta1._id, to: meta2._id, data: "edge1" })
 );
 
-// Promise.all can be used to run multiple actions in parallel
-await Promise.all([
-  trx.run(() => col2.save({ _from: meta1._id, _to: meta2._id, data: "edge2" })),
-  trx.run(() => col2.save({ _from: meta1._id, _to: meta2._id, data: "edge3" })),
-]);
-await trx.run(() =>
-  Promise.all([
-    col2.save({ _from: meta1._id, _to: meta2._id, data: "edge4" }),
-    col2.save({ _from: meta1._id, _to: meta2._id, data: "edge5" }),
-  ])
-);
+// All actions run as part of a stream transaction will only take effect if
+// the transaction is committed. Make sure to always call "commit" or "abort".
+await trx.commit();
 
 // TODO add complex example to demonstrate common mistake and how to fix
 // See https://stackoverflow.com/questions/59844658/trx/59860187
@@ -152,7 +144,17 @@ await trx.run(() => {
 // The following line is missing the "await" and creates a race condition.
 trx.run(() => col1.save({ data: "doc8" }));
 
-// All actions run as part of a stream transaction will only take effect if
-// the transaction is committed. Make sure to always call "commit" or "abort".
-await trx.commit();
+await Promise.all([
+  // Running multiple actions in parallel is not supported!
+  trx.run(() => col2.save({ _from: meta1._id, _to: meta2._id, data: "edge2" })),
+  trx.run(() => col2.save({ _from: meta1._id, _to: meta2._id, data: "edge3" })),
+]);
+
+await trx.run(() =>
+  Promise.all([
+    // Running multiple actions in parallel is not supported!
+    col2.save({ _from: meta1._id, _to: meta2._id, data: "edge4" }),
+    col2.save({ _from: meta1._id, _to: meta2._id, data: "edge5" }),
+  ])
+);
 ```
