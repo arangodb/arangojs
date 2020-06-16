@@ -12,6 +12,7 @@
  */
 import { ArangoCollection, isArangoCollection } from "./collection";
 import { Dict } from "./util/types";
+import { isArangoView, View } from "./view";
 
 /**
  * Generic AQL query object consisting of an AQL query string and its bind
@@ -69,6 +70,7 @@ export interface AqlLiteral {
  */
 export type AqlValue =
   | ArangoCollection
+  | View
   | GeneratedAqlQuery
   | AqlLiteral
   | string
@@ -240,7 +242,7 @@ export function aql(
     const index = bindVals.indexOf(rawValue);
     const isKnown = index !== -1;
     let name = `value${isKnown ? index : bindVals.length}`;
-    if (isArangoCollection(rawValue)) {
+    if (isArangoCollection(rawValue) || isArangoView(rawValue)) {
       name = `@${name}`;
       value = rawValue.name;
     }

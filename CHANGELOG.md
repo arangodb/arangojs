@@ -11,6 +11,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - Renamed `db.createArangoSearchView` to `db.createView`
 
+- Added support for `View` in `aql` templates ([#667](https://github.com/arangodb/arangojs/issues/667))
+
+  `View` (or `ArangoSearchView`) objects can now be passed into `aql` templates
+  like `ArangoCollection` objects.
+
 ## [7.0.0-preview.1] - 2020-05-13
 
 ### Removed

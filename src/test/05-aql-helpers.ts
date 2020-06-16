@@ -53,6 +53,13 @@ describe("AQL helpers", function () {
       expect(Object.keys(query.bindVars)).to.eql(["@value0"]);
       expect(query.bindVars["@value0"]).to.equal("potato");
     });
+    it("supports arangojs view parameters", () => {
+      const view = db.view("banana");
+      const query = aql`${view}`;
+      expect(query.query).to.equal("@@value0");
+      expect(Object.keys(query.bindVars)).to.eql(["@value0"]);
+      expect(query.bindVars["@value0"]).to.equal("banana");
+    });
     it("supports ArangoDB collection parameters", () => {
       class ArangoCollection {
         isArangoCollection = true;
