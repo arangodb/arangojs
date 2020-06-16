@@ -314,9 +314,9 @@
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
 									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
-<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">"some-collection"</span>);
+<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">&quot;some-collection&quot;</span>);
 <span class="hljs-keyword">const</span> data = <span class="hljs-keyword">await</span> collection.checksum();
-<span class="hljs-comment">// data contains the collection's checksum</span></code></pre>
+<span class="hljs-comment">// data contains the collection&#x27;s checksum</span></code></pre>
 									</dd>
 								</dl>
 							</div>
@@ -351,9 +351,9 @@
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
 									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
-<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">"some-collection"</span>);
+<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">&quot;some-collection&quot;</span>);
 <span class="hljs-keyword">const</span> data = <span class="hljs-keyword">await</span> collection.count();
-<span class="hljs-comment">// data contains the collection's count</span></code></pre>
+<span class="hljs-comment">// data contains the collection&#x27;s count</span></code></pre>
 									</dd>
 								</dl>
 							</div>
@@ -385,15 +385,15 @@
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
 									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
-<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">"potatoes"</span>);
+<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">&quot;potatoes&quot;</span>);
 <span class="hljs-keyword">await</span> collection.create();
-<span class="hljs-comment">// the document collection "potatoes" now exists</span></code></pre>
+<span class="hljs-comment">// the document collection &quot;potatoes&quot; now exists</span></code></pre>
 									</dd>
 									<dt>example</dt>
 									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
-<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">"friends"</span>);
+<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">&quot;friends&quot;</span>);
 <span class="hljs-keyword">await</span> collection.create({ <span class="hljs-attr">type</span>: CollectionType.EDGE_COLLECTION });
-<span class="hljs-comment">// the edge collection "friends" now exists</span></code></pre>
+<span class="hljs-comment">// the edge collection &quot;friends&quot; now exists</span></code></pre>
 									</dd>
 									<dt>example</dt>
 									<dd><pre><code class="language-ts"><span class="hljs-keyword">interface</span> Friend {
@@ -401,11 +401,11 @@
   endDate?: <span class="hljs-built_in">number</span>;
 }
 <span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
-<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">"friends"</span>) <span class="hljs-keyword">as</span> EdgeCollection&lt;Friend&gt;;
+<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">&quot;friends&quot;</span>) <span class="hljs-keyword">as</span> EdgeCollection&lt;Friend&gt;;
 <span class="hljs-comment">// even in TypeScript you still need to indicate the collection type</span>
 <span class="hljs-comment">// if you want to create an edge collection</span>
 <span class="hljs-keyword">await</span> collection.create({ <span class="hljs-keyword">type</span>: CollectionType.EDGE_COLLECTION });
-<span class="hljs-comment">// the edge collection "friends" now exists</span></code></pre>
+<span class="hljs-comment">// the edge collection &quot;friends&quot; now exists</span></code></pre>
 									</dd>
 								</dl>
 							</div>
@@ -443,22 +443,22 @@
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
 									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
-<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">"some-collection"</span>);
+<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">&quot;some-collection&quot;</span>);
 <span class="hljs-keyword">try</span> {
-  <span class="hljs-keyword">const</span> <span class="hljs-built_in">document</span> = <span class="hljs-keyword">await</span> collection.document(<span class="hljs-string">"abc123"</span>);
+  <span class="hljs-keyword">const</span> <span class="hljs-built_in">document</span> = <span class="hljs-keyword">await</span> collection.document(<span class="hljs-string">&quot;abc123&quot;</span>);
   <span class="hljs-built_in">console</span>.log(<span class="hljs-built_in">document</span>);
 } <span class="hljs-keyword">catch</span> (e) {
-  <span class="hljs-built_in">console</span>.error(<span class="hljs-string">"Could not find document"</span>);
+  <span class="hljs-built_in">console</span>.error(<span class="hljs-string">&quot;Could not find document&quot;</span>);
 }</code></pre>
 									</dd>
 									<dt>example</dt>
 									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
-<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">"some-collection"</span>);
-<span class="hljs-keyword">const</span> <span class="hljs-built_in">document</span> = <span class="hljs-keyword">await</span> collection.document(<span class="hljs-string">"abc123"</span>, { <span class="hljs-attr">graceful</span>: <span class="hljs-literal">true</span> });
+<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">&quot;some-collection&quot;</span>);
+<span class="hljs-keyword">const</span> <span class="hljs-built_in">document</span> = <span class="hljs-keyword">await</span> collection.document(<span class="hljs-string">&quot;abc123&quot;</span>, { <span class="hljs-attr">graceful</span>: <span class="hljs-literal">true</span> });
 <span class="hljs-keyword">if</span> (<span class="hljs-built_in">document</span>) {
   <span class="hljs-built_in">console</span>.log(<span class="hljs-built_in">document</span>);
 } <span class="hljs-keyword">else</span> {
-  <span class="hljs-built_in">console</span>.error(<span class="hljs-string">"Document does not exist"</span>);
+  <span class="hljs-built_in">console</span>.error(<span class="hljs-string">&quot;Document does not exist&quot;</span>);
 }</code></pre>
 									</dd>
 								</dl>
@@ -494,22 +494,22 @@
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
 									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
-<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">"some-collection"</span>);
+<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">&quot;some-collection&quot;</span>);
 <span class="hljs-keyword">try</span> {
-  <span class="hljs-keyword">const</span> <span class="hljs-built_in">document</span> = <span class="hljs-keyword">await</span> collection.document(<span class="hljs-string">"abc123"</span>);
+  <span class="hljs-keyword">const</span> <span class="hljs-built_in">document</span> = <span class="hljs-keyword">await</span> collection.document(<span class="hljs-string">&quot;abc123&quot;</span>);
   <span class="hljs-built_in">console</span>.log(<span class="hljs-built_in">document</span>);
 } <span class="hljs-keyword">catch</span> (e) {
-  <span class="hljs-built_in">console</span>.error(<span class="hljs-string">"Could not find document"</span>);
+  <span class="hljs-built_in">console</span>.error(<span class="hljs-string">&quot;Could not find document&quot;</span>);
 }</code></pre>
 									</dd>
 									<dt>example</dt>
 									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
-<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">"some-collection"</span>);
-<span class="hljs-keyword">const</span> <span class="hljs-built_in">document</span> = <span class="hljs-keyword">await</span> collection.document(<span class="hljs-string">"abc123"</span>, <span class="hljs-literal">true</span>);
+<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">&quot;some-collection&quot;</span>);
+<span class="hljs-keyword">const</span> <span class="hljs-built_in">document</span> = <span class="hljs-keyword">await</span> collection.document(<span class="hljs-string">&quot;abc123&quot;</span>, <span class="hljs-literal">true</span>);
 <span class="hljs-keyword">if</span> (<span class="hljs-built_in">document</span>) {
   <span class="hljs-built_in">console</span>.log(<span class="hljs-built_in">document</span>);
 } <span class="hljs-keyword">else</span> {
-  <span class="hljs-built_in">console</span>.error(<span class="hljs-string">"Document does not exist"</span>);
+  <span class="hljs-built_in">console</span>.error(<span class="hljs-string">&quot;Document does not exist&quot;</span>);
 }</code></pre>
 									</dd>
 								</dl>
@@ -556,10 +556,10 @@
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
 									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
-<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">"some-collection"</span>);
-<span class="hljs-keyword">const</span> exists = <span class="hljs-keyword">await</span> collection.documentExists(<span class="hljs-string">"abc123"</span>);
+<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">&quot;some-collection&quot;</span>);
+<span class="hljs-keyword">const</span> exists = <span class="hljs-keyword">await</span> collection.documentExists(<span class="hljs-string">&quot;abc123&quot;</span>);
 <span class="hljs-keyword">if</span> (!exists) {
-  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"Document does not exist"</span>);
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&quot;Document does not exist&quot;</span>);
 }</code></pre>
 									</dd>
 								</dl>
@@ -598,8 +598,8 @@
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
 									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
-<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">"some-collection"</span>);
-<span class="hljs-keyword">const</span> meta = <span class="hljs-keyword">await</span> collection.save({ <span class="hljs-attr">foo</span>: <span class="hljs-string">"bar"</span> }, { <span class="hljs-attr">returnNew</span>: <span class="hljs-literal">true</span> });
+<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">&quot;some-collection&quot;</span>);
+<span class="hljs-keyword">const</span> meta = <span class="hljs-keyword">await</span> collection.save({ <span class="hljs-attr">foo</span>: <span class="hljs-string">&quot;bar&quot;</span> }, { <span class="hljs-attr">returnNew</span>: <span class="hljs-literal">true</span> });
 <span class="hljs-keyword">const</span> doc = meta.new;
 <span class="hljs-built_in">console</span>.log(collection.documentId(meta)); <span class="hljs-comment">// via meta._id</span>
 <span class="hljs-built_in">console</span>.log(collection.documentId(doc)); <span class="hljs-comment">// via doc._id</span>
@@ -607,9 +607,9 @@
 									</dd>
 									<dt>example</dt>
 									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
-<span class="hljs-keyword">const</span> collection1 = db.collection(<span class="hljs-string">"some-collection"</span>);
-<span class="hljs-keyword">const</span> collection2 = db.collection(<span class="hljs-string">"other-collection"</span>);
-<span class="hljs-keyword">const</span> meta = <span class="hljs-keyword">await</span> collection1.save({ <span class="hljs-attr">foo</span>: <span class="hljs-string">"bar"</span> });
+<span class="hljs-keyword">const</span> collection1 = db.collection(<span class="hljs-string">&quot;some-collection&quot;</span>);
+<span class="hljs-keyword">const</span> collection2 = db.collection(<span class="hljs-string">&quot;other-collection&quot;</span>);
+<span class="hljs-keyword">const</span> meta = <span class="hljs-keyword">await</span> collection1.save({ <span class="hljs-attr">foo</span>: <span class="hljs-string">&quot;bar&quot;</span> });
 <span class="hljs-comment">// Mixing collections is usually a mistake</span>
 <span class="hljs-built_in">console</span>.log(collection1.documentId(meta)); <span class="hljs-comment">// ok: same collection</span>
 <span class="hljs-built_in">console</span>.log(collection2.documentId(meta)); <span class="hljs-comment">// throws: wrong collection</span>
@@ -650,9 +650,9 @@
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
 									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
-<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">"some-collection"</span>);
+<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">&quot;some-collection&quot;</span>);
 <span class="hljs-keyword">await</span> collection.drop();
-<span class="hljs-comment">// The collection "some-collection" is now an ex-collection</span></code></pre>
+<span class="hljs-comment">// The collection &quot;some-collection&quot; is now an ex-collection</span></code></pre>
 									</dd>
 								</dl>
 							</div>
@@ -718,15 +718,15 @@
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
 									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
-<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">"edges"</span>);
+<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">&quot;edges&quot;</span>);
 <span class="hljs-keyword">await</span> collection.import([
-  [<span class="hljs-string">"_key"</span>, <span class="hljs-string">"_from"</span>, <span class="hljs-string">"_to"</span>],
-  [<span class="hljs-string">"x"</span>, <span class="hljs-string">"vertices/a"</span>, <span class="hljs-string">"vertices/b"</span>],
-  [<span class="hljs-string">"y"</span>, <span class="hljs-string">"vertices/a"</span>, <span class="hljs-string">"vertices/c"</span>],
-  [<span class="hljs-string">"z"</span>, <span class="hljs-string">"vertices/d"</span>, <span class="hljs-string">"vertices/a"</span>],
+  [<span class="hljs-string">&quot;_key&quot;</span>, <span class="hljs-string">&quot;_from&quot;</span>, <span class="hljs-string">&quot;_to&quot;</span>],
+  [<span class="hljs-string">&quot;x&quot;</span>, <span class="hljs-string">&quot;vertices/a&quot;</span>, <span class="hljs-string">&quot;vertices/b&quot;</span>],
+  [<span class="hljs-string">&quot;y&quot;</span>, <span class="hljs-string">&quot;vertices/a&quot;</span>, <span class="hljs-string">&quot;vertices/c&quot;</span>],
+  [<span class="hljs-string">&quot;z&quot;</span>, <span class="hljs-string">&quot;vertices/d&quot;</span>, <span class="hljs-string">&quot;vertices/a&quot;</span>],
 ]);
-<span class="hljs-keyword">const</span> edges = <span class="hljs-keyword">await</span> collection.edges(<span class="hljs-string">"vertices/a"</span>);
-<span class="hljs-built_in">console</span>.log(edges.map(<span class="hljs-function">(<span class="hljs-params">edge</span>) =&gt;</span> edge._key)); <span class="hljs-comment">// ["x", "y", "z"]</span></code></pre>
+<span class="hljs-keyword">const</span> edges = <span class="hljs-keyword">await</span> collection.edges(<span class="hljs-string">&quot;vertices/a&quot;</span>);
+<span class="hljs-built_in">console</span>.log(edges.map(<span class="hljs-function">(<span class="hljs-params">edge</span>) =&gt;</span> edge._key)); <span class="hljs-comment">// [&quot;x&quot;, &quot;y&quot;, &quot;z&quot;]</span></code></pre>
 									</dd>
 								</dl>
 							</div>
@@ -768,9 +768,9 @@
 									<dt>example</dt>
 									<dd><pre><code class="language-js"><span class="hljs-comment">// Create a unique index for looking up documents by username</span>
 <span class="hljs-keyword">await</span> collection.ensureIndex({
-  <span class="hljs-attr">type</span>: <span class="hljs-string">"persistent"</span>,
-  <span class="hljs-attr">fields</span>: [<span class="hljs-string">"username"</span>],
-  <span class="hljs-attr">name</span>: <span class="hljs-string">"unique-usernames"</span>,
+  <span class="hljs-attr">type</span>: <span class="hljs-string">&quot;persistent&quot;</span>,
+  <span class="hljs-attr">fields</span>: [<span class="hljs-string">&quot;username&quot;</span>],
+  <span class="hljs-attr">name</span>: <span class="hljs-string">&quot;unique-usernames&quot;</span>,
   <span class="hljs-attr">unique</span>: <span class="hljs-literal">true</span>
 });</code></pre>
 									</dd>
@@ -801,9 +801,9 @@
 									<dt>example</dt>
 									<dd><pre><code class="language-js"><span class="hljs-comment">// Create a unique index for looking up documents by username</span>
 <span class="hljs-keyword">await</span> collection.ensureIndex({
-  <span class="hljs-attr">type</span>: <span class="hljs-string">"hash"</span>,
-  <span class="hljs-attr">fields</span>: [<span class="hljs-string">"username"</span>],
-  <span class="hljs-attr">name</span>: <span class="hljs-string">"unique-usernames"</span>,
+  <span class="hljs-attr">type</span>: <span class="hljs-string">&quot;hash&quot;</span>,
+  <span class="hljs-attr">fields</span>: [<span class="hljs-string">&quot;username&quot;</span>],
+  <span class="hljs-attr">name</span>: <span class="hljs-string">&quot;unique-usernames&quot;</span>,
   <span class="hljs-attr">unique</span>: <span class="hljs-literal">true</span>
 });</code></pre>
 									</dd>
@@ -834,8 +834,8 @@
 									<dt>example</dt>
 									<dd><pre><code class="language-js"><span class="hljs-comment">// Create an index for sorting email addresses</span>
 <span class="hljs-keyword">await</span> collection.ensureIndex({
-  <span class="hljs-attr">type</span>: <span class="hljs-string">"skiplist"</span>,
-  <span class="hljs-attr">fields</span>: [<span class="hljs-string">"email"</span>]
+  <span class="hljs-attr">type</span>: <span class="hljs-string">&quot;skiplist&quot;</span>,
+  <span class="hljs-attr">fields</span>: [<span class="hljs-string">&quot;email&quot;</span>]
 });</code></pre>
 									</dd>
 								</dl>
@@ -861,18 +861,18 @@
 								</div>
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
-									<dd><pre><code class="language-js"><span class="hljs-comment">// Expire documents with "createdAt" timestamp one day after creation</span>
+									<dd><pre><code class="language-js"><span class="hljs-comment">// Expire documents with &quot;createdAt&quot; timestamp one day after creation</span>
 <span class="hljs-keyword">await</span> collection.ensureIndex({
-  <span class="hljs-attr">type</span>: <span class="hljs-string">"ttl"</span>,
-  <span class="hljs-attr">fields</span>: [<span class="hljs-string">"createdAt"</span>],
+  <span class="hljs-attr">type</span>: <span class="hljs-string">&quot;ttl&quot;</span>,
+  <span class="hljs-attr">fields</span>: [<span class="hljs-string">&quot;createdAt&quot;</span>],
   <span class="hljs-attr">expireAfter</span>: <span class="hljs-number">60</span> * <span class="hljs-number">60</span> * <span class="hljs-number">24</span> <span class="hljs-comment">// 24 hours</span>
 });</code></pre>
 									</dd>
 									<dt>example</dt>
-									<dd><pre><code class="language-js"><span class="hljs-comment">// Expire documents with "expiresAt" timestamp according to their value</span>
+									<dd><pre><code class="language-js"><span class="hljs-comment">// Expire documents with &quot;expiresAt&quot; timestamp according to their value</span>
 <span class="hljs-keyword">await</span> collection.ensureIndex({
-  <span class="hljs-attr">type</span>: <span class="hljs-string">"ttl"</span>,
-  <span class="hljs-attr">fields</span>: [<span class="hljs-string">"expiresAt"</span>],
+  <span class="hljs-attr">type</span>: <span class="hljs-string">&quot;ttl&quot;</span>,
+  <span class="hljs-attr">fields</span>: [<span class="hljs-string">&quot;expiresAt&quot;</span>],
   <span class="hljs-attr">expireAfter</span>: <span class="hljs-number">0</span> <span class="hljs-comment">// when attribute value is exceeded</span>
 });</code></pre>
 									</dd>
@@ -901,8 +901,8 @@
 									<dt>example</dt>
 									<dd><pre><code class="language-js"><span class="hljs-comment">// Create a fulltext index for tokens longer than or equal to 3 characters</span>
 <span class="hljs-keyword">await</span> collection.ensureIndex({
-  <span class="hljs-attr">type</span>: <span class="hljs-string">"fulltext"</span>,
-  <span class="hljs-attr">fields</span>: [<span class="hljs-string">"description"</span>],
+  <span class="hljs-attr">type</span>: <span class="hljs-string">&quot;fulltext&quot;</span>,
+  <span class="hljs-attr">fields</span>: [<span class="hljs-string">&quot;description&quot;</span>],
   <span class="hljs-attr">minLength</span>: <span class="hljs-number">3</span>
 });</code></pre>
 									</dd>
@@ -931,8 +931,8 @@
 									<dt>example</dt>
 									<dd><pre><code class="language-js"><span class="hljs-comment">// Create an index for GeoJSON data</span>
 <span class="hljs-keyword">await</span> collection.ensureIndex({
-  <span class="hljs-attr">type</span>: <span class="hljs-string">"geo"</span>,
-  <span class="hljs-attr">fields</span>: [<span class="hljs-string">"lngLat"</span>],
+  <span class="hljs-attr">type</span>: <span class="hljs-string">&quot;geo&quot;</span>,
+  <span class="hljs-attr">fields</span>: [<span class="hljs-string">&quot;lngLat&quot;</span>],
   <span class="hljs-attr">geoJson</span>: <span class="hljs-literal">true</span>
 });</code></pre>
 									</dd>
@@ -969,7 +969,7 @@
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
 									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
-<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">"some-collection"</span>);
+<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">&quot;some-collection&quot;</span>);
 <span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> collection.exists();
 <span class="hljs-comment">// result indicates whether the collection exists</span></code></pre>
 									</dd>
@@ -997,9 +997,9 @@
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
 									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
-<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">"some-collection"</span>);
+<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">&quot;some-collection&quot;</span>);
 <span class="hljs-keyword">const</span> data = <span class="hljs-keyword">await</span> collection.figures();
-<span class="hljs-comment">// data contains the collection's figures</span></code></pre>
+<span class="hljs-comment">// data contains the collection&#x27;s figures</span></code></pre>
 									</dd>
 								</dl>
 							</div>
@@ -1095,7 +1095,7 @@
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
 									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
-<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">"some-collection"</span>);
+<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">&quot;some-collection&quot;</span>);
 <span class="hljs-keyword">const</span> data = <span class="hljs-keyword">await</span> collection.get();
 <span class="hljs-comment">// data contains general information about the collection</span></code></pre>
 									</dd>
@@ -1151,11 +1151,11 @@
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
 									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
-<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">"some-collection"</span>);
+<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">&quot;some-collection&quot;</span>);
 <span class="hljs-keyword">await</span> collection.import(
   [
-    { <span class="hljs-attr">_key</span>: <span class="hljs-string">"x"</span>, <span class="hljs-attr">_from</span>: <span class="hljs-string">"vertices/a"</span>, <span class="hljs-attr">_to</span>: <span class="hljs-string">"vertices/b"</span>, <span class="hljs-attr">weight</span>: <span class="hljs-number">1</span> },
-    { <span class="hljs-attr">_key</span>: <span class="hljs-string">"y"</span>, <span class="hljs-attr">_from</span>: <span class="hljs-string">"vertices/a"</span>, <span class="hljs-attr">_to</span>: <span class="hljs-string">"vertices/c"</span>, <span class="hljs-attr">weight</span>: <span class="hljs-number">2</span> }
+    { <span class="hljs-attr">_key</span>: <span class="hljs-string">&quot;x&quot;</span>, <span class="hljs-attr">_from</span>: <span class="hljs-string">&quot;vertices/a&quot;</span>, <span class="hljs-attr">_to</span>: <span class="hljs-string">&quot;vertices/b&quot;</span>, <span class="hljs-attr">weight</span>: <span class="hljs-number">1</span> },
+    { <span class="hljs-attr">_key</span>: <span class="hljs-string">&quot;y&quot;</span>, <span class="hljs-attr">_from</span>: <span class="hljs-string">&quot;vertices/a&quot;</span>, <span class="hljs-attr">_to</span>: <span class="hljs-string">&quot;vertices/c&quot;</span>, <span class="hljs-attr">weight</span>: <span class="hljs-number">2</span> }
   ]
 );</code></pre>
 									</dd>
@@ -1189,12 +1189,12 @@
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
 									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
-<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">"some-collection"</span>);
+<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">&quot;some-collection&quot;</span>);
 <span class="hljs-keyword">await</span> collection.import(
   [
-    [ <span class="hljs-string">"_key"</span>, <span class="hljs-string">"_from"</span>, <span class="hljs-string">"_to"</span>, <span class="hljs-string">"weight"</span> ],
-    [ <span class="hljs-string">"x"</span>, <span class="hljs-string">"vertices/a"</span>, <span class="hljs-string">"vertices/b"</span>, <span class="hljs-number">1</span> ],
-    [ <span class="hljs-string">"y"</span>, <span class="hljs-string">"vertices/a"</span>, <span class="hljs-string">"vertices/c"</span>, <span class="hljs-number">2</span> ]
+    [ <span class="hljs-string">&quot;_key&quot;</span>, <span class="hljs-string">&quot;_from&quot;</span>, <span class="hljs-string">&quot;_to&quot;</span>, <span class="hljs-string">&quot;weight&quot;</span> ],
+    [ <span class="hljs-string">&quot;x&quot;</span>, <span class="hljs-string">&quot;vertices/a&quot;</span>, <span class="hljs-string">&quot;vertices/b&quot;</span>, <span class="hljs-number">1</span> ],
+    [ <span class="hljs-string">&quot;y&quot;</span>, <span class="hljs-string">&quot;vertices/a&quot;</span>, <span class="hljs-string">&quot;vertices/c&quot;</span>, <span class="hljs-number">2</span> ]
   ]
 );</code></pre>
 									</dd>
@@ -1239,29 +1239,29 @@
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
 									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
-<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">"some-collection"</span>);
+<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">&quot;some-collection&quot;</span>);
 <span class="hljs-keyword">await</span> collection.import(
-  <span class="hljs-string">'{"_key":"x","_from":"vertices/a","_to":"vertices/b","weight":1}\r\n'</span> +
-  <span class="hljs-string">'{"_key":"y","_from":"vertices/a","_to":"vertices/c","weight":2}\r\n'</span>,
-  { <span class="hljs-attr">type</span>: <span class="hljs-string">"documents"</span> } <span class="hljs-comment">// or "auto"</span>
+  <span class="hljs-string">&#x27;{&quot;_key&quot;:&quot;x&quot;,&quot;_from&quot;:&quot;vertices/a&quot;,&quot;_to&quot;:&quot;vertices/b&quot;,&quot;weight&quot;:1}\r\n&#x27;</span> +
+  <span class="hljs-string">&#x27;{&quot;_key&quot;:&quot;y&quot;,&quot;_from&quot;:&quot;vertices/a&quot;,&quot;_to&quot;:&quot;vertices/c&quot;,&quot;weight&quot;:2}\r\n&#x27;</span>,
+  { <span class="hljs-attr">type</span>: <span class="hljs-string">&quot;documents&quot;</span> } <span class="hljs-comment">// or &quot;auto&quot;</span>
 );</code></pre>
 									</dd>
 									<dt>example</dt>
 									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
-<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">"some-collection"</span>);
+<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">&quot;some-collection&quot;</span>);
 <span class="hljs-keyword">await</span> collection.import(
-  <span class="hljs-string">'[{"_key":"x","_from":"vertices/a","_to":"vertices/b","weight":1},'</span> +
-  <span class="hljs-string">'{"_key":"y","_from":"vertices/a","_to":"vertices/c","weight":2}]'</span>,
-  { <span class="hljs-attr">type</span>: <span class="hljs-string">"list"</span> } <span class="hljs-comment">// or "auto"</span>
+  <span class="hljs-string">&#x27;[{&quot;_key&quot;:&quot;x&quot;,&quot;_from&quot;:&quot;vertices/a&quot;,&quot;_to&quot;:&quot;vertices/b&quot;,&quot;weight&quot;:1},&#x27;</span> +
+  <span class="hljs-string">&#x27;{&quot;_key&quot;:&quot;y&quot;,&quot;_from&quot;:&quot;vertices/a&quot;,&quot;_to&quot;:&quot;vertices/c&quot;,&quot;weight&quot;:2}]&#x27;</span>,
+  { <span class="hljs-attr">type</span>: <span class="hljs-string">&quot;list&quot;</span> } <span class="hljs-comment">// or &quot;auto&quot;</span>
 );</code></pre>
 									</dd>
 									<dt>example</dt>
 									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
-<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">"some-collection"</span>);
+<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">&quot;some-collection&quot;</span>);
 <span class="hljs-keyword">await</span> collection.import(
-  <span class="hljs-string">'["_key","_from","_to","weight"]\r\n'</span> +
-  <span class="hljs-string">'["x","vertices/a","vertices/b",1]\r\n'</span> +
-  <span class="hljs-string">'["y","vertices/a","vertices/c",2]\r\n'</span>
+  <span class="hljs-string">&#x27;[&quot;_key&quot;,&quot;_from&quot;,&quot;_to&quot;,&quot;weight&quot;]\r\n&#x27;</span> +
+  <span class="hljs-string">&#x27;[&quot;x&quot;,&quot;vertices/a&quot;,&quot;vertices/b&quot;,1]\r\n&#x27;</span> +
+  <span class="hljs-string">&#x27;[&quot;y&quot;,&quot;vertices/a&quot;,&quot;vertices/c&quot;,2]\r\n&#x27;</span>
 );</code></pre>
 									</dd>
 								</dl>
@@ -1306,15 +1306,15 @@
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
 									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
-<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">"edges"</span>);
+<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">&quot;edges&quot;</span>);
 <span class="hljs-keyword">await</span> collection.import([
-  [<span class="hljs-string">"_key"</span>, <span class="hljs-string">"_from"</span>, <span class="hljs-string">"_to"</span>],
-  [<span class="hljs-string">"x"</span>, <span class="hljs-string">"vertices/a"</span>, <span class="hljs-string">"vertices/b"</span>],
-  [<span class="hljs-string">"y"</span>, <span class="hljs-string">"vertices/a"</span>, <span class="hljs-string">"vertices/c"</span>],
-  [<span class="hljs-string">"z"</span>, <span class="hljs-string">"vertices/d"</span>, <span class="hljs-string">"vertices/a"</span>],
+  [<span class="hljs-string">&quot;_key&quot;</span>, <span class="hljs-string">&quot;_from&quot;</span>, <span class="hljs-string">&quot;_to&quot;</span>],
+  [<span class="hljs-string">&quot;x&quot;</span>, <span class="hljs-string">&quot;vertices/a&quot;</span>, <span class="hljs-string">&quot;vertices/b&quot;</span>],
+  [<span class="hljs-string">&quot;y&quot;</span>, <span class="hljs-string">&quot;vertices/a&quot;</span>, <span class="hljs-string">&quot;vertices/c&quot;</span>],
+  [<span class="hljs-string">&quot;z&quot;</span>, <span class="hljs-string">&quot;vertices/d&quot;</span>, <span class="hljs-string">&quot;vertices/a&quot;</span>],
 ]);
-<span class="hljs-keyword">const</span> edges = <span class="hljs-keyword">await</span> collection.inEdges(<span class="hljs-string">"vertices/a"</span>);
-<span class="hljs-built_in">console</span>.log(edges.map(<span class="hljs-function">(<span class="hljs-params">edge</span>) =&gt;</span> edge._key)); <span class="hljs-comment">// ["z"]</span></code></pre>
+<span class="hljs-keyword">const</span> edges = <span class="hljs-keyword">await</span> collection.inEdges(<span class="hljs-string">&quot;vertices/a&quot;</span>);
+<span class="hljs-built_in">console</span>.log(edges.map(<span class="hljs-function">(<span class="hljs-params">edge</span>) =&gt;</span> edge._key)); <span class="hljs-comment">// [&quot;z&quot;]</span></code></pre>
 									</dd>
 								</dl>
 							</div>
@@ -1432,7 +1432,7 @@
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
 									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
-<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">"some-collection"</span>);
+<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">&quot;some-collection&quot;</span>);
 <span class="hljs-keyword">await</span> collection.load();
 <span class="hljs-comment">// the collection has now been loaded into memory</span></code></pre>
 									</dd>
@@ -1462,7 +1462,7 @@
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
 									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
-<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">"some-collection"</span>);
+<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">&quot;some-collection&quot;</span>);
 <span class="hljs-keyword">await</span> collection.load(<span class="hljs-literal">false</span>);
 <span class="hljs-comment">// the collection has now been loaded into memory</span></code></pre>
 									</dd>
@@ -1502,7 +1502,7 @@
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
 									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
-<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">"indexed-collection"</span>);
+<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">&quot;indexed-collection&quot;</span>);
 <span class="hljs-keyword">await</span> collection.loadIndexes();
 <span class="hljs-comment">// the indexes are now loaded into memory</span></code></pre>
 									</dd>
@@ -1564,15 +1564,15 @@
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
 									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
-<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">"edges"</span>);
+<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">&quot;edges&quot;</span>);
 <span class="hljs-keyword">await</span> collection.import([
-  [<span class="hljs-string">"_key"</span>, <span class="hljs-string">"_from"</span>, <span class="hljs-string">"_to"</span>],
-  [<span class="hljs-string">"x"</span>, <span class="hljs-string">"vertices/a"</span>, <span class="hljs-string">"vertices/b"</span>],
-  [<span class="hljs-string">"y"</span>, <span class="hljs-string">"vertices/a"</span>, <span class="hljs-string">"vertices/c"</span>],
-  [<span class="hljs-string">"z"</span>, <span class="hljs-string">"vertices/d"</span>, <span class="hljs-string">"vertices/a"</span>],
+  [<span class="hljs-string">&quot;_key&quot;</span>, <span class="hljs-string">&quot;_from&quot;</span>, <span class="hljs-string">&quot;_to&quot;</span>],
+  [<span class="hljs-string">&quot;x&quot;</span>, <span class="hljs-string">&quot;vertices/a&quot;</span>, <span class="hljs-string">&quot;vertices/b&quot;</span>],
+  [<span class="hljs-string">&quot;y&quot;</span>, <span class="hljs-string">&quot;vertices/a&quot;</span>, <span class="hljs-string">&quot;vertices/c&quot;</span>],
+  [<span class="hljs-string">&quot;z&quot;</span>, <span class="hljs-string">&quot;vertices/d&quot;</span>, <span class="hljs-string">&quot;vertices/a&quot;</span>],
 ]);
-<span class="hljs-keyword">const</span> edges = <span class="hljs-keyword">await</span> collection.outEdges(<span class="hljs-string">"vertices/a"</span>);
-<span class="hljs-built_in">console</span>.log(edges.map(<span class="hljs-function">(<span class="hljs-params">edge</span>) =&gt;</span> edge._key)); <span class="hljs-comment">// ["x", "y"]</span></code></pre>
+<span class="hljs-keyword">const</span> edges = <span class="hljs-keyword">await</span> collection.outEdges(<span class="hljs-string">&quot;vertices/a&quot;</span>);
+<span class="hljs-built_in">console</span>.log(edges.map(<span class="hljs-function">(<span class="hljs-params">edge</span>) =&gt;</span> edge._key)); <span class="hljs-comment">// [&quot;x&quot;, &quot;y&quot;]</span></code></pre>
 									</dd>
 								</dl>
 							</div>
@@ -1609,9 +1609,9 @@
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
 									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
-<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">"some-collection"</span>);
+<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">&quot;some-collection&quot;</span>);
 <span class="hljs-keyword">const</span> data = <span class="hljs-keyword">await</span> collection.properties();
-<span class="hljs-comment">// data contains the collection's properties</span></code></pre>
+<span class="hljs-comment">// data contains the collection&#x27;s properties</span></code></pre>
 									</dd>
 								</dl>
 							</div>
@@ -1628,7 +1628,7 @@
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
 									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
-<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">"some-collection"</span>);
+<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">&quot;some-collection&quot;</span>);
 <span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> collection.setProperties({ <span class="hljs-attr">waitForSync</span>: <span class="hljs-literal">true</span> });
 <span class="hljs-comment">// the collection will now wait for data being written to disk</span>
 <span class="hljs-comment">// whenever a document is changed</span></code></pre>
@@ -1664,12 +1664,12 @@
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
 									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
-<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">"inconsistent-collection"</span>);
+<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">&quot;inconsistent-collection&quot;</span>);
 <span class="hljs-keyword">const</span> badData = <span class="hljs-keyword">await</span> collection.count();
 <span class="hljs-comment">// oh no, the collection count looks wrong -- fix it!</span>
 <span class="hljs-keyword">await</span> collection.recalculateCount();
 <span class="hljs-keyword">const</span> goodData = <span class="hljs-keyword">await</span> collection.count();
-<span class="hljs-comment">// goodData contains the collection's improved count</span></code></pre>
+<span class="hljs-comment">// goodData contains the collection&#x27;s improved count</span></code></pre>
 									</dd>
 								</dl>
 							</div>
@@ -1697,10 +1697,10 @@
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
 									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
-<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">"friends"</span>);
-<span class="hljs-keyword">const</span> doc = <span class="hljs-keyword">await</span> collection.document(<span class="hljs-string">"musadir"</span>);
+<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">&quot;friends&quot;</span>);
+<span class="hljs-keyword">const</span> doc = <span class="hljs-keyword">await</span> collection.document(<span class="hljs-string">&quot;musadir&quot;</span>);
 <span class="hljs-keyword">await</span> collection.remove(doc);
-<span class="hljs-comment">// document with key "musadir" deleted</span></code></pre>
+<span class="hljs-comment">// document with key &quot;musadir&quot; deleted</span></code></pre>
 									</dd>
 								</dl>
 							</div>
@@ -1744,9 +1744,9 @@
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
 									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
-<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">"friends"</span>);
-<span class="hljs-keyword">await</span> collection.removeAll([<span class="hljs-string">"musadir"</span>, <span class="hljs-string">"salman"</span>]);
-<span class="hljs-comment">// document with keys "musadir" and "salman" deleted</span></code></pre>
+<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">&quot;friends&quot;</span>);
+<span class="hljs-keyword">await</span> collection.removeAll([<span class="hljs-string">&quot;musadir&quot;</span>, <span class="hljs-string">&quot;salman&quot;</span>]);
+<span class="hljs-comment">// document with keys &quot;musadir&quot; and &quot;salman&quot; deleted</span></code></pre>
 									</dd>
 								</dl>
 							</div>
@@ -1862,10 +1862,10 @@
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
 									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
-<span class="hljs-keyword">const</span> collection1 = db.collection(<span class="hljs-string">"some-collection"</span>);
-<span class="hljs-keyword">await</span> collection1.rename(<span class="hljs-string">"other-collection"</span>);
-<span class="hljs-keyword">const</span> collection2 = db.collection(<span class="hljs-string">"some-collection"</span>);
-<span class="hljs-keyword">const</span> collection3 = db.collection(<span class="hljs-string">"other-collection"</span>);
+<span class="hljs-keyword">const</span> collection1 = db.collection(<span class="hljs-string">&quot;some-collection&quot;</span>);
+<span class="hljs-keyword">await</span> collection1.rename(<span class="hljs-string">&quot;other-collection&quot;</span>);
+<span class="hljs-keyword">const</span> collection2 = db.collection(<span class="hljs-string">&quot;some-collection&quot;</span>);
+<span class="hljs-keyword">const</span> collection3 = db.collection(<span class="hljs-string">&quot;other-collection&quot;</span>);
 <span class="hljs-comment">// Note all three collection instances are different objects but</span>
 <span class="hljs-comment">// collection1 and collection3 represent the same ArangoDB collection!</span></code></pre>
 									</dd>
@@ -1904,18 +1904,18 @@
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
 									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
-<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">"friends"</span>);
+<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">&quot;friends&quot;</span>);
 <span class="hljs-keyword">await</span> collection.save(
   {
-    <span class="hljs-attr">_key</span>: <span class="hljs-string">"musadir"</span>,
-    <span class="hljs-attr">_from</span>: <span class="hljs-string">"users/rana"</span>,
-    <span class="hljs-attr">_to</span>: <span class="hljs-string">"users/mudasir"</span>,
+    <span class="hljs-attr">_key</span>: <span class="hljs-string">&quot;musadir&quot;</span>,
+    <span class="hljs-attr">_from</span>: <span class="hljs-string">&quot;users/rana&quot;</span>,
+    <span class="hljs-attr">_to</span>: <span class="hljs-string">&quot;users/mudasir&quot;</span>,
     <span class="hljs-attr">active</span>: <span class="hljs-literal">true</span>,
     <span class="hljs-attr">best</span>: <span class="hljs-literal">true</span>
   }
 );
 <span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> collection.replace(
-  <span class="hljs-string">"musadir"</span>,
+  <span class="hljs-string">&quot;musadir&quot;</span>,
   { <span class="hljs-attr">active</span>: <span class="hljs-literal">false</span> },
   { <span class="hljs-attr">returnNew</span>: <span class="hljs-literal">true</span> }
 );
@@ -1968,29 +1968,29 @@
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
 									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
-<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">"friends"</span>);
+<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">&quot;friends&quot;</span>);
 <span class="hljs-keyword">await</span> collection.save(
   {
-    <span class="hljs-attr">_key</span>: <span class="hljs-string">"musadir"</span>,
-    <span class="hljs-attr">_from</span>: <span class="hljs-string">"users/rana"</span>,
-    <span class="hljs-attr">_to</span>: <span class="hljs-string">"users/mudasir"</span>,
+    <span class="hljs-attr">_key</span>: <span class="hljs-string">&quot;musadir&quot;</span>,
+    <span class="hljs-attr">_from</span>: <span class="hljs-string">&quot;users/rana&quot;</span>,
+    <span class="hljs-attr">_to</span>: <span class="hljs-string">&quot;users/mudasir&quot;</span>,
     <span class="hljs-attr">active</span>: <span class="hljs-literal">true</span>,
     <span class="hljs-attr">best</span>: <span class="hljs-literal">true</span>
   }
 );
 <span class="hljs-keyword">await</span> collection.save(
   {
-    <span class="hljs-attr">_key</span>: <span class="hljs-string">"salman"</span>,
-    <span class="hljs-attr">_from</span>: <span class="hljs-string">"users/rana"</span>,
-    <span class="hljs-attr">_to</span>: <span class="hljs-string">"users/salman"</span>,
+    <span class="hljs-attr">_key</span>: <span class="hljs-string">&quot;salman&quot;</span>,
+    <span class="hljs-attr">_from</span>: <span class="hljs-string">&quot;users/rana&quot;</span>,
+    <span class="hljs-attr">_to</span>: <span class="hljs-string">&quot;users/salman&quot;</span>,
     <span class="hljs-attr">active</span>: <span class="hljs-literal">false</span>,
     <span class="hljs-attr">best</span>: <span class="hljs-literal">false</span>
   }
 );
 <span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> collection.replaceAll(
   [
-    { <span class="hljs-attr">_key</span>: <span class="hljs-string">"musadir"</span>, <span class="hljs-attr">active</span>: <span class="hljs-literal">false</span> },
-    { <span class="hljs-attr">_key</span>: <span class="hljs-string">"salman"</span>, <span class="hljs-attr">active</span>: <span class="hljs-literal">true</span>, <span class="hljs-attr">best</span>: <span class="hljs-literal">true</span> }
+    { <span class="hljs-attr">_key</span>: <span class="hljs-string">&quot;musadir&quot;</span>, <span class="hljs-attr">active</span>: <span class="hljs-literal">false</span> },
+    { <span class="hljs-attr">_key</span>: <span class="hljs-string">&quot;salman&quot;</span>, <span class="hljs-attr">active</span>: <span class="hljs-literal">true</span>, <span class="hljs-attr">best</span>: <span class="hljs-literal">true</span> }
   ],
   { <span class="hljs-attr">returnNew</span>: <span class="hljs-literal">true</span> }
 );
@@ -2074,9 +2074,9 @@
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
 									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
-<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">"some-collection"</span>);
+<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">&quot;some-collection&quot;</span>);
 <span class="hljs-keyword">const</span> data = <span class="hljs-keyword">await</span> collection.revision();
-<span class="hljs-comment">// data contains the collection's revision</span></code></pre>
+<span class="hljs-comment">// data contains the collection&#x27;s revision</span></code></pre>
 									</dd>
 								</dl>
 							</div>
@@ -2102,7 +2102,7 @@
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
 									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
-<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">"some-collection"</span>);
+<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">&quot;some-collection&quot;</span>);
 <span class="hljs-keyword">const</span> rotated = <span class="hljs-keyword">await</span> collection.rotate();</code></pre>
 									</dd>
 								</dl>
@@ -2129,9 +2129,9 @@
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
 									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
-<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">"friends"</span>);
+<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">&quot;friends&quot;</span>);
 <span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> collection.save(
-  { <span class="hljs-attr">_from</span>: <span class="hljs-string">"users/rana"</span>, <span class="hljs-attr">_to</span>: <span class="hljs-string">"users/mudasir"</span>, <span class="hljs-attr">active</span>: <span class="hljs-literal">false</span> },
+  { <span class="hljs-attr">_from</span>: <span class="hljs-string">&quot;users/rana&quot;</span>, <span class="hljs-attr">_to</span>: <span class="hljs-string">&quot;users/mudasir&quot;</span>, <span class="hljs-attr">active</span>: <span class="hljs-literal">false</span> },
   { <span class="hljs-attr">returnNew</span>: <span class="hljs-literal">true</span> }
 );</code></pre>
 									</dd>
@@ -2174,11 +2174,11 @@
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
 									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
-<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">"friends"</span>);
+<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">&quot;friends&quot;</span>);
 <span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> collection.saveAll(
   [
-    { <span class="hljs-attr">_from</span>: <span class="hljs-string">"users/rana"</span>, <span class="hljs-attr">_to</span>: <span class="hljs-string">"users/mudasir"</span>, <span class="hljs-attr">active</span>: <span class="hljs-literal">false</span> },
-    { <span class="hljs-attr">_from</span>: <span class="hljs-string">"users/rana"</span>, <span class="hljs-attr">_to</span>: <span class="hljs-string">"users/salman"</span>, <span class="hljs-attr">active</span>: <span class="hljs-literal">true</span> }
+    { <span class="hljs-attr">_from</span>: <span class="hljs-string">&quot;users/rana&quot;</span>, <span class="hljs-attr">_to</span>: <span class="hljs-string">&quot;users/mudasir&quot;</span>, <span class="hljs-attr">active</span>: <span class="hljs-literal">false</span> },
+    { <span class="hljs-attr">_from</span>: <span class="hljs-string">&quot;users/rana&quot;</span>, <span class="hljs-attr">_to</span>: <span class="hljs-string">&quot;users/salman&quot;</span>, <span class="hljs-attr">active</span>: <span class="hljs-literal">true</span> }
   ],
   { <span class="hljs-attr">returnNew</span>: <span class="hljs-literal">true</span> }
 );</code></pre>
@@ -2229,19 +2229,19 @@
 									</dd>
 									<dt>example</dt>
 									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
-<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">"edges"</span>);
+<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">&quot;edges&quot;</span>);
 <span class="hljs-keyword">await</span> collection.import([
-  [<span class="hljs-string">"_key"</span>, <span class="hljs-string">"_from"</span>, <span class="hljs-string">"_to"</span>],
-  [<span class="hljs-string">"x"</span>, <span class="hljs-string">"vertices/a"</span>, <span class="hljs-string">"vertices/b"</span>],
-  [<span class="hljs-string">"y"</span>, <span class="hljs-string">"vertices/b"</span>, <span class="hljs-string">"vertices/c"</span>],
-  [<span class="hljs-string">"z"</span>, <span class="hljs-string">"vertices/c"</span>, <span class="hljs-string">"vertices/d"</span>],
+  [<span class="hljs-string">&quot;_key&quot;</span>, <span class="hljs-string">&quot;_from&quot;</span>, <span class="hljs-string">&quot;_to&quot;</span>],
+  [<span class="hljs-string">&quot;x&quot;</span>, <span class="hljs-string">&quot;vertices/a&quot;</span>, <span class="hljs-string">&quot;vertices/b&quot;</span>],
+  [<span class="hljs-string">&quot;y&quot;</span>, <span class="hljs-string">&quot;vertices/b&quot;</span>, <span class="hljs-string">&quot;vertices/c&quot;</span>],
+  [<span class="hljs-string">&quot;z&quot;</span>, <span class="hljs-string">&quot;vertices/c&quot;</span>, <span class="hljs-string">&quot;vertices/d&quot;</span>],
 ]);
-<span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> collection.traversal(<span class="hljs-string">"vertices/a"</span>, {
-  <span class="hljs-attr">direction</span>: <span class="hljs-string">"outbound"</span>,
-  <span class="hljs-attr">init</span>: <span class="hljs-string">"result.vertices = [];"</span>,
-  <span class="hljs-attr">visitor</span>: <span class="hljs-string">"result.vertices.push(vertex._key);"</span>,
+<span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> collection.traversal(<span class="hljs-string">&quot;vertices/a&quot;</span>, {
+  <span class="hljs-attr">direction</span>: <span class="hljs-string">&quot;outbound&quot;</span>,
+  <span class="hljs-attr">init</span>: <span class="hljs-string">&quot;result.vertices = [];&quot;</span>,
+  <span class="hljs-attr">visitor</span>: <span class="hljs-string">&quot;result.vertices.push(vertex._key);&quot;</span>,
 });
-<span class="hljs-built_in">console</span>.log(result.vertices); <span class="hljs-comment">// ["a", "b", "c", "d"]</span></code></pre>
+<span class="hljs-built_in">console</span>.log(result.vertices); <span class="hljs-comment">// [&quot;a&quot;, &quot;b&quot;, &quot;c&quot;, &quot;d&quot;]</span></code></pre>
 									</dd>
 								</dl>
 							</div>
@@ -2283,10 +2283,10 @@
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
 									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
-<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">"some-collection"</span>);
+<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">&quot;some-collection&quot;</span>);
 <span class="hljs-keyword">await</span> collection.truncate();
 <span class="hljs-comment">// millions of documents cry out in terror and are suddenly silenced,</span>
-<span class="hljs-comment">// the collection "some-collection" is now empty</span></code></pre>
+<span class="hljs-comment">// the collection &quot;some-collection&quot; is now empty</span></code></pre>
 									</dd>
 								</dl>
 							</div>
@@ -2312,7 +2312,7 @@
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
 									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
-<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">"some-collection"</span>);
+<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">&quot;some-collection&quot;</span>);
 <span class="hljs-keyword">await</span> collection.unload();
 <span class="hljs-comment">// the collection has now been unloaded from memory</span></code></pre>
 									</dd>
@@ -2342,18 +2342,18 @@
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
 									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
-<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">"friends"</span>);
+<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">&quot;friends&quot;</span>);
 <span class="hljs-keyword">await</span> collection.save(
   {
-    <span class="hljs-attr">_key</span>: <span class="hljs-string">"musadir"</span>,
-    <span class="hljs-attr">_from</span>: <span class="hljs-string">"users/rana"</span>,
-    <span class="hljs-attr">_to</span>: <span class="hljs-string">"users/mudasir"</span>,
+    <span class="hljs-attr">_key</span>: <span class="hljs-string">&quot;musadir&quot;</span>,
+    <span class="hljs-attr">_from</span>: <span class="hljs-string">&quot;users/rana&quot;</span>,
+    <span class="hljs-attr">_to</span>: <span class="hljs-string">&quot;users/mudasir&quot;</span>,
     <span class="hljs-attr">active</span>: <span class="hljs-literal">true</span>,
     <span class="hljs-attr">best</span>: <span class="hljs-literal">true</span>
   }
 );
 <span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> collection.update(
-  <span class="hljs-string">"musadir"</span>,
+  <span class="hljs-string">&quot;musadir&quot;</span>,
   { <span class="hljs-attr">active</span>: <span class="hljs-literal">false</span> },
   { <span class="hljs-attr">returnNew</span>: <span class="hljs-literal">true</span> }
 );
@@ -2417,29 +2417,29 @@
 									<div class="tsd-comment tsd-typography">
 										<p>Options for updating the documents.</p>
 										<pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
-<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">"friends"</span>);
+<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">&quot;friends&quot;</span>);
 <span class="hljs-keyword">await</span> collection.save(
   {
-    <span class="hljs-attr">_key</span>: <span class="hljs-string">"musadir"</span>,
-    <span class="hljs-attr">_from</span>: <span class="hljs-string">"users/rana"</span>,
-    <span class="hljs-attr">_to</span>: <span class="hljs-string">"users/mudasir"</span>,
+    <span class="hljs-attr">_key</span>: <span class="hljs-string">&quot;musadir&quot;</span>,
+    <span class="hljs-attr">_from</span>: <span class="hljs-string">&quot;users/rana&quot;</span>,
+    <span class="hljs-attr">_to</span>: <span class="hljs-string">&quot;users/mudasir&quot;</span>,
     <span class="hljs-attr">active</span>: <span class="hljs-literal">true</span>,
     <span class="hljs-attr">best</span>: <span class="hljs-literal">true</span>
   }
 );
 <span class="hljs-keyword">await</span> collection.save(
   {
-    <span class="hljs-attr">_key</span>: <span class="hljs-string">"salman"</span>,
-    <span class="hljs-attr">_from</span>: <span class="hljs-string">"users/rana"</span>,
-    <span class="hljs-attr">_to</span>: <span class="hljs-string">"users/salman"</span>,
+    <span class="hljs-attr">_key</span>: <span class="hljs-string">&quot;salman&quot;</span>,
+    <span class="hljs-attr">_from</span>: <span class="hljs-string">&quot;users/rana&quot;</span>,
+    <span class="hljs-attr">_to</span>: <span class="hljs-string">&quot;users/salman&quot;</span>,
     <span class="hljs-attr">active</span>: <span class="hljs-literal">false</span>,
     <span class="hljs-attr">best</span>: <span class="hljs-literal">false</span>
   }
 );
 <span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> collection.updateAll(
   [
-    { <span class="hljs-attr">_key</span>: <span class="hljs-string">"musadir"</span>, <span class="hljs-attr">active</span>: <span class="hljs-literal">false</span> },
-    { <span class="hljs-attr">_key</span>: <span class="hljs-string">"salman"</span>, <span class="hljs-attr">active</span>: <span class="hljs-literal">true</span>, <span class="hljs-attr">best</span>: <span class="hljs-literal">true</span> }
+    { <span class="hljs-attr">_key</span>: <span class="hljs-string">&quot;musadir&quot;</span>, <span class="hljs-attr">active</span>: <span class="hljs-literal">false</span> },
+    { <span class="hljs-attr">_key</span>: <span class="hljs-string">&quot;salman&quot;</span>, <span class="hljs-attr">active</span>: <span class="hljs-literal">true</span>, <span class="hljs-attr">best</span>: <span class="hljs-literal">true</span> }
   ],
   { <span class="hljs-attr">returnNew</span>: <span class="hljs-literal">true</span> }
 );

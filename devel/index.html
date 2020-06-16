@@ -98,24 +98,24 @@ npm run build</code></pre>
 				</a>
 				<p>For production use arangojs can be installed with Yarn or NPM like any
 				other dependency. Just use arangojs like you would in your server code:</p>
-				<pre><code class="language-js"><span class="hljs-keyword">import</span> { Database, aql } <span class="hljs-keyword">from</span> <span class="hljs-string">"arangojs"</span>;
+				<pre><code class="language-js"><span class="hljs-keyword">import</span> { Database, aql } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;arangojs&quot;</span>;
 <span class="hljs-comment">// -- or --</span>
-<span class="hljs-keyword">var</span> arangojs = <span class="hljs-built_in">require</span>(<span class="hljs-string">"arangojs"</span>);</code></pre>
+<span class="hljs-keyword">var</span> arangojs = <span class="hljs-built_in">require</span>(<span class="hljs-string">&quot;arangojs&quot;</span>);</code></pre>
 				<p>Additionally the NPM release comes with a precompiled browser build:</p>
-				<pre><code class="language-js"><span class="hljs-keyword">var</span> arangojs = <span class="hljs-built_in">require</span>(<span class="hljs-string">"arangojs/web"</span>);</code></pre>
+				<pre><code class="language-js"><span class="hljs-keyword">var</span> arangojs = <span class="hljs-built_in">require</span>(<span class="hljs-string">&quot;arangojs/web&quot;</span>);</code></pre>
 				<p>You can also use <a href="https://unpkg.com">unpkg</a> during development:</p>
 				<pre><code class="language-html"><span class="hljs-tag">&lt; !<span class="hljs-attr">--</span> <span class="hljs-attr">note</span> <span class="hljs-attr">the</span> <span class="hljs-attr">path</span> <span class="hljs-attr">includes</span> <span class="hljs-attr">the</span> <span class="hljs-attr">version</span> <span class="hljs-attr">number</span> (<span class="hljs-attr">e.g.</span> <span class="hljs-attr">7.0.0</span>) <span class="hljs-attr">--</span> &gt;</span>
-<span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/arangojs@7.0.0/web.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">&quot;https://unpkg.com/arangojs@7.0.0/web.js&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
 <span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="javascript">
   <span class="hljs-keyword">var</span> db = <span class="hljs-keyword">new</span> arangojs.Database();
   db.listCollections().then(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">collections</span>) </span>{
     alert(
-      <span class="hljs-string">"Your collections: "</span> +
+      <span class="hljs-string">&quot;Your collections: &quot;</span> +
         collections
           .map(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">collection</span>) </span>{
             <span class="hljs-keyword">return</span> collection.name;
           })
-          .join(<span class="hljs-string">", "</span>)
+          .join(<span class="hljs-string">&quot;, &quot;</span>)
     );
   });
 </span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
@@ -124,13 +124,13 @@ npm run build</code></pre>
 					<a href="https://babeljs.io/docs/usage/polyfill">polyfill</a> to provide missing
 				functionality needed to use arangojs.</p>
 				<p>When loading the browser build with a script tag make sure to load the polyfill first:</p>
-				<pre><code class="language-html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/6.26.0/polyfill.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
-<span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"https://unpkg.com/arangojs@7.0.0/web.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
+				<pre><code class="language-html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">&quot;https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/6.26.0/polyfill.js&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">&quot;https://unpkg.com/arangojs@7.0.0/web.js&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
 				<a href="#basic-usage-example" id="basic-usage-example" style="color: inherit; text-decoration: none;">
 					<h2>Basic usage example</h2>
 				</a>
 				<pre><code class="language-js"><span class="hljs-comment">// Modern JavaScript</span>
-<span class="hljs-keyword">import</span> { Database, aql } <span class="hljs-keyword">from</span> <span class="hljs-string">"arangojs"</span>;
+<span class="hljs-keyword">import</span> { Database, aql } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;arangojs&quot;</span>;
 <span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
 (<span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
   <span class="hljs-keyword">const</span> now = <span class="hljs-built_in">Date</span>.now();
@@ -146,11 +146,11 @@ npm run build</code></pre>
 })();
 
 <span class="hljs-comment">// or plain old Node-style</span>
-<span class="hljs-keyword">var</span> arangojs = <span class="hljs-built_in">require</span>(<span class="hljs-string">"arangojs"</span>);
+<span class="hljs-keyword">var</span> arangojs = <span class="hljs-built_in">require</span>(<span class="hljs-string">&quot;arangojs&quot;</span>);
 <span class="hljs-keyword">var</span> db = <span class="hljs-keyword">new</span> arangojs.Database();
 <span class="hljs-keyword">var</span> now = <span class="hljs-built_in">Date</span>.now();
 db.query({
-  <span class="hljs-attr">query</span>: <span class="hljs-string">"RETURN @value"</span>,
+  <span class="hljs-attr">query</span>: <span class="hljs-string">&quot;RETURN @value&quot;</span>,
   <span class="hljs-attr">bindVars</span>: { <span class="hljs-attr">value</span>: now },
 })
   .then(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">cursor</span>) </span>{
@@ -164,17 +164,17 @@ db.query({
 
 <span class="hljs-comment">// Using different databases</span>
 <span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database({
-  <span class="hljs-attr">url</span>: <span class="hljs-string">"http://localhost:8529"</span>,
+  <span class="hljs-attr">url</span>: <span class="hljs-string">&quot;http://localhost:8529&quot;</span>,
 });
-db.useDatabase(<span class="hljs-string">"pancakes"</span>);
-db.useBasicAuth(<span class="hljs-string">"root"</span>, <span class="hljs-string">""</span>);
+db.useDatabase(<span class="hljs-string">&quot;pancakes&quot;</span>);
+db.useBasicAuth(<span class="hljs-string">&quot;root&quot;</span>, <span class="hljs-string">&quot;&quot;</span>);
 <span class="hljs-comment">// The database can be swapped at any time</span>
-db.useDatabase(<span class="hljs-string">"waffles"</span>);
-db.useBasicAuth(<span class="hljs-string">"admin"</span>, <span class="hljs-string">"maplesyrup"</span>);
+db.useDatabase(<span class="hljs-string">&quot;waffles&quot;</span>);
+db.useBasicAuth(<span class="hljs-string">&quot;admin&quot;</span>, <span class="hljs-string">&quot;maplesyrup&quot;</span>);
 
 <span class="hljs-comment">// Using ArangoDB behind a reverse proxy</span>
 <span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database({
-  <span class="hljs-attr">url</span>: <span class="hljs-string">"http://arangodb-proxy:1234"</span>,
+  <span class="hljs-attr">url</span>: <span class="hljs-string">&quot;http://arangodb-proxy:1234&quot;</span>,
 });</code></pre>
 				<a href="#compatibility" id="compatibility" style="color: inherit; text-decoration: none;">
 					<h2>Compatibility</h2>
@@ -228,7 +228,7 @@ npm install --save arangojs@6</code></pre>
 					to tell it to
 				<a href="https://webpack.js.org/configuration/target/">target the correct environment</a>:</p>
 				<pre><code class="language-diff">// webpack.config.js
-<span class="hljs-addition">+ "target": "node",</span></code></pre>
+<span class="hljs-addition">+ &quot;target&quot;: &quot;node&quot;,</span></code></pre>
 				<p>To support use in both browser and Node environments arangojs uses the
 					<a href="https://github.com/defunctzombie/package-browser-field-spec"><code>package.json</code> <code>browser</code> field</a>,
 					to substitute browser-specific implementations for certain modules.
@@ -242,8 +242,8 @@ npm install --save arangojs@6</code></pre>
 				<pre><code class="language-js">...
 agentOptions: {
   <span class="hljs-attr">ca</span>: [
-    fs.readFileSync(<span class="hljs-string">".ssl/sub.class1.server.ca.pem"</span>),
-    fs.readFileSync(<span class="hljs-string">".ssl/ca.pem"</span>)
+    fs.readFileSync(<span class="hljs-string">&quot;.ssl/sub.class1.server.ca.pem&quot;</span>),
+    fs.readFileSync(<span class="hljs-string">&quot;.ssl/ca.pem&quot;</span>)
   ]
 }</code></pre>
 				<p>Although this is <strong>strongly discouraged</strong>, it&#39;s also possible to disable
@@ -273,18 +273,18 @@ agentOptions: {
 				<p><strong>Examples</strong></p>
 				<pre><code class="language-js"><span class="hljs-comment">// Using async/await</span>
 <span class="hljs-keyword">try</span> {
-  <span class="hljs-keyword">const</span> info = <span class="hljs-keyword">await</span> db.createDatabase(<span class="hljs-string">"mydb"</span>);
+  <span class="hljs-keyword">const</span> info = <span class="hljs-keyword">await</span> db.createDatabase(<span class="hljs-string">&quot;mydb&quot;</span>);
   <span class="hljs-comment">// database created</span>
 } <span class="hljs-keyword">catch</span> (err) {
   <span class="hljs-built_in">console</span>.error(err.stack);
 }
 
 <span class="hljs-comment">// Using promises with arrow functions</span>
-db.createDatabase(<span class="hljs-string">"mydb"</span>).then(
+db.createDatabase(<span class="hljs-string">&quot;mydb&quot;</span>).then(
   <span class="hljs-function">(<span class="hljs-params">info</span>) =&gt;</span> {
     <span class="hljs-comment">// database created</span>
   },
-  (err) =&gt; <span class="hljs-built_in">console</span>.error(err.stack)
+  <span class="hljs-function">(<span class="hljs-params">err</span>) =&gt;</span> <span class="hljs-built_in">console</span>.error(err.stack)
 );</code></pre>
 				<p><strong>Note</strong>: The examples throughout this documentation use <code>async</code>/<code>await</code>
 					and other modern language features like multi-line strings and template tags.

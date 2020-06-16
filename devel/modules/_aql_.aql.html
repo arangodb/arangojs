@@ -103,13 +103,13 @@
 <span class="hljs-comment">// Without aql tag: BAD! DO NOT DO THIS!</span>
 <span class="hljs-keyword">const</span> badQuery = <span class="hljs-string">`
   FOR user IN users
-  FILTER user.email == "<span class="hljs-subst">${untrustedValue}</span>"
+  FILTER user.email == &quot;<span class="hljs-subst">${untrustedValue}</span>&quot;
   RETURN user
 `</span>;
-<span class="hljs-comment">// e.g. if untrustedValue is '" || user.admin == true || "':</span>
+<span class="hljs-comment">// e.g. if untrustedValue is &#x27;&quot; || user.admin == true || &quot;&#x27;:</span>
 <span class="hljs-comment">// Query:</span>
 <span class="hljs-comment">//   FOR user IN users</span>
-<span class="hljs-comment">//   FILTER user.email == "" || user.admin == true || ""</span>
+<span class="hljs-comment">//   FILTER user.email == &quot;&quot; || user.admin == true || &quot;&quot;</span>
 <span class="hljs-comment">//   RETURN user</span>
 
 <span class="hljs-comment">// With the aql tag: GOOD! MUCH SAFER!</span>
@@ -126,7 +126,7 @@
 <span class="hljs-comment">//   value0 -&gt; untrustedValue</span></code></pre>
 								</dd>
 								<dt>example</dt>
-								<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">"some-collection"</span>);
+								<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">&quot;some-collection&quot;</span>);
 <span class="hljs-keyword">const</span> minValue = <span class="hljs-number">23</span>;
 <span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> db.query(aql<span class="hljs-string">`
   FOR d IN <span class="hljs-subst">${collection}</span>
@@ -142,15 +142,15 @@
     RETURN d
   `</span>,
   <span class="hljs-attr">bindVars</span>: {
-    <span class="hljs-string">"@collection"</span>: collection.name,
+    <span class="hljs-string">&quot;@collection&quot;</span>: collection.name,
     <span class="hljs-attr">minValue</span>: minValue
   }
 });</code></pre>
 								</dd>
 								<dt>example</dt>
-								<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">"some-collection"</span>);
-<span class="hljs-keyword">const</span> color = <span class="hljs-string">"green"</span>;
-<span class="hljs-keyword">const</span> filter = aql<span class="hljs-string">`FILTER d.color == <span class="hljs-subst">${color}</span>'`</span>;
+								<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">&quot;some-collection&quot;</span>);
+<span class="hljs-keyword">const</span> color = <span class="hljs-string">&quot;green&quot;</span>;
+<span class="hljs-keyword">const</span> filter = aql<span class="hljs-string">`FILTER d.color == <span class="hljs-subst">${color}</span>&#x27;`</span>;
 <span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> db.query(aql<span class="hljs-string">`
   FOR d IN <span class="hljs-subst">${collection}</span>
   <span class="hljs-subst">${filter}</span>
@@ -208,7 +208,7 @@
 								arrays of query fragments.</p>
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
-									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> users = db.collection(<span class="hljs-string">"users"</span>);
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> users = db.collection(<span class="hljs-string">&quot;users&quot;</span>);
 <span class="hljs-keyword">const</span> filters = [];
 <span class="hljs-keyword">if</span> (adminsOnly) filters.push(aql<span class="hljs-string">`FILTER user.admin`</span>);
 <span class="hljs-keyword">if</span> (activeOnly) filters.push(aql<span class="hljs-string">`FILTER user.active`</span>);
@@ -219,14 +219,14 @@
 `</span>);</code></pre>
 									</dd>
 									<dt>example</dt>
-									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> users = db.collection(<span class="hljs-string">"users"</span>);
-<span class="hljs-keyword">const</span> keys = [<span class="hljs-string">"jreyes"</span>, <span class="hljs-string">"ghermann"</span>];
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> users = db.collection(<span class="hljs-string">&quot;users&quot;</span>);
+<span class="hljs-keyword">const</span> keys = [<span class="hljs-string">&quot;jreyes&quot;</span>, <span class="hljs-string">&quot;ghermann&quot;</span>];
 
 <span class="hljs-comment">// BAD! NEEDLESSLY COMPLEX!</span>
 <span class="hljs-keyword">const</span> docs = keys.map(<span class="hljs-function"><span class="hljs-params">key</span> =&gt;</span> aql<span class="hljs-string">`DOCUMENT(<span class="hljs-subst">${users}</span>, <span class="hljs-subst">${key}</span>`</span>));
 <span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> db.query(aql<span class="hljs-string">`
   FOR user IN [
-    <span class="hljs-subst">${aql.join(docs, <span class="hljs-string">", "</span>)}</span>
+    <span class="hljs-subst">${aql.join(docs, <span class="hljs-string">&quot;, &quot;</span>)}</span>
   ]
   RETURN user
 `</span>);
@@ -236,9 +236,9 @@
 <span class="hljs-comment">//   ]</span>
 <span class="hljs-comment">//   RETURN user</span>
 <span class="hljs-comment">// Bind parameters:</span>
-<span class="hljs-comment">//   @value0 -&gt; "users"</span>
-<span class="hljs-comment">//   value1 -&gt; "jreyes"</span>
-<span class="hljs-comment">//   value2 -&gt; "ghermann"</span>
+<span class="hljs-comment">//   @value0 -&gt; &quot;users&quot;</span>
+<span class="hljs-comment">//   value1 -&gt; &quot;jreyes&quot;</span>
+<span class="hljs-comment">//   value2 -&gt; &quot;ghermann&quot;</span>
 
 <span class="hljs-comment">// GOOD! MUCH SIMPLER!</span>
 <span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> db.query(aql<span class="hljs-string">`
@@ -251,8 +251,8 @@
 <span class="hljs-comment">//   LET user = DOCUMENT(@@value1, key)</span>
 <span class="hljs-comment">//   RETURN user</span>
 <span class="hljs-comment">// Bind parameters:</span>
-<span class="hljs-comment">//   value0 -&gt; ["jreyes", "ghermann"]</span>
-<span class="hljs-comment">//   @value1 -&gt; "users"</span></code></pre>
+<span class="hljs-comment">//   value0 -&gt; [&quot;jreyes&quot;, &quot;ghermann&quot;]</span>
+<span class="hljs-comment">//   @value1 -&gt; &quot;users&quot;</span></code></pre>
 									</dd>
 								</dl>
 							</div>
@@ -302,14 +302,14 @@
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
 									<dd><pre><code class="language-js"><span class="hljs-comment">// BAD! DO NOT DO THIS!</span>
-<span class="hljs-keyword">const</span> sortDirection = aql.literal(<span class="hljs-string">'ASC'</span>);
+<span class="hljs-keyword">const</span> sortDirection = aql.literal(<span class="hljs-string">&#x27;ASC&#x27;</span>);
 
 <span class="hljs-comment">// GOOD! DO THIS INSTEAD!</span>
 <span class="hljs-keyword">const</span> sortDirection = aql<span class="hljs-string">`ASC`</span>;</code></pre>
 									</dd>
 									<dt>example</dt>
 									<dd><pre><code class="language-js"><span class="hljs-comment">// BAD! DO NOT DO THIS!</span>
-<span class="hljs-keyword">const</span> filterColor = aql.literal(<span class="hljs-string">'FILTER d.color == "green"'</span>);
+<span class="hljs-keyword">const</span> filterColor = aql.literal(<span class="hljs-string">&#x27;FILTER d.color == &quot;green&quot;&#x27;</span>);
 <span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> db.query(aql<span class="hljs-string">`
   FOR d IN some-collection
   <span class="hljs-subst">${filterColor}</span>
@@ -317,7 +317,7 @@
 `</span>);
 
 <span class="hljs-comment">// GOOD! DO THIS INSTEAD!</span>
-<span class="hljs-keyword">const</span> color = <span class="hljs-string">"green"</span>;
+<span class="hljs-keyword">const</span> color = <span class="hljs-string">&quot;green&quot;</span>;
 <span class="hljs-keyword">const</span> filterColor = aql<span class="hljs-string">`FILTER d.color === <span class="hljs-subst">${color}</span>`</span>;
 <span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> db.query(aql<span class="hljs-string">`
   FOR d IN some-collection

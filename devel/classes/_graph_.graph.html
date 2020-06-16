@@ -493,20 +493,20 @@
 									</dd>
 									<dt>example</dt>
 									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
-<span class="hljs-keyword">const</span> graph = db.graph(<span class="hljs-string">"my-graph"</span>);
-<span class="hljs-keyword">const</span> collection = graph.edgeCollection(<span class="hljs-string">"edges"</span>).collection;
+<span class="hljs-keyword">const</span> graph = db.graph(<span class="hljs-string">&quot;my-graph&quot;</span>);
+<span class="hljs-keyword">const</span> collection = graph.edgeCollection(<span class="hljs-string">&quot;edges&quot;</span>).collection;
 <span class="hljs-keyword">await</span> collection.import([
-  [<span class="hljs-string">"_key"</span>, <span class="hljs-string">"_from"</span>, <span class="hljs-string">"_to"</span>],
-  [<span class="hljs-string">"x"</span>, <span class="hljs-string">"vertices/a"</span>, <span class="hljs-string">"vertices/b"</span>],
-  [<span class="hljs-string">"y"</span>, <span class="hljs-string">"vertices/b"</span>, <span class="hljs-string">"vertices/c"</span>],
-  [<span class="hljs-string">"z"</span>, <span class="hljs-string">"vertices/c"</span>, <span class="hljs-string">"vertices/d"</span>],
+  [<span class="hljs-string">&quot;_key&quot;</span>, <span class="hljs-string">&quot;_from&quot;</span>, <span class="hljs-string">&quot;_to&quot;</span>],
+  [<span class="hljs-string">&quot;x&quot;</span>, <span class="hljs-string">&quot;vertices/a&quot;</span>, <span class="hljs-string">&quot;vertices/b&quot;</span>],
+  [<span class="hljs-string">&quot;y&quot;</span>, <span class="hljs-string">&quot;vertices/b&quot;</span>, <span class="hljs-string">&quot;vertices/c&quot;</span>],
+  [<span class="hljs-string">&quot;z&quot;</span>, <span class="hljs-string">&quot;vertices/c&quot;</span>, <span class="hljs-string">&quot;vertices/d&quot;</span>],
 ]);
-<span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> graph.traversal(<span class="hljs-string">"vertices/a"</span>, {
-  <span class="hljs-attr">direction</span>: <span class="hljs-string">"outbound"</span>,
-  <span class="hljs-attr">init</span>: <span class="hljs-string">"result.vertices = [];"</span>,
-  <span class="hljs-attr">visitor</span>: <span class="hljs-string">"result.vertices.push(vertex._key);"</span>,
+<span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> graph.traversal(<span class="hljs-string">&quot;vertices/a&quot;</span>, {
+  <span class="hljs-attr">direction</span>: <span class="hljs-string">&quot;outbound&quot;</span>,
+  <span class="hljs-attr">init</span>: <span class="hljs-string">&quot;result.vertices = [];&quot;</span>,
+  <span class="hljs-attr">visitor</span>: <span class="hljs-string">&quot;result.vertices.push(vertex._key);&quot;</span>,
 });
-<span class="hljs-built_in">console</span>.log(result.vertices); <span class="hljs-comment">// ["a", "b", "c", "d"]</span></code></pre>
+<span class="hljs-built_in">console</span>.log(result.vertices); <span class="hljs-comment">// [&quot;a&quot;, &quot;b&quot;, &quot;c&quot;, &quot;d&quot;]</span></code></pre>
 									</dd>
 								</dl>
 							</div>

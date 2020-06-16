@@ -305,7 +305,7 @@
 									processing speed, this may result in the server discarding the cursor
 								before it is fully depleted.</p>
 								<p>See also:
-								<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/flatMap " class="external"> <code>Array.prototype.flatMap</code></a>.</p>
+								<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/flatMap" class="external"><code>Array.prototype.flatMap</code></a>.</p>
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
 									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> cursor = <span class="hljs-keyword">await</span> db.query(aql<span class="hljs-string">`FOR x IN 1..5 RETURN x`</span>);
@@ -395,7 +395,7 @@
 									processing speed, this may result in the server discarding the cursor
 								before it is fully depleted.</p>
 								<p>See also:
-								<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach " class="external"> <code>Array.prototype.forEach</code></a>.</p>
+								<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach" class="external"><code>Array.prototype.forEach</code></a>.</p>
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
 									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> cursor = <span class="hljs-keyword">await</span> db.query(aql<span class="hljs-string">`FOR x IN 1..5 RETURN x`</span>);
@@ -508,7 +508,7 @@
 									<a href="_cursor_.arraycursor.html#foreach">ArrayCursor.forEach</a>, <a href="_cursor_.arraycursor.html#reduce">ArrayCursor.reduce</a> or
 								<a href="_cursor_.arraycursor.html#flatmap">ArrayCursor.flatMap</a> instead.</p>
 								<p>See also:
-								<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map " class="external"> <code>Array.prototype.map</code></a>.</p>
+								<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map" class="external"><code>Array.prototype.map</code></a>.</p>
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
 									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> cursor = <span class="hljs-keyword">await</span> db.query(aql<span class="hljs-string">`FOR x IN 1..5 RETURN x`</span>);
@@ -661,7 +661,7 @@
 									processing speed, this may result in the server discarding the cursor
 								before it is fully depleted.</p>
 								<p>See also:
-								<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reduce " class="external"> <code>Array.prototype.reduce</code></a>.</p>
+								<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reduce" class="external"><code>Array.prototype.reduce</code></a>.</p>
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
 									<dd><pre><code class="language-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">largestOfTwo</span>(<span class="hljs-params">one, two</span>) </span>{
@@ -678,7 +678,7 @@
 									<dd><pre><code class="language-js"><span class="hljs-comment">// BAD! NEEDLESSLY COMPLEX!</span>
 <span class="hljs-keyword">const</span> cursor = <span class="hljs-keyword">await</span> db.query(aql<span class="hljs-string">`FOR x IN 1..5 RETURN x`</span>);
 <span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> cursor.reduce(<span class="hljs-function">(<span class="hljs-params">accumulator, currentValue</span>) =&gt;</span> {
-  accumulator[currentValue % <span class="hljs-number">2</span> === <span class="hljs-number">0</span> ? <span class="hljs-string">"even"</span> : <span class="hljs-string">"odd"</span>].push(currentValue);
+  accumulator[currentValue % <span class="hljs-number">2</span> === <span class="hljs-number">0</span> ? <span class="hljs-string">&quot;even&quot;</span> : <span class="hljs-string">&quot;odd&quot;</span>].push(currentValue);
   <span class="hljs-keyword">return</span> accumulator;
 }, { <span class="hljs-attr">odd</span>: [], <span class="hljs-attr">even</span>: [] });
 <span class="hljs-built_in">console</span>.log(result); <span class="hljs-comment">// { odd: [1, 3, 5], even: [2, 4] }</span>
@@ -766,7 +766,7 @@
 									processing speed, this may result in the server discarding the cursor
 								before it is fully depleted.</p>
 								<p>See also:
-								<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reduce " class="external"> <code>Array.prototype.reduce</code></a>.</p>
+								<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reduce" class="external"><code>Array.prototype.reduce</code></a>.</p>
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
 									<dd><pre><code class="language-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">largestOfTwo</span>(<span class="hljs-params">one, two</span>) </span>{
