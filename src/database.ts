@@ -1817,11 +1817,11 @@ export class Database {
    * @example
    * ```js
    * const db = new Database();
-   * const view = await db.createArangoSearchView("potatoes");
+   * const view = await db.createView("potatoes");
    * // the ArangoSearch View "potatoes" now exists
    * ```
    */
-  async createArangoSearchView(
+  async createView(
     viewName: string,
     options?: ArangoSearchViewPropertiesOptions
   ): Promise<ArangoSearchView> {

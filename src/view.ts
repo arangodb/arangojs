@@ -351,7 +351,7 @@ export class View<
   /**
    * Creates a View with the given `options` and the instance's name.
    *
-   * See also {@link Database.createArangoSearchView}.
+   * See also {@link Database.createView}.
    */
   create(
     options?: PropertiesOptions & { type: ViewType }
