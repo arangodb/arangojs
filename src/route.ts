@@ -3,16 +3,16 @@
  * import type { Route } from "arangojs/route";
  * ```
  *
- * TODO
+ * The "route" module provides route related types and interfaces for TypeScript.
  *
  * @packageDocumentation
  */
-import { Headers, Params } from "./connection";
+import { Headers, Params, RequestOptions } from "./connection";
 import { Database } from "./database";
 import { ArangojsResponse } from "./lib/request";
 
 /**
- * TODO
+ * Represents an arbitrary route relative to an ArangoDB database.
  */
 export class Route {
   protected _db: Database;
@@ -32,7 +32,18 @@ export class Route {
   }
 
   /**
-   * TODO
+   * Creates a new route relative to this route that inherits any of its default
+   * HTTP headers.
+   *
+   * @param path - Path relative to this route.
+   * @param headers - Additional headers that will be sent with each request.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const foxx = db.route("/my-foxx-service");
+   * const users = foxx.route("/users");
+   * ```
    */
   route(path: string, headers?: Headers) {
     if (!path) path = "";
@@ -44,144 +55,318 @@ export class Route {
   }
 
   /**
-   * TODO
+   * Performs an arbitrary HTTP request relative to this route and returns the
+   * server response.
+   *
+   * @param options - Options for performing the request.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const foxx = db.route("/my-foxx-service");
+   * const res = await foxx.request({
+   *   method: "POST",
+   *   path: "/users",
+   *   body: {
+   *     username: "admin",
+   *     password: "hunter2"
+   *   }
+   * });
+   * ```
    */
-  request({ method, path, headers = {}, ...options }: any) {
-    if (!path) options.path = "";
-    else if (this._path && path.charAt(0) !== "/") options.path = `/${path}`;
-    else options.path = path;
-    options.basePath = this._path;
-    options.headers = { ...this._headers, ...headers };
-    options.method = method ? method.toUpperCase() : "GET";
-    return this._db.request(options);
-  }
-
-  protected _request1(method: string, ...args: any[]) {
-    let path: string = "";
-    let qs: Params | undefined;
-    let headers: Headers | undefined;
-    if (args[0] === undefined || typeof args[0] === "string") {
-      path = args.shift();
-    }
-    if (args[0] === undefined || typeof args[0] === "object") {
-      qs = args.shift();
-    }
-    if (args[0] === undefined || typeof args[0] === "object") {
-      headers = args.shift();
-    }
-    return this.request({ method, path, qs, headers });
-  }
-
-  protected _request2(method: string, ...args: any[]) {
-    let path: string = "";
-    let body: any = undefined;
-    let qs: Params | undefined;
-    let headers: Headers | undefined;
-    if (args[0] === undefined || typeof args[0] === "string") {
-      path = args.shift();
-    }
-    body = args.shift();
-    if (args[0] === undefined || typeof args[0] === "object") {
-      qs = args.shift();
-    }
-    if (args[0] === undefined || typeof args[0] === "object") {
-      headers = args.shift();
-    }
-    return this.request({ method, path, body, qs, headers });
+  request(options: RequestOptions) {
+    const opts = { ...options };
+    if (!opts.path || opts.path === "/") opts.path = "";
+    else if (!this._path || opts.path.charAt(0) === "/") opts.path = opts.path;
+    else opts.path = `/${opts.path}`;
+    opts.basePath = this._path;
+    opts.headers = { ...this._headers, ...opts.headers };
+    opts.method = opts.method ? opts.method.toUpperCase() : "GET";
+    return this._db.request(opts);
   }
 
   /**
-   * TODO
+   * Performs a DELETE request against the given path relative to this route
+   * and returns the server response.
+   *
+   * @param path - Path relative to this route.
+   * @param qs - Query string parameters for this request.
+   * @param headers - Additional headers to send with this request.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const foxx = db.route("/my-foxx-service");
+   * const res = await foxx.delete("/users/admin");
+   * ```
    */
   delete(
-    path?: string,
-    qs?: Params,
+    path: string,
+    qs?: string | Params,
     headers?: Headers
   ): Promise<ArangojsResponse>;
   /**
-   * TODO
+   * Performs a DELETE request against the given path relative to this route
+   * and returns the server response.
+   *
+   * @param qs - Query string parameters for this request.
+   * @param headers - Additional headers to send with this request.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const foxx = db.route("/my-foxx-service");
+   * const user = foxx.roue("/users/admin");
+   * const res = await user.delete();
+   * ```
    */
   delete(qs?: Params, headers?: Headers): Promise<ArangojsResponse>;
   delete(...args: any[]): Promise<ArangojsResponse> {
-    return this._request1("DELETE", ...args);
+    const path = typeof args[0] === "string" ? args.shift() : undefined;
+    const [qs, headers] = args;
+    return this.request({ method: "DELETE", path, qs, headers });
   }
 
   /**
-   * TODO
+   * Performs a GET request against the given path relative to this route
+   * and returns the server response.
+   *
+   * @param path - Path relative to this route.
+   * @param qs - Query string parameters for this request.
+   * @param headers - Additional headers to send with this request.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const foxx = db.route("/my-foxx-service");
+   * const res = await foxx.get("/users", { offset: 10, limit: 5 });
+   * ```
    */
-  get(path?: string, qs?: Params, headers?: Headers): Promise<ArangojsResponse>;
+  get(
+    path: string,
+    qs?: string | Params,
+    headers?: Headers
+  ): Promise<ArangojsResponse>;
   /**
-   * TODO
+   * Performs a GET request against the given path relative to this route
+   * and returns the server response.
+   *
+   * @param qs - Query string parameters for this request.
+   * @param headers - Additional headers to send with this request.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const foxx = db.route("/my-foxx-service");
+   * const users = foxx.route("/users");
+   * const res = await users.get({ offset: 10, limit: 5 });
+   * ```
    */
   get(qs?: Params, headers?: Headers): Promise<ArangojsResponse>;
   get(...args: any[]): Promise<ArangojsResponse> {
-    return this._request1("GET", ...args);
+    const path = typeof args[0] === "string" ? args.shift() : undefined;
+    const [qs, headers] = args;
+    return this.request({ method: "GET", path, qs, headers });
   }
 
   /**
-   * TODO
+   * Performs a HEAD request against the given path relative to this route
+   * and returns the server response.
+   *
+   * @param path - Path relative to this route.
+   * @param qs - Query string parameters for this request.
+   * @param headers - Additional headers to send with this request.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const foxx = db.route("/my-foxx-service");
+   * const res = await foxx.head("/users", { offset: 10, limit: 5 });
+   * ```
    */
   head(
-    path?: string,
-    qs?: Params,
+    path: string,
+    qs?: string | Params,
     headers?: Headers
   ): Promise<ArangojsResponse>;
   /**
-   * TODO
+   * Performs a HEAD request against the given path relative to this route
+   * and returns the server response.
+   *
+   * @param qs - Query string parameters for this request.
+   * @param headers - Additional headers to send with this request.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const foxx = db.route("/my-foxx-service");
+   * const users = foxx.route("/users");
+   * const res = await users.head({ offset: 10, limit: 5 });
+   * ```
    */
   head(qs?: Params, headers?: Headers): Promise<ArangojsResponse>;
   head(...args: any[]): Promise<ArangojsResponse> {
-    return this._request1("HEAD", ...args);
+    const path = typeof args[0] === "string" ? args.shift() : undefined;
+    const [qs, headers] = args;
+    return this.request({ method: "HEAD", path, qs, headers });
   }
 
   /**
-   * TODO
+   * Performs a PATCH request against the given path relative to this route
+   * and returns the server response.
+   *
+   * @param path - Path relative to this route.
+   * @param body - Body of the request object.
+   * @param qs - Query string parameters for this request.
+   * @param headers - Additional headers to send with this request.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const foxx = db.route("/my-foxx-service");
+   * const res = await foxx.patch("/users/admin", { password: "admin" });
+   * ```
    */
   patch(
-    path?: string,
+    path: string,
     body?: any,
-    qs?: Params,
+    qs?: string | Params,
     headers?: Headers
   ): Promise<ArangojsResponse>;
   /**
-   * TODO
+   * Performs a PATCH request against the given path relative to this route
+   * and returns the server response.
+   *
+   * **Note**: `body` must not be a `string`.
+   *
+   * @param body - Body of the request object. Must not be a string.
+   * @param qs - Query string parameters for this request.
+   * @param headers - Additional headers to send with this request.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const foxx = db.route("/my-foxx-service");
+   * const user = foxx.route("/users/admin")
+   * const res = await user.patch({ password: "admin" });
+   * ```
    */
-  patch(body?: any, qs?: Params, headers?: Headers): Promise<ArangojsResponse>;
+  patch(
+    body?: any,
+    qs?: string | Params,
+    headers?: Headers
+  ): Promise<ArangojsResponse>;
   patch(...args: any[]): Promise<ArangojsResponse> {
-    return this._request2("PATCH", ...args);
+    const path = typeof args[0] === "string" ? args.shift() : undefined;
+    const [body, qs, headers] = args;
+    return this.request({ method: "DELETE", path, body, qs, headers });
   }
 
   /**
-   * TODO
+   * Performs a POST request against the given path relative to this route
+   * and returns the server response.
+   *
+   * @param path - Path relative to this route.
+   * @param body - Body of the request object.
+   * @param qs - Query string parameters for this request.
+   * @param headers - Additional headers to send with this request.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const foxx = db.route("/my-foxx-service");
+   * const res = await foxx.post("/users", {
+   *   username: "admin",
+   *   password: "hunter2"
+   * });
+   * ```
    */
   post(
-    path?: string,
+    path: string,
     body?: any,
-    qs?: Params,
+    qs?: string | Params,
     headers?: Headers
   ): Promise<ArangojsResponse>;
   /**
-   * TODO
+   * Performs a POST request against the given path relative to this route
+   * and returns the server response.
+   *
+   * **Note**: `body` must not be a `string`.
+   *
+   * @param body - Body of the request object. Must not be a string.
+   * @param qs - Query string parameters for this request.
+   * @param headers - Additional headers to send with this request.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const foxx = db.route("/my-foxx-service");
+   * const users = foxx.route("/users");
+   * const res = await users.post({
+   *   username: "admin",
+   *   password: "hunter2"
+   * });
+   * ```
    */
-  post(body?: any, qs?: Params, headers?: Headers): Promise<ArangojsResponse>;
+  post(
+    body?: any,
+    qs?: string | Params,
+    headers?: Headers
+  ): Promise<ArangojsResponse>;
   post(...args: any[]): Promise<ArangojsResponse> {
-    return this._request2("POST", ...args);
+    const path = typeof args[0] === "string" ? args.shift() : undefined;
+    const [body, qs, headers] = args;
+    return this.request({ method: "POST", path, body, qs, headers });
   }
 
   /**
-   * TODO
+   * Performs a PUT request against the given path relative to this route
+   * and returns the server response.
+   *
+   * @param path - Path relative to this route.
+   * @param body - Body of the request object.
+   * @param qs - Query string parameters for this request.
+   * @param headers - Additional headers to send with this request.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const foxx = db.route("/my-foxx-service");
+   * const res = await foxx.put("/users/admin/password", { password: "admin" });
+   * ```
    */
   put(
-    path?: string,
+    path: string,
     body?: any,
-    qs?: Params,
+    qs?: string | Params,
     headers?: Headers
   ): Promise<ArangojsResponse>;
   /**
-   * TODO
+   * Performs a PUT request against the given path relative to this route
+   * and returns the server response.
+   *
+   * **Note**: `body` must not be a `string`.
+   *
+   * @param body - Body of the request object. Must not be a string.
+   * @param qs - Query string parameters for this request.
+   * @param headers - Additional headers to send with this request.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const foxx = db.route("/my-foxx-service");
+   * const password = foxx.route("/users/admin/password");
+   * const res = await password.put({ password: "admin" });
+   * ```
    */
-  put(body?: any, qs?: Params, headers?: Headers): Promise<ArangojsResponse>;
+  put(
+    body?: any,
+    qs?: string | Params,
+    headers?: Headers
+  ): Promise<ArangojsResponse>;
   put(...args: any[]): Promise<ArangojsResponse> {
-    return this._request2("PUT", ...args);
+    const path = typeof args[0] === "string" ? args.shift() : undefined;
+    const [body, qs, headers] = args;
+    return this.request({ method: "PUT", path, body, qs, headers });
   }
 }
