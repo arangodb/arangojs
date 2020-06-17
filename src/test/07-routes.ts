@@ -151,7 +151,7 @@ describe("Route API", function () {
   });
   describe("route.request", () => {
     it("should be executed using the route path", async () => {
-      const res = await db.route("/_api/version").request("get");
+      const res = await db.route("/_api/version").request({ method: "GET" });
       expect(res).to.have.property("body");
       const body = res.body;
       expect(body).to.have.property("version");

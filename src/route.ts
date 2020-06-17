@@ -74,7 +74,7 @@ export class Route {
    * });
    * ```
    */
-  request(options: RequestOptions) {
+  request(options?: RequestOptions) {
     const opts = { ...options };
     if (!opts.path || opts.path === "/") opts.path = "";
     else if (!this._path || opts.path.charAt(0) === "/") opts.path = opts.path;
