@@ -111,12 +111,14 @@ export type ShardingStrategy =
   | "enterprise-smart-edge-compat";
 
 /**
- * TODO
+ * Type of document reference.
+ *
+ * See {@link Collection.list}.
  *
  * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
  * replaced with AQL queries.
  */
-export type SimpleQueryAllKeys = "id" | "key" | "path";
+export type SimpleQueryListType = "id" | "key" | "path";
 
 /**
  * TODO
@@ -1211,61 +1213,69 @@ export type CollectionEdgesResult<T extends object = any> = {
 };
 
 /**
- * TODO
+ * Result of removing documents by an example.
+ *
+ * See {@link Collection.removeByExample}.
  *
  * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
  * replaced with AQL queries.
  */
 export type SimpleQueryRemoveByExampleResult = {
   /**
-   * TODO
+   * Number of documents removed.
    */
   deleted: number;
 };
 
 /**
- * TODO
+ * Result of replacing documents by an example.
+ *
+ * See {@link Collection.replaceByExample}.
  *
  * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
  * replaced with AQL queries.
  */
 export type SimpleQueryReplaceByExampleResult = {
   /**
-   * TODO
+   * Number of documents replaced.
    */
   replaced: number;
 };
 
 /**
- * TODO
+ * Result of updating documents by an example.
+ *
+ * See {@link Collection.updateByExample}.
  *
  * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
  * replaced with AQL queries.
  */
 export type SimpleQueryUpdateByExampleResult = {
   /**
-   * TODO
+   * Number of documents updated.
    */
   updated: number;
 };
 
 /**
- * TODO
+ * Result of removing documents by keys.
+ *
+ * See {@link Collection.removeByKeys}.
  *
  * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
  * replaced with AQL queries.
  */
 export type SimpleQueryRemoveByKeysResult<T extends object = any> = {
   /**
-   * TODO
+   * Number of documents removed.
    */
   removed: number;
   /**
-   * TODO
+   * Number of documents not removed.
    */
   ignored: number;
   /**
-   * TODO
+   * Documents that have been removed.
    */
   old?: DocumentMetadata[] | Document<T>[];
 };
@@ -1456,7 +1466,7 @@ export interface DocumentCollection<T extends object = any>
   /**
    * Retrieves the collection checksum.
    *
-   * @param options - TODO
+   * @param options - Options for retrieving the checksum.
    *
    * @example
    * ```js
@@ -2064,15 +2074,19 @@ export interface DocumentCollection<T extends object = any>
   //#region simple queries
 
   /**
-   * TODO
+   * Retrives a list of references for all documents in the collection.
+   *
+   * @param type - The type of document reference to retrieve.
    *
    * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
    * replaced with AQL queries.
    */
-  list(type?: SimpleQueryAllKeys): Promise<ArrayCursor<string>>;
+  list(type?: SimpleQueryListType): Promise<ArrayCursor<string>>;
 
   /**
-   * TODO
+   * Retrieves all documents in the collection.
+   *
+   * @param options - Options for retrieving the documents.
    *
    * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
    * replaced with AQL queries.
@@ -2080,7 +2094,7 @@ export interface DocumentCollection<T extends object = any>
   all(options?: SimpleQueryAllOptions): Promise<ArrayCursor<Document<T>>>;
 
   /**
-   * TODO
+   * Retrieves a random document from the collection.
    *
    * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
    * replaced with AQL queries.
@@ -2088,7 +2102,10 @@ export interface DocumentCollection<T extends object = any>
   any(): Promise<Document<T>>;
 
   /**
-   * TODO
+   * Retrieves all documents in the collection matching the given example.
+   *
+   * @param example - An object representing an example for documents.
+   * @param options - Options for retrieving the documents.
    *
    * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
    * replaced with AQL queries.
@@ -2099,7 +2116,9 @@ export interface DocumentCollection<T extends object = any>
   ): Promise<ArrayCursor<Document<T>>>;
 
   /**
-   * TODO
+   * Retrieves a single document in he collection matching the given example.
+   *
+   * @param example - An object representing an example for the document.
    *
    * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
    * replaced with AQL queries.
@@ -2107,7 +2126,10 @@ export interface DocumentCollection<T extends object = any>
   firstExample(example: Partial<DocumentData<T>>): Promise<Document<T>>;
 
   /**
-   * TODO
+   * Removes all documents in the collection matching the given example.
+   *
+   * @param example - An object representing an example for the document.
+   * @param options - Options for removing the documents.
    *
    * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
    * replaced with AQL queries.
@@ -2118,7 +2140,11 @@ export interface DocumentCollection<T extends object = any>
   ): Promise<ArangoResponseMetadata & SimpleQueryRemoveByExampleResult>;
 
   /**
-   * TODO
+   * Replaces all documents in the collection matching the given example.
+   *
+   * @param example - An object representing an example for the documents.
+   * @param newData - Document data to replace the matching documents with.
+   * @param options - Options for replacing the documents.
    *
    * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
    * replaced with AQL queries.
@@ -2130,7 +2156,11 @@ export interface DocumentCollection<T extends object = any>
   ): Promise<ArangoResponseMetadata & SimpleQueryReplaceByExampleResult>;
 
   /**
-   * TODO
+   * Updates all documents in the collection matching the given example.
+   *
+   * @param example - An object representing an example for the documents.
+   * @param newData - Document data to update the matching documents with.
+   * @param options - Options for updating the documents.
    *
    * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
    * replaced with AQL queries.
@@ -2142,7 +2172,9 @@ export interface DocumentCollection<T extends object = any>
   ): Promise<ArangoResponseMetadata & SimpleQueryUpdateByExampleResult>;
 
   /**
-   * TODO
+   * Retrieves all documents matching the given document keys.
+   *
+   * @param keys - An array of document keys to look up.
    *
    * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
    * replaced with AQL queries.
@@ -2150,7 +2182,10 @@ export interface DocumentCollection<T extends object = any>
   lookupByKeys(keys: string[]): Promise<Document<T>[]>;
 
   /**
-   * TODO
+   * Removes all documents matching the given document keys.
+   *
+   * @param keys - An array of document keys to remove.
+   * @param options - Options for removing the documents.
    *
    * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
    * replaced with AQL queries.
@@ -2161,7 +2196,11 @@ export interface DocumentCollection<T extends object = any>
   ): Promise<ArangoResponseMetadata & SimpleQueryRemoveByKeysResult<T>>;
 
   /**
-   * TODO
+   * Performs a fulltext query in the given `attribute` on the collection.
+   *
+   * @param attribute - Name of the field to search.
+   * @param query - Fulltext query string to search for.
+   * @param options - Options for performing the fulltext query.
    *
    * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
    * replaced with AQL queries.
@@ -2768,7 +2807,9 @@ export interface EdgeCollection<T extends object = any>
   //#region simple queries
 
   /**
-   * TODO
+   * Retrieves all documents in the collection.
+   *
+   * @param options - Options for retrieving the documents.
    *
    * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
    * replaced with AQL queries.
@@ -2776,7 +2817,7 @@ export interface EdgeCollection<T extends object = any>
   all(options?: SimpleQueryAllOptions): Promise<ArrayCursor<Edge<T>>>;
 
   /**
-   * TODO
+   * Retrieves a random document from the collection.
    *
    * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
    * replaced with AQL queries.
@@ -2784,7 +2825,10 @@ export interface EdgeCollection<T extends object = any>
   any(): Promise<Edge<T>>;
 
   /**
-   * TODO
+   * Retrieves all documents in the collection matching the given example.
+   *
+   * @param example - An object representing an example for documents.
+   * @param options - Options for retrieving the documents.
    *
    * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
    * replaced with AQL queries.
@@ -2795,7 +2839,9 @@ export interface EdgeCollection<T extends object = any>
   ): Promise<ArrayCursor<Edge<T>>>;
 
   /**
-   * TODO
+   * Retrieves a single document in he collection matching the given example.
+   *
+   * @param example - An object representing an example for the document.
    *
    * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
    * replaced with AQL queries.
@@ -2803,7 +2849,9 @@ export interface EdgeCollection<T extends object = any>
   firstExample(example: Partial<DocumentData<T>>): Promise<Edge<T>>;
 
   /**
-   * TODO
+   * Retrieves all documents matching the given document keys.
+   *
+   * @param keys - An array of document keys to look up.
    *
    * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
    * replaced with AQL queries.
@@ -2811,7 +2859,11 @@ export interface EdgeCollection<T extends object = any>
   lookupByKeys(keys: string[]): Promise<Edge<T>[]>;
 
   /**
-   * TODO
+   * Performs a fulltext query in the given `attribute` on the collection.
+   *
+   * @param attribute - Name of the field to search.
+   * @param query - Fulltext query string to search for.
+   * @param options - Options for performing the fulltext query.
    *
    * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
    * replaced with AQL queries.
@@ -3387,7 +3439,7 @@ export class Collection<T extends object = any>
   //#endregion
 
   //#region simple queries
-  list(type: SimpleQueryAllKeys = "id") {
+  list(type: SimpleQueryListType = "id") {
     return this._db.request(
       {
         method: "PUT",
