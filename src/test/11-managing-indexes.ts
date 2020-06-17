@@ -1,6 +1,6 @@
-import { expect } from "chai";
-import { Database } from "../arangojs";
-import { DocumentCollection } from "../collection";
+import {expect} from "chai";
+import {Database} from "../arangojs";
+import {DocumentCollection} from "../collection";
 
 const ARANGO_URL = process.env.TEST_ARANGODB_URL || "http://localhost:8529";
 const ARANGO_VERSION = Number(
@@ -9,13 +9,13 @@ const ARANGO_VERSION = Number(
 const itPre34 = ARANGO_VERSION < 30400 ? it : it.skip;
 const it34 = ARANGO_VERSION >= 30400 ? it : it.skip;
 
-describe("Managing indexes", function() {
+describe("Managing indexes", function () {
   let db: Database;
   let collection: DocumentCollection;
   const dbName = `testdb_${Date.now()}`;
   const collectionName = `collection-${Date.now()}`;
   before(async () => {
-    db = new Database({ url: ARANGO_URL, arangoVersion: ARANGO_VERSION });
+    db = new Database({url: ARANGO_URL, arangoVersion: ARANGO_VERSION});
     await db.createDatabase(dbName);
     db.useDatabase(dbName);
     collection = db.collection(collectionName);
@@ -144,4 +144,11 @@ describe("Managing indexes", function() {
       expect(indexes.filter((i: any) => i.id === index.id).length).to.equal(0);
     });
   });
+  describe("collection.loadIndexesIntoMemory", () => {
+    it("should loadIndexesIntoMemory", async () => {
+      const info = await collection.createHashIndex(["test"]);
+      const response = await collection.loadIndexesIntoMemory();
+      expect(response).to.have.property("result", true);
+    });
+  })
 });
