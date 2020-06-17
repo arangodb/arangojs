@@ -216,7 +216,7 @@
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>TODO</p>
+									<p>Retrieves all documents in the collection.</p>
 								</div>
 								<dl class="tsd-comment-tags">
 									<dt>deprecated</dt>
@@ -229,6 +229,9 @@
 							<ul class="tsd-parameters">
 								<li>
 									<h5><span class="tsd-flag ts-flagOptional">Optional</span> options: <a href="../modules/_collection_.html#simplequeryalloptions" class="tsd-signature-type">SimpleQueryAllOptions</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Options for retrieving the documents.</p>
+									</div>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../classes/_cursor_.arraycursor.html" class="tsd-signature-type">ArrayCursor</a><span class="tsd-signature-symbol">&lt;</span><a href="../modules/_documents_.html#document" class="tsd-signature-type">Document</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -247,7 +250,7 @@
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>TODO</p>
+									<p>Retrieves a random document from the collection.</p>
 								</div>
 								<dl class="tsd-comment-tags">
 									<dt>deprecated</dt>
@@ -272,7 +275,7 @@
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>TODO</p>
+									<p>Retrieves all documents in the collection matching the given example.</p>
 								</div>
 								<dl class="tsd-comment-tags">
 									<dt>deprecated</dt>
@@ -285,9 +288,15 @@
 							<ul class="tsd-parameters">
 								<li>
 									<h5>example: <span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/_documents_.html#documentdata" class="tsd-signature-type">DocumentData</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>An object representing an example for documents.</p>
+									</div>
 								</li>
 								<li>
 									<h5><span class="tsd-flag ts-flagOptional">Optional</span> options: <a href="../modules/_collection_.html#simplequerybyexampleoptions" class="tsd-signature-type">SimpleQueryByExampleOptions</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Options for retrieving the documents.</p>
+									</div>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../classes/_cursor_.arraycursor.html" class="tsd-signature-type">ArrayCursor</a><span class="tsd-signature-symbol">&lt;</span><a href="../modules/_documents_.html#document" class="tsd-signature-type">Document</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -322,7 +331,7 @@
 								<li>
 									<h5><span class="tsd-flag ts-flagOptional">Optional</span> options: <a href="../modules/_collection_.html#collectionchecksumoptions" class="tsd-signature-type">CollectionChecksumOptions</a></h5>
 									<div class="tsd-comment tsd-typography">
-										<p>TODO</p>
+										<p>Options for retrieving the checksum.</p>
 									</div>
 								</li>
 							</ul>
@@ -954,7 +963,7 @@
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>TODO</p>
+									<p>Retrieves a single document in he collection matching the given example.</p>
 								</div>
 								<dl class="tsd-comment-tags">
 									<dt>deprecated</dt>
@@ -967,6 +976,9 @@
 							<ul class="tsd-parameters">
 								<li>
 									<h5>example: <span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/_documents_.html#documentdata" class="tsd-signature-type">DocumentData</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>An object representing an example for the document.</p>
+									</div>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/_documents_.html#document" class="tsd-signature-type">Document</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -985,7 +997,7 @@
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>TODO</p>
+									<p>Performs a fulltext query in the given <code>attribute</code> on the collection.</p>
 								</div>
 								<dl class="tsd-comment-tags">
 									<dt>deprecated</dt>
@@ -998,12 +1010,21 @@
 							<ul class="tsd-parameters">
 								<li>
 									<h5>attribute: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Name of the field to search.</p>
+									</div>
 								</li>
 								<li>
 									<h5>query: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Fulltext query string to search for.</p>
+									</div>
 								</li>
 								<li>
 									<h5><span class="tsd-flag ts-flagOptional">Optional</span> options: <a href="../modules/_collection_.html#simplequeryfulltextoptions" class="tsd-signature-type">SimpleQueryFulltextOptions</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Options for performing the fulltext query.</p>
+									</div>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../classes/_cursor_.arraycursor.html" class="tsd-signature-type">ArrayCursor</a><span class="tsd-signature-symbol">&lt;</span><a href="../modules/_documents_.html#document" class="tsd-signature-type">Document</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -1270,7 +1291,7 @@
 					<a name="list" class="tsd-anchor"></a>
 					<h3>list</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">list<span class="tsd-signature-symbol">(</span>type<span class="tsd-signature-symbol">?: </span><a href="../modules/_collection_.html#simplequeryallkeys" class="tsd-signature-type">SimpleQueryAllKeys</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../classes/_cursor_.arraycursor.html" class="tsd-signature-type">ArrayCursor</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">list<span class="tsd-signature-symbol">(</span>type<span class="tsd-signature-symbol">?: </span><a href="../modules/_collection_.html#simplequerylisttype" class="tsd-signature-type">SimpleQueryListType</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../classes/_cursor_.arraycursor.html" class="tsd-signature-type">ArrayCursor</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -1278,7 +1299,7 @@
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>TODO</p>
+									<p>Retrives a list of references for all documents in the collection.</p>
 								</div>
 								<dl class="tsd-comment-tags">
 									<dt>deprecated</dt>
@@ -1290,7 +1311,10 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> type: <a href="../modules/_collection_.html#simplequeryallkeys" class="tsd-signature-type">SimpleQueryAllKeys</a></h5>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> type: <a href="../modules/_collection_.html#simplequerylisttype" class="tsd-signature-type">SimpleQueryListType</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The type of document reference to retrieve.</p>
+									</div>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../classes/_cursor_.arraycursor.html" class="tsd-signature-type">ArrayCursor</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -1405,7 +1429,7 @@
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>TODO</p>
+									<p>Retrieves all documents matching the given document keys.</p>
 								</div>
 								<dl class="tsd-comment-tags">
 									<dt>deprecated</dt>
@@ -1418,6 +1442,9 @@
 							<ul class="tsd-parameters">
 								<li>
 									<h5>keys: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>An array of document keys to look up.</p>
+									</div>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/_documents_.html#document" class="tsd-signature-type">Document</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -1617,7 +1644,7 @@
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>TODO</p>
+									<p>Removes all documents in the collection matching the given example.</p>
 								</div>
 								<dl class="tsd-comment-tags">
 									<dt>deprecated</dt>
@@ -1630,9 +1657,15 @@
 							<ul class="tsd-parameters">
 								<li>
 									<h5>example: <span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/_documents_.html#documentdata" class="tsd-signature-type">DocumentData</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>An object representing an example for the document.</p>
+									</div>
 								</li>
 								<li>
 									<h5><span class="tsd-flag ts-flagOptional">Optional</span> options: <a href="../modules/_collection_.html#simplequeryremovebyexampleoptions" class="tsd-signature-type">SimpleQueryRemoveByExampleOptions</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Options for removing the documents.</p>
+									</div>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/_connection_.html#arangoresponsemetadata" class="tsd-signature-type">ArangoResponseMetadata</a><span class="tsd-signature-symbol"> &amp; </span><a href="../modules/_collection_.html#simplequeryremovebyexampleresult" class="tsd-signature-type">SimpleQueryRemoveByExampleResult</a><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -1651,7 +1684,7 @@
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>TODO</p>
+									<p>Removes all documents matching the given document keys.</p>
 								</div>
 								<dl class="tsd-comment-tags">
 									<dt>deprecated</dt>
@@ -1664,9 +1697,15 @@
 							<ul class="tsd-parameters">
 								<li>
 									<h5>keys: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>An array of document keys to remove.</p>
+									</div>
 								</li>
 								<li>
 									<h5><span class="tsd-flag ts-flagOptional">Optional</span> options: <a href="../modules/_collection_.html#simplequeryremovebykeysoptions" class="tsd-signature-type">SimpleQueryRemoveByKeysOptions</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Options for removing the documents.</p>
+									</div>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/_connection_.html#arangoresponsemetadata" class="tsd-signature-type">ArangoResponseMetadata</a><span class="tsd-signature-symbol"> &amp; </span><a href="../modules/_collection_.html#simplequeryremovebykeysresult" class="tsd-signature-type">SimpleQueryRemoveByKeysResult</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -1836,7 +1875,7 @@
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>TODO</p>
+									<p>Replaces all documents in the collection matching the given example.</p>
 								</div>
 								<dl class="tsd-comment-tags">
 									<dt>deprecated</dt>
@@ -1849,12 +1888,21 @@
 							<ul class="tsd-parameters">
 								<li>
 									<h5>example: <span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/_documents_.html#documentdata" class="tsd-signature-type">DocumentData</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>An object representing an example for the documents.</p>
+									</div>
 								</li>
 								<li>
 									<h5>newData: <a href="../modules/_documents_.html#documentdata" class="tsd-signature-type">DocumentData</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Document data to replace the matching documents with.</p>
+									</div>
 								</li>
 								<li>
 									<h5><span class="tsd-flag ts-flagOptional">Optional</span> options: <a href="../modules/_collection_.html#simplequeryreplacebyexampleoptions" class="tsd-signature-type">SimpleQueryReplaceByExampleOptions</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Options for replacing the documents.</p>
+									</div>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/_connection_.html#arangoresponsemetadata" class="tsd-signature-type">ArangoResponseMetadata</a><span class="tsd-signature-symbol"> &amp; </span><a href="../modules/_collection_.html#simplequeryreplacebyexampleresult" class="tsd-signature-type">SimpleQueryReplaceByExampleResult</a><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -2183,7 +2231,7 @@
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>TODO</p>
+									<p>Updates all documents in the collection matching the given example.</p>
 								</div>
 								<dl class="tsd-comment-tags">
 									<dt>deprecated</dt>
@@ -2196,12 +2244,21 @@
 							<ul class="tsd-parameters">
 								<li>
 									<h5>example: <span class="tsd-signature-type">Partial</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/_documents_.html#documentdata" class="tsd-signature-type">DocumentData</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>An object representing an example for the documents.</p>
+									</div>
 								</li>
 								<li>
 									<h5>newData: <a href="../modules/_util_types_.html#patch" class="tsd-signature-type">Patch</a><span class="tsd-signature-symbol">&lt;</span><a href="../modules/_documents_.html#documentdata" class="tsd-signature-type">DocumentData</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Document data to update the matching documents with.</p>
+									</div>
 								</li>
 								<li>
 									<h5><span class="tsd-flag ts-flagOptional">Optional</span> options: <a href="../modules/_collection_.html#simplequeryupdatebyexampleoptions" class="tsd-signature-type">SimpleQueryUpdateByExampleOptions</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Options for updating the documents.</p>
+									</div>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/_connection_.html#arangoresponsemetadata" class="tsd-signature-type">ArangoResponseMetadata</a><span class="tsd-signature-symbol"> &amp; </span><a href="../modules/_collection_.html#simplequeryupdatebyexampleresult" class="tsd-signature-type">SimpleQueryUpdateByExampleResult</a><span class="tsd-signature-symbol">&gt;</span></h4>
