@@ -1,6 +1,6 @@
-import {Connection, RequestOptions} from "./connection";
-import {ArrayCursor} from "./cursor";
-import {isArangoError} from "./error";
+import { Connection, RequestOptions } from "./connection";
+import { ArrayCursor } from "./cursor";
+import { isArangoError } from "./error";
 import {
   CollectionChecksum,
   CollectionFigures,
@@ -27,15 +27,15 @@ export enum CollectionType {
 export type DocumentHandle =
   | string
   | {
-    _key?: string;
-    _id?: string;
-  };
+      _key?: string;
+      _id?: string;
+    };
 
 export type IndexHandle =
   | string
   | {
-    id?: string;
-  };
+      id?: string;
+    };
 
 export interface ImportOptions {
   type?: null | "auto" | "documents" | "array";
@@ -131,7 +131,7 @@ export abstract class BaseCollection<T extends object = any>
 
   protected _get(path: string, qs?: any) {
     return this._connection.request(
-      {path: `/_api/collection/${this.name}/${path}`, qs},
+      { path: `/_api/collection/${this.name}/${path}`, qs },
       res => res.body
     );
   }
@@ -149,7 +149,7 @@ export abstract class BaseCollection<T extends object = any>
 
   get() {
     return this._connection.request(
-      {path: `/_api/collection/${this.name}`},
+      { path: `/_api/collection/${this.name}` },
       res => res.body
     );
   }
@@ -217,7 +217,7 @@ export abstract class BaseCollection<T extends object = any>
   load(count?: boolean) {
     return this._put(
       "load",
-      typeof count === "boolean" ? {count: count} : undefined
+      typeof count === "boolean" ? { count: count } : undefined
     );
   }
 
@@ -234,7 +234,7 @@ export abstract class BaseCollection<T extends object = any>
       {
         method: "PUT",
         path: `/_api/collection/${this.name}/rename`,
-        body: {name}
+        body: { name }
       },
       res => res.body
     );
@@ -303,11 +303,11 @@ export abstract class BaseCollection<T extends object = any>
     opts: boolean | DocumentReadOptions = {}
   ): Promise<Document<T>> {
     if (typeof opts === "boolean") {
-      opts = {graceful: opts};
+      opts = { graceful: opts };
     }
-    const {allowDirtyRead = undefined, graceful = false} = opts;
+    const { allowDirtyRead = undefined, graceful = false } = opts;
     const result = this._connection.request(
-      {path: `/_api/${this._documentPath(documentHandle)}`, allowDirtyRead},
+      { path: `/_api/${this._documentPath(documentHandle)}`, allowDirtyRead },
       res => res.body
     );
     if (!graceful) return result;
@@ -324,13 +324,13 @@ export abstract class BaseCollection<T extends object = any>
     newValue: Object | Array<Object>,
     opts: ReplaceOptions = {}
   ) {
-    const headers: {[key: string]: string} = {};
+    const headers: { [key: string]: string } = {};
     if (typeof opts === "string") {
-      opts = {rev: opts};
+      opts = { rev: opts };
     }
     if (opts.rev && this._connection.arangoMajor >= 3) {
       let rev: string | undefined;
-      ({rev, ...opts} = opts);
+      ({ rev, ...opts } = opts);
       headers["if-match"] = rev!;
     }
     return this._connection.request(
@@ -350,13 +350,13 @@ export abstract class BaseCollection<T extends object = any>
     newValue: Object | Array<Object>,
     opts: UpdateOptions = {}
   ) {
-    const headers: {[key: string]: string} = {};
+    const headers: { [key: string]: string } = {};
     if (typeof opts === "string") {
-      opts = {rev: opts};
+      opts = { rev: opts };
     }
     if (opts.rev && this._connection.arangoMajor >= 3) {
       let rev: string | undefined;
-      ({rev, ...opts} = opts);
+      ({ rev, ...opts } = opts);
       headers["if-match"] = rev!;
     }
     return this._connection.request(
@@ -384,13 +384,13 @@ export abstract class BaseCollection<T extends object = any>
   }
 
   remove(documentHandle: DocumentHandle, opts: RemoveOptions = {}) {
-    const headers: {[key: string]: string} = {};
+    const headers: { [key: string]: string } = {};
     if (typeof opts === "string") {
-      opts = {rev: opts};
+      opts = { rev: opts };
     }
     if (opts.rev && this._connection.arangoMajor >= 3) {
       let rev: string | undefined;
-      ({rev, ...opts} = opts);
+      ({ rev, ...opts } = opts);
       headers["if-match"] = rev!;
     }
     return this._connection.request(
@@ -409,7 +409,7 @@ export abstract class BaseCollection<T extends object = any>
       return this._connection.request(
         {
           path: "/_api/document",
-          qs: {type, collection: this.name}
+          qs: { type, collection: this.name }
         },
         res => res.body.documents
       );
@@ -419,7 +419,7 @@ export abstract class BaseCollection<T extends object = any>
       {
         method: "PUT",
         path: "/_api/simple/all-keys",
-        body: {type, collection: this.name}
+        body: { type, collection: this.name }
       },
       res => res.body.result
     );
@@ -444,7 +444,7 @@ export abstract class BaseCollection<T extends object = any>
       {
         method: "PUT",
         path: "/_api/simple/any",
-        body: {collection: this.name}
+        body: { collection: this.name }
       },
       res => res.body.document
     );
@@ -452,7 +452,7 @@ export abstract class BaseCollection<T extends object = any>
 
   first(opts?: any) {
     if (typeof opts === "number") {
-      opts = {count: opts};
+      opts = { count: opts };
     }
     return this._connection.request(
       {
@@ -469,7 +469,7 @@ export abstract class BaseCollection<T extends object = any>
 
   last(opts?: any) {
     if (typeof opts === "number") {
-      opts = {count: opts};
+      opts = { count: opts };
     }
     return this._connection.request(
       {
@@ -531,7 +531,7 @@ export abstract class BaseCollection<T extends object = any>
   replaceByExample(
     example: any,
     newValue: any,
-    opts?: {waitForSync?: boolean; limit?: number}
+    opts?: { waitForSync?: boolean; limit?: number }
   ) {
     return this._connection.request(
       {
@@ -595,7 +595,7 @@ export abstract class BaseCollection<T extends object = any>
 
   import(
     data: Buffer | Blob | string | any[],
-    {type = "auto", ...opts}: ImportOptions = {}
+    { type = "auto", ...opts }: ImportOptions = {}
   ): Promise<ImportResult> {
     if (Array.isArray(data)) {
       data = data.map(line => JSON.stringify(line)).join("\r\n") + "\r\n";
@@ -620,7 +620,7 @@ export abstract class BaseCollection<T extends object = any>
     return this._connection.request(
       {
         path: "/_api/index",
-        qs: {collection: this.name}
+        qs: { collection: this.name }
       },
       res => res.body.indexes
     );
@@ -628,7 +628,7 @@ export abstract class BaseCollection<T extends object = any>
 
   index(indexHandle: IndexHandle) {
     return this._connection.request(
-      {path: `/_api/index/${this._indexHandle(indexHandle)}`},
+      { path: `/_api/index/${this._indexHandle(indexHandle)}` },
       res => res.body
     );
   }
@@ -639,7 +639,7 @@ export abstract class BaseCollection<T extends object = any>
         method: "POST",
         path: "/_api/index",
         body: details,
-        qs: {collection: this.name}
+        qs: { collection: this.name }
       },
       res => res.body
     );
@@ -662,14 +662,14 @@ export abstract class BaseCollection<T extends object = any>
 
   createCapConstraint(opts?: any) {
     if (typeof opts === "number") {
-      opts = {size: opts};
+      opts = { size: opts };
     }
     return this._connection.request(
       {
         method: "POST",
         path: "/_api/index",
-        body: {...opts, type: "cap"},
-        qs: {collection: this.name}
+        body: { ...opts, type: "cap" },
+        qs: { collection: this.name }
       },
       res => res.body
     );
@@ -680,14 +680,14 @@ export abstract class BaseCollection<T extends object = any>
       fields = [fields];
     }
     if (typeof opts === "boolean") {
-      opts = {unique: opts};
+      opts = { unique: opts };
     }
     return this._connection.request(
       {
         method: "POST",
         path: "/_api/index",
-        body: {unique: false, ...opts, type: "hash", fields: fields},
-        qs: {collection: this.name}
+        body: { unique: false, ...opts, type: "hash", fields: fields },
+        qs: { collection: this.name }
       },
       res => res.body
     );
@@ -698,14 +698,14 @@ export abstract class BaseCollection<T extends object = any>
       fields = [fields];
     }
     if (typeof opts === "boolean") {
-      opts = {unique: opts};
+      opts = { unique: opts };
     }
     return this._connection.request(
       {
         method: "POST",
         path: "/_api/index",
-        body: {unique: false, ...opts, type: "skiplist", fields: fields},
-        qs: {collection: this.name}
+        body: { unique: false, ...opts, type: "skiplist", fields: fields },
+        qs: { collection: this.name }
       },
       res => res.body
     );
@@ -716,14 +716,14 @@ export abstract class BaseCollection<T extends object = any>
       fields = [fields];
     }
     if (typeof opts === "boolean") {
-      opts = {unique: opts};
+      opts = { unique: opts };
     }
     return this._connection.request(
       {
         method: "POST",
         path: "/_api/index",
-        body: {unique: false, ...opts, type: "persistent", fields: fields},
-        qs: {collection: this.name}
+        body: { unique: false, ...opts, type: "persistent", fields: fields },
+        qs: { collection: this.name }
       },
       res => res.body
     );
@@ -737,8 +737,8 @@ export abstract class BaseCollection<T extends object = any>
       {
         method: "POST",
         path: "/_api/index",
-        body: {...opts, fields, type: "geo"},
-        qs: {collection: this.name}
+        body: { ...opts, fields, type: "geo" },
+        qs: { collection: this.name }
       },
       res => res.body
     );
@@ -752,8 +752,8 @@ export abstract class BaseCollection<T extends object = any>
       {
         method: "POST",
         path: "/_api/index",
-        body: {fields, minLength, type: "fulltext"},
-        qs: {collection: this.name}
+        body: { fields, minLength, type: "fulltext" },
+        qs: { collection: this.name }
       },
       res => res.body
     );
@@ -789,7 +789,7 @@ export abstract class BaseCollection<T extends object = any>
 
 export class DocumentCollection<T extends object = any> extends BaseCollection<
   T
-  > {
+> {
   type = CollectionType.DOCUMENT_COLLECTION;
   constructor(connection: Connection, name: string) {
     super(connection, name);
@@ -800,7 +800,7 @@ export class DocumentCollection<T extends object = any> extends BaseCollection<
     opts?: InsertOptions | boolean
   ) {
     if (typeof opts === "boolean") {
-      opts = {returnNew: opts};
+      opts = { returnNew: opts };
     }
 
     if (this._connection.arangoMajor <= 2) {
@@ -854,7 +854,7 @@ export class EdgeCollection<T extends object = any> extends BaseCollection<T> {
     opts: boolean | DocumentReadOptions = {}
   ): Promise<Edge<T>> {
     if (typeof opts === "boolean") {
-      opts = {graceful: opts};
+      opts = { graceful: opts };
     }
     return this.document(documentHandle, opts) as Promise<Edge<T>>;
   }
@@ -877,10 +877,10 @@ export class EdgeCollection<T extends object = any> extends BaseCollection<T> {
       toId = this._documentHandle(toId);
       if (Array.isArray(data)) {
         data = data.map(data =>
-          Object.assign(data, {_from: fromId, _to: toId})
+          Object.assign(data, { _from: fromId, _to: toId })
         );
       } else {
-        data = Object.assign(data, {_from: fromId, _to: toId});
+        data = Object.assign(data, { _from: fromId, _to: toId });
       }
     } else {
       if (fromIdOrOpts !== undefined) {
@@ -888,7 +888,7 @@ export class EdgeCollection<T extends object = any> extends BaseCollection<T> {
       }
     }
     if (typeof opts === "boolean") {
-      opts = {returnNew: opts};
+      opts = { returnNew: opts };
     }
     if (this._connection.arangoMajor <= 2) {
       if (Array.isArray(data)) {
