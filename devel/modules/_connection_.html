@@ -87,6 +87,7 @@
 								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="_connection_.html#headers-1" class="tsd-kind-icon">Headers</a></li>
 								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="_connection_.html#loadbalancingstrategy-1" class="tsd-kind-icon">Load<wbr>Balancing<wbr>Strategy</a></li>
 								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="_connection_.html#params" class="tsd-kind-icon">Params</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="_connection_.html#requestinterceptors" class="tsd-kind-icon">Request<wbr>Interceptors</a></li>
 								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="_connection_.html#requestoptions" class="tsd-kind-icon">Request<wbr>Options</a></li>
 								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="_connection_.html#xhroptions" class="tsd-kind-icon">Xhr<wbr>Options</a></li>
 							</ul>
@@ -190,7 +191,7 @@
 				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
 					<a name="config" class="tsd-anchor"></a>
 					<h3>Config</h3>
-					<div class="tsd-signature tsd-kind-icon">Config<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>agent<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">; </span>agentOptions<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">AgentOptions</span><span class="tsd-signature-symbol"> | </span><a href="_connection_.html#xhroptions" class="tsd-signature-type">XhrOptions</a><span class="tsd-signature-symbol">; </span>arangoVersion<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>auth<span class="tsd-signature-symbol">?: </span><a href="_connection_.html#basicauth" class="tsd-signature-type">BasicAuth</a><span class="tsd-signature-symbol"> | </span><a href="_connection_.html#bearerauth" class="tsd-signature-type">BearerAuth</a><span class="tsd-signature-symbol">; </span>databaseName<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>headers<span class="tsd-signature-symbol">?: </span><a href="_connection_.html#headers-1" class="tsd-signature-type">Headers</a><span class="tsd-signature-symbol">; </span>loadBalancingStrategy<span class="tsd-signature-symbol">?: </span><a href="_connection_.html#loadbalancingstrategy-1" class="tsd-signature-type">LoadBalancingStrategy</a><span class="tsd-signature-symbol">; </span>maxRetries<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>url<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> }</span></div>
+					<div class="tsd-signature tsd-kind-icon">Config<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>agent<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">; </span>agentOptions<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">{ </span>beforeSend<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span>xhrObject<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">; </span>maxSockets<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>timeout<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>useXdr<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span><span class="tsd-signature-symbol">; </span>withCredentials<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span><span class="tsd-signature-symbol">; </span>xhr<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">AgentOptions</span><span class="tsd-signature-symbol"> &amp; </span><a href="_connection_.html#requestinterceptors" class="tsd-signature-type">RequestInterceptors</a><span class="tsd-signature-symbol">; </span>arangoVersion<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>auth<span class="tsd-signature-symbol">?: </span><a href="_connection_.html#basicauth" class="tsd-signature-type">BasicAuth</a><span class="tsd-signature-symbol"> | </span><a href="_connection_.html#bearerauth" class="tsd-signature-type">BearerAuth</a><span class="tsd-signature-symbol">; </span>databaseName<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>headers<span class="tsd-signature-symbol">?: </span><a href="_connection_.html#headers-1" class="tsd-signature-type">Headers</a><span class="tsd-signature-symbol">; </span>loadBalancingStrategy<span class="tsd-signature-symbol">?: </span><a href="_connection_.html#loadbalancingstrategy-1" class="tsd-signature-type">LoadBalancingStrategy</a><span class="tsd-signature-symbol">; </span>maxRetries<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>url<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -215,7 +216,7 @@
 								</div>
 							</li>
 							<li class="tsd-parameter">
-								<h5><span class="tsd-flag ts-flagOptional">Optional</span> agent<wbr>Options<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">AgentOptions</span><span class="tsd-signature-symbol"> | </span><a href="_connection_.html#xhroptions" class="tsd-signature-type">XhrOptions</a></h5>
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> agent<wbr>Options<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">{ </span>beforeSend<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span>xhrObject<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">; </span>maxSockets<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>timeout<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>useXdr<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span><span class="tsd-signature-symbol">; </span>withCredentials<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span><span class="tsd-signature-symbol">; </span>xhr<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">AgentOptions</span><span class="tsd-signature-symbol"> &amp; </span><a href="_connection_.html#requestinterceptors" class="tsd-signature-type">RequestInterceptors</a></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
 										<p>Options used to create that underlying HTTP/HTTPS <code>Agent</code> (or the <code>xhr</code>
@@ -424,6 +425,57 @@
 						<ul class="tsd-parameters">
 							<li class="tsd-parameter-index-signature">
 								<h5><span class="tsd-signature-symbol">[</span>key: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]: </span><span class="tsd-signature-type">any</span></h5>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
+					<a name="requestinterceptors" class="tsd-anchor"></a>
+					<h3>Request<wbr>Interceptors</h3>
+					<div class="tsd-signature tsd-kind-icon">Request<wbr>Interceptors<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>after<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span>err<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ArangojsError</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span>, res<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">ArangojsResponse</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">; </span>before<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span>req<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ClientRequest</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> }</span></div>
+					<aside class="tsd-sources">
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Additional options for intercepting the request/response. These methods
+							are primarily intended for tracking network related metrics.</p>
+						</div>
+					</div>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter">
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> after<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span>err<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ArangojsError</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span>, res<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">ArangojsResponse</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Callback that will be invoked when the server response has been received
+										and processed or when the request has been failed without a response.</p>
+									</div>
+									<p>The originating request will be available as the <code>request</code> property
+									on either the error or response object.</p>
+									<dl class="tsd-comment-tags">
+										<dt>param</dt>
+										<dd><p>Error encountered when handling this request or <code>null</code>.</p>
+										</dd>
+										<dt>param</dt>
+										<dd><p>Response object for this request, if no error occurred.</p>
+										</dd>
+									</dl>
+								</div>
+							</li>
+							<li class="tsd-parameter">
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> before<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span>req<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ClientRequest</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Callback that will be invoked with the finished request object before it
+										is finalized. In the browser the request may already have been sent.</p>
+									</div>
+									<dl class="tsd-comment-tags">
+										<dt>param</dt>
+										<dd><p>Request object or XHR instance used for this request.</p>
+										</dd>
+									</dl>
+								</div>
 							</li>
 						</ul>
 					</div>
@@ -661,6 +713,9 @@
 					</li>
 					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
 						<a href="_connection_.html#params" class="tsd-kind-icon">Params</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
+						<a href="_connection_.html#requestinterceptors" class="tsd-kind-icon">Request<wbr>Interceptors</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
 						<a href="_connection_.html#requestoptions" class="tsd-kind-icon">Request<wbr>Options</a>
