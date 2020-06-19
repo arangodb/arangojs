@@ -19,6 +19,7 @@ import { Headers } from "../connection";
 import { Errback } from "../util/types";
 import { btoa } from "./btoa";
 import { joinPath } from "./joinPath";
+import { omit } from "./omit";
 
 /**
  * @internal
@@ -109,8 +110,9 @@ export function createRequest(
     throw new Error(`Invalid URL (empty unix socket path): ${baseUrl}`);
   }
   if (!agent) {
-    if (isTls) agent = new HttpsAgent(agentOptions);
-    else agent = new HttpAgent(agentOptions);
+    const opts = omit(agentOptions, ["before", "after"]);
+    if (isTls) agent = new HttpsAgent(opts);
+    else agent = new HttpAgent(opts);
   }
   return Object.assign(
     function request(
@@ -151,12 +153,15 @@ export function createRequest(
             const data: Buffer[] = [];
             res.on("data", (chunk) => data.push(chunk as Buffer));
             res.on("end", () => {
-              const result = res as ArangojsResponse;
-              result.request = req;
-              result.body = Buffer.concat(data);
+              const response = res as ArangojsResponse;
+              response.request = req;
+              response.body = Buffer.concat(data);
               if (called) return;
               called = true;
-              callback(null, result);
+              if (agentOptions.after) {
+                agentOptions.after(null, response);
+              }
+              callback(null, response);
             });
           }
         );
@@ -171,9 +176,15 @@ export function createRequest(
           error.request = req;
           if (called) return;
           called = true;
+          if (agentOptions.after) {
+            agentOptions.after(err);
+          }
           callback(err);
         });
         if (body) req.write(body);
+        if (agentOptions.before) {
+          agentOptions.before(req);
+        }
         req.end();
       } catch (e) {
         if (called) return;

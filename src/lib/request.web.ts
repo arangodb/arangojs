@@ -10,6 +10,7 @@ import { format as formatUrl, parse as parseUrl } from "url";
 import { Errback } from "../util/types";
 import { btoa } from "./btoa";
 import { joinPath } from "./joinPath";
+import { omit } from "./omit";
 import {
   ArangojsError,
   ArangojsResponse,
@@ -18,15 +19,6 @@ import {
 import xhr from "./xhr";
 
 export const isBrowser = true;
-
-function omit<T>(obj: T, keys: (keyof T)[]): T {
-  const result = {} as T;
-  for (const key of Object.keys(obj)) {
-    if (keys.includes(key as keyof T)) continue;
-    result[key as keyof T] = obj[key as keyof T];
-  }
-  return result;
-}
 
 /**
  * Create a function for performing requests against a given host.
@@ -82,14 +74,21 @@ export function createRequest(baseUrl: string, agentOptions: any) {
       },
       (err: Error | null, res?: any) => {
         if (!err) {
-          if (!res.body) res.body = "";
-          callback(null, res as ArangojsResponse);
+          const response = res as ArangojsResponse;
+          response.request = req;
+          if (!response.body) response.body = "";
+          options.after(null, response);
+          callback(null, response as ArangojsResponse);
         } else {
           const error = err as ArangojsError;
           error.request = req;
+          options.after(error);
           callback(error);
         }
       }
     );
+    if (options.before) {
+      options.before(req);
+    }
   };
 }

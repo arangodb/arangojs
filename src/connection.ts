@@ -8,6 +8,7 @@
  *
  * @packageDocumentation
  */
+import { ClientRequest } from "http";
 import { AgentOptions } from "https";
 import { stringify as querystringify } from "querystring";
 import { LinkedList } from "x3-linkedlist";
@@ -16,6 +17,7 @@ import { ArangoError, HttpError, isSystemError } from "./error";
 import { btoa } from "./lib/btoa";
 import { normalizeUrl } from "./lib/normalizeUrl";
 import {
+  ArangojsError,
   ArangojsResponse,
   createRequest,
   isBrowser,
@@ -131,6 +133,31 @@ export type XhrOptions = {
   xhr?: any;
   useXdr?: boolean;
   withCredentials?: boolean;
+};
+
+/**
+ * Additional options for intercepting the request/response. These methods
+ * are primarily intended for tracking network related metrics.
+ */
+export type RequestInterceptors = {
+  /**
+   * Callback that will be invoked with the finished request object before it
+   * is finalized. In the browser the request may already have been sent.
+   *
+   * @param req - Request object or XHR instance used for this request.
+   */
+  before?: (req: ClientRequest) => void;
+  /**
+   * Callback that will be invoked when the server response has been received
+   * and processed or when the request has been failed without a response.
+   *
+   * The originating request will be available as the `request` property
+   * on either the error or response object.
+   *
+   * @param err - Error encountered when handling this request or `null`.
+   * @param res - Response object for this request, if no error occurred.
+   */
+  after?: (err: ArangojsError | null, res?: ArangojsResponse) => void;
 };
 
 /**
@@ -346,7 +373,7 @@ export type Config = {
    *
    * Default (browser): `{ maxSockets: 3, useXDR: true, withCredentials: true }`
    */
-  agentOptions?: AgentOptions | XhrOptions;
+  agentOptions?: (AgentOptions | XhrOptions) & RequestInterceptors;
   /**
    * An object with additional headers to send with every request.
    *

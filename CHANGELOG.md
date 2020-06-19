@@ -16,6 +16,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   `View` (or `ArangoSearchView`) objects can now be passed into `aql` templates
   like `ArangoCollection` objects.
 
+### Added
+
+- Added `before` and `after` to the `agentOptions` configuration option ([#585](https://github.com/arangodb/arangojs/issues/585))
+
+  These methods can be used to track performance metrics for outgoing requests.
+
 ## [7.0.0-preview.1] - 2020-05-13
 
 ### Removed
