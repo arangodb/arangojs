@@ -14,13 +14,13 @@ import { LinkedList } from "x3-linkedlist";
 import { Database } from "./database";
 import { ArangoError, HttpError, isSystemError } from "./error";
 import { btoa } from "./lib/btoa";
+import { normalizeUrl } from "./lib/normalizeUrl";
 import {
   ArangojsResponse,
   createRequest,
   isBrowser,
   RequestFunction,
 } from "./lib/request";
-import { sanitizeUrl } from "./lib/sanitizeUrl";
 import { Errback } from "./util/types";
 
 const MIME_JSON = /\/(json|javascript)(\W|$)/;
@@ -604,7 +604,7 @@ export class Connection {
    */
   addToHostList(urls: string | string[]): number[] {
     const cleanUrls = (Array.isArray(urls) ? urls : [urls]).map((url) =>
-      sanitizeUrl(url)
+      normalizeUrl(url)
     );
     const newUrls = cleanUrls.filter((url) => this._urls.indexOf(url) === -1);
     this._urls.push(...newUrls);

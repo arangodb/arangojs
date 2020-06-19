@@ -3,7 +3,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { Database } from "../database";
 import { ArangoError } from "../error";
-import { sanitizeUrl } from "../lib/sanitizeUrl";
+import { normalizeUrl } from "../lib/normalizeUrl";
 
 const ARANGO_URL = process.env.TEST_ARANGODB_URL || "http://localhost:8529";
 const ARANGO_URL_SELF_REACHABLE = process.env.TEST_ARANGODB_URL_SELF_REACHABLE;
@@ -11,7 +11,7 @@ const ARANGO_VERSION = Number(
   process.env.ARANGO_VERSION || process.env.ARANGOJS_DEVEL_VERSION || 30400
 );
 
-const normalizedArangoUrl = sanitizeUrl(ARANGO_URL);
+const normalizedArangoUrl = normalizeUrl(ARANGO_URL);
 const localAppsPath = path.resolve(".", "fixtures");
 const mount = "/foxx-crud-test";
 const serviceServiceMount = "/foxx-crud-test-download";
