@@ -206,7 +206,7 @@ export function aql(
 ): GeneratedAqlQuery {
   const strings = [...templateStrings];
   const bindVars: Dict<any> = {};
-  const bindVals = [];
+  const bindValues = [];
   let query = strings[0];
   for (let i = 0; i < args.length; i++) {
     const rawValue = args[i];
@@ -239,15 +239,15 @@ export function aql(
       query += `${rawValue.toAQL()}${strings[i + 1]}`;
       continue;
     }
-    const index = bindVals.indexOf(rawValue);
+    const index = bindValues.indexOf(rawValue);
     const isKnown = index !== -1;
-    let name = `value${isKnown ? index : bindVals.length}`;
+    let name = `value${isKnown ? index : bindValues.length}`;
     if (isArangoCollection(rawValue) || isArangoView(rawValue)) {
       name = `@${name}`;
       value = rawValue.name;
     }
     if (!isKnown) {
-      bindVals.push(rawValue);
+      bindValues.push(rawValue);
       bindVars[name] = value;
     }
     query += `@${name}${strings[i + 1]}`;
