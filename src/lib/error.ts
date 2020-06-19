@@ -1,5 +1,5 @@
 /**
- * TODO
+ * Wrapper around the `es6-error` module.
  *
  * @packageDocumentation
  * @internal

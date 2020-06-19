@@ -1,5 +1,5 @@
 /**
- * TODO
+ * Node.js implementation of the HTTP(S) request function.
  *
  * @packageDocumentation
  * @internal
@@ -67,11 +67,11 @@ export type RequestFunction = {
 export const isBrowser = false;
 
 /**
- * TODO
+ * Create a function for performing requests against a given host.
  *
- * @param baseUrl
- * @param agentOptions
- * @param agent
+ * @param baseUrl - Base URL of the host, i.e. protocol, port and domain name.
+ * @param agentOptions - Options to use for creating the agent.
+ * @param agent - Agent to use for performing requests.
  *
  * @internal
  * @hidden
@@ -79,7 +79,7 @@ export const isBrowser = false;
 export function createRequest(
   baseUrl: string,
   agentOptions: any,
-  agent: any
+  agent?: any
 ): RequestFunction {
   const baseUrlParts = parseUrl(baseUrl);
   if (!baseUrlParts.protocol) {

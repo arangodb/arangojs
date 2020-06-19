@@ -1,5 +1,5 @@
 /**
- * TODO
+ * Wrapper around the browser-specific implementation of the path module.
  *
  * @packageDocumentation
  * @internal

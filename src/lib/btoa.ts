@@ -1,5 +1,5 @@
 /**
- * TODO
+ * Node.js implementation of browser `btoa` function.
  *
  * @packageDocumentation
  * @internal

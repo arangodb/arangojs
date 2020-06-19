@@ -1,4 +1,6 @@
 /**
+ * Node.js implementation of the HTTP(S) request function.
+ *
  * @packageDocumentation
  * @internal
  * @hidden
@@ -27,7 +29,10 @@ function omit<T>(obj: T, keys: (keyof T)[]): T {
 }
 
 /**
- * TODO
+ * Create a function for performing requests against a given host.
+ *
+ * @param baseUrl - Base URL of the host, i.e. protocol, port and domain name.
+ * @param agentOptions - Options to use for performing requests.
  *
  * @param baseUrl
  * @param agentOptions

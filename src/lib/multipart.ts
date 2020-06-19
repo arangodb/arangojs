@@ -1,5 +1,5 @@
 /**
- * TODO
+ * Utility function for constructing a multipart form in Node.js.
  *
  * @packageDocumentation
  * @internal

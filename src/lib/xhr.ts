@@ -1,5 +1,5 @@
 /**
- * TODO
+ * Wrapper around the `xhr` module for HTTP(S) requests in the browser.
  *
  * @packageDocumentation
  * @internal

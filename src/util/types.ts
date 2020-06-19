@@ -1,5 +1,5 @@
 /**
- * TODO
+ * Utility types for TypeScript used throughout arangojs.
  *
  * @packageDocumentation
  */

@@ -101,7 +101,7 @@ export enum CollectionStatus {
 export type KeyGenerator = "traditional" | "autoincrement" | "uuid" | "padded";
 
 /**
- * TODO
+ * Strategy for sharding a collection.
  */
 export type ShardingStrategy =
   | "hash"
@@ -180,7 +180,7 @@ export type CollectionKeyProperties = {
 };
 
 /**
- * TODO
+ * Properties for validating documents in a collection.
  */
 export type ValidationProperties = {
   /**
@@ -278,7 +278,7 @@ export type CollectionProperties = {
 // Options
 
 /**
- * TODO
+ * Options for validating collection documents.
  */
 export type ValidationOptions = {
   /**
@@ -307,7 +307,7 @@ export type CollectionPropertiesOptions = {
    */
   waitForSync?: boolean;
   /**
-   * TODO
+   * Options for validating documents in this collection.
    */
   validation?: ValidationOptions;
   /**
@@ -319,7 +319,7 @@ export type CollectionPropertiesOptions = {
 };
 
 /**
- * TODO
+ * Options for retrieving a collection checksum.
  */
 export type CollectionChecksumOptions = {
   /**
@@ -713,7 +713,7 @@ export type CollectionImportOptions = {
 };
 
 /**
- * TODO
+ * Options for retrieving documents by example.
  *
  * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
  * replaced with AQL queries.
@@ -738,7 +738,7 @@ export type SimpleQueryByExampleOptions = {
 };
 
 /**
- * TODO
+ * Options for retrieving all documents in a collection.
  *
  * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
  * replaced with AQL queries.
@@ -767,7 +767,7 @@ export type SimpleQueryAllOptions = {
 };
 
 /**
- * TODO
+ * Options for updating documents by example.
  *
  * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
  * replaced with AQL queries.
@@ -792,7 +792,7 @@ export type SimpleQueryUpdateByExampleOptions = {
 };
 
 /**
- * TODO
+ * Options for removing documents by example.
  *
  * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
  * replaced with AQL queries.
@@ -809,7 +809,7 @@ export type SimpleQueryRemoveByExampleOptions = {
 };
 
 /**
- * TODO
+ * Options for replacing documents by example.
  *
  * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
  * replaced with AQL queries.
@@ -817,7 +817,7 @@ export type SimpleQueryRemoveByExampleOptions = {
 export type SimpleQueryReplaceByExampleOptions = SimpleQueryRemoveByExampleOptions;
 
 /**
- * TODO
+ * Options for removing documents by keys.
  *
  * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
  * replaced with AQL queries.
@@ -838,7 +838,7 @@ export type SimpleQueryRemoveByKeysOptions = {
 };
 
 /**
- * TODO
+ * Options for performing a fulltext query.
  *
  * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
  * replaced with AQL queries.
@@ -1006,7 +1006,7 @@ export type TraversalOptions = {
 // Results
 
 /**
- * TODO
+ * Number of documents in a collection.
  */
 export type CollectionCount = {
   /**
@@ -1016,7 +1016,7 @@ export type CollectionCount = {
 };
 
 /**
- * TODO
+ * Statistics of a collection.
  */
 export type CollectionFigures = {
   /**
@@ -1136,7 +1136,7 @@ export type CollectionFigures = {
 };
 
 /**
- * TODO
+ * Revision of a collection.
  */
 export type CollectionRevision = {
   /**
@@ -1146,7 +1146,7 @@ export type CollectionRevision = {
 };
 
 /**
- * TODO
+ * Checksum of a collection.
  */
 export type CollectionChecksum = {
   /**
@@ -1190,7 +1190,7 @@ export type CollectionImportResult = {
 };
 
 /**
- * TODO
+ * Result of retrieving edges in a collection.
  */
 export type CollectionEdgesResult<T extends object = any> = {
   /**

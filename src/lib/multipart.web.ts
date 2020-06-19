@@ -1,5 +1,5 @@
 /**
- * TODO
+ * Utility function for constructing a multipart form in the browser.
  *
  * @packageDocumentation
  * @internal

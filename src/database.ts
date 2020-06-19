@@ -53,12 +53,6 @@ import {
   ViewType,
 } from "./view";
 
-function colToString(collection: string | ArangoCollection): string {
-  if (isArangoCollection(collection)) {
-    return String(collection.name);
-  } else return String(collection);
-}
-
 /**
  * Indicates whether the given value represents a {@link Database}.
  *
@@ -68,6 +62,10 @@ export function isArangoDatabase(database: any): database is Database {
   return Boolean(database && database.isArangoDatabase);
 }
 
+/**
+ * @internal
+ * @hidden
+ */
 type CoercedTransactionCollections = {
   allowImplicit?: boolean;
   exclusive?: string | string[];
@@ -313,7 +311,7 @@ export type ExplainOptions = {
 };
 
 /**
- * TODO
+ * Details for a transaction.
  */
 export type TransactionDetails = {
   id: string;
@@ -321,7 +319,7 @@ export type TransactionDetails = {
 };
 
 /**
- * TODO
+ * Plan explaining query execution.
  */
 export type ExplainPlan = {
   nodes: {
@@ -348,7 +346,7 @@ export type ExplainPlan = {
 };
 
 /**
- * TODO
+ * Result of explaining a query with a single plan.
  */
 export type SingleExplainResult = {
   plan: ExplainPlan;
@@ -362,7 +360,7 @@ export type SingleExplainResult = {
 };
 
 /**
- * TODO
+ * Result of explaining a query with multiple plans.
  */
 export type MultiExplainResult = {
   plans: ExplainPlan[];
@@ -375,7 +373,7 @@ export type MultiExplainResult = {
 };
 
 /**
- * TODO
+ * Node in an AQL abstract syntax tree.
  */
 export type AstNode = {
   [key: string]: any;
@@ -384,7 +382,7 @@ export type AstNode = {
 };
 
 /**
- * TODO
+ * Result of parsing a query.
  */
 export type ParseResult = {
   parsed: boolean;
@@ -394,7 +392,7 @@ export type ParseResult = {
 };
 
 /**
- * TODO
+ * Information about query tracking.
  */
 export type QueryTracking = {
   enabled: boolean;
@@ -438,7 +436,7 @@ export type QueryTrackingOptions = {
 };
 
 /**
- * TODO
+ * Object describing a query.
  */
 export type QueryInfo = {
   id: string;
@@ -514,7 +512,7 @@ export type CreateDatabaseOptions = {
 };
 
 /**
- * TODO
+ * Object describing a database.
  */
 export type DatabaseInfo = {
   name: string;
@@ -533,7 +531,7 @@ export type DatabaseInfo = {
 };
 
 /**
- * TODO
+ * Result of retrieving database version information.
  */
 export type VersionInfo = {
   server: string;
@@ -542,7 +540,7 @@ export type VersionInfo = {
 };
 
 /**
- * TODO
+ * Definition of an AQL User Function.
  */
 export type AqlUserFunction = {
   name: string;
@@ -727,7 +725,7 @@ export type UninstallServiceOptions = {
 };
 
 /**
- * TODO
+ * Object briefly describing a Foxx service.
  */
 export type ServiceSummary = {
   mount: string;
@@ -739,7 +737,7 @@ export type ServiceSummary = {
 };
 
 /**
- * TODO
+ * Object describing a Foxx service in detail.
  */
 export type ServiceInfo = {
   mount: string;
@@ -757,7 +755,7 @@ export type ServiceInfo = {
 };
 
 /**
- * TODO
+ * Object describing a configuration option of a Foxx service.
  */
 export type ServiceConfiguration = {
   type:
@@ -778,7 +776,7 @@ export type ServiceConfiguration = {
 };
 
 /**
- * TODO
+ * Object describing a single-service dependency defined by a Foxx service.
  */
 export type SingleServiceDependency = {
   multiple: false;
@@ -791,7 +789,7 @@ export type SingleServiceDependency = {
 };
 
 /**
- * TODO
+ * Object describing a multi-service dependency defined by a Foxx service.
  */
 export type MultiServiceDependency = {
   multiple: true;
@@ -802,13 +800,6 @@ export type MultiServiceDependency = {
   description?: string;
   required: boolean;
 };
-
-/**
- * TODO
- */
-export type ServiceDependency =
-  | SingleServiceDependency
-  | MultiServiceDependency;
 
 /**
  * Test stats for a Foxx service's tests.
@@ -3278,7 +3269,7 @@ export class Database {
   async getServiceDependencies(
     mount: string,
     minimal?: false
-  ): Promise<Dict<ServiceDependency>>;
+  ): Promise<Dict<SingleServiceDependency | MultiServiceDependency>>;
   /**
    * Retrieves information about the service's dependencies and their current
    * mount points.
@@ -3353,7 +3344,11 @@ export class Database {
     mount: string,
     deps: Dict<string>,
     minimal?: false
-  ): Promise<Dict<ServiceDependency & { warning?: string }>>;
+  ): Promise<
+    Dict<
+      (SingleServiceDependency | MultiServiceDependency) & { warning?: string }
+    >
+  >;
   /**
    * Replaces the dependencies of the given service, discarding any existing
    * mount points for dependencies not specified.
@@ -3417,7 +3412,7 @@ export class Database {
     }
     // Work around "minimal" flag not existing in 3.3
     const result2 = (await this.getServiceDependencies(mount, false)) as Dict<
-      ServiceDependency & { warning?: string }
+      (SingleServiceDependency | MultiServiceDependency) & { warning?: string }
     >;
     if (result.warnings) {
       for (const key of Object.keys(result2)) {
@@ -3457,7 +3452,11 @@ export class Database {
     mount: string,
     deps: Dict<string>,
     minimal?: false
-  ): Promise<Dict<ServiceDependency & { warning?: string }>>;
+  ): Promise<
+    Dict<
+      (SingleServiceDependency | MultiServiceDependency) & { warning?: string }
+    >
+  >;
   /**
    * Updates the dependencies of the given service while maintaining any
    * existing mount points for dependencies not specified.
@@ -3521,7 +3520,7 @@ export class Database {
     }
     // Work around "minimal" flag not existing in 3.3
     const result2 = (await this.getServiceDependencies(mount, false)) as Dict<
-      ServiceDependency & { warning?: string }
+      (SingleServiceDependency | MultiServiceDependency) & { warning?: string }
     >;
     if (result.warnings) {
       for (const key of Object.keys(result2)) {
@@ -3930,6 +3929,12 @@ export class Database {
   //#endregion
 }
 
+function collectionToString(collection: string | ArangoCollection): string {
+  if (isArangoCollection(collection)) {
+    return String(collection.name);
+  } else return String(collection);
+}
+
 function coerceTransactionCollections(
   collections:
     | (TransactionCollections & { allowImplicit?: boolean })
@@ -3941,10 +3946,10 @@ function coerceTransactionCollections(
     return { write: [collections] };
   }
   if (Array.isArray(collections)) {
-    return { write: collections.map(colToString) };
+    return { write: collections.map(collectionToString) };
   }
   if (isArangoCollection(collections)) {
-    return { write: colToString(collections) };
+    return { write: collectionToString(collections) };
   }
   const cols: CoercedTransactionCollections = {};
   if (collections) {
@@ -3953,18 +3958,18 @@ function coerceTransactionCollections(
     }
     if (collections.read) {
       cols.read = Array.isArray(collections.read)
-        ? collections.read.map(colToString)
-        : colToString(collections.read);
+        ? collections.read.map(collectionToString)
+        : collectionToString(collections.read);
     }
     if (collections.write) {
       cols.write = Array.isArray(collections.write)
-        ? collections.write.map(colToString)
-        : colToString(collections.write);
+        ? collections.write.map(collectionToString)
+        : collectionToString(collections.write);
     }
     if (collections.exclusive) {
       cols.exclusive = Array.isArray(collections.exclusive)
-        ? collections.exclusive.map(colToString)
-        : colToString(collections.exclusive);
+        ? collections.exclusive.map(collectionToString)
+        : collectionToString(collections.exclusive);
     }
   }
   return cols;

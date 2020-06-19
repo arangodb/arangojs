@@ -1,5 +1,6 @@
 /**
- * TODO
+ * Wrapper around browser `btoa` function to allow substituting a
+ * Node.js-specific implementation.
  *
  * @packageDocumentation
  * @internal

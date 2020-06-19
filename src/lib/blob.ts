@@ -1,5 +1,5 @@
 /**
- * TODO
+ * Blob type, equivalent to `Buffer` for browser-like environments.
  *
  * @packageDocumentation
  * @internal

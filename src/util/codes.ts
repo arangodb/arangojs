@@ -1,5 +1,5 @@
 /**
- * TODO
+ * Error codes handled by arangojs.
  *
  * @packageDocumentation
  */
