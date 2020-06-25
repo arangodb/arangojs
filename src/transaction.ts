@@ -220,7 +220,7 @@ export class Transaction {
    * });
    *
    * // BETTER: Wrap every arangojs method call that should be part of the
-   * // transaction in a separate trx.step call
+   * // transaction in a separate `trx.step` call
    * await trx.step(() => collection.save(data));
    * await trx.step(() => collection.save(moreData));
    * ```
@@ -241,7 +241,7 @@ export class Transaction {
    *     .then(() => collection.save(data)); // WRONG
    * });
    *
-   * // BETTER: Perform any async logic needed outside the trx.step call
+   * // BETTER: Perform any async logic needed outside the `trx.step` call
    * await doSomethingElse();
    * await trx.step(() => collection.save(data));
    *
@@ -270,13 +270,13 @@ export class Transaction {
    *   await trx.step(() => collection.save(data));
    *   await trx.step(() => collection.save(moreData));
    * }
-   * await saveSomeData(); // no trx.step call needed
+   * await saveSomeData(); // no `trx.step` call needed
    * ```
    *
    * @example
    * ```js
-   * // BAD! You must for the promise to resolve (or await on the trx.step call)
-   * // before calling trx.step again!
+   * // BAD! You must wait for the promise to resolve (or await on the
+   * // `trx.step` call) before calling `trx.step` again!
    * trx.step(() => collection.save(data)); // WRONG
    * await trx.step(() => collection.save(moreData));
    *
@@ -287,13 +287,13 @@ export class Transaction {
    *   collection.save(moreData),
    * ]));
    *
-   * // BAD! Multiple trx.step calls can not run in parallel!
+   * // BAD! Multiple `trx.step` calls can not run in parallel!
    * await Promise.all([ // WRONG
    *   trx.step(() => collection.save(data)),
    *   trx.step(() => collection.save(moreData)),
    * ]));
    *
-   * // BETTER: Always call trx.step sequentially, one after the other
+   * // BETTER: Always call `trx.step` sequentially, one after the other
    * await trx.step(() => collection.save(data));
    * await trx.step(() => collection.save(moreData));
    *
@@ -340,7 +340,7 @@ export class Transaction {
    * const collection = await trx.step(() => db.collection("my-documents"));
    *
    * // BETTER: If an arangojs method is not async and doesn't return promises,
-   * // call it without trx.step
+   * // call it without `trx.step`
    * const collection = db.collection("my-documents");
    */
   step<T>(callback: () => Promise<T>): Promise<T> {
