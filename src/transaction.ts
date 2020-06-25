@@ -160,6 +160,7 @@ export class Transaction {
   /**
    * Executes the given function locally as part of the transaction.
    *
+   * @param T - Type of the callback's returned promise.
    * @param callback - Callback function returning a promise.
    *
    * **Warning**: The callback function should wrap a single call of an async
