@@ -316,7 +316,7 @@
 });
 
 <span class="hljs-comment">// BETTER: Wrap every arangojs method call that should be part of the</span>
-<span class="hljs-comment">// transaction in a separate trx.step call</span>
+<span class="hljs-comment">// transaction in a separate `trx.step` call</span>
 <span class="hljs-keyword">await</span> trx.step(<span class="hljs-function">() =&gt;</span> collection.save(data));
 <span class="hljs-keyword">await</span> trx.step(<span class="hljs-function">() =&gt;</span> collection.save(moreData));</code></pre>
 									</dd>
@@ -335,7 +335,7 @@
     .then(<span class="hljs-function">() =&gt;</span> collection.save(data)); <span class="hljs-comment">// WRONG</span>
 });
 
-<span class="hljs-comment">// BETTER: Perform any async logic needed outside the trx.step call</span>
+<span class="hljs-comment">// BETTER: Perform any async logic needed outside the `trx.step` call</span>
 <span class="hljs-keyword">await</span> doSomethingElse();
 <span class="hljs-keyword">await</span> trx.step(<span class="hljs-function">() =&gt;</span> collection.save(data));
 
@@ -362,11 +362,11 @@
   <span class="hljs-keyword">await</span> trx.step(<span class="hljs-function">() =&gt;</span> collection.save(data));
   <span class="hljs-keyword">await</span> trx.step(<span class="hljs-function">() =&gt;</span> collection.save(moreData));
 }
-<span class="hljs-keyword">await</span> saveSomeData(); <span class="hljs-comment">// no trx.step call needed</span></code></pre>
+<span class="hljs-keyword">await</span> saveSomeData(); <span class="hljs-comment">// no `trx.step` call needed</span></code></pre>
 									</dd>
 									<dt>example</dt>
-									<dd><pre><code class="language-js"><span class="hljs-comment">// BAD! You must for the promise to resolve (or await on the trx.step call)</span>
-<span class="hljs-comment">// before calling trx.step again!</span>
+									<dd><pre><code class="language-js"><span class="hljs-comment">// BAD! You must wait for the promise to resolve (or await on the</span>
+<span class="hljs-comment">// `trx.step` call) before calling `trx.step` again!</span>
 trx.step(<span class="hljs-function">() =&gt;</span> collection.save(data)); <span class="hljs-comment">// WRONG</span>
 <span class="hljs-keyword">await</span> trx.step(<span class="hljs-function">() =&gt;</span> collection.save(moreData));
 
@@ -377,13 +377,13 @@ trx.step(<span class="hljs-function">() =&gt;</span> collection.save(data)); <sp
   collection.save(moreData),
 ]));
 
-<span class="hljs-comment">// BAD! Multiple trx.step calls can not run in parallel!</span>
+<span class="hljs-comment">// BAD! Multiple `trx.step` calls can not run in parallel!</span>
 <span class="hljs-keyword">await</span> <span class="hljs-built_in">Promise</span>.all([ <span class="hljs-comment">// WRONG</span>
   trx.step(<span class="hljs-function">() =&gt;</span> collection.save(data)),
   trx.step(<span class="hljs-function">() =&gt;</span> collection.save(moreData)),
 ]));
 
-<span class="hljs-comment">// BETTER: Always call trx.step sequentially, one after the other</span>
+<span class="hljs-comment">// BETTER: Always call `trx.step` sequentially, one after the other</span>
 <span class="hljs-keyword">await</span> trx.step(<span class="hljs-function">() =&gt;</span> collection.save(data));
 <span class="hljs-keyword">await</span> trx.step(<span class="hljs-function">() =&gt;</span> collection.save(moreData));
 
@@ -424,7 +424,7 @@ trx.step(<span class="hljs-function">() =&gt;</span> collection.save(data))
 <span class="hljs-keyword">const</span> collection = <span class="hljs-keyword">await</span> trx.step(<span class="hljs-function">() =&gt;</span> db.collection(<span class="hljs-string">&quot;my-documents&quot;</span>));
 
 <span class="hljs-comment">// BETTER: If an arangojs method is not async and doesn&#x27;t return promises,</span>
-<span class="hljs-comment">// call it without trx.step</span>
+<span class="hljs-comment">// call it without `trx.step`</span>
 <span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">&quot;my-documents&quot;</span>);</code></pre>
 									</dd>
 								</dl>
