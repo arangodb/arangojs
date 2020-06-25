@@ -201,8 +201,7 @@ export class Transaction {
    * }));
    *
    * // Transaction must be committed for changes to take effected
-   * // Always call either {@link Transaction.commit} or
-   * // {@link Transaction.abort} to end a transaction
+   * // Always call either trx.commit or trx.abort to end a transaction
    * await trx.commit();
    * ```
    *
