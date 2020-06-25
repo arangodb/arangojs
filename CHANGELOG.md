@@ -11,6 +11,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - Renamed `db.createArangoSearchView` to `db.createView`
 
+- Renamed `transaction.run` to `transaction.step`
+
+  This should hopefully make it more obvious that sequential calls to arangojs
+  methods should be split into separate calls of this method.
+
 - Added support for `View` in `aql` templates ([#667](https://github.com/arangodb/arangojs/issues/667))
 
   `View` (or `ArangoSearchView`) objects can now be passed into `aql` templates

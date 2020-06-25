@@ -2181,9 +2181,9 @@ export class Database {
    *   read: ["vertices"],
    *   write: [edges] // collection instances can be passed directly
    * });
-   * const start = await trx.run(() => vertices.document("a"));
-   * const end = await trx.run(() => vertices.document("b"));
-   * await trx.run(() => edges.save({ _from: start._id, _to: end._id }));
+   * const start = await trx.step(() => vertices.document("a"));
+   * const end = await trx.step(() => vertices.document("b"));
+   * await trx.step(() => edges.save({ _from: start._id, _to: end._id }));
    * await trx.commit();
    * ```
    */
@@ -2212,9 +2212,9 @@ export class Database {
    *   "vertices",
    *   edges // collection instances can be passed directly
    * ]);
-   * const start = await trx.run(() => vertices.document("a"));
-   * const end = await trx.run(() => vertices.document("b"));
-   * await trx.run(() => edges.save({ _from: start._id, _to: end._id }));
+   * const start = await trx.step(() => vertices.document("a"));
+   * const end = await trx.step(() => vertices.document("b"));
+   * await trx.step(() => edges.save({ _from: start._id, _to: end._id }));
    * await trx.commit();
    * ```
    */
@@ -2244,7 +2244,7 @@ export class Database {
    * const trx = await db.beginTransaction(
    *   edges // collection instances can be passed directly
    * );
-   * await trx.run(() => edges.save({ _from: start._id, _to: end._id }));
+   * await trx.step(() => edges.save({ _from: start._id, _to: end._id }));
    * await trx.commit();
    * ```
    */

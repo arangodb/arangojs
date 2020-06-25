@@ -77,7 +77,7 @@ describe("Transactions", () => {
 
     it("can insert a document", async () => {
       const trx = await db.beginTransaction(collection);
-      const meta = await trx.run(() => collection.save({ _key: "test" }));
+      const meta = await trx.step(() => collection.save({ _key: "test" }));
       expect(meta).to.have.property("_key", "test");
       const { id, status } = await trx.commit();
       expect(id).to.equal(trx.id);
@@ -88,8 +88,8 @@ describe("Transactions", () => {
 
     it("can insert two documents at a time", async () => {
       const trx = await db.beginTransaction(collection);
-      const meta1 = await trx.run(() => collection.save({ _key: "test1" }));
-      const meta2 = await trx.run(() => collection.save({ _key: "test2" }));
+      const meta1 = await trx.step(() => collection.save({ _key: "test1" }));
+      const meta2 = await trx.step(() => collection.save({ _key: "test2" }));
       expect(meta1).to.have.property("_key", "test1");
       expect(meta2).to.have.property("_key", "test2");
       const { id, status } = await trx.commit();
@@ -103,7 +103,7 @@ describe("Transactions", () => {
 
     itRdb("does not leak when inserting a document", async () => {
       const trx = await db.beginTransaction(collection);
-      await trx.run(() => collection.save({ _key: "test" }));
+      await trx.step(() => collection.save({ _key: "test" }));
       let doc: any;
       try {
         doc = await collection.document("test");
@@ -116,8 +116,8 @@ describe("Transactions", () => {
 
     itRdb("does not leak when inserting two documents at a time", async () => {
       const trx = await db.beginTransaction(collection);
-      await trx.run(() => collection.save({ _key: "test1" }));
-      await trx.run(() => collection.save({ _key: "test2" }));
+      await trx.step(() => collection.save({ _key: "test1" }));
+      await trx.step(() => collection.save({ _key: "test2" }));
       let doc: any;
       try {
         doc = await collection.document("test1");
@@ -134,7 +134,7 @@ describe("Transactions", () => {
 
     it("does not insert a document when aborted", async () => {
       const trx = await db.beginTransaction(collection);
-      const meta = await trx.run(() => collection.save({ _key: "test" }));
+      const meta = await trx.step(() => collection.save({ _key: "test" }));
       expect(meta).to.have.property("_key", "test");
       const { id, status } = await trx.abort();
       expect(id).to.equal(trx.id);
