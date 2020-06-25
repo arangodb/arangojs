@@ -236,6 +236,12 @@ agentOptions: {
 When using arangojs in the browser, self-signed HTTPS certificates need to
 be trusted by the browser or use a trusted root certificate.
 
+## Streaming transactions
+
+When using the `transaction.run` method it is important to be aware of the
+limitations of what a callback passed to this method is allowed to do or not.
+Please refer to the examples in the documentation of that method.
+
 ## Error responses
 
 If arangojs encounters an API error, it will throw an _ArangoError_ with an
