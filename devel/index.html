@@ -255,6 +255,12 @@ agentOptions: {
 }</code></pre>
 				<p>When using arangojs in the browser, self-signed HTTPS certificates need to
 				be trusted by the browser or use a trusted root certificate.</p>
+				<a href="#streaming-transactions" id="streaming-transactions" style="color: inherit; text-decoration: none;">
+					<h2>Streaming transactions</h2>
+				</a>
+				<p>When using the <code>transaction.run</code> method it is important to be aware of the
+					limitations of what a callback passed to this method is allowed to do or not.
+				Please refer to the examples in the documentation of that method.</p>
 				<a href="#error-responses" id="error-responses" style="color: inherit; text-decoration: none;">
 					<h2>Error responses</h2>
 				</a>
