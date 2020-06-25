@@ -412,9 +412,9 @@ db.close();</code></pre>
   <span class="hljs-attr">read</span>: [<span class="hljs-string">&quot;vertices&quot;</span>],
   <span class="hljs-attr">write</span>: [edges] <span class="hljs-comment">// collection instances can be passed directly</span>
 });
-<span class="hljs-keyword">const</span> start = <span class="hljs-keyword">await</span> trx.run(<span class="hljs-function">() =&gt;</span> vertices.document(<span class="hljs-string">&quot;a&quot;</span>));
-<span class="hljs-keyword">const</span> end = <span class="hljs-keyword">await</span> trx.run(<span class="hljs-function">() =&gt;</span> vertices.document(<span class="hljs-string">&quot;b&quot;</span>));
-<span class="hljs-keyword">await</span> trx.run(<span class="hljs-function">() =&gt;</span> edges.save({ <span class="hljs-attr">_from</span>: start._id, <span class="hljs-attr">_to</span>: end._id }));
+<span class="hljs-keyword">const</span> start = <span class="hljs-keyword">await</span> trx.step(<span class="hljs-function">() =&gt;</span> vertices.document(<span class="hljs-string">&quot;a&quot;</span>));
+<span class="hljs-keyword">const</span> end = <span class="hljs-keyword">await</span> trx.step(<span class="hljs-function">() =&gt;</span> vertices.document(<span class="hljs-string">&quot;b&quot;</span>));
+<span class="hljs-keyword">await</span> trx.step(<span class="hljs-function">() =&gt;</span> edges.save({ <span class="hljs-attr">_from</span>: start._id, <span class="hljs-attr">_to</span>: end._id }));
 <span class="hljs-keyword">await</span> trx.commit();</code></pre>
 									</dd>
 								</dl>
@@ -456,9 +456,9 @@ db.close();</code></pre>
   <span class="hljs-string">&quot;vertices&quot;</span>,
   edges <span class="hljs-comment">// collection instances can be passed directly</span>
 ]);
-<span class="hljs-keyword">const</span> start = <span class="hljs-keyword">await</span> trx.run(<span class="hljs-function">() =&gt;</span> vertices.document(<span class="hljs-string">&quot;a&quot;</span>));
-<span class="hljs-keyword">const</span> end = <span class="hljs-keyword">await</span> trx.run(<span class="hljs-function">() =&gt;</span> vertices.document(<span class="hljs-string">&quot;b&quot;</span>));
-<span class="hljs-keyword">await</span> trx.run(<span class="hljs-function">() =&gt;</span> edges.save({ <span class="hljs-attr">_from</span>: start._id, <span class="hljs-attr">_to</span>: end._id }));
+<span class="hljs-keyword">const</span> start = <span class="hljs-keyword">await</span> trx.step(<span class="hljs-function">() =&gt;</span> vertices.document(<span class="hljs-string">&quot;a&quot;</span>));
+<span class="hljs-keyword">const</span> end = <span class="hljs-keyword">await</span> trx.step(<span class="hljs-function">() =&gt;</span> vertices.document(<span class="hljs-string">&quot;b&quot;</span>));
+<span class="hljs-keyword">await</span> trx.step(<span class="hljs-function">() =&gt;</span> edges.save({ <span class="hljs-attr">_from</span>: start._id, <span class="hljs-attr">_to</span>: end._id }));
 <span class="hljs-keyword">await</span> trx.commit();</code></pre>
 									</dd>
 								</dl>
@@ -502,7 +502,7 @@ db.close();</code></pre>
 <span class="hljs-keyword">const</span> trx = <span class="hljs-keyword">await</span> db.beginTransaction(
   edges <span class="hljs-comment">// collection instances can be passed directly</span>
 );
-<span class="hljs-keyword">await</span> trx.run(<span class="hljs-function">() =&gt;</span> edges.save({ <span class="hljs-attr">_from</span>: start._id, <span class="hljs-attr">_to</span>: end._id }));
+<span class="hljs-keyword">await</span> trx.step(<span class="hljs-function">() =&gt;</span> edges.save({ <span class="hljs-attr">_from</span>: start._id, <span class="hljs-attr">_to</span>: end._id }));
 <span class="hljs-keyword">await</span> trx.commit();</code></pre>
 									</dd>
 								</dl>
