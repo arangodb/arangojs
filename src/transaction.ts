@@ -158,7 +158,7 @@ export class Transaction {
   }
 
   /**
-   * Executes the given function locally as part of the transaction.
+   * Executes the given function locally as a single step of the transaction.
    *
    * @param T - Type of the callback's returned promise.
    * @param callback - Callback function returning a promise.
@@ -322,6 +322,15 @@ export class Transaction {
    * await trx.run(function () {
    *   return collection.save(data);
    * });
+   * ```
+   *
+   * @example
+   * ```js
+   * // BAD! You can not pass promises instead of a callback!
+   * await trx.run(collection.save(data)); // WRONG
+   *
+   * // BETTER: Wrap the code in a function and pass the function instead
+   * await trx.run(() => collection.save(data));
    * ```
    *
    * @example
