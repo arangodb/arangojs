@@ -3,10 +3,12 @@
  * import type { Analyzer } from "arangojs/analyzer";
  * ```
  *
- * TODO
+ * The "analyzer" module provides analyzer related types and interfaces
+ * for TypeScript.
  *
  * @packageDocumentation
  */
+import { ArangoResponseMetadata } from "./connection";
 import { Database } from "./database";
 import { isArangoError } from "./error";
 import { ANALYZER_NOT_FOUND } from "./util/codes";
@@ -26,7 +28,7 @@ export function isArangoAnalyzer(analyzer: any): analyzer is Analyzer {
 export type AnalyzerFeature = "frequency" | "norm" | "position";
 
 /**
- * TODO
+ * An object describing an Analyzer.
  */
 export type AnalyzerDescription = AnalyzerInfo & {
   name: string;
@@ -55,7 +57,7 @@ export type AnalyzerInfo =
   | TextAnalyzerInfo;
 
 /**
- * TODO
+ * Analyzer type and type-specific properties for an Identity Analyzer.
  */
 export type IdentityAnalyzerInfo = {
   /**
@@ -71,7 +73,7 @@ export type IdentityAnalyzerInfo = {
 };
 
 /**
- * TODO
+ * Analyzer type and type-specific properties for a Delimiter Analyzer.
  */
 export type DelimiterAnalyzerInfo = {
   /**
@@ -88,7 +90,7 @@ export type DelimiterAnalyzerInfo = {
 };
 
 /**
- * TODO
+ * Analyzer type and type-specific properties for a Stem Analyzer.
  */
 export type StemAnalyzerInfo = {
   /**
@@ -106,7 +108,7 @@ export type StemAnalyzerInfo = {
 };
 
 /**
- * TODO
+ * Properties of a Norm Analyzer.
  */
 export type NormAnalyzerProperties = {
   /**
@@ -130,7 +132,7 @@ export type NormAnalyzerProperties = {
 };
 
 /**
- * TODO
+ * Analyzer type and type-specific properties for a Norm Analyzer.
  */
 export type NormAnalyzerInfo = {
   /**
@@ -144,7 +146,7 @@ export type NormAnalyzerInfo = {
 };
 
 /**
- * TODO
+ * Properties of an Ngram Analyzer.
  */
 export type NgramAnalyzerProperties = {
   /**
@@ -162,7 +164,7 @@ export type NgramAnalyzerProperties = {
 };
 
 /**
- * TODO
+ * Analyzer type and type-specific properties for an Ngram Analyzer.
  */
 export type NgramAnalyzerInfo = {
   /**
@@ -176,7 +178,7 @@ export type NgramAnalyzerInfo = {
 };
 
 /**
- * TODO
+ * Properties of a Text Analyzer.
  */
 export type TextAnalyzerProperties = {
   /**
@@ -220,7 +222,7 @@ export type TextAnalyzerProperties = {
 };
 
 /**
- * TODO
+ * Analyzer type and type-specific properties for a Text Analyzer.
  */
 export type TextAnalyzerInfo = {
   /**
@@ -234,7 +236,7 @@ export type TextAnalyzerInfo = {
 };
 
 /**
- * TODO
+ * Represents an Analyzer in a {@link Database}.
  */
 export class Analyzer {
   protected _name: string;
@@ -259,26 +261,26 @@ export class Analyzer {
   }
 
   /**
-   * TODO
+   * The name of this Analyzer.
+   *
+   * See {@link Database.analyzer}.
    */
   get name() {
     return this._name;
   }
 
   /**
-   * TODO
+   * Checks whether the Analyzer exists.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const analyzer = db.analyzer("some-analyzer");
+   * const result = await analyzer.exists();
+   * // result indicates whether the Analyzer exists
+   * ```
    */
-  get(): Promise<AnalyzerDescription> {
-    return this._db.request(
-      { path: `/_api/analyzer/${this.name}` },
-      (res) => res.body
-    );
-  }
-
-  /**
-   * TODO
-   */
-  async exists() {
+  async exists(): Promise<boolean> {
     try {
       await this.get();
       return true;
@@ -291,7 +293,29 @@ export class Analyzer {
   }
 
   /**
-   * TODO
+   * Retrieves the Analyzer definition for the Analyzer.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const analyzer = db.analyzer("some-analyzer");
+   * const definition = await analyzer.get();
+   * // definition contains the Analyzer definition
+   * ```
+   */
+  get(): Promise<ArangoResponseMetadata & AnalyzerDescription> {
+    return this._db.request(
+      { path: `/_api/analyzer/${this.name}` },
+      (res) => res.body
+    );
+  }
+
+  /**
+   * Creates a new Analyzer with the given `options` and the instance's name.
+   *
+   * See also {@link Database.createAnalyzer}.
+   *
+   * @param options - Options for creating the Analyzer.
    */
   create(options: CreateAnalyzerOptions): Promise<AnalyzerDescription> {
     return this._db.request(
@@ -305,9 +329,22 @@ export class Analyzer {
   }
 
   /**
-   * TODO
+   * Deletes the Analyzer from the database.
+   *
+   * @param force - Whether the Analyzer should still be deleted even if it
+   * is currently in use.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const analyzer = db.analyzer("some-analyzer");
+   * await analyzer.drop();
+   * // the Analyzer "some-analyzer" no longer exists
+   * ```
    */
-  drop(force?: boolean): Promise<{ name: string }> {
+  drop(
+    force: boolean = false
+  ): Promise<ArangoResponseMetadata & { name: string }> {
     return this._db.request(
       {
         method: "DELETE",
