@@ -87,7 +87,7 @@ function clean<T>(obj: T) {
 /**
  * Credentials for HTTP Basic authentication.
  */
-export type BasicAuth = {
+export type BasicAuthCredentials = {
   /**
    * The username, e.g. `"root"`.
    */
@@ -101,14 +101,14 @@ export type BasicAuth = {
 /**
  * Credentials for HTTP Bearer token authentication.
  */
-export type BearerAuth = {
+export type BearerAuthCredentials = {
   /**
    * The Bearer token.
    */
   token: string;
 };
 
-function isBearerAuth(auth: any): auth is BearerAuth {
+function isBearerAuth(auth: any): auth is BearerAuthCredentials {
   return auth.hasOwnProperty("token");
 }
 
@@ -285,7 +285,7 @@ export type Config = {
    *
    * Default: `{ username: "root", password: "" }`
    */
-  auth?: BasicAuth | BearerAuth;
+  auth?: BasicAuthCredentials | BearerAuthCredentials;
   /**
    * Numeric representation of the ArangoDB version the driver should expect.
    * The format is defined as `XYYZZ` where `X` is the major version, `Y` is
@@ -565,11 +565,11 @@ export class Connection {
     return search ? { pathname, search } : { pathname };
   }
 
-  setBearerAuth(auth: BearerAuth) {
+  setBearerAuth(auth: BearerAuthCredentials) {
     this.setHeader("authorization", `Bearer ${auth.token}`);
   }
 
-  setBasicAuth(auth: BasicAuth) {
+  setBasicAuth(auth: BasicAuthCredentials) {
     this.setHeader(
       "authorization",
       `Basic ${btoa(`${auth.username}:${auth.password}`)}`
