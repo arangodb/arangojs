@@ -81,8 +81,8 @@
 							<h3>Type aliases</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="_connection_.html#arangoresponsemetadata" class="tsd-kind-icon">Arango<wbr>Response<wbr>Metadata</a></li>
-								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="_connection_.html#basicauth" class="tsd-kind-icon">Basic<wbr>Auth</a></li>
-								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="_connection_.html#bearerauth" class="tsd-kind-icon">Bearer<wbr>Auth</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="_connection_.html#basicauthcredentials" class="tsd-kind-icon">Basic<wbr>Auth<wbr>Credentials</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="_connection_.html#bearerauthcredentials" class="tsd-kind-icon">Bearer<wbr>Auth<wbr>Credentials</a></li>
 								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="_connection_.html#config" class="tsd-kind-icon">Config</a></li>
 								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="_connection_.html#headers-1" class="tsd-kind-icon">Headers</a></li>
 								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="_connection_.html#loadbalancingstrategy-1" class="tsd-kind-icon">Load<wbr>Balancing<wbr>Strategy</a></li>
@@ -131,9 +131,9 @@
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
-					<a name="basicauth" class="tsd-anchor"></a>
-					<h3>Basic<wbr>Auth</h3>
-					<div class="tsd-signature tsd-kind-icon">Basic<wbr>Auth<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>password<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>username<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span></div>
+					<a name="basicauthcredentials" class="tsd-anchor"></a>
+					<h3>Basic<wbr>Auth<wbr>Credentials</h3>
+					<div class="tsd-signature tsd-kind-icon">Basic<wbr>Auth<wbr>Credentials<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>password<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>username<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -164,9 +164,9 @@
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
-					<a name="bearerauth" class="tsd-anchor"></a>
-					<h3>Bearer<wbr>Auth</h3>
-					<div class="tsd-signature tsd-kind-icon">Bearer<wbr>Auth<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>token<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span></div>
+					<a name="bearerauthcredentials" class="tsd-anchor"></a>
+					<h3>Bearer<wbr>Auth<wbr>Credentials</h3>
+					<div class="tsd-signature tsd-kind-icon">Bearer<wbr>Auth<wbr>Credentials<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>token<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -191,7 +191,7 @@
 				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
 					<a name="config" class="tsd-anchor"></a>
 					<h3>Config</h3>
-					<div class="tsd-signature tsd-kind-icon">Config<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>agent<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">; </span>agentOptions<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">{ </span>beforeSend<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span>xhrObject<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">; </span>maxSockets<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>timeout<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>useXdr<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span><span class="tsd-signature-symbol">; </span>withCredentials<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span><span class="tsd-signature-symbol">; </span>xhr<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">AgentOptions</span><span class="tsd-signature-symbol"> &amp; </span><a href="_connection_.html#requestinterceptors" class="tsd-signature-type">RequestInterceptors</a><span class="tsd-signature-symbol">; </span>arangoVersion<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>auth<span class="tsd-signature-symbol">?: </span><a href="_connection_.html#basicauth" class="tsd-signature-type">BasicAuth</a><span class="tsd-signature-symbol"> | </span><a href="_connection_.html#bearerauth" class="tsd-signature-type">BearerAuth</a><span class="tsd-signature-symbol">; </span>databaseName<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>headers<span class="tsd-signature-symbol">?: </span><a href="_connection_.html#headers-1" class="tsd-signature-type">Headers</a><span class="tsd-signature-symbol">; </span>loadBalancingStrategy<span class="tsd-signature-symbol">?: </span><a href="_connection_.html#loadbalancingstrategy-1" class="tsd-signature-type">LoadBalancingStrategy</a><span class="tsd-signature-symbol">; </span>maxRetries<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>url<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> }</span></div>
+					<div class="tsd-signature tsd-kind-icon">Config<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>agent<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">; </span>agentOptions<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">{ </span>beforeSend<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span>xhrObject<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">; </span>maxSockets<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>timeout<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>useXdr<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span><span class="tsd-signature-symbol">; </span>withCredentials<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span><span class="tsd-signature-symbol">; </span>xhr<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">AgentOptions</span><span class="tsd-signature-symbol"> &amp; </span><a href="_connection_.html#requestinterceptors" class="tsd-signature-type">RequestInterceptors</a><span class="tsd-signature-symbol">; </span>arangoVersion<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>auth<span class="tsd-signature-symbol">?: </span><a href="_connection_.html#basicauthcredentials" class="tsd-signature-type">BasicAuthCredentials</a><span class="tsd-signature-symbol"> | </span><a href="_connection_.html#bearerauthcredentials" class="tsd-signature-type">BearerAuthCredentials</a><span class="tsd-signature-symbol">; </span>databaseName<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>headers<span class="tsd-signature-symbol">?: </span><a href="_connection_.html#headers-1" class="tsd-signature-type">Headers</a><span class="tsd-signature-symbol">; </span>loadBalancingStrategy<span class="tsd-signature-symbol">?: </span><a href="_connection_.html#loadbalancingstrategy-1" class="tsd-signature-type">LoadBalancingStrategy</a><span class="tsd-signature-symbol">; </span>maxRetries<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>url<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -252,7 +252,7 @@
 								</div>
 							</li>
 							<li class="tsd-parameter">
-								<h5><span class="tsd-flag ts-flagOptional">Optional</span> auth<span class="tsd-signature-symbol">?: </span><a href="_connection_.html#basicauth" class="tsd-signature-type">BasicAuth</a><span class="tsd-signature-symbol"> | </span><a href="_connection_.html#bearerauth" class="tsd-signature-type">BearerAuth</a></h5>
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> auth<span class="tsd-signature-symbol">?: </span><a href="_connection_.html#basicauthcredentials" class="tsd-signature-type">BasicAuthCredentials</a><span class="tsd-signature-symbol"> | </span><a href="_connection_.html#bearerauthcredentials" class="tsd-signature-type">BearerAuthCredentials</a></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
 										<p>Credentials to use for authentication.</p>
@@ -697,10 +697,10 @@
 						<a href="_connection_.html#arangoresponsemetadata" class="tsd-kind-icon">Arango<wbr>Response<wbr>Metadata</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
-						<a href="_connection_.html#basicauth" class="tsd-kind-icon">Basic<wbr>Auth</a>
+						<a href="_connection_.html#basicauthcredentials" class="tsd-kind-icon">Basic<wbr>Auth<wbr>Credentials</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
-						<a href="_connection_.html#bearerauth" class="tsd-kind-icon">Bearer<wbr>Auth</a>
+						<a href="_connection_.html#bearerauthcredentials" class="tsd-kind-icon">Bearer<wbr>Auth<wbr>Credentials</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
 						<a href="_connection_.html#config" class="tsd-kind-icon">Config</a>
@@ -758,6 +758,5 @@
 </div>
 <div class="overlay"></div>
 <script src="../assets/js/main.js"></script>
-<script>if (location.protocol == 'file:') document.write('<script src="../assets/js/search.js"><' + '/script>');</script>
 </body>
 </html>
