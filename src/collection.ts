@@ -1607,7 +1607,9 @@ export interface DocumentCollection<T extends object = any>
 
   //#region crud
   /**
-   * TODO
+   * Retrieves the `shardId` of the shard responsible for the given document.
+   *
+   * @param document - Document in the collection to look up the `shardId` of.
    */
   getResponsibleShard(document: Partial<Document<T>>): Promise<string>;
   /**
