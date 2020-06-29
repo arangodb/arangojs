@@ -7,7 +7,8 @@
  * } from "arangojs/graph";
  * ```
  *
- * TODO
+ * The "graph" module provides graph related types and interfaces
+ * for TypeScript.
  *
  * @packageDocumentation
  */
@@ -79,7 +80,7 @@ export type GraphCollectionRemoveOptions = {
 };
 
 /**
- * TODO
+ * Represents a {@link Collection} of vertices in a {@link Graph}.
  */
 export class GraphVertexCollection<T extends object = any>
   implements ArangoCollection {
@@ -323,7 +324,7 @@ export class GraphVertexCollection<T extends object = any>
 }
 
 /**
- * TODO
+ * Represents a {@link Collection} of edges in a {@link Graph}.
  */
 export class GraphEdgeCollection<T extends object = any>
   implements ArangoCollection {
@@ -666,7 +667,7 @@ export type GraphCreateOptions = {
 };
 
 /**
- * TODO
+ * Represents a graph in a {@link Database}.
  */
 export class Graph {
   protected _name: string;
@@ -683,20 +684,10 @@ export class Graph {
   }
 
   /**
-   * TODO
+   * Name of the graph.
    */
   get name() {
     return this._name;
-  }
-
-  /**
-   * TODO
-   */
-  get(): Promise<GraphInfo> {
-    return this._db.request(
-      { path: `/_api/gharial/${this._name}` },
-      (res) => res.body.graph
-    );
   }
 
   /**
@@ -712,6 +703,16 @@ export class Graph {
       }
       throw err;
     }
+  }
+
+  /**
+   * TODO
+   */
+  get(): Promise<GraphInfo> {
+    return this._db.request(
+      { path: `/_api/gharial/${this._name}` },
+      (res) => res.body.graph
+    );
   }
 
   /**
