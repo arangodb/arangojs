@@ -2116,7 +2116,7 @@ export interface DocumentCollection<T extends object = any>
   ): Promise<ArrayCursor<Document<T>>>;
 
   /**
-   * Retrieves a single document in he collection matching the given example.
+   * Retrieves a single document in the collection matching the given example.
    *
    * @param example - An object representing an example for the document.
    *
@@ -2839,7 +2839,7 @@ export interface EdgeCollection<T extends object = any>
   ): Promise<ArrayCursor<Edge<T>>>;
 
   /**
-   * Retrieves a single document in he collection matching the given example.
+   * Retrieves a single document in the collection matching the given example.
    *
    * @param example - An object representing an example for the document.
    *
