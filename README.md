@@ -190,6 +190,49 @@ npm install --save arangojs@6
 
 ## Common issues
 
+### No code intelligence when using require instead of import
+
+If you are using `require` to import the `arangojs` module in JavaScript, the
+default export might not be recognized as a function by the code intelligence
+of common editors like Visual Studio Code, breaking auto-complete and other
+useful features.
+
+As a workaround, use the `arangojs` function exported by that module instead
+of calling the module itself:
+
+```diff
+  const arangojs = require("arangojs");
+
+- const db = arangojs({
++ const db = arangojs.arangojs({
+    url: ARANGODB_SERVER,
+  });
+```
+
+Alternatively you can use the `Database` class directly:
+
+```diff
+  const arangojs = require("arangojs");
++ const Database = arangojs.Database;
+
+- const db = arangojs({
++ const db = new Database({
+    url: ARANGODB_SERVER,
+  });
+```
+
+Or using object destructuring:
+
+```diff
+- const arangojs = require("arangojs");
++ const { Database } = require("arangojs");
+
+- const db = arangojs({
++ const db = new Database({
+    url: ARANGODB_SERVER,
+  });
+```
+
 ### Node.js `ReferenceError: window is not defined`
 
 If you compile your Node project using a build tool like Webpack, you may need

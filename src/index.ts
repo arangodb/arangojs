@@ -12,13 +12,10 @@
  *
  * @packageDocumentation
  */
-import { aql } from "./aql";
-import { CollectionStatus, CollectionType } from "./collection";
 import { Config } from "./connection";
 import { Database } from "./database";
-import { ArangoError } from "./error";
-import { ViewType } from "./view";
 
+module.exports = exports = arangojs;
 /**
  * Creates a new `Database` instance with its own connection pool.
  *
@@ -26,7 +23,7 @@ import { ViewType } from "./view";
  *
  * @param config - An object with configuration options.
  */
-export default function arangojs(config?: Config): Database;
+export function arangojs(config?: Config): Database;
 /**
  * Creates a new `Database` instance with its own connection pool.
  *
@@ -35,22 +32,15 @@ export default function arangojs(config?: Config): Database;
  * @param url - Base URL of the ArangoDB server or list of server URLs.
  * Equivalent to the `url` option in {@link Config}.
  */
-export default function arangojs(url: string | string[]): Database;
-export default function arangojs(config?: string | string[] | Config) {
+export function arangojs(url: string | string[]): Database;
+export function arangojs(config?: string | string[] | Config) {
   if (typeof config === "string" || Array.isArray(config)) {
     const url = config;
     return new Database(url);
   }
   return new Database(config);
 }
-
-arangojs.ArangoError = ArangoError;
-arangojs.CollectionStatus = CollectionStatus;
-arangojs.CollectionType = CollectionType;
-arangojs.ViewType = ViewType;
-arangojs.Database = Database;
-arangojs.aql = aql;
-
+export default arangojs;
 export { aql } from "./aql";
 export { CollectionStatus, CollectionType } from "./collection";
 export { Database } from "./database";
