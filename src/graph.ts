@@ -691,7 +691,15 @@ export class Graph {
   }
 
   /**
-   * TODO
+   * Checks whether the graph exists.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const graph = db.graph("some-graph");
+   * const result = await graph.exists();
+   * // result indicates whether the graph exists
+   * ```
    */
   async exists(): Promise<boolean> {
     try {

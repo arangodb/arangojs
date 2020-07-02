@@ -3,21 +3,6 @@
 These functions implement the
 [HTTP API for manipulating graphs](https://www.arangodb.com/docs/stable/http/gharial.html).
 
-## graph.exists
-
-`async graph.exists(): boolean`
-
-Checks whether the graph exists.
-
-**Examples**
-
-```js
-const db = new Database();
-const graph = db.graph("some-graph");
-const result = await graph.exists();
-// result indicates whether the graph exists
-```
-
 ## graph.get
 
 `async graph.get(): object`
