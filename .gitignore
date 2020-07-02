@@ -1,5 +1,7 @@
 node_modules/
 /lib
+/build
+/gh-pages
 /.vscode
 yarn.lock
 package-lock.json
