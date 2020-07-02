@@ -221,6 +221,37 @@ npm install --save arangojs@6</code></pre>
 				<a href="#common-issues" id="common-issues" style="color: inherit; text-decoration: none;">
 					<h2>Common issues</h2>
 				</a>
+				<a href="#no-code-intelligence-when-using-require-instead-of-import" id="no-code-intelligence-when-using-require-instead-of-import" style="color: inherit; text-decoration: none;">
+					<h3>No code intelligence when using require instead of import</h3>
+				</a>
+				<p>If you are using <code>require</code> to import the <code>arangojs</code> module in JavaScript, the
+					default export might not be recognized as a function by the code intelligence
+					of common editors like Visual Studio Code, breaking auto-complete and other
+				useful features.</p>
+				<p>As a workaround, use the <code>arangojs</code> function exported by that module instead
+				of calling the module itself:</p>
+				<pre><code class="language-diff">  const arangojs = require(&quot;arangojs&quot;);
+
+<span class="hljs-deletion">- const db = arangojs({</span>
+<span class="hljs-addition">+ const db = arangojs.arangojs({</span>
+    url: ARANGODB_SERVER,
+  });</code></pre>
+				<p>Alternatively you can use the <code>Database</code> class directly:</p>
+				<pre><code class="language-diff">  const arangojs = require(&quot;arangojs&quot;);
+<span class="hljs-addition">+ const Database = arangojs.Database;</span>
+
+<span class="hljs-deletion">- const db = arangojs({</span>
+<span class="hljs-addition">+ const db = new Database({</span>
+    url: ARANGODB_SERVER,
+  });</code></pre>
+				<p>Or using object destructuring:</p>
+				<pre><code class="language-diff"><span class="hljs-deletion">- const arangojs = require(&quot;arangojs&quot;);</span>
+<span class="hljs-addition">+ const { Database } = require(&quot;arangojs&quot;);</span>
+
+<span class="hljs-deletion">- const db = arangojs({</span>
+<span class="hljs-addition">+ const db = new Database({</span>
+    url: ARANGODB_SERVER,
+  });</code></pre>
 				<a href="#nodejs-referenceerror-window-is-not-defined" id="nodejs-referenceerror-window-is-not-defined" style="color: inherit; text-decoration: none;">
 					<h3>Node.js <code>ReferenceError: window is not defined</code></h3>
 				</a>
