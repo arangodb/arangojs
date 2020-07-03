@@ -342,6 +342,7 @@ export class Transaction {
    * // BETTER: If an arangojs method is not async and doesn't return promises,
    * // call it without `trx.step`
    * const collection = db.collection("my-documents");
+   * ```
    */
   step<T>(callback: () => Promise<T>): Promise<T> {
     const conn = (this._db as any)._connection as Connection;

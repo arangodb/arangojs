@@ -2603,6 +2603,7 @@ export interface EdgeCollection<T extends object = any>
    *   { returnNew: true }
    * );
    * console.log(result.new.active, result.new.best); // false true
+   * ```
    */
   update(
     selector: DocumentSelector,

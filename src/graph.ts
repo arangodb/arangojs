@@ -948,6 +948,7 @@ export class Graph {
    *   visitor: "result.vertices.push(vertex._key);",
    * });
    * console.log(result.vertices); // ["a", "b", "c", "d"]
+   * ```
    */
   traversal(startVertex: string, options?: TraversalOptions): Promise<any> {
     return this._db.request(

@@ -164,6 +164,7 @@ export class ArrayCursor<T = any> {
    * const cursor = await db.query(aql`FOR x IN 1..5 RETURN x`);
    * const result = await cursor.all(); // [1, 2, 3, 4, 5]
    * console.log(cursor.hasNext); // false
+   * ```
    */
   async all(): Promise<T[]> {
     await this._drain();
