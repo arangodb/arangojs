@@ -3,7 +3,8 @@
  * import type { ArangoError } from "arangojs/error";
  * ```
  *
- * TODO
+ * The "error" module provides types and interfaces for TypeScript related
+ * to arangojs error handling.
  *
  * @packageDocumentation
  */
@@ -74,7 +75,22 @@ export function isArangoError(error: any): error is ArangoError {
 }
 
 /**
- * TODO
+ * Indicates whether the given value represents an ArangoDB error response.
+ *
+ * @internal
+ */
+export function isArangoErrorResponse(body: any): boolean {
+  return (
+    body &&
+    body.hasOwnProperty("error") &&
+    body.hasOwnProperty("code") &&
+    body.hasOwnProperty("errorMessage") &&
+    body.hasOwnProperty("errorNum")
+  );
+}
+
+/**
+ * Indicates whether the given value represents a Node.js `SystemError`.
  */
 export function isSystemError(err: any): err is SystemError {
   return (
@@ -86,7 +102,7 @@ export function isSystemError(err: any): err is SystemError {
 }
 
 /**
- * TODO
+ * Interface representing a Node.js `SystemError`.
  */
 export interface SystemError extends Error {
   code: string;
@@ -95,7 +111,7 @@ export interface SystemError extends Error {
 }
 
 /**
- * TODO
+ * Represents an error returned by ArangoDB.
  */
 export class ArangoError extends ExtendableError {
   name = "ArangoError";
@@ -133,7 +149,7 @@ export class ArangoError extends ExtendableError {
 }
 
 /**
- * TODO
+ * Represents a plain HTTP error response.
  */
 export class HttpError extends ExtendableError {
   name = "HttpError";

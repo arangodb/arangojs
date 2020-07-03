@@ -13,7 +13,12 @@ import { AgentOptions } from "https";
 import { stringify as querystringify } from "querystring";
 import { LinkedList } from "x3-linkedlist";
 import { Database } from "./database";
-import { ArangoError, HttpError, isSystemError } from "./error";
+import {
+  ArangoError,
+  HttpError,
+  isArangoErrorResponse,
+  isSystemError,
+} from "./error";
 import { btoa } from "./lib/btoa";
 import { normalizeUrl } from "./lib/normalizeUrl";
 import {
@@ -776,13 +781,7 @@ export class Connection {
           } else {
             parsedBody = res.body;
           }
-          if (
-            parsedBody &&
-            parsedBody.hasOwnProperty("error") &&
-            parsedBody.hasOwnProperty("code") &&
-            parsedBody.hasOwnProperty("errorMessage") &&
-            parsedBody.hasOwnProperty("errorNum")
-          ) {
+          if (isArangoErrorResponse(parsedBody)) {
             res.body = parsedBody;
             reject(new ArangoError(res));
           } else if (res.statusCode && res.statusCode >= 400) {
