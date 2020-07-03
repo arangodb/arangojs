@@ -69,7 +69,8 @@
 					<div class="lead">
 						<pre><code class="language-ts"><span class="hljs-keyword">import</span> <span class="hljs-keyword">type</span> { ArangoError } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;arangojs/error&quot;</span>;</code></pre>
 					</div>
-					<p>TODO</p>
+					<p>The &quot;error&quot; module provides types and interfaces for TypeScript related
+					to arangojs error handling.</p>
 				</div>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
@@ -93,6 +94,7 @@
 							<h3>Functions</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-function tsd-parent-kind-module"><a href="_error_.html#isarangoerror" class="tsd-kind-icon">is<wbr>Arango<wbr>Error</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-module"><a href="_error_.html#isarangoerrorresponse" class="tsd-kind-icon">is<wbr>Arango<wbr>Error<wbr>Response</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-module"><a href="_error_.html#issystemerror" class="tsd-kind-icon">is<wbr>System<wbr>Error</a></li>
 							</ul>
 						</section>
@@ -130,6 +132,35 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module">
+					<a name="isarangoerrorresponse" class="tsd-anchor"></a>
+					<h3>is<wbr>Arango<wbr>Error<wbr>Response</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module">
+						<li class="tsd-signature tsd-kind-icon">is<wbr>Arango<wbr>Error<wbr>Response<span class="tsd-signature-symbol">(</span>body<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Indicates whether the given value represents an ArangoDB error response.</p>
+								</div>
+								<dl class="tsd-comment-tags">
+									<dt>internal</dt>
+									<dd></dd>
+								</dl>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>body: <span class="tsd-signature-type">any</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module">
 					<a name="issystemerror" class="tsd-anchor"></a>
 					<h3>is<wbr>System<wbr>Error</h3>
 					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module">
@@ -141,7 +172,7 @@
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>TODO</p>
+									<p>Indicates whether the given value represents a Node.js <code>SystemError</code>.</p>
 								</div>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -228,6 +259,9 @@
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-module">
 						<a href="_error_.html#isarangoerror" class="tsd-kind-icon">is<wbr>Arango<wbr>Error</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-module">
+						<a href="_error_.html#isarangoerrorresponse" class="tsd-kind-icon">is<wbr>Arango<wbr>Error<wbr>Response</a>
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-module">
 						<a href="_error_.html#issystemerror" class="tsd-kind-icon">is<wbr>System<wbr>Error</a>
