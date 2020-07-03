@@ -36,13 +36,19 @@ import {
 } from "./connection";
 import { ArrayCursor } from "./cursor";
 import { isArangoError } from "./error";
-import { EdgeDefinition, Graph, GraphCreateOptions, GraphInfo } from "./graph";
+import {
+  EdgeDefinitionOptions,
+  Graph,
+  GraphCreateOptions,
+  GraphInfo,
+} from "./graph";
 import { Blob } from "./lib/blob";
 import { toForm } from "./lib/multipart";
 import { ArangojsResponse } from "./lib/request";
 import { Route } from "./route";
 import { Transaction } from "./transaction";
 import { DATABASE_NOT_FOUND } from "./util/codes";
+import { collectionToString } from "./util/collectionToString";
 import { FoxxManifest } from "./util/foxx-manifest";
 import { Dict } from "./util/types";
 import {
@@ -60,6 +66,50 @@ import {
  */
 export function isArangoDatabase(database: any): database is Database {
   return Boolean(database && database.isArangoDatabase);
+}
+
+/**
+ * @internal
+ * @hidden
+ */
+function coerceTransactionCollections(
+  collections:
+    | (TransactionCollections & { allowImplicit?: boolean })
+    | (string | ArangoCollection)[]
+    | string
+    | ArangoCollection
+): CoercedTransactionCollections {
+  if (typeof collections === "string") {
+    return { write: [collections] };
+  }
+  if (Array.isArray(collections)) {
+    return { write: collections.map(collectionToString) };
+  }
+  if (isArangoCollection(collections)) {
+    return { write: collectionToString(collections) };
+  }
+  const cols: CoercedTransactionCollections = {};
+  if (collections) {
+    if (collections.allowImplicit !== undefined) {
+      cols.allowImplicit = collections.allowImplicit;
+    }
+    if (collections.read) {
+      cols.read = Array.isArray(collections.read)
+        ? collections.read.map(collectionToString)
+        : collectionToString(collections.read);
+    }
+    if (collections.write) {
+      cols.write = Array.isArray(collections.write)
+        ? collections.write.map(collectionToString)
+        : collectionToString(collections.write);
+    }
+    if (collections.exclusive) {
+      cols.exclusive = Array.isArray(collections.exclusive)
+        ? collections.exclusive.map(collectionToString)
+        : collectionToString(collections.exclusive);
+    }
+  }
+  return cols;
 }
 
 /**
@@ -1735,7 +1785,7 @@ export class Database {
    */
   async createGraph(
     graphName: string,
-    edgeDefinitions: EdgeDefinition[],
+    edgeDefinitions: EdgeDefinitionOptions[],
     options?: GraphCreateOptions
   ): Promise<Graph> {
     const graph = this.graph(graphName);
@@ -3935,50 +3985,4 @@ export class Database {
     );
   }
   //#endregion
-}
-
-function collectionToString(collection: string | ArangoCollection): string {
-  if (isArangoCollection(collection)) {
-    return String(collection.name);
-  } else return String(collection);
-}
-
-function coerceTransactionCollections(
-  collections:
-    | (TransactionCollections & { allowImplicit?: boolean })
-    | (string | ArangoCollection)[]
-    | string
-    | ArangoCollection
-): CoercedTransactionCollections {
-  if (typeof collections === "string") {
-    return { write: [collections] };
-  }
-  if (Array.isArray(collections)) {
-    return { write: collections.map(collectionToString) };
-  }
-  if (isArangoCollection(collections)) {
-    return { write: collectionToString(collections) };
-  }
-  const cols: CoercedTransactionCollections = {};
-  if (collections) {
-    if (collections.allowImplicit !== undefined) {
-      cols.allowImplicit = collections.allowImplicit;
-    }
-    if (collections.read) {
-      cols.read = Array.isArray(collections.read)
-        ? collections.read.map(collectionToString)
-        : collectionToString(collections.read);
-    }
-    if (collections.write) {
-      cols.write = Array.isArray(collections.write)
-        ? collections.write.map(collectionToString)
-        : collectionToString(collections.write);
-    }
-    if (collections.exclusive) {
-      cols.exclusive = Array.isArray(collections.exclusive)
-        ? collections.exclusive.map(collectionToString)
-        : collectionToString(collections.exclusive);
-    }
-  }
-  return cols;
 }
