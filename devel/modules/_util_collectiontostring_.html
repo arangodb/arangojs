@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>ViewType | arangojs</title>
+	<title>&quot;util/collectionToString&quot; | arangojs</title>
 	<meta name="description" content="Documentation for arangojs">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -54,13 +54,10 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="../modules/_view_.html">&quot;view&quot;</a>
-				</li>
-				<li>
-					<a href="_view_.viewtype.html">ViewType</a>
+					<a href="_util_collectiontostring_.html">&quot;util/collectionToString&quot;</a>
 				</li>
 			</ul>
-			<h1>Enumeration ViewType</h1>
+			<h1>Module &quot;util/collectionToString&quot;</h1>
 		</div>
 	</div>
 </header>
@@ -70,8 +67,13 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>String values indicating the View type.</p>
+						<p>Helper function for coercing a value that might be a string representing a
+						collection name, or an <a href="../interfaces/_collection_.arangocollection.html">ArangoCollection</a> object to a string.</p>
 					</div>
+					<dl class="tsd-comment-tags">
+						<dt>internal</dt>
+						<dd></dd>
+					</dl>
 				</div>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
@@ -79,22 +81,48 @@
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
 						<section class="tsd-index-section ">
-							<h3>Enumeration members</h3>
+							<h3>Functions</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-enum-member tsd-parent-kind-enum"><a href="_view_.viewtype.html#arangosearch_view" class="tsd-kind-icon">ARANGOSEARCH_<wbr>VIEW</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-module"><a href="_util_collectiontostring_.html#collectiontostring" class="tsd-kind-icon">collection<wbr>ToString</a></li>
 							</ul>
 						</section>
 					</div>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
-				<h2>Enumeration members</h2>
-				<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum">
-					<a name="arangosearch_view" class="tsd-anchor"></a>
-					<h3>ARANGOSEARCH_<wbr>VIEW</h3>
-					<div class="tsd-signature tsd-kind-icon">ARANGOSEARCH_<wbr>VIEW<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> = &quot;arangosearch&quot;</span></div>
-					<aside class="tsd-sources">
-					</aside>
+				<h2>Functions</h2>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module">
+					<a name="collectiontostring" class="tsd-anchor"></a>
+					<h3>collection<wbr>ToString</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module">
+						<li class="tsd-signature tsd-kind-icon">collection<wbr>ToString<span class="tsd-signature-symbol">(</span>collection<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="../interfaces/_collection_.arangocollection.html" class="tsd-signature-type">ArangoCollection</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Coerces the given collection name or <a href="../interfaces/_collection_.arangocollection.html">ArangoCollection</a> object to
+									a string representing the collection name.</p>
+								</div>
+								<dl class="tsd-comment-tags">
+									<dt>internal</dt>
+									<dd></dd>
+								</dl>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>collection: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="../interfaces/_collection_.arangocollection.html" class="tsd-signature-type">ArangoCollection</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Collection name or <a href="../interfaces/_collection_.arangocollection.html">ArangoCollection</a> object.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
+						</li>
+					</ul>
 				</section>
 			</section>
 		</div>
@@ -105,98 +133,62 @@
 						<a href="../globals.html"><em>Globals</em></a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="../modules/_analyzer_.html">&quot;analyzer&quot;</a>
+						<a href="_analyzer_.html">&quot;analyzer&quot;</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="../modules/_aql_.html">&quot;aql&quot;</a>
+						<a href="_aql_.html">&quot;aql&quot;</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="../modules/_collection_.html">&quot;collection&quot;</a>
+						<a href="_collection_.html">&quot;collection&quot;</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="../modules/_connection_.html">&quot;connection&quot;</a>
+						<a href="_connection_.html">&quot;connection&quot;</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="../modules/_cursor_.html">&quot;cursor&quot;</a>
+						<a href="_cursor_.html">&quot;cursor&quot;</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="../modules/_database_.html">&quot;database&quot;</a>
+						<a href="_database_.html">&quot;database&quot;</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="../modules/_documents_.html">&quot;documents&quot;</a>
+						<a href="_documents_.html">&quot;documents&quot;</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="../modules/_error_.html">&quot;error&quot;</a>
+						<a href="_error_.html">&quot;error&quot;</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="../modules/_graph_.html">&quot;graph&quot;</a>
+						<a href="_graph_.html">&quot;graph&quot;</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="../modules/_index_.html">&quot;index&quot;</a>
+						<a href="_index_.html">&quot;index&quot;</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="../modules/_indexes_.html">&quot;indexes&quot;</a>
+						<a href="_indexes_.html">&quot;indexes&quot;</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="../modules/_route_.html">&quot;route&quot;</a>
+						<a href="_route_.html">&quot;route&quot;</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="../modules/_transaction_.html">&quot;transaction&quot;</a>
+						<a href="_transaction_.html">&quot;transaction&quot;</a>
 					</li>
 					<li class=" tsd-kind-module">
-						<a href="../modules/_util_codes_.html">&quot;util/codes&quot;</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="../modules/_util_collectiontostring_.html">&quot;util/collection<wbr>ToString&quot;</a>
-					</li>
-					<li class=" tsd-kind-module">
-						<a href="../modules/_util_types_.html">&quot;util/types&quot;</a>
+						<a href="_util_codes_.html">&quot;util/codes&quot;</a>
 					</li>
 					<li class="current tsd-kind-module">
-						<a href="../modules/_view_.html">&quot;view&quot;</a>
+						<a href="_util_collectiontostring_.html">&quot;util/collection<wbr>ToString&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="_util_types_.html">&quot;util/types&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="_view_.html">&quot;view&quot;</a>
 					</li>
 				</ul>
 			</nav>
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
-				</ul>
-				<ul class="current">
-					<li class="current tsd-kind-enum tsd-parent-kind-module">
-						<a href="_view_.viewtype.html" class="tsd-kind-icon">View<wbr>Type</a>
-						<ul>
-							<li class=" tsd-kind-enum-member tsd-parent-kind-enum">
-								<a href="_view_.viewtype.html#arangosearch_view" class="tsd-kind-icon">ARANGOSEARCH_<wbr>VIEW</a>
-							</li>
-						</ul>
-					</li>
-				</ul>
-				<ul class="after-current">
-					<li class=" tsd-kind-class tsd-parent-kind-module tsd-has-type-parameter">
-						<a href="../classes/_view_.view.html" class="tsd-kind-icon">View</a>
-					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-module">
-						<a href="../interfaces/_view_.arangosearchview.html" class="tsd-kind-icon">Arango<wbr>Search<wbr>View</a>
-					</li>
-					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
-						<a href="../modules/_view_.html#arangosearchviewlink" class="tsd-kind-icon">Arango<wbr>Search<wbr>View<wbr>Link</a>
-					</li>
-					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
-						<a href="../modules/_view_.html#arangosearchviewproperties" class="tsd-kind-icon">Arango<wbr>Search<wbr>View<wbr>Properties</a>
-					</li>
-					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
-						<a href="../modules/_view_.html#arangosearchviewpropertiesoptions" class="tsd-kind-icon">Arango<wbr>Search<wbr>View<wbr>Properties<wbr>Options</a>
-					</li>
-					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
-						<a href="../modules/_view_.html#bytesaccumconsolidationpolicy" class="tsd-kind-icon">Bytes<wbr>Accum<wbr>Consolidation<wbr>Policy</a>
-					</li>
-					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
-						<a href="../modules/_view_.html#tierconsolidationpolicy" class="tsd-kind-icon">Tier<wbr>Consolidation<wbr>Policy</a>
-					</li>
-					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
-						<a href="../modules/_view_.html#viewdescription" class="tsd-kind-icon">View<wbr>Description</a>
-					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-module">
-						<a href="../modules/_view_.html#isarangoview" class="tsd-kind-icon">is<wbr>Arango<wbr>View</a>
+						<a href="_util_collectiontostring_.html#collectiontostring" class="tsd-kind-icon">collection<wbr>ToString</a>
 					</li>
 				</ul>
 			</nav>

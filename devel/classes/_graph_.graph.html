@@ -144,7 +144,7 @@
 					<a name="addedgedefinition" class="tsd-anchor"></a>
 					<h3>add<wbr>Edge<wbr>Definition</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">add<wbr>Edge<wbr>Definition<span class="tsd-signature-symbol">(</span>definition<span class="tsd-signature-symbol">: </span><a href="../modules/_graph_.html#edgedefinition" class="tsd-signature-type">EdgeDefinition</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/_graph_.html#graphinfo" class="tsd-signature-type">GraphInfo</a><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">add<wbr>Edge<wbr>Definition<span class="tsd-signature-symbol">(</span>edgeDefinition<span class="tsd-signature-symbol">: </span><a href="../modules/_graph_.html#edgedefinitionoptions" class="tsd-signature-type">EdgeDefinitionOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/_graph_.html#graphinfo" class="tsd-signature-type">GraphInfo</a><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -152,13 +152,16 @@
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>TODO</p>
+									<p>Adds an edge definition to this graph.</p>
 								</div>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>definition: <a href="../modules/_graph_.html#edgedefinition" class="tsd-signature-type">EdgeDefinition</a></h5>
+									<h5>edgeDefinition: <a href="../modules/_graph_.html#edgedefinitionoptions" class="tsd-signature-type">EdgeDefinitionOptions</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Definition of a relation in this graph.</p>
+									</div>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/_graph_.html#graphinfo" class="tsd-signature-type">GraphInfo</a><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -177,13 +180,16 @@
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>TODO</p>
+									<p>Adds the given collection to this graph as a vertex collection.</p>
 								</div>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
 									<h5>collection: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="../interfaces/_collection_.arangocollection.html" class="tsd-signature-type">ArangoCollection</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Collection to add to the graph.</p>
+									</div>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/_graph_.html#graphinfo" class="tsd-signature-type">GraphInfo</a><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -194,7 +200,7 @@
 					<a name="create" class="tsd-anchor"></a>
 					<h3>create</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">create<span class="tsd-signature-symbol">(</span>edgeDefinitions<span class="tsd-signature-symbol">: </span><a href="../modules/_graph_.html#edgedefinition" class="tsd-signature-type">EdgeDefinition</a><span class="tsd-signature-symbol">[]</span>, options<span class="tsd-signature-symbol">?: </span><a href="../modules/_graph_.html#graphcreateoptions" class="tsd-signature-type">GraphCreateOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/_graph_.html#graphinfo" class="tsd-signature-type">GraphInfo</a><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">create<span class="tsd-signature-symbol">(</span>edgeDefinitions<span class="tsd-signature-symbol">: </span><a href="../modules/_graph_.html#edgedefinitionoptions" class="tsd-signature-type">EdgeDefinitionOptions</a><span class="tsd-signature-symbol">[]</span>, options<span class="tsd-signature-symbol">?: </span><a href="../modules/_graph_.html#graphcreateoptions" class="tsd-signature-type">GraphCreateOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/_graph_.html#graphinfo" class="tsd-signature-type">GraphInfo</a><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -202,16 +208,37 @@
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>TODO</p>
+									<p>Creates a graph with the given <code>edgeDefinitions</code> and <code>options</code> for this
+									graph&#39;s name.</p>
 								</div>
+								<dl class="tsd-comment-tags">
+									<dt>example</dt>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> graph = db.graph(<span class="hljs-string">&quot;some-graph&quot;</span>);
+<span class="hljs-keyword">const</span> info = <span class="hljs-keyword">await</span> graph.create([
+  {
+    <span class="hljs-attr">collection</span>: <span class="hljs-string">&quot;edges&quot;</span>,
+    <span class="hljs-attr">from</span>: [<span class="hljs-string">&quot;start-vertices&quot;</span>],
+    <span class="hljs-attr">to</span>: [<span class="hljs-string">&quot;end-vertices&quot;</span>],
+  },
+]);
+<span class="hljs-comment">// graph now exists</span></code></pre>
+									</dd>
+								</dl>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>edgeDefinitions: <a href="../modules/_graph_.html#edgedefinition" class="tsd-signature-type">EdgeDefinition</a><span class="tsd-signature-symbol">[]</span></h5>
+									<h5>edgeDefinitions: <a href="../modules/_graph_.html#edgedefinitionoptions" class="tsd-signature-type">EdgeDefinitionOptions</a><span class="tsd-signature-symbol">[]</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Definitions for the relations of the graph.</p>
+									</div>
 								</li>
 								<li>
 									<h5><span class="tsd-flag ts-flagOptional">Optional</span> options: <a href="../modules/_graph_.html#graphcreateoptions" class="tsd-signature-type">GraphCreateOptions</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Options for creating the graph.</p>
+									</div>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/_graph_.html#graphinfo" class="tsd-signature-type">GraphInfo</a><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -230,13 +257,25 @@
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>TODO</p>
+									<p>Deletes the graph from the database.</p>
 								</div>
+								<dl class="tsd-comment-tags">
+									<dt>example</dt>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> graph = db.graph(<span class="hljs-string">&quot;some-graph&quot;</span>);
+<span class="hljs-keyword">await</span> graph.drop();
+<span class="hljs-comment">// the graph &quot;some-graph&quot; no longer exists</span></code></pre>
+									</dd>
+								</dl>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
 									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> dropCollections: <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = false</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>If set to <code>true</code>, the collections associated with
+										the graph will also be deleted.</p>
+									</div>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -247,7 +286,7 @@
 					<a name="edgecollection" class="tsd-anchor"></a>
 					<h3>edge<wbr>Collection</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
-						<li class="tsd-signature tsd-kind-icon">edge<wbr>Collection&lt;T&gt;<span class="tsd-signature-symbol">(</span>collectionName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_graph_.graphedgecollection.html" class="tsd-signature-type">GraphEdgeCollection</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">edge<wbr>Collection&lt;T&gt;<span class="tsd-signature-symbol">(</span>collection<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="../interfaces/_collection_.arangocollection.html" class="tsd-signature-type">ArangoCollection</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_graph_.graphedgecollection.html" class="tsd-signature-type">GraphEdgeCollection</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -255,19 +294,26 @@
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>TODO</p>
+									<p>Returns a <a href="_graph_.graphedgecollection.html">GraphEdgeCollection</a> instance for the given collection
+									name representing the collection in this graph.</p>
 								</div>
 							</div>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
 							<ul class="tsd-type-parameters">
 								<li>
 									<h4>T<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span></h4>
+									<div class="tsd-comment tsd-typography">
+										<p>Type to use for document data. Defaults to <code>any</code>.</p>
+									</div>
 								</li>
 							</ul>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>collectionName: <span class="tsd-signature-type">string</span></h5>
+									<h5>collection: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="../interfaces/_collection_.arangocollection.html" class="tsd-signature-type">ArangoCollection</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Name of the edge collection.</p>
+									</div>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <a href="_graph_.graphedgecollection.html" class="tsd-signature-type">GraphEdgeCollection</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -286,8 +332,10 @@
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>TODO</p>
+									<p>Fetches all edge collections of this graph from the database and returns
+									an array of <a href="_graph_.graphedgecollection.html">GraphEdgeCollection</a> instances.</p>
 								</div>
+								<p>See also <a href="_graph_.graph.html#listedgecollections">Graph.listEdgeCollections</a>.</p>
 							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="_graph_.graphedgecollection.html" class="tsd-signature-type">GraphEdgeCollection</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
@@ -332,8 +380,16 @@
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>TODO</p>
+									<p>Retrieves general information about the graph.</p>
 								</div>
+								<dl class="tsd-comment-tags">
+									<dt>example</dt>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> graph = db.graph(<span class="hljs-string">&quot;some-graph&quot;</span>);
+<span class="hljs-keyword">const</span> data = <span class="hljs-keyword">await</span> graph.get();
+<span class="hljs-comment">// data contains general information about the graph</span></code></pre>
+									</dd>
+								</dl>
 							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/_graph_.html#graphinfo" class="tsd-signature-type">GraphInfo</a><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
@@ -351,8 +407,10 @@
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>TODO</p>
+									<p>Fetches all edge collections of this graph from the database and returns
+									an array of their names.</p>
 								</div>
+								<p>See also <a href="_graph_.graph.html#edgecollections">Graph.edgeCollections</a>.</p>
 							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
@@ -370,8 +428,10 @@
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>TODO</p>
+									<p>Fetches all vertex collections of this graph from the database and returns
+									an array of their names.</p>
 								</div>
+								<p>See also <a href="_graph_.graph.html#vertexcollections">Graph.vertexCollections</a>.</p>
 							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
@@ -381,7 +441,7 @@
 					<a name="removeedgedefinition" class="tsd-anchor"></a>
 					<h3>remove<wbr>Edge<wbr>Definition</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">remove<wbr>Edge<wbr>Definition<span class="tsd-signature-symbol">(</span>edgeCollection<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, dropCollection<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/_graph_.html#graphinfo" class="tsd-signature-type">GraphInfo</a><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">remove<wbr>Edge<wbr>Definition<span class="tsd-signature-symbol">(</span>collection<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="../interfaces/_collection_.arangocollection.html" class="tsd-signature-type">ArangoCollection</a>, dropCollection<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/_graph_.html#graphinfo" class="tsd-signature-type">GraphInfo</a><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -389,16 +449,23 @@
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>TODO</p>
+									<p>Removes the edge definition for the given edge collection from this graph.</p>
 								</div>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>edgeCollection: <span class="tsd-signature-type">string</span></h5>
+									<h5>collection: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="../interfaces/_collection_.arangocollection.html" class="tsd-signature-type">ArangoCollection</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Edge collection for which to remove the definition.</p>
+									</div>
 								</li>
 								<li>
 									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> dropCollection: <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = false</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>If set to <code>true</code>, the collection will also be
+										deleted from the database.</p>
+									</div>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/_graph_.html#graphinfo" class="tsd-signature-type">GraphInfo</a><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -417,16 +484,23 @@
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>TODO</p>
+									<p>Removes the given collection from this graph as a vertex collection.</p>
 								</div>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
 									<h5>collection: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="../interfaces/_collection_.arangocollection.html" class="tsd-signature-type">ArangoCollection</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Collection to remove from the graph.</p>
+									</div>
 								</li>
 								<li>
 									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> dropCollection: <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = false</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>If set to <code>true</code>, the collection will also be
+										deleted from the database.</p>
+									</div>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/_graph_.html#graphinfo" class="tsd-signature-type">GraphInfo</a><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -437,8 +511,8 @@
 					<a name="replaceedgedefinition" class="tsd-anchor"></a>
 					<h3>replace<wbr>Edge<wbr>Definition</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">replace<wbr>Edge<wbr>Definition<span class="tsd-signature-symbol">(</span>definition<span class="tsd-signature-symbol">: </span><a href="../modules/_graph_.html#edgedefinition" class="tsd-signature-type">EdgeDefinition</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/_graph_.html#graphinfo" class="tsd-signature-type">GraphInfo</a><span class="tsd-signature-symbol">&gt;</span></li>
-						<li class="tsd-signature tsd-kind-icon">replace<wbr>Edge<wbr>Definition<span class="tsd-signature-symbol">(</span>edgeCollection<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, definition<span class="tsd-signature-symbol">: </span><a href="../modules/_graph_.html#edgedefinition" class="tsd-signature-type">EdgeDefinition</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/_graph_.html#graphinfo" class="tsd-signature-type">GraphInfo</a><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">replace<wbr>Edge<wbr>Definition<span class="tsd-signature-symbol">(</span>edgeDefinition<span class="tsd-signature-symbol">: </span><a href="../modules/_graph_.html#edgedefinitionoptions" class="tsd-signature-type">EdgeDefinitionOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/_graph_.html#graphinfo" class="tsd-signature-type">GraphInfo</a><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">replace<wbr>Edge<wbr>Definition<span class="tsd-signature-symbol">(</span>collection<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="../interfaces/_collection_.arangocollection.html" class="tsd-signature-type">ArangoCollection</a>, edgeDefinition<span class="tsd-signature-symbol">: </span><a href="../modules/_graph_.html#edgedefinitionoptions" class="tsd-signature-type">EdgeDefinitionOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/_graph_.html#graphinfo" class="tsd-signature-type">GraphInfo</a><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -446,13 +520,17 @@
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>TODO</p>
+									<p>Replaces an edge definition in this graph. The existing edge definition
+									for the given edge collection will be overwritten.</p>
 								</div>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>definition: <a href="../modules/_graph_.html#edgedefinition" class="tsd-signature-type">EdgeDefinition</a></h5>
+									<h5>edgeDefinition: <a href="../modules/_graph_.html#edgedefinitionoptions" class="tsd-signature-type">EdgeDefinitionOptions</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Definition of a relation in this graph.</p>
+									</div>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/_graph_.html#graphinfo" class="tsd-signature-type">GraphInfo</a><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -462,16 +540,23 @@
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>TODO</p>
+									<p>Replaces an edge definition in this graph. The existing edge definition
+									for the given edge collection will be overwritten.</p>
 								</div>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>edgeCollection: <span class="tsd-signature-type">string</span></h5>
+									<h5>collection: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="../interfaces/_collection_.arangocollection.html" class="tsd-signature-type">ArangoCollection</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Edge collection for which to replace the definition.</p>
+									</div>
 								</li>
 								<li>
-									<h5>definition: <a href="../modules/_graph_.html#edgedefinition" class="tsd-signature-type">EdgeDefinition</a></h5>
+									<h5>edgeDefinition: <a href="../modules/_graph_.html#edgedefinitionoptions" class="tsd-signature-type">EdgeDefinitionOptions</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Definition of a relation in this graph.</p>
+									</div>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/_graph_.html#graphinfo" class="tsd-signature-type">GraphInfo</a><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -541,7 +626,7 @@
 					<a name="vertexcollection" class="tsd-anchor"></a>
 					<h3>vertex<wbr>Collection</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
-						<li class="tsd-signature tsd-kind-icon">vertex<wbr>Collection&lt;T&gt;<span class="tsd-signature-symbol">(</span>collectionName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_graph_.graphvertexcollection.html" class="tsd-signature-type">GraphVertexCollection</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">vertex<wbr>Collection&lt;T&gt;<span class="tsd-signature-symbol">(</span>collection<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="../interfaces/_collection_.arangocollection.html" class="tsd-signature-type">ArangoCollection</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_graph_.graphvertexcollection.html" class="tsd-signature-type">GraphVertexCollection</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -549,19 +634,26 @@
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>TODO</p>
+									<p>Returns a <a href="_graph_.graphvertexcollection.html">GraphVertexCollection</a> instance for the given collection
+									name representing the collection in this graph.</p>
 								</div>
 							</div>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
 							<ul class="tsd-type-parameters">
 								<li>
 									<h4>T<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span></h4>
+									<div class="tsd-comment tsd-typography">
+										<p>Type to use for document data. Defaults to <code>any</code>.</p>
+									</div>
 								</li>
 							</ul>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>collectionName: <span class="tsd-signature-type">string</span></h5>
+									<h5>collection: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="../interfaces/_collection_.arangocollection.html" class="tsd-signature-type">ArangoCollection</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Name of the vertex collection.</p>
+									</div>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <a href="_graph_.graphvertexcollection.html" class="tsd-signature-type">GraphVertexCollection</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -580,8 +672,10 @@
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>TODO</p>
+									<p>Fetches all vertex collections of this graph from the database and returns
+									an array of <a href="_graph_.graphvertexcollection.html">GraphVertexCollection</a> instances.</p>
 								</div>
+								<p>See also <a href="_graph_.graph.html#listvertexcollections">Graph.listVertexCollections</a>.</p>
 							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="_graph_.graphvertexcollection.html" class="tsd-signature-type">GraphVertexCollection</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
@@ -636,6 +730,9 @@
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="../modules/_util_codes_.html">&quot;util/codes&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="../modules/_util_collectiontostring_.html">&quot;util/collection<wbr>ToString&quot;</a>
 					</li>
 					<li class=" tsd-kind-module">
 						<a href="../modules/_util_types_.html">&quot;util/types&quot;</a>
@@ -715,6 +812,9 @@
 					</li>
 					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
 						<a href="../modules/_graph_.html#edgedefinition" class="tsd-kind-icon">Edge<wbr>Definition</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
+						<a href="../modules/_graph_.html#edgedefinitionoptions" class="tsd-kind-icon">Edge<wbr>Definition<wbr>Options</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
 						<a href="../modules/_graph_.html#graphcollectioninsertoptions" class="tsd-kind-icon">Graph<wbr>Collection<wbr>Insert<wbr>Options</a>

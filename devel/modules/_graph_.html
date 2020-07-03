@@ -93,6 +93,7 @@
 							<h3>Type aliases</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="_graph_.html#edgedefinition" class="tsd-kind-icon">Edge<wbr>Definition</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="_graph_.html#edgedefinitionoptions" class="tsd-kind-icon">Edge<wbr>Definition<wbr>Options</a></li>
 								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="_graph_.html#graphcollectioninsertoptions" class="tsd-kind-icon">Graph<wbr>Collection<wbr>Insert<wbr>Options</a></li>
 								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="_graph_.html#graphcollectionreadoptions" class="tsd-kind-icon">Graph<wbr>Collection<wbr>Read<wbr>Options</a></li>
 								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="_graph_.html#graphcollectionremoveoptions" class="tsd-kind-icon">Graph<wbr>Collection<wbr>Remove<wbr>Options</a></li>
@@ -114,7 +115,7 @@
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>An edge definition used to define a collection of edges in a <a href="../classes/_graph_.graph.html">Graph</a>.</p>
+							<p>Definition of a relation in a <a href="../classes/_graph_.graph.html">Graph</a>.</p>
 						</div>
 					</div>
 					<div class="tsd-type-declaration">
@@ -148,6 +149,47 @@
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
+					<a name="edgedefinitionoptions" class="tsd-anchor"></a>
+					<h3>Edge<wbr>Definition<wbr>Options</h3>
+					<div class="tsd-signature tsd-kind-icon">Edge<wbr>Definition<wbr>Options<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>collection<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="../interfaces/_collection_.arangocollection.html" class="tsd-signature-type">ArangoCollection</a><span class="tsd-signature-symbol">; </span>from<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="../interfaces/_collection_.arangocollection.html" class="tsd-signature-type">ArangoCollection</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="../interfaces/_collection_.arangocollection.html" class="tsd-signature-type">ArangoCollection</a><span class="tsd-signature-symbol">; </span>to<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="../interfaces/_collection_.arangocollection.html" class="tsd-signature-type">ArangoCollection</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="../interfaces/_collection_.arangocollection.html" class="tsd-signature-type">ArangoCollection</a><span class="tsd-signature-symbol"> }</span></div>
+					<aside class="tsd-sources">
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>An edge definition used to define a collection of edges in a <a href="../classes/_graph_.graph.html">Graph</a>.</p>
+						</div>
+					</div>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter">
+								<h5>collection<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="../interfaces/_collection_.arangocollection.html" class="tsd-signature-type">ArangoCollection</a></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Collection containing the edges.</p>
+									</div>
+								</div>
+							</li>
+							<li class="tsd-parameter">
+								<h5>from<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="../interfaces/_collection_.arangocollection.html" class="tsd-signature-type">ArangoCollection</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="../interfaces/_collection_.arangocollection.html" class="tsd-signature-type">ArangoCollection</a></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Collection or collections containing the start vertices.</p>
+									</div>
+								</div>
+							</li>
+							<li class="tsd-parameter">
+								<h5>to<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="../interfaces/_collection_.arangocollection.html" class="tsd-signature-type">ArangoCollection</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="../interfaces/_collection_.arangocollection.html" class="tsd-signature-type">ArangoCollection</a></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Collection or collections containing the end vertices.</p>
+									</div>
+								</div>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
 					<a name="graphcollectioninsertoptions" class="tsd-anchor"></a>
 					<h3>Graph<wbr>Collection<wbr>Insert<wbr>Options</h3>
 					<div class="tsd-signature tsd-kind-icon">Graph<wbr>Collection<wbr>Insert<wbr>Options<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>returnNew<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span><span class="tsd-signature-symbol">; </span>waitForSync<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span><span class="tsd-signature-symbol"> }</span></div>
@@ -155,7 +197,7 @@
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>TODO</p>
+							<p>Options for inserting a document into a graph collection.</p>
 						</div>
 					</div>
 					<div class="tsd-type-declaration">
@@ -178,7 +220,7 @@
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>TODO</p>
+							<p>Options for retrieving a document from a graph collection.</p>
 						</div>
 					</div>
 					<div class="tsd-type-declaration">
@@ -204,7 +246,7 @@
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>TODO</p>
+							<p>Options for removing a document from a graph collection.</p>
 						</div>
 					</div>
 					<div class="tsd-type-declaration">
@@ -230,7 +272,7 @@
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>TODO</p>
+							<p>Options for replacing a document in a graph collection.</p>
 						</div>
 					</div>
 					<div class="tsd-type-declaration">
@@ -257,12 +299,12 @@
 				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
 					<a name="graphcreateoptions" class="tsd-anchor"></a>
 					<h3>Graph<wbr>Create<wbr>Options</h3>
-					<div class="tsd-signature tsd-kind-icon">Graph<wbr>Create<wbr>Options<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>isSmart<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span><span class="tsd-signature-symbol">; </span>minReplicationFactor<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>numberOfShards<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>orphanCollections<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span>replicationFactor<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"satellite"</span><span class="tsd-signature-symbol">; </span>smartGraphAttribute<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>waitForSync<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span><span class="tsd-signature-symbol">; </span>writeConcern<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span></div>
+					<div class="tsd-signature tsd-kind-icon">Graph<wbr>Create<wbr>Options<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>isSmart<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span><span class="tsd-signature-symbol">; </span>minReplicationFactor<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>numberOfShards<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>orphanCollections<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="../interfaces/_collection_.arangocollection.html" class="tsd-signature-type">ArangoCollection</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="../interfaces/_collection_.arangocollection.html" class="tsd-signature-type">ArangoCollection</a><span class="tsd-signature-symbol">; </span>replicationFactor<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"satellite"</span><span class="tsd-signature-symbol">; </span>smartGraphAttribute<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>waitForSync<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span><span class="tsd-signature-symbol">; </span>writeConcern<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>TODO</p>
+							<p>Option for creating a graph.</p>
 						</div>
 					</div>
 					<div class="tsd-type-declaration">
@@ -301,11 +343,11 @@
 								</div>
 							</li>
 							<li class="tsd-parameter">
-								<h5><span class="tsd-flag ts-flagOptional">Optional</span> orphan<wbr>Collections<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5>
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> orphan<wbr>Collections<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="../interfaces/_collection_.arangocollection.html" class="tsd-signature-type">ArangoCollection</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="../interfaces/_collection_.arangocollection.html" class="tsd-signature-type">ArangoCollection</a></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>An array of additional vertex collections. Documents within these
-										collections do not have edges within this graph.</p>
+										<p>Additional vertex collections. Documents within these collections do not
+										have edges within this graph.</p>
 									</div>
 								</div>
 							</li>
@@ -357,7 +399,7 @@
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>TODO</p>
+							<p>General information about a graph.</p>
 						</div>
 					</div>
 					<div class="tsd-type-declaration">
@@ -478,6 +520,9 @@
 						<a href="_util_codes_.html">&quot;util/codes&quot;</a>
 					</li>
 					<li class=" tsd-kind-module">
+						<a href="_util_collectiontostring_.html">&quot;util/collection<wbr>ToString&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
 						<a href="_util_types_.html">&quot;util/types&quot;</a>
 					</li>
 					<li class=" tsd-kind-module">
@@ -498,6 +543,9 @@
 					</li>
 					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
 						<a href="_graph_.html#edgedefinition" class="tsd-kind-icon">Edge<wbr>Definition</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
+						<a href="_graph_.html#edgedefinitionoptions" class="tsd-kind-icon">Edge<wbr>Definition<wbr>Options</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
 						<a href="_graph_.html#graphcollectioninsertoptions" class="tsd-kind-icon">Graph<wbr>Collection<wbr>Insert<wbr>Options</a>
