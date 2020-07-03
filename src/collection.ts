@@ -183,21 +183,9 @@ export type CollectionKeyProperties = {
  * Properties for validating documents in a collection.
  */
 export type ValidationProperties = {
-  /**
-   * TODO
-   */
   rule: any;
-  /**
-   * TODO
-   */
   type: "json";
-  /**
-   * TODO
-   */
   level: ValidationLevel;
-  /**
-   * TODO
-   */
   message: string;
 };
 
@@ -281,17 +269,8 @@ export type CollectionProperties = {
  * Options for validating collection documents.
  */
 export type ValidationOptions = {
-  /**
-   * TODO
-   */
   rule: any;
-  /**
-   * TODO
-   */
   level?: ValidationLevel;
-  /**
-   * TODO
-   */
   message?: string;
 };
 
@@ -322,13 +301,7 @@ export type CollectionPropertiesOptions = {
  * Options for retrieving a collection checksum.
  */
 export type CollectionChecksumOptions = {
-  /**
-   * TODO
-   */
   withRevisions?: boolean;
-  /**
-   * TODO
-   */
   withData?: boolean;
 };
 
@@ -719,21 +692,9 @@ export type CollectionImportOptions = {
  * replaced with AQL queries.
  */
 export type SimpleQueryByExampleOptions = {
-  /**
-   * TODO
-   */
   skip?: number;
-  /**
-   * TODO
-   */
   limit?: number;
-  /**
-   * TODO
-   */
   batchSize?: number;
-  /**
-   * TODO
-   */
   ttl?: number;
 };
 
@@ -744,25 +705,10 @@ export type SimpleQueryByExampleOptions = {
  * replaced with AQL queries.
  */
 export type SimpleQueryAllOptions = {
-  /**
-   * TODO
-   */
   skip?: number;
-  /**
-   * TODO
-   */
   limit?: number;
-  /**
-   * TODO
-   */
   batchSize?: number;
-  /**
-   * TODO
-   */
   ttl?: number;
-  /**
-   * TODO
-   */
   stream?: boolean;
 };
 
@@ -773,21 +719,9 @@ export type SimpleQueryAllOptions = {
  * replaced with AQL queries.
  */
 export type SimpleQueryUpdateByExampleOptions = {
-  /**
-   * TODO
-   */
   keepNull?: boolean;
-  /**
-   * TODO
-   */
   waitForSync?: boolean;
-  /**
-   * TODO
-   */
   limit?: number;
-  /**
-   * TODO
-   */
   mergeObjects?: boolean;
 };
 
@@ -798,13 +732,7 @@ export type SimpleQueryUpdateByExampleOptions = {
  * replaced with AQL queries.
  */
 export type SimpleQueryRemoveByExampleOptions = {
-  /**
-   * TODO
-   */
   waitForSync?: boolean;
-  /**
-   * TODO
-   */
   limit?: number;
 };
 
@@ -823,17 +751,8 @@ export type SimpleQueryReplaceByExampleOptions = SimpleQueryRemoveByExampleOptio
  * replaced with AQL queries.
  */
 export type SimpleQueryRemoveByKeysOptions = {
-  /**
-   * TODO
-   */
   returnOld?: boolean;
-  /**
-   * TODO
-   */
   silent?: boolean;
-  /**
-   * TODO
-   */
   waitForSync?: boolean;
 };
 
@@ -844,17 +763,8 @@ export type SimpleQueryRemoveByKeysOptions = {
  * replaced with AQL queries.
  */
 export type SimpleQueryFulltextOptions = {
-  /**
-   * TODO
-   */
   index?: string;
-  /**
-   * TODO
-   */
   limit?: number;
-  /**
-   * TODO
-   */
   skip?: number;
 };
 
@@ -1019,117 +929,54 @@ export type CollectionCount = {
  * Statistics of a collection.
  */
 export type CollectionFigures = {
-  /**
-   * TODO
-   */
   figures: {
-    /**
-     * TODO
-     */
     alive: {
       count: number;
       size: number;
     };
-    /**
-     * TODO
-     */
     dead: {
       count: number;
       size: number;
       deletion: number;
     };
-    /**
-     * TODO
-     */
     datafiles: {
       count: number;
       fileSize: number;
     };
-    /**
-     * TODO
-     */
     journals: {
       count: number;
       fileSize: number;
     };
-    /**
-     * TODO
-     */
     compactors: {
       count: number;
       fileSize: number;
     };
-    /**
-     * TODO
-     */
     shapefiles: {
       count: number;
       fileSize: number;
     };
-    /**
-     * TODO
-     */
     shapes: {
       count: number;
       size: number;
     };
-    /**
-     * TODO
-     */
     attributes: {
       count: number;
       size: number;
     };
-    /**
-     * TODO
-     */
     indexes: {
       count: number;
       size: number;
     };
-    /**
-     * TODO
-     */
     lastTick: number;
-    /**
-     * TODO
-     */
     uncollectedLogfileEntries: number;
-    /**
-     * TODO
-     */
     documentReferences: number;
-    /**
-     * TODO
-     */
     waitingFor: string;
-    /**
-     * TODO
-     */
     compactionStatus: {
-      /**
-       * TODO
-       */
       time: string;
-      /**
-       * TODO
-       */
       message: string;
-      /**
-       * TODO
-       */
       count: number;
-      /**
-       * TODO
-       */
       filesCombined: number;
-      /**
-       * TODO
-       */
       bytesRead: number;
-      /**
-       * TODO
-       */
       bytesWritten: number;
     };
   };
@@ -1139,9 +986,6 @@ export type CollectionFigures = {
  * Revision of a collection.
  */
 export type CollectionRevision = {
-  /**
-   * TODO
-   */
   revision: string;
 };
 
@@ -1149,9 +993,6 @@ export type CollectionRevision = {
  * Checksum of a collection.
  */
 export type CollectionChecksum = {
-  /**
-   * TODO
-   */
   checksum: string;
 };
 
@@ -1193,21 +1034,9 @@ export type CollectionImportResult = {
  * Result of retrieving edges in a collection.
  */
 export type CollectionEdgesResult<T extends object = any> = {
-  /**
-   * TODO
-   */
   edges: Edge<T>[];
-  /**
-   * TODO
-   */
   stats: {
-    /**
-     * TODO
-     */
     scannedIndex: number;
-    /**
-     * TODO
-     */
     filtered: number;
   };
 };

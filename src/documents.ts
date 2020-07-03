@@ -73,8 +73,6 @@ export type ObjectWithKey = {
 export type DocumentSelector = ObjectWithId | ObjectWithKey | string;
 
 /**
- * TODO
- *
  * @internal
  * @hidden
  */
