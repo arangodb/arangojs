@@ -21,6 +21,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   `View` (or `ArangoSearchView`) objects can now be passed into `aql` templates
   like `ArangoCollection` objects.
 
+- Graph methods now also accept `ArangoCollection` instances instead of names
+
+  This brings these methods behavior in line with that of the `beginTransaction`
+  and `executeTransaction` methods of `Database` objects.
+
 ### Added
 
 - Added `before` and `after` to the `agentOptions` configuration option ([#585](https://github.com/arangodb/arangojs/issues/585))
