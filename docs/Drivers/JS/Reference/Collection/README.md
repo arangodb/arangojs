@@ -16,7 +16,7 @@ See the
 [HTTP API documentation](https://www.arangodb.com/docs/stable/http/collection-getting.html)
 for details.
 
-## collection.exists
+### collection.exists
 
 `async collection.exists(): boolean`
 
