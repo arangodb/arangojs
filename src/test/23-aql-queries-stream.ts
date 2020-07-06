@@ -43,7 +43,7 @@ describe34("AQL Stream queries", function () {
         stream: true,
       });
       expect(cursor.count).to.equal(undefined);
-      expect((cursor as any)._hasMore).to.equal(true);
+      expect((cursor as any).batches.hasMore).to.equal(true);
     });
     it("supports compact queries with options", async () => {
       let query: any = {
@@ -56,7 +56,7 @@ describe34("AQL Stream queries", function () {
         stream: true,
       });
       expect(cursor.count).to.equal(undefined); // count will be ignored
-      expect((cursor as any)._hasMore).to.equal(true);
+      expect((cursor as any).batches.hasMore).to.equal(true);
     });
   });
   describe("with some data", () => {

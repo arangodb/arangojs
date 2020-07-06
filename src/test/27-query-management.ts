@@ -75,7 +75,7 @@ describe("Query Management API", function () {
         count: true,
       });
       expect(cursor.count).to.equal(10);
-      expect((cursor as any)._hasMore).to.equal(true);
+      expect((cursor as any).batches.hasMore).to.equal(true);
     });
     it("supports AQB queries", async () => {
       const cursor = await db.query({ toAQL: () => "RETURN 42" });
@@ -102,7 +102,7 @@ describe("Query Management API", function () {
       };
       const cursor = await db.query(query, { batchSize: 2, count: true });
       expect(cursor.count).to.equal(10);
-      expect((cursor as any)._hasMore).to.equal(true);
+      expect((cursor as any).batches.hasMore).to.equal(true);
     });
   });
 

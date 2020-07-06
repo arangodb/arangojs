@@ -34,7 +34,7 @@ import {
   Headers,
   RequestOptions,
 } from "./connection";
-import { ArrayCursor } from "./cursor";
+import { ArrayCursor, BatchedArrayCursor } from "./cursor";
 import { isArangoError } from "./error";
 import {
   EdgeDefinitionOptions,
@@ -2494,7 +2494,12 @@ export class Database {
         timeout,
       },
       (res) =>
-        new ArrayCursor(this, res.body, res.arangojsHostId, allowDirtyRead)
+        new BatchedArrayCursor(
+          this,
+          res.body,
+          res.arangojsHostId,
+          allowDirtyRead
+        ).items
     );
   }
 
