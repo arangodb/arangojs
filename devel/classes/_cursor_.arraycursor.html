@@ -75,11 +75,21 @@
 					</div>
 					<p>When using TypeScript, cursors can be cast to a specific item type in order
 					to increase type safety.</p>
+					<p>See also <a href="_cursor_.batchedarraycursor.html">BatchedArrayCursor</a>.</p>
 					<dl class="tsd-comment-tags">
 						<dt>example</dt>
 						<dd><pre><code class="language-ts"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
 <span class="hljs-keyword">const</span> query = aql<span class="hljs-string">`FOR x IN 1..5 RETURN x`</span>;
 <span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> db.query(query) <span class="hljs-keyword">as</span> ArrayCursor&lt;<span class="hljs-built_in">number</span>&gt;;</code></pre>
+						</dd>
+						<dt>example</dt>
+						<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> query = aql<span class="hljs-string">`FOR x IN 1..10 RETURN x`</span>;
+<span class="hljs-keyword">const</span> cursor = <span class="hljs-keyword">await</span> db.query(query);
+<span class="hljs-keyword">for</span> <span class="hljs-keyword">await</span> (<span class="hljs-keyword">const</span> value <span class="hljs-keyword">of</span> cursor) {
+  <span class="hljs-comment">// Process each value asynchronously</span>
+  <span class="hljs-keyword">await</span> processValue(value);
+}</code></pre>
 						</dd>
 					</dl>
 				</div>
@@ -110,11 +120,17 @@
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
 						<section class="tsd-index-section ">
+							<h3>Constructors</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="_cursor_.arraycursor.html#constructor" class="tsd-kind-icon">constructor</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
 							<h3>Accessors</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="_cursor_.arraycursor.html#batches" class="tsd-kind-icon">batches</a></li>
 								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="_cursor_.arraycursor.html#count" class="tsd-kind-icon">count</a></li>
 								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="_cursor_.arraycursor.html#extra" class="tsd-kind-icon">extra</a></li>
-								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="_cursor_.arraycursor.html#hasmore" class="tsd-kind-icon">has<wbr>More</a></li>
 								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="_cursor_.arraycursor.html#hasnext" class="tsd-kind-icon">has<wbr>Next</a></li>
 							</ul>
 						</section>
@@ -128,7 +144,6 @@
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_cursor_.arraycursor.html#kill" class="tsd-kind-icon">kill</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter"><a href="_cursor_.arraycursor.html#map" class="tsd-kind-icon">map</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_cursor_.arraycursor.html#next" class="tsd-kind-icon">next</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_cursor_.arraycursor.html#nextbatch" class="tsd-kind-icon">next<wbr>Batch</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter"><a href="_cursor_.arraycursor.html#reduce" class="tsd-kind-icon">reduce</a></li>
 							</ul>
 						</section>
@@ -136,7 +151,54 @@
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Constructors</h2>
+				<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class">
+					<a name="constructor" class="tsd-anchor"></a>
+					<h3>constructor</h3>
+					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Array<wbr>Cursor<span class="tsd-signature-symbol">(</span>batchedCursor<span class="tsd-signature-symbol">: </span><a href="_cursor_.batchedarraycursor.html" class="tsd-signature-type">BatchedArrayCursor</a>, view<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">BatchView</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_cursor_.arraycursor.html" class="tsd-signature-type">ArrayCursor</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>batchedCursor: <a href="_cursor_.batchedarraycursor.html" class="tsd-signature-type">BatchedArrayCursor</a></h5>
+								</li>
+								<li>
+									<h5>view: <span class="tsd-signature-type">BatchView</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="_cursor_.arraycursor.html" class="tsd-signature-type">ArrayCursor</a></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Accessors</h2>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="batches" class="tsd-anchor"></a>
+					<h3>batches</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> batches<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_cursor_.batchedarraycursor.html" class="tsd-signature-type">BatchedArrayCursor</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>A <a href="_cursor_.batchedarraycursor.html">BatchedArrayCursor</a> providing batch-wise access to the cursor
+									result set.</p>
+								</div>
+								<p>See also <a href="_cursor_.batchedarraycursor.html#items">BatchedArrayCursor.items</a>.</p>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="_cursor_.batchedarraycursor.html" class="tsd-signature-type">BatchedArrayCursor</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
 				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
 					<a name="count" class="tsd-anchor"></a>
 					<h3>count</h3>
@@ -173,28 +235,6 @@
 								</div>
 							</div>
 							<h4 class="tsd-returns-title">Returns <a href="../interfaces/_cursor_.cursorextras.html" class="tsd-signature-type">CursorExtras</a></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
-					<a name="hasmore" class="tsd-anchor"></a>
-					<h3>has<wbr>More</h3>
-					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> hasMore<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Whether the cursor has any remaining batches that haven&#39;t yet been
-										fetched. If set to <code>false</code>, all batches have been fetched and no
-										additional requests to the server will be made when consuming any
-									remaining items from this cursor.</p>
-								</div>
-							</div>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -599,44 +639,6 @@
 						</li>
 					</ul>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-					<a name="nextbatch" class="tsd-anchor"></a>
-					<h3>next<wbr>Batch</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">next<wbr>Batch<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol">&gt;</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Advances the cursor and returns all remaining values in the cursor&#39;s
-										current batch. If the current batch has already been exhausted, fetches
-										the next batch from the server and returns it, or <code>undefined</code> if the
-									cursor has been depleted.</p>
-								</div>
-								<p><strong>Note</strong>: If the result set spans multiple batches, any remaining batches
-									will only be fetched on demand. Depending on the cursor&#39;s TTL and the
-									processing speed, this may result in the server discarding the cursor
-								before it is fully depleted.</p>
-								<dl class="tsd-comment-tags">
-									<dt>example</dt>
-									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> cursor = <span class="hljs-keyword">await</span> db.query(
-  aql<span class="hljs-string">`FOR i IN 1..10 RETURN i`</span>,
-  { <span class="hljs-attr">batchSize</span>: <span class="hljs-number">5</span> }
-);
-<span class="hljs-keyword">const</span> firstBatch = <span class="hljs-keyword">await</span> cursor.nextBatch(); <span class="hljs-comment">// [1, 2, 3, 4, 5]</span>
-<span class="hljs-keyword">await</span> cursor.next(); <span class="hljs-comment">// 6</span>
-<span class="hljs-keyword">const</span> lastBatch = <span class="hljs-keyword">await</span> cursor.nextBatch(); <span class="hljs-comment">// [7, 8, 9, 10]</span>
-<span class="hljs-built_in">console</span>.log(cursor.hasNext); <span class="hljs-comment">// false</span></code></pre>
-									</dd>
-								</dl>
-							</div>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol">&gt;</span></h4>
-						</li>
-					</ul>
-				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
 					<a name="reduce" class="tsd-anchor"></a>
 					<h3>reduce</h3>
@@ -898,14 +900,17 @@
 					<li class="current tsd-kind-class tsd-parent-kind-module tsd-has-type-parameter">
 						<a href="_cursor_.arraycursor.html" class="tsd-kind-icon">Array<wbr>Cursor</a>
 						<ul>
+							<li class=" tsd-kind-constructor tsd-parent-kind-class">
+								<a href="_cursor_.arraycursor.html#constructor" class="tsd-kind-icon">constructor</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="_cursor_.arraycursor.html#batches" class="tsd-kind-icon">batches</a>
+							</li>
 							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
 								<a href="_cursor_.arraycursor.html#count" class="tsd-kind-icon">count</a>
 							</li>
 							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
 								<a href="_cursor_.arraycursor.html#extra" class="tsd-kind-icon">extra</a>
-							</li>
-							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
-								<a href="_cursor_.arraycursor.html#hasmore" class="tsd-kind-icon">has<wbr>More</a>
 							</li>
 							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
 								<a href="_cursor_.arraycursor.html#hasnext" class="tsd-kind-icon">has<wbr>Next</a>
@@ -931,9 +936,6 @@
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="_cursor_.arraycursor.html#next" class="tsd-kind-icon">next</a>
 							</li>
-							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="_cursor_.arraycursor.html#nextbatch" class="tsd-kind-icon">next<wbr>Batch</a>
-							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
 								<a href="_cursor_.arraycursor.html#reduce" class="tsd-kind-icon">reduce</a>
 							</li>
@@ -941,6 +943,9 @@
 					</li>
 				</ul>
 				<ul class="after-current">
+					<li class=" tsd-kind-class tsd-parent-kind-module tsd-has-type-parameter">
+						<a href="_cursor_.batchedarraycursor.html" class="tsd-kind-icon">Batched<wbr>Array<wbr>Cursor</a>
+					</li>
 					<li class=" tsd-kind-interface tsd-parent-kind-module">
 						<a href="../interfaces/_cursor_.cursorextras.html" class="tsd-kind-icon">Cursor<wbr>Extras</a>
 					</li>
@@ -963,6 +968,7 @@
 			<ul class="tsd-legend">
 				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
 				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
+				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
 				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
 			</ul>
 			<ul class="tsd-legend">
