@@ -30,6 +30,35 @@ interface BatchView<T = any> {
   shift(): T | undefined;
 }
 
+/**
+ * The `BatchedArrayCursor` provides a batch-wise API to an {@link ArrayCursor}.
+ *
+ * When using TypeScript, cursors can be cast to a specific item type in order
+ * to increase type safety.
+ *
+ * @param T - Type to use for each item. Defaults to `any`.
+ *
+ * @example
+ * ```ts
+ * const db = new Database();
+ * const query = aql`FOR x IN 1..5 RETURN x`;
+ * const cursor = await db.query(query) as ArrayCursor<number>;
+ * const batches = cursor.batches;
+ * ```
+ *
+ * @example
+ * ```js
+ * const db = new Database();
+ * const query = aql`FOR x IN 1..10000 RETURN x`;
+ * const cursor = await db.query(query, { batchSize: 10 });
+ * for await (const batch of cursor.batches) {
+ *   // Process all values in a batch in parallel
+ *   await Promise.all(batch.map(
+ *     value => asyncProcessValue(value)
+ *   ));
+ * }
+ * ```
+ */
 export class BatchedArrayCursor<T = any> {
   protected _db: Database;
   protected _batches: LinkedList<LinkedList<any>>;
@@ -596,6 +625,8 @@ export class BatchedArrayCursor<T = any> {
  * When using TypeScript, cursors can be cast to a specific item type in order
  * to increase type safety.
  *
+ * See also {@link BatchedArrayCursor}.
+ *
  * @param T - Type to use for each item. Defaults to `any`.
  *
  * @example
@@ -603,6 +634,17 @@ export class BatchedArrayCursor<T = any> {
  * const db = new Database();
  * const query = aql`FOR x IN 1..5 RETURN x`;
  * const result = await db.query(query) as ArrayCursor<number>;
+ * ```
+ *
+ * @example
+ * ```js
+ * const db = new Database();
+ * const query = aql`FOR x IN 1..10 RETURN x`;
+ * const cursor = await db.query(query);
+ * for await (const value of cursor) {
+ *   // Process each value asynchronously
+ *   await processValue(value);
+ * }
  * ```
  */
 export class ArrayCursor<T = any> {
