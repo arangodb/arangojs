@@ -141,7 +141,7 @@ const db = new Database({
 ArangoJS is compatible with the latest stable version of ArangoDB available at
 the time of the driver release.
 
-The _arangoVersion_ option can be used to tell arangojs to target a specific
+The `arangoVersion` option can be used to tell arangojs to target a specific
 ArangoDB version. Depending on the version this may enable or disable certain
 methods and change behavior to maintain compatibility with the given version.
 
@@ -281,25 +281,33 @@ environment and may need to be explicitly told you are targetting Node instead.
 If you need to support self-signed HTTPS certificates, you may have to add
 your certificates to the `agentOptions`, e.g.:
 
-```js
-...
-agentOptions: {
-  ca: [
-    fs.readFileSync(".ssl/sub.class1.server.ca.pem"),
-    fs.readFileSync(".ssl/ca.pem")
-  ]
-}
+```diff
+  const { Database } = require("arangojs");
+
+  const db = new Database({
+    url: ARANGODB_SERVER,
++   agentOptions: {
++     ca: [
++       fs.readFileSync(".ssl/sub.class1.server.ca.pem"),
++       fs.readFileSync(".ssl/ca.pem")
++     ]
++   },
+  });
 ```
 
 Although this is **strongly discouraged**, it's also possible to disable
 HTTPS certificate validation entirely, but note this has
 **extremely dangerous** security implications:
 
-```js
-...
-agentOptions: {
-  rejectUnauthorized: false
-}
+```diff
+  const { Database } = require("arangojs");
+
+  const db = new Database({
+    url: ARANGODB_SERVER,
++   agentOptions: {
++     rejectUnauthorized: false
++   },
+  });
 ```
 
 When using arangojs in the browser, self-signed HTTPS certificates need to
@@ -313,18 +321,19 @@ Please refer to the examples in the documentation of that method.
 
 ## Error responses
 
-If arangojs encounters an API error, it will throw an _ArangoError_ with an
-[_errorNum_ error code](https://www.arangodb.com/docs/stable/appendix-error-codes.html)
-as well as a _code_ and _statusCode_ property indicating the intended and
+If arangojs encounters an API error, it will throw an `ArangoError` with an
+[`errorNum` error code](https://www.arangodb.com/docs/stable/appendix-error-codes.html)
+as well as a `code` and `statusCode` property indicating the intended and
 actual HTTP status code of the response.
 
 For any other error responses (4xx/5xx status code), it will throw an
-_HttpError_ error with the status code indicated by the _code_ and _statusCode_ properties.
+`HttpError` error with the status code indicated by the `code` and
+`statusCode` properties.
 
 If the server response did not indicate an error but the response body could
-not be parsed, a _SyntaxError_ may be thrown instead.
+not be parsed, a `SyntaxError` may be thrown instead.
 
-In all of these cases the error object will additionally have a _response_
+In all of these cases the error object will additionally have a `response`
 property containing the server response object.
 
 If the request failed at a network level or the connection was closed without
