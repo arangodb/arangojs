@@ -9,7 +9,7 @@
  * @packageDocumentation
  */
 import { ClientRequest } from "http";
-import { AgentOptions } from "https";
+import { AgentOptions as NodeAgentOptions } from "https";
 import { stringify as querystringify } from "querystring";
 import { LinkedList } from "x3-linkedlist";
 import { Database } from "./database";
@@ -147,14 +147,14 @@ type UrlInfo = {
  *
  * See also: {@link https://www.npmjs.com/package/xhr | `xhr` on npm }.
  */
-export type XhrOptions = {
+export interface XhrOptions {
   maxSockets?: number;
   timeout?: number;
   beforeSend?: (xhrObject: any) => void;
   xhr?: any;
   useXdr?: boolean;
   withCredentials?: boolean;
-};
+}
 
 /**
  * Additional options for intercepting the request/response. These methods
@@ -395,7 +395,7 @@ export type Config = {
    *
    * Default (browser): `{ maxSockets: 3, useXDR: true, withCredentials: true }`
    */
-  agentOptions?: (AgentOptions | XhrOptions) & RequestInterceptors;
+  agentOptions?: (NodeAgentOptions | XhrOptions) & RequestInterceptors;
   /**
    * An object with additional headers to send with every request.
    *
