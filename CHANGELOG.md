@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed
 
+- Renamed `cursor.nextBatch` to `cursor.batches.next`
+
+- Renamed `cursor.hasMore` to `cursor.batches.hasMore`
+
 - Renamed `db.createArangoSearchView` to `db.createView`
 
 - Renamed `transaction.run` to `transaction.step`
@@ -27,6 +31,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   and `executeTransaction` methods of `Database` objects.
 
 ### Added
+
+- Added `cursor.batches` to provide a batch-wise cursor API
 
 - Added `before` and `after` to the `agentOptions` configuration option ([#585](https://github.com/arangodb/arangojs/issues/585))
 

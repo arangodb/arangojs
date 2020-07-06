@@ -12,7 +12,7 @@
  * @packageDocumentation
  */
 import { ArangoResponseMetadata, Params } from "./connection";
-import { ArrayCursor } from "./cursor";
+import { ArrayCursor, BatchedArrayCursor } from "./cursor";
 import { Database } from "./database";
 import {
   Document,
@@ -3278,7 +3278,8 @@ export class Collection<T extends object = any>
         path: "/_api/simple/all-keys",
         body: { type, collection: this._name },
       },
-      (res) => new ArrayCursor(this._db, res.body, res.arangojsHostId)
+      (res) =>
+        new BatchedArrayCursor(this._db, res.body, res.arangojsHostId).items
     );
   }
 
@@ -3292,7 +3293,8 @@ export class Collection<T extends object = any>
           collection: this._name,
         },
       },
-      (res) => new ArrayCursor(this._db, res.body, res.arangojsHostId)
+      (res) =>
+        new BatchedArrayCursor(this._db, res.body, res.arangojsHostId).items
     );
   }
 
@@ -3321,7 +3323,8 @@ export class Collection<T extends object = any>
           collection: this._name,
         },
       },
-      (res) => new ArrayCursor(this._db, res.body, res.arangojsHostId)
+      (res) =>
+        new BatchedArrayCursor(this._db, res.body, res.arangojsHostId).items
     );
   }
 
@@ -3492,7 +3495,8 @@ export class Collection<T extends object = any>
           collection: this._name,
         },
       },
-      (res) => new ArrayCursor(this._db, res.body, res.arangojsHostId)
+      (res) =>
+        new BatchedArrayCursor(this._db, res.body, res.arangojsHostId).items
     );
   }
   //#endregion
