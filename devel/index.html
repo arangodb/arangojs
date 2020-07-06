@@ -252,6 +252,27 @@ npm install --save arangojs@6</code></pre>
 <span class="hljs-addition">+ const db = new Database({</span>
     url: ARANGODB_SERVER,
   });</code></pre>
+				<a href="#error-stack-traces-contain-no-useful-information" id="error-stack-traces-contain-no-useful-information" style="color: inherit; text-decoration: none;">
+					<h3>Error stack traces contain no useful information</h3>
+				</a>
+				<p>Due to the async, queue-based behavior of arangojs, the stack traces generated
+					when an error occur rarely provide enough information to determine the location
+				in your own code where the request was initiated.</p>
+				<p>Using the <code>precaptureStackTraces</code> configuration option, arangojs will attempt
+					to always generate stack traces proactively when a request is performed,
+					allowing arangojs to provide more meaningful stack traces at the cost of an
+				impact to performance even when no error occurs.</p>
+				<pre><code class="language-diff">  const { Database } = require(&quot;arangojs&quot;);
+
+  const db = new Database({
+    url: ARANGODB_SERVER,
+<span class="hljs-addition">+   precaptureStackTraces: true,</span>
+  });</code></pre>
+				<p>Note that arangojs will attempt to use <code>Error.captureStackTrace</code> if available
+					and fall back to generating a stack trace by throwing an error. In environments
+					that do not support the <code>stack</code> property on error objects, this option will
+					still impact performance but not result in any additional information becoming
+				available.</p>
 				<a href="#nodejs-referenceerror-window-is-not-defined" id="nodejs-referenceerror-window-is-not-defined" style="color: inherit; text-decoration: none;">
 					<h3>Node.js <code>ReferenceError: window is not defined</code></h3>
 				</a>
