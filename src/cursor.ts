@@ -181,9 +181,13 @@ export class BatchedArrayCursor<T = any> {
    *   { batchSize: 1 }
    * );
    * console.log(cursor.hasMore); // true
-   * await cursor.loadAll();
+   * await cursor.batches.loadAll();
    * console.log(cursor.hasMore); // false
    * console.log(cursor.hasNext); // true
+   * for await (const item of cursor) {
+   *   console.log(item);
+   *   // No server roundtrips necessary any more
+   * }
    * ```
    */
   async loadAll(): Promise<void> {
