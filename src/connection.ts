@@ -147,14 +147,14 @@ type UrlInfo = {
  *
  * See also: {@link https://www.npmjs.com/package/xhr | `xhr` on npm }.
  */
-export interface XhrOptions {
+export type XhrOptions = {
   maxSockets?: number;
   timeout?: number;
   beforeSend?: (xhrObject: any) => void;
   xhr?: any;
   useXdr?: boolean;
   withCredentials?: boolean;
-}
+};
 
 /**
  * Additional options for intercepting the request/response. These methods
@@ -259,6 +259,19 @@ type Task = {
     body: any;
   };
 };
+
+/**
+ * Options for creating the Node.js `http.Agent` or `https.Agent`.
+ *
+ * In browser environments this option can be used to pass additional options
+ * to the underlying calls of the
+ * {@link https://www.npmjs.com/package/xhr | xhr module}.
+ *
+ * See also {@link https://nodejs.org/api/http.html#http_new_agent_options | `http.Agent`}
+ * and {@link https://nodejs.org/api/https.html#https_new_agent_options | `https.Agent`}
+ * (when using TLS).
+ */
+export type AgentOptions = NodeAgentOptions | XhrOptions;
 
 /**
  * Options for configuring arangojs.
@@ -383,19 +396,11 @@ export type Config = {
    * equal to `maxSockets * 2` with `keepAlive: true` or equal to `maxSockets`
    * with `keepAlive: false` (or in the browser).
    *
-   * In the browser version of arangojs this option can be used to pass
-   * additional options to the underlying calls of the
-   * {@link https://www.npmjs.com/package/xhr | xhr module}.
-   *
-   * See also: {@link https://nodejs.org/api/http.html#http_new_agent_options | `http.Agent`}
-   * and {@link https://nodejs.org/api/https.html#https_new_agent_options | `https.Agent`}
-   * (when using TLS).
-   *
    * Default (Node.js): `{ maxSockets: 3, keepAlive: true, keepAliveMsecs: 1000 }`
    *
    * Default (browser): `{ maxSockets: 3, useXDR: true, withCredentials: true }`
    */
-  agentOptions?: (NodeAgentOptions | XhrOptions) & RequestInterceptors;
+  agentOptions?: AgentOptions & RequestInterceptors;
   /**
    * An object with additional headers to send with every request.
    *

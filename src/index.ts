@@ -7,7 +7,7 @@
  * module or using the web build in the browser.
  *
  * If you are just getting started, you probably want to use the
- * {@link arangojs} function, which is the default export of this module,
+ * {@link arangojs} function, which is also the default export of this module,
  * or the {@link Database} class for which it is a wrapper.
  *
  * @packageDocumentation
