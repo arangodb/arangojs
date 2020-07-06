@@ -181,7 +181,7 @@ db.useBasicAuth(<span class="hljs-string">&quot;admin&quot;</span>, <span class=
 				</a>
 				<p>ArangoJS is compatible with the latest stable version of ArangoDB available at
 				the time of the driver release.</p>
-				<p>The <em>arangoVersion</em> option can be used to tell arangojs to target a specific
+				<p>The <code>arangoVersion</code> option can be used to tell arangojs to target a specific
 					ArangoDB version. Depending on the version this may enable or disable certain
 				methods and change behavior to maintain compatibility with the given version.</p>
 				<p><strong>Note</strong>: As of June 2018 ArangoDB 2.8 has reached its End of Life and is no
@@ -291,20 +291,28 @@ npm install --save arangojs@6</code></pre>
 				</a>
 				<p>If you need to support self-signed HTTPS certificates, you may have to add
 				your certificates to the <code>agentOptions</code>, e.g.:</p>
-				<pre><code class="language-js">...
-agentOptions: {
-  <span class="hljs-attr">ca</span>: [
-    fs.readFileSync(<span class="hljs-string">&quot;.ssl/sub.class1.server.ca.pem&quot;</span>),
-    fs.readFileSync(<span class="hljs-string">&quot;.ssl/ca.pem&quot;</span>)
-  ]
-}</code></pre>
+				<pre><code class="language-diff">  const { Database } = require(&quot;arangojs&quot;);
+
+  const db = new Database({
+    url: ARANGODB_SERVER,
+<span class="hljs-addition">+   agentOptions: {</span>
+<span class="hljs-addition">+     ca: [</span>
+<span class="hljs-addition">+       fs.readFileSync(&quot;.ssl/sub.class1.server.ca.pem&quot;),</span>
+<span class="hljs-addition">+       fs.readFileSync(&quot;.ssl/ca.pem&quot;)</span>
+<span class="hljs-addition">+     ]</span>
+<span class="hljs-addition">+   },</span>
+  });</code></pre>
 				<p>Although this is <strong>strongly discouraged</strong>, it&#39;s also possible to disable
 					HTTPS certificate validation entirely, but note this has
 				<strong>extremely dangerous</strong> security implications:</p>
-				<pre><code class="language-js">...
-agentOptions: {
-  <span class="hljs-attr">rejectUnauthorized</span>: <span class="hljs-literal">false</span>
-}</code></pre>
+				<pre><code class="language-diff">  const { Database } = require(&quot;arangojs&quot;);
+
+  const db = new Database({
+    url: ARANGODB_SERVER,
+<span class="hljs-addition">+   agentOptions: {</span>
+<span class="hljs-addition">+     rejectUnauthorized: false</span>
+<span class="hljs-addition">+   },</span>
+  });</code></pre>
 				<p>When using arangojs in the browser, self-signed HTTPS certificates need to
 				be trusted by the browser or use a trusted root certificate.</p>
 				<a href="#streaming-transactions" id="streaming-transactions" style="color: inherit; text-decoration: none;">
@@ -316,15 +324,16 @@ agentOptions: {
 				<a href="#error-responses" id="error-responses" style="color: inherit; text-decoration: none;">
 					<h2>Error responses</h2>
 				</a>
-				<p>If arangojs encounters an API error, it will throw an <em>ArangoError</em> with an
-					<a href="https://www.arangodb.com/docs/stable/appendix-error-codes.html"><em>errorNum</em> error code</a>
-					as well as a <em>code</em> and <em>statusCode</em> property indicating the intended and
+				<p>If arangojs encounters an API error, it will throw an <code>ArangoError</code> with an
+					<a href="https://www.arangodb.com/docs/stable/appendix-error-codes.html"><code>errorNum</code> error code</a>
+					as well as a <code>code</code> and <code>statusCode</code> property indicating the intended and
 				actual HTTP status code of the response.</p>
 				<p>For any other error responses (4xx/5xx status code), it will throw an
-				<em>HttpError</em> error with the status code indicated by the <em>code</em> and <em>statusCode</em> properties.</p>
+					<code>HttpError</code> error with the status code indicated by the <code>code</code> and
+				<code>statusCode</code> properties.</p>
 				<p>If the server response did not indicate an error but the response body could
-				not be parsed, a <em>SyntaxError</em> may be thrown instead.</p>
-				<p>In all of these cases the error object will additionally have a <em>response</em>
+				not be parsed, a <code>SyntaxError</code> may be thrown instead.</p>
+				<p>In all of these cases the error object will additionally have a <code>response</code>
 				property containing the server response object.</p>
 				<p>If the request failed at a network level or the connection was closed without
 				receiving a response, the underlying error will be thrown instead.</p>
