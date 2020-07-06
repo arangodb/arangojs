@@ -229,6 +229,7 @@ export type RequestOptions = {
 
 type Task = {
   host?: number;
+  stack?: string;
   allowDirtyRead: boolean;
   resolve: Function;
   reject: Function;
@@ -387,6 +388,16 @@ export type Config = {
    * the `auth` configuration option.
    */
   headers?: Headers;
+  /**
+   * (V8 only.) If set to `true`, arangojs will generate stack traces every
+   * time a request is initiated and augment the stack traces of any errors it
+   * generates.
+   *
+   * **Warning**: This will cause arangojs to generate stack traces in advance
+   * even if the request does not result in an error. Generating stack traces
+   * may negatively impact performance.
+   */
+  precaptureStackTraces?: boolean;
 };
 
 /**
@@ -425,6 +436,7 @@ export class Connection {
   protected _activeHost: number;
   protected _activeDirtyHost: number;
   protected _transactionId: string | null = null;
+  protected _precaptureStackTraces: boolean;
 
   /**
    * @internal
@@ -454,6 +466,7 @@ export class Connection {
     this._headers = { ...config.headers };
     this._loadBalancingStrategy = config.loadBalancingStrategy || "NONE";
     this._useFailOver = this._loadBalancingStrategy !== "ROUND_ROBIN";
+    this._precaptureStackTraces = Boolean(config.precaptureStackTraces);
     if (config.maxRetries === false) {
       this._shouldRetry = false;
       this._maxRetries = 0;
@@ -531,6 +544,9 @@ export class Connection {
           task.retries += 1;
           this._queue.push(task);
         } else {
+          if (task.stack) {
+            err.stack += task.stack;
+          }
           task.reject(err);
         }
       } else {
@@ -746,7 +762,7 @@ export class Connection {
         extraHeaders["x-arango-trx-id"] = this._transactionId;
       }
 
-      this._queue.push({
+      const task: Task = {
         retries: 0,
         host,
         allowDirtyRead,
@@ -792,7 +808,17 @@ export class Connection {
             resolve(transform ? transform(res) : (res as any));
           }
         },
-      });
+      };
+
+      if (
+        this._precaptureStackTraces &&
+        typeof Error.captureStackTrace === "function"
+      ) {
+        Error.captureStackTrace(task);
+        task.stack = `\n${task.stack!.split("\n").slice(3).join("\n")}`;
+      }
+
+      this._queue.push(task);
       this._runQueue();
     });
   }
