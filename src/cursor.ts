@@ -100,6 +100,8 @@ export class BatchedArrayCursor<T = any> {
 
   /**
    * An {@link ArrayCursor} providing item-wise access to the cursor result set.
+   *
+   * See also {@link ArrayCursor.batches}.
    */
   get items() {
     return this._itemsCursor;
@@ -615,6 +617,8 @@ export class ArrayCursor<T = any> {
   /**
    * A {@link BatchedArrayCursor} providing batch-wise access to the cursor
    * result set.
+   *
+   * See also {@link BatchedArrayCursor.items}.
    */
   get batches() {
     return this._batches;
