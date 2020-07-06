@@ -117,6 +117,22 @@ function isBearerAuth(auth: any): auth is BearerAuthCredentials {
   return auth.hasOwnProperty("token");
 }
 
+/**
+ * @internal
+ * @hidden
+ */
+function generateStackTrace() {
+  let err = new Error();
+  if (!err.stack) {
+    try {
+      throw err;
+    } catch (e) {
+      err = e;
+    }
+  }
+  return err.stack;
+}
+
 type UrlInfo = {
   absolutePath?: boolean;
   basePath?: string;
@@ -389,9 +405,8 @@ export type Config = {
    */
   headers?: Headers;
   /**
-   * (V8 only.) If set to `true`, arangojs will generate stack traces every
-   * time a request is initiated and augment the stack traces of any errors it
-   * generates.
+   * If set to `true`, arangojs will generate stack traces every time a request
+   * is initiated and augment the stack traces of any errors it generates.
    *
    * **Warning**: This will cause arangojs to generate stack traces in advance
    * even if the request does not result in an error. Generating stack traces
@@ -810,12 +825,16 @@ export class Connection {
         },
       };
 
-      if (
-        this._precaptureStackTraces &&
-        typeof Error.captureStackTrace === "function"
-      ) {
-        Error.captureStackTrace(task);
-        task.stack = `\n${task.stack!.split("\n").slice(3).join("\n")}`;
+      if (this._precaptureStackTraces) {
+        if (typeof Error.captureStackTrace === "function") {
+          Error.captureStackTrace(task);
+          task.stack = `\n${task.stack!.split("\n").slice(3).join("\n")}`;
+        } else {
+          const stack = generateStackTrace();
+          if (stack) {
+            task.stack = `\n${stack.split("\n").slice(4).join("\n")}`;
+          }
+        }
       }
 
       this._queue.push(task);

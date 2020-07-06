@@ -34,8 +34,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - Added `precaptureStackTraces` configuration option ([#599](https://github.com/arangodb/arangojs/issues/599))
 
-  This option can be used to get more useful stacktraces in V8 environments
-  (e.g. Node.js) but results in a performance hit on every request.
+  This option can be used to get more useful stack traces but results in a
+  performance hit on every request.
 
 - Added `cursor.batches` to provide a batch-wise cursor API
 

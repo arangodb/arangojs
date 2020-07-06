@@ -233,6 +233,32 @@ Or using object destructuring:
   });
 ```
 
+### Error stack traces contain no useful information
+
+Due to the async, queue-based behavior of arangojs, the stack traces generated
+when an error occur rarely provide enough information to determine the location
+in your own code where the request was initiated.
+
+Using the `precaptureStackTraces` configuration option, arangojs will attempt
+to always generate stack traces proactively when a request is performed,
+allowing arangojs to provide more meaningful stack traces at the cost of an
+impact to performance even when no error occurs.
+
+```diff
+  const { Database } = require("arangojs");
+
+  const db = new Database({
+    url: ARANGODB_SERVER,
++   precaptureStackTraces: true,
+  });
+```
+
+Note that arangojs will attempt to use `Error.captureStackTrace` if available
+and fall back to generating a stack trace by throwing an error. In environments
+that do not support the `stack` property on error objects, this option will
+still impact performance but not result in any additional information becoming
+available.
+
 ### Node.js `ReferenceError: window is not defined`
 
 If you compile your Node project using a build tool like Webpack, you may need
