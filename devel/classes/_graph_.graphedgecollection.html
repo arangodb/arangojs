@@ -219,16 +219,47 @@
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>TODO</p>
+									<p>Retrieves the edge matching the given key or id.</p>
 								</div>
+								<p>Throws an exception when passed a edge or <code>_id</code> from a different
+								collection, or if the edge does not exist.</p>
+								<dl class="tsd-comment-tags">
+									<dt>example</dt>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> graph = db.graph(<span class="hljs-string">&quot;some-graph&quot;</span>);
+<span class="hljs-keyword">const</span> collection = graph.edgeCollection(<span class="hljs-string">&quot;friends&quot;</span>)
+<span class="hljs-keyword">try</span> {
+  <span class="hljs-keyword">const</span> edge = <span class="hljs-keyword">await</span> collection.edge(<span class="hljs-string">&quot;abc123&quot;</span>);
+  <span class="hljs-built_in">console</span>.log(edge);
+} <span class="hljs-keyword">catch</span> (e) {
+  <span class="hljs-built_in">console</span>.error(<span class="hljs-string">&quot;Could not find edge&quot;</span>);
+}</code></pre>
+									</dd>
+									<dt>example</dt>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> graph = db.graph(<span class="hljs-string">&quot;some-graph&quot;</span>);
+<span class="hljs-keyword">const</span> collection = graph.edgeCollection(<span class="hljs-string">&quot;friends&quot;</span>)
+<span class="hljs-keyword">const</span> edge = <span class="hljs-keyword">await</span> collection.edge(<span class="hljs-string">&quot;abc123&quot;</span>, { <span class="hljs-attr">graceful</span>: <span class="hljs-literal">true</span> });
+<span class="hljs-keyword">if</span> (edge) {
+  <span class="hljs-built_in">console</span>.log(edge);
+} <span class="hljs-keyword">else</span> {
+  <span class="hljs-built_in">console</span>.error(<span class="hljs-string">&quot;Edge does not exist&quot;</span>);
+}</code></pre>
+									</dd>
+								</dl>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
 									<h5>selector: <a href="../modules/_documents_.html#documentselector" class="tsd-signature-type">DocumentSelector</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Document <code>_key</code>, <code>_id</code> or object with either of those
+										properties (e.g. a edge from this collection).</p>
+									</div>
 								</li>
 								<li>
 									<h5><span class="tsd-flag ts-flagOptional">Optional</span> options: <a href="../modules/_graph_.html#graphcollectionreadoptions" class="tsd-signature-type">GraphCollectionReadOptions</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Options for retrieving the edge.</p>
+									</div>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/_documents_.html#edge" class="tsd-signature-type">Edge</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -238,16 +269,48 @@
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>TODO</p>
+									<p>Retrieves the edge matching the given key or id.</p>
 								</div>
+								<p>Throws an exception when passed a edge or <code>_id</code> from a different
+								collection, or if the edge does not exist.</p>
+								<dl class="tsd-comment-tags">
+									<dt>example</dt>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> graph = db.graph(<span class="hljs-string">&quot;some-graph&quot;</span>);
+<span class="hljs-keyword">const</span> collection = graph.edgeCollection(<span class="hljs-string">&quot;friends&quot;</span>)
+<span class="hljs-keyword">try</span> {
+  <span class="hljs-keyword">const</span> edge = <span class="hljs-keyword">await</span> collection.edge(<span class="hljs-string">&quot;abc123&quot;</span>, <span class="hljs-literal">false</span>);
+  <span class="hljs-built_in">console</span>.log(edge);
+} <span class="hljs-keyword">catch</span> (e) {
+  <span class="hljs-built_in">console</span>.error(<span class="hljs-string">&quot;Could not find edge&quot;</span>);
+}</code></pre>
+									</dd>
+									<dt>example</dt>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> graph = db.graph(<span class="hljs-string">&quot;some-graph&quot;</span>);
+<span class="hljs-keyword">const</span> collection = graph.edgeCollection(<span class="hljs-string">&quot;friends&quot;</span>)
+<span class="hljs-keyword">const</span> edge = <span class="hljs-keyword">await</span> collection.edge(<span class="hljs-string">&quot;abc123&quot;</span>, <span class="hljs-literal">true</span>);
+<span class="hljs-keyword">if</span> (edge) {
+  <span class="hljs-built_in">console</span>.log(edge);
+} <span class="hljs-keyword">else</span> {
+  <span class="hljs-built_in">console</span>.error(<span class="hljs-string">&quot;Edge does not exist&quot;</span>);
+}</code></pre>
+									</dd>
+								</dl>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
 									<h5>selector: <a href="../modules/_documents_.html#documentselector" class="tsd-signature-type">DocumentSelector</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Document <code>_key</code>, <code>_id</code> or object with either of those
+										properties (e.g. a edge from this collection).</p>
+									</div>
 								</li>
 								<li>
 									<h5>graceful: <span class="tsd-signature-type">boolean</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>If set to <code>true</code>, <code>null</code> is returned instead of an
+										exception being thrown if the edge does not exist.</p>
+									</div>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/_documents_.html#edge" class="tsd-signature-type">Edge</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -266,13 +329,30 @@
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>TODO</p>
+									<p>Checks whether a edge matching the given key or id exists in this
+									collection.</p>
 								</div>
+								<p>Throws an exception when passed a edge or <code>_id</code> from a different
+								collection.</p>
+								<dl class="tsd-comment-tags">
+									<dt>example</dt>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> graph = db.graph(<span class="hljs-string">&quot;some-graph&quot;</span>);
+<span class="hljs-keyword">const</span> collection = graph.edgeCollection(<span class="hljs-string">&quot;friends&quot;</span>)
+<span class="hljs-keyword">const</span> exists = <span class="hljs-keyword">await</span> collection.edgeExists(<span class="hljs-string">&quot;abc123&quot;</span>);
+<span class="hljs-keyword">if</span> (!exists) {
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&quot;Edge does not exist&quot;</span>);
+}</code></pre>
+									</dd>
+								</dl>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
 									<h5>selector: <a href="../modules/_documents_.html#documentselector" class="tsd-signature-type">DocumentSelector</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Document <code>_key</code>, <code>_id</code> or object with either of those
+										properties (e.g. a edge from this collection).</p>
+									</div>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -291,16 +371,34 @@
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>TODO</p>
+									<p>Removes an existing edge from the collection.</p>
 								</div>
+								<p>Throws an exception when passed a edge or <code>_id</code> from a different
+								collection.</p>
+								<dl class="tsd-comment-tags">
+									<dt>example</dt>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">&quot;friends&quot;</span>);
+<span class="hljs-keyword">const</span> doc = <span class="hljs-keyword">await</span> collection.edge(<span class="hljs-string">&quot;musadir&quot;</span>);
+<span class="hljs-keyword">await</span> collection.remove(doc);
+<span class="hljs-comment">// edge with key &quot;musadir&quot; deleted</span></code></pre>
+									</dd>
+								</dl>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
 									<h5>selector: <a href="../modules/_documents_.html#documentselector" class="tsd-signature-type">DocumentSelector</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Document <code>_key</code>, <code>_id</code> or object with either of those
+										properties (e.g. a edge from this collection).</p>
+									</div>
 								</li>
 								<li>
 									<h5><span class="tsd-flag ts-flagOptional">Optional</span> options: <a href="../modules/_graph_.html#graphcollectionremoveoptions" class="tsd-signature-type">GraphCollectionRemoveOptions</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Options for removing the edge.</p>
+									</div>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/_documents_.html#documentmetadata" class="tsd-signature-type">DocumentMetadata</a><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{ </span>old<span class="tsd-signature-symbol">?: </span><a href="../modules/_documents_.html#edge" class="tsd-signature-type">Edge</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -319,19 +417,49 @@
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>TODO</p>
+									<p>Replaces an existing edge in the collection.</p>
 								</div>
+								<p>Throws an exception when passed a edge or <code>_id</code> from a different
+								collection.</p>
+								<dl class="tsd-comment-tags">
+									<dt>example</dt>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">&quot;friends&quot;</span>);
+<span class="hljs-keyword">await</span> collection.save(
+  {
+    <span class="hljs-attr">_key</span>: <span class="hljs-string">&quot;musadir&quot;</span>,
+    <span class="hljs-attr">_from</span>: <span class="hljs-string">&quot;users/rana&quot;</span>,
+    <span class="hljs-attr">_to</span>: <span class="hljs-string">&quot;users/mudasir&quot;</span>,
+    <span class="hljs-attr">active</span>: <span class="hljs-literal">true</span>,
+    <span class="hljs-attr">best</span>: <span class="hljs-literal">true</span>
+  }
+);
+<span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> collection.replace(
+  <span class="hljs-string">&quot;musadir&quot;</span>,
+  { <span class="hljs-attr">active</span>: <span class="hljs-literal">false</span> },
+  { <span class="hljs-attr">returnNew</span>: <span class="hljs-literal">true</span> }
+);
+<span class="hljs-built_in">console</span>.log(result.new.active, result.new.best); <span class="hljs-comment">// false undefined</span></code></pre>
+									</dd>
+								</dl>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
 									<h5>selector: <a href="../modules/_documents_.html#documentselector" class="tsd-signature-type">DocumentSelector</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Document <code>_key</code>, <code>_id</code> or object with either of those
+										properties (e.g. a edge from this collection).</p>
+									</div>
 								</li>
 								<li>
 									<h5>newValue: <a href="../modules/_documents_.html#edgedata" class="tsd-signature-type">EdgeData</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h5>
 								</li>
 								<li>
 									<h5><span class="tsd-flag ts-flagOptional">Optional</span> options: <a href="../modules/_graph_.html#graphcollectionreplaceoptions" class="tsd-signature-type">GraphCollectionReplaceOptions</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Options for replacing the edge.</p>
+									</div>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/_documents_.html#documentmetadata" class="tsd-signature-type">DocumentMetadata</a><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{ </span>new<span class="tsd-signature-symbol">?: </span><a href="../modules/_documents_.html#edge" class="tsd-signature-type">Edge</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">; </span>old<span class="tsd-signature-symbol">?: </span><a href="../modules/_documents_.html#edge" class="tsd-signature-type">Edge</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -350,16 +478,32 @@
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>TODO</p>
+									<p>Inserts a new edge with the given <code>data</code> into the collection.</p>
 								</div>
+								<dl class="tsd-comment-tags">
+									<dt>example</dt>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">&quot;friends&quot;</span>);
+<span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> collection.save(
+  { <span class="hljs-attr">_from</span>: <span class="hljs-string">&quot;users/rana&quot;</span>, <span class="hljs-attr">_to</span>: <span class="hljs-string">&quot;users/mudasir&quot;</span>, <span class="hljs-attr">active</span>: <span class="hljs-literal">false</span> },
+  { <span class="hljs-attr">returnNew</span>: <span class="hljs-literal">true</span> }
+);</code></pre>
+									</dd>
+								</dl>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
 									<h5>data: <a href="../modules/_documents_.html#edgedata" class="tsd-signature-type">EdgeData</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The contents of the new edge.</p>
+									</div>
 								</li>
 								<li>
 									<h5><span class="tsd-flag ts-flagOptional">Optional</span> options: <a href="../modules/_graph_.html#graphcollectioninsertoptions" class="tsd-signature-type">GraphCollectionInsertOptions</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Options for inserting the edge.</p>
+									</div>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/_documents_.html#documentmetadata" class="tsd-signature-type">DocumentMetadata</a><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{ </span>new<span class="tsd-signature-symbol">?: </span><a href="../modules/_documents_.html#edge" class="tsd-signature-type">Edge</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -378,19 +522,49 @@
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>TODO</p>
+									<p>Updates an existing edge in the collection.</p>
 								</div>
+								<p>Throws an exception when passed a edge or <code>_id</code> from a different
+								collection.</p>
+								<dl class="tsd-comment-tags">
+									<dt>example</dt>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">&quot;friends&quot;</span>);
+<span class="hljs-keyword">await</span> collection.save(
+  {
+    <span class="hljs-attr">_key</span>: <span class="hljs-string">&quot;musadir&quot;</span>,
+    <span class="hljs-attr">_from</span>: <span class="hljs-string">&quot;users/rana&quot;</span>,
+    <span class="hljs-attr">_to</span>: <span class="hljs-string">&quot;users/mudasir&quot;</span>,
+    <span class="hljs-attr">active</span>: <span class="hljs-literal">true</span>,
+    <span class="hljs-attr">best</span>: <span class="hljs-literal">true</span>
+  }
+);
+<span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> collection.update(
+  <span class="hljs-string">&quot;musadir&quot;</span>,
+  { <span class="hljs-attr">active</span>: <span class="hljs-literal">false</span> },
+  { <span class="hljs-attr">returnNew</span>: <span class="hljs-literal">true</span> }
+);
+<span class="hljs-built_in">console</span>.log(result.new.active, result.new.best); <span class="hljs-comment">// false true</span></code></pre>
+									</dd>
+								</dl>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
 									<h5>selector: <a href="../modules/_documents_.html#documentselector" class="tsd-signature-type">DocumentSelector</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Document <code>_key</code>, <code>_id</code> or object with either of those
+										properties (e.g. a edge from this collection).</p>
+									</div>
 								</li>
 								<li>
 									<h5>newValue: <a href="../modules/_util_types_.html#patch" class="tsd-signature-type">Patch</a><span class="tsd-signature-symbol">&lt;</span><a href="../modules/_documents_.html#edgedata" class="tsd-signature-type">EdgeData</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h5>
 								</li>
 								<li>
 									<h5><span class="tsd-flag ts-flagOptional">Optional</span> options: <a href="../modules/_graph_.html#graphcollectionreplaceoptions" class="tsd-signature-type">GraphCollectionReplaceOptions</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Options for updating the edge.</p>
+									</div>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/_documents_.html#documentmetadata" class="tsd-signature-type">DocumentMetadata</a><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{ </span>new<span class="tsd-signature-symbol">?: </span><a href="../modules/_documents_.html#edge" class="tsd-signature-type">Edge</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">; </span>old<span class="tsd-signature-symbol">?: </span><a href="../modules/_documents_.html#edge" class="tsd-signature-type">Edge</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">&gt;</span></h4>
