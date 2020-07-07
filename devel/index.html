@@ -165,17 +165,12 @@ db.query({
 <span class="hljs-comment">// Using different databases</span>
 <span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database({
   <span class="hljs-attr">url</span>: <span class="hljs-string">&quot;http://localhost:8529&quot;</span>,
+  <span class="hljs-attr">database</span>: <span class="hljs-string">&quot;pancakes&quot;</span>,
+  <span class="hljs-attr">auth</span>: { <span class="hljs-attr">username</span>: <span class="hljs-string">&quot;root&quot;</span>, <span class="hljs-attr">password</span>: <span class="hljs-string">&quot;hunter2&quot;</span> },
 });
-db.useDatabase(<span class="hljs-string">&quot;pancakes&quot;</span>);
-db.useBasicAuth(<span class="hljs-string">&quot;root&quot;</span>, <span class="hljs-string">&quot;&quot;</span>);
 <span class="hljs-comment">// The database can be swapped at any time</span>
 db.useDatabase(<span class="hljs-string">&quot;waffles&quot;</span>);
-db.useBasicAuth(<span class="hljs-string">&quot;admin&quot;</span>, <span class="hljs-string">&quot;maplesyrup&quot;</span>);
-
-<span class="hljs-comment">// Using ArangoDB behind a reverse proxy</span>
-<span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database({
-  <span class="hljs-attr">url</span>: <span class="hljs-string">&quot;http://arangodb-proxy:1234&quot;</span>,
-});</code></pre>
+db.useBasicAuth(<span class="hljs-string">&quot;admin&quot;</span>, <span class="hljs-string">&quot;maplesyrup&quot;</span>);</code></pre>
 				<a href="#compatibility" id="compatibility" style="color: inherit; text-decoration: none;">
 					<h2>Compatibility</h2>
 				</a>
