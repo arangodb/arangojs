@@ -677,7 +677,24 @@ export class GraphEdgeCollection<T extends object = any>
   }
 
   /**
-   * TODO
+   * Checks whether a edge matching the given key or id exists in this
+   * collection.
+   *
+   * Throws an exception when passed a edge or `_id` from a different
+   * collection.
+   *
+   * @param selector - Document `_key`, `_id` or object with either of those
+   * properties (e.g. a edge from this collection).
+   *
+   * @example
+   * ```js
+   * const graph = db.graph("some-graph");
+   * const collection = graph.edgeCollection("friends")
+   * const exists = await collection.edgeExists("abc123");
+   * if (!exists) {
+   *   console.log("Edge does not exist");
+   * }
+   * ```
    */
   async edgeExists(selector: DocumentSelector): Promise<boolean> {
     try {
@@ -700,14 +717,77 @@ export class GraphEdgeCollection<T extends object = any>
   }
 
   /**
-   * TODO
+   * Retrieves the edge matching the given key or id.
+   *
+   * Throws an exception when passed a edge or `_id` from a different
+   * collection, or if the edge does not exist.
+   *
+   * @param selector - Document `_key`, `_id` or object with either of those
+   * properties (e.g. a edge from this collection).
+   * @param options - Options for retrieving the edge.
+   *
+   * @example
+   * ```js
+   * const graph = db.graph("some-graph");
+   * const collection = graph.edgeCollection("friends")
+   * try {
+   *   const edge = await collection.edge("abc123");
+   *   console.log(edge);
+   * } catch (e) {
+   *   console.error("Could not find edge");
+   * }
+   * ```
+   *
+   * @example
+   * ```js
+   * const graph = db.graph("some-graph");
+   * const collection = graph.edgeCollection("friends")
+   * const edge = await collection.edge("abc123", { graceful: true });
+   * if (edge) {
+   *   console.log(edge);
+   * } else {
+   *   console.error("Edge does not exist");
+   * }
+   * ```
    */
   async edge(
     selector: DocumentSelector,
     options?: GraphCollectionReadOptions
   ): Promise<Edge<T>>;
   /**
-   * TODO
+   * Retrieves the edge matching the given key or id.
+   *
+   * Throws an exception when passed a edge or `_id` from a different
+   * collection, or if the edge does not exist.
+   *
+   * @param selector - Document `_key`, `_id` or object with either of those
+   * properties (e.g. a edge from this collection).
+   * @param graceful - If set to `true`, `null` is returned instead of an
+   * exception being thrown if the edge does not exist.
+   *
+   * @example
+   * ```js
+   * const graph = db.graph("some-graph");
+   * const collection = graph.edgeCollection("friends")
+   * try {
+   *   const edge = await collection.edge("abc123", false);
+   *   console.log(edge);
+   * } catch (e) {
+   *   console.error("Could not find edge");
+   * }
+   * ```
+   *
+   * @example
+   * ```js
+   * const graph = db.graph("some-graph");
+   * const collection = graph.edgeCollection("friends")
+   * const edge = await collection.edge("abc123", true);
+   * if (edge) {
+   *   console.log(edge);
+   * } else {
+   *   console.error("Edge does not exist");
+   * }
+   * ```
    */
   async edge(selector: DocumentSelector, graceful: boolean): Promise<Edge<T>>;
   async edge(
@@ -748,7 +828,20 @@ export class GraphEdgeCollection<T extends object = any>
   }
 
   /**
-   * TODO
+   * Inserts a new edge with the given `data` into the collection.
+   *
+   * @param data - The contents of the new edge.
+   * @param options - Options for inserting the edge.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collection = db.collection("friends");
+   * const result = await collection.save(
+   *   { _from: "users/rana", _to: "users/mudasir", active: false },
+   *   { returnNew: true }
+   * );
+   * ```
    */
   save(
     data: EdgeData<T>,
@@ -767,7 +860,36 @@ export class GraphEdgeCollection<T extends object = any>
   }
 
   /**
-   * TODO
+   * Replaces an existing edge in the collection.
+   *
+   * Throws an exception when passed a edge or `_id` from a different
+   * collection.
+   *
+   * @param selector - Document `_key`, `_id` or object with either of those
+   * properties (e.g. a edge from this collection).
+   * @param newData - The contents of the new edge.
+   * @param options - Options for replacing the edge.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collection = db.collection("friends");
+   * await collection.save(
+   *   {
+   *     _key: "musadir",
+   *     _from: "users/rana",
+   *     _to: "users/mudasir",
+   *     active: true,
+   *     best: true
+   *   }
+   * );
+   * const result = await collection.replace(
+   *   "musadir",
+   *   { active: false },
+   *   { returnNew: true }
+   * );
+   * console.log(result.new.active, result.new.best); // false undefined
+   * ```
    */
   replace(
     selector: DocumentSelector,
@@ -801,7 +923,36 @@ export class GraphEdgeCollection<T extends object = any>
   }
 
   /**
-   * TODO
+   * Updates an existing edge in the collection.
+   *
+   * Throws an exception when passed a edge or `_id` from a different
+   * collection.
+   *
+   * @param selector - Document `_key`, `_id` or object with either of those
+   * properties (e.g. a edge from this collection).
+   * @param newData - The data for updating the edge.
+   * @param options - Options for updating the edge.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collection = db.collection("friends");
+   * await collection.save(
+   *   {
+   *     _key: "musadir",
+   *     _from: "users/rana",
+   *     _to: "users/mudasir",
+   *     active: true,
+   *     best: true
+   *   }
+   * );
+   * const result = await collection.update(
+   *   "musadir",
+   *   { active: false },
+   *   { returnNew: true }
+   * );
+   * console.log(result.new.active, result.new.best); // false true
+   * ```
    */
   update(
     selector: DocumentSelector,
@@ -835,7 +986,23 @@ export class GraphEdgeCollection<T extends object = any>
   }
 
   /**
-   * TODO
+   * Removes an existing edge from the collection.
+   *
+   * Throws an exception when passed a edge or `_id` from a different
+   * collection.
+   *
+   * @param selector - Document `_key`, `_id` or object with either of those
+   * properties (e.g. a edge from this collection).
+   * @param options - Options for removing the edge.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collection = db.collection("friends");
+   * const doc = await collection.edge("musadir");
+   * await collection.remove(doc);
+   * // edge with key "musadir" deleted
+   * ```
    */
   remove(
     selector: DocumentSelector,
