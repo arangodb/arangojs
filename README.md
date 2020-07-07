@@ -123,17 +123,12 @@ db.query({
 // Using different databases
 const db = new Database({
   url: "http://localhost:8529",
+  database: "pancakes",
+  auth: { username: "root", password: "hunter2" },
 });
-db.useDatabase("pancakes");
-db.useBasicAuth("root", "");
 // The database can be swapped at any time
 db.useDatabase("waffles");
 db.useBasicAuth("admin", "maplesyrup");
-
-// Using ArangoDB behind a reverse proxy
-const db = new Database({
-  url: "http://arangodb-proxy:1234",
-});
 ```
 
 ## Compatibility
