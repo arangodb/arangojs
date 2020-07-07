@@ -272,7 +272,24 @@ export class GraphVertexCollection<T extends object = any>
   }
 
   /**
-   * TODO
+   * Checks whether a vertex matching the given key or id exists in this
+   * collection.
+   *
+   * Throws an exception when passed a vertex or `_id` from a different
+   * collection.
+   *
+   * @param selector - Document `_key`, `_id` or object with either of those
+   * properties (e.g. a vertex from this collection).
+   *
+   * @example
+   * ```js
+   * const graph = db.graph("some-graph");
+   * const collection = graph.vertexCollection("vertices");
+   * const exists = await collection.vertexExists("abc123");
+   * if (!exists) {
+   *   console.log("Vertex does not exist");
+   * }
+   * ```
    */
   async vertexExists(selector: DocumentSelector): Promise<boolean> {
     try {
@@ -295,14 +312,77 @@ export class GraphVertexCollection<T extends object = any>
   }
 
   /**
-   * TODO
+   * Retrieves the vertex matching the given key or id.
+   *
+   * Throws an exception when passed a vertex or `_id` from a different
+   * collection.
+   *
+   * @param selector - Document `_key`, `_id` or object with either of those
+   * properties (e.g. a vertex from this collection).
+   * @param options - Options for retrieving the vertex.
+   *
+   * @example
+   * ```js
+   * const graph = db.graph("some-graph");
+   * const collection = graph.vertexCollection("vertices");
+   * try {
+   *   const vertex = await collection.vertex("abc123");
+   *   console.log(vertex);
+   * } catch (e) {
+   *   console.error("Could not find vertex");
+   * }
+   * ```
+   *
+   * @example
+   * ```js
+   * const graph = db.graph("some-graph");
+   * const collection = graph.vertexCollection("vertices");
+   * const vertex = await collection.vertex("abc123", { graceful: true });
+   * if (vertex) {
+   *   console.log(vertex);
+   * } else {
+   *   console.error("Could not find vertex");
+   * }
+   * ```
    */
   async vertex(
     selector: DocumentSelector,
     options?: GraphCollectionReadOptions
   ): Promise<Document<T>>;
   /**
-   * TODO
+   * Retrieves the vertex matching the given key or id.
+   *
+   * Throws an exception when passed a vertex or `_id` from a different
+   * collection.
+   *
+   * @param selector - Document `_key`, `_id` or object with either of those
+   * properties (e.g. a vertex from this collection).
+   * @param graceful - If set to `true`, `null` is returned instead of an
+   * exception being thrown if the vertex does not exist.
+   *
+   * @example
+   * ```js
+   * const graph = db.graph("some-graph");
+   * const collection = graph.vertexCollection("vertices");
+   * try {
+   *   const vertex = await collection.vertex("abc123", false);
+   *   console.log(vertex);
+   * } catch (e) {
+   *   console.error("Could not find vertex");
+   * }
+   * ```
+   *
+   * @example
+   * ```js
+   * const graph = db.graph("some-graph");
+   * const collection = graph.vertexCollection("vertices");
+   * const vertex = await collection.vertex("abc123", true);
+   * if (vertex) {
+   *   console.log(vertex);
+   * } else {
+   *   console.error("Could not find vertex");
+   * }
+   * ```
    */
   async vertex(
     selector: DocumentSelector,
@@ -347,10 +427,24 @@ export class GraphVertexCollection<T extends object = any>
   }
 
   /**
-   * TODO
+   * Inserts a new vertex with the given `data` into the collection.
+   *
+   * @param data - The contents of the new vertex.
+   * @param options - Options for inserting the vertex.
+   *
+   * @example
+   * ```js
+   * const graph = db.graph("some-graph");
+   * const collection = graph.vertexCollection("friends");
+   * const result = await collection.save(
+   *   { _key: "a", color: "blue", count: 1 },
+   *   { returnNew: true }
+   * );
+   * console.log(result.new.color, result.new.count); // "blue" 1
+   * ```
    */
   save(
-    data: EdgeData<T>,
+    data: DocumentData<T>,
     options?: GraphCollectionInsertOptions
   ): Promise<DocumentMetadata & { new?: Document<T> }>;
   save(data: DocumentData<T>, options?: GraphCollectionInsertOptions) {
@@ -366,7 +460,28 @@ export class GraphVertexCollection<T extends object = any>
   }
 
   /**
-   * TODO
+   * Replaces an existing vertex in the collection.
+   *
+   * Throws an exception when passed a vertex or `_id` from a different
+   * collection.
+   *
+   * @param selector - Document `_key`, `_id` or object with either of those
+   * properties (e.g. a vertex from this collection).
+   * @param newData - The contents of the new vertex.
+   * @param options - Options for replacing the vertex.
+   *
+   * @example
+   * ```js
+   * const graph = db.graph("some-graph");
+   * const collection = graph.collection("vertices");
+   * await collection.save({ _key: "a", color: "blue", count: 1 });
+   * const result = await collection.replace(
+   *   "a",
+   *   { color: "red" },
+   *   { returnNew: true }
+   * );
+   * console.log(result.new.color, result.new.count); // "red" undefined
+   * ```
    */
   replace(
     selector: DocumentSelector,
@@ -400,7 +515,28 @@ export class GraphVertexCollection<T extends object = any>
   }
 
   /**
-   * TODO
+   * Updates an existing vertex in the collection.
+   *
+   * Throws an exception when passed a vertex or `_id` from a different
+   * collection.
+   *
+   * @param selector - Document `_key`, `_id` or object with either of those
+   * properties (e.g. a vertex from this collection).
+   * @param newData - The data for updating the vertex.
+   * @param options - Options for updating the vertex.
+   *
+   * @example
+   * ```js
+   * const graph = db.graph("some-graph");
+   * const collection = graph.collection("vertices");
+   * await collection.save({ _key: "a", color: "blue", count: 1 });
+   * const result = await collection.update(
+   *   "a",
+   *   { count: 2 },
+   *   { returnNew: true }
+   * );
+   * console.log(result.new.color, result.new.count); // "blue" 2
+   * ```
    */
   update(
     selector: DocumentSelector,
@@ -432,8 +568,33 @@ export class GraphVertexCollection<T extends object = any>
       (res) => mungeGharialResponse(res.body, "vertex")
     );
   }
+
   /**
-   * TODO
+   * Removes an existing vertex from the collection.
+   *
+   * Throws an exception when passed a vertex or `_id` from a different
+   * collection.
+   *
+   * @param selector - Document `_key`, `_id` or object with either of those
+   * properties (e.g. a vertex from this collection).
+   * @param options - Options for removing the vertex.
+   *
+   * @example
+   * ```js
+   * const graph = db.graph("some-graph");
+   * const collection = graph.vertexCollection("vertices");
+   * await collection.remove("abc123");
+   * // document with key "abc123" deleted
+   * ```
+   *
+   * @example
+   * ```js
+   * const graph = db.graph("some-graph");
+   * const collection = graph.vertexCollection("vertices");
+   * const doc = await collection.vertex("abc123");
+   * await collection.remove(doc);
+   * // document with key "abc123" deleted
+   * ```
    */
   remove(
     selector: DocumentSelector,

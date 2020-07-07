@@ -1497,7 +1497,7 @@ export interface DocumentCollection<T extends object = any>
    */
   documentExists(selector: DocumentSelector): Promise<boolean>;
   /**
-   * Retrives the document matching the given key or id.
+   * Retrieves the document matching the given key or id.
    *
    * Throws an exception when passed a document or `_id` from a different
    * collection.
@@ -1535,7 +1535,7 @@ export interface DocumentCollection<T extends object = any>
     options?: CollectionReadOptions
   ): Promise<Document<T>>;
   /**
-   * Retrives the document matching the given key or id.
+   * Retrieves the document matching the given key or id.
    *
    * Throws an exception when passed a document or `_id` from a different
    * collection.
@@ -1550,7 +1550,7 @@ export interface DocumentCollection<T extends object = any>
    * const db = new Database();
    * const collection = db.collection("some-collection");
    * try {
-   *   const document = await collection.document("abc123");
+   *   const document = await collection.document("abc123", false);
    *   console.log(document);
    * } catch (e) {
    *   console.error("Could not find document");
@@ -1905,7 +1905,7 @@ export interface DocumentCollection<T extends object = any>
   //#region simple queries
 
   /**
-   * Retrives a list of references for all documents in the collection.
+   * Retrieves a list of references for all documents in the collection.
    *
    * @param type - The type of document reference to retrieve.
    *
@@ -2205,7 +2205,7 @@ export interface DocumentCollection<T extends object = any>
 export interface EdgeCollection<T extends object = any>
   extends DocumentCollection<T> {
   /**
-   * Retrives the document matching the given key or id.
+   * Retrieves the document matching the given key or id.
    *
    * Throws an exception when passed a document or `_id` from a different
    * collection, or if the document does not exist.
@@ -2243,7 +2243,7 @@ export interface EdgeCollection<T extends object = any>
     options?: CollectionReadOptions
   ): Promise<Edge<T>>;
   /**
-   * Retrives the document matching the given key or id.
+   * Retrieves the document matching the given key or id.
    *
    * Throws an exception when passed a document or `_id` from a different
    * collection, or if the document does not exist.
@@ -2258,7 +2258,7 @@ export interface EdgeCollection<T extends object = any>
    * const db = new Database();
    * const collection = db.collection("some-collection");
    * try {
-   *   const document = await collection.document("abc123");
+   *   const document = await collection.document("abc123", false);
    *   console.log(document);
    * } catch (e) {
    *   console.error("Could not find document");
