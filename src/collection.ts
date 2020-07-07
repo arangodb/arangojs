@@ -269,8 +269,17 @@ export type CollectionProperties = {
  * Options for validating collection documents.
  */
 export type ValidationOptions = {
+  /**
+   * TODO
+   */
   rule: any;
+  /**
+   * TODO
+   */
   level?: ValidationLevel;
+  /**
+   * TODO
+   */
   message?: string;
 };
 
@@ -301,7 +310,13 @@ export type CollectionPropertiesOptions = {
  * Options for retrieving a collection checksum.
  */
 export type CollectionChecksumOptions = {
+  /**
+   * TODO
+   */
   withRevisions?: boolean;
+  /**
+   * TODO
+   */
   withData?: boolean;
 };
 
@@ -692,9 +707,21 @@ export type CollectionImportOptions = {
  * replaced with AQL queries.
  */
 export type SimpleQueryByExampleOptions = {
+  /**
+   * TODO
+   */
   skip?: number;
+  /**
+   * TODO
+   */
   limit?: number;
+  /**
+   * TODO
+   */
   batchSize?: number;
+  /**
+   * TODO
+   */
   ttl?: number;
 };
 
@@ -705,10 +732,25 @@ export type SimpleQueryByExampleOptions = {
  * replaced with AQL queries.
  */
 export type SimpleQueryAllOptions = {
+  /**
+   * TODO
+   */
   skip?: number;
+  /**
+   * TODO
+   */
   limit?: number;
+  /**
+   * TODO
+   */
   batchSize?: number;
+  /**
+   * TODO
+   */
   ttl?: number;
+  /**
+   * TODO
+   */
   stream?: boolean;
 };
 
@@ -719,9 +761,21 @@ export type SimpleQueryAllOptions = {
  * replaced with AQL queries.
  */
 export type SimpleQueryUpdateByExampleOptions = {
+  /**
+   * TODO
+   */
   keepNull?: boolean;
+  /**
+   * TODO
+   */
   waitForSync?: boolean;
+  /**
+   * TODO
+   */
   limit?: number;
+  /**
+   * TODO
+   */
   mergeObjects?: boolean;
 };
 
@@ -732,7 +786,13 @@ export type SimpleQueryUpdateByExampleOptions = {
  * replaced with AQL queries.
  */
 export type SimpleQueryRemoveByExampleOptions = {
+  /**
+   * TODO
+   */
   waitForSync?: boolean;
+  /**
+   * TODO
+   */
   limit?: number;
 };
 
@@ -751,8 +811,17 @@ export type SimpleQueryReplaceByExampleOptions = SimpleQueryRemoveByExampleOptio
  * replaced with AQL queries.
  */
 export type SimpleQueryRemoveByKeysOptions = {
+  /**
+   * TODO
+   */
   returnOld?: boolean;
+  /**
+   * TODO
+   */
   silent?: boolean;
+  /**
+   * TODO
+   */
   waitForSync?: boolean;
 };
 
@@ -763,8 +832,17 @@ export type SimpleQueryRemoveByKeysOptions = {
  * replaced with AQL queries.
  */
 export type SimpleQueryFulltextOptions = {
+  /**
+   * TODO
+   */
   index?: string;
+  /**
+   * TODO
+   */
   limit?: number;
+  /**
+   * TODO
+   */
   skip?: number;
 };
 

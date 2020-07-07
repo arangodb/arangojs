@@ -23,6 +23,9 @@
  * to {@link EnsurePersistentIndexOptions}.
  */
 export type EnsureHashIndexOptions = {
+  /**
+   * The type of this index.
+   */
   type: "hash";
   /**
    * An array of attribute paths.
@@ -61,6 +64,9 @@ export type EnsureHashIndexOptions = {
  * to {@link EnsurePersistentIndexOptions}.
  */
 export type EnsureSkiplistIndexOptions = {
+  /**
+   * The type of this index.
+   */
   type: "skiplist";
   /**
    * An array of attribute paths.
@@ -96,6 +102,9 @@ export type EnsureSkiplistIndexOptions = {
  * Options for creating a persistent index.
  */
 export type EnsurePersistentIndexOptions = {
+  /**
+   * The type of this index.
+   */
   type: "persistent";
   /**
    * An array of attribute paths.
@@ -173,6 +182,9 @@ export type EnsureGeoIndexOptions =
  * Options for creating a fulltext index.
  */
 export type EnsureFulltextIndexOptions = {
+  /**
+   * The type of this index.
+   */
   type: "fulltext";
   /**
    * An array containing exactly one attribute path.
@@ -192,6 +204,9 @@ export type EnsureFulltextIndexOptions = {
  * Options for creating a TTL index.
  */
 export type EnsureTtlIndexOptions = {
+  /**
+   * The type of this index.
+   */
   type: "ttl";
   /**
    * An array containing exactly one attribute path.

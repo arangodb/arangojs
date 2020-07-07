@@ -67,8 +67,17 @@ function coerceEdgeDefinition(options: EdgeDefinitionOptions): EdgeDefinition {
  * Options for retrieving a document from a graph collection.
  */
 export type GraphCollectionReadOptions = {
+  /**
+   * TODO
+   */
   rev?: string;
+  /**
+   * TODO
+   */
   graceful?: boolean;
+  /**
+   * TODO
+   */
   allowDirtyRead?: boolean;
 };
 
@@ -76,7 +85,13 @@ export type GraphCollectionReadOptions = {
  * Options for inserting a document into a graph collection.
  */
 export type GraphCollectionInsertOptions = {
+  /**
+   * TODO
+   */
   waitForSync?: boolean;
+  /**
+   * TODO
+   */
   returnNew?: boolean;
 };
 
@@ -84,10 +99,25 @@ export type GraphCollectionInsertOptions = {
  * Options for replacing a document in a graph collection.
  */
 export type GraphCollectionReplaceOptions = {
+  /**
+   * TODO
+   */
   rev?: string;
+  /**
+   * TODO
+   */
   waitForSync?: boolean;
+  /**
+   * TODO
+   */
   keepNull?: boolean;
+  /**
+   * TODO
+   */
   returnOld?: boolean;
+  /**
+   * TODO
+   */
   returnNew?: boolean;
 };
 
@@ -95,8 +125,17 @@ export type GraphCollectionReplaceOptions = {
  * Options for removing a document from a graph collection.
  */
 export type GraphCollectionRemoveOptions = {
+  /**
+   * TODO
+   */
   rev?: string;
+  /**
+   * TODO
+   */
   waitForSync?: boolean;
+  /**
+   * TODO
+   */
   returnOld?: boolean;
 };
 
@@ -140,28 +179,64 @@ export type EdgeDefinitionOptions = {
  * General information about a graph.
  */
 export type GraphInfo = {
+  /**
+   * TODO
+   */
   _id: string;
+  /**
+   * TODO
+   */
   _key: string;
+  /**
+   * TODO
+   */
   _rev: string;
+  /**
+   * TODO
+   */
   name: string;
+  /**
+   * TODO
+   */
   edgeDefinitions: EdgeDefinition[];
+  /**
+   * TODO
+   */
   orphanCollections: string[];
 
   // Cluster options
+  /**
+   * TODO
+   */
   numberOfShards?: number;
+  /**
+   * TODO
+   */
   replicationFactor?: number;
+  /**
+   * TODO
+   */
   writeConcern?: number;
   /**
    * @deprecated Renamed to `writeConcern` in ArangoDB 3.6.
    */
+  /**
+   * TODO
+   */
   minReplicationFactor?: number;
 
   // Extra options
-  /** Enterprise Edition only */
+  /**
+   * (Enterprise Edition only.) TODO
+   */
   isSatellite?: boolean;
-  /** Enterprise Edition only */
+  /**
+   * (Enterprise Edition only.) TODO
+   */
   isSmart?: boolean;
-  /** Enterprise Edition only */
+  /**
+   * (Enterprise Edition only.) TODO
+   */
   smartGraphAttribute?: string;
 };
 

@@ -148,11 +148,29 @@ type UrlInfo = {
  * See also: {@link https://www.npmjs.com/package/xhr | `xhr` on npm }.
  */
 export type XhrOptions = {
+  /**
+   * TODO
+   */
   maxSockets?: number;
+  /**
+   * TODO
+   */
   timeout?: number;
+  /**
+   * TODO
+   */
   beforeSend?: (xhrObject: any) => void;
+  /**
+   * TODO
+   */
   xhr?: any;
+  /**
+   * TODO
+   */
   useXdr?: boolean;
+  /**
+   * TODO
+   */
   withCredentials?: boolean;
 };
 
