@@ -297,6 +297,8 @@ export type GraphCreateOptions = {
 
 /**
  * Represents a {@link Collection} of vertices in a {@link Graph}.
+ *
+ * @param T - Type to use for document data. Defaults to `any`.
  */
 export class GraphVertexCollection<T extends object = any>
   implements ArangoCollection {
@@ -702,6 +704,8 @@ export class GraphVertexCollection<T extends object = any>
 
 /**
  * Represents a {@link Collection} of edges in a {@link Graph}.
+ *
+ * @param T - Type to use for document data. Defaults to `any`.
  */
 export class GraphEdgeCollection<T extends object = any>
   implements ArangoCollection {
