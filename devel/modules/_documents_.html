@@ -103,7 +103,7 @@
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>TODO</p>
+							<p>Type representing a document stored in a collection.</p>
 						</div>
 					</div>
 					<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -121,7 +121,7 @@
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>TODO</p>
+							<p>Type representing an object that can be stored in a collection.</p>
 						</div>
 					</div>
 					<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -139,7 +139,7 @@
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>TODO</p>
+							<p>Common ArangoDB metadata properties of a document.</p>
 						</div>
 					</div>
 					<div class="tsd-type-declaration">
@@ -147,12 +147,29 @@
 						<ul class="tsd-parameters">
 							<li class="tsd-parameter">
 								<h5>_id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>The unique ID of the document, which is composed of the collection name
+										and the document <code>_key</code>.</p>
+									</div>
+								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5>_key<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>The key of the document, which uniquely identifies the document within its
+										collection.</p>
+									</div>
+								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5>_rev<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>The revision of the document data.</p>
+									</div>
+								</div>
 							</li>
 						</ul>
 					</div>
@@ -165,8 +182,11 @@
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>TODO</p>
+							<p>A value that can be used to identify a document within a collection in
+								arangojs methods, i.e. a partial ArangoDB document or the value of a
+							document&#39;s <code>_key</code> or <code>_id</code>.</p>
 						</div>
+						<p>See <a href="_documents_.html#documentmetadata">DocumentMetadata</a>.</p>
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module tsd-has-type-parameter">
@@ -177,7 +197,7 @@
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>TODO</p>
+							<p>Type representing an edge document stored in an edge collection.</p>
 						</div>
 					</div>
 					<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -195,7 +215,7 @@
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>TODO</p>
+							<p>Type representing an object that can be stored in an edge collection.</p>
 						</div>
 					</div>
 					<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -213,7 +233,7 @@
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>TODO</p>
+							<p>ArangoDB metadata defining the relations of an edge document.</p>
 						</div>
 					</div>
 					<div class="tsd-type-declaration">
@@ -221,9 +241,19 @@
 						<ul class="tsd-parameters">
 							<li class="tsd-parameter">
 								<h5>_from<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>The unique ID of the document that acts as the edge&#39;s start vertex.</p>
+									</div>
+								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5>_to<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>The unique ID of the document that acts as the edge&#39;s end vertex.</p>
+									</div>
+								</div>
 							</li>
 						</ul>
 					</div>
@@ -236,8 +266,9 @@
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>TODO</p>
+							<p>An object with an ArangoDB document <code>_id</code> property.</p>
 						</div>
+						<p>See <a href="_documents_.html#documentmetadata">DocumentMetadata</a>.</p>
 					</div>
 					<div class="tsd-type-declaration">
 						<h4>Type declaration</h4>
@@ -259,8 +290,9 @@
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>TODO</p>
+							<p>An object with an ArangoDB document <code>_key</code> property.</p>
 						</div>
+						<p>See <a href="_documents_.html#documentmetadata">DocumentMetadata</a>.</p>
 					</div>
 					<div class="tsd-type-declaration">
 						<h4>Type declaration</h4>

@@ -104,9 +104,7 @@
 						<section class="tsd-index-section ">
 							<h3>Type aliases</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="_collection_.html#collectionchecksum" class="tsd-kind-icon">Collection<wbr>Checksum</a></li>
 								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="_collection_.html#collectionchecksumoptions" class="tsd-kind-icon">Collection<wbr>Checksum<wbr>Options</a></li>
-								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="_collection_.html#collectioncount" class="tsd-kind-icon">Collection<wbr>Count</a></li>
 								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="_collection_.html#collectiondropoptions" class="tsd-kind-icon">Collection<wbr>Drop<wbr>Options</a></li>
 								<li class="tsd-kind-type-alias tsd-parent-kind-module tsd-has-type-parameter"><a href="_collection_.html#collectionedgesresult" class="tsd-kind-icon">Collection<wbr>Edges<wbr>Result</a></li>
 								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="_collection_.html#collectionfigures" class="tsd-kind-icon">Collection<wbr>Figures</a></li>
@@ -121,7 +119,6 @@
 								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="_collection_.html#collectionreadoptions" class="tsd-kind-icon">Collection<wbr>Read<wbr>Options</a></li>
 								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="_collection_.html#collectionremoveoptions" class="tsd-kind-icon">Collection<wbr>Remove<wbr>Options</a></li>
 								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="_collection_.html#collectionreplaceoptions" class="tsd-kind-icon">Collection<wbr>Replace<wbr>Options</a></li>
-								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="_collection_.html#collectionrevision" class="tsd-kind-icon">Collection<wbr>Revision</a></li>
 								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="_collection_.html#collectionupdateoptions" class="tsd-kind-icon">Collection<wbr>Update<wbr>Options</a></li>
 								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="_collection_.html#createcollectionoptions" class="tsd-kind-icon">Create<wbr>Collection<wbr>Options</a></li>
 								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="_collection_.html#keygenerator" class="tsd-kind-icon">Key<wbr>Generator</a></li>
@@ -156,26 +153,6 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Type aliases</h2>
 				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
-					<a name="collectionchecksum" class="tsd-anchor"></a>
-					<h3>Collection<wbr>Checksum</h3>
-					<div class="tsd-signature tsd-kind-icon">Collection<wbr>Checksum<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>checksum<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span></div>
-					<aside class="tsd-sources">
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Checksum of a collection.</p>
-						</div>
-					</div>
-					<div class="tsd-type-declaration">
-						<h4>Type declaration</h4>
-						<ul class="tsd-parameters">
-							<li class="tsd-parameter">
-								<h5>checksum<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
-							</li>
-						</ul>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
 					<a name="collectionchecksumoptions" class="tsd-anchor"></a>
 					<h3>Collection<wbr>Checksum<wbr>Options</h3>
 					<div class="tsd-signature tsd-kind-icon">Collection<wbr>Checksum<wbr>Options<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>withData<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span><span class="tsd-signature-symbol">; </span>withRevisions<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span><span class="tsd-signature-symbol"> }</span></div>
@@ -193,41 +170,20 @@
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> with<wbr>Data<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>TODO</p>
+										<p>If set to <code>true</code>, document data will be included in the calculation
+										of the checksum.</p>
 									</div>
+									<p>Default: <code>false</code></p>
 								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> with<wbr>Revisions<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>TODO</p>
+										<p>If set to <code>true</code>, revision IDs will be included in the calculation
+										of the checksum.</p>
 									</div>
-								</div>
-							</li>
-						</ul>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
-					<a name="collectioncount" class="tsd-anchor"></a>
-					<h3>Collection<wbr>Count</h3>
-					<div class="tsd-signature tsd-kind-icon">Collection<wbr>Count<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>count<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span></div>
-					<aside class="tsd-sources">
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Number of documents in a collection.</p>
-						</div>
-					</div>
-					<div class="tsd-type-declaration">
-						<h4>Type declaration</h4>
-						<ul class="tsd-parameters">
-							<li class="tsd-parameter">
-								<h5>count<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
-								<div class="tsd-comment tsd-typography">
-									<div class="lead">
-										<p>The number of documents in this collection.</p>
-									</div>
+									<p>Default: <code>false</code></p>
 								</div>
 							</li>
 						</ul>
@@ -301,7 +257,7 @@
 				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
 					<a name="collectionfigures" class="tsd-anchor"></a>
 					<h3>Collection<wbr>Figures</h3>
-					<div class="tsd-signature tsd-kind-icon">Collection<wbr>Figures<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>figures<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>alive<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>count<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>size<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">; </span>attributes<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>count<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>size<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">; </span>compactionStatus<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>bytesRead<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>bytesWritten<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>count<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>filesCombined<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>message<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>time<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">; </span>compactors<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>count<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>fileSize<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">; </span>datafiles<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>count<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>fileSize<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">; </span>dead<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>count<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>deletion<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>size<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">; </span>documentReferences<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>indexes<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>count<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>size<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">; </span>journals<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>count<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>fileSize<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">; </span>lastTick<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>shapefiles<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>count<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>fileSize<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">; </span>shapes<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>count<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>size<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">; </span>uncollectedLogfileEntries<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>waitingFor<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol"> }</span></div>
+					<div class="tsd-signature tsd-kind-icon">Collection<wbr>Figures<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>alive<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>count<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>size<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">; </span>attributes<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>count<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>size<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">; </span>cacheInUse<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>cacheSize<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>cacheUsage<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>compactionStatus<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>bytesRead<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>bytesWritten<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>count<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>filesCombined<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>message<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>time<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">; </span>compactors<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>count<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>fileSize<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">; </span>datafiles<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>count<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>fileSize<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">; </span>dead<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>count<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>deletion<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>size<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">; </span>documentReferences<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>documentsSize<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>indexes<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>count<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>size<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">; </span>journals<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>count<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>fileSize<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">; </span>lastTick<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>shapefiles<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>count<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>fileSize<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">; </span>shapes<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>count<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>size<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">; </span>uncollectedLogfileEntries<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>waitingFor<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -313,146 +269,153 @@
 						<h4>Type declaration</h4>
 						<ul class="tsd-parameters">
 							<li class="tsd-parameter">
-								<h5>figures<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>alive<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>count<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>size<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">; </span>attributes<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>count<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>size<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">; </span>compactionStatus<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>bytesRead<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>bytesWritten<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>count<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>filesCombined<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>message<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>time<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">; </span>compactors<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>count<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>fileSize<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">; </span>datafiles<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>count<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>fileSize<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">; </span>dead<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>count<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>deletion<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>size<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">; </span>documentReferences<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>indexes<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>count<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>size<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">; </span>journals<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>count<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>fileSize<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">; </span>lastTick<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>shapefiles<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>count<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>fileSize<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">; </span>shapes<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>count<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>size<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">; </span>uncollectedLogfileEntries<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>waitingFor<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span></h5>
+								<h5>alive<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>count<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>size<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span></h5>
 								<ul class="tsd-parameters">
 									<li class="tsd-parameter">
-										<h5>alive<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>count<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>size<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span></h5>
-										<ul class="tsd-parameters">
-											<li class="tsd-parameter">
-												<h5>count<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
-											</li>
-											<li class="tsd-parameter">
-												<h5>size<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
-											</li>
-										</ul>
+										<h5>count<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
 									</li>
 									<li class="tsd-parameter">
-										<h5>attributes<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>count<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>size<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span></h5>
-										<ul class="tsd-parameters">
-											<li class="tsd-parameter">
-												<h5>count<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
-											</li>
-											<li class="tsd-parameter">
-												<h5>size<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
-											</li>
-										</ul>
-									</li>
-									<li class="tsd-parameter">
-										<h5>compaction<wbr>Status<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>bytesRead<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>bytesWritten<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>count<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>filesCombined<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>message<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>time<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span></h5>
-										<ul class="tsd-parameters">
-											<li class="tsd-parameter">
-												<h5>bytes<wbr>Read<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
-											</li>
-											<li class="tsd-parameter">
-												<h5>bytes<wbr>Written<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
-											</li>
-											<li class="tsd-parameter">
-												<h5>count<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
-											</li>
-											<li class="tsd-parameter">
-												<h5>files<wbr>Combined<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
-											</li>
-											<li class="tsd-parameter">
-												<h5>message<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
-											</li>
-											<li class="tsd-parameter">
-												<h5>time<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
-											</li>
-										</ul>
-									</li>
-									<li class="tsd-parameter">
-										<h5>compactors<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>count<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>fileSize<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span></h5>
-										<ul class="tsd-parameters">
-											<li class="tsd-parameter">
-												<h5>count<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
-											</li>
-											<li class="tsd-parameter">
-												<h5>file<wbr>Size<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
-											</li>
-										</ul>
-									</li>
-									<li class="tsd-parameter">
-										<h5>datafiles<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>count<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>fileSize<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span></h5>
-										<ul class="tsd-parameters">
-											<li class="tsd-parameter">
-												<h5>count<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
-											</li>
-											<li class="tsd-parameter">
-												<h5>file<wbr>Size<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
-											</li>
-										</ul>
-									</li>
-									<li class="tsd-parameter">
-										<h5>dead<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>count<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>deletion<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>size<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span></h5>
-										<ul class="tsd-parameters">
-											<li class="tsd-parameter">
-												<h5>count<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
-											</li>
-											<li class="tsd-parameter">
-												<h5>deletion<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
-											</li>
-											<li class="tsd-parameter">
-												<h5>size<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
-											</li>
-										</ul>
-									</li>
-									<li class="tsd-parameter">
-										<h5>document<wbr>References<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
-									</li>
-									<li class="tsd-parameter">
-										<h5>indexes<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>count<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>size<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span></h5>
-										<ul class="tsd-parameters">
-											<li class="tsd-parameter">
-												<h5>count<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
-											</li>
-											<li class="tsd-parameter">
-												<h5>size<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
-											</li>
-										</ul>
-									</li>
-									<li class="tsd-parameter">
-										<h5>journals<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>count<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>fileSize<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span></h5>
-										<ul class="tsd-parameters">
-											<li class="tsd-parameter">
-												<h5>count<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
-											</li>
-											<li class="tsd-parameter">
-												<h5>file<wbr>Size<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
-											</li>
-										</ul>
-									</li>
-									<li class="tsd-parameter">
-										<h5>last<wbr>Tick<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
-									</li>
-									<li class="tsd-parameter">
-										<h5>shapefiles<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>count<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>fileSize<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span></h5>
-										<ul class="tsd-parameters">
-											<li class="tsd-parameter">
-												<h5>count<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
-											</li>
-											<li class="tsd-parameter">
-												<h5>file<wbr>Size<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
-											</li>
-										</ul>
-									</li>
-									<li class="tsd-parameter">
-										<h5>shapes<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>count<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>size<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span></h5>
-										<ul class="tsd-parameters">
-											<li class="tsd-parameter">
-												<h5>count<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
-											</li>
-											<li class="tsd-parameter">
-												<h5>size<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
-											</li>
-										</ul>
-									</li>
-									<li class="tsd-parameter">
-										<h5>uncollected<wbr>Logfile<wbr>Entries<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
-									</li>
-									<li class="tsd-parameter">
-										<h5>waiting<wbr>For<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
+										<h5>size<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
 									</li>
 								</ul>
+							</li>
+							<li class="tsd-parameter">
+								<h5>attributes<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>count<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>size<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span></h5>
+								<ul class="tsd-parameters">
+									<li class="tsd-parameter">
+										<h5>count<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
+									</li>
+									<li class="tsd-parameter">
+										<h5>size<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
+									</li>
+								</ul>
+							</li>
+							<li class="tsd-parameter">
+								<h5>cache<wbr>InUse<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></h5>
+							</li>
+							<li class="tsd-parameter">
+								<h5>cache<wbr>Size<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
+							</li>
+							<li class="tsd-parameter">
+								<h5>cache<wbr>Usage<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
+							</li>
+							<li class="tsd-parameter">
+								<h5>compaction<wbr>Status<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>bytesRead<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>bytesWritten<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>count<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>filesCombined<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>message<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>time<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span></h5>
+								<ul class="tsd-parameters">
+									<li class="tsd-parameter">
+										<h5>bytes<wbr>Read<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
+									</li>
+									<li class="tsd-parameter">
+										<h5>bytes<wbr>Written<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
+									</li>
+									<li class="tsd-parameter">
+										<h5>count<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
+									</li>
+									<li class="tsd-parameter">
+										<h5>files<wbr>Combined<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
+									</li>
+									<li class="tsd-parameter">
+										<h5>message<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
+									</li>
+									<li class="tsd-parameter">
+										<h5>time<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
+									</li>
+								</ul>
+							</li>
+							<li class="tsd-parameter">
+								<h5>compactors<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>count<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>fileSize<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span></h5>
+								<ul class="tsd-parameters">
+									<li class="tsd-parameter">
+										<h5>count<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
+									</li>
+									<li class="tsd-parameter">
+										<h5>file<wbr>Size<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
+									</li>
+								</ul>
+							</li>
+							<li class="tsd-parameter">
+								<h5>datafiles<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>count<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>fileSize<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span></h5>
+								<ul class="tsd-parameters">
+									<li class="tsd-parameter">
+										<h5>count<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
+									</li>
+									<li class="tsd-parameter">
+										<h5>file<wbr>Size<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
+									</li>
+								</ul>
+							</li>
+							<li class="tsd-parameter">
+								<h5>dead<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>count<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>deletion<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>size<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span></h5>
+								<ul class="tsd-parameters">
+									<li class="tsd-parameter">
+										<h5>count<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
+									</li>
+									<li class="tsd-parameter">
+										<h5>deletion<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
+									</li>
+									<li class="tsd-parameter">
+										<h5>size<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
+									</li>
+								</ul>
+							</li>
+							<li class="tsd-parameter">
+								<h5>document<wbr>References<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
+							</li>
+							<li class="tsd-parameter">
+								<h5>documents<wbr>Size<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
+							</li>
+							<li class="tsd-parameter">
+								<h5>indexes<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>count<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>size<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span></h5>
+								<ul class="tsd-parameters">
+									<li class="tsd-parameter">
+										<h5>count<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
+									</li>
+									<li class="tsd-parameter">
+										<h5>size<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
+									</li>
+								</ul>
+							</li>
+							<li class="tsd-parameter">
+								<h5>journals<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>count<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>fileSize<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span></h5>
+								<ul class="tsd-parameters">
+									<li class="tsd-parameter">
+										<h5>count<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
+									</li>
+									<li class="tsd-parameter">
+										<h5>file<wbr>Size<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
+									</li>
+								</ul>
+							</li>
+							<li class="tsd-parameter">
+								<h5>last<wbr>Tick<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
+							</li>
+							<li class="tsd-parameter">
+								<h5>shapefiles<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>count<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>fileSize<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span></h5>
+								<ul class="tsd-parameters">
+									<li class="tsd-parameter">
+										<h5>count<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
+									</li>
+									<li class="tsd-parameter">
+										<h5>file<wbr>Size<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
+									</li>
+								</ul>
+							</li>
+							<li class="tsd-parameter">
+								<h5>shapes<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>count<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>size<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span></h5>
+								<ul class="tsd-parameters">
+									<li class="tsd-parameter">
+										<h5>count<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
+									</li>
+									<li class="tsd-parameter">
+										<h5>size<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
+									</li>
+								</ul>
+							</li>
+							<li class="tsd-parameter">
+								<h5>uncollected<wbr>Logfile<wbr>Entries<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
+							</li>
+							<li class="tsd-parameter">
+								<h5>waiting<wbr>For<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
 							</li>
 						</ul>
 					</div>
@@ -853,7 +816,7 @@
 				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
 					<a name="collectionproperties" class="tsd-anchor"></a>
 					<h3>Collection<wbr>Properties</h3>
-					<div class="tsd-signature tsd-kind-icon">Collection<wbr>Properties<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>distributeShardsLike<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>doCompact<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span><span class="tsd-signature-symbol">; </span>indexBuckets<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>isVolatile<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span><span class="tsd-signature-symbol">; </span>journalSize<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>keyOptions<span class="tsd-signature-symbol">: </span><a href="_collection_.html#collectionkeyproperties" class="tsd-signature-type">CollectionKeyProperties</a><span class="tsd-signature-symbol">; </span>minReplicationFactor<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>numberOfShards<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>replicationFactor<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>shardKeys<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span>shardingStrategy<span class="tsd-signature-symbol">?: </span><a href="_collection_.html#shardingstrategy-2" class="tsd-signature-type">ShardingStrategy</a><span class="tsd-signature-symbol">; </span>smartJoinAttribute<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>statusString<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>validation<span class="tsd-signature-symbol">: </span><a href="_collection_.html#validationproperties" class="tsd-signature-type">ValidationProperties</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">; </span>waitForSync<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>writeConcern<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span></div>
+					<div class="tsd-signature tsd-kind-icon">Collection<wbr>Properties<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>distributeShardsLike<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>doCompact<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span><span class="tsd-signature-symbol">; </span>indexBuckets<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>isVolatile<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span><span class="tsd-signature-symbol">; </span>journalSize<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>keyOptions<span class="tsd-signature-symbol">: </span><a href="_collection_.html#collectionkeyproperties" class="tsd-signature-type">CollectionKeyProperties</a><span class="tsd-signature-symbol">; </span>minReplicationFactor<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>numberOfShards<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>replicationFactor<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>shardKeys<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span>shardingStrategy<span class="tsd-signature-symbol">?: </span><a href="_collection_.html#shardingstrategy-2" class="tsd-signature-type">ShardingStrategy</a><span class="tsd-signature-symbol">; </span>smartJoinAttribute<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>statusString<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>validation<span class="tsd-signature-symbol">: </span><a href="_collection_.html#validationproperties" class="tsd-signature-type">ValidationProperties</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol">; </span>waitForSync<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>writeConcern<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -868,7 +831,9 @@
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> distribute<wbr>Shards<wbr>Like<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>(Enterprise Edition cluster only.) TODO</p>
+										<p>(Enterprise Edition cluster only.) If set to a collection name, sharding
+											of the new collection will follow the rules for that collection. As long
+										as the new collection exists, the indicated collection can not be dropped.</p>
 									</div>
 								</div>
 							</li>
@@ -876,7 +841,7 @@
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> do<wbr>Compact<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>(MMFiles only.) TODO</p>
+										<p>(MMFiles only.) Whether the collection will be compacted.</p>
 									</div>
 								</div>
 							</li>
@@ -884,7 +849,8 @@
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> index<wbr>Buckets<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>(MMFiles only.) TODO</p>
+										<p>(MMFiles only.) Number of buckets into which indexes using hash tables are
+										split.</p>
 									</div>
 								</div>
 							</li>
@@ -892,7 +858,8 @@
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> is<wbr>Volatile<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>(MMFiles only.) TODO</p>
+										<p>(MMFiles only.) If set to <code>true</code>, the collection will only be kept
+										in-memory and discarded when unloaded, resulting in full data loss.</p>
 									</div>
 								</div>
 							</li>
@@ -900,7 +867,7 @@
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> journal<wbr>Size<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>(MMFiles only.) TODO</p>
+										<p>(MMFiles only.) The maximum size for each journal or datafile in bytes.</p>
 									</div>
 								</div>
 							</li>
@@ -913,10 +880,10 @@
 								</div>
 							</li>
 							<li class="tsd-parameter">
-								<h5>min<wbr>Replication<wbr>Factor<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> min<wbr>Replication<wbr>Factor<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>(Cluster only.) TODO</p>
+										<p>(Cluster only.) Write concern for this collection.</p>
 									</div>
 									<dl class="tsd-comment-tags">
 										<dt>deprecated</dt>
@@ -962,7 +929,8 @@
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> smart<wbr>Join<wbr>Attribute<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>(Enterprise Edition cluster only.) TODO</p>
+										<p>(Enterprise Edition cluster only.) Attribute containing the shard key
+										value of the referred-to smart join collection.</p>
 									</div>
 								</div>
 							</li>
@@ -978,7 +946,7 @@
 								<h5>validation<span class="tsd-signature-symbol">: </span><a href="_collection_.html#validationproperties" class="tsd-signature-type">ValidationProperties</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>TODO</p>
+										<p>Properties for validating documents in the collection.</p>
 									</div>
 								</div>
 							</li>
@@ -995,7 +963,7 @@
 								<h5>write<wbr>Concern<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>(Cluster only.) TODO</p>
+										<p>(Cluster only.) Write concern for this collection.</p>
 									</div>
 								</div>
 							</li>
@@ -1190,26 +1158,6 @@
 									</div>
 									<p>Default: <code>false</code></p>
 								</div>
-							</li>
-						</ul>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
-					<a name="collectionrevision" class="tsd-anchor"></a>
-					<h3>Collection<wbr>Revision</h3>
-					<div class="tsd-signature tsd-kind-icon">Collection<wbr>Revision<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>revision<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span></div>
-					<aside class="tsd-sources">
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Revision of a collection.</p>
-						</div>
-					</div>
-					<div class="tsd-type-declaration">
-						<h4>Type declaration</h4>
-						<ul class="tsd-parameters">
-							<li class="tsd-parameter">
-								<h5>revision<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
 							</li>
 						</ul>
 					</div>
@@ -1458,7 +1406,7 @@
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> validation<span class="tsd-signature-symbol">?: </span><a href="_collection_.html#validationoptions" class="tsd-signature-type">ValidationOptions</a></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>TODO</p>
+										<p>Options for validating documents in the collection.</p>
 									</div>
 								</div>
 							</li>
@@ -1541,15 +1489,18 @@
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> batch<wbr>Size<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>TODO</p>
+										<p>The number of result values to be transferred by the server in each
+										network roundtrip (or &quot;batch&quot;).</p>
 									</div>
+									<p>Must be greater than zero.</p>
+									<p>See also <a href="_database_.html#queryoptions">QueryOptions</a>.</p>
 								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> limit<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>TODO</p>
+										<p>Maximum number of documents to return.</p>
 									</div>
 								</div>
 							</li>
@@ -1557,7 +1508,7 @@
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> skip<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>TODO</p>
+										<p>Number of documents to skip in the query.</p>
 									</div>
 								</div>
 							</li>
@@ -1565,16 +1516,19 @@
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> stream<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>TODO</p>
+										<p>If set to <code>true</code>, the query will be executed as a streaming query.</p>
 									</div>
+									<p>See also <a href="_database_.html#queryoptions">QueryOptions</a>.</p>
 								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> ttl<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>TODO</p>
+										<p>The time-to-live for the cursor in seconds. The cursor results may be
+										garbage collected by ArangoDB after this much time has passed.</p>
 									</div>
+									<p>See also <a href="_database_.html#queryoptions">QueryOptions</a>.</p>
 								</div>
 							</li>
 						</ul>
@@ -1604,15 +1558,18 @@
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> batch<wbr>Size<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>TODO</p>
+										<p>The number of result values to be transferred by the server in each
+										network roundtrip (or &quot;batch&quot;).</p>
 									</div>
+									<p>Must be greater than zero.</p>
+									<p>See also <a href="_database_.html#queryoptions">QueryOptions</a>.</p>
 								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> limit<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>TODO</p>
+										<p>Maximum number of documents to return.</p>
 									</div>
 								</div>
 							</li>
@@ -1620,7 +1577,7 @@
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> skip<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>TODO</p>
+										<p>Number of documents to skip in the query.</p>
 									</div>
 								</div>
 							</li>
@@ -1628,8 +1585,10 @@
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> ttl<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>TODO</p>
+										<p>The time-to-live for the cursor in seconds. The cursor results may be
+										garbage collected by ArangoDB after this much time has passed.</p>
 									</div>
+									<p>See also <a href="_database_.html#queryoptions">QueryOptions</a>.</p>
 								</div>
 							</li>
 						</ul>
@@ -1659,7 +1618,7 @@
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> index<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>TODO</p>
+										<p>The ID of the fulltext index to use to perform the query.</p>
 									</div>
 								</div>
 							</li>
@@ -1667,7 +1626,7 @@
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> limit<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>TODO</p>
+										<p>Maximum number of documents to return.</p>
 									</div>
 								</div>
 							</li>
@@ -1675,7 +1634,7 @@
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> skip<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>TODO</p>
+										<p>Number of documents to skip in the query.</p>
 									</div>
 								</div>
 							</li>
@@ -1725,7 +1684,7 @@
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> limit<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>TODO</p>
+										<p>Maximum number of documents to return.</p>
 									</div>
 								</div>
 							</li>
@@ -1733,8 +1692,10 @@
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> wait<wbr>For<wbr>Sync<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>TODO</p>
+										<p>If set to <code>true</code>, the request will wait until all modifications have been
+										synchronized to disk before returning successfully.</p>
 									</div>
+									<p>Default: <code>false</code></p>
 								</div>
 							</li>
 						</ul>
@@ -1796,24 +1757,30 @@
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> return<wbr>Old<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>TODO</p>
+										<p>If set to <code>true</code>, the complete old document will be returned as the <code>old</code>
+										property on the result object. Has no effect if <code>silent</code> is set to <code>true</code>.</p>
 									</div>
+									<p>Default: <code>false</code></p>
 								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> silent<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>TODO</p>
+										<p>If set to <code>true</code>, no data will be returned by the server. This option can
+										be used to reduce network traffic.</p>
 									</div>
+									<p>Default: <code>false</code></p>
 								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> wait<wbr>For<wbr>Sync<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>TODO</p>
+										<p>If set to <code>true</code>, the request will wait until all modifications have been
+										synchronized to disk before returning successfully.</p>
 									</div>
+									<p>Default: <code>false</code></p>
 								</div>
 							</li>
 						</ul>
@@ -1947,15 +1914,17 @@
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> keep<wbr>Null<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>TODO</p>
+										<p>If set to <code>false</code>, properties with a value of <code>null</code> will be removed from
+										the new document.</p>
 									</div>
+									<p>Default: <code>true</code></p>
 								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> limit<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>TODO</p>
+										<p>Maximum number of documents to return.</p>
 									</div>
 								</div>
 							</li>
@@ -1963,16 +1932,21 @@
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> merge<wbr>Objects<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>TODO</p>
+										<p>If set to <code>false</code>, object properties that already exist in the old
+											document will be overwritten rather than merged. This does not affect
+										arrays.</p>
 									</div>
+									<p>Default: <code>true</code></p>
 								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> wait<wbr>For<wbr>Sync<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>TODO</p>
+										<p>If set to <code>true</code>, the request will wait until all modifications have been
+										synchronized to disk before returning successfully.</p>
 									</div>
+									<p>Default: <code>false</code></p>
 								</div>
 							</li>
 						</ul>
@@ -2206,8 +2180,15 @@
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>TODO</p>
+							<p>When a validation should be applied.</p>
 						</div>
+						<ul>
+							<li><code>&quot;none&quot;</code>: No validation.</li>
+							<li><code>&quot;new&quot;</code>: Newly inserted documents are validated.</li>
+							<li><code>&quot;moderate&quot;</code>: New and modified documents are validated unless the modified
+							document was already invalid.</li>
+							<li><code>&quot;strict&quot;</code>: New and modified documents are always validated.</li>
+						</ul>
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
@@ -2228,15 +2209,16 @@
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> level<span class="tsd-signature-symbol">?: </span><a href="_collection_.html#validationlevel" class="tsd-signature-type">ValidationLevel</a></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>TODO</p>
+										<p>When validation should be applied.</p>
 									</div>
+									<p>Default: <code>&quot;strict&quot;</code></p>
 								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> message<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>TODO</p>
+										<p>Message to be used if validation fails.</p>
 									</div>
 								</div>
 							</li>
@@ -2244,7 +2226,7 @@
 								<h5>rule<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>TODO</p>
+										<p>JSON Schema description of the validation schema for documents.</p>
 									</div>
 								</div>
 							</li>
@@ -2267,15 +2249,35 @@
 						<ul class="tsd-parameters">
 							<li class="tsd-parameter">
 								<h5>level<span class="tsd-signature-symbol">: </span><a href="_collection_.html#validationlevel" class="tsd-signature-type">ValidationLevel</a></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>When validation should be applied.</p>
+									</div>
+								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5>message<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Message to be used if validation fails.</p>
+									</div>
+								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5>rule<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>JSON Schema description of the validation schema for documents.</p>
+									</div>
+								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5>type<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"json"</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>The type of document validation.</p>
+									</div>
+								</div>
 							</li>
 						</ul>
 					</div>
@@ -2393,13 +2395,7 @@
 						<a href="../interfaces/_collection_.edgecollection.html" class="tsd-kind-icon">Edge<wbr>Collection</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
-						<a href="_collection_.html#collectionchecksum" class="tsd-kind-icon">Collection<wbr>Checksum</a>
-					</li>
-					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
 						<a href="_collection_.html#collectionchecksumoptions" class="tsd-kind-icon">Collection<wbr>Checksum<wbr>Options</a>
-					</li>
-					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
-						<a href="_collection_.html#collectioncount" class="tsd-kind-icon">Collection<wbr>Count</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
 						<a href="_collection_.html#collectiondropoptions" class="tsd-kind-icon">Collection<wbr>Drop<wbr>Options</a>
@@ -2442,9 +2438,6 @@
 					</li>
 					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
 						<a href="_collection_.html#collectionreplaceoptions" class="tsd-kind-icon">Collection<wbr>Replace<wbr>Options</a>
-					</li>
-					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
-						<a href="_collection_.html#collectionrevision" class="tsd-kind-icon">Collection<wbr>Revision</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
 						<a href="_collection_.html#collectionupdateoptions" class="tsd-kind-icon">Collection<wbr>Update<wbr>Options</a>

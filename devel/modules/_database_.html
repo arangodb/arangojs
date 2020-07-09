@@ -155,12 +155,28 @@
 						<ul class="tsd-parameters">
 							<li class="tsd-parameter">
 								<h5>code<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Implementation of the AQL User Function.</p>
+									</div>
+								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5>is<wbr>Deterministic<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Whether the function is deterministic.</p>
+									</div>
+									<p>See <a href="../classes/_database_.database.html#createfunction">Database.createFunction</a>.</p>
+								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5>name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Name of the AQL User Function.</p>
+									</div>
+								</div>
 							</li>
 						</ul>
 					</div>
@@ -173,7 +189,7 @@
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>Node in an AQL abstract syntax tree.</p>
+							<p>Node in an AQL abstract syntax tree (AST).</p>
 						</div>
 					</div>
 					<div class="tsd-type-declaration">
@@ -199,8 +215,9 @@
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>Options for creating a database. See <a href="../classes/_database_.database.html#createdatabase">Database.createDatabase</a>.</p>
+							<p>Options for creating a database.</p>
 						</div>
+						<p>See <a href="../classes/_database_.database.html#createdatabase">Database.createDatabase</a>.</p>
 					</div>
 					<div class="tsd-type-declaration">
 						<h4>Type declaration</h4>
@@ -320,19 +337,34 @@
 						<div class="lead">
 							<p>Object describing a database.</p>
 						</div>
+						<p>See <a href="../classes/_database_.database.html#get">Database.get</a>.</p>
 					</div>
 					<div class="tsd-type-declaration">
 						<h4>Type declaration</h4>
 						<ul class="tsd-parameters">
 							<li class="tsd-parameter">
 								<h5>id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Unique identifier of the database.</p>
+									</div>
+								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5>is<wbr>System<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Whether the database is the system database.</p>
+									</div>
+								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> min<wbr>Replication<wbr>Factor<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></h5>
 								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>(Cluster only.) Default write concern for new collections created in this
+										database.</p>
+									</div>
 									<dl class="tsd-comment-tags">
 										<dt>deprecated</dt>
 										<dd><p>Renamed to <code>writeConcern</code> in ArangoDB 3.6.</p>
@@ -342,18 +374,46 @@
 							</li>
 							<li class="tsd-parameter">
 								<h5>name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Name of the database.</p>
+									</div>
+								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5>path<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>File system path of the database.</p>
+									</div>
+								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> replication<wbr>Factor<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">"satellite"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>(Cluster only.) Default replication factor for new collections in this
+										database.</p>
+									</div>
+								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> sharding<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">""</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"flexible"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"single"</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>(Cluster only.) The sharding method to use for new collections in the
+										database.</p>
+									</div>
+								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> write<wbr>Concern<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>(Cluster only.) Default write concern for new collections created in this
+										database.</p>
+									</div>
+								</div>
 							</li>
 						</ul>
 					</div>
@@ -366,8 +426,9 @@
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>Options for explaining a query. See <a href="../classes/_database_.database.html#explain">Database.explain</a>.</p>
+							<p>Options for explaining a query.</p>
 						</div>
+						<p>See <a href="../classes/_database_.database.html#explain">Database.explain</a>.</p>
 					</div>
 					<div class="tsd-type-declaration">
 						<h4>Type declaration</h4>
@@ -409,7 +470,7 @@
 				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
 					<a name="explainplan" class="tsd-anchor"></a>
 					<h3>Explain<wbr>Plan</h3>
-					<div class="tsd-signature tsd-kind-icon">Explain<wbr>Plan<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>collections<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>type<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"read"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"write"</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span>estimatedCost<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>estimatedNrItems<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>initialize<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>isModificationQuery<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>nodes<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>dependencies<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span>estimatedCost<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>estimatedNrItems<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>type<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span>rules<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span>variables<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> }</span></div>
+					<div class="tsd-signature tsd-kind-icon">Explain<wbr>Plan<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>collections<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>type<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"read"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"write"</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span>estimatedCost<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>estimatedNrItems<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>isModificationQuery<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>nodes<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>dependencies<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span>estimatedCost<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>estimatedNrItems<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>type<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span>rules<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span>variables<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -422,27 +483,59 @@
 						<ul class="tsd-parameters">
 							<li class="tsd-parameter">
 								<h5>collections<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>type<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"read"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"write"</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">[]</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Information about collections involved in the query.</p>
+									</div>
+								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5>estimated<wbr>Cost<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Total estimated cost of the plan.</p>
+									</div>
+								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5>estimated<wbr>NrItems<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
-							</li>
-							<li class="tsd-parameter">
-								<h5>initialize<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Estimated number of items returned by the query.</p>
+									</div>
+								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5>is<wbr>Modification<wbr>Query<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Whether the query is a data modification query.</p>
+									</div>
+								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5>nodes<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>dependencies<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span>estimatedCost<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>estimatedNrItems<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>type<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">[]</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Execution nodes in this plan.</p>
+									</div>
+								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5>rules<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Rules applied by the optimizer.</p>
+									</div>
+								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5>variables<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">[]</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Variables used in the query.</p>
+									</div>
+								</div>
 							</li>
 						</ul>
 					</div>
@@ -515,7 +608,7 @@
 				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
 					<a name="multiexplainresult" class="tsd-anchor"></a>
 					<h3>Multi<wbr>Explain<wbr>Result</h3>
-					<div class="tsd-signature tsd-kind-icon">Multi<wbr>Explain<wbr>Result<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>plans<span class="tsd-signature-symbol">: </span><a href="_database_.html#explainplan" class="tsd-signature-type">ExplainPlan</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span>stats<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>plansCreated<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>rulesExecuted<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>rulesSkipped<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">; </span>warnings<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>code<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>message<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> }</span></div>
+					<div class="tsd-signature tsd-kind-icon">Multi<wbr>Explain<wbr>Result<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>cacheable<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>plans<span class="tsd-signature-symbol">: </span><a href="_database_.html#explainplan" class="tsd-signature-type">ExplainPlan</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span>stats<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>plansCreated<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>rulesExecuted<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>rulesSkipped<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">; </span>warnings<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>code<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>message<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -527,24 +620,62 @@
 						<h4>Type declaration</h4>
 						<ul class="tsd-parameters">
 							<li class="tsd-parameter">
+								<h5>cacheable<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Whether it would be possible to cache the query.</p>
+									</div>
+								</div>
+							</li>
+							<li class="tsd-parameter">
 								<h5>plans<span class="tsd-signature-symbol">: </span><a href="_database_.html#explainplan" class="tsd-signature-type">ExplainPlan</a><span class="tsd-signature-symbol">[]</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>The query plans.</p>
+									</div>
+								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5>stats<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>plansCreated<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>rulesExecuted<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>rulesSkipped<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Statistical information about the query plan generation.</p>
+									</div>
+								</div>
 								<ul class="tsd-parameters">
 									<li class="tsd-parameter">
 										<h5>plans<wbr>Created<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
+										<div class="tsd-comment tsd-typography">
+											<div class="lead">
+												<p>The total number of plans created.</p>
+											</div>
+										</div>
 									</li>
 									<li class="tsd-parameter">
 										<h5>rules<wbr>Executed<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
+										<div class="tsd-comment tsd-typography">
+											<div class="lead">
+												<p>The total number of rules executed for this query.</p>
+											</div>
+										</div>
 									</li>
 									<li class="tsd-parameter">
 										<h5>rules<wbr>Skipped<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
+										<div class="tsd-comment tsd-typography">
+											<div class="lead">
+												<p>The number of rules skipped for this query.</p>
+											</div>
+										</div>
 									</li>
 								</ul>
 							</li>
 							<li class="tsd-parameter">
 								<h5>warnings<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>code<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>message<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">[]</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Warnings encountered while planning the query execution.</p>
+									</div>
+								</div>
 							</li>
 						</ul>
 					</div>
@@ -565,24 +696,60 @@
 						<ul class="tsd-parameters">
 							<li class="tsd-parameter">
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> current<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>The current mount points the dependency is resolved to.</p>
+									</div>
+								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> description<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Human-readable description of the dependency.</p>
+									</div>
+								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5>multiple<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">true</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Whether this is a multi-service dependency.</p>
+									</div>
+								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5>name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>The name of the service the dependency expects to match.</p>
+									</div>
+								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5>required<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Whether the dependency must be matched in order for the service
+										to be operational.</p>
+									</div>
+								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5>title<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>The formatted name of the dependency.</p>
+									</div>
+								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5>version<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>The version of the service the dependency expects to match.</p>
+									</div>
+								</div>
 							</li>
 						</ul>
 					</div>
@@ -603,15 +770,35 @@
 						<ul class="tsd-parameters">
 							<li class="tsd-parameter">
 								<h5>ast<span class="tsd-signature-symbol">: </span><a href="_database_.html#astnode" class="tsd-signature-type">AstNode</a><span class="tsd-signature-symbol">[]</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>The abstract syntax tree (AST) of the query.</p>
+									</div>
+								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5>bind<wbr>Vars<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Names of all bind parameters used in the query.</p>
+									</div>
+								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5>collections<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Names of all collections involved in the query.</p>
+									</div>
+								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5>parsed<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Whether the query was parsed.</p>
+									</div>
+								</div>
 							</li>
 						</ul>
 					</div>
@@ -632,24 +819,59 @@
 						<ul class="tsd-parameters">
 							<li class="tsd-parameter">
 								<h5>bind<wbr>Vars<span class="tsd-signature-symbol">: </span><a href="_util_types_.html#dict" class="tsd-signature-type">Dict</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Bind parameters used in the query.</p>
+									</div>
+								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5>id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Unique identifier for this query.</p>
+									</div>
+								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5>query<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Query string (potentially truncated).</p>
+									</div>
+								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5>run<wbr>Time<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Query&#39;s running time in seconds.</p>
+									</div>
+								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5>started<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Date and time the query was started.</p>
+									</div>
+								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5>state<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"executing"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"finished"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"killed"</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Query&#39;s current execution state.</p>
+									</div>
+								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5>stream<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Whether the query uses a streaming cursor.</p>
+									</div>
+								</div>
 							</li>
 						</ul>
 					</div>
@@ -662,8 +884,9 @@
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>Options for executing a query. See <a href="../classes/_database_.database.html#query">Database.query</a>.</p>
+							<p>Options for executing a query.</p>
 						</div>
+						<p>See <a href="../classes/_database_.database.html#query">Database.query</a>.</p>
 					</div>
 					<div class="tsd-type-declaration">
 						<h4>Type declaration</h4>
@@ -892,21 +1115,52 @@
 						<ul class="tsd-parameters">
 							<li class="tsd-parameter">
 								<h5>enabled<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Whether query tracking is enabled.</p>
+									</div>
+								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5>max<wbr>Query<wbr>String<wbr>Length<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>The maximum query string length in bytes that is kept in the list.</p>
+									</div>
+								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5>max<wbr>Slow<wbr>Queries<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>The maximum number of slow queries that is kept in the list.</p>
+									</div>
+								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5>slow<wbr>Query<wbr>Threshold<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>The threshold execution time in seconds for when a query is
+										considered slow.</p>
+									</div>
+								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5>track<wbr>Bind<wbr>Vars<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Whether bind parameters are being tracked along with queries.</p>
+									</div>
+								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5>track<wbr>Slow<wbr>Queries<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Whether slow queries are being tracked.</p>
+									</div>
+								</div>
 							</li>
 						</ul>
 					</div>
@@ -919,8 +1173,9 @@
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>Options for query tracking. See <a href="../classes/_database_.database.html#querytracking">Database.queryTracking</a>.</p>
+							<p>Options for query tracking.</p>
 						</div>
+						<p>See <a href="../classes/_database_.database.html#querytracking">Database.queryTracking</a>.</p>
 					</div>
 					<div class="tsd-type-declaration">
 						<h4>Type declaration</h4>
@@ -1079,24 +1334,65 @@
 						<ul class="tsd-parameters">
 							<li class="tsd-parameter">
 								<h5>current<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>The processed current value of the configuration option as exposed in the
+										service code.</p>
+									</div>
+								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5>current<wbr>Raw<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>The current value of the configuration option as stored internally.</p>
+									</div>
+								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> default<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>The default value of the configuration option.</p>
+									</div>
+								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> description<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Human-readable description of the configuration option.</p>
+									</div>
+								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5>required<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Whether the configuration option must be set in order for the service
+										to be operational.</p>
+									</div>
+								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5>title<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>The formatted name of the configuration option.</p>
+									</div>
+								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5>type<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"integer"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"boolean"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"string"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"number"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"json"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"password"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"int"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"bool"</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Data type of the configuration value.</p>
+									</div>
+									<p><strong>Note</strong>: <code>&quot;int&quot;</code> and <code>&quot;bool&quot;</code> are historical synonyms for <code>&quot;integer&quot;</code> and
+										<code>&quot;boolean&quot;</code>. The <code>&quot;password&quot;</code> type is synonymous with <code>&quot;string&quot;</code> but can
+										be used to distinguish values which should not be displayed in plain text
+									by software when managing the service.</p>
+								</div>
 							</li>
 						</ul>
 					</div>
@@ -1117,38 +1413,93 @@
 						<ul class="tsd-parameters">
 							<li class="tsd-parameter">
 								<h5>checksum<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>The internal checksum of the service&#39;s initial source bundle.</p>
+									</div>
+								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5>development<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Whether development mode is enabled for this service.</p>
+									</div>
+								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5>legacy<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Whether the service is running in legacy compatibility mode.</p>
+									</div>
+								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5>manifest<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">FoxxManifest</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>The content of the service manifest of this service.</p>
+									</div>
+								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5>mount<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>The service&#39;s mount point, relative to the database.</p>
+									</div>
+								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> name<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Name defined in the service manifest.</p>
+									</div>
+								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5>options<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>configuration<span class="tsd-signature-symbol">: </span><a href="_util_types_.html#dict" class="tsd-signature-type">Dict</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">; </span>dependencies<span class="tsd-signature-symbol">: </span><a href="_util_types_.html#dict" class="tsd-signature-type">Dict</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> }</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Options for this service.</p>
+									</div>
+								</div>
 								<ul class="tsd-parameters">
 									<li class="tsd-parameter">
 										<h5>configuration<span class="tsd-signature-symbol">: </span><a href="_util_types_.html#dict" class="tsd-signature-type">Dict</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h5>
+										<div class="tsd-comment tsd-typography">
+											<div class="lead">
+												<p>Configuration values set for this service.</p>
+											</div>
+										</div>
 									</li>
 									<li class="tsd-parameter">
 										<h5>dependencies<span class="tsd-signature-symbol">: </span><a href="_util_types_.html#dict" class="tsd-signature-type">Dict</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></h5>
+										<div class="tsd-comment tsd-typography">
+											<div class="lead">
+												<p>Service dependency configuration of this service.</p>
+											</div>
+										</div>
 									</li>
 								</ul>
 							</li>
 							<li class="tsd-parameter">
 								<h5>path<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>File system path of the service.</p>
+									</div>
+								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> version<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Version defined in the service manifest.</p>
+									</div>
+								</div>
 							</li>
 						</ul>
 					</div>
@@ -1169,21 +1520,52 @@
 						<ul class="tsd-parameters">
 							<li class="tsd-parameter">
 								<h5>development<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Whether development mode is enabled for this service.</p>
+									</div>
+								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5>legacy<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Whether the service is running in legacy compatibility mode.</p>
+									</div>
+								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5>mount<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>The service&#39;s mount point, relative to the database.</p>
+									</div>
+								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> name<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Name defined in the service manifest.</p>
+									</div>
+								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5>provides<span class="tsd-signature-symbol">: </span><a href="_util_types_.html#dict" class="tsd-signature-type">Dict</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Service dependencies the service expects to be able to match as a mapping
+										from dependency names to versions the service is compatible with.</p>
+									</div>
+								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> version<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Version defined in the service manifest.</p>
+									</div>
+								</div>
 							</li>
 						</ul>
 					</div>
@@ -1265,18 +1647,43 @@
 						<ul class="tsd-parameters">
 							<li class="tsd-parameter">
 								<h5>duration<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Total test duration in milliseconds.</p>
+									</div>
+								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5>failures<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Number of tests that failed.</p>
+									</div>
+								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5>passes<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Number of tests that ran successfully.</p>
+									</div>
+								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5>pending<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Number of tests skipped or not executed.</p>
+									</div>
+								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5>tests<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Total number of tests found.</p>
+									</div>
+								</div>
 							</li>
 						</ul>
 					</div>
@@ -1457,26 +1864,61 @@
 						<ul class="tsd-parameters">
 							<li class="tsd-parameter">
 								<h5>cacheable<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Whether it would be possible to cache the query.</p>
+									</div>
+								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5>plan<span class="tsd-signature-symbol">: </span><a href="_database_.html#explainplan" class="tsd-signature-type">ExplainPlan</a></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>The query plan.</p>
+									</div>
+								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5>stats<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>plansCreated<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>rulesExecuted<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>rulesSkipped<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Statistical information about the query plan generation.</p>
+									</div>
+								</div>
 								<ul class="tsd-parameters">
 									<li class="tsd-parameter">
 										<h5>plans<wbr>Created<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
+										<div class="tsd-comment tsd-typography">
+											<div class="lead">
+												<p>The total number of plans created.</p>
+											</div>
+										</div>
 									</li>
 									<li class="tsd-parameter">
 										<h5>rules<wbr>Executed<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
+										<div class="tsd-comment tsd-typography">
+											<div class="lead">
+												<p>The total number of rules executed for this query.</p>
+											</div>
+										</div>
 									</li>
 									<li class="tsd-parameter">
 										<h5>rules<wbr>Skipped<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
+										<div class="tsd-comment tsd-typography">
+											<div class="lead">
+												<p>The number of rules skipped for this query.</p>
+											</div>
+										</div>
 									</li>
 								</ul>
 							</li>
 							<li class="tsd-parameter">
 								<h5>warnings<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>code<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>message<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">[]</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Warnings encountered while planning the query execution.</p>
+									</div>
+								</div>
 							</li>
 						</ul>
 					</div>
@@ -1497,24 +1939,60 @@
 						<ul class="tsd-parameters">
 							<li class="tsd-parameter">
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> current<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>The current mount point the dependency is resolved to.</p>
+									</div>
+								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> description<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Human-readable description of the dependency.</p>
+									</div>
+								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5>multiple<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">false</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Whether this is a multi-service dependency.</p>
+									</div>
+								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5>name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>The name of the service the dependency expects to match.</p>
+									</div>
+								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5>required<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Whether the dependency must be matched in order for the service
+										to be operational.</p>
+									</div>
+								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5>title<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>The formatted name of the dependency.</p>
+									</div>
+								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5>version<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>The version of the service the dependency expects to match.</p>
+									</div>
+								</div>
 							</li>
 						</ul>
 					</div>
@@ -1621,15 +2099,26 @@
 						<div class="lead">
 							<p>Details for a transaction.</p>
 						</div>
+						<p>See also <a href="_transaction_.html#transactionstatus">TransactionStatus</a>.</p>
 					</div>
 					<div class="tsd-type-declaration">
 						<h4>Type declaration</h4>
 						<ul class="tsd-parameters">
 							<li class="tsd-parameter">
 								<h5>id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>The unique identifier of the transaction.</p>
+									</div>
+								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5>state<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"running"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"committed"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"aborted"</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>The status (or &quot;state&quot;) of the transaction.</p>
+									</div>
+								</div>
 							</li>
 						</ul>
 					</div>
@@ -1842,7 +2331,7 @@
 				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
 					<a name="versioninfo" class="tsd-anchor"></a>
 					<h3>Version<wbr>Info</h3>
-					<div class="tsd-signature tsd-kind-icon">Version<wbr>Info<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>license<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"community"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"enterprise"</span><span class="tsd-signature-symbol">; </span>server<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>version<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span></div>
+					<div class="tsd-signature tsd-kind-icon">Version<wbr>Info<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>details<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">{}</span><span class="tsd-signature-symbol">; </span>license<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"community"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"enterprise"</span><span class="tsd-signature-symbol">; </span>server<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>version<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1854,13 +2343,36 @@
 						<h4>Type declaration</h4>
 						<ul class="tsd-parameters">
 							<li class="tsd-parameter">
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> details<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">{}</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Additional information about the ArangoDB server.</p>
+									</div>
+								</div>
+							</li>
+							<li class="tsd-parameter">
 								<h5>license<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"community"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"enterprise"</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>The ArangoDB license type or &quot;edition&quot;.</p>
+									</div>
+								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5>server<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Value identifying the server type, i.e. <code>&quot;arango&quot;</code>.</p>
+									</div>
+								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5>version<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>The ArangoDB server version.</p>
+									</div>
+								</div>
 							</li>
 						</ul>
 					</div>

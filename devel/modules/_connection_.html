@@ -641,15 +641,19 @@
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> before<wbr>Send<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span>xhrObject<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>TODO</p>
+										<p>Callback that will be invoked immediately before the <code>send</code> method of the
+										request is called.</p>
 									</div>
+									<p>See also <a href="_connection_.html#requestinterceptors">RequestInterceptors</a>.</p>
 								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> max<wbr>Sockets<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>TODO</p>
+										<p>Maximum number of parallel requests arangojs will perform. If any
+											additional requests are attempted, they will be enqueued until one of the
+										active requests has completed.</p>
 									</div>
 								</div>
 							</li>
@@ -657,15 +661,18 @@
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> timeout<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>TODO</p>
+										<p>Number of milliseconds to wait for a response.</p>
 									</div>
+									<p>Default: <code>0</code> (disabled)</p>
 								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> use<wbr>Xdr<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>TODO</p>
+										<p>(Internet Explorer 10 and lower only.) Whether <code>XDomainRequest</code> should be
+											used instead of <code>XMLHttpRequest</code>. Only required for performing
+										cross-domain requests in older versions of Internet Explorer.</p>
 									</div>
 								</div>
 							</li>
@@ -673,15 +680,17 @@
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> with<wbr>Credentials<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>TODO</p>
+										<p>Specifies whether browser credentials (e.g. cookies) should be sent if
+										performing a cross-domain request.</p>
 									</div>
+									<p>See <a href="https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/withCredentials" class="external"><code>XMLHttpRequest.withCredentials</code></a>.</p>
 								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> xhr<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>TODO</p>
+										<p><code>XMLHttpRequest</code> object to use instead of the native implementation.</p>
 									</div>
 								</div>
 							</li>

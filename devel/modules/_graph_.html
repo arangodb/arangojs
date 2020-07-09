@@ -207,16 +207,19 @@
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> return<wbr>New<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>TODO</p>
+										<p>If set to <code>true</code>, the complete new document will be returned as the <code>new</code>
+										property on the result object.</p>
 									</div>
+									<p>Default: <code>false</code></p>
 								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> wait<wbr>For<wbr>Sync<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>TODO</p>
+										<p>If set to <code>true</code>, data will be synchronized to disk before returning.</p>
 									</div>
+									<p>Default: <code>false</code></p>
 								</div>
 							</li>
 						</ul>
@@ -240,24 +243,31 @@
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> allow<wbr>Dirty<wbr>Read<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>TODO</p>
+										<p>If set to <code>true</code>, the request will explicitly permit ArangoDB to return a
+											potentially dirty or stale result and arangojs will load balance the
+										request without distinguishing between leaders and followers.</p>
 									</div>
+									<p>Default: <code>false</code></p>
 								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> graceful<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>TODO</p>
+										<p>If set to <code>true</code>, <code>null</code> is returned instead of an exception being thrown
+										if the document does not exist.</p>
 									</div>
+									<p>Default: <code>false</code></p>
 								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> rev<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>TODO</p>
+										<p>If set to a document revision, the document will only be returned if its
+										<code>_rev</code> property matches this value.</p>
 									</div>
+									<p>See also <a href="_documents_.html#documentmetadata">DocumentMetadata</a>.</p>
 								</div>
 							</li>
 						</ul>
@@ -281,24 +291,29 @@
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> return<wbr>Old<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>TODO</p>
+										<p>If set to <code>true</code>, the complete old document will be returned as the <code>old</code>
+										property on the result object.</p>
 									</div>
+									<p>Default: <code>false</code></p>
 								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> rev<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>TODO</p>
+										<p>If set to a document revision, the document will only be removed if its
+										<code>_rev</code> property matches this value.</p>
 									</div>
+									<p>See also <a href="_documents_.html#documentmetadata">DocumentMetadata</a>.</p>
 								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> wait<wbr>For<wbr>Sync<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>TODO</p>
+										<p>If set to <code>true</code>, data will be synchronized to disk before returning.</p>
 									</div>
+									<p>Default: <code>false</code></p>
 								</div>
 							</li>
 						</ul>
@@ -322,40 +337,49 @@
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> keep<wbr>Null<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>TODO</p>
+										<p>If set to <code>false</code>, properties with a value of <code>null</code> will be removed from
+										the new document.</p>
 									</div>
+									<p>Default: <code>true</code></p>
 								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> return<wbr>New<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>TODO</p>
+										<p>If set to <code>true</code>, the complete new document will be returned as the <code>new</code>
+										property on the result object.</p>
 									</div>
+									<p>Default: <code>false</code></p>
 								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> return<wbr>Old<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>TODO</p>
+										<p>If set to <code>true</code>, the complete old document will be returned as the <code>old</code>
+										property on the result object.</p>
 									</div>
+									<p>Default: <code>false</code></p>
 								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> rev<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>TODO</p>
+										<p>If set to a document revision, the document will only be modified if its
+										<code>_rev</code> property matches this value.</p>
 									</div>
+									<p>See also <a href="_documents_.html#documentmetadata">DocumentMetadata</a>.</p>
 								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> wait<wbr>For<wbr>Sync<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>TODO</p>
+										<p>If set to <code>true</code>, data will be synchronized to disk before returning.</p>
 									</div>
+									<p>Default: <code>false</code></p>
 								</div>
 							</li>
 						</ul>
@@ -440,9 +464,10 @@
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> wait<wbr>For<wbr>Sync<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>If set to <code>true</code>, the request will wait until everything is synced to
-										disk before returning successfully.</p>
+										<p>If set to <code>true</code>, the request will wait until all modifications have been
+										synchronized to disk before returning successfully.</p>
 									</div>
+									<p>Default: <code>false</code></p>
 								</div>
 							</li>
 							<li class="tsd-parameter">
@@ -459,7 +484,7 @@
 				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
 					<a name="graphinfo" class="tsd-anchor"></a>
 					<h3>Graph<wbr>Info</h3>
-					<div class="tsd-signature tsd-kind-icon">Graph<wbr>Info<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>_id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>_key<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>_rev<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>edgeDefinitions<span class="tsd-signature-symbol">: </span><a href="_graph_.html#edgedefinition" class="tsd-signature-type">EdgeDefinition</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span>isSatellite<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span><span class="tsd-signature-symbol">; </span>isSmart<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span><span class="tsd-signature-symbol">; </span>minReplicationFactor<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>numberOfShards<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>orphanCollections<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span>replicationFactor<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>smartGraphAttribute<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>writeConcern<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span></div>
+					<div class="tsd-signature tsd-kind-icon">Graph<wbr>Info<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>_id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>_key<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>_rev<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>edgeDefinitions<span class="tsd-signature-symbol">: </span><a href="_graph_.html#edgedefinition" class="tsd-signature-type">EdgeDefinition</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span>isSmart<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span><span class="tsd-signature-symbol">; </span>minReplicationFactor<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>numberOfShards<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>orphanCollections<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span>replicationFactor<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>smartGraphAttribute<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>writeConcern<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -474,39 +499,46 @@
 								<h5>_id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>TODO</p>
+										<p>The unique ID of the document internally representing this graph.</p>
 									</div>
+									<p>See <a href="_documents_.html#documentmetadata">DocumentMetadata</a>.</p>
+									<dl class="tsd-comment-tags">
+										<dt>internal</dt>
+										<dd></dd>
+									</dl>
 								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5>_key<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>TODO</p>
+										<p>The key of the document internally representing this graph.</p>
 									</div>
+									<p>See <a href="_documents_.html#documentmetadata">DocumentMetadata</a>.</p>
+									<dl class="tsd-comment-tags">
+										<dt>internal</dt>
+										<dd></dd>
+									</dl>
 								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5>_rev<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>TODO</p>
+										<p>The revision of the document internally representing this graph.</p>
 									</div>
+									<p>See <a href="_documents_.html#documentmetadata">DocumentMetadata</a>.</p>
+									<dl class="tsd-comment-tags">
+										<dt>internal</dt>
+										<dd></dd>
+									</dl>
 								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5>edge<wbr>Definitions<span class="tsd-signature-symbol">: </span><a href="_graph_.html#edgedefinition" class="tsd-signature-type">EdgeDefinition</a><span class="tsd-signature-symbol">[]</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>TODO</p>
-									</div>
-								</div>
-							</li>
-							<li class="tsd-parameter">
-								<h5><span class="tsd-flag ts-flagOptional">Optional</span> is<wbr>Satellite<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span></h5>
-								<div class="tsd-comment tsd-typography">
-									<div class="lead">
-										<p>(Enterprise Edition only.) TODO</p>
+										<p>Definitions for the relations of the graph.</p>
 									</div>
 								</div>
 							</li>
@@ -514,7 +546,8 @@
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> is<wbr>Smart<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>(Enterprise Edition only.) TODO</p>
+										<p>(Enterprise Edition cluster only.) If set to <code>true</code>, the graph has been
+										created as a SmartGraph.</p>
 									</div>
 								</div>
 							</li>
@@ -522,15 +555,20 @@
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> min<wbr>Replication<wbr>Factor<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>TODO</p>
+										<p>(Cluster only.) Write concern for new collections in the graph.</p>
 									</div>
+									<dl class="tsd-comment-tags">
+										<dt>deprecated</dt>
+										<dd><p>Renamed to <code>writeConcern</code> in ArangoDB 3.6.</p>
+										</dd>
+									</dl>
 								</div>
 							</li>
 							<li class="tsd-parameter">
 								<h5>name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>TODO</p>
+										<p>Name of the graph.</p>
 									</div>
 								</div>
 							</li>
@@ -538,7 +576,8 @@
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> number<wbr>OfShards<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>TODO</p>
+										<p>(Cluster only.) The number of shards that is used for every collection
+										within this graph.</p>
 									</div>
 								</div>
 							</li>
@@ -546,7 +585,8 @@
 								<h5>orphan<wbr>Collections<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>TODO</p>
+										<p>Additional vertex collections. Documents within these collections do not
+										have edges within this graph.</p>
 									</div>
 								</div>
 							</li>
@@ -554,7 +594,8 @@
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> replication<wbr>Factor<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>TODO</p>
+										<p>(Cluster only.) The replication factor used when initially creating
+										collections for this graph.</p>
 									</div>
 								</div>
 							</li>
@@ -562,7 +603,8 @@
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> smart<wbr>Graph<wbr>Attribute<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>(Enterprise Edition only.) TODO</p>
+										<p>(Enterprise Edition cluster only.) Attribute containing the shard key
+										value to use for smart sharding.</p>
 									</div>
 								</div>
 							</li>
@@ -570,7 +612,7 @@
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> write<wbr>Concern<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>TODO</p>
+										<p>(Cluster only.) Write concern for new collections in the graph.</p>
 									</div>
 								</div>
 							</li>
