@@ -1,13 +1,22 @@
 # Contributing
 
-## Testing
-
-Run the tests using the `yarn test` or `npm test` commands:
+Please check out and build arangojs from source:
 
 ```sh
-yarn test
-# - or -
+git clone https://github.com/arangodb/arangojs.git
+cd arangojs
+npm install
+npm run build
+```
+
+## Testing
+
+Run the tests using the `npm test` or `yarn test` commands:
+
+```sh
 npm test
+# - or -
+yarn test
 ```
 
 By default the tests will be run against a server listening on
@@ -16,9 +25,9 @@ override this, you can set the environment variable `TEST_ARANGODB_URL` to
 something different:
 
 ```sh
-TEST_ARANGODB_URL=http://myserver.local:8530 yarn test
-# - or -
 TEST_ARANGODB_URL=http://myserver.local:8530 npm test
+# - or -
+TEST_ARANGODB_URL=http://myserver.local:8530 yarn test
 ```
 
 For development arangojs tracks the development build of ArangoDB. This means
@@ -29,9 +38,9 @@ To run tests for a specific release of ArangoDB other than the latest
 development build, use the environment variable `ARANGO_VERSION`, e.g. for 3.3:
 
 ```sh
-ARANGO_VERSION=30300 yarn test
-# - or -
 ARANGO_VERSION=30300 npm test
+# - or -
+ARANGO_VERSION=30300 yarn test
 ```
 
 The value follows the same format as the `arangoVersion` config option,
@@ -45,9 +54,9 @@ To run the resilience/failover tests you need to set the environment variables
 `RESILIENCE_DOCKER_IMAGE` (to use a docker image by name):
 
 ```sh
-RESILIENCE_ARANGO_BASEPATH=../arangodb yarn test
-# - or -
 RESILIENCE_ARANGO_BASEPATH=../arangodb npm test
+# - or -
+RESILIENCE_ARANGO_BASEPATH=../arangodb yarn test
 ```
 
 This runs only the resilience/failover tests, without running any other tests.

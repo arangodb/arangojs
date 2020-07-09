@@ -1,15 +1,6 @@
 # ArangoDB JavaScript Driver
 
-The official ArangoDB low-level JavaScript client.
-
-**Note:** if you are looking for the ArangoDB JavaScript API in
-[Foxx](https://foxx.arangodb.com) (or the `arangosh` interactive shell) please
-refer to the documentation about the
-[`@arangodb` module](https://www.arangodb.com/docs/stable/foxx-reference-modules.html#the-arangodb-module)
-instead; specifically
-[the `db` object exported by the `@arangodb` module](https://www.arangodb.com/docs/stable/appendix-references-dbobject.html).
-The JavaScript driver is **only** meant to be used when accessing ArangoDB from
-**outside** the database.
+The official ArangoDB JavaScript client for Node.js and the browser.
 
 [![license - APACHE-2.0](https://img.shields.io/npm/l/arangojs.svg)](http://opensource.org/licenses/APACHE-2.0)
 [![Continuous Integration](https://github.com/arangodb/arangojs/workflows/Continuous%20Integration/badge.svg)](https://github.com/arangodb/arangojs/actions?query=workflow:"Continuous+Integration")
@@ -18,29 +9,21 @@ The JavaScript driver is **only** meant to be used when accessing ArangoDB from
 
 ## Install
 
-### With Yarn or npm
+### With npm or yarn
 
 ```sh
-yarn add arangojs
-## - or -
 npm install --save arangojs
-```
-
-### From source
-
-```sh
-git clone https://github.com/arangodb/arangojs.git
-cd arangojs
-npm install
-npm run build
+## - or -
+yarn add arangojs
 ```
 
 ### For browsers
 
 When using modern JavaScript tooling with a bundler and compiler (e.g. Babel),
-arangojs can be installed using Yarn or npm like any other dependency.
+arangojs can be installed using `npm` or `yarn` like any other dependency.
 
-For use without a compiler like Babel, the npm release comes with a precompiled browser build:
+For use without a compiler, the npm release comes with a precompiled browser
+build for evergreen browsers and Internet Explorer 11:
 
 ```js
 var arangojs = require("arangojs/web");
@@ -144,39 +127,61 @@ substitute promises for `await` syntax as in the above example.
 
 ## Compatibility
 
-ArangoJS is compatible with the latest stable version of ArangoDB available at
-the time of the driver release.
+The arangojs driver is compatible with the latest stable version of ArangoDB
+available at the time of the driver release and remains compatible with the
+two most recent Node.js LTS versions in accordance with the official
+[Node.js long-term support schedule](https://github.com/nodejs/LTS).
 
-The `arangoVersion` option can be used to tell arangojs to target a specific
-ArangoDB version. Depending on the version this may enable or disable certain
-methods and change behavior to maintain compatibility with the given version.
+For a list of changes between recent versions of the driver, see the
+[CHANGELOG](https://arangodb.github.io/arangojs/CHANGELOG).
+
+**Note:** arangojs is only intended to be used in Node.js or a browser to access
+ArangoDB **from outside the database**. If you are looking for the ArangoDB
+JavaScript API for [Foxx](https://foxx.arangodb.com) or for accessing ArangoDB
+from within the `arangosh` interactive shell, please refer to the documentation
+of the [`@arangodb` module](https://www.arangodb.com/docs/stable/foxx-reference-modules.html#the-arangodb-module)
+and [the `db` object](https://www.arangodb.com/docs/stable/appendix-references-dbobject.html) instead.
+
+## Error responses
+
+If arangojs encounters an API error, it will throw an `ArangoError` with
+an `errorNum` property indicating the ArangoDB error code and the `code`
+property indicating the HTTP status code from the response body.
+
+For any other non-ArangoDB error responses (4xx/5xx status code), it will throw
+an `HttpError` error with the status code indicated by the `code` property.
+
+If the server response did not indicate an error but the response body could
+not be parsed, a regular `SyntaxError` may be thrown instead.
+
+In all of these cases the server response object will be exposed as the
+`response` property on the error object.
+
+If the request failed at a network level or the connection was closed without
+receiving a response, the underlying system error will be thrown instead.
+
+## Common issues
+
+### Missing functions or unexpected server errors
+
+Please make sure you are using the latest version of this driver and that the
+version of the arangojs documentation you are reading matches that version.
+
+Changes in the major version number of arangojs (e.g. 6.x.y -> 7.0.0) indicate
+backwards-incompatible changes in the arangojs API that may require changes in
+your code when upgrading your version of arangojs.
+
+Additionally please ensure that your version of Node.js (or browser) and
+ArangoDB are supported by the version of arangojs you are trying to use. See
+the [compatibility section](#compatibility) for additional information.
 
 **Note**: As of June 2018 ArangoDB 2.8 has reached its End of Life and is no
 longer supported in arangojs 7 and later. If your code needs to work with
 ArangoDB 2.8 you can continue using arangojs 6 and enable ArangoDB 2.8
-compatibility mode by setting the option `arangoVersion: 20800`.
+compatibility mode by setting the config option `arangoVersion: 20800` to
+enable the ArangoDB 2.8 compatibility mode in arangojs 6.
 
-The yarn/npm distribution of arangojs maintains compatibility with the latest
-Node.js version as well as the two most recent LTS releases by following
-[the official Node.js long-term support schedule](https://github.com/nodejs/LTS).
-
-The included browser build is compatible with recent versions of all modern
-browsers (Edge, Chrome, Firefox and Safari).
-
-Versions outside this range may be compatible but are not actively supported.
-
-## Versions
-
-**The version number of this driver does not indicate supported ArangoDB versions!**
-
-For a list of changes between recent versions, see the
-[CHANGELOG](https://arangodb.github.io/arangojs/CHANGELOG).
-
-If you are getting unexpected errors or functions seem to be missing, make sure you
-are using the latest version of the driver and following documentation written
-for a compatible version. If you are following a tutorial written for an older
-version of arangojs, you can install that version using the `<name>@<version>`
-syntax:
+You can install an older version of arangojs using `npm` or `yarn`:
 
 ```sh
 # for version 6.x.x
@@ -184,8 +189,6 @@ yarn add arangojs@6
 # - or -
 npm install --save arangojs@6
 ```
-
-## Common issues
 
 ### No code intelligence when using require instead of import
 
@@ -310,51 +313,27 @@ HTTPS certificate validation entirely, but note this has
 When using arangojs in the browser, self-signed HTTPS certificates need to
 be trusted by the browser or use a trusted root certificate.
 
-## Streaming transactions
+### Streaming transactions
 
 When using the `transaction.step` method it is important to be aware of the
-limitations of what a callback passed to this method is allowed to do or not.
-Please refer to the examples in the documentation of that method.
-
-## Error responses
-
-If arangojs encounters an API error, it will throw an `ArangoError` with an
-[`errorNum` error code](https://www.arangodb.com/docs/stable/appendix-error-codes.html)
-as well as a `code` and `statusCode` property indicating the intended and
-actual HTTP status code of the response.
-
-For any other error responses (4xx/5xx status code), it will throw an
-`HttpError` error with the status code indicated by the `code` and
-`statusCode` properties.
-
-If the server response did not indicate an error but the response body could
-not be parsed, a `SyntaxError` may be thrown instead.
-
-In all of these cases the error object will additionally have a `response`
-property containing the server response object.
-
-If the request failed at a network level or the connection was closed without
-receiving a response, the underlying error will be thrown instead.
-
-**Examples**
+limitations of what a callback passed to this method is allowed to do.
 
 ```js
-// Using async/await
-try {
-  const info = await db.createDatabase("mydb");
-  // database created
-} catch (err) {
-  console.error(err.stack);
-}
+const collection = db.collection(collectionName);
+const trx = db.transaction(transactionId);
 
-// Using promises with arrow functions
-db.createDatabase("mydb").then(
-  (info) => {
-    // database created
-  },
-  (err) => console.error(err.stack)
-);
+// WARNING: This code will not work as intended!
+await trx.step(async () => {
+  await collection.save(doc1);
+  await collection.save(doc2); // Not part of the transaction!
+});
+
+// INSTEAD: Always perform a single operation per step:
+await trx.step(() => collection.save(doc1));
+await trx.step(() => collection.save(doc2));
 ```
+
+Please refer to the documentation of this method for additional examples.
 
 ## License
 
