@@ -1,4 +1,8 @@
 /**
+ * ```ts
+ * import { colllectionToString } from "arangojs/util/collectionToString";
+ * ```
+ *
  * Helper function for coercing a value that might be a string representing a
  * collection name, or an {@link ArangoCollection} object to a string.
  *
