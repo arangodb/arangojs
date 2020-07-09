@@ -7,7 +7,6 @@
  * collection name, or an {@link ArangoCollection} object to a string.
  *
  * @packageDocumentation
- * @internal
  */
 import { ArangoCollection, isArangoCollection } from "../collection";
 
@@ -16,8 +15,6 @@ import { ArangoCollection, isArangoCollection } from "../collection";
  * a string representing the collection name.
  *
  * @param collection - Collection name or {@link ArangoCollection} object.
- *
- * @internal
  */
 export function collectionToString(
   collection: string | ArangoCollection

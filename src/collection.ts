@@ -42,7 +42,7 @@ import {
   _indexHandle,
 } from "./indexes";
 import { Blob } from "./lib/blob";
-import { COLLECTION_NOT_FOUND, DOCUMENT_NOT_FOUND } from "./util/codes";
+import { COLLECTION_NOT_FOUND, DOCUMENT_NOT_FOUND } from "./lib/codes";
 import { Patch } from "./util/types";
 
 /**

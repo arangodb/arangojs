@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import { DocumentCollection } from "../collection";
 import { Database } from "../database";
-import { COLLECTION_NOT_FOUND } from "../util/codes";
+import { COLLECTION_NOT_FOUND } from "../lib/codes";
 
 const ARANGO_URL = process.env.TEST_ARANGODB_URL || "http://localhost:8529";
 const ARANGO_VERSION = Number(

@@ -43,11 +43,11 @@ import {
   GraphInfo,
 } from "./graph";
 import { Blob } from "./lib/blob";
+import { DATABASE_NOT_FOUND } from "./lib/codes";
 import { toForm } from "./lib/multipart";
 import { ArangojsResponse } from "./lib/request";
 import { Route } from "./route";
 import { Transaction } from "./transaction";
-import { DATABASE_NOT_FOUND } from "./util/codes";
 import { collectionToString } from "./util/collectionToString";
 import { FoxxManifest } from "./util/foxx-manifest";
 import { Dict } from "./util/types";

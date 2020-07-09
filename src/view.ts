@@ -10,7 +10,7 @@
 import { ArangoResponseMetadata } from "./connection";
 import { Database } from "./database";
 import { isArangoError } from "./error";
-import { VIEW_NOT_FOUND } from "./util/codes";
+import { VIEW_NOT_FOUND } from "./lib/codes";
 import { Dict } from "./util/types";
 
 /**

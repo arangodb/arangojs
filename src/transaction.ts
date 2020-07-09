@@ -11,7 +11,7 @@
 import { Connection } from "./connection";
 import { Database } from "./database";
 import { isArangoError } from "./error";
-import { TRANSACTION_NOT_FOUND } from "./util/codes";
+import { TRANSACTION_NOT_FOUND } from "./lib/codes";
 
 /**
  * Indicates whether the given value represents a {@link Transaction}.

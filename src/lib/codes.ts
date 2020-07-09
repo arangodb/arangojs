@@ -4,6 +4,8 @@
  * See also {@link https://www.arangodb.com/docs/stable/appendix-error-codes.html | ArangoDB error documentation}.
  *
  * @packageDocumentation
+ * @internal
+ * @hidden
  */
 
 export const TRANSACTION_NOT_FOUND = 10;

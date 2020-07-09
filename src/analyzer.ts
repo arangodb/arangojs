@@ -11,7 +11,7 @@
 import { ArangoResponseMetadata } from "./connection";
 import { Database } from "./database";
 import { isArangoError } from "./error";
-import { ANALYZER_NOT_FOUND } from "./util/codes";
+import { ANALYZER_NOT_FOUND } from "./lib/codes";
 
 /**
  * Indicates whether the given value represents an {@link Analyzer}.

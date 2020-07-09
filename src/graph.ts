@@ -31,7 +31,7 @@ import {
   _documentHandle,
 } from "./documents";
 import { isArangoError } from "./error";
-import { DOCUMENT_NOT_FOUND, GRAPH_NOT_FOUND } from "./util/codes";
+import { DOCUMENT_NOT_FOUND, GRAPH_NOT_FOUND } from "./lib/codes";
 import { collectionToString } from "./util/collectionToString";
 import { Patch } from "./util/types";
 
