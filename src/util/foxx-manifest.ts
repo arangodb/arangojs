@@ -1,5 +1,3 @@
-// Source: http://json.schemastore.org/foxx-manifest
-// Generated with json-schema-to-typescript.
 /**
  * ```ts
  * import type { FoxxManifest } from "arangojs/util/foxx-manifest";
@@ -7,6 +5,9 @@
  *
  * The "util/foxx-manifest" module provides the Foxx manifest type for
  * TypeScript.
+ *
+ * Generated from {@link http://json.schemastore.org/foxx-manifest | JSON Schema}
+ * using `json-schema-to-typescript`.
  *
  * @packageDocumentation
  */
