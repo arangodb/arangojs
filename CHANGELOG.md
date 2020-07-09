@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+This driver uses semantic versioning:
+
+- A change in the bugfix version (e.g. X.Y.0 -> X.Y.1) indicates internal
+  changes and should always be safe to upgrade.
+- A change in the minor version (e.g. X.1.Z -> X.2.0) indicates additions and
+  backwards-compatible changes that should not affect your code.
+- A change in the major version (e.g. 1.Y.Z -> 2.0.0) indicates _breaking_
+  changes that require changes in your code to upgrade.
+
 ## [Unreleased]
 
 ### Changed

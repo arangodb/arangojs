@@ -14,11 +14,11 @@ The JavaScript driver is **only** meant to be used when accessing ArangoDB from
 [![license - APACHE-2.0](https://img.shields.io/npm/l/arangojs.svg)](http://opensource.org/licenses/APACHE-2.0)
 [![Continuous Integration](https://github.com/arangodb/arangojs/workflows/Continuous%20Integration/badge.svg)](https://github.com/arangodb/arangojs/actions?query=workflow:"Continuous+Integration")
 
-[![NPM status](https://nodei.co/npm/arangojs.png?downloads=true&stars=true)](https://npmjs.org/package/arangojs)
+[![npm package status](https://nodei.co/npm/arangojs.png?downloads=true&stars=true)](https://npmjs.org/package/arangojs)
 
 ## Install
 
-### With Yarn or NPM
+### With Yarn or npm
 
 ```sh
 yarn add arangojs
@@ -37,16 +37,10 @@ npm run build
 
 ### For browsers
 
-For production use arangojs can be installed with Yarn or NPM like any
-other dependency. Just use arangojs like you would in your server code:
+When using modern JavaScript tooling with a bundler and compiler (e.g. Babel),
+arangojs can be installed using Yarn or npm like any other dependency.
 
-```js
-import { Database, aql } from "arangojs";
-// -- or --
-var arangojs = require("arangojs");
-```
-
-Additionally the NPM release comes with a precompiled browser build:
+For use without a compiler like Babel, the npm release comes with a precompiled browser build:
 
 ```js
 var arangojs = require("arangojs/web");
@@ -59,16 +53,7 @@ You can also use [unpkg](https://unpkg.com) during development:
 <script src="https://unpkg.com/arangojs@7.0.0/web.js"></script>
 <script>
   var db = new arangojs.Database();
-  db.listCollections().then(function (collections) {
-    alert(
-      "Your collections: " +
-        collections
-          .map(function (collection) {
-            return collection.name;
-          })
-          .join(", ")
-    );
-  });
+  // ...
 </script>
 ```
 
@@ -87,49 +72,72 @@ When loading the browser build with a script tag make sure to load the polyfill 
 ## Basic usage example
 
 ```js
-// Modern JavaScript
-import { Database, aql } from "arangojs";
+// Modern JavaScript/TypeScript with async/await
+// TS: import { Database, aql } from "arangojs";
+const { Database, aql } = require("arangojs");
+
 const db = new Database();
-(async function () {
-  const now = Date.now();
+const pokemons = db.collection("my-pokemons");
+
+async function main() {
   try {
-    const cursor = await db.query(aql`
-      RETURN ${now}
+    const pokemons = await db.query(aql`
+      FOR pokemon IN ${pokemons}
+      FILTER pokemon.type == "fire"
+      RETURN pokemon
     `);
-    const result = await cursor.next();
-    // ...
+    console.log("My pokemons, let me show you them:");
+    for await (const pokemon of pokemons) {
+      console.log(pokemon.name);
+    }
   } catch (err) {
-    // ...
+    console.error(err.message);
   }
-})();
+}
 
-// or plain old Node-style
-var arangojs = require("arangojs");
-var db = new arangojs.Database();
-var now = Date.now();
-db.query({
-  query: "RETURN @value",
-  bindVars: { value: now },
-})
-  .then(function (cursor) {
-    return cursor.next().then(function (result) {
-      // ...
-    });
-  })
-  .catch(function (err) {
-    // ...
-  });
+main();
+```
 
-// Using different databases
+```js
+// Using a different database
 const db = new Database({
   url: "http://localhost:8529",
   database: "pancakes",
   auth: { username: "root", password: "hunter2" },
 });
+
 // The database can be swapped at any time
 db.useDatabase("waffles");
 db.useBasicAuth("admin", "maplesyrup");
 ```
+
+```js
+// Old-school JavaScript with promises
+var arangojs = require("arangojs");
+var Database = arangojs.Database;
+
+var db = new Database();
+var pokemons = db.collection("pokemons");
+
+db.query({
+  query: "FOR p IN @@c FILTER p.type === 'fire' RETURN p",
+  bindVars: { c: pokemons },
+})
+  .then(function (cursor) {
+    console.log("My pokemons, let me show you them:");
+    return cursor.forEach(function (pokemon) {
+      console.log(pokemon.name);
+    });
+  })
+  .catch(function (err) {
+    console.error(err.message);
+  });
+```
+
+**Note**: The examples throughout this documentation use `async`/`await`
+and other modern language features like multi-line strings and template tags.
+When developing for an environment without support for these language features,
+substitute promises for `await` syntax as in the above example.
 
 ## Compatibility
 
@@ -156,16 +164,7 @@ Versions outside this range may be compatible but are not actively supported.
 
 ## Versions
 
-The version number of this driver does not indicate supported ArangoDB versions!
-
-This driver uses semantic versioning:
-
-- A change in the bugfix version (e.g. X.Y.0 -> X.Y.1) indicates internal
-  changes and should always be safe to upgrade.
-- A change in the minor version (e.g. X.1.Z -> X.2.0) indicates additions and
-  backwards-compatible changes that should not affect your code.
-- A change in the major version (e.g. 1.Y.Z -> 2.0.0) indicates _breaking_
-  changes that require changes in your code to upgrade.
+**The version number of this driver does not indicate supported ArangoDB versions!**
 
 For a list of changes between recent versions, see the
 [CHANGELOG](https://arangodb.github.io/arangojs/CHANGELOG).
@@ -353,11 +352,6 @@ db.createDatabase("mydb").then(
   (err) => console.error(err.stack)
 );
 ```
-
-**Note**: The examples throughout this documentation use `async`/`await`
-and other modern language features like multi-line strings and template tags.
-When developing for an environment without support for these language features,
-substitute promises for `await` syntax as in the above example.
 
 ## License
 
