@@ -68,15 +68,25 @@ function coerceEdgeDefinition(options: EdgeDefinitionOptions): EdgeDefinition {
  */
 export type GraphCollectionReadOptions = {
   /**
-   * TODO
+   * If set to a document revision, the document will only be returned if its
+   * `_rev` property matches this value.
+   *
+   * See also {@link DocumentMetadata}.
    */
   rev?: string;
   /**
-   * TODO
+   * If set to `true`, `null` is returned instead of an exception being thrown
+   * if the document does not exist.
+   *
+   * Default: `false`
    */
   graceful?: boolean;
   /**
-   * TODO
+   * If set to `true`, the request will explicitly permit ArangoDB to return a
+   * potentially dirty or stale result and arangojs will load balance the
+   * request without distinguishing between leaders and followers.
+   *
+   * Default: `false`
    */
   allowDirtyRead?: boolean;
 };
@@ -86,11 +96,16 @@ export type GraphCollectionReadOptions = {
  */
 export type GraphCollectionInsertOptions = {
   /**
-   * TODO
+   * If set to `true`, data will be synchronized to disk before returning.
+   *
+   * Default: `false`
    */
   waitForSync?: boolean;
   /**
-   * TODO
+   * If set to `true`, the complete new document will be returned as the `new`
+   * property on the result object.
+   *
+   * Default: `false`
    */
   returnNew?: boolean;
 };
@@ -100,23 +115,37 @@ export type GraphCollectionInsertOptions = {
  */
 export type GraphCollectionReplaceOptions = {
   /**
-   * TODO
+   * If set to a document revision, the document will only be modified if its
+   * `_rev` property matches this value.
+   *
+   * See also {@link DocumentMetadata}.
    */
   rev?: string;
   /**
-   * TODO
+   * If set to `true`, data will be synchronized to disk before returning.
+   *
+   * Default: `false`
    */
   waitForSync?: boolean;
   /**
-   * TODO
+   * If set to `false`, properties with a value of `null` will be removed from
+   * the new document.
+   *
+   * Default: `true`
    */
   keepNull?: boolean;
   /**
-   * TODO
+   * If set to `true`, the complete old document will be returned as the `old`
+   * property on the result object.
+   *
+   * Default: `false`
    */
   returnOld?: boolean;
   /**
-   * TODO
+   * If set to `true`, the complete new document will be returned as the `new`
+   * property on the result object.
+   *
+   * Default: `false`
    */
   returnNew?: boolean;
 };
@@ -126,15 +155,23 @@ export type GraphCollectionReplaceOptions = {
  */
 export type GraphCollectionRemoveOptions = {
   /**
-   * TODO
+   * If set to a document revision, the document will only be removed if its
+   * `_rev` property matches this value.
+   *
+   * See also {@link DocumentMetadata}.
    */
   rev?: string;
   /**
-   * TODO
+   * If set to `true`, data will be synchronized to disk before returning.
+   *
+   * Default: `false`
    */
   waitForSync?: boolean;
   /**
-   * TODO
+   * If set to `true`, the complete old document will be returned as the `old`
+   * property on the result object.
+   *
+   * Default: `false`
    */
   returnOld?: boolean;
 };
@@ -180,62 +217,71 @@ export type EdgeDefinitionOptions = {
  */
 export type GraphInfo = {
   /**
-   * TODO
-   */
-  _id: string;
-  /**
-   * TODO
+   * The key of the document internally representing this graph.
+   *
+   * See {@link DocumentMetadata}.
+   *
+   * @internal
    */
   _key: string;
   /**
-   * TODO
+   * The unique ID of the document internally representing this graph.
+   *
+   * See {@link DocumentMetadata}.
+   *
+   * @internal
+   */
+  _id: string;
+  /**
+   * The revision of the document internally representing this graph.
+   *
+   * See {@link DocumentMetadata}.
+   *
+   * @internal
    */
   _rev: string;
   /**
-   * TODO
+   * Name of the graph.
    */
   name: string;
   /**
-   * TODO
+   * Definitions for the relations of the graph.
    */
   edgeDefinitions: EdgeDefinition[];
   /**
-   * TODO
+   * Additional vertex collections. Documents within these collections do not
+   * have edges within this graph.
    */
   orphanCollections: string[];
 
-  // Cluster options
   /**
-   * TODO
+   * (Cluster only.) The number of shards that is used for every collection
+   * within this graph.
    */
   numberOfShards?: number;
   /**
-   * TODO
+   * (Cluster only.) The replication factor used when initially creating
+   * collections for this graph.
    */
   replicationFactor?: number;
   /**
-   * TODO
+   * (Cluster only.) Write concern for new collections in the graph.
    */
   writeConcern?: number;
   /**
+   * (Cluster only.) Write concern for new collections in the graph.
+   *
    * @deprecated Renamed to `writeConcern` in ArangoDB 3.6.
    */
-  /**
-   * TODO
-   */
   minReplicationFactor?: number;
-
-  // Extra options
   /**
-   * (Enterprise Edition only.) TODO
-   */
-  isSatellite?: boolean;
-  /**
-   * (Enterprise Edition only.) TODO
+   * (Enterprise Edition cluster only.) If set to `true`, the graph has been
+   * created as a SmartGraph.
    */
   isSmart?: boolean;
   /**
-   * (Enterprise Edition only.) TODO
+   * (Enterprise Edition cluster only.) Attribute containing the shard key
+   * value to use for smart sharding.
    */
   smartGraphAttribute?: string;
 };
@@ -245,8 +291,10 @@ export type GraphInfo = {
  */
 export type GraphCreateOptions = {
   /**
-   * If set to `true`, the request will wait until everything is synced to
-   * disk before returning successfully.
+   * If set to `true`, the request will wait until all modifications have been
+   * synchronized to disk before returning successfully.
+   *
+   * Default: `false`
    */
   waitForSync?: boolean;
   /**

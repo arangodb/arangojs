@@ -15,12 +15,24 @@ import { Dict } from "./util/types";
  * Additional information about the cursor.
  */
 export interface CursorExtras {
+  /**
+   * Warnings encountered while executing the query.
+   */
   warnings: {
     code: number;
     message: string;
   }[];
+  /**
+   * Query execution plan for the executed query.
+   */
   plan?: any;
+  /**
+   * Additional profiling information for the executed query.
+   */
   profile?: any;
+  /**
+   * Additional statistics about the query execution.
+   */
   stats?: Dict<any>;
 }
 

@@ -263,7 +263,7 @@ export class Analyzer {
   /**
    * The name of this Analyzer.
    *
-   * See {@link Database.analyzer}.
+   * See also {@link Database.analyzer}.
    */
   get name() {
     return this._name;

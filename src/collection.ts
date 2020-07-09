@@ -121,7 +121,13 @@ export type ShardingStrategy =
 export type SimpleQueryListType = "id" | "key" | "path";
 
 /**
- * TODO
+ * When a validation should be applied.
+ *
+ * * `"none"`: No validation.
+ * * `"new"`: Newly inserted documents are validated.
+ * * `"moderate"`: New and modified documents are validated unless the modified
+ *   document was already invalid.
+ * * `"strict"`: New and modified documents are always validated.
  */
 export type ValidationLevel = "none" | "new" | "moderate" | "strict";
 
@@ -183,9 +189,21 @@ export type CollectionKeyProperties = {
  * Properties for validating documents in a collection.
  */
 export type ValidationProperties = {
-  rule: any;
+  /**
+   * The type of document validation.
+   */
   type: "json";
+  /**
+   * JSON Schema description of the validation schema for documents.
+   */
+  rule: any;
+  /**
+   * When validation should be applied.
+   */
   level: ValidationLevel;
+  /**
+   * Message to be used if validation fails.
+   */
   message: string;
 };
 
@@ -207,19 +225,19 @@ export type CollectionProperties = {
    */
   keyOptions: CollectionKeyProperties;
   /**
-   * TODO
+   * Properties for validating documents in the collection.
    */
   validation: ValidationProperties | null;
   /**
-   * (Cluster only.) TODO
+   * (Cluster only.) Write concern for this collection.
    */
   writeConcern: number;
   /**
-   * (Cluster only.) TODO
+   * (Cluster only.) Write concern for this collection.
    *
    * @deprecated Renamed to `writeConcern` in ArangoDB 3.6.
    */
-  minReplicationFactor: number;
+  minReplicationFactor?: number;
   /**
    * (Cluster only.) The number of shards of this collection.
    */
@@ -238,27 +256,32 @@ export type CollectionProperties = {
    */
   shardingStrategy?: ShardingStrategy;
   /**
-   * (MMFiles only.) TODO
+   * (MMFiles only.) Whether the collection will be compacted.
    */
   doCompact?: boolean;
   /**
-   * (MMFiles only.) TODO
+   * (MMFiles only.) The maximum size for each journal or datafile in bytes.
    */
   journalSize?: number;
   /**
-   * (MMFiles only.) TODO
+   * (MMFiles only.) Number of buckets into which indexes using hash tables are
+   * split.
    */
   indexBuckets?: number;
   /**
-   * (MMFiles only.) TODO
+   * (MMFiles only.) If set to `true`, the collection will only be kept
+   * in-memory and discarded when unloaded, resulting in full data loss.
    */
   isVolatile?: boolean;
   /**
-   * (Enterprise Edition cluster only.) TODO
+   * (Enterprise Edition cluster only.) If set to a collection name, sharding
+   * of the new collection will follow the rules for that collection. As long
+   * as the new collection exists, the indicated collection can not be dropped.
    */
   distributeShardsLike?: string;
   /**
-   * (Enterprise Edition cluster only.) TODO
+   * (Enterprise Edition cluster only.) Attribute containing the shard key
+   * value of the referred-to smart join collection.
    */
   smartJoinAttribute?: string;
 };
@@ -270,15 +293,17 @@ export type CollectionProperties = {
  */
 export type ValidationOptions = {
   /**
-   * TODO
+   * JSON Schema description of the validation schema for documents.
    */
   rule: any;
   /**
-   * TODO
+   * When validation should be applied.
+   *
+   * Default: `"strict"`
    */
   level?: ValidationLevel;
   /**
-   * TODO
+   * Message to be used if validation fails.
    */
   message?: string;
 };
@@ -311,11 +336,17 @@ export type CollectionPropertiesOptions = {
  */
 export type CollectionChecksumOptions = {
   /**
-   * TODO
+   * If set to `true`, revision IDs will be included in the calculation
+   * of the checksum.
+   *
+   * Default: `false`
    */
   withRevisions?: boolean;
   /**
-   * TODO
+   * If set to `true`, document data will be included in the calculation
+   * of the checksum.
+   *
+   * Default: `false`
    */
   withData?: boolean;
 };
@@ -386,7 +417,7 @@ export type CreateCollectionOptions = {
    */
   keyOptions?: CollectionKeyOptions;
   /**
-   * TODO
+   * Options for validating documents in the collection.
    */
   validation?: ValidationOptions;
   /**
@@ -708,19 +739,27 @@ export type CollectionImportOptions = {
  */
 export type SimpleQueryByExampleOptions = {
   /**
-   * TODO
+   * Number of documents to skip in the query.
    */
   skip?: number;
   /**
-   * TODO
+   * Maximum number of documents to return.
    */
   limit?: number;
   /**
-   * TODO
+   * The number of result values to be transferred by the server in each
+   * network roundtrip (or "batch").
+   *
+   * Must be greater than zero.
+   *
+   * See also {@link QueryOptions}.
    */
   batchSize?: number;
   /**
-   * TODO
+   * The time-to-live for the cursor in seconds. The cursor results may be
+   * garbage collected by ArangoDB after this much time has passed.
+   *
+   * See also {@link QueryOptions}.
    */
   ttl?: number;
 };
@@ -733,23 +772,33 @@ export type SimpleQueryByExampleOptions = {
  */
 export type SimpleQueryAllOptions = {
   /**
-   * TODO
+   * Number of documents to skip in the query.
    */
   skip?: number;
   /**
-   * TODO
+   * Maximum number of documents to return.
    */
   limit?: number;
   /**
-   * TODO
+   * The number of result values to be transferred by the server in each
+   * network roundtrip (or "batch").
+   *
+   * Must be greater than zero.
+   *
+   * See also {@link QueryOptions}.
    */
   batchSize?: number;
   /**
-   * TODO
+   * The time-to-live for the cursor in seconds. The cursor results may be
+   * garbage collected by ArangoDB after this much time has passed.
+   *
+   * See also {@link QueryOptions}.
    */
   ttl?: number;
   /**
-   * TODO
+   * If set to `true`, the query will be executed as a streaming query.
+   *
+   * See also {@link QueryOptions}.
    */
   stream?: boolean;
 };
@@ -762,19 +811,29 @@ export type SimpleQueryAllOptions = {
  */
 export type SimpleQueryUpdateByExampleOptions = {
   /**
-   * TODO
+   * If set to `false`, properties with a value of `null` will be removed from
+   * the new document.
+   *
+   * Default: `true`
    */
   keepNull?: boolean;
   /**
-   * TODO
+   * If set to `true`, the request will wait until all modifications have been
+   * synchronized to disk before returning successfully.
+   *
+   * Default: `false`
    */
   waitForSync?: boolean;
   /**
-   * TODO
+   * Maximum number of documents to return.
    */
   limit?: number;
   /**
-   * TODO
+   * If set to `false`, object properties that already exist in the old
+   * document will be overwritten rather than merged. This does not affect
+   * arrays.
+   *
+   * Default: `true`
    */
   mergeObjects?: boolean;
 };
@@ -787,11 +846,14 @@ export type SimpleQueryUpdateByExampleOptions = {
  */
 export type SimpleQueryRemoveByExampleOptions = {
   /**
-   * TODO
+   * If set to `true`, the request will wait until all modifications have been
+   * synchronized to disk before returning successfully.
+   *
+   * Default: `false`
    */
   waitForSync?: boolean;
   /**
-   * TODO
+   * Maximum number of documents to return.
    */
   limit?: number;
 };
@@ -812,15 +874,24 @@ export type SimpleQueryReplaceByExampleOptions = SimpleQueryRemoveByExampleOptio
  */
 export type SimpleQueryRemoveByKeysOptions = {
   /**
-   * TODO
+   * If set to `true`, the complete old document will be returned as the `old`
+   * property on the result object. Has no effect if `silent` is set to `true`.
+   *
+   * Default: `false`
    */
   returnOld?: boolean;
   /**
-   * TODO
+   * If set to `true`, no data will be returned by the server. This option can
+   * be used to reduce network traffic.
+   *
+   * Default: `false`
    */
   silent?: boolean;
   /**
-   * TODO
+   * If set to `true`, the request will wait until all modifications have been
+   * synchronized to disk before returning successfully.
+   *
+   * Default: `false`
    */
   waitForSync?: boolean;
 };
@@ -833,15 +904,15 @@ export type SimpleQueryRemoveByKeysOptions = {
  */
 export type SimpleQueryFulltextOptions = {
   /**
-   * TODO
+   * The ID of the fulltext index to use to perform the query.
    */
   index?: string;
   /**
-   * TODO
+   * Maximum number of documents to return.
    */
   limit?: number;
   /**
-   * TODO
+   * Number of documents to skip in the query.
    */
   skip?: number;
 };
@@ -992,86 +1063,63 @@ export type TraversalOptions = {
 };
 
 // Results
-
-/**
- * Number of documents in a collection.
- */
-export type CollectionCount = {
-  /**
-   * The number of documents in this collection.
-   */
-  count: number;
-};
-
 /**
  * Statistics of a collection.
  */
 export type CollectionFigures = {
-  figures: {
-    alive: {
-      count: number;
-      size: number;
-    };
-    dead: {
-      count: number;
-      size: number;
-      deletion: number;
-    };
-    datafiles: {
-      count: number;
-      fileSize: number;
-    };
-    journals: {
-      count: number;
-      fileSize: number;
-    };
-    compactors: {
-      count: number;
-      fileSize: number;
-    };
-    shapefiles: {
-      count: number;
-      fileSize: number;
-    };
-    shapes: {
-      count: number;
-      size: number;
-    };
-    attributes: {
-      count: number;
-      size: number;
-    };
-    indexes: {
-      count: number;
-      size: number;
-    };
-    lastTick: number;
-    uncollectedLogfileEntries: number;
-    documentReferences: number;
-    waitingFor: string;
-    compactionStatus: {
-      time: string;
-      message: string;
-      count: number;
-      filesCombined: number;
-      bytesRead: number;
-      bytesWritten: number;
-    };
+  alive: {
+    count: number;
+    size: number;
   };
-};
-
-/**
- * Revision of a collection.
- */
-export type CollectionRevision = {
-  revision: string;
-};
-
-/**
- * Checksum of a collection.
- */
-export type CollectionChecksum = {
-  checksum: string;
+  dead: {
+    count: number;
+    size: number;
+    deletion: number;
+  };
+  datafiles: {
+    count: number;
+    fileSize: number;
+  };
+  journals: {
+    count: number;
+    fileSize: number;
+  };
+  compactors: {
+    count: number;
+    fileSize: number;
+  };
+  shapefiles: {
+    count: number;
+    fileSize: number;
+  };
+  shapes: {
+    count: number;
+    size: number;
+  };
+  attributes: {
+    count: number;
+    size: number;
+  };
+  indexes: {
+    count: number;
+    size: number;
+  };
+  lastTick: number;
+  uncollectedLogfileEntries: number;
+  documentReferences: number;
+  documentsSize: number;
+  cacheInUse: boolean;
+  cacheSize: number;
+  cacheUsage: number;
+  waitingFor: string;
+  compactionStatus: {
+    time: string;
+    message: string;
+    count: number;
+    filesCombined: number;
+    bytesRead: number;
+    bytesWritten: number;
+  };
 };
 
 /**
@@ -1316,8 +1364,7 @@ export interface DocumentCollection<T extends object = any>
   count(): Promise<
     ArangoResponseMetadata &
       CollectionMetadata &
-      CollectionProperties &
-      CollectionCount
+      CollectionProperties & { count: number }
   >;
   /**
    * (RocksDB only.) Instructs ArangoDB to recalculate the collection's
@@ -1349,9 +1396,7 @@ export interface DocumentCollection<T extends object = any>
   figures(): Promise<
     ArangoResponseMetadata &
       CollectionMetadata &
-      CollectionProperties &
-      CollectionCount &
-      CollectionFigures
+      CollectionProperties & { count: number; figures: CollectionFigures }
   >;
   /**
    * Retrieves the collection revision ID.
@@ -1367,8 +1412,7 @@ export interface DocumentCollection<T extends object = any>
   revision(): Promise<
     ArangoResponseMetadata &
       CollectionMetadata &
-      CollectionProperties &
-      CollectionRevision
+      CollectionProperties & { revision: string }
   >;
   /**
    * Retrieves the collection checksum.
@@ -1387,9 +1431,7 @@ export interface DocumentCollection<T extends object = any>
     options?: CollectionChecksumOptions
   ): Promise<
     ArangoResponseMetadata &
-      CollectionMetadata &
-      CollectionRevision &
-      CollectionChecksum
+      CollectionMetadata & { revision: string; checksum: string }
   >;
   /**
    * Instructs ArangoDB to load the collection into memory.
@@ -1408,7 +1450,7 @@ export interface DocumentCollection<T extends object = any>
    */
   load(
     count?: true
-  ): Promise<ArangoResponseMetadata & CollectionMetadata & CollectionCount>;
+  ): Promise<ArangoResponseMetadata & CollectionMetadata & { count: number }>;
   /**
    * Instructs ArangoDB to load the collection into memory.
    *
@@ -3036,7 +3078,7 @@ export class Collection<T extends object = any>
 
   count() {
     return this._get<
-      CollectionMetadata & CollectionProperties & CollectionCount
+      CollectionMetadata & CollectionProperties & { count: number }
     >("count");
   }
 
@@ -3048,26 +3090,24 @@ export class Collection<T extends object = any>
   figures() {
     return this._get<
       CollectionMetadata &
-        CollectionProperties &
-        CollectionCount &
-        CollectionFigures
+        CollectionProperties & { count: number; figures: CollectionFigures }
     >("figures");
   }
 
   revision() {
     return this._get<
-      CollectionMetadata & CollectionProperties & CollectionRevision
+      CollectionMetadata & CollectionProperties & { revision: string }
     >("revision");
   }
 
   checksum(options?: CollectionChecksumOptions) {
     return this._get<
-      CollectionMetadata & CollectionRevision & CollectionChecksum
+      CollectionMetadata & { revision: string; checksum: string }
     >("checksum", options);
   }
 
   load(count?: boolean) {
-    return this._put<CollectionMetadata & CollectionCount>(
+    return this._put<CollectionMetadata & { count: number }>(
       "load",
       typeof count === "boolean" ? { count } : undefined
     );

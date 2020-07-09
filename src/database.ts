@@ -191,7 +191,9 @@ export type TransactionOptions = {
 };
 
 /**
- * Options for executing a query. See {@link Database.query}.
+ * Options for executing a query.
+ *
+ * See {@link Database.query}.
  */
 export type QueryOptions = {
   /**
@@ -335,7 +337,9 @@ export type QueryOptions = {
 };
 
 /**
- * Options for explaining a query. See {@link Database.explain}.
+ * Options for explaining a query.
+ *
+ * See {@link Database.explain}.
  */
 export type ExplainOptions = {
   /**
@@ -362,9 +366,17 @@ export type ExplainOptions = {
 
 /**
  * Details for a transaction.
+ *
+ * See also {@link TransactionStatus}.
  */
 export type TransactionDetails = {
+  /**
+   * The unique identifier of the transaction.
+   */
   id: string;
+  /**
+   * The status (or "state") of the transaction.
+   */
   state: "running" | "committed" | "aborted";
 };
 
@@ -372,6 +384,9 @@ export type TransactionDetails = {
  * Plan explaining query execution.
  */
 export type ExplainPlan = {
+  /**
+   * Execution nodes in this plan.
+   */
   nodes: {
     [key: string]: any;
     type: string;
@@ -380,18 +395,35 @@ export type ExplainPlan = {
     estimatedCost: number;
     estimatedNrItems: number;
   }[];
+  /**
+   * Rules applied by the optimizer.
+   */
   rules: string[];
+  /**
+   * Information about collections involved in the query.
+   */
   collections: {
     name: string;
     type: "read" | "write";
   }[];
+  /**
+   * Variables used in the query.
+   */
   variables: {
     id: number;
     name: string;
   }[];
+  /**
+   * Total estimated cost of the plan.
+   */
   estimatedCost: number;
+  /**
+   * Estimated number of items returned by the query.
+   */
   estimatedNrItems: number;
-  initialize: boolean;
+  /**
+   * Whether the query is a data modification query.
+   */
   isModificationQuery: boolean;
 };
 
@@ -399,12 +431,33 @@ export type ExplainPlan = {
  * Result of explaining a query with a single plan.
  */
 export type SingleExplainResult = {
+  /**
+   * The query plan.
+   */
   plan: ExplainPlan;
+  /**
+   * Whether it would be possible to cache the query.
+   */
   cacheable: boolean;
+  /**
+   * Warnings encountered while planning the query execution.
+   */
   warnings: { code: number; message: string }[];
+  /**
+   * Statistical information about the query plan generation.
+   */
   stats: {
+    /**
+     * The total number of rules executed for this query.
+     */
     rulesExecuted: number;
+    /**
+     * The number of rules skipped for this query.
+     */
     rulesSkipped: number;
+    /**
+     * The total number of plans created.
+     */
     plansCreated: number;
   };
 };
@@ -413,17 +466,39 @@ export type SingleExplainResult = {
  * Result of explaining a query with multiple plans.
  */
 export type MultiExplainResult = {
+  /**
+   * The query plans.
+   */
   plans: ExplainPlan[];
+  /**
+   * Whether it would be possible to cache the query.
+   */
+  cacheable: boolean;
+  /**
+   * Warnings encountered while planning the query execution.
+   */
   warnings: { code: number; message: string }[];
+  /**
+   * Statistical information about the query plan generation.
+   */
   stats: {
+    /**
+     * The total number of rules executed for this query.
+     */
     rulesExecuted: number;
+    /**
+     * The number of rules skipped for this query.
+     */
     rulesSkipped: number;
+    /**
+     * The total number of plans created.
+     */
     plansCreated: number;
   };
 };
 
 /**
- * Node in an AQL abstract syntax tree.
+ * Node in an AQL abstract syntax tree (AST).
  */
 export type AstNode = {
   [key: string]: any;
@@ -435,9 +510,21 @@ export type AstNode = {
  * Result of parsing a query.
  */
 export type ParseResult = {
+  /**
+   * Whether the query was parsed.
+   */
   parsed: boolean;
+  /**
+   * Names of all collections involved in the query.
+   */
   collections: string[];
+  /**
+   * Names of all bind parameters used in the query.
+   */
   bindVars: string[];
+  /**
+   * The abstract syntax tree (AST) of the query.
+   */
   ast: AstNode[];
 };
 
@@ -445,16 +532,37 @@ export type ParseResult = {
  * Information about query tracking.
  */
 export type QueryTracking = {
+  /**
+   * Whether query tracking is enabled.
+   */
   enabled: boolean;
+  /**
+   * The maximum query string length in bytes that is kept in the list.
+   */
   maxQueryStringLength: number;
+  /**
+   * The maximum number of slow queries that is kept in the list.
+   */
   maxSlowQueries: number;
+  /**
+   * The threshold execution time in seconds for when a query is
+   * considered slow.
+   */
   slowQueryThreshold: number;
+  /**
+   * Whether bind parameters are being tracked along with queries.
+   */
   trackBindVars: boolean;
+  /**
+   * Whether slow queries are being tracked.
+   */
   trackSlowQueries: boolean;
 };
 
 /**
- * Options for query tracking. See {@link Database.queryTracking}.
+ * Options for query tracking.
+ *
+ * See {@link Database.queryTracking}.
  */
 export type QueryTrackingOptions = {
   /**
@@ -489,12 +597,33 @@ export type QueryTrackingOptions = {
  * Object describing a query.
  */
 export type QueryInfo = {
+  /**
+   * Unique identifier for this query.
+   */
   id: string;
+  /**
+   * Query string (potentially truncated).
+   */
   query: string;
+  /**
+   * Bind parameters used in the query.
+   */
   bindVars: Dict<any>;
+  /**
+   * Query's running time in seconds.
+   */
   runTime: number;
+  /**
+   * Date and time the query was started.
+   */
   started: string;
+  /**
+   * Query's current execution state.
+   */
   state: "executing" | "finished" | "killed";
+  /**
+   * Whether the query uses a streaming cursor.
+   */
   stream: boolean;
 };
 
@@ -525,15 +654,15 @@ export type CreateDatabaseUser = {
 };
 
 /**
- * Options for creating a database. See {@link Database.createDatabase}.
+ * Options for creating a database.
+ *
+ * See {@link Database.createDatabase}.
  */
 export type CreateDatabaseOptions = {
   /**
    * Database users to create with the database.
    */
   users?: CreateDatabaseUser[];
-
-  // Cluster options
   /**
    * (Cluster only.) The sharding method to use for new collections in the
    * database.
@@ -563,18 +692,45 @@ export type CreateDatabaseOptions = {
 
 /**
  * Object describing a database.
+ *
+ * See {@link Database.get}.
  */
 export type DatabaseInfo = {
+  /**
+   * Name of the database.
+   */
   name: string;
+  /**
+   * Unique identifier of the database.
+   */
   id: string;
+  /**
+   * File system path of the database.
+   */
   path: string;
+  /**
+   * Whether the database is the system database.
+   */
   isSystem: boolean;
-
-  // Cluster options
+  /**
+   * (Cluster only.) The sharding method to use for new collections in the
+   * database.
+   */
   sharding?: "" | "flexible" | "single";
+  /**
+   * (Cluster only.) Default replication factor for new collections in this
+   * database.
+   */
   replicationFactor?: "satellite" | number;
+  /**
+   * (Cluster only.) Default write concern for new collections created in this
+   * database.
+   */
   writeConcern?: number;
   /**
+   * (Cluster only.) Default write concern for new collections created in this
+   * database.
+   *
    * @deprecated Renamed to `writeConcern` in ArangoDB 3.6.
    */
   minReplicationFactor?: number;
@@ -584,17 +740,41 @@ export type DatabaseInfo = {
  * Result of retrieving database version information.
  */
 export type VersionInfo = {
+  /**
+   * Value identifying the server type, i.e. `"arango"`.
+   */
   server: string;
+  /**
+   * The ArangoDB license type or "edition".
+   */
   license: "community" | "enterprise";
+  /**
+   * The ArangoDB server version.
+   */
   version: string;
+  /**
+   * Additional information about the ArangoDB server.
+   */
+  details?: { [key: string]: string };
 };
 
 /**
  * Definition of an AQL User Function.
  */
 export type AqlUserFunction = {
+  /**
+   * Name of the AQL User Function.
+   */
   name: string;
+  /**
+   * Implementation of the AQL User Function.
+   */
   code: string;
+  /**
+   * Whether the function is deterministic.
+   *
+   * See {@link Database.createFunction}.
+   */
   isDeterministic: boolean;
 };
 
@@ -778,11 +958,30 @@ export type UninstallServiceOptions = {
  * Object briefly describing a Foxx service.
  */
 export type ServiceSummary = {
+  /**
+   * The service's mount point, relative to the database.
+   */
   mount: string;
+  /**
+   * Name defined in the service manifest.
+   */
   name?: string;
+  /**
+   * Version defined in the service manifest.
+   */
   version?: string;
+  /**
+   * Service dependencies the service expects to be able to match as a mapping
+   * from dependency names to versions the service is compatible with.
+   */
   provides: Dict<string>;
+  /**
+   * Whether development mode is enabled for this service.
+   */
   development: boolean;
+  /**
+   * Whether the service is running in legacy compatibility mode.
+   */
   legacy: boolean;
 };
 
@@ -790,16 +989,49 @@ export type ServiceSummary = {
  * Object describing a Foxx service in detail.
  */
 export type ServiceInfo = {
+  /**
+   * The service's mount point, relative to the database.
+   */
   mount: string;
+  /**
+   * File system path of the service.
+   */
   path: string;
+  /**
+   * Name defined in the service manifest.
+   */
   name?: string;
+  /**
+   * Version defined in the service manifest.
+   */
   version?: string;
+  /**
+   * Whether development mode is enabled for this service.
+   */
   development: boolean;
+  /**
+   * Whether the service is running in legacy compatibility mode.
+   */
   legacy: boolean;
+  /**
+   * The content of the service manifest of this service.
+   */
   manifest: FoxxManifest;
+  /**
+   * The internal checksum of the service's initial source bundle.
+   */
   checksum: string;
+  /**
+   * Options for this service.
+   */
   options: {
+    /**
+     * Configuration values set for this service.
+     */
     configuration: Dict<any>;
+    /**
+     * Service dependency configuration of this service.
+     */
     dependencies: Dict<string>;
   };
 };
@@ -808,6 +1040,14 @@ export type ServiceInfo = {
  * Object describing a configuration option of a Foxx service.
  */
 export type ServiceConfiguration = {
+  /**
+   * Data type of the configuration value.
+   *
+   * **Note**: `"int"` and `"bool"` are historical synonyms for `"integer"` and
+   * `"boolean"`. The `"password"` type is synonymous with `"string"` but can
+   * be used to distinguish values which should not be displayed in plain text
+   * by software when managing the service.
+   */
   type:
     | "integer"
     | "boolean"
@@ -817,11 +1057,31 @@ export type ServiceConfiguration = {
     | "password"
     | "int"
     | "bool";
+  /**
+   * The current value of the configuration option as stored internally.
+   */
   currentRaw: any;
+  /**
+   * The processed current value of the configuration option as exposed in the
+   * service code.
+   */
   current: any;
+  /**
+   * The formatted name of the configuration option.
+   */
   title: string;
+  /**
+   * Human-readable description of the configuration option.
+   */
   description?: string;
+  /**
+   * Whether the configuration option must be set in order for the service
+   * to be operational.
+   */
   required: boolean;
+  /**
+   * The default value of the configuration option.
+   */
   default?: any;
 };
 
@@ -829,12 +1089,34 @@ export type ServiceConfiguration = {
  * Object describing a single-service dependency defined by a Foxx service.
  */
 export type SingleServiceDependency = {
+  /**
+   * Whether this is a multi-service dependency.
+   */
   multiple: false;
+  /**
+   * The current mount point the dependency is resolved to.
+   */
   current?: string;
+  /**
+   * The formatted name of the dependency.
+   */
   title: string;
+  /**
+   * The name of the service the dependency expects to match.
+   */
   name: string;
+  /**
+   * The version of the service the dependency expects to match.
+   */
   version: string;
+  /**
+   * Human-readable description of the dependency.
+   */
   description?: string;
+  /**
+   * Whether the dependency must be matched in order for the service
+   * to be operational.
+   */
   required: boolean;
 };
 
@@ -842,12 +1124,34 @@ export type SingleServiceDependency = {
  * Object describing a multi-service dependency defined by a Foxx service.
  */
 export type MultiServiceDependency = {
+  /**
+   * Whether this is a multi-service dependency.
+   */
   multiple: true;
+  /**
+   * The current mount points the dependency is resolved to.
+   */
   current?: string[];
+  /**
+   * The formatted name of the dependency.
+   */
   title: string;
+  /**
+   * The name of the service the dependency expects to match.
+   */
   name: string;
+  /**
+   * The version of the service the dependency expects to match.
+   */
   version: string;
+  /**
+   * Human-readable description of the dependency.
+   */
   description?: string;
+  /**
+   * Whether the dependency must be matched in order for the service
+   * to be operational.
+   */
   required: boolean;
 };
 
@@ -855,10 +1159,25 @@ export type MultiServiceDependency = {
  * Test stats for a Foxx service's tests.
  */
 export type ServiceTestStats = {
+  /**
+   * Total number of tests found.
+   */
   tests: number;
+  /**
+   * Number of tests that ran successfully.
+   */
   passes: number;
+  /**
+   * Number of tests that failed.
+   */
   failures: number;
+  /**
+   * Number of tests skipped or not executed.
+   */
   pending: number;
+  /**
+   * Total test duration in milliseconds.
+   */
   duration: number;
 };
 
@@ -1058,6 +1377,9 @@ export class Database {
   /**
    * Fetches version information from the ArangoDB server.
    *
+   * @param details - If set to `true`, additional information about the
+   * ArangoDB server will be available as the `details` property.
+   *
    * @example
    * ```js
    * const db = new Database();
@@ -1068,11 +1390,12 @@ export class Database {
    * // server: description of the server
    * ```
    */
-  version(): Promise<VersionInfo> {
+  version(details?: boolean): Promise<VersionInfo> {
     return this.request(
       {
         method: "GET",
         path: "/_api/version",
+        qs: { details },
       },
       (res) => res.body
     );

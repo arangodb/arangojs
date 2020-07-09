@@ -133,6 +133,10 @@ function generateStackTrace() {
   return err.stack;
 }
 
+/**
+ * @internal
+ * @hidden
+ */
 type UrlInfo = {
   absolutePath?: boolean;
   basePath?: string;
@@ -149,27 +153,39 @@ type UrlInfo = {
  */
 export type XhrOptions = {
   /**
-   * TODO
+   * Maximum number of parallel requests arangojs will perform. If any
+   * additional requests are attempted, they will be enqueued until one of the
+   * active requests has completed.
    */
   maxSockets?: number;
   /**
-   * TODO
+   * Number of milliseconds to wait for a response.
+   *
+   * Default: `0` (disabled)
    */
   timeout?: number;
   /**
-   * TODO
+   * Callback that will be invoked immediately before the `send` method of the
+   * request is called.
+   *
+   * See also {@link RequestInterceptors}.
    */
   beforeSend?: (xhrObject: any) => void;
   /**
-   * TODO
+   * `XMLHttpRequest` object to use instead of the native implementation.
    */
   xhr?: any;
   /**
-   * TODO
+   * (Internet Explorer 10 and lower only.) Whether `XDomainRequest` should be
+   * used instead of `XMLHttpRequest`. Only required for performing
+   * cross-domain requests in older versions of Internet Explorer.
    */
   useXdr?: boolean;
   /**
-   * TODO
+   * Specifies whether browser credentials (e.g. cookies) should be sent if
+   * performing a cross-domain request.
+   *
+   * See {@link https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/withCredentials | `XMLHttpRequest.withCredentials`}.
    */
   withCredentials?: boolean;
 };
@@ -261,6 +277,10 @@ export type RequestOptions = {
   qs?: string | Params;
 };
 
+/**
+ * @internal
+ * @hidden
+ */
 type Task = {
   host?: number;
   stack?: string;
@@ -711,7 +731,7 @@ export class Connection {
    * within the transaction if possible. Setting the ID manually may cause
    * unexpected behavior.
    *
-   * See {@link Connection.clearTransactionId}.
+   * See also {@link Connection.clearTransactionId}.
    *
    * @param transactionId - ID of the active transaction.
    */

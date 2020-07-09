@@ -9,50 +9,69 @@
  */
 
 /**
- * TODO
+ * Common ArangoDB metadata properties of a document.
  */
 export type DocumentMetadata = {
+  /**
+   * The key of the document, which uniquely identifies the document within its
+   * collection.
+   */
   _key: string;
+  /**
+   * The unique ID of the document, which is composed of the collection name
+   * and the document `_key`.
+   */
   _id: string;
+  /**
+   * The revision of the document data.
+   */
   _rev: string;
 };
 
 /**
- * TODO
+ * ArangoDB metadata defining the relations of an edge document.
  */
 export type EdgeMetadata = {
+  /**
+   * The unique ID of the document that acts as the edge's start vertex.
+   */
   _from: string;
+  /**
+   * The unique ID of the document that acts as the edge's end vertex.
+   */
   _to: string;
 };
 
 /**
- * TODO
+ * Type representing an object that can be stored in a collection.
  */
 export type DocumentData<T extends object = any> = T &
   Partial<DocumentMetadata> &
   Partial<EdgeMetadata>;
 
 /**
- * TODO
+ * Type representing an object that can be stored in an edge collection.
  */
 export type EdgeData<T extends object = any> = T &
   Partial<DocumentMetadata> &
   EdgeMetadata;
 
 /**
- * TODO
+ * Type representing a document stored in a collection.
  */
 export type Document<T extends object = any> = T &
   DocumentMetadata &
   Partial<EdgeMetadata>;
 
 /**
- * TODO
+ * Type representing an edge document stored in an edge collection.
  */
 export type Edge<T extends object = any> = T & DocumentMetadata & EdgeMetadata;
 
 /**
- * TODO
+ * An object with an ArangoDB document `_id` property.
+ *
+ * See {@link DocumentMetadata}.
  */
 export type ObjectWithId = {
   [key: string]: any;
@@ -60,7 +79,9 @@ export type ObjectWithId = {
 };
 
 /**
- * TODO
+ * An object with an ArangoDB document `_key` property.
+ *
+ * See {@link DocumentMetadata}.
  */
 export type ObjectWithKey = {
   [key: string]: any;
@@ -68,7 +89,11 @@ export type ObjectWithKey = {
 };
 
 /**
- * TODO
+ * A value that can be used to identify a document within a collection in
+ * arangojs methods, i.e. a partial ArangoDB document or the value of a
+ * document's `_key` or `_id`.
+ *
+ * See {@link DocumentMetadata}.
  */
 export type DocumentSelector = ObjectWithId | ObjectWithKey | string;
 
