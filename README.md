@@ -71,8 +71,9 @@ When loading the browser build with a script tag make sure to load the polyfill 
 
 ## Basic usage example
 
+Modern JavaScript/TypeScript with async/await:
+
 ```js
-// Modern JavaScript/TypeScript with async/await
 // TS: import { Database, aql } from "arangojs";
 const { Database, aql } = require("arangojs");
 
@@ -98,8 +99,9 @@ async function main() {
 main();
 ```
 
+Using a different database:
+
 ```js
-// Using a different database
 const db = new Database({
   url: "http://localhost:8529",
   database: "pancakes",
@@ -111,8 +113,9 @@ db.useDatabase("waffles");
 db.useBasicAuth("admin", "maplesyrup");
 ```
 
+Old-school JavaScript with promises:
+
 ```js
-// Old-school JavaScript with promises
 var arangojs = require("arangojs");
 var Database = arangojs.Database;
 
