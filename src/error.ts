@@ -115,9 +115,19 @@ export interface SystemError extends Error {
  */
 export class ArangoError extends ExtendableError {
   name = "ArangoError";
+  /**
+   * ArangoDB error code.
+   *
+   * See {@link https://www.arangodb.com/docs/stable/appendix-error-codes.html | ArangoDB error documentation}.
+   */
   errorNum: number;
+  /**
+   * HTTP status code included in the server error response object.
+   */
   code: number;
-  statusCode: number;
+  /**
+   * Server response object.
+   */
   response: any;
 
   /**
@@ -127,7 +137,6 @@ export class ArangoError extends ExtendableError {
   constructor(response: any) {
     super();
     this.response = response;
-    this.statusCode = response.statusCode;
     this.message = response.body.errorMessage;
     this.errorNum = response.body.errorNum;
     this.code = response.body.code;
@@ -153,9 +162,14 @@ export class ArangoError extends ExtendableError {
  */
 export class HttpError extends ExtendableError {
   name = "HttpError";
+  /**
+   * Server response object.
+   */
   response: any;
+  /**
+   * HTTP status code of the server response.
+   */
   code: number;
-  statusCode: number;
 
   /**
    * @internal
@@ -164,9 +178,8 @@ export class HttpError extends ExtendableError {
   constructor(response: any) {
     super();
     this.response = response;
-    this.statusCode = response.statusCode || 500;
-    this.message = messages[this.statusCode] || messages[500];
-    this.code = this.statusCode;
+    this.code = response.statusCode || 500;
+    this.message = messages[this.code] || messages[500];
     const err = new Error(this.message);
     err.name = this.name;
     for (const key of nativeErrorKeys) {

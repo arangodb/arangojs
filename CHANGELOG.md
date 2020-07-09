@@ -16,6 +16,14 @@ This driver uses semantic versioning:
 
 ## [Unreleased]
 
+### Removed
+
+- Removed `statusCode` properties of `ArangoError` and `HttpError`
+
+  Both of these error types still expose the HTTP status code as the `code`
+  property. For `ArangoError` the true HTTP status code may be different and
+  can still be accessed using the `response.statusCode` property.
+
 ### Changed
 
 - Renamed `cursor.nextBatch` to `cursor.batches.next`
