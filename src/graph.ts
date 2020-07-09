@@ -429,7 +429,7 @@ export class GraphVertexCollection<T extends object = any>
         () => true
       );
     } catch (err) {
-      if (err.statusCode === 404) {
+      if (err.code === 404) {
         return false;
       }
       throw err;
@@ -836,7 +836,7 @@ export class GraphEdgeCollection<T extends object = any>
         () => true
       );
     } catch (err) {
-      if (err.statusCode === 404) {
+      if (err.code === 404) {
         return false;
       }
       throw err;

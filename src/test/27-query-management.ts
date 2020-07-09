@@ -40,7 +40,7 @@ describe("Query Management API", function () {
         await db.query("FOR i IN no RETURN i");
       } catch (err) {
         expect(err).is.instanceof(ArangoError);
-        expect(err).to.have.property("statusCode", 404);
+        expect(err).to.have.property("code", 404);
         expect(err).to.have.property("errorNum", 1203);
         return;
       }
