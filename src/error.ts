@@ -1,6 +1,6 @@
 /**
  * ```ts
- * import type { ArangoError } from "arangojs/error";
+ * import type { ArangoError, HttpError } from "arangojs/error";
  * ```
  *
  * The "error" module provides types and interfaces for TypeScript related
