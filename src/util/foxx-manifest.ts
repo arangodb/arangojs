@@ -11,6 +11,8 @@
  * @packageDocumentation
  */
 
+import { Dict } from "./types";
+
 /**
  * Schema for ArangoDB Foxx service manifests.
  */
@@ -18,9 +20,7 @@ export type FoxxManifest = {
   /**
    * An object defining the configuration options this service requires.
    */
-  configuration?: {
-    [key: string]: Configuration;
-  };
+  configuration?: Dict<Configuration>;
   /**
    * If specified, the / (root) route of the service will automatically redirect to the given relative path, e.g. "index.html".
    */
@@ -28,31 +28,21 @@ export type FoxxManifest = {
   /**
    * The dependencies this service uses, i.e. which APIs its dependencies need to be compatible with.
    */
-  dependencies?: {
-    [key: string]: string | Dependency;
-  };
+  dependencies?: Dict<string | Dependency>;
   /**
    * The dependencies this provides, i.e. which APIs it claims to be compatible with.
    */
-  provides?: {
-    /**
-     * The semantic version ranges of the API the service implements.
-     */
-    [key: string]: string;
-  };
+  provides?: Dict<string>;
   /**
    * An object indicating the semantic version ranges of ArangoDB (or compatible environments) the service will be compatible with.
    */
   engines?: {
     arangodb?: string;
-    [key: string]: string | undefined;
-  };
+  } & Dict<string>;
   /**
    * An object defining file assets served by this service.
    */
-  files?: {
-    [key: string]: string | File;
-  };
+  files?: Dict<string | File>;
   /**
    * The relative path to the Foxx JavaScript files in the service, e.g. "lib". Defaults to the folder containing this manifest.
    */
@@ -64,12 +54,7 @@ export type FoxxManifest = {
   /**
    * An object defining named scripts provided by this service, which can either be used directly or as queued jobs by other services.
    */
-  scripts?: {
-    /**
-     * Path of the script (relative to lib), e.g. "scripts/setup.js".
-     */
-    [key: string]: string;
-  };
+  scripts?: Dict<string>;
   /**
    * A path/pattern or list of paths/patterns of JavaScript tests provided for this service.
    */
@@ -131,9 +116,7 @@ export type Configuration = {
   /**
    * The default value for this option in plain JSON. Can be omitted to provide no default value.
    */
-  default?: {
-    [key: string]: any;
-  };
+  default?: any;
   /**
    * Whether the service can not function without this option. Defaults to true unless a default value is provided.
    */
@@ -164,7 +147,6 @@ export type Dependency = {
    * Whether the dependency can be specified more than once.
    */
   multiple?: boolean;
-  [key: string]: any;
 };
 
 /**
