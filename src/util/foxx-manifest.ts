@@ -36,9 +36,9 @@ export type FoxxManifest = {
   /**
    * An object indicating the semantic version ranges of ArangoDB (or compatible environments) the service will be compatible with.
    */
-  engines?: {
+  engines?: Dict<string> & {
     arangodb?: string;
-  } & Dict<string>;
+  };
   /**
    * An object defining file assets served by this service.
    */
