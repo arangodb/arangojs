@@ -1,6 +1,8 @@
 /**
  * Error codes handled by arangojs.
  *
+ * See also {@link https://www.arangodb.com/docs/stable/appendix-error-codes.html | ArangoDB error documentation}.
+ *
  * @packageDocumentation
  */
 
