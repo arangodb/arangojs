@@ -7,7 +7,7 @@
  */
 
 import { ClientRequest } from "http";
-import { Errback } from "../util/types";
+import { Errback } from "./errback";
 
 /**
  * @internal

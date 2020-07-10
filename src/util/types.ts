@@ -9,13 +9,6 @@
  */
 
 /**
- * Type representing a Node.js error-first callback.
- *
- * @param T - Type of the optional result value.
- */
-export type Errback<T = never> = (err: Error | null, result?: T) => void;
-
-/**
  * Type representing patch data for a given object type to represent a payload
  * ArangoDB can apply in a document PATCH request (i.e. a partial update).
  *

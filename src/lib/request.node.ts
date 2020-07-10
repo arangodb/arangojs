@@ -16,8 +16,8 @@ import {
 import { Agent as HttpsAgent, request as httpsRequest } from "https";
 import { parse as parseUrl } from "url";
 import { Headers } from "../connection";
-import { Errback } from "../util/types";
 import { btoa } from "./btoa";
+import { Errback } from "./errback";
 import { joinPath } from "./joinPath";
 import { omit } from "./omit";
 

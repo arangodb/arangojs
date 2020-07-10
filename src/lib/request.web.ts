@@ -7,8 +7,8 @@
  */
 
 import { format as formatUrl, parse as parseUrl } from "url";
-import { Errback } from "../util/types";
 import { btoa } from "./btoa";
+import { Errback } from "./errback";
 import { joinPath } from "./joinPath";
 import { omit } from "./omit";
 import {

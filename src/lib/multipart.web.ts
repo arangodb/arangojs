@@ -6,7 +6,7 @@
  * @hidden
  */
 
-import { Errback } from "../util/types";
+import { Errback } from "./errback";
 import { Fields, MultipartRequest } from "./multipart";
 
 declare const FormData: any;

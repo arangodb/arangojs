@@ -20,6 +20,7 @@ import {
   isSystemError,
 } from "./error";
 import { btoa } from "./lib/btoa";
+import { Errback } from "./lib/errback";
 import { normalizeUrl } from "./lib/normalizeUrl";
 import {
   ArangojsError,
@@ -28,7 +29,6 @@ import {
   isBrowser,
   RequestFunction,
 } from "./lib/request";
-import { Errback } from "./util/types";
 
 const MIME_JSON = /\/(json|javascript)(\W|$)/;
 const LEADER_ENDPOINT_HEADER = "x-arango-endpoint";
