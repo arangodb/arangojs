@@ -11,7 +11,7 @@
  *
  * @packageDocumentation
  */
-import { ArangoResponseMetadata, Params } from "./connection";
+import { ArangoResponseMetadata, Dict, Params } from "./connection";
 import { ArrayCursor, BatchedArrayCursor } from "./cursor";
 import { Database } from "./database";
 import {
@@ -1077,64 +1077,6 @@ export type TraversalOptions = {
 };
 
 // Results
-/**
- * Statistics of a collection.
- */
-export type CollectionFigures = {
-  alive: {
-    count: number;
-    size: number;
-  };
-  dead: {
-    count: number;
-    size: number;
-    deletion: number;
-  };
-  datafiles: {
-    count: number;
-    fileSize: number;
-  };
-  journals: {
-    count: number;
-    fileSize: number;
-  };
-  compactors: {
-    count: number;
-    fileSize: number;
-  };
-  shapefiles: {
-    count: number;
-    fileSize: number;
-  };
-  shapes: {
-    count: number;
-    size: number;
-  };
-  attributes: {
-    count: number;
-    size: number;
-  };
-  indexes: {
-    count: number;
-    size: number;
-  };
-  lastTick: number;
-  uncollectedLogfileEntries: number;
-  documentReferences: number;
-  documentsSize: number;
-  cacheInUse: boolean;
-  cacheSize: number;
-  cacheUsage: number;
-  waitingFor: string;
-  compactionStatus: {
-    time: string;
-    message: string;
-    count: number;
-    filesCombined: number;
-    bytesRead: number;
-    bytesWritten: number;
-  };
-};
 
 /**
  * The result of a collection bulk import.
@@ -1424,7 +1366,7 @@ export interface DocumentCollection<T extends object = any>
   figures(): Promise<
     ArangoResponseMetadata &
       CollectionMetadata &
-      CollectionProperties & { count: number; figures: CollectionFigures }
+      CollectionProperties & { count: number; figures: Dict<any> }
   >;
   /**
    * Retrieves the collection revision ID.
@@ -3115,7 +3057,7 @@ export class Collection<T extends object = any>
   figures() {
     return this._get<
       CollectionMetadata &
-        CollectionProperties & { count: number; figures: CollectionFigures }
+        CollectionProperties & { count: number; figures: Dict<any> }
     >("figures");
   }
 
