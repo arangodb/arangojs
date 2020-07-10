@@ -1,10 +1,9 @@
 /**
  * ```ts
- * import type { FoxxManifest } from "arangojs/util/foxx-manifest";
+ * import type { FoxxManifest } from "arangojs/foxx-manifest";
  * ```
  *
- * The "util/foxx-manifest" module provides the Foxx manifest type for
- * TypeScript.
+ * The "foxx-manifest" module provides the Foxx manifest type for TypeScript.
  *
  * Generated from {@link http://json.schemastore.org/foxx-manifest | JSON Schema}
  * using `json-schema-to-typescript`.
@@ -12,7 +11,7 @@
  * @packageDocumentation
  */
 
-import { Dict } from "./types";
+import { Dict } from "./connection";
 
 /**
  * Schema for ArangoDB Foxx service manifests.

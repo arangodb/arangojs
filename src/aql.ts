@@ -11,7 +11,7 @@
  * @packageDocumentation
  */
 import { ArangoCollection, isArangoCollection } from "./collection";
-import { Dict } from "./util/types";
+import { Dict } from "./connection";
 import { isArangoView, View } from "./view";
 
 /**

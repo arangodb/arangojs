@@ -7,11 +7,10 @@
  *
  * @packageDocumentation
  */
-import { ArangoResponseMetadata } from "./connection";
+import { ArangoResponseMetadata, Dict } from "./connection";
 import { Database } from "./database";
 import { isArangoError } from "./error";
 import { VIEW_NOT_FOUND } from "./lib/codes";
-import { Dict } from "./util/types";
 
 /**
  * String values indicating the View type.

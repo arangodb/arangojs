@@ -47,6 +47,16 @@ This driver uses semantic versioning:
   This brings these methods behavior in line with that of the `beginTransaction`
   and `executeTransaction` methods of `Database` objects.
 
+- Moved `collectionToString` helper into `collection` module
+
+- Moved `Dict` type into `connection` module
+
+- Moved `Patch` type into `documents` module
+
+- Moved `Errback` type into library internals
+
+- Renamed `util/foxx-manifest` module to `foxx-manifest`
+
 ### Added
 
 - Added `precaptureStackTraces` configuration option ([#599](https://github.com/arangodb/arangojs/issues/599))

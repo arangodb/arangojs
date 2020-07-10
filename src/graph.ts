@@ -14,6 +14,7 @@
  */
 import {
   ArangoCollection,
+  collectionToString,
   DocumentCollection,
   EdgeCollection,
   isArangoCollection,
@@ -28,12 +29,11 @@ import {
   DocumentSelector,
   Edge,
   EdgeData,
+  Patch,
   _documentHandle,
 } from "./documents";
 import { isArangoError } from "./error";
 import { DOCUMENT_NOT_FOUND, GRAPH_NOT_FOUND } from "./lib/codes";
-import { collectionToString } from "./util/collectionToString";
-import { Patch } from "./util/types";
 
 /**
  * @internal

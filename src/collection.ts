@@ -21,6 +21,7 @@ import {
   DocumentSelector,
   Edge,
   EdgeData,
+  Patch,
   _documentHandle,
 } from "./documents";
 import { isArangoError } from "./error";
@@ -43,7 +44,6 @@ import {
 } from "./indexes";
 import { Blob } from "./lib/blob";
 import { COLLECTION_NOT_FOUND, DOCUMENT_NOT_FOUND } from "./lib/codes";
-import { Patch } from "./util/types";
 
 /**
  * Indicates whether the given value represents an {@link ArangoCollection}.
@@ -54,6 +54,20 @@ export function isArangoCollection(
   collection: any
 ): collection is ArangoCollection {
   return Boolean(collection && collection.isArangoCollection);
+}
+
+/**
+ * Coerces the given collection name or {@link ArangoCollection} object to
+ * a string representing the collection name.
+ *
+ * @param collection - Collection name or {@link ArangoCollection} object.
+ */
+export function collectionToString(
+  collection: string | ArangoCollection
+): string {
+  if (isArangoCollection(collection)) {
+    return String(collection.name);
+  } else return String(collection);
 }
 
 /**

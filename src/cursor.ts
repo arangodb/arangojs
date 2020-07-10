@@ -8,8 +8,8 @@
  * @packageDocumentation
  */
 import { LinkedList } from "x3-linkedlist";
+import { Dict } from "./connection";
 import { Database } from "./database";
-import { Dict } from "./util/types";
 
 /**
  * Additional information about the cursor.

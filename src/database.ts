@@ -21,6 +21,7 @@ import {
   ArangoCollection,
   Collection,
   CollectionMetadata,
+  collectionToString,
   CollectionType,
   CreateCollectionOptions,
   DocumentCollection,
@@ -31,11 +32,13 @@ import {
   ArangoResponseMetadata,
   Config,
   Connection,
+  Dict,
   Headers,
   RequestOptions,
 } from "./connection";
 import { ArrayCursor, BatchedArrayCursor } from "./cursor";
 import { isArangoError } from "./error";
+import { FoxxManifest } from "./foxx-manifest";
 import {
   EdgeDefinitionOptions,
   Graph,
@@ -48,9 +51,6 @@ import { toForm } from "./lib/multipart";
 import { ArangojsResponse } from "./lib/request";
 import { Route } from "./route";
 import { Transaction } from "./transaction";
-import { collectionToString } from "./util/collectionToString";
-import { FoxxManifest } from "./util/foxx-manifest";
-import { Dict } from "./util/types";
 import {
   ArangoSearchView,
   ArangoSearchViewPropertiesOptions,
