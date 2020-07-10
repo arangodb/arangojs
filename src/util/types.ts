@@ -1,6 +1,6 @@
 /**
  * ```ts
- * import type { Dict, Errback, Patch } from "arangojs/util/types";
+ * import type { Dict, Patch } from "arangojs/util/types";
  * ```
  *
  * Utility types for TypeScript used throughout arangojs.
