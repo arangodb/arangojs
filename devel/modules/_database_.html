@@ -631,7 +631,7 @@
 								<h5>plans<span class="tsd-signature-symbol">: </span><a href="_database_.html#explainplan" class="tsd-signature-type">ExplainPlan</a><span class="tsd-signature-symbol">[]</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>The query plans.</p>
+										<p>Query plans.</p>
 									</div>
 								</div>
 							</li>
@@ -647,7 +647,7 @@
 										<h5>plans<wbr>Created<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
 										<div class="tsd-comment tsd-typography">
 											<div class="lead">
-												<p>The total number of plans created.</p>
+												<p>Total number of plans created.</p>
 											</div>
 										</div>
 									</li>
@@ -655,7 +655,7 @@
 										<h5>rules<wbr>Executed<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
 										<div class="tsd-comment tsd-typography">
 											<div class="lead">
-												<p>The total number of rules executed for this query.</p>
+												<p>Total number of rules executed for this query.</p>
 											</div>
 										</div>
 									</li>
@@ -663,7 +663,7 @@
 										<h5>rules<wbr>Skipped<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
 										<div class="tsd-comment tsd-typography">
 											<div class="lead">
-												<p>The number of rules skipped for this query.</p>
+												<p>Number of rules skipped for this query.</p>
 											</div>
 										</div>
 									</li>
@@ -698,7 +698,7 @@
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> current<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>The current mount points the dependency is resolved to.</p>
+										<p>Current mount points the dependency is resolved to.</p>
 									</div>
 								</div>
 							</li>
@@ -722,7 +722,7 @@
 								<h5>name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>The name of the service the dependency expects to match.</p>
+										<p>Name of the service the dependency expects to match.</p>
 									</div>
 								</div>
 							</li>
@@ -739,7 +739,7 @@
 								<h5>title<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>The formatted name of the dependency.</p>
+										<p>Formatted name of the dependency.</p>
 									</div>
 								</div>
 							</li>
@@ -747,7 +747,7 @@
 								<h5>version<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>The version of the service the dependency expects to match.</p>
+										<p>Version of the service the dependency expects to match.</p>
 									</div>
 								</div>
 							</li>
@@ -772,7 +772,7 @@
 								<h5>ast<span class="tsd-signature-symbol">: </span><a href="_database_.html#astnode" class="tsd-signature-type">AstNode</a><span class="tsd-signature-symbol">[]</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>The abstract syntax tree (AST) of the query.</p>
+										<p>Abstract syntax tree (AST) of the query.</p>
 									</div>
 								</div>
 							</li>
@@ -910,7 +910,7 @@
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> batch<wbr>Size<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>The number of result values to be transferred by the server in each
+										<p>Number of result values to be transferred by the server in each
 										network roundtrip (or &quot;batch&quot;).</p>
 									</div>
 									<p>Must be greater than zero.</p>
@@ -1014,7 +1014,7 @@
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> memory<wbr>Limit<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>The maximum memory size in bytes that the query is allowed to use.
+										<p>Maximum memory size in bytes that the query is allowed to use.
 										Exceeding this value will result in the query failing with an error.</p>
 									</div>
 									<p>If set to <code>0</code>, the memory limit is disabled.</p>
@@ -1061,7 +1061,7 @@
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
 										<p>(Enterprise Edition cluster only.) If set to <code>true</code>, collections
-											inaccessible to the current user will result in an access error instead
+											inaccessible to current user will result in an access error instead
 										of being treated as empty.</p>
 									</div>
 								</div>
@@ -1090,7 +1090,7 @@
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> ttl<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>The time-to-live for the cursor in seconds. The cursor results may be
+										<p>Time-to-live for the cursor in seconds. The cursor results may be
 										garbage collected by ArangoDB after this much time has passed.</p>
 									</div>
 									<p>Default: <code>30</code></p>
@@ -1125,7 +1125,7 @@
 								<h5>max<wbr>Query<wbr>String<wbr>Length<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>The maximum query string length in bytes that is kept in the list.</p>
+										<p>Maximum query string length in bytes that is kept in the list.</p>
 									</div>
 								</div>
 							</li>
@@ -1133,7 +1133,7 @@
 								<h5>max<wbr>Slow<wbr>Queries<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>The maximum number of slow queries that is kept in the list.</p>
+										<p>Maximum number of slow queries that is kept in the list.</p>
 									</div>
 								</div>
 							</li>
@@ -1141,7 +1141,7 @@
 								<h5>slow<wbr>Query<wbr>Threshold<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>The threshold execution time in seconds for when a query is
+										<p>Threshold execution time in seconds for when a query is
 										considered slow.</p>
 									</div>
 								</div>
@@ -1192,7 +1192,7 @@
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> max<wbr>Query<wbr>String<wbr>Length<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>The maximum query string length in bytes that will be kept in the list.</p>
+										<p>Maximum query string length in bytes that will be kept in the list.</p>
 									</div>
 								</div>
 							</li>
@@ -1200,7 +1200,7 @@
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> max<wbr>Slow<wbr>Queries<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>The maximum number of slow queries to be kept in the list.</p>
+										<p>Maximum number of slow queries to be kept in the list.</p>
 									</div>
 								</div>
 							</li>
@@ -1208,7 +1208,7 @@
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> slow<wbr>Query<wbr>Threshold<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>The threshold execution time in seconds for when a query will be
+										<p>Threshold execution time in seconds for when a query will be
 										considered slow.</p>
 									</div>
 								</div>
@@ -1336,7 +1336,7 @@
 								<h5>current<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>The processed current value of the configuration option as exposed in the
+										<p>Processed current value of the configuration option as exposed in the
 										service code.</p>
 									</div>
 								</div>
@@ -1345,7 +1345,7 @@
 								<h5>current<wbr>Raw<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>The current value of the configuration option as stored internally.</p>
+										<p>Current value of the configuration option as stored internally.</p>
 									</div>
 								</div>
 							</li>
@@ -1353,7 +1353,7 @@
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> default<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>The default value of the configuration option.</p>
+										<p>Default value of the configuration option.</p>
 									</div>
 								</div>
 							</li>
@@ -1378,7 +1378,7 @@
 								<h5>title<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>The formatted name of the configuration option.</p>
+										<p>Formatted name of the configuration option.</p>
 									</div>
 								</div>
 							</li>
@@ -1415,7 +1415,7 @@
 								<h5>checksum<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>The internal checksum of the service&#39;s initial source bundle.</p>
+										<p>Internal checksum of the service&#39;s initial source bundle.</p>
 									</div>
 								</div>
 							</li>
@@ -1439,7 +1439,7 @@
 								<h5>manifest<span class="tsd-signature-symbol">: </span><a href="_foxx_manifest_.html#foxxmanifest" class="tsd-signature-type">FoxxManifest</a></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>The content of the service manifest of this service.</p>
+										<p>Content of the service manifest of this service.</p>
 									</div>
 								</div>
 							</li>
@@ -1447,7 +1447,7 @@
 								<h5>mount<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>The service&#39;s mount point, relative to the database.</p>
+										<p>Service mount point, relative to the database.</p>
 									</div>
 								</div>
 							</li>
@@ -1538,7 +1538,7 @@
 								<h5>mount<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>The service&#39;s mount point, relative to the database.</p>
+										<p>Service mount point, relative to the database.</p>
 									</div>
 								</div>
 							</li>
@@ -1874,7 +1874,7 @@
 								<h5>plan<span class="tsd-signature-symbol">: </span><a href="_database_.html#explainplan" class="tsd-signature-type">ExplainPlan</a></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>The query plan.</p>
+										<p>Query plan.</p>
 									</div>
 								</div>
 							</li>
@@ -1890,7 +1890,7 @@
 										<h5>plans<wbr>Created<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
 										<div class="tsd-comment tsd-typography">
 											<div class="lead">
-												<p>The total number of plans created.</p>
+												<p>Total number of plans created.</p>
 											</div>
 										</div>
 									</li>
@@ -1898,7 +1898,7 @@
 										<h5>rules<wbr>Executed<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
 										<div class="tsd-comment tsd-typography">
 											<div class="lead">
-												<p>The total number of rules executed for this query.</p>
+												<p>Total number of rules executed for this query.</p>
 											</div>
 										</div>
 									</li>
@@ -1906,7 +1906,7 @@
 										<h5>rules<wbr>Skipped<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
 										<div class="tsd-comment tsd-typography">
 											<div class="lead">
-												<p>The number of rules skipped for this query.</p>
+												<p>Number of rules skipped for this query.</p>
 											</div>
 										</div>
 									</li>
@@ -1941,7 +1941,7 @@
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> current<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>The current mount point the dependency is resolved to.</p>
+										<p>Current mount point the dependency is resolved to.</p>
 									</div>
 								</div>
 							</li>
@@ -1965,7 +1965,7 @@
 								<h5>name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>The name of the service the dependency expects to match.</p>
+										<p>Name of the service the dependency expects to match.</p>
 									</div>
 								</div>
 							</li>
@@ -1982,7 +1982,7 @@
 								<h5>title<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>The formatted name of the dependency.</p>
+										<p>Formatted name of the dependency.</p>
 									</div>
 								</div>
 							</li>
@@ -1990,7 +1990,7 @@
 								<h5>version<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>The version of the service the dependency expects to match.</p>
+										<p>Version of the service the dependency expects to match.</p>
 									</div>
 								</div>
 							</li>
@@ -2108,7 +2108,7 @@
 								<h5>id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>The unique identifier of the transaction.</p>
+										<p>Unique identifier of the transaction.</p>
 									</div>
 								</div>
 							</li>
@@ -2116,7 +2116,7 @@
 								<h5>state<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"running"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"committed"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"aborted"</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>The status (or &quot;state&quot;) of the transaction.</p>
+										<p>Status (or &quot;state&quot;) of the transaction.</p>
 									</div>
 								</div>
 							</li>
@@ -2354,7 +2354,7 @@
 								<h5>license<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"community"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"enterprise"</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>The ArangoDB license type or &quot;edition&quot;.</p>
+										<p>ArangoDB license type or &quot;edition&quot;.</p>
 									</div>
 								</div>
 							</li>
@@ -2370,7 +2370,7 @@
 								<h5>version<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>The ArangoDB server version.</p>
+										<p>ArangoDB server version.</p>
 									</div>
 								</div>
 							</li>
