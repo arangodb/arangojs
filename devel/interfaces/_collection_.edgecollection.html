@@ -74,6 +74,18 @@
 					</div>
 					<p>See <a href="_collection_.documentcollection.html">DocumentCollection</a> for a more generic variant of this interface
 					more suited for regular document collections.</p>
+					<p>When using TypeScript, collections can be cast to a specific edge document
+					data type to increase type safety.</p>
+					<dl class="tsd-comment-tags">
+						<dt>example</dt>
+						<dd><pre><code class="language-ts"><span class="hljs-keyword">interface</span> Friend {
+  startDate: <span class="hljs-built_in">number</span>;
+  endDate?: <span class="hljs-built_in">number</span>;
+}
+<span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> edges = db.collection(<span class="hljs-string">&quot;friends&quot;</span>) <span class="hljs-keyword">as</span> EdgeCollection&lt;Friend&gt;;</code></pre>
+						</dd>
+					</dl>
 				</div>
 			</section>
 			<section class="tsd-panel tsd-type-parameters">
@@ -81,6 +93,11 @@
 				<ul class="tsd-type-parameters">
 					<li>
 						<h4>T<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span></h4>
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>Type to use for edge document data. Defaults to <code>any</code>.</p>
+							</div>
+						</div>
 					</li>
 				</ul>
 			</section>
@@ -95,12 +112,6 @@
 							</li>
 						</ul>
 					</li>
-				</ul>
-			</section>
-			<section class="tsd-panel">
-				<h3>Implemented by</h3>
-				<ul class="tsd-hierarchy">
-					<li><a href="../classes/_collection_.collection.html" class="tsd-signature-type">Collection</a></li>
 				</ul>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
