@@ -72,4 +72,4 @@ Releases of arangojs are manually
 
 Releases can only be published by authorized ArangoDB staff.
 For more information see the internal documentation on
-[Releasing ArangoJS](https://github.com/arangodb/documents/blob/3fc65fd/Driver/JavaScript/ReleasingArangojs.md).
+[Releasing ArangoJS](https://github.com/arangodb/documents/blob/2a5f7c7/Driver/JavaScript/ReleasingArangojs.md).
