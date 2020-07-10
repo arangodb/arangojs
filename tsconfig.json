@@ -7,7 +7,7 @@
     "importHelpers": false,
     "sourceMap": true,
     "inlineSources": true,
-    "lib": ["dom", "es2015", "es2016", "es2017"],
+    "lib": ["es2015", "es2016", "es2017"],
     "module": "commonjs",
     "moduleResolution": "node",
     "noEmit": false,
@@ -17,7 +17,7 @@
     "noImplicitThis": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "outDir": "./lib/",
+    "outDir": "./build/",
     "preserveConstEnums": true,
     "removeComments": false,
     "rootDir": "./src/",
@@ -26,8 +26,5 @@
     "strictNullChecks": true,
     "target": "es2016"
   },
-  "exclude": [
-    "node_modules",
-    "output"
-  ]
+  "exclude": ["node_modules", "build"]
 }

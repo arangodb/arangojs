@@ -1,6 +1,6 @@
 import { expect } from "chai";
-import { Database } from "../arangojs";
 import { DocumentCollection } from "../collection";
+import { Database } from "../database";
 
 const ARANGO_URL = process.env.TEST_ARANGODB_URL || "http://localhost:8529";
 const ARANGO_VERSION = Number(
@@ -39,8 +39,7 @@ describe("Transactions", () => {
       await db.dropDatabase(name);
     });
     beforeEach(async () => {
-      collection = db.collection(`collection-${Date.now()}`);
-      await collection.create();
+      collection = await db.createCollection(`collection-${Date.now()}`);
     });
     afterEach(async () => {
       try {
@@ -78,7 +77,7 @@ describe("Transactions", () => {
 
     it("can insert a document", async () => {
       const trx = await db.beginTransaction(collection);
-      const meta = await trx.run(() => collection.save({ _key: "test" }));
+      const meta = await trx.step(() => collection.save({ _key: "test" }));
       expect(meta).to.have.property("_key", "test");
       const { id, status } = await trx.commit();
       expect(id).to.equal(trx.id);
@@ -87,10 +86,10 @@ describe("Transactions", () => {
       expect(doc).to.have.property("_key", "test");
     });
 
-    it("can insert two documents at a time", async () => {
+    it("can insert two documents sequentially", async () => {
       const trx = await db.beginTransaction(collection);
-      const meta1 = await trx.run(() => collection.save({ _key: "test1" }));
-      const meta2 = await trx.run(() => collection.save({ _key: "test2" }));
+      const meta1 = await trx.step(() => collection.save({ _key: "test1" }));
+      const meta2 = await trx.step(() => collection.save({ _key: "test2" }));
       expect(meta1).to.have.property("_key", "test1");
       expect(meta2).to.have.property("_key", "test2");
       const { id, status } = await trx.commit();
@@ -104,7 +103,7 @@ describe("Transactions", () => {
 
     itRdb("does not leak when inserting a document", async () => {
       const trx = await db.beginTransaction(collection);
-      await trx.run(() => collection.save({ _key: "test" }));
+      await trx.step(() => collection.save({ _key: "test" }));
       let doc: any;
       try {
         doc = await collection.document("test");
@@ -115,27 +114,30 @@ describe("Transactions", () => {
       expect(status).to.equal("committed");
     });
 
-    itRdb("does not leak when inserting two documents at a time", async () => {
-      const trx = await db.beginTransaction(collection);
-      await trx.run(() => collection.save({ _key: "test1" }));
-      await trx.run(() => collection.save({ _key: "test2" }));
-      let doc: any;
-      try {
-        doc = await collection.document("test1");
-      } catch (e) {}
-      if (doc) expect.fail("Document should not exist yet.");
-      try {
-        doc = await collection.document("test2");
-      } catch (e) {}
-      if (doc) expect.fail("Document should not exist yet.");
-      const { id, status } = await trx.commit();
-      expect(id).to.equal(trx.id);
-      expect(status).to.equal("committed");
-    });
+    itRdb(
+      "does not leak when inserting two documents sequentially",
+      async () => {
+        const trx = await db.beginTransaction(collection);
+        await trx.step(() => collection.save({ _key: "test1" }));
+        await trx.step(() => collection.save({ _key: "test2" }));
+        let doc: any;
+        try {
+          doc = await collection.document("test1");
+        } catch (e) {}
+        if (doc) expect.fail("Document should not exist yet.");
+        try {
+          doc = await collection.document("test2");
+        } catch (e) {}
+        if (doc) expect.fail("Document should not exist yet.");
+        const { id, status } = await trx.commit();
+        expect(id).to.equal(trx.id);
+        expect(status).to.equal("committed");
+      }
+    );
 
     it("does not insert a document when aborted", async () => {
       const trx = await db.beginTransaction(collection);
-      const meta = await trx.run(() => collection.save({ _key: "test" }));
+      const meta = await trx.step(() => collection.save({ _key: "test" }));
       expect(meta).to.have.property("_key", "test");
       const { id, status } = await trx.abort();
       expect(id).to.equal(trx.id);

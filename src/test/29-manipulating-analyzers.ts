@@ -1,6 +1,6 @@
 import { expect } from "chai";
-import { ArangoAnalyzer } from "../analyzer";
-import { Database } from "../arangojs";
+import { Analyzer } from "../analyzer";
+import { Database } from "../database";
 
 const ARANGO_URL = process.env.TEST_ARANGODB_URL || "http://localhost:8529";
 const ARANGO_VERSION = Number(
@@ -8,7 +8,7 @@ const ARANGO_VERSION = Number(
 );
 const describe35 = ARANGO_VERSION >= 30500 ? describe : describe.skip;
 
-describe35("Manipulating analyzers", function() {
+describe35("Manipulating analyzers", function () {
   const name = `testdb_${Date.now()}`;
   let db: Database;
   before(async () => {
@@ -33,7 +33,7 @@ describe35("Manipulating analyzers", function() {
     });
   });
   describe("analyzer.get", () => {
-    let analyzer: ArangoAnalyzer;
+    let analyzer: Analyzer;
     before(async () => {
       analyzer = db.analyzer(`a_${Date.now()}`);
       await analyzer.create({ type: "identity" });
@@ -56,7 +56,7 @@ describe35("Manipulating analyzers", function() {
     });
   });
   describe("analyzer.drop", () => {
-    let analyzer: ArangoAnalyzer;
+    let analyzer: Analyzer;
     beforeEach(async () => {
       analyzer = db.analyzer(`a_${Date.now()}`);
       await analyzer.create({ type: "identity" });

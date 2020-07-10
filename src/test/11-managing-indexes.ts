@@ -1,6 +1,6 @@
 import { expect } from "chai";
-import { Database } from "../arangojs";
 import { DocumentCollection } from "../collection";
+import { Database } from "../database";
 
 const ARANGO_URL = process.env.TEST_ARANGODB_URL || "http://localhost:8529";
 const ARANGO_VERSION = Number(
@@ -9,7 +9,7 @@ const ARANGO_VERSION = Number(
 const itPre34 = ARANGO_VERSION < 30400 ? it : it.skip;
 const it34 = ARANGO_VERSION >= 30400 ? it : it.skip;
 
-describe("Managing indexes", function() {
+describe("Managing indexes", function () {
   let db: Database;
   let collection: DocumentCollection;
   const dbName = `testdb_${Date.now()}`;
@@ -18,8 +18,7 @@ describe("Managing indexes", function() {
     db = new Database({ url: ARANGO_URL, arangoVersion: ARANGO_VERSION });
     await db.createDatabase(dbName);
     db.useDatabase(dbName);
-    collection = db.collection(collectionName);
-    await collection.create();
+    collection = await db.createCollection(collectionName);
   });
   after(async () => {
     try {
@@ -29,22 +28,12 @@ describe("Managing indexes", function() {
       db.close();
     }
   });
-  describe("collection.createIndex", () => {
-    it("should create a index of given type", async () => {
-      const info = await collection.createIndex({
-        type: "hash",
-        fields: ["value0"]
-      });
-      expect(info).to.have.property("id");
-      expect(info).to.have.property("type", "hash");
-      expect(info).to.have.property("fields");
-      expect(info.fields).to.eql(["value0"]);
-      expect(info).to.have.property("isNewlyCreated", true);
-    });
-  });
-  describe("collection.createHashIndex", () => {
+  describe("collection.ensureIndex#hash", () => {
     it("should create a hash index", async () => {
-      const info = await collection.createHashIndex(["value"]);
+      const info = await collection.ensureIndex({
+        type: "hash",
+        fields: ["value"],
+      });
       expect(info).to.have.property("id");
       expect(info).to.have.property("type", "hash");
       expect(info).to.have.property("fields");
@@ -52,9 +41,12 @@ describe("Managing indexes", function() {
       expect(info).to.have.property("isNewlyCreated", true);
     });
   });
-  describe("collection.createSkipList", () => {
+  describe("collection.ensureIndex#skiplist", () => {
     it("should create a skiplist index", async () => {
-      const info = await collection.createSkipList(["value"]);
+      const info = await collection.ensureIndex({
+        type: "skiplist",
+        fields: ["value"],
+      });
       expect(info).to.have.property("id");
       expect(info).to.have.property("type", "skiplist");
       expect(info).to.have.property("fields");
@@ -62,9 +54,12 @@ describe("Managing indexes", function() {
       expect(info).to.have.property("isNewlyCreated", true);
     });
   });
-  describe("collection.createPersistentIndex", () => {
+  describe("collection.ensureIndex#persistent", () => {
     it("should create a persistent index", async () => {
-      const info = await collection.createPersistentIndex(["value"]);
+      const info = await collection.ensureIndex({
+        type: "persistent",
+        fields: ["value"],
+      });
       expect(info).to.have.property("id");
       expect(info).to.have.property("type", "persistent");
       expect(info).to.have.property("fields");
@@ -72,9 +67,12 @@ describe("Managing indexes", function() {
       expect(info).to.have.property("isNewlyCreated", true);
     });
   });
-  describe("collection.createGeoIndex", () => {
+  describe("collection.ensureIndex#geo", () => {
     itPre34("should create a geo1 index for one field", async () => {
-      const info = await collection.createGeoIndex(["value"]);
+      const info = await collection.ensureIndex({
+        type: "geo",
+        fields: ["value"],
+      });
       expect(info).to.have.property("id");
       expect(info).to.have.property("type", "geo1");
       expect(info).to.have.property("fields");
@@ -82,7 +80,10 @@ describe("Managing indexes", function() {
       expect(info).to.have.property("isNewlyCreated", true);
     });
     itPre34("should create a geo2 index for two fields", async () => {
-      const info = await collection.createGeoIndex(["value1", "value2"]);
+      const info = await collection.ensureIndex({
+        type: "geo",
+        fields: ["value1", "value2"],
+      });
       expect(info).to.have.property("id");
       expect(info).to.have.property("type", "geo2");
       expect(info).to.have.property("fields");
@@ -90,7 +91,10 @@ describe("Managing indexes", function() {
       expect(info).to.have.property("isNewlyCreated", true);
     });
     it34("should create a geo index for one field", async () => {
-      const info = await collection.createGeoIndex(["value"]);
+      const info = await collection.ensureIndex({
+        type: "geo",
+        fields: ["value"],
+      });
       expect(info).to.have.property("id");
       expect(info).to.have.property("type", "geo");
       expect(info).to.have.property("fields");
@@ -98,7 +102,10 @@ describe("Managing indexes", function() {
       expect(info).to.have.property("isNewlyCreated", true);
     });
     it34("should create a geo index for two fields", async () => {
-      const info = await collection.createGeoIndex(["value1", "value2"]);
+      const info = await collection.ensureIndex({
+        type: "geo",
+        fields: ["value1", "value2"],
+      });
       expect(info).to.have.property("id");
       expect(info).to.have.property("type", "geo");
       expect(info).to.have.property("fields");
@@ -106,9 +113,12 @@ describe("Managing indexes", function() {
       expect(info).to.have.property("isNewlyCreated", true);
     });
   });
-  describe("collection.createFulltextIndex", () => {
+  describe("collection.ensureIndex#fulltext", () => {
     it("should create a fulltext index", async () => {
-      const info = await collection.createFulltextIndex(["value"]);
+      const info = await collection.ensureIndex({
+        type: "fulltext",
+        fields: ["value"],
+      });
       expect(info).to.have.property("id");
       expect(info).to.have.property("type", "fulltext");
       expect(info).to.have.property("fields");
@@ -118,7 +128,10 @@ describe("Managing indexes", function() {
   });
   describe("collection.index", () => {
     it("should return information about a index", async () => {
-      const info = await collection.createHashIndex(["test"]);
+      const info = await collection.ensureIndex({
+        type: "hash",
+        fields: ["test"],
+      });
       const index = await collection.index(info.id);
       expect(index).to.have.property("id", info.id);
       expect(index).to.have.property("type", info.type);
@@ -126,7 +139,10 @@ describe("Managing indexes", function() {
   });
   describe("collection.indexes", () => {
     it("should return a list of indexes", async () => {
-      const index = await collection.createHashIndex(["test"]);
+      const index = await collection.ensureIndex({
+        type: "hash",
+        fields: ["test"],
+      });
       const indexes = await collection.indexes();
       expect(indexes).to.be.instanceof(Array);
       expect(indexes).to.not.be.empty;
@@ -135,7 +151,10 @@ describe("Managing indexes", function() {
   });
   describe("collection.dropIndex", () => {
     it("should drop existing index", async () => {
-      const info = await collection.createHashIndex(["test"]);
+      const info = await collection.ensureIndex({
+        type: "hash",
+        fields: ["test"],
+      });
       const index = await collection.dropIndex(info.id);
       expect(index).to.have.property("id", info.id);
       const indexes = await collection.indexes();

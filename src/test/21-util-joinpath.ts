@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { joinPath } from "../util/joinPath";
+import { joinPath } from "../lib/joinPath";
 
 describe("Join Path", () => {
   it("joinPath 1", () => {

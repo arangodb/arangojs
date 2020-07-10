@@ -1,9 +1,9 @@
 import { expect } from "chai";
 import * as fs from "fs";
 import * as path from "path";
-import { Database } from "../arangojs";
+import { Database } from "../database";
 import { ArangoError } from "../error";
-import { sanitizeUrl } from "../util/sanitizeUrl";
+import { normalizeUrl } from "../lib/normalizeUrl";
 
 const ARANGO_URL = process.env.TEST_ARANGODB_URL || "http://localhost:8529";
 const ARANGO_URL_SELF_REACHABLE = process.env.TEST_ARANGODB_URL_SELF_REACHABLE;
@@ -11,7 +11,7 @@ const ARANGO_VERSION = Number(
   process.env.ARANGO_VERSION || process.env.ARANGOJS_DEVEL_VERSION || 30400
 );
 
-const normalizedArangoUrl = sanitizeUrl(ARANGO_URL);
+const normalizedArangoUrl = normalizeUrl(ARANGO_URL);
 const localAppsPath = path.resolve(".", "fixtures");
 const mount = "/foxx-crud-test";
 const serviceServiceMount = "/foxx-crud-test-download";
@@ -54,38 +54,38 @@ describe("Foxx service", () => {
   const cases = [
     {
       name: "localJsFile",
-      source: (arangoPaths: any) => arangoPaths.local.js
+      source: (arangoPaths: any) => arangoPaths.local.js,
     },
     {
       name: "localZipFile",
-      source: (arangoPaths: any) => arangoPaths.local.zip
+      source: (arangoPaths: any) => arangoPaths.local.zip,
     },
     {
       name: "localDir",
-      source: (arangoPaths: any) => arangoPaths.local.dir
+      source: (arangoPaths: any) => arangoPaths.local.dir,
     },
     {
       name: "jsBuffer",
       source: () =>
         fs.readFileSync(
           path.resolve(localAppsPath, "minimal-working-service.js")
-        )
+        ),
     },
     {
       name: "zipBuffer",
       source: () =>
         fs.readFileSync(
           path.resolve(localAppsPath, "minimal-working-service.zip")
-        )
+        ),
     },
     {
       name: "remoteJsFile",
-      source: (arangoPaths: any) => makeSelfReachable(arangoPaths.remote.js)
+      source: (arangoPaths: any) => makeSelfReachable(arangoPaths.remote.js),
     },
     {
       name: "remoteZipFile",
-      source: (arangoPaths: any) => makeSelfReachable(arangoPaths.remote.zip)
-    }
+      source: (arangoPaths: any) => makeSelfReachable(arangoPaths.remote.zip),
+    },
   ];
 
   for (const c of cases) {
@@ -179,7 +179,7 @@ describe("Foxx service", () => {
       fs.readFileSync(path.resolve(localAppsPath, "with-configuration.zip"))
     );
     const updateResp = await db.updateServiceConfiguration(mount, {
-      test1: "test"
+      test1: "test",
     });
     expect(updateResp).to.have.property("test1");
     expect(updateResp.test1).to.have.property("current", "test");
@@ -202,7 +202,7 @@ describe("Foxx service", () => {
     const updateResp = await db.updateServiceConfiguration(
       mount,
       {
-        test1: "test"
+        test1: "test",
       },
       true
     );
@@ -221,7 +221,7 @@ describe("Foxx service", () => {
       fs.readFileSync(path.resolve(localAppsPath, "with-configuration.zip"))
     );
     const replaceResp = await db.replaceServiceConfiguration(mount, {
-      test1: "test"
+      test1: "test",
     });
     expect(replaceResp).to.have.property("test1");
     expect(replaceResp.test1).to.have.property("current", "test");
@@ -244,7 +244,7 @@ describe("Foxx service", () => {
     const replaceResp = await db.replaceServiceConfiguration(
       mount,
       {
-        test1: "test"
+        test1: "test",
       },
       true
     );
@@ -359,7 +359,7 @@ describe("Foxx service", () => {
       fs.readFileSync(path.resolve(localAppsPath, "with-dependencies.zip"))
     );
     const updateResp = await db.updateServiceDependencies(mount, {
-      test1: "/test"
+      test1: "/test",
     });
     expect(updateResp).to.have.property("test1");
     expect(updateResp.test1).to.have.property("current", "/test");
@@ -382,7 +382,7 @@ describe("Foxx service", () => {
     const updateResp = await db.updateServiceDependencies(
       mount,
       {
-        test1: "/test"
+        test1: "/test",
       },
       true
     );
@@ -401,7 +401,7 @@ describe("Foxx service", () => {
       fs.readFileSync(path.resolve(localAppsPath, "with-dependencies.zip"))
     );
     const replaceResp = await db.replaceServiceDependencies(mount, {
-      test1: "/test"
+      test1: "/test",
     });
     expect(replaceResp).to.have.property("test1");
     expect(replaceResp.test1).to.have.property("current", "/test");
@@ -424,7 +424,7 @@ describe("Foxx service", () => {
     const replaceResp = await db.replaceServiceDependencies(
       mount,
       {
-        test1: "/test"
+        test1: "/test",
       },
       true
     );
@@ -444,14 +444,14 @@ describe("Foxx service", () => {
       fs.readFileSync(path.resolve(localAppsPath, "with-dependencies.zip"))
     );
     const replaceResp = await db.replaceServiceDependencies(mount, {
-      test2: "/test2"
+      test2: "/test2",
     });
     expect(replaceResp).to.have.property("test1");
     expect(replaceResp.test1).to.have.property("warning", "is required");
     expect(replaceResp).to.have.property("test2");
     expect(replaceResp.test2).to.have.property("current", "/test2");
     const updateResp = await db.updateServiceDependencies(mount, {
-      test1: "/test1"
+      test1: "/test1",
     });
     expect(updateResp).to.have.property("test1");
     expect(updateResp.test1).to.have.property("current", "/test1");
@@ -484,7 +484,7 @@ describe("Foxx service", () => {
     const updateResp = await db.updateServiceDependencies(
       mount,
       {
-        test1: "/test1"
+        test1: "/test1",
       },
       true
     );
@@ -502,7 +502,7 @@ describe("Foxx service", () => {
       fs.readFileSync(path.resolve(localAppsPath, "with-dependencies.zip"))
     );
     const updateResp = await db.updateServiceDependencies(mount, {
-      test2: "/test2"
+      test2: "/test2",
     });
     expect(updateResp).to.have.property("test1");
     expect(updateResp.test1).to.not.have.property("current");
@@ -511,7 +511,7 @@ describe("Foxx service", () => {
     expect(updateResp.test2).to.have.property("current", "/test2");
     expect(updateResp.test2).to.not.have.property("warning");
     const replaceResp = await db.replaceServiceDependencies(mount, {
-      test1: "/test1"
+      test1: "/test1",
     });
     expect(replaceResp).to.have.property("test1");
     expect(replaceResp.test1).to.have.property("current", "/test1");
@@ -534,7 +534,7 @@ describe("Foxx service", () => {
     const updateResp = await db.updateServiceDependencies(
       mount,
       {
-        test2: "/test2"
+        test2: "/test2",
       },
       true
     );
@@ -545,7 +545,7 @@ describe("Foxx service", () => {
     const replaceResp = await db.replaceServiceDependencies(
       mount,
       {
-        test1: "/test1"
+        test1: "/test1",
       },
       true
     );
@@ -590,7 +590,7 @@ describe("Foxx service", () => {
       )
     );
     const services = await db.listServices();
-    const service = services.find((service: any) => service.mount === mount);
+    const service = services.find((service) => service.mount === mount)!;
     expect(service).to.have.property("name", "minimal-working-manifest");
     expect(service).to.have.property("version", "0.0.0");
     expect(service).to.have.property("provides");
@@ -694,7 +694,7 @@ describe("Foxx service", () => {
     );
     const resp = await db.getService(mount);
     expect(resp.development).to.equal(false);
-    const devResp = await db.enableServiceDevelopmentMode(mount);
+    const devResp = await db.setServiceDevelopmentMode(mount, true);
     expect(devResp.development).to.equal(true);
     const respAfter = await db.getService(mount);
     expect(respAfter.development).to.equal(true);
@@ -710,7 +710,7 @@ describe("Foxx service", () => {
     );
     const resp = await db.getService(mount);
     expect(resp.development).to.equal(true);
-    const devResp = await db.disableServiceDevelopmentMode(mount);
+    const devResp = await db.setServiceDevelopmentMode(mount, false);
     expect(devResp.development).to.equal(false);
     const respAfter = await db.getService(mount);
     expect(respAfter.development).to.equal(false);
@@ -773,51 +773,51 @@ describe("Foxx service", () => {
     ["getService", (mount: string) => db.getService(mount)],
     [
       "getServiceConfiguration",
-      (mount: string) => db.getServiceConfiguration(mount)
+      (mount: string) => db.getServiceConfiguration(mount),
     ],
     [
       "getServiceDependencies",
-      (mount: string) => db.getServiceDependencies(mount)
+      (mount: string) => db.getServiceDependencies(mount),
     ],
     ["listServiceScripts", (mount: string) => db.listServiceScripts(mount)],
-    ["upgradeService", (mount: string) => db.upgradeService(mount, {})],
+    ["upgradeService", (mount: string) => db.upgradeService(mount, {} as any)],
     [
       "updateServiceConfiguration",
-      (mount: string) => db.updateServiceConfiguration(mount, {})
+      (mount: string) => db.updateServiceConfiguration(mount, {}),
     ],
     [
       "updateServiceDependencies",
-      (mount: string) => db.updateServiceDependencies(mount, {})
+      (mount: string) => db.updateServiceDependencies(mount, {}),
     ],
-    ["replaceService", (mount: string) => db.replaceService(mount, {})],
+    ["replaceService", (mount: string) => db.replaceService(mount, {} as any)],
     [
       "replaceServiceConfiguration",
-      (mount: string) => db.replaceServiceConfiguration(mount, {})
+      (mount: string) => db.replaceServiceConfiguration(mount, {}),
     ],
     [
       "replaceServiceDependencies",
-      (mount: string) => db.replaceServiceDependencies(mount, {})
+      (mount: string) => db.replaceServiceDependencies(mount, {}),
     ],
     [
       "runServiceScript",
-      (mount: string) => db.runServiceScript(mount, "xxx", {})
+      (mount: string) => db.runServiceScript(mount, "xxx", {}),
     ],
     ["runServiceTests", (mount: string) => db.runServiceTests(mount, {})],
     ["uninstallService", (mount: string) => db.uninstallService(mount)],
     ["downloadService", (mount: string) => db.downloadService(mount)],
     [
       "enableServiceDevelopmentMode",
-      (mount: string) => db.enableServiceDevelopmentMode(mount)
+      (mount: string) => db.setServiceDevelopmentMode(mount, true),
     ],
     [
       "disableServiceDevelopmentMode",
-      (mount: string) => db.disableServiceDevelopmentMode(mount)
+      (mount: string) => db.setServiceDevelopmentMode(mount, false),
     ],
     [
       "getServiceDocumentation",
-      (mount: string) => db.getServiceDocumentation(mount)
+      (mount: string) => db.getServiceDocumentation(mount),
     ],
-    ["getServiceReadme", (mount: string) => db.getServiceReadme(mount)]
+    ["getServiceReadme", (mount: string) => db.getServiceReadme(mount)],
   ];
 
   for (const [desc, method] of routes) {

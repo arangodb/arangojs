@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { Database } from "../arangojs";
+import { Database } from "../database";
 import { ArangoSearchView } from "../view";
 
 const ARANGO_URL = process.env.TEST_ARANGODB_URL || "http://localhost:8529";
@@ -8,7 +8,7 @@ const ARANGO_VERSION = Number(
 );
 const describe34 = ARANGO_VERSION >= 30400 ? describe : describe.skip;
 
-describe34("Manipulating views", function() {
+describe34("Manipulating views", function () {
   const name = `testdb_${Date.now()}`;
   let db: Database;
   let view: ArangoSearchView;
@@ -26,7 +26,7 @@ describe34("Manipulating views", function() {
     }
   });
   beforeEach(async () => {
-    view = db.arangoSearchView(`v-${Date.now()}`);
+    view = db.view(`v-${Date.now()}`);
     await view.create();
   });
   afterEach(async () => {
@@ -39,23 +39,23 @@ describe34("Manipulating views", function() {
   });
   describe("view.create", () => {
     it("creates a new arangosearch view", async () => {
-      const view = db.arangoSearchView(`asv-${Date.now()}`);
+      const view = db.view(`asv-${Date.now()}`);
       await view.create();
       const info = await view.get();
       expect(info).to.have.property("name", view.name);
       expect(info).to.have.property("type", "arangosearch");
     });
   });
-  describe("view.setProperties", () => {
+  describe("view.updateProperties", () => {
     it("should change properties", async () => {
-      const oldProps = await view.setProperties({
+      const oldProps = await view.updateProperties({
         consolidationIntervalMsec: 45000,
-        consolidationPolicy: { type: "tier" }
+        consolidationPolicy: { type: "tier" },
       });
       expect(oldProps.consolidationIntervalMsec).to.equal(45000);
       expect(oldProps.consolidationPolicy).to.have.property("type", "tier");
-      const properties = await view.setProperties({
-        consolidationPolicy: { type: "bytes_accum" }
+      const properties = await view.updateProperties({
+        consolidationPolicy: { type: "bytes_accum" },
       });
       expect(properties.consolidationIntervalMsec).to.equal(45000);
       expect(properties.consolidationPolicy).to.have.property(
@@ -70,12 +70,12 @@ describe34("Manipulating views", function() {
       expect(initial.consolidationIntervalMsec).not.to.equal(45000);
       const oldProps = await view.replaceProperties({
         consolidationIntervalMsec: 45000,
-        consolidationPolicy: { type: "tier" }
+        consolidationPolicy: { type: "tier" },
       });
       expect(oldProps.consolidationIntervalMsec).to.equal(45000);
       expect(oldProps.consolidationPolicy).to.have.property("type", "tier");
       const properties = await view.replaceProperties({
-        consolidationPolicy: { type: "bytes_accum" }
+        consolidationPolicy: { type: "bytes_accum" },
       });
       expect(properties.consolidationIntervalMsec).to.equal(
         initial.consolidationIntervalMsec

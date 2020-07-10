@@ -1,6 +1,6 @@
 import { expect } from "chai";
-import { Database } from "../arangojs";
-import { ArangoSearchView } from "../view";
+import { Database } from "../database";
+import { View } from "../view";
 
 const range = (n: number): number[] => Array.from(Array(n).keys());
 
@@ -10,7 +10,7 @@ const ARANGO_VERSION = Number(
 );
 const describe34 = ARANGO_VERSION >= 30400 ? describe : describe.skip;
 
-describe34("Accessing views", function() {
+describe34("Accessing views", function () {
   let name = `testdb_${Date.now()}`;
   let db: Database;
   before(async () => {
@@ -27,52 +27,44 @@ describe34("Accessing views", function() {
     }
   });
   describe("database.arangoSearchView", () => {
-    it("returns a ArangoSearchView instance for the view", () => {
+    it("returns a View instance for the view", () => {
       let name = "potato";
-      let view = db.arangoSearchView(name);
-      expect(view).to.be.an.instanceof(ArangoSearchView);
-      expect(view)
-        .to.have.property("name")
-        .that.equals(name);
+      let view = db.view(name);
+      expect(view).to.be.an.instanceof(View);
+      expect(view).to.have.property("name").that.equals(name);
     });
   });
   describe("database.listViews", () => {
-    let viewNames = range(4).map(i => `v_${Date.now()}_${i}`);
+    let viewNames = range(4).map((i) => `v_${Date.now()}_${i}`);
     before(async () => {
-      await Promise.all(
-        viewNames.map(name => db.arangoSearchView(name).create())
-      );
+      await Promise.all(viewNames.map((name) => db.view(name).create()));
     });
     after(async () => {
-      await Promise.all(
-        viewNames.map(name => db.arangoSearchView(name).drop())
-      );
+      await Promise.all(viewNames.map((name) => db.view(name).drop()));
     });
     it("fetches information about all views", async () => {
       const views = await db.listViews();
       expect(views.length).to.equal(viewNames.length);
-      expect(views.map(v => v.name).sort()).to.eql(viewNames);
+      expect(views.map((v) => v.name).sort()).to.eql(viewNames);
     });
   });
   describe("database.views", () => {
-    let arangoSearchViewNames = range(4).map(i => `asv_${Date.now()}_${i}`);
+    let arangoSearchViewNames = range(4).map((i) => `asv_${Date.now()}_${i}`);
     before(async () => {
       await Promise.all(
-        arangoSearchViewNames.map(name => db.arangoSearchView(name).create())
+        arangoSearchViewNames.map((name) => db.view(name).create())
       );
     });
     after(async () => {
       await Promise.all(
-        arangoSearchViewNames.map(name => db.arangoSearchView(name).drop())
+        arangoSearchViewNames.map((name) => db.view(name).drop())
       );
     });
-    it("creates ArangoSearchView instances", async () => {
+    it("creates View instances", async () => {
       const views = await db.views();
-      let arangoSearchViews = views
-        .filter(v => v instanceof ArangoSearchView)
-        .sort();
+      let arangoSearchViews = views.filter((v) => v instanceof View).sort();
       expect(arangoSearchViews.length).to.equal(arangoSearchViewNames.length);
-      expect(arangoSearchViews.map(v => v.name).sort()).to.eql(
+      expect(arangoSearchViews.map((v) => v.name).sort()).to.eql(
         arangoSearchViewNames
       );
     });

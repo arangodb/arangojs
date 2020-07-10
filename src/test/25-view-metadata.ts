@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { Database } from "../arangojs";
+import { Database } from "../database";
 import { ArangoSearchView } from "../view";
 
 const ARANGO_URL = process.env.TEST_ARANGODB_URL || "http://localhost:8529";
@@ -8,7 +8,7 @@ const ARANGO_VERSION = Number(
 );
 const describe34 = ARANGO_VERSION >= 30400 ? describe : describe.skip;
 
-describe34("View metadata", function() {
+describe34("View metadata", function () {
   const dbName = `testdb_${Date.now()}`;
   const viewName = `view-${Date.now()}`;
   let db: Database;
@@ -17,7 +17,7 @@ describe34("View metadata", function() {
     db = new Database({ url: ARANGO_URL, arangoVersion: ARANGO_VERSION });
     await db.createDatabase(dbName);
     db.useDatabase(dbName);
-    view = db.arangoSearchView(viewName);
+    view = db.view(viewName);
     await view.create();
   });
   after(async () => {
@@ -33,7 +33,7 @@ describe34("View metadata", function() {
     });
     it("should throw if view does not exists", async () => {
       try {
-        await db.arangoSearchView("no").get();
+        await db.view("no").get();
       } catch (err) {
         expect(err).to.have.property("errorNum", 1203);
         return;

@@ -1,7 +1,8 @@
 import { expect } from "chai";
-import { aql, Database } from "../arangojs";
+import { aql } from "../aql";
+import { Database } from "../database";
 
-describe("AQL helpers", function() {
+describe("AQL helpers", function () {
   describe("aql", () => {
     const db = new Database();
     it("supports simple parameters", () => {
@@ -15,7 +16,7 @@ describe("AQL helpers", function() {
         "",
         "string",
         [1, 2, 3],
-        { a: "b" }
+        { a: "b" },
       ];
       const query = aql`A ${values[0]} B ${values[1]} C ${values[2]} D ${values[3]} E ${values[4]} F ${values[5]} G ${values[6]} H ${values[7]} I ${values[8]} J ${values[9]} K EOF`;
       expect(query.query).to.equal(
@@ -34,9 +35,9 @@ describe("AQL helpers", function() {
         "value6",
         "value7",
         "value8",
-        "value9"
+        "value9",
       ]);
-      expect(bindVarNames.map(k => query.bindVars[k])).to.eql(values);
+      expect(bindVarNames.map((k) => query.bindVars[k])).to.eql(values);
     });
     it("omits undefined bindvars and empty queries", () => {
       const query = aql`A ${undefined} B ${aql``} C ${aql.join(
@@ -51,6 +52,13 @@ describe("AQL helpers", function() {
       expect(query.query).to.equal("@@value0");
       expect(Object.keys(query.bindVars)).to.eql(["@value0"]);
       expect(query.bindVars["@value0"]).to.equal("potato");
+    });
+    it("supports arangojs view parameters", () => {
+      const view = db.view("banana");
+      const query = aql`${view}`;
+      expect(query.query).to.equal("@@value0");
+      expect(Object.keys(query.bindVars)).to.eql(["@value0"]);
+      expect(query.bindVars["@value0"]).to.equal("banana");
     });
     it("supports ArangoDB collection parameters", () => {
       class ArangoCollection {
@@ -72,7 +80,7 @@ describe("AQL helpers", function() {
       }
       const whatever: Whatever[] = [
         { color: "green", more: { x: 2 } },
-        { color: "yellow", more: { x: 3 } }
+        { color: "yellow", more: { x: 3 } },
       ];
       const query = aql`${whatever}`;
       expect(query.query).to.equal("@value0");
@@ -88,7 +96,7 @@ describe("AQL helpers", function() {
       }
       const whatever: Whatever[] = [
         new Whatever("green"),
-        new Whatever("yellow")
+        new Whatever("yellow"),
       ];
       const query = aql`${whatever}`;
       expect(query.query).to.equal("@value0");
@@ -123,7 +131,7 @@ describe("AQL helpers", function() {
       expect(query.bindVars).to.eql({
         "@value0": "paprika",
         value1: 9,
-        value2: 4
+        value2: 4,
       });
     });
     it("supports arbitrary nesting", () => {
@@ -136,7 +144,7 @@ describe("AQL helpers", function() {
       );
       expect(query.bindVars).to.eql({
         "@value0": users.name,
-        value1: role
+        value1: role,
       });
     });
     it("supports basic nesting", () => {
@@ -156,7 +164,7 @@ describe("AQL helpers", function() {
         value3: 4,
         value4: 5,
         value5: 6,
-        value6: 7
+        value6: 7,
       });
     });
     it("supports nesting without bindvars", () => {
@@ -175,7 +183,7 @@ describe("AQL helpers", function() {
       [true, "true"],
       [false, "false"],
       ["", ""],
-      ["string", "string"]
+      ["string", "string"],
     ];
     for (const [value, result] of pairs) {
       it(`returns an AQL literal of "${result}" for ${String(

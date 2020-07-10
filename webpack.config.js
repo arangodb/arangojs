@@ -3,13 +3,14 @@ var resolve = require("path").resolve;
 var webpack = require("webpack");
 
 module.exports = {
-  entry: ["regenerator-runtime/runtime", resolve(__dirname, "src/index.js")],
+  mode: "production",
+  entry: ["regenerator-runtime/runtime", resolve(__dirname, "src/index.ts")],
   devtool: "source-map",
   output: {
-    path: resolve(__dirname, "lib"),
+    path: resolve(__dirname, "build"),
     filename: "web.js",
     library: "arangojs",
-    libraryTarget: "umd"
+    libraryTarget: "umd",
   },
   module: {
     rules: [
@@ -17,44 +18,15 @@ module.exports = {
       {
         test: /\.(ts|js)$/,
         loader: "babel-loader",
-        options: {
-          presets: [
-            [
-              "babel-preset-env",
-              {
-                target: {
-                  browsers: ["> 2%", "ie 11"]
-                }
-              }
-            ]
-          ],
-          plugins: [
-            "babel-plugin-transform-class-properties",
-            "babel-plugin-transform-object-rest-spread"
-          ]
-        }
       },
-      {
-        test: /\.ts/,
-        loader: "ts-loader",
-        options: {
-          transpileOnly: true,
-          compilerOptions: { target: "esnext" }
-        }
-      }
-    ]
+    ],
   },
   resolve: {
-    extensions: [".web.js", ".web.ts", ".js", ".ts", ".json"]
+    extensions: [".web.js", ".web.ts", ".js", ".ts", ".json"],
   },
   plugins: [
     new webpack.DefinePlugin({
-      "process.env": { NODE_ENV: '"production"' }
+      "process.env": { NODE_ENV: '"production"' },
     }),
-    new webpack.optimize.UglifyJsPlugin({
-      sourceMap: true,
-      minimize: true,
-      output: { comments: false }
-    })
-  ]
+  ],
 };

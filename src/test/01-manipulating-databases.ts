@@ -1,16 +1,13 @@
 import { expect } from "chai";
-import { Database } from "../arangojs";
+import { Database } from "../database";
 import { ArangoError } from "../error";
-
-const range = (n: number): number[] => Array.from(Array(n).keys());
 
 const ARANGO_URL = process.env.TEST_ARANGODB_URL || "http://localhost:8529";
 const ARANGO_VERSION = Number(
   process.env.ARANGO_VERSION || process.env.ARANGOJS_DEVEL_VERSION || 30400
 );
-const it2x = ARANGO_VERSION < 30000 ? it : it.skip;
 
-describe("Manipulating databases", function() {
+describe("Manipulating databases", function () {
   let db: Database;
   beforeEach(() => {
     db = new Database({ url: ARANGO_URL, arangoVersion: ARANGO_VERSION });
@@ -23,7 +20,6 @@ describe("Manipulating databases", function() {
       const name = "example";
       expect(db.name).to.equal("_system"); // default
       db.useDatabase(name);
-      expect((db as any)._connection).to.have.property("_databaseName", name);
       expect(db.name).to.equal(name);
     });
     it("returns itself", () => {
@@ -89,66 +85,5 @@ describe("Manipulating databases", function() {
       }
       expect.fail("should not succeed");
     });
-  });
-  describe("database.truncate", () => {
-    let name = `testdb_${Date.now()}`;
-    let nonSystemCollections = range(4).map(i => `c_${Date.now()}_${i}`);
-    let systemCollections = range(4).map(i => `_c_${Date.now()}_${i}`);
-    beforeEach(async () => {
-      await db.createDatabase(name);
-      db.useDatabase(name);
-      await Promise.all([
-        ...nonSystemCollections.map(async name => {
-          let collection = db.collection(name);
-          await collection.create();
-          return await collection.save({ _key: "example" });
-        }),
-        ...systemCollections.map(async name => {
-          let collection = db.collection(name);
-          await collection.create({ isSystem: true });
-          return await collection.save({ _key: "example" });
-        })
-      ]);
-    });
-    afterEach(async () => {
-      db.useDatabase("_system");
-      await db.dropDatabase(name);
-    });
-    it("removes all documents from all non-system collections in the database", async () => {
-      await db.truncate();
-      await Promise.all([
-        ...nonSystemCollections.map(async name => {
-          let doc;
-          try {
-            doc = await db.collection(name).document("example");
-          } catch (e) {
-            expect(e).to.be.an.instanceof(ArangoError);
-            return;
-          }
-          expect.fail(`Expected document to be destroyed: ${doc._id}`);
-        }),
-        ...systemCollections.map(name => {
-          db.collection(name).document("example");
-        })
-      ]);
-    });
-    it2x(
-      "additionally truncates system collections if explicitly passed false",
-      async () => {
-        await db.truncate(false);
-        await Promise.all(
-          nonSystemCollections.map(async name => {
-            let doc;
-            try {
-              doc = await db.collection(name).document("example");
-            } catch (e) {
-              expect(e).to.be.an.instanceof(ArangoError);
-              return;
-            }
-            expect.fail(`Expected document to be destroyed: ${doc._id}`);
-          })
-        );
-      }
-    );
   });
 });

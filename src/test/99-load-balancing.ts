@@ -1,12 +1,12 @@
 import Instance from "arangodb-instance-manager/lib/Instance";
 import InstanceManager from "arangodb-instance-manager/lib/InstanceManager";
 import { expect } from "chai";
-import { Database } from "../arangojs";
 import { DocumentCollection } from "../collection";
 import { Connection } from "../connection";
+import { Database } from "../database";
 
 const sleep = (timeout: number) =>
-  new Promise(resolve => setTimeout(resolve, timeout));
+  new Promise((resolve) => setTimeout(resolve, timeout));
 
 let ARANGO_PATH: string;
 let ARANGO_RUNNER: "local" | "docker";
@@ -19,7 +19,7 @@ if (process.env.RESILIENCE_ARANGO_BASEPATH) {
 }
 const describeIm = ARANGO_PATH! ? describe.only : describe.skip;
 
-describeIm("Single-server active failover", function() {
+describeIm("Single-server active failover", function () {
   this.timeout(Infinity);
   let im: InstanceManager;
   let uuid: string;
@@ -37,7 +37,7 @@ describeIm("Single-server active failover", function() {
     conn = (db as any)._connection;
     await db.acquireHostList();
   });
-  afterEach(async function() {
+  afterEach(async function () {
     im.moveServerLogs(this.currentTest);
     const logs = await im.cleanup(this.currentTest!.isFailed());
     if (logs) console.error(`IM Logs:\n${logs}`);
@@ -89,7 +89,7 @@ describeIm("Single-server active failover", function() {
   });
 });
 
-describeIm("Single-server with follower", function() {
+describeIm("Single-server with follower", function () {
   this.timeout(Infinity);
   let im: InstanceManager;
   let leader: Instance;
@@ -105,8 +105,7 @@ describeIm("Single-server with follower", function() {
     db = new Database({ url: leader.endpoint });
     conn = (db as any)._connection;
     await db.acquireHostList();
-    collection = db.collection("test");
-    await collection.create();
+    collection = await db.createCollection("test");
     await collection.save({ _key: "abc" });
     await sleep(3000);
   });
@@ -119,7 +118,7 @@ describeIm("Single-server with follower", function() {
     return await conn.request({
       method: "GET",
       path: "/_api/document/test/abc",
-      allowDirtyRead: dirty
+      allowDirtyRead: dirty,
     });
   }
   it("supports dirty reads", async () => {
@@ -152,17 +151,17 @@ describeIm("Single-server with follower", function() {
       {},
       {
         allowDirtyRead: true,
-        batchSize: 1
+        batchSize: 1,
       }
     );
-    expect(cursor.hasNext()).to.equal(true);
+    expect(cursor.hasNext).to.equal(true);
     expect(await cursor.next()).to.equal(1);
-    expect(cursor.hasNext()).to.equal(true);
+    expect(cursor.hasNext).to.equal(true);
     expect(await cursor.next()).to.equal(2);
   });
 });
 
-describeIm("Cluster round robin", function() {
+describeIm("Cluster round robin", function () {
   this.timeout(Infinity);
   const NUM_COORDINATORS = 3;
   let im: InstanceManager;
@@ -173,7 +172,7 @@ describeIm("Cluster round robin", function() {
     const endpoint = await im.startCluster(1, NUM_COORDINATORS, 2);
     db = new Database({
       url: endpoint,
-      loadBalancingStrategy: "ROUND_ROBIN"
+      loadBalancingStrategy: "ROUND_ROBIN",
     });
     conn = (db as any)._connection;
     await db.acquireHostList();
@@ -259,7 +258,7 @@ describeIm("Cluster round robin", function() {
       { batchSize: 1 }
     );
     const result = [];
-    while (cursor.hasNext()) {
+    while (cursor.hasNext) {
       result.push(await cursor.next());
     }
     expect(result).to.have.lengthOf(LENGTH);

@@ -1,13 +1,13 @@
 import { expect } from "chai";
-import { Database } from "../arangojs";
 import { DocumentCollection } from "../collection";
+import { Database } from "../database";
 
 const ARANGO_URL = process.env.TEST_ARANGODB_URL || "http://localhost:8529";
 const ARANGO_VERSION = Number(
   process.env.ARANGO_VERSION || process.env.ARANGOJS_DEVEL_VERSION || 30400
 );
 
-describe("Manipulating collections", function() {
+describe("Manipulating collections", function () {
   const name = `testdb_${Date.now()}`;
   let db: Database;
   let collection: DocumentCollection;
@@ -25,8 +25,7 @@ describe("Manipulating collections", function() {
     }
   });
   beforeEach(async () => {
-    collection = db.collection(`collection-${Date.now()}`);
-    await collection.create();
+    collection = await db.createCollection(`collection-${Date.now()}`);
   });
   afterEach(async () => {
     try {
@@ -38,8 +37,9 @@ describe("Manipulating collections", function() {
   });
   describe("collection.create", () => {
     it("creates a new document collection", async () => {
-      const collection = db.collection(`document-collection-${Date.now()}`);
-      await collection.create();
+      const collection = await db.createCollection(
+        `document-collection-${Date.now()}`
+      );
       const info = await db.collection(collection.name).get();
       expect(info).to.have.property("name", collection.name);
       expect(info).to.have.property("isSystem", false);
@@ -47,8 +47,9 @@ describe("Manipulating collections", function() {
       expect(info).to.have.property("type", 2); // document collection
     });
     it("creates a new edge collection", async () => {
-      const collection = db.edgeCollection(`edge-collection-${Date.now()}`);
-      await collection.create();
+      const collection = await db.createEdgeCollection(
+        `edge-collection-${Date.now()}`
+      );
       const info = await db.collection(collection.name).get();
       expect(info).to.have.property("name", collection.name);
       expect(info).to.have.property("isSystem", false);
@@ -73,7 +74,7 @@ describe("Manipulating collections", function() {
   });
   describe("collection.setProperties", () => {
     it("should change properties", async () => {
-      const info = await collection.setProperties({ waitForSync: true });
+      const info = await collection.properties({ waitForSync: true });
       expect(info).to.have.property("name", collection.name);
       expect(info).to.have.property("waitForSync", true);
     });

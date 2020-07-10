@@ -5,11 +5,555 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+This driver uses semantic versioning:
+
+- A change in the bugfix version (e.g. X.Y.0 -> X.Y.1) indicates internal
+  changes and should always be safe to upgrade.
+- A change in the minor version (e.g. X.1.Z -> X.2.0) indicates additions and
+  backwards-compatible changes that should not affect your code.
+- A change in the major version (e.g. 1.Y.Z -> 2.0.0) indicates _breaking_
+  changes that require changes in your code to upgrade.
+
+## [Unreleased]
+
+### Removed
+
+- Removed `statusCode` properties of `ArangoError` and `HttpError`
+
+  Both of these error types still expose the HTTP status code as the `code`
+  property. For `ArangoError` the true HTTP status code may be different and
+  can still be accessed using the `response.statusCode` property.
+
+- Removed `ArangoError` re-export
+
+  The type can still be imported directly from the `error` module.
+
+### Changed
+
+- Renamed `cursor.nextBatch` to `cursor.batches.next`
+
+- Renamed `cursor.hasMore` to `cursor.batches.hasMore`
+
+- Renamed `db.createArangoSearchView` to `db.createView`
+
+- Renamed `transaction.run` to `transaction.step`
+
+  This should hopefully make it more obvious that sequential calls to arangojs
+  methods should be split into separate calls of this method.
+
+- Added support for `View` in `aql` templates ([#667](https://github.com/arangodb/arangojs/issues/667))
+
+  `View` (or `ArangoSearchView`) objects can now be passed into `aql` templates
+  like `ArangoCollection` objects.
+
+- Graph methods now also accept `ArangoCollection` instances instead of names
+
+  This brings these methods behavior in line with that of the `beginTransaction`
+  and `executeTransaction` methods of `Database` objects.
+
+- Moved `collectionToString` helper into `collection` module
+
+- Moved `Dict` type into `connection` module
+
+- Moved `Patch` type into `documents` module
+
+- Removed `Errback` type from public API
+
+- Renamed `util/foxx-manifest` module to `foxx-manifest`
+
+- Removed `Collection` type from public API
+
+  All public APIs reference `DocumentCollection` and `EdgeCollection` directly.
+
+### Added
+
+- Added `precaptureStackTraces` configuration option ([#599](https://github.com/arangodb/arangojs/issues/599))
+
+  This option can be used to get more useful stack traces but results in a
+  performance hit on every request.
+
+- Added `cursor.batches` to provide a batch-wise cursor API
+
+- Added `before` and `after` to the `agentOptions` configuration option ([#585](https://github.com/arangodb/arangojs/issues/585))
+
+  These methods can be used to track performance metrics for outgoing requests.
+
+## [7.0.0-preview.1] - 2020-05-13
+
+### Removed
+
+- Removed `collection.edge` method
+
+  This method was previously an alias for `collection.document`.
+
+  The method `graphEdgeCollection.edge` is unaffected by this change.
+
+- Removed `graphName` option for `edgeCollection.traversal`
+
+  Graph traversals can still be performed via `graph.traversal`.
+
+- Removed `ViewResponse` type
+
+  The type `ViewDescription` represents the same structure.
+
+- Removed `ArangoSearchViewPropertiesResponse` type
+
+  The type `ArangoSearchViewProperties & ViewDescription` can be used
+  to represent the same structure.
+
+### Changed
+
+- Removed `CollectionMetadata` fields from `CollectionProperties` type
+
+  Methods that previously returned `CollectionProperties` now return
+  `CollectionMetadata & CollectionProperties`.
+
+### Added
+
+- Added `auth` option to configuration
+
+  It is now possible to pass authentication credentials using the `auth`
+  option in addition to calling `db.useBasicAuth` or `db.useBearerAuth`.
+
+### Fixed
+
+- Changed async return type of `collection.index` from `Index[]` to `Index`
+
+## [7.0.0-preview.0] - 2020-05-01
+
+This is a major release and breaks backwards compatibility.
+
+### Removed
+
+#### General
+
+- Removed ArangoDB 2.8 support
+
+  ArangoDB 2.8 has reached End of Life since mid 2018. Version 7 and above
+  of arangojs will no longer support ArangoDB 2.8 and earlier.
+
+- Removed Node.js 6/8 support
+
+  As of version 7 arangojs now requires language support for async/await.
+  This means arangojs requires Node.js 10 (LTS) or newer to function correctly.
+
+- Removed support for absolute endpoint URLs
+
+  This removes the `isAbsolute` option from the arangojs configuration.
+
+#### Database API
+
+- Removed `db.edgeCollection` method
+
+  As arangojs 7 uses the same implementation for document and edge collections,
+  this method is no longer necessary. Generic collection objects can still be
+  cast to `DocumentCollection` or `EdgeCollection` types in TypeScript.
+
+- Removed `db.truncate` convenience method
+
+  This was a wrapper around `db.listCollections` and `collection.truncate`.
+  The behavior of `db.truncate` can still be emulated by calling these methods
+  directly.
+
+#### Collection API
+
+- Removed collection `createCapConstraint`, `createHashIndex`,
+  `createSkipList`, `createPersistentIndex`, `createGeoIndex` and
+  `createFulltextIndex` methods
+
+  These methods are no longer part of the official ArangoDB API and can be
+  replaced by using the `collection.ensureIndex` method.
+
+- Removed `save(fromId, toId, edgeData)` method variants
+
+  Methods for creating edges now require the `_to` and `_from` attributes to
+  be specified in the edge (document) data and no longer accept these values
+  as positional arguments.
+
+- Removed `collection.bulkUpdate` method
+
+  The new method `collection.updateAll` now provides this functionality.
+
+#### Graph API
+
+- Removed generic collection methods from `GraphVertexCollection`
+
+  All methods that are not part of the graph API have been removed.
+  The underlying collection can still be accessed from the `collection`
+  property.
+
+- Removed generic collection methods from `GraphEdgeCollection`
+
+  All methods that are not part of the graph API have been removed.
+  The underlying collection can still be accessed from the `collection`
+  property.
+
+#### Cursor API
+
+- Removed `cursor.some` and `cursor.every` methods
+
+  These methods encouraged overfetching and should be replaced with more
+  efficient AQL queries.
+
+  The behavior can still be implemented by using the `next` method directly
+  or iterating over the cursor using the `forEach` method or the `for await`
+  syntax.
+
+### Deprecated
+
+#### Database API
+
+- Deprecated `db.useDatabase` method
+
+  Using this method will affect `Collection`, `Graph` and other objects
+  already created for the given database and change which database these
+  refer to, which may cause unexpected behavior.
+
+  As of arangojs 7 the `db.database` method can be used instead to create a
+  new, separate `Database` object using the same connection pool.
+
+#### Collection API
+
+- Deprecated `Collection` methods for simple queries: `list`, `all`, `any`,
+  `byExample`, `firstExample`, `removeByExample`, `replaceByExample`,
+  `updateByExample`, `lookupByKeys`, `removeByKeys`, `fulltext`
+
+  These methods were deprecated in ArangoDB 3.4 and should no longer be used.
+  They will still behave correctly with versions of ArangoDB supporting these
+  methods but may be removed in a future ArangoDB release.
+
+  Their behavior can be emulated using AQL queries.
+
+#### Graph API
+
+- Deprecated `graph.traversal` and `collection.traversal`
+
+  These methods were deprecated in ArangoDB 3.4 and should no longer be used.
+  They will still behave correctly with versions of ArangoDB supporting these
+  methods but may be removed in a future ArangoDB release.
+
+  Their behavior can be emulated using AQL graph traversal.
+
+### Changed
+
+#### General
+
+- Multiple `Database` objects can now share a single `Connection`
+
+  All arangojs objects now reference a `Database` object rather than accessing
+  the underlying `Connection` directly. This allows multiple `Database` objects
+  to be created by using the `db.database` method while still allowing the
+  creation of separate database objects with separate connection pools if
+  desired.
+
+- Memoized `Database`, `Collection`, `Graph`, `View` and `Analyzer`
+
+  Database objects are now memoized per-connection and the other object types
+  are memoized per-database. Using `useDatabase` de-memoizes the database
+  object to prevent unexpected behavior.
+
+#### Database API
+
+- Renamed method `db.arangoSearchView` to `db.view`
+
+- Replaced methods `db.enableServiceDevelopmentMode` and
+  `db.disableServiceDevelopmentMode` with `db.setServiceDevelopmentMode`
+
+- Flattened database `query` method `options` argument
+
+  The optional `options` argument previously contained an additional `options`
+  object with additional query options. These options are now specified on the
+  `options` argument itself directly.
+
+  Before:
+
+  ```js
+  db.query(aql`FOR doc IN ${collection} RETURN doc`, {
+    cache: false,
+    options: { fullCount: true },
+  });
+  ```
+
+  After:
+
+  ```js
+  db.query(aql`FOR doc IN ${collection} RETURN doc`, {
+    cache: false,
+    fullCount: true,
+  });
+  ```
+
+- Changed `db.listServices` option `excludeSystem` default to `true`
+
+  To be more consistent with the equivalent options in other methods,
+  the default value has been changed from `false` to `true`.
+
+- Changed `db.createDatabase` return type to `Database`
+
+- Renamed `database.setQueryTracking` to `database.queryTracking`
+
+  The method will now return the existing query tracking properties or set the
+  new query tracking properties depending on whether an argument is provided.
+
+#### Collection API
+
+- Renamed `collection.setProperties` to `collection.properties`
+
+  The method will now return the existing properties or set the properties
+  depending on whether an argument is provided.
+
+- Merged `DocumentCollection` and `EdgeCollection` APIs
+
+  All collections are now implemented as generic `Collection` objects.
+  In TypeScript the generic collection object can still be explicitly cast to
+  `DocumentCollection` or `EdgeCollection` for stricter type safety.
+
+- Collection methods `save`, `update`, `replace` and `remove` no longer take
+  arrays as input
+
+  The array versions have been renamed to `saveAll`, `updateAll`, `replaceAll`
+  and `removeAll` to reduce the likelihood of mistakes and provide more helpful
+  type signatures.
+
+- Collection methods will now throw errors when passed documents or document
+  IDs from different collections where a document key or ID for a document in
+  the same collection is expected
+
+  For example the following code will now result in an error rather than the
+  document from a different collection being returned:
+
+  ```js
+  const aliceId = "alice/123"; // Document from collection "alice"
+  const bobCol = db.collection("bob"); // Collection "bob"
+  const doc = await bobCol.document(aliceId); // THROWS
+  ```
+
+- Changed `collection.import` option `type` behavior
+
+  Previously this option would always default to `"auto"`.
+
+  When passing a `string`, `Buffer` or `Blob` as data, the option now defaults
+  to `undefined`. This matches the behavior in previous versions of setting
+  the option explicitly to `null`.
+
+  Additionally, the value `"array"` has been replaced with `"list"`.
+
+  When passing an array as data, the option is now no longer supported as the
+  corresponding value will be inferred from the array's contents:
+
+  If the array's first item is also an array, it will match the behavior in
+  previous versions of setting the option explicitly to `null`.
+
+  Otherwise it will match the behavior in previous versions of setting the
+  option explicitly to `"documents"` or `"auto"`, or omitting it entirely.
+
+- Changed `collection.list` return type to `ArrayCursor`
+
+#### Graph API
+
+- Graph `create` method (and `db.createGraph`) signature changed
+
+  The `graph.create` method now takes an array of edge definitions as the
+  first argument and any additional options (not just the `waitForSync`
+  option) as the second argument.
+
+  Before:
+
+  ```js
+  await graph.create(
+    {
+      edgeDefinitions: [{ collection: "edges", from: ["a"], to: ["b"] }],
+      isSmart: true,
+    },
+    { waitForSync: true }
+  );
+  ```
+
+  After:
+
+  ```js
+  await graph.create([{ collection: "edges", from: ["a"], to: ["b"] }], {
+    isSmart: true,
+    waitForSync: true,
+  });
+  ```
+
+- First argument to `graph.replaceEdgeDefinition` is now optional
+
+  Since the new edge definition already includes the edge collection name
+  that identifies the edge definition, it is now possible to specify only the
+  new edge definition object without additionally specifying the collection
+  name as the first argument.
+
+  Before:
+
+  ```js
+  await graph.replaceEdgeDefinition("edges", {
+    collection: "edges", // This is a bit redundant
+    from: ["a"],
+    to: ["b"],
+  });
+  ```
+
+  After:
+
+  ```js
+  await graph.replaceEdgeDefinition({
+    collection: "edges",
+    from: ["a"],
+    to: ["b"],
+  });
+  ```
+
+- Graph collection return values now contain `old` and `new` properties when
+  `returnOld` or `returnNew` options are used
+
+  This behavior represents a compromise between remaining consistent with the
+  behavior of the regular collection method equivalents and remaining
+  compatible with the ArangoDB HTTP API response object quirks.
+
+#### Cursor API
+
+- Replaced `ArrayCursor` methods `hasNext` and `hasMore` with getters
+
+- Renamed `ArrayCursor` method `each` to `forEach`
+
+- In TypeScript `ArrayCursor` is now a generic type
+
+  TypeScript users can now cast cursor instances to use a specific type for
+  its values rather than `any` to aid type safety.
+
+#### View API
+
+- Renamed `view.setProperties` to `view.updateProperties`
+
+- Renamed type `ArangoView` to `View`
+
+#### Analyzer API
+
+- Renamed type `ArangoAnalyzer` to `Analyzer`
+
+#### Transaction API
+
+- Renamed type `ArangoTransaction` to `Transaction`
+
+- Transactions no longer take a positional `params` argument
+
+  The argument can still be specified using the `opts.params` argument.
+
+### Added
+
+#### General
+
+- Added `databaseName` option to arangojs config
+
+  Setting this option to a database name will result in the initial `Database`
+  object using this database instead of the default `_system` database.
+
+- Improved type signatures for TypeScript and inline documentation
+
+  Most methods should now provide full type signatures for options and response
+  objects and provide inline documentation in IDEs and editors that support
+  this feature in TypeScript and JavaScript.
+
+#### Database API
+
+- Added `db.database` method
+
+  This method replaces the use case for the deprecated `db.useDatabase`
+  method.
+
+- Added support for extended options in `db.createDatabase`
+
+  This method now supports passing an extended options object instead of
+  passing the users array directly.
+
+- Added `db.createCollection` and `db.createEdgeCollection` methods
+
+  These are convenience methods wrapping `collection.create`. In TypeScript
+  `createEdgeCollection` will return a collection cast to the `EdgeCollection`
+  type.
+
+- Added `db.createGraph` method
+
+  This is a convenience method wrapping `graph.create`.
+
+- Added `db.createArangoSearchView` method
+
+  This is a convenience method wrapping `view.create`.
+
+- Added `db.createAnalyzer` method
+
+  This is a convenience method wrapping `analyzer.create`.
+
+- Added support for `db.createFunction` option `isDeterministic`
+
+- Added support for `db.listServices` option `excludeSystem`
+
+#### Collection API
+
+- Added collection `saveAll`, `updateAll`, `replaceAll` and `removeAll` methods
+
+  These methods replace the respective array versions of the collection
+  methods `save`, `update`, `replace` and `remove`, which no longer accept
+  arrays as inputs.
+
+- Added `collection.documentId` method
+
+  The method takes a document or a document key and returns a fully qualified
+  document ID string for the document in the current collection.
+
+#### Graph API
+
+- Added `graphVertexCollection.vertexExists` and
+  `graphEdgeCollection.edgeExists` methods
+
+  These mimic the behavior of the `collection.documentExists` method but using
+  the Graph API.
+
+- Added `graphVertexCollection.collection` and `graphEdgeCollection.collection`
+
+  These properties now provide access to regular (non-graph) collection
+  objects for these graph collections. These objects can be used to perform
+  operations not available within the context of a graph (e.g. bulk imports
+  or modifying the collection itself).
+
+#### Cursor API
+
+- Added `cursor.flatMap` method
+
+  This method behaves similarly to the `Array` method `flatMap` but operates
+  on the cursor directly like `cursor.map` does.
+
+- Added support for `for await` in `ArrayCursor` ([#616](https://github.com/arangodb/arangojs/pull/616))
+
+  It is now possible to use `for await` to iterate over each item in a cursor
+  asynchronously.
+
+### Fixed
+
+#### General
+
+- Removed TypeScript dependency on `dom` library
+
+  If you are using arangojs in Node.js, you no longer need to add the `dom`
+  library to your `tsconfig.json` configuration.
+
+#### Database API
+
+- Fixed `db.dropFunction` option `group` being ignored
+
+- Fixed documentation of `db.runServiceTests`
+
+  Previously the documentation incorrectly indicated that the default value
+  of the `idiomatic` option is `true`. The correct default value is `false`.
+
 ## [6.14.1] - 2020-05-01
 
 ### Fixed
 
 - Added `uuid` and `padded` to legal `KeyGeneratorType` values in TypeScript ([#656](https://github.com/arangodb/arangojs/issues/656))
+
 - Added `overwrite` to `InsertOptions` type in TypeScript ([#657](https://github.com/arangodb/arangojs/issues/657))
 
 ## [6.14.0] - 2020-03-18
@@ -230,7 +774,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   ```js
   const users = db.collection("users");
   const keys = ["a", "b", "c"];
-  const fragments = keys.map(key => aql`DOCUMENT(${users}, ${key})`);
+  const fragments = keys.map((key) => aql`DOCUMENT(${users}, ${key})`);
   const combined = aql`[${aql.join(fragments, ", ")}]`;
   // [DOCUMENT(@@value0, @value1), DOCUMENT(@@value0, @value2), \
   // DOCUMENT(@@value0, @value3)]
@@ -253,7 +797,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed
 
-- Reimplemented `collection.import`
+- Re-implemented `collection.import`
 
   The previous implementation was broken. The new implementation should be backwards-compatible
   in cases where it previously wasn't broken but is more flexible and also handles buffers.
@@ -480,6 +1024,22 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed
 
+- Removed `lib` path prefix
+
+  All arangojs files can now be imported directly by name.
+
+  Before:
+
+  ```js
+  import { DocumentCollection } from "arangojs/lib/collection";
+  ```
+
+  After:
+
+  ```js
+  import { DocumentCollection } from "arangojs/collection";
+  ```
+
 - The `url` config can now also be an array of URLs.
 
   The behavior depends on the load balancing strategy (see API docs).
@@ -529,6 +1089,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
   Graph methods now only return the relevant part of the response body.
 
+[unreleased]: https://github.com/arangodb/arangojs/compare/v7.0.0-preview.1...v7
+[7.0.0-preview.1]: https://github.com/arangodb/arangojs/compare/v7.0.0-preview.0...v7.0.0-preview.1
+[7.0.0-preview.0]: https://github.com/arangodb/arangojs/compare/v6.14.1...v7.0.0-preview.0
 [6.14.1]: https://github.com/arangodb/arangojs/compare/v6.14.0...v6.14.1
 [6.14.0]: https://github.com/arangodb/arangojs/compare/v6.13.0...v6.14.0
 [6.13.0]: https://github.com/arangodb/arangojs/compare/v6.12.0...v6.13.0

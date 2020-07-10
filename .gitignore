@@ -1,7 +1,8 @@
 node_modules/
-/lib
 /build
 /gh-pages
+/tsdoc
 /.vscode
+yarn-error.log
 yarn.lock
 package-lock.json

@@ -1,13 +1,14 @@
 import { expect } from "chai";
-import { Database } from "../arangojs";
-import { COLLECTION_NOT_FOUND, DocumentCollection } from "../collection";
+import { DocumentCollection } from "../collection";
+import { Database } from "../database";
+import { COLLECTION_NOT_FOUND } from "../lib/codes";
 
 const ARANGO_URL = process.env.TEST_ARANGODB_URL || "http://localhost:8529";
 const ARANGO_VERSION = Number(
   process.env.ARANGO_VERSION || process.env.ARANGOJS_DEVEL_VERSION || 30400
 );
 
-describe("Collection metadata", function() {
+describe("Collection metadata", function () {
   let db: Database;
   let collection: DocumentCollection;
   const dbName = `testdb_${Date.now()}`;
@@ -16,8 +17,7 @@ describe("Collection metadata", function() {
     db = new Database({ url: ARANGO_URL, arangoVersion: ARANGO_VERSION });
     await db.createDatabase(dbName);
     db.useDatabase(dbName);
-    collection = db.collection(collectionName);
-    await collection.create();
+    collection = await db.createCollection(collectionName);
   });
   after(async () => {
     db.useDatabase("_system");

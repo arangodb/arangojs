@@ -1,81 +1,263 @@
 # ArangoDB JavaScript Driver
 
-The official ArangoDB low-level JavaScript client.
+The official ArangoDB JavaScript client for Node.js and the browser.
 
 [![license - APACHE-2.0](https://img.shields.io/npm/l/arangojs.svg)](http://opensource.org/licenses/APACHE-2.0)
 [![Continuous Integration](https://github.com/arangodb/arangojs/workflows/Continuous%20Integration/badge.svg)](https://github.com/arangodb/arangojs/actions?query=workflow:"Continuous+Integration")
 
-[![NPM status](https://nodei.co/npm/arangojs.png?downloads=true&stars=true)](https://npmjs.org/package/arangojs)
+[![npm package status](https://nodei.co/npm/arangojs.png?downloads=true&stars=true)](https://npmjs.org/package/arangojs)
 
 ## Install
 
-### With Yarn or NPM
+### With npm or yarn
 
 ```sh
-yarn add arangojs
-## - or -
 npm install --save arangojs
+## - or -
+yarn add arangojs
 ```
 
-### From source
+### For browsers
 
-```sh
-git clone https://github.com/arangodb/arangojs.git
-cd arangojs
-npm install
-npm run dist
+When using modern JavaScript tooling with a bundler and compiler (e.g. Babel),
+arangojs can be installed using `npm` or `yarn` like any other dependency.
+
+For use without a compiler, the npm release comes with a precompiled browser
+build for evergreen browsers and Internet Explorer 11:
+
+```js
+var arangojs = require("arangojs/web");
+```
+
+You can also use [unpkg](https://unpkg.com) during development:
+
+```html
+< !-- note the path includes the version number (e.g. 7.0.0) -- >
+<script src="https://unpkg.com/arangojs@7.0.0/web.js"></script>
+<script>
+  var db = new arangojs.Database();
+  // ...
+</script>
+```
+
+If you are targetting browsers older than Internet Explorer 11 you may want to
+use [babel](https://babeljs.io) with a
+[polyfill](https://babeljs.io/docs/usage/polyfill) to provide missing
+functionality needed to use arangojs.
+
+When loading the browser build with a script tag make sure to load the polyfill first:
+
+```html
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/6.26.0/polyfill.js"></script>
+<script src="https://unpkg.com/arangojs@7.0.0/web.js"></script>
 ```
 
 ## Basic usage example
 
-```js
-// Modern JavaScript
-import { Database, aql } from "arangojs";
-const db = new Database();
-(async function() {
-  const now = Date.now();
-  try {
-    const cursor = await db.query(aql`RETURN ${now}`);
-    const result = await cursor.next();
-    // ...
-  } catch (err) {
-    // ...
-  }
-})();
+Modern JavaScript/TypeScript with async/await:
 
-// or plain old Node-style
+```js
+// TS: import { Database, aql } from "arangojs";
+const { Database, aql } = require("arangojs");
+
+const db = new Database();
+const pokemons = db.collection("my-pokemons");
+
+async function main() {
+  try {
+    const pokemons = await db.query(aql`
+      FOR pokemon IN ${pokemons}
+      FILTER pokemon.type == "fire"
+      RETURN pokemon
+    `);
+    console.log("My pokemons, let me show you them:");
+    for await (const pokemon of pokemons) {
+      console.log(pokemon.name);
+    }
+  } catch (err) {
+    console.error(err.message);
+  }
+}
+
+main();
+```
+
+Using a different database:
+
+```js
+const db = new Database({
+  url: "http://localhost:8529",
+  database: "pancakes",
+  auth: { username: "root", password: "hunter2" },
+});
+
+// The database can be swapped at any time
+db.useDatabase("waffles");
+db.useBasicAuth("admin", "maplesyrup");
+```
+
+Old-school JavaScript with promises:
+
+```js
 var arangojs = require("arangojs");
-var db = new arangojs.Database();
-var now = Date.now();
+var Database = arangojs.Database;
+
+var db = new Database();
+var pokemons = db.collection("pokemons");
+
 db.query({
-  query: "RETURN @value",
-  bindVars: { value: now }
+  query: "FOR p IN @@c FILTER p.type === 'fire' RETURN p",
+  bindVars: { c: pokemons },
 })
-  .then(function(cursor) {
-    return cursor.next().then(function(result) {
-      // ...
+  .then(function (cursor) {
+    console.log("My pokemons, let me show you them:");
+    return cursor.forEach(function (pokemon) {
+      console.log(pokemon.name);
     });
   })
-  .catch(function(err) {
-    // ...
+  .catch(function (err) {
+    console.error(err.message);
   });
 ```
 
+**Note**: The examples throughout this documentation use `async`/`await`
+and other modern language features like multi-line strings and template tags.
+When developing for an environment without support for these language features,
+substitute promises for `await` syntax as in the above example.
+
+## Compatibility
+
+The arangojs driver is compatible with the latest stable version of ArangoDB
+available at the time of the driver release and remains compatible with the
+two most recent Node.js LTS versions in accordance with the official
+[Node.js long-term support schedule](https://github.com/nodejs/LTS).
+
+For a list of changes between recent versions of the driver, see the
+[CHANGELOG](https://arangodb.github.io/arangojs/CHANGELOG).
+
+**Note:** arangojs is only intended to be used in Node.js or a browser to access
+ArangoDB **from outside the database**. If you are looking for the ArangoDB
+JavaScript API for [Foxx](https://foxx.arangodb.com) or for accessing ArangoDB
+from within the `arangosh` interactive shell, please refer to the documentation
+of the [`@arangodb` module](https://www.arangodb.com/docs/stable/foxx-reference-modules.html#the-arangodb-module)
+and [the `db` object](https://www.arangodb.com/docs/stable/appendix-references-dbobject.html) instead.
+
+## Error responses
+
+If arangojs encounters an API error, it will throw an `ArangoError` with
+an `errorNum` property indicating the ArangoDB error code and the `code`
+property indicating the HTTP status code from the response body.
+
+For any other non-ArangoDB error responses (4xx/5xx status code), it will throw
+an `HttpError` error with the status code indicated by the `code` property.
+
+If the server response did not indicate an error but the response body could
+not be parsed, a regular `SyntaxError` may be thrown instead.
+
+In all of these cases the server response object will be exposed as the
+`response` property on the error object.
+
+If the request failed at a network level or the connection was closed without
+receiving a response, the underlying system error will be thrown instead.
+
 ## Common issues
 
-### TypeScript `error TS2304: Cannot find name 'Blob'.`
+### Missing functions or unexpected server errors
 
-Even if your project doesn't contain any browser code, you need to add `"dom"`
-to the `"lib"` array in your `tsconfig.json` to make arangojs work. This is a
-known limitation because the library supports both browser and Node
-environments and there is no common binary format that works in
-both environments:
+Please make sure you are using the latest version of this driver and that the
+version of the arangojs documentation you are reading matches that version.
+
+Changes in the major version number of arangojs (e.g. 6.x.y -> 7.0.0) indicate
+backwards-incompatible changes in the arangojs API that may require changes in
+your code when upgrading your version of arangojs.
+
+Additionally please ensure that your version of Node.js (or browser) and
+ArangoDB are supported by the version of arangojs you are trying to use. See
+the [compatibility section](#compatibility) for additional information.
+
+**Note**: As of June 2018 ArangoDB 2.8 has reached its End of Life and is no
+longer supported in arangojs 7 and later. If your code needs to work with
+ArangoDB 2.8 you can continue using arangojs 6 and enable ArangoDB 2.8
+compatibility mode by setting the config option `arangoVersion: 20800` to
+enable the ArangoDB 2.8 compatibility mode in arangojs 6.
+
+You can install an older version of arangojs using `npm` or `yarn`:
+
+```sh
+# for version 6.x.x
+yarn add arangojs@6
+# - or -
+npm install --save arangojs@6
+```
+
+### No code intelligence when using require instead of import
+
+If you are using `require` to import the `arangojs` module in JavaScript, the
+default export might not be recognized as a function by the code intelligence
+of common editors like Visual Studio Code, breaking auto-complete and other
+useful features.
+
+As a workaround, use the `arangojs` function exported by that module instead
+of calling the module itself:
 
 ```diff
-// tsconfig.json
-- "lib": ["es6"],
-+ "lib": ["es6", "dom"],
+  const arangojs = require("arangojs");
+
+- const db = arangojs({
++ const db = arangojs.arangojs({
+    url: ARANGODB_SERVER,
+  });
 ```
+
+Alternatively you can use the `Database` class directly:
+
+```diff
+  const arangojs = require("arangojs");
++ const Database = arangojs.Database;
+
+- const db = arangojs({
++ const db = new Database({
+    url: ARANGODB_SERVER,
+  });
+```
+
+Or using object destructuring:
+
+```diff
+- const arangojs = require("arangojs");
++ const { Database } = require("arangojs");
+
+- const db = arangojs({
++ const db = new Database({
+    url: ARANGODB_SERVER,
+  });
+```
+
+### Error stack traces contain no useful information
+
+Due to the async, queue-based behavior of arangojs, the stack traces generated
+when an error occur rarely provide enough information to determine the location
+in your own code where the request was initiated.
+
+Using the `precaptureStackTraces` configuration option, arangojs will attempt
+to always generate stack traces proactively when a request is performed,
+allowing arangojs to provide more meaningful stack traces at the cost of an
+impact to performance even when no error occurs.
+
+```diff
+  const { Database } = require("arangojs");
+
+  const db = new Database({
+    url: ARANGODB_SERVER,
++   precaptureStackTraces: true,
+  });
+```
+
+Note that arangojs will attempt to use `Error.captureStackTrace` if available
+and fall back to generating a stack trace by throwing an error. In environments
+that do not support the `stack` property on error objects, this option will
+still impact performance but not result in any additional information becoming
+available.
 
 ### Node.js `ReferenceError: window is not defined`
 
@@ -94,65 +276,64 @@ to substitute browser-specific implementations for certain modules.
 Build tools like Webpack will respect this field when targetting a browser
 environment and may need to be explicitly told you are targetting Node instead.
 
-## Documentation
+### Node.js with self-signed HTTPS certificates
 
-[Latest Documentation](https://www.arangodb.com/docs/stable/drivers/js.html)
+If you need to support self-signed HTTPS certificates, you may have to add
+your certificates to the `agentOptions`, e.g.:
 
-## Testing
+```diff
+  const { Database } = require("arangojs");
 
-Run the tests using the `yarn test` or `npm test` commands:
-
-```sh
-yarn test
-# - or -
-npm test
+  const db = new Database({
+    url: ARANGODB_SERVER,
++   agentOptions: {
++     ca: [
++       fs.readFileSync(".ssl/sub.class1.server.ca.pem"),
++       fs.readFileSync(".ssl/ca.pem")
++     ]
++   },
+  });
 ```
 
-By default the tests will be run against a server listening on
-`http://localhost:8529` (using username `root` with no password). To
-override this, you can set the environment variable `TEST_ARANGODB_URL` to
-something different:
+Although this is **strongly discouraged**, it's also possible to disable
+HTTPS certificate validation entirely, but note this has
+**extremely dangerous** security implications:
 
-```sh
-TEST_ARANGODB_URL=http://myserver.local:8530 yarn test
-# - or -
-TEST_ARANGODB_URL=http://myserver.local:8530 npm test
+```diff
+  const { Database } = require("arangojs");
+
+  const db = new Database({
+    url: ARANGODB_SERVER,
++   agentOptions: {
++     rejectUnauthorized: false
++   },
+  });
 ```
 
-For development arangojs tracks the development build of ArangoDB. This means
-tests may reflect behavior that does not match any existing public release of
-ArangoDB.
+When using arangojs in the browser, self-signed HTTPS certificates need to
+be trusted by the browser or use a trusted root certificate.
 
-To run tests for a specific release of ArangoDB other than the latest
-development build, use the environment variable `ARANGO_VERSION`, e.g. for 3.3:
+### Streaming transactions
 
-```sh
-ARANGO_VERSION=30300 yarn test
-# - or -
-ARANGO_VERSION=30300 npm test
+When using the `transaction.step` method it is important to be aware of the
+limitations of what a callback passed to this method is allowed to do.
+
+```js
+const collection = db.collection(collectionName);
+const trx = db.transaction(transactionId);
+
+// WARNING: This code will not work as intended!
+await trx.step(async () => {
+  await collection.save(doc1);
+  await collection.save(doc2); // Not part of the transaction!
+});
+
+// INSTEAD: Always perform a single operation per step:
+await trx.step(() => collection.save(doc1));
+await trx.step(() => collection.save(doc2));
 ```
 
-The value follows the same format as the `arangoVersion` config option,
-i.e. XYYZZ where X is the major version, YY is the two digit minor version
-and ZZ is the two digit patch version (both zero filled to two digits).
-
-Any incompatible tests will appear as skipped (not failed) in the test result.
-
-To run the resilience/failover tests you need to set the environment variables
-`RESILIENCE_ARANGO_BASEPATH` (to use a local build of ArangoDB) or
-`RESILIENCE_DOCKER_IMAGE` (to use a docker image by name):
-
-```sh
-RESILIENCE_ARANGO_BASEPATH=../arangodb yarn test
-# - or -
-RESILIENCE_ARANGO_BASEPATH=../arangodb npm test
-```
-
-This runs only the resilience/failover tests, without running any other tests.
-
-Note that these tests are generally a lot slower than the regular test suite
-because they involve shutting down and restarting individual ArangoDB server
-instances.
+Please refer to the documentation of this method for additional examples.
 
 ## License
 

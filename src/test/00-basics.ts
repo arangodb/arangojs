@@ -1,8 +1,7 @@
 import { expect } from "chai";
 import * as http from "http";
 import * as https from "https";
-import arangojs, { Database } from "../arangojs";
-import { Connection } from "../connection";
+import arangojs, { Database } from "..";
 
 describe("Creating a Database", () => {
   describe("using the factory", () => {
@@ -29,38 +28,38 @@ describe("Configuring the driver", () => {
   describe.skip("with a string", () => {
     it("sets the url", () => {
       const url = "https://example.com:9000";
-      const conn = new Connection(url);
-      expect((conn as any)._url).to.eql([url]);
+      const db = new Database(url);
+      expect((db as any)._connection._url).to.eql([url]);
     });
   });
   describe("with headers", () => {
-    it("applies the headers", done => {
-      const conn = new Connection({
+    it("applies the headers", (done) => {
+      const db = new Database({
         headers: {
           "x-one": "1",
-          "x-two": "2"
-        }
+          "x-two": "2",
+        },
       });
-      (conn as any)._hosts = [
+      (db as any)._connection._hosts = [
         ({ headers }: any) => {
           expect(headers).to.have.property("x-one", "1");
           expect(headers).to.have.property("x-two", "2");
           done();
-        }
+        },
       ];
-      conn.request({ headers: {} }, () => {});
+      db.request({ headers: {} }, () => {});
     });
   });
   describe("with an arangoVersion", () => {
-    it("sets the x-arango-version header", done => {
-      const conn = new Connection({ arangoVersion: 99999 });
-      (conn as any)._hosts = [
+    it("sets the x-arango-version header", (done) => {
+      const db = new Database({ arangoVersion: 99999 });
+      (db as any)._connection._hosts = [
         ({ headers }: any) => {
           expect(headers).to.have.property("x-arango-version", "99999");
           done();
-        }
+        },
       ];
-      conn.request({ headers: {} }, () => {});
+      db.request({ headers: {} }, () => {});
     });
   });
   describe("with agentOptions", () => {
@@ -73,9 +72,9 @@ describe("Configuring the driver", () => {
       options = undefined;
     });
     before(() => {
-      let Agent = (ptcl: any) =>
-        function(opts: any) {
-          protocol = ptcl;
+      let Agent = (proto: any) =>
+        function (opts: any) {
+          protocol = proto;
           options = opts;
           return () => null;
         };
@@ -87,16 +86,16 @@ describe("Configuring the driver", () => {
       (https as any).Agent = _httpsAgent;
     });
     it("passes the agentOptions to the agent", () => {
-      new Connection({ agentOptions: { hello: "world" } }); // eslint-disable-line no-new
-      expect(options).to.have.property("hello", "world");
+      new Database({ agentOptions: { maxSockets: 23 } }); // eslint-disable-line no-new
+      expect(options).to.have.property("maxSockets", 23);
     });
     it("uses the built-in agent for the protocol", () => {
       // default: http
-      new Connection(); // eslint-disable-line no-new
+      new Database(); // eslint-disable-line no-new
       expect(protocol).to.equal("http");
-      new Connection("https://localhost:8529"); // eslint-disable-line no-new
+      new Database("https://localhost:8529"); // eslint-disable-line no-new
       expect(protocol).to.equal("https");
-      new Connection("http://localhost:8529"); // eslint-disable-line no-new
+      new Database("http://localhost:8529"); // eslint-disable-line no-new
       expect(protocol).to.equal("http");
     });
   });
@@ -110,8 +109,8 @@ describe("Configuring the driver", () => {
       options = undefined;
     });
     before(() => {
-      let Request = (ptcl: any) => (opts: any) => {
-        protocol = ptcl;
+      let Request = (proto: any) => (opts: any) => {
+        protocol = proto;
         options = opts;
         return {
           on() {
@@ -119,7 +118,7 @@ describe("Configuring the driver", () => {
           },
           end() {
             return this;
-          }
+          },
         };
       };
       (http as any).request = Request("http");
@@ -131,30 +130,30 @@ describe("Configuring the driver", () => {
     });
     it("passes the agent to the request function", () => {
       let agent = Symbol("agent");
-      let conn;
-      conn = new Connection({ agent }); // default: http
-      conn.request({ headers: {} }, () => {});
+      let db;
+      db = new Database({ agent }); // default: http
+      db.request({ headers: {} }, () => {});
       expect(options).to.have.property("agent", agent);
       agent = Symbol("agent");
-      conn = new Connection({ agent, url: "https://localhost:8529" });
-      conn.request({ headers: {} }, () => {});
+      db = new Database({ agent, url: "https://localhost:8529" });
+      db.request({ headers: {} }, () => {});
       expect(options).to.have.property("agent", agent);
       agent = Symbol("agent");
-      conn = new Connection({ agent, url: "http://localhost:8529" });
-      conn.request({ headers: {} }, () => {});
+      db = new Database({ agent, url: "http://localhost:8529" });
+      db.request({ headers: {} }, () => {});
       expect(options).to.have.property("agent", agent);
     });
     it("uses the request function for the protocol", () => {
       const agent = Symbol("agent");
-      let conn;
-      conn = new Connection({ agent }); // default: http
-      conn.request({ headers: {} }, () => {});
+      let db;
+      db = new Database({ agent }); // default: http
+      db.request({ headers: {} }, () => {});
       expect(protocol).to.equal("http");
-      conn = new Connection({ agent, url: "https://localhost:8529" });
-      conn.request({ headers: {} }, () => {});
+      db = new Database({ agent, url: "https://localhost:8529" });
+      db.request({ headers: {} }, () => {});
       expect(protocol).to.equal("https");
-      conn = new Connection({ agent, url: "http://localhost:8529" });
-      conn.request({ headers: {} }, () => {});
+      db = new Database({ agent, url: "http://localhost:8529" });
+      db.request({ headers: {} }, () => {});
       expect(protocol).to.equal("http");
     });
     it("calls Agent#destroy when the connection is closed", () => {
@@ -162,11 +161,11 @@ describe("Configuring the driver", () => {
         _destroyed: false,
         destroy() {
           this._destroyed = true;
-        }
+        },
       };
-      const conn = new Connection({ agent });
+      const db = new Database({ agent });
       expect(agent._destroyed).to.equal(false);
-      conn.close();
+      db.close();
       expect(agent._destroyed).to.equal(true);
     });
   });

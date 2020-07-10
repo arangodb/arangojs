@@ -1,6 +1,10 @@
 {
+  "private": true,
   "name": "arangojs",
-  "version": "6.14.1",
+  "version": "7.0.0-preview.1",
+  "engines": {
+    "node": ">=10"
+  },
   "license": "Apache-2.0",
   "description": "The official ArangoDB JavaScript driver.",
   "homepage": "https://github.com/arangodb/arangojs",
@@ -29,68 +33,81 @@
     "http",
     "rest"
   ],
-  "main": "lib/index.js",
-  "typings": "lib/cjs/arangojs.d.ts",
+  "main": "build/index.js",
+  "typings": "build/arangojs.d.ts",
   "browser": {
-    "./lib/index.js": "./lib/cjs/index.js",
-    "./lib/cjs/util/btoa.js": "./lib/cjs/util/btoa.web.js",
-    "./lib/cjs/util/bytelength.js": "./lib/cjs/util/bytelength.web.js",
-    "./lib/cjs/util/joinPath.js": "./lib/cjs/util/joinPath.web.js",
-    "./lib/cjs/util/multipart.js": "./lib/cjs/util/multipart.web.js",
-    "./lib/cjs/util/request.js": "./lib/cjs/util/request.web.js"
+    "./src/lib/btoa.ts": "./src/lib/btoa.web.ts",
+    "./src/lib/bytelength.ts": "./src/lib/bytelength.web.ts",
+    "./src/lib/joinPath.ts": "./src/lib/joinPath.web.ts",
+    "./src/lib/multipart.ts": "./src/lib/multipart.web.ts",
+    "./src/lib/request.ts": "./src/lib/request.web.ts"
   },
   "files": [
-    "lib/*.*",
-    "lib/async/*.*",
-    "lib/async/util/*.*",
-    "lib/cjs/*.*",
-    "lib/cjs/util/*.*"
+    "**/*",
+    "!test/**"
   ],
   "scripts": {
-    "arango-test": "mocha --reporter json --require source-map-support/register --timeout 30000 lib/async/test",
-    "test": "mocha --reporter spec --require source-map-support/register --timeout 10000 lib/async/test",
-    "pretest": "yarn dist",
-    "ci": "mocha --reporter spec --require source-map-support/register --timeout 30000 lib/cjs/test",
-    "preci": "yarn install",
-    "jenkins": "mocha --reporter spec --require source-map-support/register --timeout 0 lib/cjs/test",
-    "dist:cjs": "tsc -p . --outDir ./lib/cjs/ --declarationMap true && cpy src/index.js lib/cjs/",
-    "dist:async": "tsc -p . --outDir ./lib/async/ --target es2018 --declarationMap true && cpy src/index.js lib/async/",
-    "dist:web": "webpack",
-    "dist": "rimraf lib && npm-run-all --parallel dist:* && cpy src/index.all.js --rename index.js lib/",
-    "prepare": "yarn dist && node -e 'require(\".\");'"
+    "arango-test": "mocha --reporter json --require source-map-support/register --timeout 30000 build/test",
+    "jenkins": "mocha --reporter spec --require source-map-support/register --timeout 0 build/test",
+    "test": "mocha --reporter spec --require source-map-support/register --timeout 10000 build/test",
+    "pretest": "yarn build",
+    "build:package": "cat package.json | jq 'delpaths([[\"private\"],[\"scripts\"],[\"devDependencies\"],[\"babel\"],[\"browserslist\"]])' | sed 's/build\\///g' | sed -r 's/src\\/([^\"]+)\\.ts/\\1.js/g' > build/package.json",
+    "build:cjs": "tsc -p . --outDir ./build/ --target es2018 --declarationMap true",
+    "build:web": "webpack",
+    "build": "rm -rf build && mkdir build && npm-run-all --parallel build:*",
+    "prepare": "yarn build && node -e 'require(\".\");'"
   },
   "dependencies": {
-    "@types/node": "*",
+    "@types/node": ">=13.13.4",
     "es6-error": "^4.0.1",
-    "multi-part": "^2.0.0",
-    "x3-linkedlist": "1.0.0",
+    "multi-part": "^3.0.0",
+    "x3-linkedlist": "1.2.0",
     "xhr": "^2.4.1"
   },
   "devDependencies": {
-    "@types/chai": "^4.0.10",
-    "@types/mocha": "^5.2.1",
-    "@types/request-promise": "^4.1.42",
+    "@babel/core": "^7.9.6",
+    "@babel/plugin-proposal-class-properties": "^7.8.3",
+    "@babel/preset-env": "^7.9.6",
+    "@babel/preset-typescript": "^7.9.0",
+    "@types/chai": "^4.2.11",
+    "@types/mocha": "^7.0.2",
+    "@types/request-promise": "^4.1.46",
     "arangodb-instance-manager": "^1.2.3",
-    "babel-core": "^6.26.0",
-    "babel-eslint": "^8.0.3",
-    "babel-loader": "^7.1.2",
-    "babel-plugin-transform-class-properties": "^6.24.1",
-    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-eslint": "^10.1.0",
+    "babel-loader": "^8.1.0",
     "babel-preset-env": "^1.6.1",
     "chai": "^4.0.2",
-    "cpy-cli": "^2.0.0",
-    "eslint": "^4.13.0",
-    "eslint-config-prettier": "^2.9.0",
-    "eslint-plugin-prettier": "^2.3.1",
-    "mocha": "^6.2.0",
+    "eslint": "^6.8.0",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-plugin-prettier": "^3.1.3",
+    "mocha": "^7.1.2",
     "npm-run-all": "^4.1.2",
-    "prettier": "^1.9.1",
-    "regenerator-runtime": "^0.11.1",
-    "rimraf": "^3.0.0",
-    "source-map-support": "^0.5.0",
-    "ts-loader": "^3.2.0",
-    "typescript": "^3.0.1",
-    "webpack": "^3.0.0",
+    "prettier": "^2.0.5",
+    "regenerator-runtime": "^0.13.5",
+    "semver": "^7.3.2",
+    "source-map-support": "^0.5.19",
+    "typedoc": "^0.17.6",
+    "typescript": "^3.8.3",
+    "webpack": "^4.43.0",
+    "webpack-cli": "^3.3.11",
     "xunit-file": "^1.0.0"
-  }
+  },
+  "babel": {
+    "plugins": [
+      "@babel/proposal-class-properties"
+    ],
+    "presets": [
+      "@babel/env",
+      [
+        "@babel/typescript",
+        {
+          "allowNamespaces": true
+        }
+      ]
+    ]
+  },
+  "browserslist": [
+    "> 2%",
+    "ie 11"
+  ]
 }

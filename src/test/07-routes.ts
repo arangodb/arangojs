@@ -1,6 +1,6 @@
 import { expect } from "chai";
-import { Database } from "../arangojs";
 import { DocumentCollection } from "../collection";
+import { Database } from "../database";
 import { Route } from "../route";
 
 const ARANGO_URL = process.env.TEST_ARANGODB_URL || "http://localhost:8529";
@@ -11,7 +11,7 @@ const ARANGO_VERSION = Number(
 describe("Arbitrary HTTP routes", () => {
   const db = new Database({
     url: ARANGO_URL,
-    arangoVersion: ARANGO_VERSION
+    arangoVersion: ARANGO_VERSION,
   });
   describe("database.route", () => {
     it("returns a Route instance", () => {
@@ -30,7 +30,7 @@ describe("Arbitrary HTTP routes", () => {
   });
 });
 
-describe("Route API", function() {
+describe("Route API", function () {
   const name = `testdb_${Date.now()}`;
   let db: Database;
   let collection: DocumentCollection;
@@ -38,8 +38,7 @@ describe("Route API", function() {
     db = new Database({ url: ARANGO_URL, arangoVersion: ARANGO_VERSION });
     await db.createDatabase(name);
     db.useDatabase(name);
-    collection = db.collection(`c_${Date.now()}`);
-    await collection.create();
+    collection = await db.createCollection(`c_${Date.now()}`);
   });
   after(async () => {
     try {
@@ -54,8 +53,8 @@ describe("Route API", function() {
   });
   describe("route.route", () => {
     it("should concat path", () => {
-      const route = db.route("/api").route("/version");
-      expect(route).to.have.property("_path", "/api/version");
+      const route = db.route("/_api").route("/version");
+      expect(route).to.have.property("_path", "/_api/version");
     });
   });
   describe("route.get", () => {
@@ -152,7 +151,7 @@ describe("Route API", function() {
   });
   describe("route.request", () => {
     it("should be executed using the route path", async () => {
-      const res = await db.route("/_api/version").request("get");
+      const res = await db.route("/_api/version").request({ method: "GET" });
       expect(res).to.have.property("body");
       const body = res.body;
       expect(body).to.have.property("version");
