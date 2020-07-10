@@ -24,11 +24,6 @@ This driver uses semantic versioning:
   property. For `ArangoError` the true HTTP status code may be different and
   can still be accessed using the `response.statusCode` property.
 
-- Removed `CollectionStatus`, `CollectionType` and `ViewType` re-exports
-
-  These enums can still be imported directly from the `collection` and `view`
-  modules.
-
 - Removed `ArangoError` re-export
 
   The type can still be imported directly from the `error` module.
