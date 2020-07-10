@@ -57,9 +57,13 @@ This driver uses semantic versioning:
 
 - Moved `Patch` type into `documents` module
 
-- Moved `Errback` type into library internals
+- Removed `Errback` type from public API
 
 - Renamed `util/foxx-manifest` module to `foxx-manifest`
+
+- Removed `Collection` type from public API
+
+  All public APIs reference `DocumentCollection` and `EdgeCollection` directly.
 
 ### Added
 
@@ -1027,13 +1031,13 @@ This is a major release and breaks backwards compatibility.
   Before:
 
   ```js
-  import { Collection } from "arangojs/lib/collection";
+  import { DocumentCollection } from "arangojs/lib/collection";
   ```
 
   After:
 
   ```js
-  import { Collection } from "arangojs/collection";
+  import { DocumentCollection } from "arangojs/collection";
   ```
 
 - The `url` config can now also be an array of URLs.

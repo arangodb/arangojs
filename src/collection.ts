@@ -127,7 +127,7 @@ export type ShardingStrategy =
 /**
  * Type of document reference.
  *
- * See {@link Collection.list}.
+ * See {@link DocumentCollection.list} and {@link EdgeCollection.list}.
  *
  * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
  * replaced with AQL queries.
@@ -325,7 +325,7 @@ export type ValidationOptions = {
 /**
  * Options for setting a collection's properties.
  *
- * See {@link Collection.properties}.
+ * See {@link DocumentCollection.properties} and {@link EdgeCollection.properties}.
  */
 export type CollectionPropertiesOptions = {
   /**
@@ -1184,7 +1184,7 @@ export type CollectionEdgesResult<T extends object = any> = {
 /**
  * Result of removing documents by an example.
  *
- * See {@link Collection.removeByExample}.
+ * See {@link DocumentCollection.removeByExample} and {@link EdgeCollection.removeByExample}.
  *
  * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
  * replaced with AQL queries.
@@ -1199,7 +1199,7 @@ export type SimpleQueryRemoveByExampleResult = {
 /**
  * Result of replacing documents by an example.
  *
- * See {@link Collection.replaceByExample}.
+ * See {@link DocumentCollection.replaceByExample} and {@link EdgeCollection.replaceByExample}.
  *
  * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
  * replaced with AQL queries.
@@ -1214,7 +1214,7 @@ export type SimpleQueryReplaceByExampleResult = {
 /**
  * Result of updating documents by an example.
  *
- * See {@link Collection.updateByExample}.
+ * See {@link DocumentCollection.updateByExample} and {@link EdgeCollection.updateByExample}.
  *
  * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
  * replaced with AQL queries.
@@ -1229,7 +1229,7 @@ export type SimpleQueryUpdateByExampleResult = {
 /**
  * Result of removing documents by keys.
  *
- * See {@link Collection.removeByKeys}.
+ * See {@link DocumentCollection.removeByKeys} and {@link EdgeCollection.removeByKeys}.
  *
  * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
  * replaced with AQL queries.
@@ -1256,6 +1256,20 @@ export type SimpleQueryRemoveByKeysResult<T extends object = any> = {
  *
  * See {@link EdgeCollection} for a variant of this interface more suited for
  * edge collections.
+ *
+ * When using TypeScript, collections can be cast to a specific document data
+ * type to increase type safety.
+ *
+ * @param T - Type to use for document data. Defaults to `any`.
+ *
+ * @example
+ * ```ts
+ * interface Person {
+ *   name: string;
+ * }
+ * const db = new Database();
+ * const documents = db.collection("persons") as DocumentCollection<Person>;
+ * ```
  */
 export interface DocumentCollection<T extends object = any>
   extends ArangoCollection {
@@ -2335,6 +2349,21 @@ export interface DocumentCollection<T extends object = any>
  *
  * See {@link DocumentCollection} for a more generic variant of this interface
  * more suited for regular document collections.
+ *
+ * When using TypeScript, collections can be cast to a specific edge document
+ * data type to increase type safety.
+ *
+ * @param T - Type to use for edge document data. Defaults to `any`.
+ *
+ * @example
+ * ```ts
+ * interface Friend {
+ *   startDate: number;
+ *   endDate?: number;
+ * }
+ * const db = new Database();
+ * const edges = db.collection("friends") as EdgeCollection<Friend>;
+ * ```
  */
 export interface EdgeCollection<T extends object = any>
   extends DocumentCollection<T> {
@@ -2965,26 +2994,8 @@ export interface EdgeCollection<T extends object = any>
 }
 
 /**
- * The `Collection` type represents a collection in a {@link Database}.
- *
- * When using TypeScript, collections can be cast to {@link DocumentCollection}
- * or {@link EdgeCollection} in order to increase type safety.
- *
- * @param T - Type to use for document data. Defaults to `any`.
- *
- * @example
- * ```ts
- * interface Person {
- *   name: string;
- * }
- * interface Friend {
- *   startDate: number;
- *   endDate?: number;
- * }
- * const db = new Database();
- * const documents = db.collection("persons") as DocumentCollection<Person>;
- * const edges = db.collection("friends") as EdgeCollection<Friend>;
- * ```
+ * @internal
+ * @hidden
  */
 export class Collection<T extends object = any>
   implements EdgeCollection<T>, DocumentCollection<T> {
