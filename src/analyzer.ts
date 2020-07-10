@@ -61,7 +61,7 @@ export type AnalyzerInfo =
  */
 export type IdentityAnalyzerInfo = {
   /**
-   * The type of the Analyzer.
+   * Type of the Analyzer.
    */
   type: "identity";
   /**
@@ -77,7 +77,7 @@ export type IdentityAnalyzerInfo = {
  */
 export type DelimiterAnalyzerInfo = {
   /**
-   * The type of the Analyzer.
+   * Type of the Analyzer.
    */
   type: "delimiter";
   /**
@@ -94,7 +94,7 @@ export type DelimiterAnalyzerInfo = {
  */
 export type StemAnalyzerInfo = {
   /**
-   * The type of the Analyzer.
+   * Type of the Analyzer.
    */
   type: "stem";
   /**
@@ -112,7 +112,7 @@ export type StemAnalyzerInfo = {
  */
 export type NormAnalyzerProperties = {
   /**
-   * The text locale.
+   * Text locale.
    *
    * Format: `language[_COUNTRY][.encoding][@variant]`
    */
@@ -136,7 +136,7 @@ export type NormAnalyzerProperties = {
  */
 export type NormAnalyzerInfo = {
   /**
-   * The type of the Analyzer.
+   * Type of the Analyzer.
    */
   type: "norm";
   /**
@@ -168,7 +168,7 @@ export type NgramAnalyzerProperties = {
  */
 export type NgramAnalyzerInfo = {
   /**
-   * The type of the Analyzer.
+   * Type of the Analyzer.
    */
   type: "ngram";
   /**
@@ -182,7 +182,7 @@ export type NgramAnalyzerInfo = {
  */
 export type TextAnalyzerProperties = {
   /**
-   * The text locale.
+   * Text locale.
    *
    * Format: `language[_COUNTRY][.encoding][@variant]`
    */
@@ -226,7 +226,7 @@ export type TextAnalyzerProperties = {
  */
 export type TextAnalyzerInfo = {
   /**
-   * The type of the Analyzer.
+   * Type of the Analyzer.
    */
   type: "text";
   /**
@@ -261,7 +261,7 @@ export class Analyzer {
   }
 
   /**
-   * The name of this Analyzer.
+   * Name of this Analyzer.
    *
    * See also {@link Database.analyzer}.
    */

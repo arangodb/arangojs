@@ -13,17 +13,17 @@
  */
 export type DocumentMetadata = {
   /**
-   * The key of the document, which uniquely identifies the document within its
+   * Key of the document, which uniquely identifies the document within its
    * collection.
    */
   _key: string;
   /**
-   * The unique ID of the document, which is composed of the collection name
+   * Unique ID of the document, which is composed of the collection name
    * and the document `_key`.
    */
   _id: string;
   /**
-   * The revision of the document data.
+   * Revision of the document data.
    */
   _rev: string;
 };
@@ -33,11 +33,11 @@ export type DocumentMetadata = {
  */
 export type EdgeMetadata = {
   /**
-   * The unique ID of the document that acts as the edge's start vertex.
+   * Unique ID of the document that acts as the edge's start vertex.
    */
   _from: string;
   /**
-   * The unique ID of the document that acts as the edge's end vertex.
+   * Unique ID of the document that acts as the edge's end vertex.
    */
   _to: string;
 };

@@ -228,7 +228,7 @@ export type QueryOptions = {
    */
   count?: boolean;
   /**
-   * The number of result values to be transferred by the server in each
+   * Number of result values to be transferred by the server in each
    * network roundtrip (or "batch").
    *
    * Must be greater than zero.
@@ -242,7 +242,7 @@ export type QueryOptions = {
    */
   cache?: boolean;
   /**
-   * The maximum memory size in bytes that the query is allowed to use.
+   * Maximum memory size in bytes that the query is allowed to use.
    * Exceeding this value will result in the query failing with an error.
    *
    * If set to `0`, the memory limit is disabled.
@@ -259,7 +259,7 @@ export type QueryOptions = {
    */
   maxRuntime?: number;
   /**
-   * The time-to-live for the cursor in seconds. The cursor results may be
+   * Time-to-live for the cursor in seconds. The cursor results may be
    * garbage collected by ArangoDB after this much time has passed.
    *
    * Default: `30`
@@ -322,7 +322,7 @@ export type QueryOptions = {
   intermediateCommitSize?: number;
   /**
    * (Enterprise Edition cluster only.) If set to `true`, collections
-   * inaccessible to the current user will result in an access error instead
+   * inaccessible to current user will result in an access error instead
    * of being treated as empty.
    */
   skipInaccessibleCollections?: boolean;
@@ -371,11 +371,11 @@ export type ExplainOptions = {
  */
 export type TransactionDetails = {
   /**
-   * The unique identifier of the transaction.
+   * Unique identifier of the transaction.
    */
   id: string;
   /**
-   * The status (or "state") of the transaction.
+   * Status (or "state") of the transaction.
    */
   state: "running" | "committed" | "aborted";
 };
@@ -432,7 +432,7 @@ export type ExplainPlan = {
  */
 export type SingleExplainResult = {
   /**
-   * The query plan.
+   * Query plan.
    */
   plan: ExplainPlan;
   /**
@@ -448,15 +448,15 @@ export type SingleExplainResult = {
    */
   stats: {
     /**
-     * The total number of rules executed for this query.
+     * Total number of rules executed for this query.
      */
     rulesExecuted: number;
     /**
-     * The number of rules skipped for this query.
+     * Number of rules skipped for this query.
      */
     rulesSkipped: number;
     /**
-     * The total number of plans created.
+     * Total number of plans created.
      */
     plansCreated: number;
   };
@@ -467,7 +467,7 @@ export type SingleExplainResult = {
  */
 export type MultiExplainResult = {
   /**
-   * The query plans.
+   * Query plans.
    */
   plans: ExplainPlan[];
   /**
@@ -483,15 +483,15 @@ export type MultiExplainResult = {
    */
   stats: {
     /**
-     * The total number of rules executed for this query.
+     * Total number of rules executed for this query.
      */
     rulesExecuted: number;
     /**
-     * The number of rules skipped for this query.
+     * Number of rules skipped for this query.
      */
     rulesSkipped: number;
     /**
-     * The total number of plans created.
+     * Total number of plans created.
      */
     plansCreated: number;
   };
@@ -523,7 +523,7 @@ export type ParseResult = {
    */
   bindVars: string[];
   /**
-   * The abstract syntax tree (AST) of the query.
+   * Abstract syntax tree (AST) of the query.
    */
   ast: AstNode[];
 };
@@ -537,15 +537,15 @@ export type QueryTracking = {
    */
   enabled: boolean;
   /**
-   * The maximum query string length in bytes that is kept in the list.
+   * Maximum query string length in bytes that is kept in the list.
    */
   maxQueryStringLength: number;
   /**
-   * The maximum number of slow queries that is kept in the list.
+   * Maximum number of slow queries that is kept in the list.
    */
   maxSlowQueries: number;
   /**
-   * The threshold execution time in seconds for when a query is
+   * Threshold execution time in seconds for when a query is
    * considered slow.
    */
   slowQueryThreshold: number;
@@ -570,15 +570,15 @@ export type QueryTrackingOptions = {
    */
   enabled?: boolean;
   /**
-   * The maximum query string length in bytes that will be kept in the list.
+   * Maximum query string length in bytes that will be kept in the list.
    */
   maxQueryStringLength?: number;
   /**
-   * The maximum number of slow queries to be kept in the list.
+   * Maximum number of slow queries to be kept in the list.
    */
   maxSlowQueries?: number;
   /**
-   * The threshold execution time in seconds for when a query will be
+   * Threshold execution time in seconds for when a query will be
    * considered slow.
    */
   slowQueryThreshold?: number;
@@ -745,11 +745,11 @@ export type VersionInfo = {
    */
   server: string;
   /**
-   * The ArangoDB license type or "edition".
+   * ArangoDB license type or "edition".
    */
   license: "community" | "enterprise";
   /**
-   * The ArangoDB server version.
+   * ArangoDB server version.
    */
   version: string;
   /**
@@ -959,7 +959,7 @@ export type UninstallServiceOptions = {
  */
 export type ServiceSummary = {
   /**
-   * The service's mount point, relative to the database.
+   * Service mount point, relative to the database.
    */
   mount: string;
   /**
@@ -990,7 +990,7 @@ export type ServiceSummary = {
  */
 export type ServiceInfo = {
   /**
-   * The service's mount point, relative to the database.
+   * Service mount point, relative to the database.
    */
   mount: string;
   /**
@@ -1014,11 +1014,11 @@ export type ServiceInfo = {
    */
   legacy: boolean;
   /**
-   * The content of the service manifest of this service.
+   * Content of the service manifest of this service.
    */
   manifest: FoxxManifest;
   /**
-   * The internal checksum of the service's initial source bundle.
+   * Internal checksum of the service's initial source bundle.
    */
   checksum: string;
   /**
@@ -1058,16 +1058,16 @@ export type ServiceConfiguration = {
     | "int"
     | "bool";
   /**
-   * The current value of the configuration option as stored internally.
+   * Current value of the configuration option as stored internally.
    */
   currentRaw: any;
   /**
-   * The processed current value of the configuration option as exposed in the
+   * Processed current value of the configuration option as exposed in the
    * service code.
    */
   current: any;
   /**
-   * The formatted name of the configuration option.
+   * Formatted name of the configuration option.
    */
   title: string;
   /**
@@ -1080,7 +1080,7 @@ export type ServiceConfiguration = {
    */
   required: boolean;
   /**
-   * The default value of the configuration option.
+   * Default value of the configuration option.
    */
   default?: any;
 };
@@ -1094,19 +1094,19 @@ export type SingleServiceDependency = {
    */
   multiple: false;
   /**
-   * The current mount point the dependency is resolved to.
+   * Current mount point the dependency is resolved to.
    */
   current?: string;
   /**
-   * The formatted name of the dependency.
+   * Formatted name of the dependency.
    */
   title: string;
   /**
-   * The name of the service the dependency expects to match.
+   * Name of the service the dependency expects to match.
    */
   name: string;
   /**
-   * The version of the service the dependency expects to match.
+   * Version of the service the dependency expects to match.
    */
   version: string;
   /**
@@ -1129,19 +1129,19 @@ export type MultiServiceDependency = {
    */
   multiple: true;
   /**
-   * The current mount points the dependency is resolved to.
+   * Current mount points the dependency is resolved to.
    */
   current?: string[];
   /**
-   * The formatted name of the dependency.
+   * Formatted name of the dependency.
    */
   title: string;
   /**
-   * The name of the service the dependency expects to match.
+   * Name of the service the dependency expects to match.
    */
   name: string;
   /**
-   * The version of the service the dependency expects to match.
+   * Version of the service the dependency expects to match.
    */
   version: string;
   /**
@@ -1368,7 +1368,7 @@ export class Database {
   }
 
   /**
-   * The name of the ArangoDB database this instance represents.
+   * Name of the ArangoDB database this instance represents.
    */
   get name() {
     return this._name;
@@ -1995,7 +1995,7 @@ export class Database {
    * **Note**: Renaming collections may not be supported when ArangoDB is
    * running in a cluster configuration.
    *
-   * @param collectionName - The current name of the collection.
+   * @param collectionName - Current name of the collection.
    * @param newName - The new name of the collection.
    */
   async renameCollection(
@@ -2203,7 +2203,7 @@ export class Database {
    * **Note**: Renaming views may not be supported when ArangoDB is running in
    * a cluster configuration.
    *
-   * @param viewName - The current name of the view.
+   * @param viewName - Current name of the view.
    * @param newName - The new name of the view.
    */
   async renameView(
@@ -2599,7 +2599,7 @@ export class Database {
    * Begins a new streaming transaction for the given collections, then returns
    * a {@link Transaction} instance for the transaction.
    *
-   * The collection can be specified as a collection name (string) or an object
+   * The Collection can be specified as a collection name (string) or an object
    * implementing the {@link ArangoCollection} interface: {@link Collection},
    * {@link GraphVertexCollection}, {@link GraphEdgeCollection} as well as
    * (in TypeScript) {@link DocumentCollection} and {@link EdgeCollection}.

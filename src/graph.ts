@@ -217,7 +217,7 @@ export type EdgeDefinitionOptions = {
  */
 export type GraphInfo = {
   /**
-   * The key of the document internally representing this graph.
+   * Key of the document internally representing this graph.
    *
    * See {@link DocumentMetadata}.
    *
@@ -225,7 +225,7 @@ export type GraphInfo = {
    */
   _key: string;
   /**
-   * The unique ID of the document internally representing this graph.
+   * Unique identifier of the document internally representing this graph.
    *
    * See {@link DocumentMetadata}.
    *
@@ -233,7 +233,7 @@ export type GraphInfo = {
    */
   _id: string;
   /**
-   * The revision of the document internally representing this graph.
+   * Revision of the document internally representing this graph.
    *
    * See {@link DocumentMetadata}.
    *
@@ -255,12 +255,12 @@ export type GraphInfo = {
   orphanCollections: string[];
 
   /**
-   * (Cluster only.) The number of shards that is used for every collection
+   * (Cluster only.) Number of shards that is used for every collection
    * within this graph.
    */
   numberOfShards?: number;
   /**
-   * (Cluster only.) The replication factor used when initially creating
+   * (Cluster only.) Replication factor used when initially creating
    * collections for this graph.
    */
   replicationFactor?: number;
@@ -304,12 +304,12 @@ export type GraphCreateOptions = {
   orphanCollections?: (string | ArangoCollection)[] | string | ArangoCollection;
 
   /**
-   * (Cluster only.) The number of shards that is used for every collection
+   * (Cluster only.) Number of shards that is used for every collection
    * within this graph.
    */
   numberOfShards?: number;
   /**
-   * (Cluster only.) The replication factor used when initially creating
+   * (Cluster only.) Replication factor used when initially creating
    * collections for this graph.
    *
    * Default: `1`

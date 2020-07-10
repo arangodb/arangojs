@@ -24,7 +24,7 @@
  */
 export type EnsureHashIndexOptions = {
   /**
-   * The type of this index.
+   * Type of this index.
    */
   type: "hash";
   /**
@@ -65,7 +65,7 @@ export type EnsureHashIndexOptions = {
  */
 export type EnsureSkiplistIndexOptions = {
   /**
-   * The type of this index.
+   * Type of this index.
    */
   type: "skiplist";
   /**
@@ -103,7 +103,7 @@ export type EnsureSkiplistIndexOptions = {
  */
 export type EnsurePersistentIndexOptions = {
   /**
-   * The type of this index.
+   * Type of this index.
    */
   type: "persistent";
   /**
@@ -183,7 +183,7 @@ export type EnsureGeoIndexOptions =
  */
 export type EnsureFulltextIndexOptions = {
   /**
-   * The type of this index.
+   * Type of this index.
    */
   type: "fulltext";
   /**
@@ -195,7 +195,7 @@ export type EnsureFulltextIndexOptions = {
    */
   name?: string;
   /**
-   * The minimum character length of words to index.
+   * Minimum character length of words to index.
    */
   minLength?: number;
 };
@@ -205,7 +205,7 @@ export type EnsureFulltextIndexOptions = {
  */
 export type EnsureTtlIndexOptions = {
   /**
-   * The type of this index.
+   * Type of this index.
    */
   type: "ttl";
   /**

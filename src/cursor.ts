@@ -156,7 +156,7 @@ export class BatchedArrayCursor<T = any> {
   }
 
   /**
-   * The total number of documents in the query result. Only available if the
+   * Total number of documents in the query result. Only available if the
    * `count` option was used.
    */
   get count(): number | undefined {
@@ -686,7 +686,7 @@ export class ArrayCursor<T = any> {
   }
 
   /**
-   * The total number of documents in the query result. Only available if the
+   * Total number of documents in the query result. Only available if the
    * `count` option was used.
    */
   get count(): number | undefined {

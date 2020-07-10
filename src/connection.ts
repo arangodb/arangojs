@@ -77,7 +77,7 @@ export type ArangoResponseMetadata = {
    */
   error: false;
   /**
-   * The response status code, typically `200`.
+   * Response status code, typically `200`.
    */
   code: number;
 };
@@ -97,11 +97,11 @@ function clean<T>(obj: T) {
  */
 export type BasicAuthCredentials = {
   /**
-   * The username, e.g. `"root"`.
+   * Username to use for authentication, e.g. `"root"`.
    */
   username: string;
   /**
-   * The password. Defaults to an empty string.
+   * Password to use for authentication. Defaults to an empty string.
    */
   password?: string;
 };
@@ -111,7 +111,7 @@ export type BasicAuthCredentials = {
  */
 export type BearerAuthCredentials = {
   /**
-   * The Bearer token.
+   * Bearer token to use for authentication.
    */
   token: string;
 };

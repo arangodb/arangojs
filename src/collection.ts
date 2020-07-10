@@ -110,7 +110,7 @@ export enum CollectionStatus {
 }
 
 /**
- * The type of key generator.
+ * Type of key generator.
  */
 export type KeyGenerator = "traditional" | "autoincrement" | "uuid" | "padded";
 
@@ -150,7 +150,7 @@ export type ValidationLevel = "none" | "new" | "moderate" | "strict";
  */
 export type CollectionMetadata = {
   /**
-   * The collection name.
+   * Collection name.
    */
   name: string;
   /**
@@ -190,11 +190,11 @@ export type CollectionKeyProperties = {
    */
   increment?: number;
   /**
-   * (Autoincrement only.) The initial offset for the key.
+   * (Autoincrement only.) Initial offset for the key.
    */
   offset?: number;
   /**
-   * The most recent key that has been generated.
+   * Most recent key that has been generated.
    */
   lastValue: number;
 };
@@ -204,7 +204,7 @@ export type CollectionKeyProperties = {
  */
 export type ValidationProperties = {
   /**
-   * The type of document validation.
+   * Type of document validation.
    */
   type: "json";
   /**
@@ -253,20 +253,20 @@ export type CollectionProperties = {
    */
   minReplicationFactor?: number;
   /**
-   * (Cluster only.) The number of shards of this collection.
+   * (Cluster only.) Number of shards of this collection.
    */
   numberOfShards?: number;
   /**
-   * (Cluster only.) The keys of this collection that will be used for
+   * (Cluster only.) Keys of this collection that will be used for
    * sharding.
    */
   shardKeys?: string[];
   /**
-   * (Cluster only.) The collection's replication factor.
+   * (Cluster only.) Replication factor of the collection.
    */
   replicationFactor?: number;
   /**
-   * (Cluster only.) The collection's sharding strategy.
+   * (Cluster only.) Sharding strategy of the collection.
    */
   shardingStrategy?: ShardingStrategy;
   /**
@@ -274,7 +274,7 @@ export type CollectionProperties = {
    */
   doCompact?: boolean;
   /**
-   * (MMFiles only.) The maximum size for each journal or datafile in bytes.
+   * (MMFiles only.) Maximum size for each journal or datafile in bytes.
    */
   journalSize?: number;
   /**
@@ -338,7 +338,7 @@ export type CollectionPropertiesOptions = {
    */
   validation?: ValidationOptions;
   /**
-   * (MMFiles only.) The maximum size for each journal or datafile in bytes.
+   * (MMFiles only.) Maximum size for each journal or datafile in bytes.
    *
    * Must be a number greater than or equal to `1048576` (1 MiB).
    */
@@ -399,7 +399,7 @@ export type CollectionKeyOptions = {
    */
   increment?: number;
   /**
-   * (Autoincrement only.) The initial offset for the key.
+   * (Autoincrement only.) Initial offset for the key.
    */
   offset?: number;
 };
@@ -498,7 +498,7 @@ export type CreateCollectionOptions = {
    */
   doCompact?: boolean;
   /**
-   * (MMFiles only.) The maximum size for each journal or datafile in bytes.
+   * (MMFiles only.) Maximum size for each journal or datafile in bytes.
    *
    * Must be a number greater than or equal to `1048576` (1 MiB).
    */
@@ -761,7 +761,7 @@ export type SimpleQueryByExampleOptions = {
    */
   limit?: number;
   /**
-   * The number of result values to be transferred by the server in each
+   * Number of result values to be transferred by the server in each
    * network roundtrip (or "batch").
    *
    * Must be greater than zero.
@@ -770,7 +770,7 @@ export type SimpleQueryByExampleOptions = {
    */
   batchSize?: number;
   /**
-   * The time-to-live for the cursor in seconds. The cursor results may be
+   * Time-to-live for the cursor in seconds. The cursor results may be
    * garbage collected by ArangoDB after this much time has passed.
    *
    * See also {@link QueryOptions}.
@@ -794,7 +794,7 @@ export type SimpleQueryAllOptions = {
    */
   limit?: number;
   /**
-   * The number of result values to be transferred by the server in each
+   * Number of result values to be transferred by the server in each
    * network roundtrip (or "batch").
    *
    * Must be greater than zero.
@@ -803,7 +803,7 @@ export type SimpleQueryAllOptions = {
    */
   batchSize?: number;
   /**
-   * The time-to-live for the cursor in seconds. The cursor results may be
+   * Time-to-live for the cursor in seconds. The cursor results may be
    * garbage collected by ArangoDB after this much time has passed.
    *
    * See also {@link QueryOptions}.
@@ -918,7 +918,7 @@ export type SimpleQueryRemoveByKeysOptions = {
  */
 export type SimpleQueryFulltextOptions = {
   /**
-   * The ID of the fulltext index to use to perform the query.
+   * Unique identifier of the fulltext index to use to perform the query.
    */
   index?: string;
   /**
@@ -1079,7 +1079,7 @@ export type TraversalOptions = {
 // Results
 
 /**
- * The result of a collection bulk import.
+ * Result of a collection bulk import.
  */
 export type CollectionImportResult = {
   /**
@@ -1087,23 +1087,23 @@ export type CollectionImportResult = {
    */
   error: false;
   /**
-   * The number of new documents imported.
+   * Number of new documents imported.
    */
   created: number;
   /**
-   * The number of documents that failed with an error.
+   * Number of documents that failed with an error.
    */
   errors: number;
   /**
-   * The number of empty documents.
+   * Number of empty documents.
    */
   empty: number;
   /**
-   * The number of documents updated.
+   * Number of documents updated.
    */
   updated: number;
   /**
-   * The number of documents that failed with an error that is ignored.
+   * Number of documents that failed with an error that is ignored.
    */
   ignored: number;
   /**

@@ -25,17 +25,17 @@ export function isArangoTransaction(
 }
 
 /**
- * The status of a given transaction.
+ * Status of a given transaction.
  *
  * See also {@link TransactionDetails}.
  */
 export type TransactionStatus = {
   /**
-   * The unique identifier of the transaction.
+   * Unique identifier of the transaction.
    */
   id: string;
   /**
-   * The status of the transaction.
+   * Status of the transaction.
    */
   status: "running" | "committed" | "aborted";
 };
@@ -66,7 +66,7 @@ export class Transaction {
   }
 
   /**
-   * The id of this transaction.
+   * Unique identifier of this transaction.
    *
    * See {@link Database.transaction}.
    */
