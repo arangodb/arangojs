@@ -21,22 +21,29 @@ app.use("/", proxy("arangodb:8529"));
 
 app.listen(8529, () => {
   (async () => {
-    const browser = await puppeteer.launch({ args: ["--no-sandbox"] });
-    const page = await browser.newPage();
-    await page.goto("http://localhost:8529/smoke", {
-      waitUntil: "networkidle2",
-    });
-    const server = await page.evaluate(`async function () {
+    let server;
+    try {
+      const browser = await puppeteer.launch({ args: ["--no-sandbox"] });
+      const page = await browser.newPage();
+      await page.goto("http://localhost:8529/smoke", {
+        waitUntil: "networkidle2",
+      });
+      server = await page.evaluate(`async function () {
       var Database = arangojs.Database;
       var db = new Database();
       var el = document.getElementById("version");
       const info = await db.version();
       return info.server;
     }`);
-    await browser.close();
+      await browser.close();
+    } catch (e) {
+      console.error(e);
+    }
     if (server !== "arango") {
       console.error("Unexpected version response:", server);
       process.exit(1);
+    } else {
+      process.exit(0);
     }
   })();
 });
