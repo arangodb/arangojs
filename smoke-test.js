@@ -29,12 +29,12 @@ app.listen(8529, () => {
         waitUntil: "networkidle2",
       });
       server = await page.evaluate(`async function () {
-      var Database = arangojs.Database;
-      var db = new Database();
-      var el = document.getElementById("version");
-      const info = await db.version();
-      return info.server;
-    }`);
+        var Database = arangojs.Database;
+        var db = new Database();
+        var el = document.getElementById("version");
+        const info = await db.version();
+        return info.server;
+      }`);
       await browser.close();
     } catch (e) {
       console.error(e);
