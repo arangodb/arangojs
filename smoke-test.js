@@ -31,16 +31,20 @@ app.listen(8529, () => {
       server = await page.evaluate(async () => {
         // eslint-disable-next-line no-undef
         const Database = arangojs.Database;
-        const db = new Database();
-        const info = await db.version();
-        return info.server;
+        const db = new Database({ databaseName: "doesnotexist" });
+        try {
+          const info = await db.version();
+          return info.server;
+        } catch (e) {
+          return JSON.stringify(e);
+        }
       });
       await browser.close();
     } catch (e) {
       console.error(e);
     }
-    if (server === "arango") {
-      console.error("Unexpected version response:", server);
+    if (server !== "arango") {
+      console.error("Smoke test failed:", server);
       process.exit(1);
     } else {
       process.exit(0);
