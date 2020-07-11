@@ -14,6 +14,12 @@ This driver uses semantic versioning:
 - A change in the major version (e.g. 1.Y.Z -> 2.0.0) indicates _breaking_
   changes that require changes in your code to upgrade.
 
+## [Unreleased]
+
+## Fixed
+
+- Fixed `export is not defined` error in the browser build
+
 ## [7.0.0-rc.0] - 2020-07-10
 
 ### Removed
@@ -1089,6 +1095,7 @@ This is a major release and breaks backwards compatibility.
 
   Graph methods now only return the relevant part of the response body.
 
+[unreleased]: https://github.com/arangodb/arangojs/compare/v7.0.0-rc.0...HEAD
 [7.0.0-rc.0]: https://github.com/arangodb/arangojs/compare/v7.0.0-preview.1...v7.0.0-rc.0
 [7.0.0-preview.1]: https://github.com/arangodb/arangojs/compare/v7.0.0-preview.0...v7.0.0-preview.1
 [7.0.0-preview.0]: https://github.com/arangodb/arangojs/compare/v6.14.1...v7.0.0-preview.0
