@@ -39,7 +39,7 @@ app.listen(8529, () => {
     } catch (e) {
       console.error(e);
     }
-    if (server !== "arango") {
+    if (server === "arango") {
       console.error("Unexpected version response:", server);
       process.exit(1);
     } else {
