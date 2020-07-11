@@ -21,32 +21,34 @@ app.use("/", proxy("arangodb:8529"));
 
 app.listen(8529, () => {
   (async () => {
-    let server;
+    let info;
     try {
       const browser = await puppeteer.launch({ args: ["--no-sandbox"] });
       const page = await browser.newPage();
       await page.goto("http://localhost:8529/smoke", {
         waitUntil: "networkidle2",
       });
-      server = await page.evaluate(async () => {
+      const response = await page.evaluate(async () => {
         // eslint-disable-next-line no-undef
         const Database = arangojs.Database;
-        const db = new Database({ databaseName: "doesnotexist" });
+        const db = new Database();
         try {
           const info = await db.version();
-          return info.server;
+          return JSON.stringify(info);
         } catch (e) {
           return JSON.stringify(e);
         }
       });
+      info = JSON.parse(response);
       await browser.close();
     } catch (e) {
       console.error(e);
     }
-    if (server !== "arango") {
-      console.error("Smoke test failed:", server);
+    if (info.server !== "arango") {
+      console.error("Smoke test failed:", info);
       process.exit(1);
     } else {
+      console.log("Smoke test passed", info);
       process.exit(0);
     }
   })();
