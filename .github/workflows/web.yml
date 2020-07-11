@@ -1,4 +1,4 @@
-name: Continuous Integration
+name: Browser Smoke Test
 
 on: [push]
 
@@ -8,11 +8,10 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [10, 12, 13]
         arangodb-version: [3.5, 3.6]
 
     container:
-      image: node:${{ matrix.node-version }}
+      image: buildkite/puppeteer:latest
 
     services:
       arangodb:
@@ -23,7 +22,4 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: yarn
-      - run: yarn test
-        env:
-          TEST_ARANGODB_URL: http://arangodb:8529
-          CI: true
+      - run: node smoke-test.js
