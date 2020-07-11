@@ -21,7 +21,7 @@ app.use("/", proxy("arangodb:8529"));
 
 app.listen(8529, () => {
   (async () => {
-    const browser = await puppeteer.launch();
+    const browser = await puppeteer.launch({ args: ["--no-sandbox"] });
     const page = await browser.newPage();
     await page.goto("http://localhost:8529/smoke", {
       waitUntil: "networkidle2",
