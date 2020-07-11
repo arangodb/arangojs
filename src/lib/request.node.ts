@@ -8,6 +8,7 @@
 
 import {
   Agent as HttpAgent,
+  AgentOptions,
   ClientRequest,
   ClientRequestArgs,
   IncomingMessage,
@@ -15,7 +16,7 @@ import {
 } from "http";
 import { Agent as HttpsAgent, request as httpsRequest } from "https";
 import { parse as parseUrl } from "url";
-import { Headers } from "../connection";
+import { Headers, RequestInterceptors } from "../connection";
 import { btoa } from "./btoa";
 import { Errback } from "./errback";
 import { joinPath } from "./joinPath";
@@ -79,7 +80,7 @@ export const isBrowser = false;
  */
 export function createRequest(
   baseUrl: string,
-  agentOptions: any,
+  agentOptions: AgentOptions & RequestInterceptors,
   agent?: any
 ): RequestFunction {
   const baseUrlParts = parseUrl(baseUrl);
@@ -177,9 +178,9 @@ export function createRequest(
           if (called) return;
           called = true;
           if (agentOptions.after) {
-            agentOptions.after(err);
+            agentOptions.after(error);
           }
-          callback(err);
+          callback(error);
         });
         if (body) req.write(body);
         if (agentOptions.before) {

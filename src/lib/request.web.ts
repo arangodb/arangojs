@@ -7,6 +7,7 @@
  */
 
 import { format as formatUrl, parse as parseUrl } from "url";
+import { RequestInterceptors, XhrOptions } from "../connection";
 import { btoa } from "./btoa";
 import { Errback } from "./errback";
 import { joinPath } from "./joinPath";
@@ -32,7 +33,10 @@ export const isBrowser = true;
  * @internal
  * @hidden
  */
-export function createRequest(baseUrl: string, agentOptions: any) {
+export function createRequest(
+  baseUrl: string,
+  agentOptions: XhrOptions & RequestInterceptors
+) {
   const { auth, ...baseUrlParts } = parseUrl(baseUrl);
   const options = omit(agentOptions, ["maxSockets"]);
   return function request(
@@ -77,12 +81,16 @@ export function createRequest(baseUrl: string, agentOptions: any) {
           const response = res as ArangojsResponse;
           response.request = req;
           if (!response.body) response.body = "";
-          options.after(null, response);
+          if (options.after) {
+            options.after(null, response);
+          }
           callback(null, response as ArangojsResponse);
         } else {
           const error = err as ArangojsError;
           error.request = req;
-          options.after(error);
+          if (options.after) {
+            options.after(error);
+          }
           callback(error);
         }
       }

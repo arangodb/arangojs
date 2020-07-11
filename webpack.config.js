@@ -4,7 +4,7 @@ var webpack = require("webpack");
 
 module.exports = {
   mode: "production",
-  entry: ["regenerator-runtime/runtime", resolve(__dirname, "src/index.ts")],
+  entry: ["regenerator-runtime/runtime", resolve(__dirname, "src/web.js")],
   devtool: "source-map",
   output: {
     path: resolve(__dirname, "build"),
