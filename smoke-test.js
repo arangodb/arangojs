@@ -28,13 +28,13 @@ app.listen(8529, () => {
       await page.goto("http://localhost:8529/smoke", {
         waitUntil: "networkidle2",
       });
-      server = await page.evaluate(`async function () {
-        var Database = arangojs.Database;
-        var db = new Database();
-        var el = document.getElementById("version");
+      server = await page.evaluate(async () => {
+        // eslint-disable-next-line no-undef
+        const Database = arangojs.Database;
+        const db = new Database();
         const info = await db.version();
         return info.server;
-      }`);
+      });
       await browser.close();
     } catch (e) {
       console.error(e);
