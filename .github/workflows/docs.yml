@@ -43,7 +43,8 @@ jobs:
       - name: Update VERSION
         if: env.tag != 'devel' && env.latest == 1
         run: |
-          echo $tag > gh-pages/VERSION
+          echo $'---\npermalink: /VERSION\ntitle: "VERSION"\n---\n' > gh-pages/VERSION.md
+          echo $tag >> gh-pages/VERSION
 
       - name: Update CHANGELOG
         if: env.latest == 1 # don't overwrite for backport versions
