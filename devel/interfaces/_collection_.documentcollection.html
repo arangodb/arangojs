@@ -233,6 +233,15 @@
 									<dd><p>Simple Queries have been deprecated in ArangoDB 3.4 and can be
 										replaced with AQL queries.</p>
 									</dd>
+									<dt>example</dt>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">&quot;some-collection&quot;</span>);
+<span class="hljs-comment">// const cursor = await collection.all();</span>
+<span class="hljs-keyword">const</span> cursor = <span class="hljs-keyword">await</span> db.query(aql<span class="hljs-string">`
+  FOR doc IN <span class="hljs-subst">${collection}</span>
+  RETURN doc
+`</span>);</code></pre>
+									</dd>
 								</dl>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -267,6 +276,9 @@
 									<dd><p>Simple Queries have been deprecated in ArangoDB 3.4 and can be
 										replaced with AQL queries.</p>
 									</dd>
+									<dt>example</dt>
+									<dd><pre><code class="language-js">TODO</code></pre>
+									</dd>
 								</dl>
 							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/_documents_.html#document" class="tsd-signature-type">Document</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -291,6 +303,9 @@
 									<dt>deprecated</dt>
 									<dd><p>Simple Queries have been deprecated in ArangoDB 3.4 and can be
 										replaced with AQL queries.</p>
+									</dd>
+									<dt>example</dt>
+									<dd><pre><code class="language-js">TODO</code></pre>
 									</dd>
 								</dl>
 							</div>
@@ -692,6 +707,11 @@
 								<div class="lead">
 									<p>Deletes the index with the given name or <code>id</code> from the database.</p>
 								</div>
+								<dl class="tsd-comment-tags">
+									<dt>example</dt>
+									<dd><pre><code class="language-js">TODO</code></pre>
+									</dd>
+								</dl>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
@@ -980,6 +1000,9 @@
 									<dd><p>Simple Queries have been deprecated in ArangoDB 3.4 and can be
 										replaced with AQL queries.</p>
 									</dd>
+									<dt>example</dt>
+									<dd><pre><code class="language-js">TODO</code></pre>
+									</dd>
 								</dl>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1013,6 +1036,9 @@
 									<dt>deprecated</dt>
 									<dd><p>Simple Queries have been deprecated in ArangoDB 3.4 and can be
 										replaced with AQL queries.</p>
+									</dd>
+									<dt>example</dt>
+									<dd><pre><code class="language-js">TODO</code></pre>
 									</dd>
 								</dl>
 							</div>
@@ -1082,6 +1108,11 @@
 								<div class="lead">
 									<p>Retrieves the <code>shardId</code> of the shard responsible for the given document.</p>
 								</div>
+								<dl class="tsd-comment-tags">
+									<dt>example</dt>
+									<dd><pre><code class="language-js">TODO</code></pre>
+									</dd>
+								</dl>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
@@ -1267,6 +1298,11 @@
 								<div class="lead">
 									<p>Returns an index description by name or <code>id</code> if it exists.</p>
 								</div>
+								<dl class="tsd-comment-tags">
+									<dt>example</dt>
+									<dd><pre><code class="language-js">TODO</code></pre>
+									</dd>
+								</dl>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
@@ -1295,6 +1331,11 @@
 								<div class="lead">
 									<p>Returns a list of all index descriptions for the collection.</p>
 								</div>
+								<dl class="tsd-comment-tags">
+									<dt>example</dt>
+									<dd><pre><code class="language-js">TODO</code></pre>
+									</dd>
+								</dl>
 							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/_indexes_.html#index" class="tsd-signature-type">Index</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
@@ -1318,6 +1359,33 @@
 									<dt>deprecated</dt>
 									<dd><p>Simple Queries have been deprecated in ArangoDB 3.4 and can be
 										replaced with AQL queries.</p>
+									</dd>
+									<dt>example</dt>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">&quot;some-collection&quot;</span>);
+<span class="hljs-comment">// const ids = await collection.list(&quot;id&quot;);</span>
+<span class="hljs-keyword">const</span> ids = <span class="hljs-keyword">await</span> db.query(aql<span class="hljs-string">`
+  FOR doc IN <span class="hljs-subst">${collection}</span>
+  RETURN doc._id
+`</span>);</code></pre>
+									</dd>
+									<dt>example</dt>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">&quot;some-collection&quot;</span>);
+<span class="hljs-comment">// const keys = await collection.list(&quot;key&quot;);</span>
+<span class="hljs-keyword">const</span> keys = <span class="hljs-keyword">await</span> db.query(aql<span class="hljs-string">`
+  FOR doc IN <span class="hljs-subst">${collection}</span>
+  RETURN doc._key
+`</span>);</code></pre>
+									</dd>
+									<dt>example</dt>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">&quot;some-collection&quot;</span>);
+<span class="hljs-comment">// const paths = await collection.list(&quot;path&quot;);</span>
+<span class="hljs-keyword">const</span> paths = <span class="hljs-keyword">await</span> db.query(aql<span class="hljs-string">`
+  FOR doc IN <span class="hljs-subst">${collection}</span>
+  RETURN CONCAT(&quot;/_db/&quot;, CURRENT_DATABASE(), &quot;/_api/document/&quot;, doc._id)
+`</span>);</code></pre>
 									</dd>
 								</dl>
 							</div>
@@ -1448,6 +1516,9 @@
 									<dt>deprecated</dt>
 									<dd><p>Simple Queries have been deprecated in ArangoDB 3.4 and can be
 										replaced with AQL queries.</p>
+									</dd>
+									<dt>example</dt>
+									<dd><pre><code class="language-js">TODO</code></pre>
 									</dd>
 								</dl>
 							</div>
@@ -1664,6 +1735,9 @@
 									<dd><p>Simple Queries have been deprecated in ArangoDB 3.4 and can be
 										replaced with AQL queries.</p>
 									</dd>
+									<dt>example</dt>
+									<dd><pre><code class="language-js">TODO</code></pre>
+									</dd>
 								</dl>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1703,6 +1777,9 @@
 									<dt>deprecated</dt>
 									<dd><p>Simple Queries have been deprecated in ArangoDB 3.4 and can be
 										replaced with AQL queries.</p>
+									</dd>
+									<dt>example</dt>
+									<dd><pre><code class="language-js">TODO</code></pre>
 									</dd>
 								</dl>
 							</div>
@@ -1894,6 +1971,9 @@
 									<dt>deprecated</dt>
 									<dd><p>Simple Queries have been deprecated in ArangoDB 3.4 and can be
 										replaced with AQL queries.</p>
+									</dd>
+									<dt>example</dt>
+									<dd><pre><code class="language-js">TODO</code></pre>
 									</dd>
 								</dl>
 							</div>
@@ -2250,6 +2330,9 @@
 									<dt>deprecated</dt>
 									<dd><p>Simple Queries have been deprecated in ArangoDB 3.4 and can be
 										replaced with AQL queries.</p>
+									</dd>
+									<dt>example</dt>
+									<dd><pre><code class="language-js">TODO</code></pre>
 									</dd>
 								</dl>
 							</div>
