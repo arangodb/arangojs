@@ -2009,7 +2009,35 @@ export interface DocumentCollection<T extends object = any>
    *
    * @example
    * ```js
-   * TODO
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
+   * // const ids = await collection.list("id");
+   * const ids = await db.query(aql`
+   *   FOR doc IN ${collection}
+   *   RETURN doc._id
+   * `);
+   * ```
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
+   * // const keys = await collection.list("key");
+   * const keys = await db.query(aql`
+   *   FOR doc IN ${collection}
+   *   RETURN doc._key
+   * `);
+   * ```
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
+   * // const paths = await collection.list("path");
+   * const paths = await db.query(aql`
+   *   FOR doc IN ${collection}
+   *   RETURN CONCAT("/_db/", CURRENT_DATABASE(), "/_api/document/", doc._id)
+   * `);
    * ```
    */
   list(type?: SimpleQueryListType): Promise<ArrayCursor<string>>;
@@ -2024,7 +2052,13 @@ export interface DocumentCollection<T extends object = any>
    *
    * @example
    * ```js
-   * TODO
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
+   * // const cursor = await collection.all();
+   * const cursor = await db.query(aql`
+   *   FOR doc IN ${collection}
+   *   RETURN doc
+   * `);
    * ```
    */
   all(options?: SimpleQueryAllOptions): Promise<ArrayCursor<Document<T>>>;
