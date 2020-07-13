@@ -1529,6 +1529,11 @@ export interface DocumentCollection<T extends object = any>
    * Retrieves the `shardId` of the shard responsible for the given document.
    *
    * @param document - Document in the collection to look up the `shardId` of.
+   *
+   * @example
+   * ```js
+   * TODO
+   * ```
    */
   getResponsibleShard(document: Partial<Document<T>>): Promise<string>;
   /**
@@ -2001,6 +2006,11 @@ export interface DocumentCollection<T extends object = any>
    *
    * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
    * replaced with AQL queries.
+   *
+   * @example
+   * ```js
+   * TODO
+   * ```
    */
   list(type?: SimpleQueryListType): Promise<ArrayCursor<string>>;
 
@@ -2011,6 +2021,11 @@ export interface DocumentCollection<T extends object = any>
    *
    * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
    * replaced with AQL queries.
+   *
+   * @example
+   * ```js
+   * TODO
+   * ```
    */
   all(options?: SimpleQueryAllOptions): Promise<ArrayCursor<Document<T>>>;
 
@@ -2019,6 +2034,11 @@ export interface DocumentCollection<T extends object = any>
    *
    * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
    * replaced with AQL queries.
+   *
+   * @example
+   * ```js
+   * TODO
+   * ```
    */
   any(): Promise<Document<T>>;
 
@@ -2030,6 +2050,11 @@ export interface DocumentCollection<T extends object = any>
    *
    * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
    * replaced with AQL queries.
+   *
+   * @example
+   * ```js
+   * TODO
+   * ```
    */
   byExample(
     example: Partial<DocumentData<T>>,
@@ -2043,6 +2068,11 @@ export interface DocumentCollection<T extends object = any>
    *
    * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
    * replaced with AQL queries.
+   *
+   * @example
+   * ```js
+   * TODO
+   * ```
    */
   firstExample(example: Partial<DocumentData<T>>): Promise<Document<T>>;
 
@@ -2054,6 +2084,11 @@ export interface DocumentCollection<T extends object = any>
    *
    * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
    * replaced with AQL queries.
+   *
+   * @example
+   * ```js
+   * TODO
+   * ```
    */
   removeByExample(
     example: Partial<DocumentData<T>>,
@@ -2069,6 +2104,11 @@ export interface DocumentCollection<T extends object = any>
    *
    * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
    * replaced with AQL queries.
+   *
+   * @example
+   * ```js
+   * TODO
+   * ```
    */
   replaceByExample(
     example: Partial<DocumentData<T>>,
@@ -2085,6 +2125,11 @@ export interface DocumentCollection<T extends object = any>
    *
    * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
    * replaced with AQL queries.
+   *
+   * @example
+   * ```js
+   * TODO
+   * ```
    */
   updateByExample(
     example: Partial<DocumentData<T>>,
@@ -2099,6 +2144,11 @@ export interface DocumentCollection<T extends object = any>
    *
    * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
    * replaced with AQL queries.
+   *
+   * @example
+   * ```js
+   * TODO
+   * ```
    */
   lookupByKeys(keys: string[]): Promise<Document<T>[]>;
 
@@ -2110,6 +2160,11 @@ export interface DocumentCollection<T extends object = any>
    *
    * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
    * replaced with AQL queries.
+   *
+   * @example
+   * ```js
+   * TODO
+   * ```
    */
   removeByKeys(
     keys: string[],
@@ -2125,6 +2180,11 @@ export interface DocumentCollection<T extends object = any>
    *
    * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
    * replaced with AQL queries.
+   *
+   * @example
+   * ```js
+   * TODO
+   * ```
    */
   fulltext(
     attribute: string,
@@ -2136,12 +2196,22 @@ export interface DocumentCollection<T extends object = any>
   //#region indexes
   /**
    * Returns a list of all index descriptions for the collection.
+   *
+   * @example
+   * ```js
+   * TODO
+   * ```
    */
   indexes(): Promise<Index[]>;
   /**
    * Returns an index description by name or `id` if it exists.
    *
    * @param selector - Index name, id or object with either property.
+   *
+   * @example
+   * ```js
+   * TODO
+   * ```
    */
   index(selector: IndexSelector): Promise<Index>;
   /**
@@ -2279,6 +2349,11 @@ export interface DocumentCollection<T extends object = any>
    * Deletes the index with the given name or `id` from the database.
    *
    * @param selector - Index name, id or object with either property.
+   *
+   * @example
+   * ```js
+   * TODO
+   * ```
    */
   dropIndex(
     selector: IndexSelector
@@ -2750,6 +2825,11 @@ export interface EdgeCollection<T extends object = any>
    *
    * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
    * replaced with AQL queries.
+   *
+   * @example
+   * ```js
+   * TODO
+   * ```
    */
   all(options?: SimpleQueryAllOptions): Promise<ArrayCursor<Edge<T>>>;
 
@@ -2758,6 +2838,11 @@ export interface EdgeCollection<T extends object = any>
    *
    * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
    * replaced with AQL queries.
+   *
+   * @example
+   * ```js
+   * TODO
+   * ```
    */
   any(): Promise<Edge<T>>;
 
@@ -2769,6 +2854,11 @@ export interface EdgeCollection<T extends object = any>
    *
    * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
    * replaced with AQL queries.
+   *
+   * @example
+   * ```js
+   * TODO
+   * ```
    */
   byExample(
     example: Partial<DocumentData<T>>,
@@ -2782,6 +2872,11 @@ export interface EdgeCollection<T extends object = any>
    *
    * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
    * replaced with AQL queries.
+   *
+   * @example
+   * ```js
+   * TODO
+   * ```
    */
   firstExample(example: Partial<DocumentData<T>>): Promise<Edge<T>>;
 
@@ -2792,6 +2887,11 @@ export interface EdgeCollection<T extends object = any>
    *
    * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
    * replaced with AQL queries.
+   *
+   * @example
+   * ```js
+   * TODO
+   * ```
    */
   lookupByKeys(keys: string[]): Promise<Edge<T>[]>;
 
@@ -2804,6 +2904,11 @@ export interface EdgeCollection<T extends object = any>
    *
    * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
    * replaced with AQL queries.
+   *
+   * @example
+   * ```js
+   * TODO
+   * ```
    */
   fulltext(
     attribute: string,
@@ -2862,6 +2967,7 @@ export interface EdgeCollection<T extends object = any>
    * ]);
    * const edges = await collection.inEdges("vertices/a");
    * console.log(edges.map((edge) => edge._key)); // ["z"]
+   * ```
    */
   inEdges(
     selector: DocumentSelector

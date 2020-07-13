@@ -316,6 +316,11 @@ export class Analyzer {
    * See also {@link Database.createAnalyzer}.
    *
    * @param options - Options for creating the Analyzer.
+   *
+   * @example
+   * ```js
+   * TODO
+   * ```
    */
   create(options: CreateAnalyzerOptions): Promise<AnalyzerDescription> {
     return this._db.request(

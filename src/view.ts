@@ -351,6 +351,11 @@ export class View<
    * Creates a View with the given `options` and the instance's name.
    *
    * See also {@link Database.createView}.
+   *
+   * @example
+   * ```js
+   * TODO
+   * ```
    */
   create(
     options?: PropertiesOptions & { type: ViewType }

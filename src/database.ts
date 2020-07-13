@@ -1318,6 +1318,11 @@ export class Database {
    * See also {@link Database.database}.
    *
    * @param config - An object with configuration options.
+   *
+   * @example
+   * ```js
+   * TODO
+   * ```
    */
   constructor(config?: Config);
   /**
@@ -1327,6 +1332,11 @@ export class Database {
    *
    * @param url - Base URL of the ArangoDB server or list of server URLs.
    * Equivalent to the `url` option in {@link Config}.
+   *
+   * @example
+   * ```js
+   * TODO
+   * ```
    */
   constructor(url: string | string[]);
   // There's currently no way to hide a single overload from typedoc
@@ -1531,6 +1541,11 @@ export class Database {
    * @param databaseName - Name of the database to use.
    *
    * @deprecated Use {@link Database.database} instead.
+   *
+   * @example
+   * ```js
+   * TODO
+   * ```
    */
   useDatabase(databaseName: string): this {
     this._connection.database(this._name, null);
@@ -1618,6 +1633,11 @@ export class Database {
    * See also {@link Database.constructor}.
    *
    * @param databaseName - Name of the database.
+   *
+   * @example
+   * ```js
+   * TODO
+   * ```
    */
   database(databaseName: string) {
     const db = new (Database as any)(this, databaseName) as Database;
@@ -2090,6 +2110,11 @@ export class Database {
    * `graphName`.
    *
    * @param graphName - Name of the graph.
+   *
+   * @example
+   * ```js
+   * TODO
+   * ```
    */
   graph(graphName: string): Graph {
     if (!this._graphs.has(graphName)) {
@@ -2836,6 +2861,11 @@ export class Database {
    * @param query - An object containing an AQL query string and bind
    * parameters, e.g. the object returned from an {@link aql} template string.
    * @param options - Options for explaining the query.
+   *
+   * @example
+   * ```js
+   * TODO
+   * ```
    */
   explain(
     query: AqlQuery,
@@ -2851,6 +2881,11 @@ export class Database {
    * @param query - An object containing an AQL query string and bind
    * parameters, e.g. the object returned from an {@link aql} template string.
    * @param options - Options for explaining the query.
+   *
+   * @example
+   * ```js
+   * TODO
+   * ```
    */
   explain(
     query: AqlQuery,
@@ -2865,6 +2900,11 @@ export class Database {
    * @param query - An AQL query string.
    * @param bindVars - An object defining bind parameters for the query.
    * @param options - Options for explaining the query.
+   *
+   * @example
+   * ```js
+   * TODO
+   * ```
    */
   explain(
     query: string | AqlLiteral,
@@ -2880,6 +2920,11 @@ export class Database {
    * @param query - An AQL query string.
    * @param bindVars - An object defining bind parameters for the query.
    * @param options - Options for explaining the query.
+   *
+   * @example
+   * ```js
+   * TODO
+   * ```
    */
   explain(
     query: string | AqlLiteral,
@@ -2920,6 +2965,11 @@ export class Database {
    * @param query - An AQL query string or an object containing an AQL query
    * string and bind parameters, e.g. the object returned from an {@link aql}
    * template string.
+   *
+   * @example
+   * ```js
+   * TODO
+   * ```
    */
   parse(query: string | AqlQuery | AqlLiteral): Promise<ParseResult> {
     if (isAqlQuery(query)) {
@@ -2939,6 +2989,11 @@ export class Database {
 
   /**
    * Fetches the query tracking properties.
+   *
+   * @example
+   * ```js
+   * TODO
+   * ```
    */
   queryTracking(): Promise<QueryTracking>;
   /**
@@ -2978,6 +3033,11 @@ export class Database {
    * Fetches a list of information for all currently running queries.
    *
    * See also {@link Database.listSlowQueries} and {@link Database.killQuery}.
+   *
+   * @example
+   * ```js
+   * TODO
+   * ```
    */
   listRunningQueries(): Promise<QueryInfo[]> {
     return this.request(
@@ -2994,6 +3054,11 @@ export class Database {
    *
    * See also {@link Database.listRunningQueries} and
    * {@link Database.clearSlowQueries}.
+   *
+   * @example
+   * ```js
+   * TODO
+   * ```
    */
   listSlowQueries(): Promise<QueryInfo[]> {
     return this.request(
@@ -3009,6 +3074,11 @@ export class Database {
    * Clears the list of recent slow queries.
    *
    * See also {@link Database.listSlowQueries}.
+   *
+   * @example
+   * ```js
+   * TODO
+   * ```
    */
   clearSlowQueries(): Promise<void> {
     return this.request(
@@ -3026,6 +3096,11 @@ export class Database {
    * See also {@link Database.listRunningQueries}.
    *
    * @param queryId - The ID of a currently running query.
+   *
+   * @example
+   * ```js
+   * TODO
+   * ```
    */
   killQuery(queryId: string): Promise<void> {
     return this.request(
@@ -3321,6 +3396,11 @@ export class Database {
    *
    * @param mount - The service's mount point, relative to the database.
    * @param options - Options for uninstalling the service.
+   *
+   * @example
+   * ```js
+   * TODO
+   * ```
    */
   uninstallService(
     mount: string,
@@ -4009,6 +4089,11 @@ export class Database {
    *
    * @param mount - The service's mount point, relative to the database.
    * @param options - Options for running the tests.
+   *
+   * @example
+   * ```js
+   * TODO
+   * ```
    */
   runServiceTests(
     mount: string,
@@ -4032,6 +4117,11 @@ export class Database {
    *
    * @param mount - The service's mount point, relative to the database.
    * @param options - Options for running the tests.
+   *
+   * @example
+   * ```js
+   * TODO
+   * ```
    */
   runServiceTests(
     mount: string,
@@ -4056,6 +4146,11 @@ export class Database {
    *
    * @param mount - The service's mount point, relative to the database.
    * @param options - Options for running the tests.
+   *
+   * @example
+   * ```js
+   * TODO
+   * ```
    */
   runServiceTests(
     mount: string,
@@ -4080,6 +4175,11 @@ export class Database {
    *
    * @param mount - The service's mount point, relative to the database.
    * @param options - Options for running the tests.
+   *
+   * @example
+   * ```js
+   * TODO
+   * ```
    */
   runServiceTests(
     mount: string,
@@ -4104,6 +4204,11 @@ export class Database {
    *
    * @param mount - The service's mount point, relative to the database.
    * @param options - Options for running the tests.
+   *
+   * @example
+   * ```js
+   * TODO
+   * ```
    */
   runServiceTests(
     mount: string,
@@ -4128,6 +4233,11 @@ export class Database {
    *
    * @param mount - The service's mount point, relative to the database.
    * @param options - Options for running the tests.
+   *
+   * @example
+   * ```js
+   * TODO
+   * ```
    */
   runServiceTests(
     mount: string,
@@ -4153,6 +4263,11 @@ export class Database {
    *
    * @param mount - The service's mount point, relative to the database.
    * @param options - Options for running the tests.
+   *
+   * @example
+   * ```js
+   * TODO
+   * ```
    */
   runServiceTests(
     mount: string,
@@ -4178,6 +4293,11 @@ export class Database {
    *
    * @param mount - The service's mount point, relative to the database.
    * @param options - Options for running the tests.
+   *
+   * @example
+   * ```js
+   * TODO
+   * ```
    */
   runServiceTests(
     mount: string,
@@ -4269,6 +4389,11 @@ export class Database {
    * Returns a `Buffer` in node.js or `Blob` in the browser.
    *
    * @param mount - The service's mount point, relative to the database.
+   *
+   * @example
+   * ```js
+   * TODO
+   * ```
    */
   downloadService(mount: string): Promise<Buffer | Blob> {
     return this.request(

@@ -1318,6 +1318,11 @@ export class Graph {
    * an array of their names.
    *
    * See also {@link Graph.vertexCollections}.
+   *
+   * @example
+   * ```js
+   * TODO
+   * ```
    */
   listVertexCollections(): Promise<string[]> {
     return this._db.request(
@@ -1341,6 +1346,11 @@ export class Graph {
    * Adds the given collection to this graph as a vertex collection.
    *
    * @param collection - Collection to add to the graph.
+   *
+   * @example
+   * ```js
+   * TODO
+   * ```
    */
   addVertexCollection(
     collection: string | ArangoCollection
@@ -1364,6 +1374,11 @@ export class Graph {
    * @param collection - Collection to remove from the graph.
    * @param dropCollection - If set to `true`, the collection will also be
    * deleted from the database.
+   *
+   * @example
+   * ```js
+   * TODO
+   * ```
    */
   removeVertexCollection(
     collection: string | ArangoCollection,
@@ -1405,6 +1420,11 @@ export class Graph {
    * an array of their names.
    *
    * See also {@link Graph.edgeCollections}.
+   *
+   * @example
+   * ```js
+   * TODO
+   * ```
    */
   listEdgeCollections(): Promise<string[]> {
     return this._db.request(
@@ -1428,6 +1448,11 @@ export class Graph {
    * Adds an edge definition to this graph.
    *
    * @param edgeDefinition - Definition of a relation in this graph.
+   *
+   * @example
+   * ```js
+   * TODO
+   * ```
    */
   addEdgeDefinition(edgeDefinition: EdgeDefinitionOptions): Promise<GraphInfo> {
     return this._db.request(
@@ -1445,6 +1470,11 @@ export class Graph {
    * for the given edge collection will be overwritten.
    *
    * @param edgeDefinition - Definition of a relation in this graph.
+   *
+   * @example
+   * ```js
+   * TODO
+   * ```
    */
   replaceEdgeDefinition(
     edgeDefinition: EdgeDefinitionOptions
@@ -1455,6 +1485,11 @@ export class Graph {
    *
    * @param collection - Edge collection for which to replace the definition.
    * @param edgeDefinition - Definition of a relation in this graph.
+   *
+   * @example
+   * ```js
+   * TODO
+   * ```
    */
   replaceEdgeDefinition(
     collection: string | ArangoCollection,
@@ -1487,6 +1522,11 @@ export class Graph {
    * @param collection - Edge collection for which to remove the definition.
    * @param dropCollection - If set to `true`, the collection will also be
    * deleted from the database.
+   *
+   * @example
+   * ```js
+   * TODO
+   * ```
    */
   removeEdgeDefinition(
     collection: string | ArangoCollection,
