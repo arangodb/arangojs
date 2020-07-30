@@ -202,7 +202,7 @@ export type CollectionKeyProperties = {
 /**
  * Properties for validating documents in a collection.
  */
-export type ValidationProperties = {
+export type SchemaProperties = {
   /**
    * Type of document validation.
    */
@@ -241,7 +241,7 @@ export type CollectionProperties = {
   /**
    * Properties for validating documents in the collection.
    */
-  validation: ValidationProperties | null;
+  schema: SchemaProperties | null;
   /**
    * (Cluster only.) Write concern for this collection.
    */
@@ -305,7 +305,7 @@ export type CollectionProperties = {
 /**
  * Options for validating collection documents.
  */
-export type ValidationOptions = {
+export type SchemaOptions = {
   /**
    * JSON Schema description of the validation schema for documents.
    */
@@ -336,7 +336,7 @@ export type CollectionPropertiesOptions = {
   /**
    * Options for validating documents in this collection.
    */
-  validation?: ValidationOptions;
+  schema?: SchemaOptions;
   /**
    * (MMFiles only.) Maximum size for each journal or datafile in bytes.
    *
@@ -433,7 +433,7 @@ export type CreateCollectionOptions = {
   /**
    * Options for validating documents in the collection.
    */
-  validation?: ValidationOptions;
+  schema?: SchemaOptions;
   /**
    * (Cluster only.) Unless set to `false`, the server will wait for all
    * replicas to create the collection before returning.
