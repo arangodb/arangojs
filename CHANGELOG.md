@@ -14,9 +14,15 @@ This driver uses semantic versioning:
 - A change in the major version (e.g. 1.Y.Z -> 2.0.0) indicates _breaking_
   changes that require changes in your code to upgrade.
 
+## [Unreleased]
+
+### Fixed
+
+- Renamed `validation` option to `schema` ([#681](https://github.com/arangodb/arangojs/issues/681))
+
 ## [7.0.0-rc.1] - 2020-07-11
 
-## Fixed
+### Fixed
 
 - Fixed `export is not defined` error in the browser build
 
@@ -1095,6 +1101,7 @@ This is a major release and breaks backwards compatibility.
 
   Graph methods now only return the relevant part of the response body.
 
+[unreleased]: https://github.com/arangodb/arangojs/compare/v7.0.0-rc.1...HEAD
 [7.0.0-rc.1]: https://github.com/arangodb/arangojs/compare/v7.0.0-rc.0...v7.0.0-rc.1
 [7.0.0-rc.0]: https://github.com/arangodb/arangojs/compare/v7.0.0-preview.1...v7.0.0-rc.0
 [7.0.0-preview.1]: https://github.com/arangodb/arangojs/compare/v7.0.0-preview.0...v7.0.0-preview.1
