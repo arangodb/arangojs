@@ -575,8 +575,10 @@ export type CollectionInsertOptions = {
   /**
    * Defines what should happen if a document with the same `_key` or `_id`
    * already exists, instead of throwing an exception.
+   *
+   * Default: `"conflict"
    */
-  overwriteMode?: "update" | "replace";
+  overwriteMode?: "ignore" | "update" | "replace" | "conflict";
 };
 
 /**

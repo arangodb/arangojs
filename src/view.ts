@@ -116,6 +116,39 @@ export type ArangoSearchViewProperties = {
    */
   consolidationPolicy: BytesAccumConsolidationPolicy | TierConsolidationPolicy;
   /**
+   * Attribute path (`field`) for the value of each document that is
+   * used for sorting.
+   */
+  primarySort: {
+    /**
+     * Attribute path for the value of each document used for
+     * sorting.
+     */
+    field: string;
+    /**
+     * If set to `"asc"`, the primary sorting order is ascending.
+     * If set to `"desc"`, the primary sorting order is descending.
+     */
+    direction: "desc" | "asc";
+  }[];
+  /**
+   * Compression to use for the primary sort data.
+   *
+   * Default: `"lz4"`
+   */
+  primarySortCompression: PrimarySortCompression;
+  /**
+   * Attribute paths for which values should be stored in the view index
+   * in addition to those used for sorting via `primarySort`.
+   */
+  storedValues: {
+    /**
+     * Attribute paths for which values should be stored in the view index
+     * in addition to those used for sorting via `primarySort`.
+     */
+    fields: string[];
+  }[];
+  /**
    * An object mapping names of linked collections to
    * {@link ArangoSearchViewLink} definitions.
    */
@@ -178,6 +211,13 @@ export type TierConsolidationPolicy = {
    */
   minScore?: number;
 };
+
+/**
+ * Compression to use for primary sort data of a View.
+ *
+ * Default: `"lz4"`
+ */
+export type PrimarySortCompression = "lz4" | "none";
 
 /**
  * Properties of an ArangoSearch View.
@@ -261,6 +301,23 @@ export type ArangoSearchViewPropertiesOptions = {
         asc: boolean;
       }
   )[];
+  /**
+   * Compression to use for the primary sort data.
+   *
+   * Default: `"lz4"`
+   */
+  primarySortCompression?: PrimarySortCompression;
+  /**
+   * Attribute paths for which values should be stored in the view index
+   * in addition to those used for sorting via `primarySort`.
+   */
+  storedValues?: {
+    /**
+     * Attribute paths for which values should be stored in the view index
+     * in addition to those used for sorting via `primarySort`.
+     */
+    fields: string[];
+  }[];
   /**
    * An object mapping names of linked collections to
    * {@link ArangoSearchViewLink} definitions.

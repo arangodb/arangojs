@@ -275,6 +275,11 @@ export type GraphInfo = {
    */
   minReplicationFactor?: number;
   /**
+   * (Enterprise Edition cluster only.) If set to `true`, the graph is a
+   * SatelliteGraph.
+   */
+  isSatellite?: boolean;
+  /**
    * (Enterprise Edition cluster only.) If set to `true`, the graph has been
    * created as a SmartGraph.
    */
@@ -284,6 +289,11 @@ export type GraphInfo = {
    * value to use for smart sharding.
    */
   smartGraphAttribute?: string;
+  /**
+   * (Enterprise Edition cluster only.) If set to `true`, the graph has been
+   * created as a Disjoint SmartGraph.
+   */
+  isDisjoint?: boolean;
 };
 
 /**
@@ -306,6 +316,8 @@ export type GraphCreateOptions = {
   /**
    * (Cluster only.) Number of shards that is used for every collection
    * within this graph.
+   *
+   * Has no effect when `replicationFactor` is set to `"satellite"`.
    */
   numberOfShards?: number;
   /**
@@ -317,10 +329,14 @@ export type GraphCreateOptions = {
   replicationFactor?: number | "satellite";
   /**
    * (Cluster only.) Write concern for new collections in the graph.
+   *
+   * Has no effect when `replicationFactor` is set to `"satellite"`.
    */
   writeConcern?: number;
   /**
    * (Cluster only.) Write concern for new collections in the graph.
+   *
+   * Has no effect when `replicationFactor` is set to `"satellite"`.
    *
    * @deprecated Renamed to `writeConcern` in ArangoDB 3.6.
    */
@@ -341,6 +357,13 @@ export type GraphCreateOptions = {
    * **Note**: `isSmart` must be set to `true`.
    */
   smartGraphAttribute?: string;
+  /**
+   * (Enterprise Edition cluster only.) If set to `true`, the graph will be
+   * created as a Disjoint SmartGraph.
+   *
+   * Default: `false`
+   */
+  isDisjoint?: boolean;
 };
 
 /**
@@ -1250,7 +1273,8 @@ export class Graph {
     edgeDefinitions: EdgeDefinitionOptions[],
     options?: GraphCreateOptions
   ): Promise<GraphInfo> {
-    const { orphanCollections, waitForSync, isSmart, ...opts } = options || {};
+    const { orphanCollections, waitForSync, isSmart, isDisjoint, ...opts } =
+      options || {};
     return this._db.request(
       {
         method: "POST",
@@ -1263,6 +1287,7 @@ export class Graph {
               : [collectionToString(orphanCollections)]),
           edgeDefinitions: edgeDefinitions.map(coerceEdgeDefinition),
           isSmart,
+          isDisjoint,
           name: this._name,
           options: opts,
         },

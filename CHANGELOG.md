@@ -20,6 +20,16 @@ This driver uses semantic versioning:
 
 - Renamed `validation` option to `schema` ([#681](https://github.com/arangodb/arangojs/issues/681))
 
+### Added
+
+- Added support for `isDisjoint` option in Graph API
+
+- Added support for values `"ignore"` and `"conflict"` in `overwriteMode`
+  option when saving documents using the Collection API
+
+- Added support for `primarySortCompression` and `storedValues` options in
+  View API
+
 ## [7.0.0-rc.1] - 2020-07-11
 
 ### Fixed
