@@ -101,6 +101,7 @@
 								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="_view_.html#arangosearchviewproperties" class="tsd-kind-icon">Arango<wbr>Search<wbr>View<wbr>Properties</a></li>
 								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="_view_.html#arangosearchviewpropertiesoptions" class="tsd-kind-icon">Arango<wbr>Search<wbr>View<wbr>Properties<wbr>Options</a></li>
 								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="_view_.html#bytesaccumconsolidationpolicy" class="tsd-kind-icon">Bytes<wbr>Accum<wbr>Consolidation<wbr>Policy</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="_view_.html#primarysortcompression-2" class="tsd-kind-icon">Primary<wbr>Sort<wbr>Compression</a></li>
 								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="_view_.html#tierconsolidationpolicy" class="tsd-kind-icon">Tier<wbr>Consolidation<wbr>Policy</a></li>
 								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="_view_.html#viewdescription" class="tsd-kind-icon">View<wbr>Description</a></li>
 							</ul>
@@ -183,7 +184,7 @@
 				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
 					<a name="arangosearchviewproperties" class="tsd-anchor"></a>
 					<h3>Arango<wbr>Search<wbr>View<wbr>Properties</h3>
-					<div class="tsd-signature tsd-kind-icon">Arango<wbr>Search<wbr>View<wbr>Properties<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>cleanupIntervalStep<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>consolidationIntervalMsec<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>consolidationPolicy<span class="tsd-signature-symbol">: </span><a href="_view_.html#bytesaccumconsolidationpolicy" class="tsd-signature-type">BytesAccumConsolidationPolicy</a><span class="tsd-signature-symbol"> | </span><a href="_view_.html#tierconsolidationpolicy" class="tsd-signature-type">TierConsolidationPolicy</a><span class="tsd-signature-symbol">; </span>links<span class="tsd-signature-symbol">: </span><a href="_connection_.html#dict" class="tsd-signature-type">Dict</a><span class="tsd-signature-symbol">&lt;</span><a href="_view_.html#arangosearchviewlink" class="tsd-signature-type">ArangoSearchViewLink</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">; </span>writebufferActive<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>writebufferIdle<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>writebufferSizeMax<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span></div>
+					<div class="tsd-signature tsd-kind-icon">Arango<wbr>Search<wbr>View<wbr>Properties<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>cleanupIntervalStep<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>consolidationIntervalMsec<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>consolidationPolicy<span class="tsd-signature-symbol">: </span><a href="_view_.html#bytesaccumconsolidationpolicy" class="tsd-signature-type">BytesAccumConsolidationPolicy</a><span class="tsd-signature-symbol"> | </span><a href="_view_.html#tierconsolidationpolicy" class="tsd-signature-type">TierConsolidationPolicy</a><span class="tsd-signature-symbol">; </span>links<span class="tsd-signature-symbol">: </span><a href="_connection_.html#dict" class="tsd-signature-type">Dict</a><span class="tsd-signature-symbol">&lt;</span><a href="_view_.html#arangosearchviewlink" class="tsd-signature-type">ArangoSearchViewLink</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">; </span>primarySort<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>direction<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"desc"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"asc"</span><span class="tsd-signature-symbol">; </span>field<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span>primarySortCompression<span class="tsd-signature-symbol">: </span><a href="_view_.html#primarysortcompression-2" class="tsd-signature-type">PrimarySortCompression</a><span class="tsd-signature-symbol">; </span>storedValues<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>fields<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span>writebufferActive<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>writebufferIdle<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>writebufferSizeMax<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -229,6 +230,33 @@
 								</div>
 							</li>
 							<li class="tsd-parameter">
+								<h5>primary<wbr>Sort<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>direction<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"desc"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"asc"</span><span class="tsd-signature-symbol">; </span>field<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">[]</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Attribute path (<code>field</code>) for the value of each document that is
+										used for sorting.</p>
+									</div>
+								</div>
+							</li>
+							<li class="tsd-parameter">
+								<h5>primary<wbr>Sort<wbr>Compression<span class="tsd-signature-symbol">: </span><a href="_view_.html#primarysortcompression-2" class="tsd-signature-type">PrimarySortCompression</a></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Compression to use for the primary sort data.</p>
+									</div>
+									<p>Default: <code>&quot;lz4&quot;</code></p>
+								</div>
+							</li>
+							<li class="tsd-parameter">
+								<h5>stored<wbr>Values<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>fields<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">[]</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Attribute paths for which values should be stored in the view index
+										in addition to those used for sorting via <code>primarySort</code>.</p>
+									</div>
+								</div>
+							</li>
+							<li class="tsd-parameter">
 								<h5>writebuffer<wbr>Active<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
@@ -258,7 +286,7 @@
 				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
 					<a name="arangosearchviewpropertiesoptions" class="tsd-anchor"></a>
 					<h3>Arango<wbr>Search<wbr>View<wbr>Properties<wbr>Options</h3>
-					<div class="tsd-signature tsd-kind-icon">Arango<wbr>Search<wbr>View<wbr>Properties<wbr>Options<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>cleanupIntervalStep<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>commitIntervalMsec<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>consolidationIntervalMsec<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>consolidationPolicy<span class="tsd-signature-symbol">?: </span><a href="_view_.html#bytesaccumconsolidationpolicy" class="tsd-signature-type">BytesAccumConsolidationPolicy</a><span class="tsd-signature-symbol"> | </span><a href="_view_.html#tierconsolidationpolicy" class="tsd-signature-type">TierConsolidationPolicy</a><span class="tsd-signature-symbol">; </span>links<span class="tsd-signature-symbol">?: </span><a href="_connection_.html#dict" class="tsd-signature-type">Dict</a><span class="tsd-signature-symbol">&lt;</span><a href="_view_.html#arangosearchviewlink" class="tsd-signature-type">ArangoSearchViewLink</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">; </span>primarySort<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">{ </span>direction<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"desc"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"asc"</span><span class="tsd-signature-symbol">; </span>field<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">{ </span>asc<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>field<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span>writebufferActive<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>writebufferIdle<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>writebufferSizeMax<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span></div>
+					<div class="tsd-signature tsd-kind-icon">Arango<wbr>Search<wbr>View<wbr>Properties<wbr>Options<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>cleanupIntervalStep<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>commitIntervalMsec<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>consolidationIntervalMsec<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>consolidationPolicy<span class="tsd-signature-symbol">?: </span><a href="_view_.html#bytesaccumconsolidationpolicy" class="tsd-signature-type">BytesAccumConsolidationPolicy</a><span class="tsd-signature-symbol"> | </span><a href="_view_.html#tierconsolidationpolicy" class="tsd-signature-type">TierConsolidationPolicy</a><span class="tsd-signature-symbol">; </span>links<span class="tsd-signature-symbol">?: </span><a href="_connection_.html#dict" class="tsd-signature-type">Dict</a><span class="tsd-signature-symbol">&lt;</span><a href="_view_.html#arangosearchviewlink" class="tsd-signature-type">ArangoSearchViewLink</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">; </span>primarySort<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">{ </span>direction<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">"desc"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"asc"</span><span class="tsd-signature-symbol">; </span>field<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">{ </span>asc<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>field<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span>primarySortCompression<span class="tsd-signature-symbol">?: </span><a href="_view_.html#primarysortcompression-2" class="tsd-signature-type">PrimarySortCompression</a><span class="tsd-signature-symbol">; </span>storedValues<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">{ </span>fields<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span>writebufferActive<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>writebufferIdle<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>writebufferSizeMax<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -329,6 +357,24 @@
 								</div>
 							</li>
 							<li class="tsd-parameter">
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> primary<wbr>Sort<wbr>Compression<span class="tsd-signature-symbol">?: </span><a href="_view_.html#primarysortcompression-2" class="tsd-signature-type">PrimarySortCompression</a></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Compression to use for the primary sort data.</p>
+									</div>
+									<p>Default: <code>&quot;lz4&quot;</code></p>
+								</div>
+							</li>
+							<li class="tsd-parameter">
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> stored<wbr>Values<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">{ </span>fields<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">[]</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Attribute paths for which values should be stored in the view index
+										in addition to those used for sorting via <code>primarySort</code>.</p>
+									</div>
+								</div>
+							</li>
+							<li class="tsd-parameter">
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> writebuffer<wbr>Active<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
@@ -390,6 +436,19 @@
 								</div>
 							</li>
 						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
+					<a name="primarysortcompression-2" class="tsd-anchor"></a>
+					<h3>Primary<wbr>Sort<wbr>Compression</h3>
+					<div class="tsd-signature tsd-kind-icon">Primary<wbr>Sort<wbr>Compression<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"lz4"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"none"</span></div>
+					<aside class="tsd-sources">
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Compression to use for primary sort data of a View.</p>
+						</div>
+						<p>Default: <code>&quot;lz4&quot;</code></p>
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
@@ -622,6 +681,9 @@
 					</li>
 					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
 						<a href="_view_.html#bytesaccumconsolidationpolicy" class="tsd-kind-icon">Bytes<wbr>Accum<wbr>Consolidation<wbr>Policy</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
+						<a href="_view_.html#primarysortcompression-2" class="tsd-kind-icon">Primary<wbr>Sort<wbr>Compression</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
 						<a href="_view_.html#tierconsolidationpolicy" class="tsd-kind-icon">Tier<wbr>Consolidation<wbr>Policy</a>
