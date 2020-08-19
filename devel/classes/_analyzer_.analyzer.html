@@ -168,7 +168,10 @@
 								<p>See also <a href="_database_.database.html#createanalyzer">Database.createAnalyzer</a>.</p>
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
-									<dd><pre><code class="language-js">TODO</code></pre>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> analyzer = db.analyzer(<span class="hljs-string">&quot;potatoes&quot;</span>);
+<span class="hljs-keyword">await</span> analyzer.create({ <span class="hljs-attr">type</span>: <span class="hljs-string">&quot;identity&quot;</span> });
+<span class="hljs-comment">// the identity Analyzer &quot;potatoes&quot; now exists</span></code></pre>
 									</dd>
 								</dl>
 							</div>

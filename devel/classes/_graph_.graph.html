@@ -156,7 +156,14 @@
 								</div>
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
-									<dd><pre><code class="language-js">TODO</code></pre>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> graph = db.graph(<span class="hljs-string">&quot;some-graph&quot;</span>);
+<span class="hljs-keyword">await</span> graph.addEdgeDefinition({
+  <span class="hljs-attr">collection</span>: <span class="hljs-string">&quot;edges&quot;</span>,
+  <span class="hljs-attr">from</span>: [<span class="hljs-string">&quot;start-vertices&quot;</span>],
+  <span class="hljs-attr">to</span>: [<span class="hljs-string">&quot;end-vertices&quot;</span>],
+});
+<span class="hljs-comment">// The edge definition has been added to the graph</span></code></pre>
 									</dd>
 								</dl>
 							</div>
@@ -189,7 +196,13 @@
 								</div>
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
-									<dd><pre><code class="language-js">TODO</code></pre>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> graph = db.graph(<span class="hljs-string">&quot;some-graph&quot;</span>);
+<span class="hljs-keyword">await</span> graph.addVertexCollection(<span class="hljs-string">&quot;more-vertices&quot;</span>);
+<span class="hljs-comment">// The collection &quot;more-vertices&quot; has been added to the graph</span>
+<span class="hljs-keyword">const</span> extra = db.collection(<span class="hljs-string">&quot;extra-vertices&quot;</span>);
+<span class="hljs-keyword">await</span> graph.addVertexCollection(extra);
+<span class="hljs-comment">// The collection &quot;extra-vertices&quot; has been added to the graph</span></code></pre>
 									</dd>
 								</dl>
 							</div>
@@ -307,6 +320,22 @@
 									<p>Returns a <a href="_graph_.graphedgecollection.html">GraphEdgeCollection</a> instance for the given collection
 									name representing the collection in this graph.</p>
 								</div>
+								<dl class="tsd-comment-tags">
+									<dt>example</dt>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> graph = db.graph(<span class="hljs-string">&quot;some-graph&quot;</span>);
+<span class="hljs-keyword">const</span> info = <span class="hljs-keyword">await</span> graph.create([
+  {
+    <span class="hljs-attr">collection</span>: <span class="hljs-string">&quot;edges&quot;</span>,
+    <span class="hljs-attr">from</span>: [<span class="hljs-string">&quot;start-vertices&quot;</span>],
+    <span class="hljs-attr">to</span>: [<span class="hljs-string">&quot;end-vertices&quot;</span>],
+  },
+]);
+<span class="hljs-keyword">const</span> graphEdgeCollection = graph.edgeCollection(<span class="hljs-string">&quot;edges&quot;</span>);
+<span class="hljs-comment">// Access the underlying EdgeCollection API:</span>
+<span class="hljs-keyword">const</span> edgeCollection = graphEdgeCollection.collection;</code></pre>
+									</dd>
+								</dl>
 							</div>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
 							<ul class="tsd-type-parameters">
@@ -346,6 +375,24 @@
 									an array of <a href="_graph_.graphedgecollection.html">GraphEdgeCollection</a> instances.</p>
 								</div>
 								<p>See also <a href="_graph_.graph.html#listedgecollections">Graph.listEdgeCollections</a>.</p>
+								<dl class="tsd-comment-tags">
+									<dt>example</dt>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> graph = db.graph(<span class="hljs-string">&quot;some-graph&quot;</span>);
+<span class="hljs-keyword">const</span> info = <span class="hljs-keyword">await</span> graph.create([
+  {
+    <span class="hljs-attr">collection</span>: <span class="hljs-string">&quot;edges&quot;</span>,
+    <span class="hljs-attr">from</span>: [<span class="hljs-string">&quot;start-vertices&quot;</span>],
+    <span class="hljs-attr">to</span>: [<span class="hljs-string">&quot;end-vertices&quot;</span>],
+  },
+]);
+<span class="hljs-keyword">const</span> graphEdgeCollections = <span class="hljs-keyword">await</span> graph.edgeCollections();
+<span class="hljs-keyword">for</span> (<span class="hljs-keyword">const</span> collection <span class="hljs-keyword">of</span> graphEdgeCollection) {
+  <span class="hljs-built_in">console</span>.log(collection.name);
+  <span class="hljs-comment">// &quot;edges&quot;</span>
+}</code></pre>
+									</dd>
+								</dl>
 							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="_graph_.graphedgecollection.html" class="tsd-signature-type">GraphEdgeCollection</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
@@ -423,7 +470,17 @@
 								<p>See also <a href="_graph_.graph.html#edgecollections">Graph.edgeCollections</a>.</p>
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
-									<dd><pre><code class="language-js">TODO</code></pre>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> graph = db.graph(<span class="hljs-string">&quot;some-graph&quot;</span>);
+<span class="hljs-keyword">const</span> info = <span class="hljs-keyword">await</span> graph.create([
+  {
+    <span class="hljs-attr">collection</span>: <span class="hljs-string">&quot;edges&quot;</span>,
+    <span class="hljs-attr">from</span>: [<span class="hljs-string">&quot;start-vertices&quot;</span>],
+    <span class="hljs-attr">to</span>: [<span class="hljs-string">&quot;end-vertices&quot;</span>],
+  },
+]);
+<span class="hljs-keyword">const</span> edgeCollectionNames = <span class="hljs-keyword">await</span> graph.listEdgeCollections();
+<span class="hljs-comment">// [&quot;edges&quot;]</span></code></pre>
 									</dd>
 								</dl>
 							</div>
@@ -449,7 +506,17 @@
 								<p>See also <a href="_graph_.graph.html#vertexcollections">Graph.vertexCollections</a>.</p>
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
-									<dd><pre><code class="language-js">TODO</code></pre>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> graph = db.graph(<span class="hljs-string">&quot;some-graph&quot;</span>);
+<span class="hljs-keyword">const</span> info = <span class="hljs-keyword">await</span> graph.create([
+  {
+    <span class="hljs-attr">collection</span>: <span class="hljs-string">&quot;edges&quot;</span>,
+    <span class="hljs-attr">from</span>: [<span class="hljs-string">&quot;start-vertices&quot;</span>],
+    <span class="hljs-attr">to</span>: [<span class="hljs-string">&quot;end-vertices&quot;</span>],
+  },
+]);
+<span class="hljs-keyword">const</span> vertexCollectionNames = <span class="hljs-keyword">await</span> graph.listVertexCollections();
+<span class="hljs-comment">// [&quot;start-vertices&quot;, &quot;end-vertices&quot;]</span></code></pre>
 									</dd>
 								</dl>
 							</div>
@@ -473,7 +540,17 @@
 								</div>
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
-									<dd><pre><code class="language-js">TODO</code></pre>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> graph = db.graph(<span class="hljs-string">&quot;some-graph&quot;</span>);
+<span class="hljs-keyword">const</span> info = <span class="hljs-keyword">await</span> graph.create([
+  {
+    <span class="hljs-attr">collection</span>: <span class="hljs-string">&quot;edges&quot;</span>,
+    <span class="hljs-attr">from</span>: [<span class="hljs-string">&quot;start-vertices&quot;</span>],
+    <span class="hljs-attr">to</span>: [<span class="hljs-string">&quot;end-vertices&quot;</span>],
+  },
+]);
+<span class="hljs-keyword">await</span> graph.removeEdgeDefinition(<span class="hljs-string">&quot;edges&quot;</span>);
+<span class="hljs-comment">// The edge definition for &quot;edges&quot; has been replaced</span></code></pre>
 									</dd>
 								</dl>
 							</div>
@@ -513,7 +590,17 @@
 								</div>
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
-									<dd><pre><code class="language-js">TODO</code></pre>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> graph = db.graph(<span class="hljs-string">&quot;some-graph&quot;</span>);
+<span class="hljs-keyword">const</span> info = <span class="hljs-keyword">await</span> graph.create([
+  {
+    <span class="hljs-attr">collection</span>: <span class="hljs-string">&quot;edges&quot;</span>,
+    <span class="hljs-attr">from</span>: [<span class="hljs-string">&quot;start-vertices&quot;</span>],
+    <span class="hljs-attr">to</span>: [<span class="hljs-string">&quot;end-vertices&quot;</span>],
+  },
+]);
+<span class="hljs-keyword">await</span> graph.removeVertexCollection(<span class="hljs-string">&quot;start-vertices&quot;</span>);
+<span class="hljs-comment">// The collection &quot;start-vertices&quot; is no longer part of the graph.</span></code></pre>
 									</dd>
 								</dl>
 							</div>
@@ -555,7 +642,21 @@
 								</div>
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
-									<dd><pre><code class="language-js">TODO</code></pre>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> graph = db.graph(<span class="hljs-string">&quot;some-graph&quot;</span>);
+<span class="hljs-keyword">const</span> info = <span class="hljs-keyword">await</span> graph.create([
+  {
+    <span class="hljs-attr">collection</span>: <span class="hljs-string">&quot;edges&quot;</span>,
+    <span class="hljs-attr">from</span>: [<span class="hljs-string">&quot;start-vertices&quot;</span>],
+    <span class="hljs-attr">to</span>: [<span class="hljs-string">&quot;end-vertices&quot;</span>],
+  },
+]);
+<span class="hljs-keyword">await</span> graph.replaceEdgeDefinition({
+  <span class="hljs-attr">collection</span>: <span class="hljs-string">&quot;edges&quot;</span>,
+  <span class="hljs-attr">from</span>: [<span class="hljs-string">&quot;start-vertices&quot;</span>],
+  <span class="hljs-attr">to</span>: [<span class="hljs-string">&quot;other-vertices&quot;</span>],
+});
+<span class="hljs-comment">// The edge definition for &quot;edges&quot; has been replaced</span></code></pre>
 									</dd>
 								</dl>
 							</div>
@@ -580,7 +681,21 @@
 								</div>
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
-									<dd><pre><code class="language-js">TODO</code></pre>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> graph = db.graph(<span class="hljs-string">&quot;some-graph&quot;</span>);
+<span class="hljs-keyword">const</span> info = <span class="hljs-keyword">await</span> graph.create([
+  {
+    <span class="hljs-attr">collection</span>: <span class="hljs-string">&quot;edges&quot;</span>,
+    <span class="hljs-attr">from</span>: [<span class="hljs-string">&quot;start-vertices&quot;</span>],
+    <span class="hljs-attr">to</span>: [<span class="hljs-string">&quot;end-vertices&quot;</span>],
+  },
+]);
+<span class="hljs-keyword">await</span> graph.replaceEdgeDefinition(<span class="hljs-string">&quot;edges&quot;</span>, {
+  <span class="hljs-attr">collection</span>: <span class="hljs-string">&quot;edges&quot;</span>,
+  <span class="hljs-attr">from</span>: [<span class="hljs-string">&quot;start-vertices&quot;</span>],
+  <span class="hljs-attr">to</span>: [<span class="hljs-string">&quot;other-vertices&quot;</span>],
+});
+<span class="hljs-comment">// The edge definition for &quot;edges&quot; has been replaced</span></code></pre>
 									</dd>
 								</dl>
 							</div>
@@ -716,6 +831,25 @@
 									an array of <a href="_graph_.graphvertexcollection.html">GraphVertexCollection</a> instances.</p>
 								</div>
 								<p>See also <a href="_graph_.graph.html#listvertexcollections">Graph.listVertexCollections</a>.</p>
+								<dl class="tsd-comment-tags">
+									<dt>example</dt>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> graph = db.graph(<span class="hljs-string">&quot;some-graph&quot;</span>);
+<span class="hljs-keyword">const</span> info = <span class="hljs-keyword">await</span> graph.create([
+  {
+    <span class="hljs-attr">collection</span>: <span class="hljs-string">&quot;edges&quot;</span>,
+    <span class="hljs-attr">from</span>: [<span class="hljs-string">&quot;start-vertices&quot;</span>],
+    <span class="hljs-attr">to</span>: [<span class="hljs-string">&quot;end-vertices&quot;</span>],
+  },
+]);
+<span class="hljs-keyword">const</span> vertexCollections = <span class="hljs-keyword">await</span> graph.vertexCollections();
+<span class="hljs-keyword">for</span> (<span class="hljs-keyword">const</span> vertexCollection <span class="hljs-keyword">of</span> vertexCollections) {
+  <span class="hljs-built_in">console</span>.log(vertexCollection.name);
+  <span class="hljs-comment">// &quot;start-vertices&quot;</span>
+  <span class="hljs-comment">// &quot;end-vertices&quot;</span>
+}</code></pre>
+									</dd>
+								</dl>
 							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="_graph_.graphvertexcollection.html" class="tsd-signature-type">GraphVertexCollection</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
