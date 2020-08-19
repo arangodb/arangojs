@@ -224,7 +224,7 @@ describe("Query Management API", function () {
     });
   });
 
-  // TODO rewrite this test to use async mode to eliminate the timing
+  // FIXME rewrite this test to use async mode to eliminate the timing
   // dependence. This test is flakey on Jenkins otherwise.
   describe.skip("database.killQuery", () => {
     it("kills the given query", async () => {

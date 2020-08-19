@@ -1346,7 +1346,17 @@ export class Graph {
    *
    * @example
    * ```js
-   * TODO
+   * const db = new Database();
+   * const graph = db.graph("some-graph");
+   * const info = await graph.create([
+   *   {
+   *     collection: "edges",
+   *     from: ["start-vertices"],
+   *     to: ["end-vertices"],
+   *   },
+   * ]);
+   * const vertexCollectionNames = await graph.listVertexCollections();
+   * // ["start-vertices", "end-vertices"]
    * ```
    */
   listVertexCollections(): Promise<string[]> {
@@ -1361,6 +1371,25 @@ export class Graph {
    * an array of {@link GraphVertexCollection} instances.
    *
    * See also {@link Graph.listVertexCollections}.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const graph = db.graph("some-graph");
+   * const info = await graph.create([
+   *   {
+   *     collection: "edges",
+   *     from: ["start-vertices"],
+   *     to: ["end-vertices"],
+   *   },
+   * ]);
+   * const vertexCollections = await graph.vertexCollections();
+   * for (const vertexCollection of vertexCollections) {
+   *   console.log(vertexCollection.name);
+   *   // "start-vertices"
+   *   // "end-vertices"
+   * }
+   * ```
    */
   async vertexCollections(): Promise<GraphVertexCollection[]> {
     const names = await this.listVertexCollections();
@@ -1374,7 +1403,13 @@ export class Graph {
    *
    * @example
    * ```js
-   * TODO
+   * const db = new Database();
+   * const graph = db.graph("some-graph");
+   * await graph.addVertexCollection("more-vertices");
+   * // The collection "more-vertices" has been added to the graph
+   * const extra = db.collection("extra-vertices");
+   * await graph.addVertexCollection(extra);
+   * // The collection "extra-vertices" has been added to the graph
    * ```
    */
   addVertexCollection(
@@ -1402,7 +1437,17 @@ export class Graph {
    *
    * @example
    * ```js
-   * TODO
+   * const db = new Database();
+   * const graph = db.graph("some-graph");
+   * const info = await graph.create([
+   *   {
+   *     collection: "edges",
+   *     from: ["start-vertices"],
+   *     to: ["end-vertices"],
+   *   },
+   * ]);
+   * await graph.removeVertexCollection("start-vertices");
+   * // The collection "start-vertices" is no longer part of the graph.
    * ```
    */
   removeVertexCollection(
@@ -1430,6 +1475,22 @@ export class Graph {
    *
    * @param T - Type to use for document data. Defaults to `any`.
    * @param collection - Name of the edge collection.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const graph = db.graph("some-graph");
+   * const info = await graph.create([
+   *   {
+   *     collection: "edges",
+   *     from: ["start-vertices"],
+   *     to: ["end-vertices"],
+   *   },
+   * ]);
+   * const graphEdgeCollection = graph.edgeCollection("edges");
+   * // Access the underlying EdgeCollection API:
+   * const edgeCollection = graphEdgeCollection.collection;
+   * ```
    */
   edgeCollection<T extends object = any>(
     collection: string | ArangoCollection
@@ -1448,7 +1509,17 @@ export class Graph {
    *
    * @example
    * ```js
-   * TODO
+   * const db = new Database();
+   * const graph = db.graph("some-graph");
+   * const info = await graph.create([
+   *   {
+   *     collection: "edges",
+   *     from: ["start-vertices"],
+   *     to: ["end-vertices"],
+   *   },
+   * ]);
+   * const edgeCollectionNames = await graph.listEdgeCollections();
+   * // ["edges"]
    * ```
    */
   listEdgeCollections(): Promise<string[]> {
@@ -1463,6 +1534,24 @@ export class Graph {
    * an array of {@link GraphEdgeCollection} instances.
    *
    * See also {@link Graph.listEdgeCollections}.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const graph = db.graph("some-graph");
+   * const info = await graph.create([
+   *   {
+   *     collection: "edges",
+   *     from: ["start-vertices"],
+   *     to: ["end-vertices"],
+   *   },
+   * ]);
+   * const graphEdgeCollections = await graph.edgeCollections();
+   * for (const collection of graphEdgeCollection) {
+   *   console.log(collection.name);
+   *   // "edges"
+   * }
+   * ```
    */
   async edgeCollections(): Promise<GraphEdgeCollection[]> {
     const names = await this.listEdgeCollections();
@@ -1476,7 +1565,14 @@ export class Graph {
    *
    * @example
    * ```js
-   * TODO
+   * const db = new Database();
+   * const graph = db.graph("some-graph");
+   * await graph.addEdgeDefinition({
+   *   collection: "edges",
+   *   from: ["start-vertices"],
+   *   to: ["end-vertices"],
+   * });
+   * // The edge definition has been added to the graph
    * ```
    */
   addEdgeDefinition(edgeDefinition: EdgeDefinitionOptions): Promise<GraphInfo> {
@@ -1498,7 +1594,21 @@ export class Graph {
    *
    * @example
    * ```js
-   * TODO
+   * const db = new Database();
+   * const graph = db.graph("some-graph");
+   * const info = await graph.create([
+   *   {
+   *     collection: "edges",
+   *     from: ["start-vertices"],
+   *     to: ["end-vertices"],
+   *   },
+   * ]);
+   * await graph.replaceEdgeDefinition({
+   *   collection: "edges",
+   *   from: ["start-vertices"],
+   *   to: ["other-vertices"],
+   * });
+   * // The edge definition for "edges" has been replaced
    * ```
    */
   replaceEdgeDefinition(
@@ -1513,7 +1623,21 @@ export class Graph {
    *
    * @example
    * ```js
-   * TODO
+   * const db = new Database();
+   * const graph = db.graph("some-graph");
+   * const info = await graph.create([
+   *   {
+   *     collection: "edges",
+   *     from: ["start-vertices"],
+   *     to: ["end-vertices"],
+   *   },
+   * ]);
+   * await graph.replaceEdgeDefinition("edges", {
+   *   collection: "edges",
+   *   from: ["start-vertices"],
+   *   to: ["other-vertices"],
+   * });
+   * // The edge definition for "edges" has been replaced
    * ```
    */
   replaceEdgeDefinition(
@@ -1550,7 +1674,17 @@ export class Graph {
    *
    * @example
    * ```js
-   * TODO
+   * const db = new Database();
+   * const graph = db.graph("some-graph");
+   * const info = await graph.create([
+   *   {
+   *     collection: "edges",
+   *     from: ["start-vertices"],
+   *     to: ["end-vertices"],
+   *   },
+   * ]);
+   * await graph.removeEdgeDefinition("edges");
+   * // The edge definition for "edges" has been replaced
    * ```
    */
   removeEdgeDefinition(

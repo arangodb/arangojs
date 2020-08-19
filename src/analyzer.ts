@@ -319,7 +319,10 @@ export class Analyzer {
    *
    * @example
    * ```js
-   * TODO
+   * const db = new Database();
+   * const analyzer = db.analyzer("potatoes");
+   * await analyzer.create({ type: "identity" });
+   * // the identity Analyzer "potatoes" now exists
    * ```
    */
   create(options: CreateAnalyzerOptions): Promise<AnalyzerDescription> {

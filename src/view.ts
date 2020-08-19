@@ -411,7 +411,10 @@ export class View<
    *
    * @example
    * ```js
-   * TODO
+   * const db = new Database();
+   * const view = db.view("potatoes");
+   * await view.create();
+   * // the ArangoSearch View "potatoes" now exists
    * ```
    */
   create(
