@@ -8,8 +8,8 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [10, 12, 13]
-        arangodb-version: [3.5, 3.6]
+        node-version: [10, 12, 14]
+        arangodb-version: [3.5, 3.6, 3.7]
 
     container:
       image: node:${{ matrix.node-version }}
