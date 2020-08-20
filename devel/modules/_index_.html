@@ -134,7 +134,7 @@
 					<h3>arangojs</h3>
 					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module">
 						<li class="tsd-signature tsd-kind-icon">arangojs<span class="tsd-signature-symbol">(</span>config<span class="tsd-signature-symbol">?: </span><a href="_connection_.html#config" class="tsd-signature-type">Config</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../classes/_database_.database.html" class="tsd-signature-type">Database</a></li>
-						<li class="tsd-signature tsd-kind-icon">arangojs<span class="tsd-signature-symbol">(</span>url<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../classes/_database_.database.html" class="tsd-signature-type">Database</a></li>
+						<li class="tsd-signature tsd-kind-icon">arangojs<span class="tsd-signature-symbol">(</span>url<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span>, name<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../classes/_database_.database.html" class="tsd-signature-type">Database</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -145,6 +145,15 @@
 									<p>Creates a new <code>Database</code> instance with its own connection pool.</p>
 								</div>
 								<p>This is a wrapper function for the <a href="../classes/_database_.database.html#constructor">Database.constructor</a>.</p>
+								<dl class="tsd-comment-tags">
+									<dt>example</dt>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = arangojs({
+  <span class="hljs-attr">url</span>: <span class="hljs-string">&quot;http://localhost:8529&quot;</span>,
+  <span class="hljs-attr">databaseName</span>: <span class="hljs-string">&quot;myDatabase&quot;</span>,
+  <span class="hljs-attr">auth</span>: { <span class="hljs-attr">username</span>: <span class="hljs-string">&quot;admin&quot;</span>, <span class="hljs-attr">password</span>: <span class="hljs-string">&quot;hunter2&quot;</span> },
+});</code></pre>
+									</dd>
+								</dl>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
@@ -165,6 +174,12 @@
 									<p>Creates a new <code>Database</code> instance with its own connection pool.</p>
 								</div>
 								<p>This is a wrapper function for the <a href="../classes/_database_.database.html#constructor">Database.constructor</a>.</p>
+								<dl class="tsd-comment-tags">
+									<dt>example</dt>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = arangojs(<span class="hljs-string">&quot;http://localhost:8529&quot;</span>, <span class="hljs-string">&quot;myDatabase&quot;</span>);
+db.useBasicAuth(<span class="hljs-string">&quot;admin&quot;</span>, <span class="hljs-string">&quot;hunter2&quot;</span>);</code></pre>
+									</dd>
+								</dl>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
@@ -174,6 +189,9 @@
 										<p>Base URL of the ArangoDB server or list of server URLs.
 										Equivalent to the <code>url</code> option in <a href="_connection_.html#config">Config</a>.</p>
 									</div>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> name: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <a href="../classes/_database_.database.html" class="tsd-signature-type">Database</a></h4>

@@ -188,7 +188,7 @@
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
 						<li class="tsd-signature tsd-kind-icon">new <wbr>Database<span class="tsd-signature-symbol">(</span>config<span class="tsd-signature-symbol">?: </span><a href="../modules/_connection_.html#config" class="tsd-signature-type">Config</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_database_.database.html" class="tsd-signature-type">Database</a></li>
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Database<span class="tsd-signature-symbol">(</span>url<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_database_.database.html" class="tsd-signature-type">Database</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Database<span class="tsd-signature-symbol">(</span>url<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span>, name<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_database_.database.html" class="tsd-signature-type">Database</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -201,7 +201,11 @@
 								<p>See also <a href="_database_.database.html#database">Database.database</a>.</p>
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
-									<dd><pre><code class="language-js">TODO</code></pre>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database({
+  <span class="hljs-attr">url</span>: <span class="hljs-string">&quot;http://localhost:8529&quot;</span>,
+  <span class="hljs-attr">databaseName</span>: <span class="hljs-string">&quot;my_database&quot;</span>,
+  <span class="hljs-attr">auth</span>: { <span class="hljs-attr">username</span>: <span class="hljs-string">&quot;admin&quot;</span>, <span class="hljs-attr">password</span>: <span class="hljs-string">&quot;hunter2&quot;</span> },
+});</code></pre>
 									</dd>
 								</dl>
 							</div>
@@ -228,7 +232,8 @@
 								<p>See also <a href="_database_.database.html#database">Database.database</a>.</p>
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
-									<dd><pre><code class="language-js">TODO</code></pre>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database(<span class="hljs-string">&quot;http://localhost:8529&quot;</span>, <span class="hljs-string">&quot;my_database&quot;</span>);
+db.useBasicAuth(<span class="hljs-string">&quot;admin&quot;</span>, <span class="hljs-string">&quot;hunter2&quot;</span>);</code></pre>
 									</dd>
 								</dl>
 							</div>
@@ -242,6 +247,9 @@
 											Equivalent to the <code>url</code> option in <a href="../modules/_connection_.html#config">Config</a>.</p>
 										</div>
 									</div>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> name: <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <a href="_database_.database.html" class="tsd-signature-type">Database</a></h4>
@@ -550,7 +558,9 @@ db.close();</code></pre>
 								<p>See also <a href="_database_.database.html#listslowqueries">Database.listSlowQueries</a>.</p>
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
-									<dd><pre><code class="language-js">TODO</code></pre>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">await</span> db.clearSlowQueries();
+<span class="hljs-comment">// Slow query list is now cleared</span></code></pre>
 									</dd>
 								</dl>
 							</div>
@@ -1208,7 +1218,8 @@ db.useBasicAuth(<span class="hljs-string">&quot;root&quot;</span>, <span class="
 								<p>See also <a href="_database_.database.html#constructor">Database.constructor</a>.</p>
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
-									<dd><pre><code class="language-js">TODO</code></pre>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> systemDb = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> myDb = system.database(<span class="hljs-string">&quot;my_database&quot;</span>);</code></pre>
 									</dd>
 								</dl>
 							</div>
@@ -1271,7 +1282,8 @@ db.useBasicAuth(<span class="hljs-string">&quot;root&quot;</span>, <span class="
 								<p>Returns a <code>Buffer</code> in node.js or <code>Blob</code> in the browser.</p>
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
-									<dd><pre><code class="language-js">TODO</code></pre>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> serviceBundle = <span class="hljs-keyword">await</span> db.downloadService(<span class="hljs-string">&quot;/my-foxx&quot;</span>);</code></pre>
 									</dd>
 								</dl>
 							</div>
@@ -1627,7 +1639,13 @@ db.useBasicAuth(<span class="hljs-string">&quot;root&quot;</span>, <span class="
 								having to worry about escaping variables.</p>
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
-									<dd><pre><code class="language-js">TODO</code></pre>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">&quot;some-collection&quot;</span>);
+<span class="hljs-keyword">const</span> explanation = <span class="hljs-keyword">await</span> db.explain(aql<span class="hljs-string">`
+  FOR doc IN <span class="hljs-subst">${collection}</span>
+  FILTER doc.flavor == &quot;strawberry&quot;
+  RETURN doc._key
+`</span>);</code></pre>
 									</dd>
 								</dl>
 							</div>
@@ -1661,7 +1679,16 @@ db.useBasicAuth(<span class="hljs-string">&quot;root&quot;</span>, <span class="
 								having to worry about escaping variables.</p>
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
-									<dd><pre><code class="language-js">TODO</code></pre>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">&quot;some-collection&quot;</span>);
+<span class="hljs-keyword">const</span> explanation = <span class="hljs-keyword">await</span> db.explain(
+  aql<span class="hljs-string">`
+    FOR doc IN <span class="hljs-subst">${collection}</span>
+    FILTER doc.flavor == &quot;strawberry&quot;
+    RETURN doc._key
+  `</span>,
+  { <span class="hljs-attr">allPlans</span>: <span class="hljs-literal">true</span> }
+);</code></pre>
 									</dd>
 								</dl>
 							</div>
@@ -1694,7 +1721,16 @@ db.useBasicAuth(<span class="hljs-string">&quot;root&quot;</span>, <span class="
 								alternative to passing strings directly.</p>
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
-									<dd><pre><code class="language-js">TODO</code></pre>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">&quot;some-collection&quot;</span>);
+<span class="hljs-keyword">const</span> explanation = <span class="hljs-keyword">await</span> db.explain(
+  <span class="hljs-string">`
+    FOR doc IN @@collection
+    FILTER doc.flavor == &quot;strawberry&quot;
+    RETURN doc._key
+  `</span>,
+  { <span class="hljs-string">&quot;@collection&quot;</span>: collection.name }
+);</code></pre>
 									</dd>
 								</dl>
 							</div>
@@ -1732,7 +1768,17 @@ db.useBasicAuth(<span class="hljs-string">&quot;root&quot;</span>, <span class="
 								alternative to passing strings directly.</p>
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
-									<dd><pre><code class="language-js">TODO</code></pre>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">&quot;some-collection&quot;</span>);
+<span class="hljs-keyword">const</span> explanation = <span class="hljs-keyword">await</span> db.explain(
+  <span class="hljs-string">`
+    FOR doc IN @@collection
+    FILTER doc.flavor == &quot;strawberry&quot;
+    RETURN doc._key
+  `</span>,
+  { <span class="hljs-string">&quot;@collection&quot;</span>: collection.name },
+  { <span class="hljs-attr">allPlans</span>: <span class="hljs-literal">true</span> }
+);</code></pre>
 									</dd>
 								</dl>
 							</div>
@@ -1803,7 +1849,8 @@ db.useBasicAuth(<span class="hljs-string">&quot;root&quot;</span>, <span class="
 								</div>
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
-									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> info = <span class="hljs-keyword">await</span> db.getService(<span class="hljs-string">&quot;/my-service&quot;</span>);
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> info = <span class="hljs-keyword">await</span> db.getService(<span class="hljs-string">&quot;/my-service&quot;</span>);
 <span class="hljs-comment">// info contains detailed information about the service</span></code></pre>
 									</dd>
 								</dl>
@@ -1841,7 +1888,8 @@ db.useBasicAuth(<span class="hljs-string">&quot;root&quot;</span>, <span class="
 								<a href="_database_.database.html#updateserviceconfiguration">Database.updateServiceConfiguration</a>.</p>
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
-									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> config = <span class="hljs-keyword">await</span> db.getServiceConfiguration(<span class="hljs-string">&quot;/my-service&quot;</span>);
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> config = <span class="hljs-keyword">await</span> db.getServiceConfiguration(<span class="hljs-string">&quot;/my-service&quot;</span>);
 <span class="hljs-keyword">for</span> (<span class="hljs-keyword">const</span> [key, option] <span class="hljs-keyword">of</span> <span class="hljs-built_in">Object</span>.entries(config)) {
   <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`<span class="hljs-subst">${option.title}</span> (<span class="hljs-subst">${key}</span>): <span class="hljs-subst">${option.current}</span>`</span>);
 }</code></pre>
@@ -1879,7 +1927,8 @@ db.useBasicAuth(<span class="hljs-string">&quot;root&quot;</span>, <span class="
 								<a href="_database_.database.html#updateserviceconfiguration">Database.updateServiceConfiguration</a>.</p>
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
-									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> config = <span class="hljs-keyword">await</span> db.getServiceConfiguration(<span class="hljs-string">&quot;/my-service&quot;</span>, <span class="hljs-literal">true</span>);
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> config = <span class="hljs-keyword">await</span> db.getServiceConfiguration(<span class="hljs-string">&quot;/my-service&quot;</span>, <span class="hljs-literal">true</span>);
 <span class="hljs-keyword">for</span> (<span class="hljs-keyword">const</span> [key, value] <span class="hljs-keyword">of</span> <span class="hljs-built_in">Object</span>.entries(config)) {
   <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`<span class="hljs-subst">${key}</span>: <span class="hljs-subst">${value}</span>`</span>);
 }</code></pre>
@@ -1927,7 +1976,8 @@ db.useBasicAuth(<span class="hljs-string">&quot;root&quot;</span>, <span class="
 								<a href="_database_.database.html#updateservicedependencies">Database.updateServiceDependencies</a>.</p>
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
-									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> deps = <span class="hljs-keyword">await</span> db.getServiceDependencies(<span class="hljs-string">&quot;/my-service&quot;</span>);
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> deps = <span class="hljs-keyword">await</span> db.getServiceDependencies(<span class="hljs-string">&quot;/my-service&quot;</span>);
 <span class="hljs-keyword">for</span> (<span class="hljs-keyword">const</span> [key, dep] <span class="hljs-keyword">of</span> <span class="hljs-built_in">Object</span>.entries(deps)) {
   <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`<span class="hljs-subst">${dep.title}</span> (<span class="hljs-subst">${key}</span>): <span class="hljs-subst">${dep.current}</span>`</span>);
 }</code></pre>
@@ -1965,7 +2015,8 @@ db.useBasicAuth(<span class="hljs-string">&quot;root&quot;</span>, <span class="
 								<a href="_database_.database.html#updateservicedependencies">Database.updateServiceDependencies</a>.</p>
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
-									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> deps = <span class="hljs-keyword">await</span> db.getServiceDependencies(<span class="hljs-string">&quot;/my-service&quot;</span>, <span class="hljs-literal">true</span>);
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> deps = <span class="hljs-keyword">await</span> db.getServiceDependencies(<span class="hljs-string">&quot;/my-service&quot;</span>, <span class="hljs-literal">true</span>);
 <span class="hljs-keyword">for</span> (<span class="hljs-keyword">const</span> [key, value] <span class="hljs-keyword">of</span> <span class="hljs-built_in">Object</span>.entries(deps)) {
   <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`<span class="hljs-subst">${key}</span>: <span class="hljs-subst">${value}</span>`</span>);
 }</code></pre>
@@ -2010,7 +2061,8 @@ db.useBasicAuth(<span class="hljs-string">&quot;root&quot;</span>, <span class="
 								</div>
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
-									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> spec = <span class="hljs-keyword">await</span> db.getServiceDocumentation(<span class="hljs-string">&quot;/my-service&quot;</span>);
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> spec = <span class="hljs-keyword">await</span> db.getServiceDocumentation(<span class="hljs-string">&quot;/my-service&quot;</span>);
 <span class="hljs-comment">// spec is a Swagger API description of the service</span></code></pre>
 									</dd>
 								</dl>
@@ -2045,7 +2097,8 @@ db.useBasicAuth(<span class="hljs-string">&quot;root&quot;</span>, <span class="
 								<p>Returns <code>undefined</code> if no such file could be found.</p>
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
-									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> readme = <span class="hljs-keyword">await</span> db.getServiceReadme(<span class="hljs-string">&quot;/my-service&quot;</span>);
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> readme = <span class="hljs-keyword">await</span> db.getServiceReadme(<span class="hljs-string">&quot;/my-service&quot;</span>);
 <span class="hljs-keyword">if</span> (readme !== <span class="hljs-literal">undefined</span>) <span class="hljs-built_in">console</span>.log(readme);
 <span class="hljs-keyword">else</span> <span class="hljs-built_in">console</span>.warn(<span class="hljs-string">`No README found.`</span>)</code></pre>
 									</dd>
@@ -2081,7 +2134,8 @@ db.useBasicAuth(<span class="hljs-string">&quot;root&quot;</span>, <span class="
 								</div>
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
-									<dd><pre><code class="language-js">TODO</code></pre>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> graph = db.graph(<span class="hljs-string">&quot;some-graph&quot;</span>);</code></pre>
 									</dd>
 								</dl>
 							</div>
@@ -2142,17 +2196,20 @@ db.useBasicAuth(<span class="hljs-string">&quot;root&quot;</span>, <span class="
 								</div>
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
-									<dd><pre><code class="language-js"><span class="hljs-comment">// Using a node.js file stream as source</span>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-comment">// Using a node.js file stream as source</span>
 <span class="hljs-keyword">const</span> source = fs.createReadStream(<span class="hljs-string">&quot;./my-foxx-service.zip&quot;</span>);
 <span class="hljs-keyword">const</span> info = <span class="hljs-keyword">await</span> db.installService(<span class="hljs-string">&quot;/hello&quot;</span>, source);</code></pre>
 									</dd>
 									<dt>example</dt>
-									<dd><pre><code class="language-js"><span class="hljs-comment">// Using a node.js Buffer as source</span>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-comment">// Using a node.js Buffer as source</span>
 <span class="hljs-keyword">const</span> source = fs.readFileSync(<span class="hljs-string">&quot;./my-foxx-service.zip&quot;</span>);
 <span class="hljs-keyword">const</span> info = <span class="hljs-keyword">await</span> db.installService(<span class="hljs-string">&quot;/hello&quot;</span>, source);</code></pre>
 									</dd>
 									<dt>example</dt>
-									<dd><pre><code class="language-js"><span class="hljs-comment">// Using a File (Blob) from a browser file input</span>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-comment">// Using a File (Blob) from a browser file input</span>
 <span class="hljs-keyword">const</span> element = <span class="hljs-built_in">document</span>.getElementById(<span class="hljs-string">&quot;my-file-input&quot;</span>);
 <span class="hljs-keyword">const</span> source = element.files[<span class="hljs-number">0</span>];
 <span class="hljs-keyword">const</span> info = <span class="hljs-keyword">await</span> db.installService(<span class="hljs-string">&quot;/hello&quot;</span>, source);</code></pre>
@@ -2201,7 +2258,15 @@ db.useBasicAuth(<span class="hljs-string">&quot;root&quot;</span>, <span class="
 								<p>See also <a href="_database_.database.html#listrunningqueries">Database.listRunningQueries</a>.</p>
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
-									<dd><pre><code class="language-js">TODO</code></pre>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> queries = <span class="hljs-keyword">await</span> db.listRunningQueries();
+<span class="hljs-keyword">await</span> <span class="hljs-built_in">Promise</span>.all(queries.map(
+  <span class="hljs-keyword">async</span> (query) =&gt; {
+    <span class="hljs-keyword">if</span> (query.state === <span class="hljs-string">&quot;executing&quot;</span>) {
+      <span class="hljs-keyword">await</span> db.killQuery(query.id);
+    }
+  }
+));</code></pre>
 									</dd>
 								</dl>
 							</div>
@@ -2389,7 +2454,8 @@ db.useBasicAuth(<span class="hljs-string">&quot;root&quot;</span>, <span class="
 								<p>See also <a href="_database_.database.html#listslowqueries">Database.listSlowQueries</a> and <a href="_database_.database.html#killquery">Database.killQuery</a>.</p>
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
-									<dd><pre><code class="language-js">TODO</code></pre>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> queries = <span class="hljs-keyword">await</span> db.listRunningQueries();</code></pre>
 									</dd>
 								</dl>
 							</div>
@@ -2414,7 +2480,8 @@ db.useBasicAuth(<span class="hljs-string">&quot;root&quot;</span>, <span class="
 								</div>
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
-									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> scripts = <span class="hljs-keyword">await</span> db.listServiceScripts(<span class="hljs-string">&quot;/my-service&quot;</span>);
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> scripts = <span class="hljs-keyword">await</span> db.listServiceScripts(<span class="hljs-string">&quot;/my-service&quot;</span>);
 <span class="hljs-keyword">for</span> (<span class="hljs-keyword">const</span> [name, title] <span class="hljs-keyword">of</span> <span class="hljs-built_in">Object</span>.entries(scripts)) {
   <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`<span class="hljs-subst">${name}</span>: <span class="hljs-subst">${title}</span>`</span>);
 }</code></pre>
@@ -2450,10 +2517,12 @@ db.useBasicAuth(<span class="hljs-string">&quot;root&quot;</span>, <span class="
 								</div>
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
-									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> services = <span class="hljs-keyword">await</span> db.listServices();</code></pre>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> services = <span class="hljs-keyword">await</span> db.listServices();</code></pre>
 									</dd>
 									<dt>example</dt>
-									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> services = <span class="hljs-keyword">await</span> db.listServices(<span class="hljs-literal">false</span>); <span class="hljs-comment">// all services</span></code></pre>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> services = <span class="hljs-keyword">await</span> db.listServices(<span class="hljs-literal">false</span>); <span class="hljs-comment">// all services</span></code></pre>
 									</dd>
 								</dl>
 							</div>
@@ -2488,7 +2557,9 @@ db.useBasicAuth(<span class="hljs-string">&quot;root&quot;</span>, <span class="
 								<a href="_database_.database.html#clearslowqueries">Database.clearSlowQueries</a>.</p>
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
-									<dd><pre><code class="language-js">TODO</code></pre>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> queries = <span class="hljs-keyword">await</span> db.listSlowQueries();
+<span class="hljs-comment">// Only works if slow query tracking is enabled</span></code></pre>
 									</dd>
 								</dl>
 							</div>
@@ -2646,7 +2717,13 @@ db.useDatabase(<span class="hljs-string">&quot;test&quot;</span>);
 								having to worry about escaping variables.</p>
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
-									<dd><pre><code class="language-js">TODO</code></pre>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">&quot;some-collection&quot;</span>);
+<span class="hljs-keyword">const</span> ast = <span class="hljs-keyword">await</span> db.parse(aql<span class="hljs-string">`
+  FOR doc IN <span class="hljs-subst">${collection}</span>
+  FILTER doc.flavor == &quot;strawberry&quot;
+  RETURN doc._key
+`</span>);</code></pre>
 									</dd>
 								</dl>
 							</div>
@@ -2814,7 +2891,9 @@ db.useDatabase(<span class="hljs-string">&quot;test&quot;</span>);
 								</div>
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
-									<dd><pre><code class="language-js">TODO</code></pre>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> tracking = <span class="hljs-keyword">await</span> db.queryTracking();
+<span class="hljs-built_in">console</span>.log(tracking.enabled);</code></pre>
 									</dd>
 								</dl>
 							</div>
@@ -2829,7 +2908,8 @@ db.useDatabase(<span class="hljs-string">&quot;test&quot;</span>);
 								</div>
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
-									<dd><pre><code class="language-js"><span class="hljs-comment">// track up to 5 slow queries exceeding 5 seconds execution time</span>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-comment">// track up to 5 slow queries exceeding 5 seconds execution time</span>
 <span class="hljs-keyword">await</span> db.setQueryTracking({
   <span class="hljs-attr">enabled</span>: <span class="hljs-literal">true</span>,
   <span class="hljs-attr">trackSlowQueries</span>: <span class="hljs-literal">true</span>,
@@ -2945,17 +3025,20 @@ db.useDatabase(<span class="hljs-string">&quot;test&quot;</span>);
 								</div>
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
-									<dd><pre><code class="language-js"><span class="hljs-comment">// Using a node.js file stream as source</span>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-comment">// Using a node.js file stream as source</span>
 <span class="hljs-keyword">const</span> source = fs.createReadStream(<span class="hljs-string">&quot;./my-foxx-service.zip&quot;</span>);
 <span class="hljs-keyword">const</span> info = <span class="hljs-keyword">await</span> db.replaceService(<span class="hljs-string">&quot;/hello&quot;</span>, source);</code></pre>
 									</dd>
 									<dt>example</dt>
-									<dd><pre><code class="language-js"><span class="hljs-comment">// Using a node.js Buffer as source</span>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-comment">// Using a node.js Buffer as source</span>
 <span class="hljs-keyword">const</span> source = fs.readFileSync(<span class="hljs-string">&quot;./my-foxx-service.zip&quot;</span>);
 <span class="hljs-keyword">const</span> info = <span class="hljs-keyword">await</span> db.replaceService(<span class="hljs-string">&quot;/hello&quot;</span>, source);</code></pre>
 									</dd>
 									<dt>example</dt>
-									<dd><pre><code class="language-js"><span class="hljs-comment">// Using a File (Blob) from a browser file input</span>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-comment">// Using a File (Blob) from a browser file input</span>
 <span class="hljs-keyword">const</span> element = <span class="hljs-built_in">document</span>.getElementById(<span class="hljs-string">&quot;my-file-input&quot;</span>);
 <span class="hljs-keyword">const</span> source = element.files[<span class="hljs-number">0</span>];
 <span class="hljs-keyword">const</span> info = <span class="hljs-keyword">await</span> db.replaceService(<span class="hljs-string">&quot;/hello&quot;</span>, source);</code></pre>
@@ -3007,7 +3090,8 @@ db.useDatabase(<span class="hljs-string">&quot;test&quot;</span>);
 								<a href="_database_.database.html#getserviceconfiguration">Database.getServiceConfiguration</a>.</p>
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
-									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> config = { <span class="hljs-attr">currency</span>: <span class="hljs-string">&quot;USD&quot;</span>, <span class="hljs-attr">locale</span>: <span class="hljs-string">&quot;en-US&quot;</span> };
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> config = { <span class="hljs-attr">currency</span>: <span class="hljs-string">&quot;USD&quot;</span>, <span class="hljs-attr">locale</span>: <span class="hljs-string">&quot;en-US&quot;</span> };
 <span class="hljs-keyword">const</span> info = <span class="hljs-keyword">await</span> db.replaceServiceConfiguration(<span class="hljs-string">&quot;/my-service&quot;</span>, config);
 <span class="hljs-keyword">for</span> (<span class="hljs-keyword">const</span> [key, option] <span class="hljs-keyword">of</span> <span class="hljs-built_in">Object</span>.entries(info)) {
   <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`<span class="hljs-subst">${option.title}</span> (<span class="hljs-subst">${key}</span>): <span class="hljs-subst">${option.value}</span>`</span>);
@@ -3056,7 +3140,8 @@ db.useDatabase(<span class="hljs-string">&quot;test&quot;</span>);
 								<a href="_database_.database.html#getserviceconfiguration">Database.getServiceConfiguration</a>.</p>
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
-									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> config = { <span class="hljs-attr">currency</span>: <span class="hljs-string">&quot;USD&quot;</span>, <span class="hljs-attr">locale</span>: <span class="hljs-string">&quot;en-US&quot;</span> };
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> config = { <span class="hljs-attr">currency</span>: <span class="hljs-string">&quot;USD&quot;</span>, <span class="hljs-attr">locale</span>: <span class="hljs-string">&quot;en-US&quot;</span> };
 <span class="hljs-keyword">const</span> info = <span class="hljs-keyword">await</span> db.replaceServiceConfiguration(<span class="hljs-string">&quot;/my-service&quot;</span>, config);
 <span class="hljs-keyword">for</span> (<span class="hljs-keyword">const</span> [key, value] <span class="hljs-keyword">of</span> <span class="hljs-built_in">Object</span>.entries(info.values)) {
   <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`<span class="hljs-subst">${key}</span>: <span class="hljs-subst">${value}</span>`</span>);
@@ -3115,7 +3200,8 @@ db.useDatabase(<span class="hljs-string">&quot;test&quot;</span>);
 								<a href="_database_.database.html#getservicedependencies">Database.getServiceDependencies</a>.</p>
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
-									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> deps = { <span class="hljs-attr">mailer</span>: <span class="hljs-string">&quot;/mailer-api&quot;</span>, <span class="hljs-attr">auth</span>: <span class="hljs-string">&quot;/remote-auth&quot;</span> };
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> deps = { <span class="hljs-attr">mailer</span>: <span class="hljs-string">&quot;/mailer-api&quot;</span>, <span class="hljs-attr">auth</span>: <span class="hljs-string">&quot;/remote-auth&quot;</span> };
 <span class="hljs-keyword">const</span> info = <span class="hljs-keyword">await</span> db.replaceServiceDependencies(<span class="hljs-string">&quot;/my-service&quot;</span>, deps);
 <span class="hljs-keyword">for</span> (<span class="hljs-keyword">const</span> [key, dep] <span class="hljs-keyword">of</span> <span class="hljs-built_in">Object</span>.entries(info)) {
   <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`<span class="hljs-subst">${dep.title}</span> (<span class="hljs-subst">${key}</span>): <span class="hljs-subst">${dep.current}</span>`</span>);
@@ -3161,7 +3247,8 @@ db.useDatabase(<span class="hljs-string">&quot;test&quot;</span>);
 								<a href="_database_.database.html#getservicedependencies">Database.getServiceDependencies</a>.</p>
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
-									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> deps = { <span class="hljs-attr">mailer</span>: <span class="hljs-string">&quot;/mailer-api&quot;</span>, <span class="hljs-attr">auth</span>: <span class="hljs-string">&quot;/remote-auth&quot;</span> };
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> deps = { <span class="hljs-attr">mailer</span>: <span class="hljs-string">&quot;/mailer-api&quot;</span>, <span class="hljs-attr">auth</span>: <span class="hljs-string">&quot;/remote-auth&quot;</span> };
 <span class="hljs-keyword">const</span> info = <span class="hljs-keyword">await</span> db.replaceServiceDependencies(
   <span class="hljs-string">&quot;/my-service&quot;</span>,
   deps,
@@ -3316,7 +3403,8 @@ db.useDatabase(<span class="hljs-string">&quot;test&quot;</span>);
 								</div>
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
-									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> db.runServiceScript(
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> db.runServiceScript(
   <span class="hljs-string">&quot;/my-service&quot;</span>,
   <span class="hljs-string">&quot;create-user&quot;</span>,
   {
@@ -3379,7 +3467,8 @@ db.useDatabase(<span class="hljs-string">&quot;test&quot;</span>);
 								</div>
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
-									<dd><pre><code class="language-js">TODO</code></pre>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> testReport = <span class="hljs-keyword">await</span> db.runServiceTests(<span class="hljs-string">&quot;/my-foxx&quot;</span>);</code></pre>
 									</dd>
 								</dl>
 							</div>
@@ -3410,7 +3499,11 @@ db.useDatabase(<span class="hljs-string">&quot;test&quot;</span>);
 								</div>
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
-									<dd><pre><code class="language-js">TODO</code></pre>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> suiteReport = <span class="hljs-keyword">await</span> db.runServiceTests(
+  <span class="hljs-string">&quot;/my-foxx&quot;</span>,
+  { <span class="hljs-attr">reporter</span>: <span class="hljs-string">&quot;suite&quot;</span> }
+);</code></pre>
 									</dd>
 								</dl>
 							</div>
@@ -3465,7 +3558,11 @@ db.useDatabase(<span class="hljs-string">&quot;test&quot;</span>);
 								</div>
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
-									<dd><pre><code class="language-js">TODO</code></pre>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> streamEvents = <span class="hljs-keyword">await</span> db.runServiceTests(
+  <span class="hljs-string">&quot;/my-foxx&quot;</span>,
+  { <span class="hljs-attr">reporter</span>: <span class="hljs-string">&quot;stream&quot;</span> }
+);</code></pre>
 									</dd>
 								</dl>
 							</div>
@@ -3520,7 +3617,11 @@ db.useDatabase(<span class="hljs-string">&quot;test&quot;</span>);
 								</div>
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
-									<dd><pre><code class="language-js">TODO</code></pre>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> tapLines = <span class="hljs-keyword">await</span> db.runServiceTests(
+  <span class="hljs-string">&quot;/my-foxx&quot;</span>,
+  { <span class="hljs-attr">reporter</span>: <span class="hljs-string">&quot;tap&quot;</span> }
+);</code></pre>
 									</dd>
 								</dl>
 							</div>
@@ -3575,7 +3676,11 @@ db.useDatabase(<span class="hljs-string">&quot;test&quot;</span>);
 								</div>
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
-									<dd><pre><code class="language-js">TODO</code></pre>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> jsonML = <span class="hljs-keyword">await</span> db.runServiceTests(
+  <span class="hljs-string">&quot;/my-foxx&quot;</span>,
+  { <span class="hljs-attr">reporter</span>: <span class="hljs-string">&quot;xunit&quot;</span> }
+);</code></pre>
 									</dd>
 								</dl>
 							</div>
@@ -3630,7 +3735,11 @@ db.useDatabase(<span class="hljs-string">&quot;test&quot;</span>);
 								</div>
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
-									<dd><pre><code class="language-js">TODO</code></pre>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> streamReport = <span class="hljs-keyword">await</span> db.runServiceTests(
+  <span class="hljs-string">&quot;/my-foxx&quot;</span>,
+  { <span class="hljs-attr">reporter</span>: <span class="hljs-string">&quot;stream&quot;</span>, <span class="hljs-attr">idiomatic</span>: <span class="hljs-literal">true</span> }
+);</code></pre>
 									</dd>
 								</dl>
 							</div>
@@ -3686,7 +3795,11 @@ db.useDatabase(<span class="hljs-string">&quot;test&quot;</span>);
 								</div>
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
-									<dd><pre><code class="language-js">TODO</code></pre>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> tapReport = <span class="hljs-keyword">await</span> db.runServiceTests(
+  <span class="hljs-string">&quot;/my-foxx&quot;</span>,
+  { <span class="hljs-attr">reporter</span>: <span class="hljs-string">&quot;tap&quot;</span>, <span class="hljs-attr">idiomatic</span>: <span class="hljs-literal">true</span> }
+);</code></pre>
 									</dd>
 								</dl>
 							</div>
@@ -3742,7 +3855,11 @@ db.useDatabase(<span class="hljs-string">&quot;test&quot;</span>);
 								</div>
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
-									<dd><pre><code class="language-js">TODO</code></pre>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> xml = <span class="hljs-keyword">await</span> db.runServiceTests(
+  <span class="hljs-string">&quot;/my-foxx&quot;</span>,
+  { <span class="hljs-attr">reporter</span>: <span class="hljs-string">&quot;xunit&quot;</span>, <span class="hljs-attr">idiomatic</span>: <span class="hljs-literal">true</span> }
+);</code></pre>
 									</dd>
 								</dl>
 							</div>
@@ -3805,7 +3922,8 @@ db.useDatabase(<span class="hljs-string">&quot;test&quot;</span>);
 								</div>
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
-									<dd><pre><code class="language-js"><span class="hljs-keyword">await</span> db.setServiceDevelopmentMode(<span class="hljs-string">&quot;/my-service&quot;</span>, <span class="hljs-literal">true</span>);
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">await</span> db.setServiceDevelopmentMode(<span class="hljs-string">&quot;/my-service&quot;</span>, <span class="hljs-literal">true</span>);
 <span class="hljs-comment">// the service is now in development mode</span>
 <span class="hljs-keyword">await</span> db.setServiceDevelopmentMode(<span class="hljs-string">&quot;/my-service&quot;</span>, <span class="hljs-literal">false</span>);
 <span class="hljs-comment">// the service is now in production mode</span></code></pre>
@@ -3911,7 +4029,8 @@ db.useDatabase(<span class="hljs-string">&quot;test&quot;</span>);
 								</div>
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
-									<dd><pre><code class="language-js">TODO</code></pre>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">await</span> db.uninstallService(<span class="hljs-string">&quot;/my-foxx&quot;</span>);</code></pre>
 									</dd>
 								</dl>
 							</div>
@@ -3954,7 +4073,8 @@ db.useDatabase(<span class="hljs-string">&quot;test&quot;</span>);
 								<a href="_database_.database.html#getserviceconfiguration">Database.getServiceConfiguration</a>.</p>
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
-									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> config = { <span class="hljs-attr">currency</span>: <span class="hljs-string">&quot;USD&quot;</span>, <span class="hljs-attr">locale</span>: <span class="hljs-string">&quot;en-US&quot;</span> };
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> config = { <span class="hljs-attr">currency</span>: <span class="hljs-string">&quot;USD&quot;</span>, <span class="hljs-attr">locale</span>: <span class="hljs-string">&quot;en-US&quot;</span> };
 <span class="hljs-keyword">const</span> info = <span class="hljs-keyword">await</span> db.updateServiceConfiguration(<span class="hljs-string">&quot;/my-service&quot;</span>, config);
 <span class="hljs-keyword">for</span> (<span class="hljs-keyword">const</span> [key, option] <span class="hljs-keyword">of</span> <span class="hljs-built_in">Object</span>.entries(info)) {
   <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`<span class="hljs-subst">${option.title}</span> (<span class="hljs-subst">${key}</span>): <span class="hljs-subst">${option.value}</span>`</span>);
@@ -4003,7 +4123,8 @@ db.useDatabase(<span class="hljs-string">&quot;test&quot;</span>);
 								<a href="_database_.database.html#getserviceconfiguration">Database.getServiceConfiguration</a>.</p>
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
-									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> config = { <span class="hljs-attr">currency</span>: <span class="hljs-string">&quot;USD&quot;</span>, <span class="hljs-attr">locale</span>: <span class="hljs-string">&quot;en-US&quot;</span> };
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> config = { <span class="hljs-attr">currency</span>: <span class="hljs-string">&quot;USD&quot;</span>, <span class="hljs-attr">locale</span>: <span class="hljs-string">&quot;en-US&quot;</span> };
 <span class="hljs-keyword">const</span> info = <span class="hljs-keyword">await</span> db.updateServiceConfiguration(<span class="hljs-string">&quot;/my-service&quot;</span>, config);
 <span class="hljs-keyword">for</span> (<span class="hljs-keyword">const</span> [key, value] <span class="hljs-keyword">of</span> <span class="hljs-built_in">Object</span>.entries(info.values)) {
   <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`<span class="hljs-subst">${key}</span>: <span class="hljs-subst">${value}</span>`</span>);
@@ -4062,7 +4183,8 @@ db.useDatabase(<span class="hljs-string">&quot;test&quot;</span>);
 								<a href="_database_.database.html#getservicedependencies">Database.getServiceDependencies</a>.</p>
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
-									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> deps = { <span class="hljs-attr">mailer</span>: <span class="hljs-string">&quot;/mailer-api&quot;</span>, <span class="hljs-attr">auth</span>: <span class="hljs-string">&quot;/remote-auth&quot;</span> };
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> deps = { <span class="hljs-attr">mailer</span>: <span class="hljs-string">&quot;/mailer-api&quot;</span>, <span class="hljs-attr">auth</span>: <span class="hljs-string">&quot;/remote-auth&quot;</span> };
 <span class="hljs-keyword">const</span> info = <span class="hljs-keyword">await</span> db.updateServiceDependencies(<span class="hljs-string">&quot;/my-service&quot;</span>, deps);
 <span class="hljs-keyword">for</span> (<span class="hljs-keyword">const</span> [key, dep] <span class="hljs-keyword">of</span> <span class="hljs-built_in">Object</span>.entries(info)) {
   <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`<span class="hljs-subst">${dep.title}</span> (<span class="hljs-subst">${key}</span>): <span class="hljs-subst">${dep.current}</span>`</span>);
@@ -4108,7 +4230,8 @@ db.useDatabase(<span class="hljs-string">&quot;test&quot;</span>);
 								<a href="_database_.database.html#getservicedependencies">Database.getServiceDependencies</a>.</p>
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
-									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> deps = { <span class="hljs-attr">mailer</span>: <span class="hljs-string">&quot;/mailer-api&quot;</span>, <span class="hljs-attr">auth</span>: <span class="hljs-string">&quot;/remote-auth&quot;</span> };
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> deps = { <span class="hljs-attr">mailer</span>: <span class="hljs-string">&quot;/mailer-api&quot;</span>, <span class="hljs-attr">auth</span>: <span class="hljs-string">&quot;/remote-auth&quot;</span> };
 <span class="hljs-keyword">const</span> info = <span class="hljs-keyword">await</span> db.updateServiceDependencies(
   <span class="hljs-string">&quot;/my-service&quot;</span>,
   deps,
@@ -4165,17 +4288,20 @@ db.useDatabase(<span class="hljs-string">&quot;test&quot;</span>);
 								</div>
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
-									<dd><pre><code class="language-js"><span class="hljs-comment">// Using a node.js file stream as source</span>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-comment">// Using a node.js file stream as source</span>
 <span class="hljs-keyword">const</span> source = fs.createReadStream(<span class="hljs-string">&quot;./my-foxx-service.zip&quot;</span>);
 <span class="hljs-keyword">const</span> info = <span class="hljs-keyword">await</span> db.upgradeService(<span class="hljs-string">&quot;/hello&quot;</span>, source);</code></pre>
 									</dd>
 									<dt>example</dt>
-									<dd><pre><code class="language-js"><span class="hljs-comment">// Using a node.js Buffer as source</span>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-comment">// Using a node.js Buffer as source</span>
 <span class="hljs-keyword">const</span> source = fs.readFileSync(<span class="hljs-string">&quot;./my-foxx-service.zip&quot;</span>);
 <span class="hljs-keyword">const</span> info = <span class="hljs-keyword">await</span> db.upgradeService(<span class="hljs-string">&quot;/hello&quot;</span>, source);</code></pre>
 									</dd>
 									<dt>example</dt>
-									<dd><pre><code class="language-js"><span class="hljs-comment">// Using a File (Blob) from a browser file input</span>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-comment">// Using a File (Blob) from a browser file input</span>
 <span class="hljs-keyword">const</span> element = <span class="hljs-built_in">document</span>.getElementById(<span class="hljs-string">&quot;my-file-input&quot;</span>);
 <span class="hljs-keyword">const</span> source = element.files[<span class="hljs-number">0</span>];
 <span class="hljs-keyword">const</span> info = <span class="hljs-keyword">await</span> db.upgradeService(<span class="hljs-string">&quot;/hello&quot;</span>, source);</code></pre>
@@ -4311,7 +4437,9 @@ db.useBearerAuth(<span class="hljs-string">&quot;keyboardcat&quot;</span>);
 									<dd><p>Use <a href="_database_.database.html#database">Database.database</a> instead.</p>
 									</dd>
 									<dt>example</dt>
-									<dd><pre><code class="language-js">TODO</code></pre>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> systemDb = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-comment">// systemDb.useDatabase(&quot;my_database&quot;); // deprecated</span>
+<span class="hljs-keyword">const</span> myDb = systemDb.database(<span class="hljs-string">&quot;my_database&quot;</span>);</code></pre>
 									</dd>
 								</dl>
 							</div>
