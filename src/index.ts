@@ -22,6 +22,15 @@ module.exports = exports = arangojs;
  * This is a wrapper function for the {@link Database.constructor}.
  *
  * @param config - An object with configuration options.
+ *
+ * @example
+ * ```js
+ * const db = arangojs({
+ *   url: "http://localhost:8529",
+ *   databaseName: "myDatabase",
+ *   auth: { username: "admin", password: "hunter2" },
+ * });
+ * ```
  */
 export function arangojs(config?: Config): Database;
 /**
@@ -31,12 +40,18 @@ export function arangojs(config?: Config): Database;
  *
  * @param url - Base URL of the ArangoDB server or list of server URLs.
  * Equivalent to the `url` option in {@link Config}.
+ *
+ * @example
+ * ```js
+ * const db = arangojs("http://localhost:8529", "myDatabase");
+ * db.useBasicAuth("admin", "hunter2");
+ * ```
  */
-export function arangojs(url: string | string[]): Database;
-export function arangojs(config?: string | string[] | Config) {
+export function arangojs(url: string | string[], name?: string): Database;
+export function arangojs(config?: string | string[] | Config, name?: string) {
   if (typeof config === "string" || Array.isArray(config)) {
     const url = config;
-    return new Database(url);
+    return new Database(url, name);
   }
   return new Database(config);
 }

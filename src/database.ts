@@ -1321,7 +1321,11 @@ export class Database {
    *
    * @example
    * ```js
-   * TODO
+   * const db = new Database({
+   *   url: "http://localhost:8529",
+   *   databaseName: "my_database",
+   *   auth: { username: "admin", password: "hunter2" },
+   * });
    * ```
    */
   constructor(config?: Config);
@@ -1335,10 +1339,11 @@ export class Database {
    *
    * @example
    * ```js
-   * TODO
+   * const db = new Database("http://localhost:8529", "my_database");
+   * db.useBasicAuth("admin", "hunter2");
    * ```
    */
-  constructor(url: string | string[]);
+  constructor(url: string | string[], name?: string);
   // There's currently no way to hide a single overload from typedoc
   // /**
   //  * @internal
@@ -1360,7 +1365,7 @@ export class Database {
       const config = configOrDatabase;
       const { databaseName, ...options } =
         typeof config === "string" || Array.isArray(config)
-          ? { databaseName: undefined, url: config }
+          ? { databaseName: name, url: config }
           : config;
       this._connection = new Connection(options);
       this._name = databaseName || "_system";
@@ -1544,7 +1549,9 @@ export class Database {
    *
    * @example
    * ```js
-   * TODO
+   * const systemDb = new Database();
+   * // systemDb.useDatabase("my_database"); // deprecated
+   * const myDb = systemDb.database("my_database");
    * ```
    */
   useDatabase(databaseName: string): this {
@@ -1636,7 +1643,8 @@ export class Database {
    *
    * @example
    * ```js
-   * TODO
+   * const systemDb = new Database();
+   * const myDb = system.database("my_database");
    * ```
    */
   database(databaseName: string) {
@@ -2113,7 +2121,8 @@ export class Database {
    *
    * @example
    * ```js
-   * TODO
+   * const db = new Database();
+   * const graph = db.graph("some-graph");
    * ```
    */
   graph(graphName: string): Graph {
@@ -2864,7 +2873,13 @@ export class Database {
    *
    * @example
    * ```js
-   * TODO
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
+   * const explanation = await db.explain(aql`
+   *   FOR doc IN ${collection}
+   *   FILTER doc.flavor == "strawberry"
+   *   RETURN doc._key
+   * `);
    * ```
    */
   explain(
@@ -2884,7 +2899,16 @@ export class Database {
    *
    * @example
    * ```js
-   * TODO
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
+   * const explanation = await db.explain(
+   *   aql`
+   *     FOR doc IN ${collection}
+   *     FILTER doc.flavor == "strawberry"
+   *     RETURN doc._key
+   *   `,
+   *   { allPlans: true }
+   * );
    * ```
    */
   explain(
@@ -2903,7 +2927,16 @@ export class Database {
    *
    * @example
    * ```js
-   * TODO
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
+   * const explanation = await db.explain(
+   *   `
+   *     FOR doc IN @@collection
+   *     FILTER doc.flavor == "strawberry"
+   *     RETURN doc._key
+   *   `,
+   *   { "@collection": collection.name }
+   * );
    * ```
    */
   explain(
@@ -2923,7 +2956,17 @@ export class Database {
    *
    * @example
    * ```js
-   * TODO
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
+   * const explanation = await db.explain(
+   *   `
+   *     FOR doc IN @@collection
+   *     FILTER doc.flavor == "strawberry"
+   *     RETURN doc._key
+   *   `,
+   *   { "@collection": collection.name },
+   *   { allPlans: true }
+   * );
    * ```
    */
   explain(
@@ -2968,7 +3011,13 @@ export class Database {
    *
    * @example
    * ```js
-   * TODO
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
+   * const ast = await db.parse(aql`
+   *   FOR doc IN ${collection}
+   *   FILTER doc.flavor == "strawberry"
+   *   RETURN doc._key
+   * `);
    * ```
    */
   parse(query: string | AqlQuery | AqlLiteral): Promise<ParseResult> {
@@ -2992,7 +3041,9 @@ export class Database {
    *
    * @example
    * ```js
-   * TODO
+   * const db = new Database();
+   * const tracking = await db.queryTracking();
+   * console.log(tracking.enabled);
    * ```
    */
   queryTracking(): Promise<QueryTracking>;
@@ -3003,6 +3054,7 @@ export class Database {
    *
    * @example
    * ```js
+   * const db = new Database();
    * // track up to 5 slow queries exceeding 5 seconds execution time
    * await db.setQueryTracking({
    *   enabled: true,
@@ -3036,7 +3088,8 @@ export class Database {
    *
    * @example
    * ```js
-   * TODO
+   * const db = new Database();
+   * const queries = await db.listRunningQueries();
    * ```
    */
   listRunningQueries(): Promise<QueryInfo[]> {
@@ -3057,7 +3110,9 @@ export class Database {
    *
    * @example
    * ```js
-   * TODO
+   * const db = new Database();
+   * const queries = await db.listSlowQueries();
+   * // Only works if slow query tracking is enabled
    * ```
    */
   listSlowQueries(): Promise<QueryInfo[]> {
@@ -3077,7 +3132,9 @@ export class Database {
    *
    * @example
    * ```js
-   * TODO
+   * const db = new Database();
+   * await db.clearSlowQueries();
+   * // Slow query list is now cleared
    * ```
    */
   clearSlowQueries(): Promise<void> {
@@ -3099,7 +3156,15 @@ export class Database {
    *
    * @example
    * ```js
-   * TODO
+   * const db = new Database();
+   * const queries = await db.listRunningQueries();
+   * await Promise.all(queries.map(
+   *   async (query) => {
+   *     if (query.state === "executing") {
+   *       await db.killQuery(query.id);
+   *     }
+   *   }
+   * ));
    * ```
    */
   killQuery(queryId: string): Promise<void> {
@@ -3215,11 +3280,13 @@ export class Database {
    *
    * @example
    * ```js
+   * const db = new Database();
    * const services = await db.listServices();
    * ```
    *
    * @example
    * ```js
+   * const db = new Database();
    * const services = await db.listServices(false); // all services
    * ```
    */
@@ -3242,6 +3309,7 @@ export class Database {
    *
    * @example
    * ```js
+   * const db = new Database();
    * // Using a node.js file stream as source
    * const source = fs.createReadStream("./my-foxx-service.zip");
    * const info = await db.installService("/hello", source);
@@ -3249,6 +3317,7 @@ export class Database {
    *
    * @example
    * ```js
+   * const db = new Database();
    * // Using a node.js Buffer as source
    * const source = fs.readFileSync("./my-foxx-service.zip");
    * const info = await db.installService("/hello", source);
@@ -3256,6 +3325,7 @@ export class Database {
    *
    * @example
    * ```js
+   * const db = new Database();
    * // Using a File (Blob) from a browser file input
    * const element = document.getElementById("my-file-input");
    * const source = element.files[0];
@@ -3295,6 +3365,7 @@ export class Database {
    *
    * @example
    * ```js
+   * const db = new Database();
    * // Using a node.js file stream as source
    * const source = fs.createReadStream("./my-foxx-service.zip");
    * const info = await db.replaceService("/hello", source);
@@ -3302,6 +3373,7 @@ export class Database {
    *
    * @example
    * ```js
+   * const db = new Database();
    * // Using a node.js Buffer as source
    * const source = fs.readFileSync("./my-foxx-service.zip");
    * const info = await db.replaceService("/hello", source);
@@ -3309,6 +3381,7 @@ export class Database {
    *
    * @example
    * ```js
+   * const db = new Database();
    * // Using a File (Blob) from a browser file input
    * const element = document.getElementById("my-file-input");
    * const source = element.files[0];
@@ -3348,6 +3421,7 @@ export class Database {
    *
    * @example
    * ```js
+   * const db = new Database();
    * // Using a node.js file stream as source
    * const source = fs.createReadStream("./my-foxx-service.zip");
    * const info = await db.upgradeService("/hello", source);
@@ -3355,6 +3429,7 @@ export class Database {
    *
    * @example
    * ```js
+   * const db = new Database();
    * // Using a node.js Buffer as source
    * const source = fs.readFileSync("./my-foxx-service.zip");
    * const info = await db.upgradeService("/hello", source);
@@ -3362,6 +3437,7 @@ export class Database {
    *
    * @example
    * ```js
+   * const db = new Database();
    * // Using a File (Blob) from a browser file input
    * const element = document.getElementById("my-file-input");
    * const source = element.files[0];
@@ -3399,7 +3475,8 @@ export class Database {
    *
    * @example
    * ```js
-   * TODO
+   * const db = new Database();
+   * await db.uninstallService("/my-foxx");
    * ```
    */
   uninstallService(
@@ -3423,6 +3500,7 @@ export class Database {
    *
    * @example
    * ```js
+   * const db = new Database();
    * const info = await db.getService("/my-service");
    * // info contains detailed information about the service
    * ```
@@ -3451,6 +3529,7 @@ export class Database {
    *
    * @example
    * ```js
+   * const db = new Database();
    * const config = await db.getServiceConfiguration("/my-service");
    * for (const [key, option] of Object.entries(config)) {
    *   console.log(`${option.title} (${key}): ${option.current}`);
@@ -3475,6 +3554,7 @@ export class Database {
    *
    * @example
    * ```js
+   * const db = new Database();
    * const config = await db.getServiceConfiguration("/my-service", true);
    * for (const [key, value] of Object.entries(config)) {
    *   console.log(`${key}: ${value}`);
@@ -3525,6 +3605,7 @@ export class Database {
    *
    * @example
    * ```js
+   * const db = new Database();
    * const config = { currency: "USD", locale: "en-US" };
    * const info = await db.replaceServiceConfiguration("/my-service", config);
    * for (const [key, option] of Object.entries(info)) {
@@ -3557,6 +3638,7 @@ export class Database {
    *
    * @example
    * ```js
+   * const db = new Database();
    * const config = { currency: "USD", locale: "en-US" };
    * const info = await db.replaceServiceConfiguration("/my-service", config);
    * for (const [key, value] of Object.entries(info.values)) {
@@ -3626,6 +3708,7 @@ export class Database {
    *
    * @example
    * ```js
+   * const db = new Database();
    * const config = { currency: "USD", locale: "en-US" };
    * const info = await db.updateServiceConfiguration("/my-service", config);
    * for (const [key, option] of Object.entries(info)) {
@@ -3658,6 +3741,7 @@ export class Database {
    *
    * @example
    * ```js
+   * const db = new Database();
    * const config = { currency: "USD", locale: "en-US" };
    * const info = await db.updateServiceConfiguration("/my-service", config);
    * for (const [key, value] of Object.entries(info.values)) {
@@ -3722,6 +3806,7 @@ export class Database {
    *
    * @example
    * ```js
+   * const db = new Database();
    * const deps = await db.getServiceDependencies("/my-service");
    * for (const [key, dep] of Object.entries(deps)) {
    *   console.log(`${dep.title} (${key}): ${dep.current}`);
@@ -3746,6 +3831,7 @@ export class Database {
    *
    * @example
    * ```js
+   * const db = new Database();
    * const deps = await db.getServiceDependencies("/my-service", true);
    * for (const [key, value] of Object.entries(deps)) {
    *   console.log(`${key}: ${value}`);
@@ -3795,6 +3881,7 @@ export class Database {
    *
    * @example
    * ```js
+   * const db = new Database();
    * const deps = { mailer: "/mailer-api", auth: "/remote-auth" };
    * const info = await db.replaceServiceDependencies("/my-service", deps);
    * for (const [key, dep] of Object.entries(info)) {
@@ -3831,6 +3918,7 @@ export class Database {
    *
    * @example
    * ```js
+   * const db = new Database();
    * const deps = { mailer: "/mailer-api", auth: "/remote-auth" };
    * const info = await db.replaceServiceDependencies(
    *   "/my-service",
@@ -3905,6 +3993,7 @@ export class Database {
    *
    * @example
    * ```js
+   * const db = new Database();
    * const deps = { mailer: "/mailer-api", auth: "/remote-auth" };
    * const info = await db.updateServiceDependencies("/my-service", deps);
    * for (const [key, dep] of Object.entries(info)) {
@@ -3941,6 +4030,7 @@ export class Database {
    *
    * @example
    * ```js
+   * const db = new Database();
    * const deps = { mailer: "/mailer-api", auth: "/remote-auth" };
    * const info = await db.updateServiceDependencies(
    *   "/my-service",
@@ -4004,6 +4094,7 @@ export class Database {
    *
    * @example
    * ```js
+   * const db = new Database();
    * await db.setServiceDevelopmentMode("/my-service", true);
    * // the service is now in development mode
    * await db.setServiceDevelopmentMode("/my-service", false);
@@ -4032,6 +4123,7 @@ export class Database {
    *
    * @example
    * ```js
+   * const db = new Database();
    * const scripts = await db.listServiceScripts("/my-service");
    * for (const [name, title] of Object.entries(scripts)) {
    *   console.log(`${name}: ${title}`);
@@ -4061,6 +4153,7 @@ export class Database {
    *
    * @example
    * ```js
+   * const db = new Database();
    * const result = await db.runServiceScript(
    *   "/my-service",
    *   "create-user",
@@ -4092,7 +4185,8 @@ export class Database {
    *
    * @example
    * ```js
-   * TODO
+   * const db = new Database();
+   * const testReport = await db.runServiceTests("/my-foxx");
    * ```
    */
   runServiceTests(
@@ -4120,7 +4214,11 @@ export class Database {
    *
    * @example
    * ```js
-   * TODO
+   * const db = new Database();
+   * const suiteReport = await db.runServiceTests(
+   *   "/my-foxx",
+   *   { reporter: "suite" }
+   * );
    * ```
    */
   runServiceTests(
@@ -4149,7 +4247,11 @@ export class Database {
    *
    * @example
    * ```js
-   * TODO
+   * const db = new Database();
+   * const streamEvents = await db.runServiceTests(
+   *   "/my-foxx",
+   *   { reporter: "stream" }
+   * );
    * ```
    */
   runServiceTests(
@@ -4178,7 +4280,11 @@ export class Database {
    *
    * @example
    * ```js
-   * TODO
+   * const db = new Database();
+   * const tapLines = await db.runServiceTests(
+   *   "/my-foxx",
+   *   { reporter: "tap" }
+   * );
    * ```
    */
   runServiceTests(
@@ -4207,7 +4313,11 @@ export class Database {
    *
    * @example
    * ```js
-   * TODO
+   * const db = new Database();
+   * const jsonML = await db.runServiceTests(
+   *   "/my-foxx",
+   *   { reporter: "xunit" }
+   * );
    * ```
    */
   runServiceTests(
@@ -4236,7 +4346,11 @@ export class Database {
    *
    * @example
    * ```js
-   * TODO
+   * const db = new Database();
+   * const streamReport = await db.runServiceTests(
+   *   "/my-foxx",
+   *   { reporter: "stream", idiomatic: true }
+   * );
    * ```
    */
   runServiceTests(
@@ -4266,7 +4380,11 @@ export class Database {
    *
    * @example
    * ```js
-   * TODO
+   * const db = new Database();
+   * const tapReport = await db.runServiceTests(
+   *   "/my-foxx",
+   *   { reporter: "tap", idiomatic: true }
+   * );
    * ```
    */
   runServiceTests(
@@ -4296,7 +4414,11 @@ export class Database {
    *
    * @example
    * ```js
-   * TODO
+   * const db = new Database();
+   * const xml = await db.runServiceTests(
+   *   "/my-foxx",
+   *   { reporter: "xunit", idiomatic: true }
+   * );
    * ```
    */
   runServiceTests(
@@ -4346,6 +4468,7 @@ export class Database {
    *
    * @example
    * ```js
+   * const db = new Database();
    * const readme = await db.getServiceReadme("/my-service");
    * if (readme !== undefined) console.log(readme);
    * else console.warn(`No README found.`)
@@ -4369,6 +4492,7 @@ export class Database {
    *
    * @example
    * ```js
+   * const db = new Database();
    * const spec = await db.getServiceDocumentation("/my-service");
    * // spec is a Swagger API description of the service
    * ```
@@ -4392,7 +4516,8 @@ export class Database {
    *
    * @example
    * ```js
-   * TODO
+   * const db = new Database();
+   * const serviceBundle = await db.downloadService("/my-foxx");
    * ```
    */
   downloadService(mount: string): Promise<Buffer | Blob> {
