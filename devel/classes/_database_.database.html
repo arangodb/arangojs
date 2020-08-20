@@ -419,7 +419,7 @@ db.close();</code></pre>
 									a <a href="_transaction_.transaction.html">Transaction</a> instance for the transaction.</p>
 								</div>
 								<p>Collections can be specified as collection names (strings) or objects
-									implementing the <a href="../interfaces/_collection_.arangocollection.html">ArangoCollection</a> interface: {@link Collection},
+									implementing the <a href="../interfaces/_collection_.arangocollection.html">ArangoCollection</a> interface: <code>Collection</code>,
 									<a href="_graph_.graphvertexcollection.html">GraphVertexCollection</a>, <a href="_graph_.graphedgecollection.html">GraphEdgeCollection</a> as well as
 								(in TypeScript) <a href="../interfaces/_collection_.documentcollection.html">DocumentCollection</a> and <a href="../interfaces/_collection_.edgecollection.html">EdgeCollection</a>.</p>
 								<dl class="tsd-comment-tags">
@@ -463,7 +463,7 @@ db.close();</code></pre>
 									a <a href="_transaction_.transaction.html">Transaction</a> instance for the transaction.</p>
 								</div>
 								<p>Collections can be specified as collection names (strings) or objects
-									implementing the <a href="../interfaces/_collection_.arangocollection.html">ArangoCollection</a> interface: {@link Collection},
+									implementing the <a href="../interfaces/_collection_.arangocollection.html">ArangoCollection</a> interface: <code>Collection</code>,
 									<a href="_graph_.graphvertexcollection.html">GraphVertexCollection</a>, <a href="_graph_.graphedgecollection.html">GraphEdgeCollection</a> as well as
 								(in TypeScript) <a href="../interfaces/_collection_.documentcollection.html">DocumentCollection</a> and <a href="../interfaces/_collection_.edgecollection.html">EdgeCollection</a>.</p>
 								<dl class="tsd-comment-tags">
@@ -508,7 +508,7 @@ db.close();</code></pre>
 									a <a href="_transaction_.transaction.html">Transaction</a> instance for the transaction.</p>
 								</div>
 								<p>The Collection can be specified as a collection name (string) or an object
-									implementing the <a href="../interfaces/_collection_.arangocollection.html">ArangoCollection</a> interface: {@link Collection},
+									implementing the <a href="../interfaces/_collection_.arangocollection.html">ArangoCollection</a> interface: <code>Collection</code>,
 									<a href="_graph_.graphvertexcollection.html">GraphVertexCollection</a>, <a href="_graph_.graphedgecollection.html">GraphEdgeCollection</a> as well as
 								(in TypeScript) <a href="../interfaces/_collection_.documentcollection.html">DocumentCollection</a> and <a href="../interfaces/_collection_.edgecollection.html">EdgeCollection</a>.</p>
 								<dl class="tsd-comment-tags">
@@ -619,8 +619,11 @@ db.close();</code></pre>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Returns a {@link Collection} instance for the given collection name.</p>
+									<p>Returns a <code>Collection</code> instance for the given collection name.</p>
 								</div>
+								<p>In TypeScript the collection implements both the
+									<a href="../interfaces/_collection_.documentcollection.html">DocumentCollection</a> and <a href="../interfaces/_collection_.edgecollection.html">EdgeCollection</a> interfaces and can
+								be cast to either type to enforce a stricter API.</p>
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
 									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
@@ -682,8 +685,11 @@ db.close();</code></pre>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
 									<p>Fetches all collections from the database and returns an array of
-									{@link Collection} instances.</p>
+									<code>Collection</code> instances.</p>
 								</div>
+								<p>In TypeScript these instances implement both the
+									<a href="../interfaces/_collection_.documentcollection.html">DocumentCollection</a> and <a href="../interfaces/_collection_.edgecollection.html">EdgeCollection</a> interfaces and can
+								be cast to either type to enforce a stricter API.</p>
 								<p>See also <a href="_database_.database.html#listcollections">Database.listCollections</a>.</p>
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
@@ -1396,7 +1402,7 @@ db.useBasicAuth(<span class="hljs-string">&quot;root&quot;</span>, <span class="
 									value.</p>
 								</div>
 								<p>Collections can be specified as collection names (strings) or objects
-									implementing the <a href="../interfaces/_collection_.arangocollection.html">ArangoCollection</a> interface: {@link Collection},
+									implementing the <a href="../interfaces/_collection_.arangocollection.html">ArangoCollection</a> interface: <code>Collection</code>,
 									<a href="_graph_.graphvertexcollection.html">GraphVertexCollection</a>, <a href="_graph_.graphedgecollection.html">GraphEdgeCollection</a> as well as
 								(in TypeScript) <a href="../interfaces/_collection_.documentcollection.html">DocumentCollection</a> and <a href="../interfaces/_collection_.edgecollection.html">EdgeCollection</a>.</p>
 								<p><strong>Note</strong>: The <code>action</code> function will be evaluated and executed on the
@@ -1465,7 +1471,7 @@ db.useBasicAuth(<span class="hljs-string">&quot;root&quot;</span>, <span class="
 									<p>Performs a server-side transaction and returns its return value.</p>
 								</div>
 								<p>Collections can be specified as collection names (strings) or objects
-									implementing the <a href="../interfaces/_collection_.arangocollection.html">ArangoCollection</a> interface: {@link Collection},
+									implementing the <a href="../interfaces/_collection_.arangocollection.html">ArangoCollection</a> interface: <code>Collection</code>,
 									<a href="_graph_.graphvertexcollection.html">GraphVertexCollection</a>, <a href="_graph_.graphedgecollection.html">GraphEdgeCollection</a> as well as
 								(in TypeScript) <a href="../interfaces/_collection_.documentcollection.html">DocumentCollection</a> and <a href="../interfaces/_collection_.edgecollection.html">EdgeCollection</a>.</p>
 								<p><strong>Note</strong>: The <code>action</code> function will be evaluated and executed on the
@@ -1531,7 +1537,7 @@ db.useBasicAuth(<span class="hljs-string">&quot;root&quot;</span>, <span class="
 									<p>Performs a server-side transaction and returns its return value.</p>
 								</div>
 								<p>The Collection can be specified as a collection name (string) or an object
-									implementing the <a href="../interfaces/_collection_.arangocollection.html">ArangoCollection</a> interface: {@link Collection},
+									implementing the <a href="../interfaces/_collection_.arangocollection.html">ArangoCollection</a> interface: <code>Collection</code>,
 									<a href="_graph_.graphvertexcollection.html">GraphVertexCollection</a>, <a href="_graph_.graphedgecollection.html">GraphEdgeCollection</a> as well as
 								(in TypeScript) <a href="../interfaces/_collection_.documentcollection.html">DocumentCollection</a> and <a href="../interfaces/_collection_.edgecollection.html">EdgeCollection</a>.</p>
 								<p><strong>Note</strong>: The <code>action</code> function will be evaluated and executed on the
@@ -2946,7 +2952,7 @@ db.useDatabase(<span class="hljs-string">&quot;test&quot;</span>);
 								<div class="lead">
 									<p>Renames the collection <code>collectionName</code> to <code>newName</code>.</p>
 								</div>
-								<p>Additionally removes any stored {@link Collection} instance for
+								<p>Additionally removes any stored <code>Collection</code> instance for
 								<code>collectionName</code> from the <code>Database</code> instance&#39;s internal cache.</p>
 								<p><strong>Note</strong>: Renaming collections may not be supported when ArangoDB is
 								running in a cluster configuration.</p>
