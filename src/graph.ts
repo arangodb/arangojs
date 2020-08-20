@@ -367,7 +367,7 @@ export type GraphCreateOptions = {
 };
 
 /**
- * Represents a {@link Collection} of vertices in a {@link Graph}.
+ * Represents a {@link DocumentCollection} of vertices in a {@link Graph}.
  *
  * @param T - Type to use for document data. Defaults to `any`.
  */
@@ -774,7 +774,7 @@ export class GraphVertexCollection<T extends object = any>
 }
 
 /**
- * Represents a {@link Collection} of edges in a {@link Graph}.
+ * Represents a {@link EdgeCollection} of edges in a {@link Graph}.
  *
  * @param T - Type to use for document data. Defaults to `any`.
  */

@@ -408,7 +408,7 @@ export type CollectionKeyOptions = {
  * Options for creating a collection.
  *
  * See {@link Database.createCollection}, {@link Database.createEdgeCollection}
- * and {@link Collection.create}.
+ * and {@link DocumentCollection.create} or {@link EdgeCollection.create}.
  */
 export type CreateCollectionOptions = {
   /**

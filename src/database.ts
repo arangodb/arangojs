@@ -1857,7 +1857,11 @@ export class Database {
 
   //#region collections
   /**
-   * Returns a {@link Collection} instance for the given collection name.
+   * Returns a `Collection` instance for the given collection name.
+   *
+   * In TypeScript the collection implements both the
+   * {@link DocumentCollection} and {@link EdgeCollection} interfaces and can
+   * be cast to either type to enforce a stricter API.
    *
    * @param T - Type to use for document data. Defaults to `any`.
    * @param collectionName - Name of the edge collection.
@@ -2017,7 +2021,7 @@ export class Database {
   /**
    * Renames the collection `collectionName` to `newName`.
    *
-   * Additionally removes any stored {@link Collection} instance for
+   * Additionally removes any stored `Collection` instance for
    * `collectionName` from the `Database` instance's internal cache.
    *
    * **Note**: Renaming collections may not be supported when ArangoDB is
@@ -2080,7 +2084,11 @@ export class Database {
 
   /**
    * Fetches all collections from the database and returns an array of
-   * {@link Collection} instances.
+   * `Collection` instances.
+   *
+   * In TypeScript these instances implement both the
+   * {@link DocumentCollection} and {@link EdgeCollection} interfaces and can
+   * be cast to either type to enforce a stricter API.
    *
    * See also {@link Database.listCollections}.
    *
@@ -2377,7 +2385,7 @@ export class Database {
    * value.
    *
    * Collections can be specified as collection names (strings) or objects
-   * implementing the {@link ArangoCollection} interface: {@link Collection},
+   * implementing the {@link ArangoCollection} interface: `Collection`,
    * {@link GraphVertexCollection}, {@link GraphEdgeCollection} as well as
    * (in TypeScript) {@link DocumentCollection} and {@link EdgeCollection}.
    *
@@ -2430,7 +2438,7 @@ export class Database {
    * Performs a server-side transaction and returns its return value.
    *
    * Collections can be specified as collection names (strings) or objects
-   * implementing the {@link ArangoCollection} interface: {@link Collection},
+   * implementing the {@link ArangoCollection} interface: `Collection`,
    * {@link GraphVertexCollection}, {@link GraphEdgeCollection} as well as
    * (in TypeScript) {@link DocumentCollection} and {@link EdgeCollection}.
    *
@@ -2479,7 +2487,7 @@ export class Database {
    * Performs a server-side transaction and returns its return value.
    *
    * The Collection can be specified as a collection name (string) or an object
-   * implementing the {@link ArangoCollection} interface: {@link Collection},
+   * implementing the {@link ArangoCollection} interface: `Collection`,
    * {@link GraphVertexCollection}, {@link GraphEdgeCollection} as well as
    * (in TypeScript) {@link DocumentCollection} and {@link EdgeCollection}.
    *
@@ -2573,7 +2581,7 @@ export class Database {
    * a {@link Transaction} instance for the transaction.
    *
    * Collections can be specified as collection names (strings) or objects
-   * implementing the {@link ArangoCollection} interface: {@link Collection},
+   * implementing the {@link ArangoCollection} interface: `Collection`,
    * {@link GraphVertexCollection}, {@link GraphEdgeCollection} as well as
    * (in TypeScript) {@link DocumentCollection} and {@link EdgeCollection}.
    *
@@ -2603,7 +2611,7 @@ export class Database {
    * a {@link Transaction} instance for the transaction.
    *
    * Collections can be specified as collection names (strings) or objects
-   * implementing the {@link ArangoCollection} interface: {@link Collection},
+   * implementing the {@link ArangoCollection} interface: `Collection`,
    * {@link GraphVertexCollection}, {@link GraphEdgeCollection} as well as
    * (in TypeScript) {@link DocumentCollection} and {@link EdgeCollection}.
    *
@@ -2634,7 +2642,7 @@ export class Database {
    * a {@link Transaction} instance for the transaction.
    *
    * The Collection can be specified as a collection name (string) or an object
-   * implementing the {@link ArangoCollection} interface: {@link Collection},
+   * implementing the {@link ArangoCollection} interface: `Collection`,
    * {@link GraphVertexCollection}, {@link GraphEdgeCollection} as well as
    * (in TypeScript) {@link DocumentCollection} and {@link EdgeCollection}.
    *

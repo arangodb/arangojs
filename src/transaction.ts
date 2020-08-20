@@ -172,8 +172,8 @@ export class Transaction {
    * @param callback - Callback function returning a promise.
    *
    * **Warning**: The callback function should wrap a single call of an async
-   * arangojs method (e.g. a method on a {@link Collection} object of a
-   * collection that is involved in the transaction or the `db.query` method).
+   * arangojs method (e.g. a method on a `Collection` object of a collection
+   * that is involved in the transaction or the `db.query` method).
    * If the callback function is async, only the first promise-returning (or
    * async) method call will be executed as part of the transaction. See the
    * examples below for how to avoid common mistakes when using this method.
