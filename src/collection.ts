@@ -1534,7 +1534,9 @@ export interface DocumentCollection<T extends object = any>
    *
    * @example
    * ```js
-   * TODO
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
+   * const responsibleShard = await collection.getResponsibleShard();
    * ```
    */
   getResponsibleShard(document: Partial<Document<T>>): Promise<string>;
@@ -2073,7 +2075,16 @@ export interface DocumentCollection<T extends object = any>
    *
    * @example
    * ```js
-   * TODO
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
+   * // const doc = await collection.any();
+   * const cursor = await db.query(aql`
+   *   FOR doc IN ${collection}
+   *   SORT RAND()
+   *   LIMIT 1
+   *   RETURN doc
+   * `);
+   * const doc = await cursor.next();
    * ```
    */
   any(): Promise<Document<T>>;
@@ -2089,7 +2100,14 @@ export interface DocumentCollection<T extends object = any>
    *
    * @example
    * ```js
-   * TODO
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
+   * // const cursor = await collection.byExample({ flavor: "strawberry" });
+   * const cursor = await db.query(aql`
+   *   FOR doc IN ${collection}
+   *   FILTER doc.flavor == "strawberry"
+   *   RETURN doc
+   * `);
    * ```
    */
   byExample(
@@ -2107,7 +2125,16 @@ export interface DocumentCollection<T extends object = any>
    *
    * @example
    * ```js
-   * TODO
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
+   * // const doc = await collection.firstExample({ flavor: "strawberry" });
+   * const cursor = await db.query(aql`
+   *   FOR doc IN ${collection}
+   *   FILTER doc.flavor == "strawberry"
+   *   LIMIT 1
+   *   RETURN doc
+   * `);
+   * const doc = await cursor.next();
    * ```
    */
   firstExample(example: Partial<DocumentData<T>>): Promise<Document<T>>;
@@ -2123,7 +2150,20 @@ export interface DocumentCollection<T extends object = any>
    *
    * @example
    * ```js
-   * TODO
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
+   * // const { deleted } = await collection.removeByExample({
+   * //   flavor: "strawberry"
+   * // });
+   * const cursor = await db.query(aql`
+   *   RETURN LENGTH(
+   *     FOR doc IN ${collection}
+   *     FILTER doc.flavor == "strawberry"
+   *     REMOVE doc IN ${collection}
+   *     RETURN 1
+   *   )
+   * `);
+   * const deleted = await cursor.next();
    * ```
    */
   removeByExample(
@@ -2143,7 +2183,22 @@ export interface DocumentCollection<T extends object = any>
    *
    * @example
    * ```js
-   * TODO
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
+   * const newData = { flavor: "chocolate" };
+   * // const { replaced } = await collection.replaceByExample(
+   * //   { flavor: "strawberry" },
+   * //   newData
+   * // );
+   * const cursor = await db.query(aql`
+   *   RETURN LENGTH(
+   *     FOR doc IN ${collection}
+   *     FILTER doc.flavor == "strawberry"
+   *     REPLACE doc WITH ${newData} IN ${collection}
+   *     RETURN 1
+   *   )
+   * `);
+   * const replaced = await cursor.next();
    * ```
    */
   replaceByExample(
@@ -2164,7 +2219,22 @@ export interface DocumentCollection<T extends object = any>
    *
    * @example
    * ```js
-   * TODO
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
+   * const newData = { color: "red" };
+   * // const { updated } = await collection.updateByExample(
+   * //   { flavor: "strawberry" },
+   * //   newData
+   * // );
+   * const cursor = await db.query(aql`
+   *   RETURN LENGTH(
+   *     FOR doc IN ${collection}
+   *     FILTER doc.flavor == "strawberry"
+   *     UPDATE doc WITH ${newData} IN ${collection}
+   *     RETURN 1
+   *   )
+   * `);
+   * const updated = await cursor.next();
    * ```
    */
   updateByExample(
@@ -2183,7 +2253,16 @@ export interface DocumentCollection<T extends object = any>
    *
    * @example
    * ```js
-   * TODO
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
+   * const keys = ["a", "b", "c"];
+   * // const docs = await collection.byKeys(keys);
+   * const cursor = await db.query(aql`
+   *   FOR key IN ${keys}
+   *   LET doc = DOCUMENT(${collection}, key)
+   *   RETURN doc
+   * `);
+   * const docs = await cursor.all();
    * ```
    */
   lookupByKeys(keys: string[]): Promise<Document<T>[]>;
@@ -2199,7 +2278,19 @@ export interface DocumentCollection<T extends object = any>
    *
    * @example
    * ```js
-   * TODO
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
+   * const keys = ["a", "b", "c"];
+   * // const { removed, ignored } = await collection.removeByKeys(keys);
+   * const cursor = await db.query(aql`
+   *   FOR key IN ${keys}
+   *   LET doc = DOCUMENT(${collection}, key)
+   *   FILTER doc
+   *   REMOVE doc IN ${collection}
+   *   RETURN key
+   * `);
+   * const removed = await cursor.all();
+   * const ignored = keys.filter((key) => !removed.includes(key));
    * ```
    */
   removeByKeys(
@@ -2219,7 +2310,13 @@ export interface DocumentCollection<T extends object = any>
    *
    * @example
    * ```js
-   * TODO
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
+   * // const cursor = await collection.fulltext("article", "needle");
+   * const cursor = await db.query(aql`
+   *   FOR doc IN FULLTEXT(${collection}, "article", "needle")
+   *   RETURN doc
+   * `);
    * ```
    */
   fulltext(
@@ -2235,7 +2332,9 @@ export interface DocumentCollection<T extends object = any>
    *
    * @example
    * ```js
-   * TODO
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
+   * const indexes = await collection.indexes();
    * ```
    */
   indexes(): Promise<Index[]>;
@@ -2246,7 +2345,9 @@ export interface DocumentCollection<T extends object = any>
    *
    * @example
    * ```js
-   * TODO
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
+   * const index = await collection.index("some-index");
    * ```
    */
   index(selector: IndexSelector): Promise<Index>;
@@ -2257,6 +2358,8 @@ export interface DocumentCollection<T extends object = any>
    *
    * @example
    * ```js
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
    * // Create a unique index for looking up documents by username
    * await collection.ensureIndex({
    *   type: "persistent",
@@ -2281,6 +2384,8 @@ export interface DocumentCollection<T extends object = any>
    *
    * @example
    * ```js
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
    * // Create a unique index for looking up documents by username
    * await collection.ensureIndex({
    *   type: "hash",
@@ -2303,6 +2408,8 @@ export interface DocumentCollection<T extends object = any>
    *
    * @example
    * ```js
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
    * // Create an index for sorting email addresses
    * await collection.ensureIndex({
    *   type: "skiplist",
@@ -2322,6 +2429,8 @@ export interface DocumentCollection<T extends object = any>
    *
    * @example
    * ```js
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
    * // Expire documents with "createdAt" timestamp one day after creation
    * await collection.ensureIndex({
    *   type: "ttl",
@@ -2332,6 +2441,8 @@ export interface DocumentCollection<T extends object = any>
    *
    * @example
    * ```js
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
    * // Expire documents with "expiresAt" timestamp according to their value
    * await collection.ensureIndex({
    *   type: "ttl",
@@ -2350,6 +2461,8 @@ export interface DocumentCollection<T extends object = any>
    *
    * @example
    * ```js
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
    * // Create a fulltext index for tokens longer than or equal to 3 characters
    * await collection.ensureIndex({
    *   type: "fulltext",
@@ -2370,6 +2483,8 @@ export interface DocumentCollection<T extends object = any>
    *
    * @example
    * ```js
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
    * // Create an index for GeoJSON data
    * await collection.ensureIndex({
    *   type: "geo",
@@ -2388,7 +2503,10 @@ export interface DocumentCollection<T extends object = any>
    *
    * @example
    * ```js
-   * TODO
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
+   * await collection.dropIndex("some-index");
+   * // The index "some-index" no longer exists
    * ```
    */
   dropIndex(
@@ -2864,7 +2982,13 @@ export interface EdgeCollection<T extends object = any>
    *
    * @example
    * ```js
-   * TODO
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
+   * // const cursor = await collection.all();
+   * const cursor = await db.query(aql`
+   *   FOR doc IN ${collection}
+   *   RETURN doc
+   * `);
    * ```
    */
   all(options?: SimpleQueryAllOptions): Promise<ArrayCursor<Edge<T>>>;
@@ -2877,7 +3001,16 @@ export interface EdgeCollection<T extends object = any>
    *
    * @example
    * ```js
-   * TODO
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
+   * // const doc = await collection.any();
+   * const cursor = await db.query(aql`
+   *   FOR doc IN ${collection}
+   *   SORT RAND()
+   *   LIMIT 1
+   *   RETURN doc
+   * `);
+   * const doc = await cursor.next();
    * ```
    */
   any(): Promise<Edge<T>>;
@@ -2893,7 +3026,14 @@ export interface EdgeCollection<T extends object = any>
    *
    * @example
    * ```js
-   * TODO
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
+   * // const cursor = await collection.byExample({ flavor: "strawberry" });
+   * const cursor = await db.query(aql`
+   *   FOR doc IN ${collection}
+   *   FILTER doc.flavor == "strawberry"
+   *   RETURN doc
+   * `);
    * ```
    */
   byExample(
@@ -2911,7 +3051,16 @@ export interface EdgeCollection<T extends object = any>
    *
    * @example
    * ```js
-   * TODO
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
+   * // const doc = await collection.firstExample({ flavor: "strawberry" });
+   * const cursor = await db.query(aql`
+   *   FOR doc IN ${collection}
+   *   FILTER doc.flavor == "strawberry"
+   *   LIMIT 1
+   *   RETURN doc
+   * `);
+   * const doc = await cursor.next();
    * ```
    */
   firstExample(example: Partial<DocumentData<T>>): Promise<Edge<T>>;
@@ -2926,7 +3075,16 @@ export interface EdgeCollection<T extends object = any>
    *
    * @example
    * ```js
-   * TODO
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
+   * const keys = ["a", "b", "c"];
+   * // const docs = await collection.byKeys(keys);
+   * const cursor = await db.query(aql`
+   *   FOR key IN ${keys}
+   *   LET doc = DOCUMENT(${collection}, key)
+   *   RETURN doc
+   * `);
+   * const docs = await cursor.all();
    * ```
    */
   lookupByKeys(keys: string[]): Promise<Edge<T>[]>;
@@ -2943,7 +3101,13 @@ export interface EdgeCollection<T extends object = any>
    *
    * @example
    * ```js
-   * TODO
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
+   * // const cursor = await collection.fulltext("article", "needle");
+   * const cursor = await db.query(aql`
+   *   FOR doc IN FULLTEXT(${collection}, "article", "needle")
+   *   RETURN doc
+   * `);
    * ```
    */
   fulltext(
