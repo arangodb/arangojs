@@ -8,7 +8,7 @@ jobs:
 
     strategy:
       matrix:
-        arangodb-version: [3.5, 3.6]
+        arangodb-version: [3.5, 3.6, 3.7]
 
     container:
       image: buildkite/puppeteer:latest
