@@ -277,7 +277,16 @@
 										replaced with AQL queries.</p>
 									</dd>
 									<dt>example</dt>
-									<dd><pre><code class="language-js">TODO</code></pre>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">&quot;some-collection&quot;</span>);
+<span class="hljs-comment">// const doc = await collection.any();</span>
+<span class="hljs-keyword">const</span> cursor = <span class="hljs-keyword">await</span> db.query(aql<span class="hljs-string">`
+  FOR doc IN <span class="hljs-subst">${collection}</span>
+  SORT RAND()
+  LIMIT 1
+  RETURN doc
+`</span>);
+<span class="hljs-keyword">const</span> doc = <span class="hljs-keyword">await</span> cursor.next();</code></pre>
 									</dd>
 								</dl>
 							</div>
@@ -305,7 +314,14 @@
 										replaced with AQL queries.</p>
 									</dd>
 									<dt>example</dt>
-									<dd><pre><code class="language-js">TODO</code></pre>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">&quot;some-collection&quot;</span>);
+<span class="hljs-comment">// const cursor = await collection.byExample({ flavor: &quot;strawberry&quot; });</span>
+<span class="hljs-keyword">const</span> cursor = <span class="hljs-keyword">await</span> db.query(aql<span class="hljs-string">`
+  FOR doc IN <span class="hljs-subst">${collection}</span>
+  FILTER doc.flavor == &quot;strawberry&quot;
+  RETURN doc
+`</span>);</code></pre>
 									</dd>
 								</dl>
 							</div>
@@ -709,7 +725,10 @@
 								</div>
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
-									<dd><pre><code class="language-js">TODO</code></pre>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">&quot;some-collection&quot;</span>);
+<span class="hljs-keyword">await</span> collection.dropIndex(<span class="hljs-string">&quot;some-index&quot;</span>);
+<span class="hljs-comment">// The index &quot;some-index&quot; no longer exists</span></code></pre>
 									</dd>
 								</dl>
 							</div>
@@ -747,7 +766,9 @@
 								</div>
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
-									<dd><pre><code class="language-js"><span class="hljs-comment">// Create a unique index for looking up documents by username</span>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">&quot;some-collection&quot;</span>);
+<span class="hljs-comment">// Create a unique index for looking up documents by username</span>
 <span class="hljs-keyword">await</span> collection.ensureIndex({
   <span class="hljs-attr">type</span>: <span class="hljs-string">&quot;persistent&quot;</span>,
   <span class="hljs-attr">fields</span>: [<span class="hljs-string">&quot;username&quot;</span>],
@@ -779,7 +800,9 @@
 								to persistent indexes.</p>
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
-									<dd><pre><code class="language-js"><span class="hljs-comment">// Create a unique index for looking up documents by username</span>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">&quot;some-collection&quot;</span>);
+<span class="hljs-comment">// Create a unique index for looking up documents by username</span>
 <span class="hljs-keyword">await</span> collection.ensureIndex({
   <span class="hljs-attr">type</span>: <span class="hljs-string">&quot;hash&quot;</span>,
   <span class="hljs-attr">fields</span>: [<span class="hljs-string">&quot;username&quot;</span>],
@@ -811,7 +834,9 @@
 								to persistent indexes.</p>
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
-									<dd><pre><code class="language-js"><span class="hljs-comment">// Create an index for sorting email addresses</span>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">&quot;some-collection&quot;</span>);
+<span class="hljs-comment">// Create an index for sorting email addresses</span>
 <span class="hljs-keyword">await</span> collection.ensureIndex({
   <span class="hljs-attr">type</span>: <span class="hljs-string">&quot;skiplist&quot;</span>,
   <span class="hljs-attr">fields</span>: [<span class="hljs-string">&quot;email&quot;</span>]
@@ -839,7 +864,9 @@
 								</div>
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
-									<dd><pre><code class="language-js"><span class="hljs-comment">// Expire documents with &quot;createdAt&quot; timestamp one day after creation</span>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">&quot;some-collection&quot;</span>);
+<span class="hljs-comment">// Expire documents with &quot;createdAt&quot; timestamp one day after creation</span>
 <span class="hljs-keyword">await</span> collection.ensureIndex({
   <span class="hljs-attr">type</span>: <span class="hljs-string">&quot;ttl&quot;</span>,
   <span class="hljs-attr">fields</span>: [<span class="hljs-string">&quot;createdAt&quot;</span>],
@@ -847,7 +874,9 @@
 });</code></pre>
 									</dd>
 									<dt>example</dt>
-									<dd><pre><code class="language-js"><span class="hljs-comment">// Expire documents with &quot;expiresAt&quot; timestamp according to their value</span>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">&quot;some-collection&quot;</span>);
+<span class="hljs-comment">// Expire documents with &quot;expiresAt&quot; timestamp according to their value</span>
 <span class="hljs-keyword">await</span> collection.ensureIndex({
   <span class="hljs-attr">type</span>: <span class="hljs-string">&quot;ttl&quot;</span>,
   <span class="hljs-attr">fields</span>: [<span class="hljs-string">&quot;expiresAt&quot;</span>],
@@ -876,7 +905,9 @@
 								</div>
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
-									<dd><pre><code class="language-js"><span class="hljs-comment">// Create a fulltext index for tokens longer than or equal to 3 characters</span>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">&quot;some-collection&quot;</span>);
+<span class="hljs-comment">// Create a fulltext index for tokens longer than or equal to 3 characters</span>
 <span class="hljs-keyword">await</span> collection.ensureIndex({
   <span class="hljs-attr">type</span>: <span class="hljs-string">&quot;fulltext&quot;</span>,
   <span class="hljs-attr">fields</span>: [<span class="hljs-string">&quot;description&quot;</span>],
@@ -905,7 +936,9 @@
 								</div>
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
-									<dd><pre><code class="language-js"><span class="hljs-comment">// Create an index for GeoJSON data</span>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">&quot;some-collection&quot;</span>);
+<span class="hljs-comment">// Create an index for GeoJSON data</span>
 <span class="hljs-keyword">await</span> collection.ensureIndex({
   <span class="hljs-attr">type</span>: <span class="hljs-string">&quot;geo&quot;</span>,
   <span class="hljs-attr">fields</span>: [<span class="hljs-string">&quot;lngLat&quot;</span>],
@@ -1001,7 +1034,16 @@
 										replaced with AQL queries.</p>
 									</dd>
 									<dt>example</dt>
-									<dd><pre><code class="language-js">TODO</code></pre>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">&quot;some-collection&quot;</span>);
+<span class="hljs-comment">// const doc = await collection.firstExample({ flavor: &quot;strawberry&quot; });</span>
+<span class="hljs-keyword">const</span> cursor = <span class="hljs-keyword">await</span> db.query(aql<span class="hljs-string">`
+  FOR doc IN <span class="hljs-subst">${collection}</span>
+  FILTER doc.flavor == &quot;strawberry&quot;
+  LIMIT 1
+  RETURN doc
+`</span>);
+<span class="hljs-keyword">const</span> doc = <span class="hljs-keyword">await</span> cursor.next();</code></pre>
 									</dd>
 								</dl>
 							</div>
@@ -1038,7 +1080,13 @@
 										replaced with AQL queries.</p>
 									</dd>
 									<dt>example</dt>
-									<dd><pre><code class="language-js">TODO</code></pre>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">&quot;some-collection&quot;</span>);
+<span class="hljs-comment">// const cursor = await collection.fulltext(&quot;article&quot;, &quot;needle&quot;);</span>
+<span class="hljs-keyword">const</span> cursor = <span class="hljs-keyword">await</span> db.query(aql<span class="hljs-string">`
+  FOR doc IN FULLTEXT(<span class="hljs-subst">${collection}</span>, &quot;article&quot;, &quot;needle&quot;)
+  RETURN doc
+`</span>);</code></pre>
 									</dd>
 								</dl>
 							</div>
@@ -1110,7 +1158,9 @@
 								</div>
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
-									<dd><pre><code class="language-js">TODO</code></pre>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">&quot;some-collection&quot;</span>);
+<span class="hljs-keyword">const</span> responsibleShard = <span class="hljs-keyword">await</span> collection.getResponsibleShard();</code></pre>
 									</dd>
 								</dl>
 							</div>
@@ -1300,7 +1350,9 @@
 								</div>
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
-									<dd><pre><code class="language-js">TODO</code></pre>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">&quot;some-collection&quot;</span>);
+<span class="hljs-keyword">const</span> index = <span class="hljs-keyword">await</span> collection.index(<span class="hljs-string">&quot;some-index&quot;</span>);</code></pre>
 									</dd>
 								</dl>
 							</div>
@@ -1333,7 +1385,9 @@
 								</div>
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
-									<dd><pre><code class="language-js">TODO</code></pre>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">&quot;some-collection&quot;</span>);
+<span class="hljs-keyword">const</span> indexes = <span class="hljs-keyword">await</span> collection.indexes();</code></pre>
 									</dd>
 								</dl>
 							</div>
@@ -1518,7 +1572,16 @@
 										replaced with AQL queries.</p>
 									</dd>
 									<dt>example</dt>
-									<dd><pre><code class="language-js">TODO</code></pre>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">&quot;some-collection&quot;</span>);
+<span class="hljs-keyword">const</span> keys = [<span class="hljs-string">&quot;a&quot;</span>, <span class="hljs-string">&quot;b&quot;</span>, <span class="hljs-string">&quot;c&quot;</span>];
+<span class="hljs-comment">// const docs = await collection.byKeys(keys);</span>
+<span class="hljs-keyword">const</span> cursor = <span class="hljs-keyword">await</span> db.query(aql<span class="hljs-string">`
+  FOR key IN <span class="hljs-subst">${keys}</span>
+  LET doc = DOCUMENT(<span class="hljs-subst">${collection}</span>, key)
+  RETURN doc
+`</span>);
+<span class="hljs-keyword">const</span> docs = <span class="hljs-keyword">await</span> cursor.all();</code></pre>
 									</dd>
 								</dl>
 							</div>
@@ -1736,7 +1799,20 @@
 										replaced with AQL queries.</p>
 									</dd>
 									<dt>example</dt>
-									<dd><pre><code class="language-js">TODO</code></pre>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">&quot;some-collection&quot;</span>);
+<span class="hljs-comment">// const { deleted } = await collection.removeByExample({</span>
+<span class="hljs-comment">//   flavor: &quot;strawberry&quot;</span>
+<span class="hljs-comment">// });</span>
+<span class="hljs-keyword">const</span> cursor = <span class="hljs-keyword">await</span> db.query(aql<span class="hljs-string">`
+  RETURN LENGTH(
+    FOR doc IN <span class="hljs-subst">${collection}</span>
+    FILTER doc.flavor == &quot;strawberry&quot;
+    REMOVE doc IN <span class="hljs-subst">${collection}</span>
+    RETURN 1
+  )
+`</span>);
+<span class="hljs-keyword">const</span> deleted = <span class="hljs-keyword">await</span> cursor.next();</code></pre>
 									</dd>
 								</dl>
 							</div>
@@ -1779,7 +1855,19 @@
 										replaced with AQL queries.</p>
 									</dd>
 									<dt>example</dt>
-									<dd><pre><code class="language-js">TODO</code></pre>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">&quot;some-collection&quot;</span>);
+<span class="hljs-keyword">const</span> keys = [<span class="hljs-string">&quot;a&quot;</span>, <span class="hljs-string">&quot;b&quot;</span>, <span class="hljs-string">&quot;c&quot;</span>];
+<span class="hljs-comment">// const { removed, ignored } = await collection.removeByKeys(keys);</span>
+<span class="hljs-keyword">const</span> cursor = <span class="hljs-keyword">await</span> db.query(aql<span class="hljs-string">`
+  FOR key IN <span class="hljs-subst">${keys}</span>
+  LET doc = DOCUMENT(<span class="hljs-subst">${collection}</span>, key)
+  FILTER doc
+  REMOVE doc IN <span class="hljs-subst">${collection}</span>
+  RETURN key
+`</span>);
+<span class="hljs-keyword">const</span> removed = <span class="hljs-keyword">await</span> cursor.all();
+<span class="hljs-keyword">const</span> ignored = keys.filter(<span class="hljs-function">(<span class="hljs-params">key</span>) =&gt;</span> !removed.includes(key));</code></pre>
 									</dd>
 								</dl>
 							</div>
@@ -1973,7 +2061,22 @@
 										replaced with AQL queries.</p>
 									</dd>
 									<dt>example</dt>
-									<dd><pre><code class="language-js">TODO</code></pre>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">&quot;some-collection&quot;</span>);
+<span class="hljs-keyword">const</span> newData = { <span class="hljs-attr">flavor</span>: <span class="hljs-string">&quot;chocolate&quot;</span> };
+<span class="hljs-comment">// const { replaced } = await collection.replaceByExample(</span>
+<span class="hljs-comment">//   { flavor: &quot;strawberry&quot; },</span>
+<span class="hljs-comment">//   newData</span>
+<span class="hljs-comment">// );</span>
+<span class="hljs-keyword">const</span> cursor = <span class="hljs-keyword">await</span> db.query(aql<span class="hljs-string">`
+  RETURN LENGTH(
+    FOR doc IN <span class="hljs-subst">${collection}</span>
+    FILTER doc.flavor == &quot;strawberry&quot;
+    REPLACE doc WITH <span class="hljs-subst">${newData}</span> IN <span class="hljs-subst">${collection}</span>
+    RETURN 1
+  )
+`</span>);
+<span class="hljs-keyword">const</span> replaced = <span class="hljs-keyword">await</span> cursor.next();</code></pre>
 									</dd>
 								</dl>
 							</div>
@@ -2332,7 +2435,22 @@
 										replaced with AQL queries.</p>
 									</dd>
 									<dt>example</dt>
-									<dd><pre><code class="language-js">TODO</code></pre>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">&quot;some-collection&quot;</span>);
+<span class="hljs-keyword">const</span> newData = { <span class="hljs-attr">color</span>: <span class="hljs-string">&quot;red&quot;</span> };
+<span class="hljs-comment">// const { updated } = await collection.updateByExample(</span>
+<span class="hljs-comment">//   { flavor: &quot;strawberry&quot; },</span>
+<span class="hljs-comment">//   newData</span>
+<span class="hljs-comment">// );</span>
+<span class="hljs-keyword">const</span> cursor = <span class="hljs-keyword">await</span> db.query(aql<span class="hljs-string">`
+  RETURN LENGTH(
+    FOR doc IN <span class="hljs-subst">${collection}</span>
+    FILTER doc.flavor == &quot;strawberry&quot;
+    UPDATE doc WITH <span class="hljs-subst">${newData}</span> IN <span class="hljs-subst">${collection}</span>
+    RETURN 1
+  )
+`</span>);
+<span class="hljs-keyword">const</span> updated = <span class="hljs-keyword">await</span> cursor.next();</code></pre>
 									</dd>
 								</dl>
 							</div>
