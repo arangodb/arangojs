@@ -53,6 +53,7 @@
     "pretest": "yarn build",
     "build:package": "cat package.json | jq 'delpaths([[\"private\"],[\"scripts\"],[\"devDependencies\"],[\"babel\"],[\"browserslist\"]])' | sed 's/build\\///g' | sed -r 's/src\\/([^\"]+)\\.ts/\\1.js/g' > build/package.json",
     "build:cjs": "tsc -p . --outDir ./build/ --target es2018 --declarationMap true",
+    "build:text": "cp *.md build/",
     "build:web": "webpack",
     "build": "rm -rf build && mkdir build && npm-run-all --parallel build:*",
     "prepare": "yarn build && node -e 'require(\".\");'"
