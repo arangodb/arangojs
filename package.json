@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "arangojs",
-  "version": "7.0.0",
+  "version": "7.0.1",
   "engines": {
     "node": ">=10"
   },
