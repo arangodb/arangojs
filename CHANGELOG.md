@@ -14,136 +14,12 @@ This driver uses semantic versioning:
 - A change in the major version (e.g. 1.Y.Z -> 2.0.0) indicates _breaking_
   changes that require changes in your code to upgrade.
 
-## [7.0.0-rc.2] - 2020-08-20
-
-### Fixed
-
-- Renamed `validation` option to `schema` ([#681](https://github.com/arangodb/arangojs/issues/681))
-
-### Added
-
-- Added support for `isDisjoint` option in Graph API
-
-- Added support for values `"ignore"` and `"conflict"` in `overwriteMode`
-  option when saving documents using the Collection API
-
-- Added support for `primarySortCompression` and `storedValues` options in
-  View API
-
-## [7.0.0-rc.1] - 2020-07-11
-
-### Fixed
-
-- Fixed `export is not defined` error in the browser build
-
-## [7.0.0-rc.0] - 2020-07-10
-
-### Removed
-
-- Removed `statusCode` properties of `ArangoError` and `HttpError`
-
-  Both of these error types still expose the HTTP status code as the `code`
-  property. For `ArangoError` the true HTTP status code may be different and
-  can still be accessed using the `response.statusCode` property.
-
-- Removed `ArangoError` re-export
-
-  The type can still be imported directly from the `error` module.
-
-### Changed
-
-- Renamed `cursor.nextBatch` to `cursor.batches.next`
-
-- Renamed `cursor.hasMore` to `cursor.batches.hasMore`
-
-- Renamed `db.createArangoSearchView` to `db.createView`
-
-- Renamed `transaction.run` to `transaction.step`
-
-  This should hopefully make it more obvious that sequential calls to arangojs
-  methods should be split into separate calls of this method.
-
-- Added support for `View` in `aql` templates ([#667](https://github.com/arangodb/arangojs/issues/667))
-
-  `View` (or `ArangoSearchView`) objects can now be passed into `aql` templates
-  like `ArangoCollection` objects.
-
-- Graph methods now also accept `ArangoCollection` instances instead of names
-
-  This brings these methods behavior in line with that of the `beginTransaction`
-  and `executeTransaction` methods of `Database` objects.
-
-- Moved `collectionToString` helper into `collection` module
-
-- Moved `Dict` type into `connection` module
-
-- Moved `Patch` type into `documents` module
-
-- Removed `Errback` type from public API
-
-- Renamed `util/foxx-manifest` module to `foxx-manifest`
-
-- Removed `Collection` type from public API
-
-  All public APIs reference `DocumentCollection` and `EdgeCollection` directly.
-
-### Added
-
-- Added `precaptureStackTraces` configuration option ([#599](https://github.com/arangodb/arangojs/issues/599))
-
-  This option can be used to get more useful stack traces but results in a
-  performance hit on every request.
-
-- Added `cursor.batches` to provide a batch-wise cursor API
-
-- Added `before` and `after` to the `agentOptions` configuration option ([#585](https://github.com/arangodb/arangojs/issues/585))
-
-  These methods can be used to track performance metrics for outgoing requests.
-
-## [7.0.0-preview.1] - 2020-05-13
-
-### Removed
-
-- Removed `collection.edge` method
-
-  This method was previously an alias for `collection.document`.
-
-  The method `graphEdgeCollection.edge` is unaffected by this change.
-
-- Removed `graphName` option for `edgeCollection.traversal`
-
-  Graph traversals can still be performed via `graph.traversal`.
-
-- Removed `ViewResponse` type
-
-  The type `ViewDescription` represents the same structure.
-
-- Removed `ArangoSearchViewPropertiesResponse` type
-
-  The type `ArangoSearchViewProperties & ViewDescription` can be used
-  to represent the same structure.
-
-### Changed
-
-- Removed `CollectionMetadata` fields from `CollectionProperties` type
-
-  Methods that previously returned `CollectionProperties` now return
-  `CollectionMetadata & CollectionProperties`.
-
-### Added
-
-- Added `auth` option to configuration
-
-  It is now possible to pass authentication credentials using the `auth`
-  option in addition to calling `db.useBasicAuth` or `db.useBearerAuth`.
-
-### Fixed
-
-- Changed async return type of `collection.index` from `Index[]` to `Index`
-
-## [7.0.0-preview.0] - 2020-05-01
+## [Unreleased]
 
 This is a major release and breaks backwards compatibility.
+
+For a detailed list of changes between pre-release versions of v7 see the
+[Changelog of the final v7 release candidate](https://github.com/arangodb/arangojs/blob/v7.0.0-rc.2/CHANGELOG.md).
 
 ### Removed
 
@@ -162,6 +38,16 @@ This is a major release and breaks backwards compatibility.
 - Removed support for absolute endpoint URLs
 
   This removes the `isAbsolute` option from the arangojs configuration.
+
+- Removed `ArangoError` re-export
+
+  The type can still be imported directly from the `error` module.
+
+- Removed `statusCode` properties of `ArangoError` and `HttpError`
+
+  Both of these error types still expose the HTTP status code as the `code`
+  property. For `ArangoError` the true HTTP status code may be different and
+  can still be accessed using the `response.statusCode` property.
 
 #### Database API
 
@@ -196,6 +82,16 @@ This is a major release and breaks backwards compatibility.
 
   The new method `collection.updateAll` now provides this functionality.
 
+- Removed `collection.edge` method
+
+  This method was previously an alias for `collection.document`.
+
+  The method `graphEdgeCollection.edge` is unaffected by this change.
+
+- Removed `graphName` option for `edgeCollection.traversal`
+
+  Graph traversals can still be performed via `graph.traversal`.
+
 #### Graph API
 
 - Removed generic collection methods from `GraphVertexCollection`
@@ -220,6 +116,17 @@ This is a major release and breaks backwards compatibility.
   The behavior can still be implemented by using the `next` method directly
   or iterating over the cursor using the `forEach` method or the `for await`
   syntax.
+
+#### View API
+
+- Removed `ViewResponse` type
+
+  The type `ViewDescription` represents the same structure.
+
+- Removed `ArangoSearchViewPropertiesResponse` type
+
+  The type `ArangoSearchViewProperties & ViewDescription` can be used
+  to represent the same structure.
 
 ### Deprecated
 
@@ -274,9 +181,26 @@ This is a major release and breaks backwards compatibility.
   are memoized per-database. Using `useDatabase` de-memoizes the database
   object to prevent unexpected behavior.
 
+- Added support for `View` in `aql` templates ([#667](https://github.com/arangodb/arangojs/issues/667))
+
+  `View` (or `ArangoSearchView`) objects can now be passed into `aql` templates
+  like `ArangoCollection` objects.
+
+- Moved `collectionToString` helper into `collection` module
+
+- Moved `Dict` type into `connection` module
+
+- Moved `Patch` type into `documents` module
+
+- Removed `Errback` type from public API
+
+- Renamed `util/foxx-manifest` module to `foxx-manifest`
+
 #### Database API
 
 - Renamed method `db.arangoSearchView` to `db.view`
+
+- Renamed method `db.createArangoSearchView` to `db.createView`
 
 - Replaced methods `db.enableServiceDevelopmentMode` and
   `db.disableServiceDevelopmentMode` with `db.setServiceDevelopmentMode`
@@ -319,16 +243,21 @@ This is a major release and breaks backwards compatibility.
 
 #### Collection API
 
-- Renamed `collection.setProperties` to `collection.properties`
-
-  The method will now return the existing properties or set the properties
-  depending on whether an argument is provided.
-
 - Merged `DocumentCollection` and `EdgeCollection` APIs
 
   All collections are now implemented as generic `Collection` objects.
   In TypeScript the generic collection object can still be explicitly cast to
   `DocumentCollection` or `EdgeCollection` for stricter type safety.
+
+- Renamed `collection.setProperties` to `collection.properties`
+
+  The method will now return the existing properties or set the properties
+  depending on whether an argument is provided.
+
+- Removed `CollectionMetadata` fields from `CollectionProperties` type
+
+  Methods that previously returned `CollectionProperties` now return
+  `CollectionMetadata & CollectionProperties`.
 
 - Collection methods `save`, `update`, `replace` and `remove` no longer take
   arrays as input
@@ -372,6 +301,11 @@ This is a major release and breaks backwards compatibility.
 - Changed `collection.list` return type to `ArrayCursor`
 
 #### Graph API
+
+- Graph methods now also accept `ArangoCollection` instances instead of names
+
+  This brings these methods behavior in line with that of the `beginTransaction`
+  and `executeTransaction` methods of `Database` objects.
 
 - Graph `create` method (and `db.createGraph`) signature changed
 
@@ -440,6 +374,10 @@ This is a major release and breaks backwards compatibility.
 
 - Renamed `ArrayCursor` method `each` to `forEach`
 
+- Renamed `cursor.nextBatch` to `cursor.batches.next`
+
+- Renamed `cursor.hasMore` to `cursor.batches.hasMore`
+
 - In TypeScript `ArrayCursor` is now a generic type
 
   TypeScript users can now cast cursor instances to use a specific type for
@@ -459,6 +397,11 @@ This is a major release and breaks backwards compatibility.
 
 - Renamed type `ArangoTransaction` to `Transaction`
 
+- Renamed `transaction.run` to `transaction.step`
+
+  This should hopefully make it more obvious that sequential calls to arangojs
+  methods should be split into separate calls of this method.
+
 - Transactions no longer take a positional `params` argument
 
   The argument can still be specified using the `opts.params` argument.
@@ -467,10 +410,24 @@ This is a major release and breaks backwards compatibility.
 
 #### General
 
-- Added `databaseName` option to arangojs config
+- Added `databaseName` configuration option
 
   Setting this option to a database name will result in the initial `Database`
   object using this database instead of the default `_system` database.
+
+- Added `auth` configuration option
+
+  It is now possible to pass authentication credentials using the `auth`
+  option in addition to calling `db.useBasicAuth` or `db.useBearerAuth`.
+
+- Added `precaptureStackTraces` configuration option ([#599](https://github.com/arangodb/arangojs/issues/599))
+
+  This option can be used to get more useful stack traces but results in a
+  performance hit on every request.
+
+- Added `before` and `after` to the `agentOptions` configuration option ([#585](https://github.com/arangodb/arangojs/issues/585))
+
+  These methods can be used to track performance metrics for outgoing requests.
 
 - Improved type signatures for TypeScript and inline documentation
 
@@ -525,6 +482,9 @@ This is a major release and breaks backwards compatibility.
   The method takes a document or a document key and returns a fully qualified
   document ID string for the document in the current collection.
 
+- Added support for values `"ignore"` and `"conflict"` in `overwriteMode`
+  option when saving documents using the Collection API
+
 #### Graph API
 
 - Added `graphVertexCollection.vertexExists` and
@@ -540,6 +500,8 @@ This is a major release and breaks backwards compatibility.
   operations not available within the context of a graph (e.g. bulk imports
   or modifying the collection itself).
 
+- Added support for `isDisjoint` option in Graph API
+
 #### Cursor API
 
 - Added `cursor.flatMap` method
@@ -547,10 +509,17 @@ This is a major release and breaks backwards compatibility.
   This method behaves similarly to the `Array` method `flatMap` but operates
   on the cursor directly like `cursor.map` does.
 
+- Added `cursor.batches` to provide a batch-wise cursor API
+
 - Added support for `for await` in `ArrayCursor` ([#616](https://github.com/arangodb/arangojs/pull/616))
 
   It is now possible to use `for await` to iterate over each item in a cursor
   asynchronously.
+
+#### View API
+
+- Added support for `primarySortCompression` and `storedValues` options in
+  View API
 
 ### Fixed
 
@@ -1111,11 +1080,7 @@ This is a major release and breaks backwards compatibility.
 
   Graph methods now only return the relevant part of the response body.
 
-[7.0.0-rc.2]: https://github.com/arangodb/arangojs/compare/v7.0.0-rc.1...v7.0.0-rc.2
-[7.0.0-rc.1]: https://github.com/arangodb/arangojs/compare/v7.0.0-rc.0...v7.0.0-rc.1
-[7.0.0-rc.0]: https://github.com/arangodb/arangojs/compare/v7.0.0-preview.1...v7.0.0-rc.0
-[7.0.0-preview.1]: https://github.com/arangodb/arangojs/compare/v7.0.0-preview.0...v7.0.0-preview.1
-[7.0.0-preview.0]: https://github.com/arangodb/arangojs/compare/v6.14.1...v7.0.0-preview.0
+[unreleased]: https://github.com/arangodb/arangojs/compare/v6.14.1...HEAD
 [6.14.1]: https://github.com/arangodb/arangojs/compare/v6.14.0...v6.14.1
 [6.14.0]: https://github.com/arangodb/arangojs/compare/v6.13.0...v6.14.0
 [6.13.0]: https://github.com/arangodb/arangojs/compare/v6.12.0...v6.13.0
