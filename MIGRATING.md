@@ -40,7 +40,7 @@ was previously called `createIndex`):
 
 ```diff
 -await collection.createGeoIndex(["lat", "lng"]);
-+await collection.createIndex({ type: "geo", fields: ["lat", "lng"] });
++await collection.ensureIndex({ type: "geo", fields: ["lat", "lng"] });
 ```
 
 ### Document and edge collections
