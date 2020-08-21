@@ -85,9 +85,8 @@ an alias for the `document` method, which still exists:
 
 ```diff
 -const edges = db.edgeCollection("edges");
-+const edges = db.collection("edges");
-
 -const edge = await edges.edge("my-edge");
++const edges = db.collection("edges");
 +const edge = await edges.document("my-edge");
 ```
 
