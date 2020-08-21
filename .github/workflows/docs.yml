@@ -52,6 +52,12 @@ jobs:
           echo $'---\npermalink: /CHANGELOG\ntitle: "CHANGELOG"\n---\n' > gh-pages/CHANGELOG.md
           cat CHANGELOG.md >> gh-pages/CHANGELOG.md
 
+      - name: Update MIGRATING
+        if: env.latest == 1 # don't overwrite for backport versions
+        run: |
+          echo $'---\npermalink: /MIGRATING\ntitle: "Migrating"\n---\n' > gh-pages/MIGRATING.md
+          cat MIGRATING.md >> gh-pages/MIGRATING.md
+
       - name: Remove old docs
         run: |
           rm -rf gh-pages/${tag}

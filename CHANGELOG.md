@@ -18,6 +18,9 @@ This driver uses semantic versioning:
 
 This is a major release and breaks backwards compatibility.
 
+See [the migration guide](./MIGRATING.md#v6-to-v7) for detailed instructions
+for upgrading your code to arangojs v7.
+
 For a detailed list of changes between pre-release versions of v7 see the
 [Changelog of the final v7 release candidate](https://github.com/arangodb/arangojs/blob/v7.0.0-rc.2/CHANGELOG.md).
 
