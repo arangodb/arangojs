@@ -241,6 +241,11 @@ For a detailed list of changes between pre-release versions of v7 see the
   The method will now return the existing query tracking properties or set the
   new query tracking properties depending on whether an argument is provided.
 
+- Method `db.transaction` no longer acts as an alias for `executeTransaction`
+
+  The method now only allows looking up transactions by ID. Previously it would
+  wrap `executeTransaction` if passed the arguments expected by that method.
+
 #### Collection API
 
 - Merged `DocumentCollection` and `EdgeCollection` APIs
@@ -401,10 +406,6 @@ For a detailed list of changes between pre-release versions of v7 see the
 
   This should hopefully make it more obvious that sequential calls to arangojs
   methods should be split into separate calls of this method.
-
-- Transactions no longer take a positional `params` argument
-
-  The argument can still be specified using the `opts.params` argument.
 
 ### Added
 
