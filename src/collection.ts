@@ -2521,6 +2521,9 @@ export interface DocumentCollection<T extends object = any>
  * See {@link DocumentCollection} for a more generic variant of this interface
  * more suited for regular document collections.
  *
+ * See also {@link GraphEdgeCollection} for the type representing an edge
+ * collection in a {@link Graph}.
+ *
  * When using TypeScript, collections can be cast to a specific edge document
  * data type to increase type safety.
  *
