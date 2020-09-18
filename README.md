@@ -7,6 +7,14 @@ The official ArangoDB JavaScript client for Node.js and the browser.
 
 [![npm package status](https://nodei.co/npm/arangojs.png?downloads=true&stars=true)](https://npmjs.org/package/arangojs)
 
+## Links
+
+* [API Documentation](https://arangodb.github.io/arangojs/latest/modules/_index_.html)
+
+* [Changelog](https://arangodb.github.io/arangojs/CHANGELOG)
+
+* [Migration Guide](http://arangodb.github.io/arangojs/MIGRATING)
+
 ## Install
 
 ### With npm or yarn
