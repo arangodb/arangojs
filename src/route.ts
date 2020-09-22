@@ -259,7 +259,7 @@ export class Route {
   patch(...args: any[]): Promise<ArangojsResponse> {
     const path = typeof args[0] === "string" ? args.shift() : undefined;
     const [body, qs, headers] = args;
-    return this.request({ method: "DELETE", path, body, qs, headers });
+    return this.request({ method: "PATCH", path, body, qs, headers });
   }
 
   /**
