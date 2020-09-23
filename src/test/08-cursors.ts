@@ -9,7 +9,7 @@ const ARANGO_VERSION = Number(
   process.env.ARANGO_VERSION || process.env.ARANGOJS_DEVEL_VERSION || 30400
 );
 
-const aqlQuery = aql`FOR i In 0..10 RETURN i`;
+const aqlQuery = aql`FOR i IN 0..10 RETURN i`;
 const aqlResult = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
 async function sleep(ms: number) {
@@ -73,7 +73,7 @@ describe("Item-wise Cursor API", () => {
       expect(cursor.hasNext).to.equal(true);
     });
     it("returns false after last batch is consumed", async () => {
-      const cursor = await db.query(aql`FOR i In 0..1 RETURN i`, {
+      const cursor = await db.query(aql`FOR i IN 0..1 RETURN i`, {
         batchSize: 2,
       });
       expect(cursor.hasNext).to.equal(true);
@@ -88,7 +88,7 @@ describe("Item-wise Cursor API", () => {
       expect((cursor.batches as any)._batches.length).to.equal(0);
     });
     it("returns false after last result is consumed", async () => {
-      const cursor = await db.query(aql`FOR i In 0..1 RETURN i`, {
+      const cursor = await db.query(aql`FOR i IN 0..1 RETURN i`, {
         batchSize: 2,
       });
       expect(cursor.hasNext).to.equal(true);
@@ -103,7 +103,7 @@ describe("Item-wise Cursor API", () => {
       expect((cursor.batches as any)._batches.length).to.equal(0);
     });
     it.skip("returns 404 after timeout", async () => {
-      const cursor = await db.query(aql`FOR i In 0..1 RETURN i`, {
+      const cursor = await db.query(aql`FOR i IN 0..1 RETURN i`, {
         batchSize: 1,
         ttl: 1,
       });
@@ -132,8 +132,13 @@ describe("Item-wise Cursor API", () => {
           await loadMore(cursor, totalLength);
         }
       }
-      const cursor = await db.query(`FOR i In 1..${EXPECTED_LENGTH} RETURN i`);
+      const cursor = await db.query(`FOR i IN 1..${EXPECTED_LENGTH} RETURN i`);
       await loadMore(cursor, 0);
+    });
+    it("returns false if there are no results", async () => {
+      const cursor = await db.query(aql`FOR i IN [] RETURN i`);
+      expect(cursor.hasNext).to.equal(false);
+      expect((cursor.batches as any)._batches.length).to.equal(0);
     });
   });
   describe("cursor.forEach", () => {
@@ -143,6 +148,14 @@ describe("Item-wise Cursor API", () => {
         results.push(value);
       });
       expect(results).to.eql(aqlResult);
+    });
+    it("correctly handles empty results", async () => {
+      const cursor = await db.query(aql`FOR i IN [] RETURN i`);
+      const results: any[] = [];
+      await cursor.forEach((value) => {
+        results.push(value);
+      });
+      expect(results).to.eql([]);
     });
     it("aborts if the callback returns false", async () => {
       const results: any[] = [];
@@ -264,7 +277,7 @@ describe("Batch-wise Cursor API", () => {
     });
     it("returns false after last batch is consumed", async () => {
       const cursor = (
-        await db.query(aql`FOR i In 0..1 RETURN i`, {
+        await db.query(aql`FOR i IN 0..1 RETURN i`, {
           batchSize: 1,
         })
       ).batches;
@@ -280,7 +293,7 @@ describe("Batch-wise Cursor API", () => {
       expect((cursor as any)._batches.length).to.equal(0);
     });
     it.skip("returns 404 after timeout", async () => {
-      const cursor = await db.query(aql`FOR i In 0..1 RETURN i`, {
+      const cursor = await db.query(aql`FOR i IN 0..1 RETURN i`, {
         batchSize: 1,
         ttl: 1,
       });
@@ -309,7 +322,7 @@ describe("Batch-wise Cursor API", () => {
           await loadMore(cursor, totalLength);
         }
       }
-      const cursor = await db.query(`FOR i In 1..${EXPECTED_LENGTH} RETURN i`);
+      const cursor = await db.query(`FOR i IN 1..${EXPECTED_LENGTH} RETURN i`);
       await loadMore(cursor, 0);
     });
   });

@@ -18,7 +18,9 @@ This driver uses semantic versioning:
 
 ### Fixed
 
-- Fixed incorrect HTTP method call in `patch` method ([#687](https://github.com/arangodb/arangojs/issues/687))
+- Fixed incorrect HTTP method call in `patch` method ([#687](https://github.com/arangodb/arangojs/pull/687))
+
+- Fixed empty query results containing `[undefined]` ([#687](https://github.com/arangodb/arangojs/issues/683))
 
 ## [7.0.1] - 2020-08-21
 
