@@ -95,7 +95,7 @@ Using a different database:
 ```js
 const db = new Database({
   url: "http://localhost:8529",
-  database: "pancakes",
+  databaseName: "pancakes",
   auth: { username: "root", password: "hunter2" },
 });
 
