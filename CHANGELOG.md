@@ -22,6 +22,12 @@ This driver uses semantic versioning:
 
 - Fixed empty query results containing `[undefined]` ([#687](https://github.com/arangodb/arangojs/issues/683))
 
+- Fixed `updateByExample` and `replaceByExample` new value parameter name
+
+  Note that these methods are still deprecated. Previously the `newValue`
+  parameter was incorrectly called `newData`, which prevented the methods from
+  working at all.
+
 ## [7.0.1] - 2020-08-21
 
 This is a maintenance release because the initial v7 release did not include

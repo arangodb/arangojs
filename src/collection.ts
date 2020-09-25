@@ -2175,7 +2175,7 @@ export interface DocumentCollection<T extends object = any>
    * Replaces all documents in the collection matching the given example.
    *
    * @param example - An object representing an example for the documents.
-   * @param newData - Document data to replace the matching documents with.
+   * @param newValue - Document data to replace the matching documents with.
    * @param options - Options for replacing the documents.
    *
    * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
@@ -2185,16 +2185,16 @@ export interface DocumentCollection<T extends object = any>
    * ```js
    * const db = new Database();
    * const collection = db.collection("some-collection");
-   * const newData = { flavor: "chocolate" };
+   * const newValue = { flavor: "chocolate" };
    * // const { replaced } = await collection.replaceByExample(
    * //   { flavor: "strawberry" },
-   * //   newData
+   * //   newValue
    * // );
    * const cursor = await db.query(aql`
    *   RETURN LENGTH(
    *     FOR doc IN ${collection}
    *     FILTER doc.flavor == "strawberry"
-   *     REPLACE doc WITH ${newData} IN ${collection}
+   *     REPLACE doc WITH ${newValue} IN ${collection}
    *     RETURN 1
    *   )
    * `);
@@ -2203,7 +2203,7 @@ export interface DocumentCollection<T extends object = any>
    */
   replaceByExample(
     example: Partial<DocumentData<T>>,
-    newData: DocumentData<T>,
+    newValue: DocumentData<T>,
     options?: SimpleQueryReplaceByExampleOptions
   ): Promise<ArangoResponseMetadata & SimpleQueryReplaceByExampleResult>;
 
@@ -2211,7 +2211,7 @@ export interface DocumentCollection<T extends object = any>
    * Updates all documents in the collection matching the given example.
    *
    * @param example - An object representing an example for the documents.
-   * @param newData - Document data to update the matching documents with.
+   * @param newValue - Document data to update the matching documents with.
    * @param options - Options for updating the documents.
    *
    * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
@@ -2224,13 +2224,13 @@ export interface DocumentCollection<T extends object = any>
    * const newData = { color: "red" };
    * // const { updated } = await collection.updateByExample(
    * //   { flavor: "strawberry" },
-   * //   newData
+   * //   newValue
    * // );
    * const cursor = await db.query(aql`
    *   RETURN LENGTH(
    *     FOR doc IN ${collection}
    *     FILTER doc.flavor == "strawberry"
-   *     UPDATE doc WITH ${newData} IN ${collection}
+   *     UPDATE doc WITH ${newValue} IN ${collection}
    *     RETURN 1
    *   )
    * `);
@@ -2239,7 +2239,7 @@ export interface DocumentCollection<T extends object = any>
    */
   updateByExample(
     example: Partial<DocumentData<T>>,
-    newData: Patch<DocumentData<T>>,
+    newValue: Patch<DocumentData<T>>,
     options?: SimpleQueryUpdateByExampleOptions
   ): Promise<ArangoResponseMetadata & SimpleQueryUpdateByExampleResult>;
 
@@ -3756,7 +3756,7 @@ export class Collection<T extends object = any>
 
   replaceByExample(
     example: Partial<DocumentData<T>>,
-    newData: DocumentData<T>,
+    newValue: DocumentData<T>,
     options?: SimpleQueryReplaceByExampleOptions
   ) {
     return this._db.request(
@@ -3766,7 +3766,7 @@ export class Collection<T extends object = any>
         body: {
           ...options,
           example,
-          newData,
+          newValue,
           collection: this._name,
         },
       },
@@ -3776,7 +3776,7 @@ export class Collection<T extends object = any>
 
   updateByExample(
     example: Partial<DocumentData<T>>,
-    newData: Patch<DocumentData<T>>,
+    newValue: Patch<DocumentData<T>>,
     options?: SimpleQueryUpdateByExampleOptions
   ) {
     return this._db.request(
@@ -3786,7 +3786,7 @@ export class Collection<T extends object = any>
         body: {
           ...options,
           example,
-          newData,
+          newValue,
           collection: this._name,
         },
       },
