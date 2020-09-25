@@ -20,7 +20,7 @@ This driver uses semantic versioning:
 
 - Fixed incorrect HTTP method call in `patch` method ([#687](https://github.com/arangodb/arangojs/pull/687))
 
-- Fixed empty query results containing `[undefined]` ([#687](https://github.com/arangodb/arangojs/issues/683))
+- Fixed empty query results containing `[undefined]` ([#683](https://github.com/arangodb/arangojs/issues/683))
 
 - Fixed `updateByExample` and `replaceByExample` new value parameter name
 
