@@ -13,8 +13,8 @@ This driver uses semantic versioning:
   backwards-compatible changes that should not affect your code.
 - A change in the major version (e.g. 1.Y.Z -> 2.0.0) indicates _breaking_
   changes that require changes in your code to upgrade.
-  
-## [Unreleased]
+
+## [7.0.2] - 2020-09-25
 
 ### Fixed
 
@@ -1103,7 +1103,7 @@ For a detailed list of changes between pre-release versions of v7 see the
 
   Graph methods now only return the relevant part of the response body.
 
-[unreleased]: https://github.com/arangodb/arangojs/compare/v7.0.1...HEAD
+[7.0.2]: https://github.com/arangodb/arangojs/compare/v7.0.1...v7.0.2
 [7.0.1]: https://github.com/arangodb/arangojs/compare/v7.0.0...v7.0.1
 [7.0.0]: https://github.com/arangodb/arangojs/compare/v6.14.1...v7.0.0
 [6.14.1]: https://github.com/arangodb/arangojs/compare/v6.14.0...v6.14.1
