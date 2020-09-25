@@ -1700,7 +1700,7 @@ export interface DocumentCollection<T extends object = any>
    * ```js
    * const db = new Database();
    * const collection = db.collection("some-collection");
-   * const result = await collection.save(
+   * const result = await collection.saveAll(
    *   [
    *     { _key: "a", color: "blue", count: 1 },
    *     { _key: "b", color: "red", count: 2 },
