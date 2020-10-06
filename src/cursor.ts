@@ -289,7 +289,10 @@ export class BatchedArrayCursor<T = any> {
       return undefined;
     }
     const batch = this._batches.shift();
-    return batch && [...batch.values()];
+    if (!batch) return undefined;
+    const values = [...batch.values()];
+    batch.clear(true);
+    return values;
   }
 
   /**
