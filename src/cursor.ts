@@ -601,9 +601,9 @@ export class BatchedArrayCursor<T = any> {
   }
 
   /**
-   * Kills the cursor and frees up associated database resources.
+   * Drains the cursor and frees up associated database resources.
    *
-   * This method has no effect if all batches have already been fetched.
+   * This method has no effect if all batches have already been consumed.
    *
    * @example
    * ```js
@@ -620,6 +620,12 @@ export class BatchedArrayCursor<T = any> {
    * ```
    */
   async kill(): Promise<void> {
+    if (this._batches.length) {
+      for (const batch of this._batches.values()) {
+        batch.clear();
+      }
+      this._batches.clear();
+    }
     if (!this.hasNext) return undefined;
     return this._db.request(
       {

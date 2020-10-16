@@ -16,6 +16,10 @@ This driver uses semantic versioning:
 
 ## [Unreleased]
 
+### Changed
+
+- Killing a cursor now also drains it locally
+
 ### Fixed
 
 - Fixed a potential memory leak in cursor batch handling
