@@ -518,9 +518,9 @@
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Kills the cursor and frees up associated database resources.</p>
+									<p>Drains the cursor and frees up associated database resources.</p>
 								</div>
-								<p>This method has no effect if all batches have already been fetched.</p>
+								<p>This method has no effect if all batches have already been consumed.</p>
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
 									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> cursor1 = <span class="hljs-keyword">await</span> db.query(aql<span class="hljs-string">`FOR x IN 1..5 RETURN x`</span>);
