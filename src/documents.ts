@@ -3,7 +3,7 @@
  * import type { Document, Edge } from "arangojs/documents";
  * ```
  *
- * The "document" module provides document/edge related types for TypeScript.
+ * The "documents" module provides document/edge related types for TypeScript.
  *
  * @packageDocumentation
  */
