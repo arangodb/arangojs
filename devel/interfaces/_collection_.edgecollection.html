@@ -81,7 +81,7 @@
 					<dl class="tsd-comment-tags">
 						<dt>example</dt>
 						<dd><pre><code class="language-ts"><span class="hljs-keyword">interface</span> Friend {
-  startDate: <span class="hljs-built_in">number</span>;
+  <span class="hljs-attr">startDate</span>: <span class="hljs-built_in">number</span>;
   endDate?: <span class="hljs-built_in">number</span>;
 }
 <span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
@@ -450,14 +450,14 @@
 									</dd>
 									<dt>example</dt>
 									<dd><pre><code class="language-ts"><span class="hljs-keyword">interface</span> Friend {
-  startDate: <span class="hljs-built_in">number</span>;
+  <span class="hljs-attr">startDate</span>: <span class="hljs-built_in">number</span>;
   endDate?: <span class="hljs-built_in">number</span>;
 }
 <span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
 <span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">&quot;friends&quot;</span>) <span class="hljs-keyword">as</span> EdgeCollection&lt;Friend&gt;;
 <span class="hljs-comment">// even in TypeScript you still need to indicate the collection type</span>
 <span class="hljs-comment">// if you want to create an edge collection</span>
-<span class="hljs-keyword">await</span> collection.create({ <span class="hljs-keyword">type</span>: CollectionType.EDGE_COLLECTION });
+<span class="hljs-keyword">await</span> collection.create({ <span class="hljs-attr">type</span>: CollectionType.EDGE_COLLECTION });
 <span class="hljs-comment">// the edge collection &quot;friends&quot; now exists</span></code></pre>
 									</dd>
 								</dl>

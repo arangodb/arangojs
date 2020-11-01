@@ -631,17 +631,17 @@ db.close();</code></pre>
 									</dd>
 									<dt>example</dt>
 									<dd><pre><code class="language-ts"><span class="hljs-keyword">interface</span> Person {
-  name: <span class="hljs-built_in">string</span>;
+  <span class="hljs-attr">name</span>: <span class="hljs-built_in">string</span>;
 }
 <span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
 <span class="hljs-keyword">const</span> persons = db.collection&lt;Person&gt;(<span class="hljs-string">&quot;persons&quot;</span>);</code></pre>
 									</dd>
 									<dt>example</dt>
 									<dd><pre><code class="language-ts"><span class="hljs-keyword">interface</span> Person {
-  name: <span class="hljs-built_in">string</span>;
+  <span class="hljs-attr">name</span>: <span class="hljs-built_in">string</span>;
 }
 <span class="hljs-keyword">interface</span> Friend {
-  startDate: <span class="hljs-built_in">number</span>;
+  <span class="hljs-attr">startDate</span>: <span class="hljs-built_in">number</span>;
   endDate?: <span class="hljs-built_in">number</span>;
 }
 <span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
@@ -827,7 +827,7 @@ db.close();</code></pre>
 									</dd>
 									<dt>example</dt>
 									<dd><pre><code class="language-ts"><span class="hljs-keyword">interface</span> Person {
-  name: <span class="hljs-built_in">string</span>;
+  <span class="hljs-attr">name</span>: <span class="hljs-built_in">string</span>;
 }
 <span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
 <span class="hljs-keyword">const</span> documents = db.createCollection&lt;Person&gt;(<span class="hljs-string">&quot;persons&quot;</span>);</code></pre>
@@ -878,12 +878,12 @@ db.close();</code></pre>
 									</dd>
 									<dt>example</dt>
 									<dd><pre><code class="language-ts"><span class="hljs-keyword">interface</span> Friend {
-  startDate: <span class="hljs-built_in">number</span>;
+  <span class="hljs-attr">startDate</span>: <span class="hljs-built_in">number</span>;
   endDate?: <span class="hljs-built_in">number</span>;
 }
 <span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
 <span class="hljs-keyword">const</span> edges = db.createCollection&lt;Friend&gt;(<span class="hljs-string">&quot;friends&quot;</span>, {
-  <span class="hljs-keyword">type</span>: CollectionType.EDGE_COLLECTION
+  <span class="hljs-attr">type</span>: CollectionType.EDGE_COLLECTION
 });</code></pre>
 									</dd>
 								</dl>
@@ -1023,7 +1023,7 @@ db.useBasicAuth(<span class="hljs-string">&quot;root&quot;</span>, <span class="
 									</dd>
 									<dt>example</dt>
 									<dd><pre><code class="language-ts"><span class="hljs-keyword">interface</span> Friend {
-  startDate: <span class="hljs-built_in">number</span>;
+  <span class="hljs-attr">startDate</span>: <span class="hljs-built_in">number</span>;
   endDate?: <span class="hljs-built_in">number</span>;
 }
 <span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
