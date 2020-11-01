@@ -725,7 +725,7 @@ export type CollectionImportOptions = {
    */
   waitForSync?: boolean;
   /**
-   * Controls behavior when a unique constraint is violated.
+   * Controls behavior when a unique constraint is violated on the document key.
    *
    * * `"error"`: the document will not be imported.
    * * `"update`: the document will be merged into the existing document.
