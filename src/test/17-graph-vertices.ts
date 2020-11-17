@@ -3,13 +3,9 @@ import { ArangoCollection, DocumentCollection } from "../collection";
 import { Database } from "../database";
 import { ArangoError } from "../error";
 import { Graph, GraphVertexCollection } from "../graph";
+import { config } from "./_config";
 
 const range = (n: number): number[] => Array.from(Array(n).keys());
-
-const ARANGO_URL = process.env.TEST_ARANGODB_URL || "http://localhost:8529";
-const ARANGO_VERSION = Number(
-  process.env.ARANGO_VERSION || process.env.ARANGOJS_DEVEL_VERSION || 30400
-);
 
 async function createCollections(db: Database) {
   const vertexCollectionNames = range(2).map((i) => `vc_${Date.now()}_${i}`);
@@ -41,7 +37,8 @@ describe("Manipulating graph vertices", function () {
   let graph: Graph;
   let collectionNames: string[];
   before(async () => {
-    db = new Database({ url: ARANGO_URL, arangoVersion: ARANGO_VERSION });
+    db = new Database(config);
+    if (Array.isArray(config.url)) await db.acquireHostList();
     await db.createDatabase(name);
     db.useDatabase(name);
   });

@@ -2,18 +2,15 @@ import { expect } from "chai";
 import { Database } from "../database";
 import { DocumentMetadata } from "../documents";
 import { GraphEdgeCollection } from "../graph";
-
-const ARANGO_URL = process.env.TEST_ARANGODB_URL || "http://localhost:8529";
-const ARANGO_VERSION = Number(
-  process.env.ARANGO_VERSION || process.env.ARANGOJS_DEVEL_VERSION || 30400
-);
+import { config } from "./_config";
 
 describe("GraphEdgeCollection API", function () {
   const dbName = `testdb_${Date.now()}`;
   let db: Database;
   let collection: GraphEdgeCollection;
   before(async () => {
-    db = new Database({ url: ARANGO_URL, arangoVersion: ARANGO_VERSION });
+    db = new Database(config);
+    if (Array.isArray(config.url)) await db.acquireHostList();
     await db.createDatabase(dbName);
     db.useDatabase(dbName);
     const graph = db.graph(`testgraph_${Date.now()}`);

@@ -2,11 +2,7 @@ import { expect } from "chai";
 import { DocumentCollection, EdgeCollection } from "../collection";
 import { Database } from "../database";
 import { DocumentMetadata } from "../documents";
-
-const ARANGO_URL = process.env.TEST_ARANGODB_URL || "http://localhost:8529";
-const ARANGO_VERSION = Number(
-  process.env.ARANGO_VERSION || process.env.ARANGOJS_DEVEL_VERSION || 30400
-);
+import { config } from "./_config";
 
 describe("EdgeCollection API", function () {
   const name = `testdb_${Date.now()}`;
@@ -17,7 +13,8 @@ describe("EdgeCollection API", function () {
     empty?: boolean | null;
   }>;
   before(async () => {
-    db = new Database({ url: ARANGO_URL, arangoVersion: ARANGO_VERSION });
+    db = new Database(config);
+    if (Array.isArray(config.url)) await db.acquireHostList();
     await db.createDatabase(name);
     db.useDatabase(name);
   });

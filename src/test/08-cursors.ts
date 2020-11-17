@@ -3,17 +3,13 @@ import { LinkedList } from "x3-linkedlist";
 import { aql } from "../aql";
 import { ArrayCursor, BatchedArrayCursor } from "../cursor";
 import { Database } from "../database";
-
-const ARANGO_URL = process.env.TEST_ARANGODB_URL || "http://localhost:8529";
-const ARANGO_VERSION = Number(
-  process.env.ARANGO_VERSION || process.env.ARANGOJS_DEVEL_VERSION || 30400
-);
+import { config } from "./_config";
 
 const aqlQuery = aql`FOR i IN 0..10 RETURN i`;
 const aqlResult = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
 async function sleep(ms: number) {
-  return new Promise((resolve) => {
+  return new Promise<void>((resolve) => {
     setTimeout(() => resolve(), ms);
   });
 }
@@ -21,8 +17,9 @@ async function sleep(ms: number) {
 describe("Item-wise Cursor API", () => {
   let db: Database;
   let cursor: ArrayCursor;
-  before(() => {
-    db = new Database({ url: ARANGO_URL, arangoVersion: ARANGO_VERSION });
+  before(async () => {
+    db = new Database(config);
+    if (Array.isArray(config.url)) await db.acquireHostList();
   });
   after(() => {
     db.close();
@@ -223,8 +220,9 @@ describe("Item-wise Cursor API", () => {
 describe("Batch-wise Cursor API", () => {
   let db: Database;
   let cursor: BatchedArrayCursor;
-  before(() => {
-    db = new Database({ url: ARANGO_URL, arangoVersion: ARANGO_VERSION });
+  before(async () => {
+    db = new Database(config);
+    if (Array.isArray(config.url)) await db.acquireHostList();
   });
   after(() => {
     db.close();

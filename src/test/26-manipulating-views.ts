@@ -1,19 +1,17 @@
 import { expect } from "chai";
 import { Database } from "../database";
 import { ArangoSearchView } from "../view";
+import { config } from "./_config";
 
-const ARANGO_URL = process.env.TEST_ARANGODB_URL || "http://localhost:8529";
-const ARANGO_VERSION = Number(
-  process.env.ARANGO_VERSION || process.env.ARANGOJS_DEVEL_VERSION || 30400
-);
-const describe34 = ARANGO_VERSION >= 30400 ? describe : describe.skip;
+const describe34 = config.arangoVersion! >= 30400 ? describe : describe.skip;
 
 describe34("Manipulating views", function () {
   const name = `testdb_${Date.now()}`;
   let db: Database;
   let view: ArangoSearchView;
   before(async () => {
-    db = new Database({ url: ARANGO_URL, arangoVersion: ARANGO_VERSION });
+    db = new Database(config);
+    if (Array.isArray(config.url)) await db.acquireHostList();
     await db.createDatabase(name);
     db.useDatabase(name);
   });

@@ -1,17 +1,15 @@
 import { expect } from "chai";
 import { Database } from "../database";
+import { config } from "./_config";
 
-const ARANGO_URL = process.env.TEST_ARANGODB_URL || "http://localhost:8529";
-const ARANGO_VERSION = Number(
-  process.env.ARANGO_VERSION || process.env.ARANGOJS_DEVEL_VERSION || 30400
-);
-const it34 = ARANGO_VERSION >= 30400 ? it : it.skip;
+const it34 = config.arangoVersion! >= 30400 ? it : it.skip;
 
 describe("Managing functions", function () {
   const name = `testdb_${Date.now()}`;
   let db: Database;
   before(async () => {
-    db = new Database({ url: ARANGO_URL, arangoVersion: ARANGO_VERSION });
+    db = new Database(config);
+    if (Array.isArray(config.url)) await db.acquireHostList();
     await db.createDatabase(name);
     db.useDatabase(name);
   });
@@ -60,7 +58,7 @@ describe("Managing functions", function () {
           "function (celsius) { return celsius * 1.8 + 32; }"
         );
         const info = await db.dropFunction(name);
-        if (ARANGO_VERSION >= 30400)
+        if (config.arangoVersion! >= 30400)
           expect(info).to.have.property("deletedCount", 1);
       });
     });

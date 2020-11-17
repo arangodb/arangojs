@@ -30,6 +30,10 @@ TEST_ARANGODB_URL=http://myserver.local:8530 npm test
 TEST_ARANGODB_URL=http://myserver.local:8530 yarn test
 ```
 
+To run tests against a cluster, you can use multiple comma-separated URLs or
+append a comma to the URL. The tests will automatically attempt to acquire a
+host list and use round robin load balancing.
+
 For development arangojs tracks the development build of ArangoDB. This means
 tests may reflect behavior that does not match any existing public release of
 ArangoDB.

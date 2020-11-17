@@ -3,17 +3,18 @@ import { aql } from "../aql";
 import { ArrayCursor } from "../cursor";
 import { Database } from "../database";
 import { ArangoError } from "../error";
+import { config } from "./_config";
 
-const ARANGO_URL = process.env.TEST_ARANGODB_URL || "http://localhost:8529";
-const ARANGO_VERSION = Number(
-  process.env.ARANGO_VERSION || process.env.ARANGOJS_DEVEL_VERSION || 30400
-);
+// NOTE These tests will not reliably work with load balancing.
+const describeNLB =
+  config.loadBalancingStrategy === "ROUND_ROBIN" ? describe.skip : describe;
 
 describe("Query Management API", function () {
   const dbName = `testdb_${Date.now()}`;
   let db: Database;
   before(async () => {
-    db = new Database({ url: ARANGO_URL, arangoVersion: ARANGO_VERSION });
+    db = new Database(config);
+    if (Array.isArray(config.url)) await db.acquireHostList();
     await db.createDatabase(dbName);
     db.useDatabase(dbName);
   });
@@ -161,7 +162,7 @@ describe("Query Management API", function () {
     });
   });
 
-  describe("database.listRunningQueries", () => {
+  describeNLB("database.listRunningQueries", () => {
     it("returns a list of running queries", async () => {
       const query = "RETURN SLEEP(0.5)";
       const p1 = db.query(query);
@@ -173,7 +174,7 @@ describe("Query Management API", function () {
     });
   });
 
-  describe("database.listSlowQueries", () => {
+  describeNLB("database.listSlowQueries", () => {
     beforeEach(async () => {
       await db.queryTracking({
         enabled: true,
@@ -198,7 +199,7 @@ describe("Query Management API", function () {
     });
   });
 
-  describe("database.clearSlowQueries", () => {
+  describeNLB("database.clearSlowQueries", () => {
     beforeEach(async () => {
       await db.queryTracking({
         enabled: true,
