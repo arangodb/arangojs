@@ -1,6 +1,7 @@
 import { expect } from "chai";
 import { DocumentCollection } from "../collection";
 import { Database } from "../database";
+import { Transaction } from "../transaction";
 import { config } from "./_config";
 
 const describe35 = config.arangoVersion! >= 30500 ? describe : describe.skip;
@@ -28,11 +29,18 @@ describe("Transactions", () => {
   describe35("stream transactions", () => {
     const name = `testdb_${Date.now()}`;
     let collection: DocumentCollection;
+    let allTransactions: Transaction[];
     before(async () => {
+      allTransactions = [];
       await db.createDatabase(name);
       db.useDatabase(name);
     });
     after(async () => {
+      await Promise.all(
+        allTransactions.map((transaction) =>
+          transaction.abort().catch(() => undefined)
+        )
+      );
       db.useDatabase("_system");
       await db.dropDatabase(name);
     });
@@ -50,6 +58,7 @@ describe("Transactions", () => {
 
     it("can commit an empty transaction", async () => {
       const trx = await db.beginTransaction(collection);
+      allTransactions.push(trx);
       {
         const { id, status } = await trx.get();
         expect(id).to.equal(trx.id);
@@ -68,6 +77,7 @@ describe("Transactions", () => {
 
     it("can abort an empty transaction", async () => {
       const trx = await db.beginTransaction(collection);
+      allTransactions.push(trx);
       const { id, status } = await trx.abort();
       expect(id).to.equal(trx.id);
       expect(status).to.equal("aborted");
@@ -75,6 +85,7 @@ describe("Transactions", () => {
 
     it("can insert a document", async () => {
       const trx = await db.beginTransaction(collection);
+      allTransactions.push(trx);
       const meta = await trx.step(() => collection.save({ _key: "test" }));
       expect(meta).to.have.property("_key", "test");
       const { id, status } = await trx.commit();
@@ -86,6 +97,7 @@ describe("Transactions", () => {
 
     it("can insert two documents sequentially", async () => {
       const trx = await db.beginTransaction(collection);
+      allTransactions.push(trx);
       const meta1 = await trx.step(() => collection.save({ _key: "test1" }));
       const meta2 = await trx.step(() => collection.save({ _key: "test2" }));
       expect(meta1).to.have.property("_key", "test1");
@@ -101,6 +113,7 @@ describe("Transactions", () => {
 
     itRdb("does not leak when inserting a document", async () => {
       const trx = await db.beginTransaction(collection);
+      allTransactions.push(trx);
       await trx.step(() => collection.save({ _key: "test" }));
       let doc: any;
       try {
@@ -116,6 +129,7 @@ describe("Transactions", () => {
       "does not leak when inserting two documents sequentially",
       async () => {
         const trx = await db.beginTransaction(collection);
+        allTransactions.push(trx);
         await trx.step(() => collection.save({ _key: "test1" }));
         await trx.step(() => collection.save({ _key: "test2" }));
         let doc: any;
@@ -135,6 +149,7 @@ describe("Transactions", () => {
 
     it("does not insert a document when aborted", async () => {
       const trx = await db.beginTransaction(collection);
+      allTransactions.push(trx);
       const meta = await trx.step(() => collection.save({ _key: "test" }));
       expect(meta).to.have.property("_key", "test");
       const { id, status } = await trx.abort();
@@ -149,6 +164,7 @@ describe("Transactions", () => {
 
     itRdb("does not revert unrelated changes when aborted", async () => {
       const trx = await db.beginTransaction(collection);
+      allTransactions.push(trx);
       const meta = await collection.save({ _key: "test" });
       expect(meta).to.have.property("_key", "test");
       const { id, status } = await trx.abort();

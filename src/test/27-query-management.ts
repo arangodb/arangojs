@@ -12,13 +12,18 @@ const describeNLB =
 describe("Query Management API", function () {
   const dbName = `testdb_${Date.now()}`;
   let db: Database;
+  let allCursors: ArrayCursor[];
   before(async () => {
+    allCursors = [];
     db = new Database(config);
     if (Array.isArray(config.url)) await db.acquireHostList();
     await db.createDatabase(dbName);
     db.useDatabase(dbName);
   });
   after(async () => {
+    await Promise.all(
+      allCursors.map((cursor) => cursor.kill().catch(() => undefined))
+    );
     try {
       db.useDatabase("_system");
       await db.dropDatabase(dbName);
@@ -28,17 +33,15 @@ describe("Query Management API", function () {
   });
 
   describe("database.query", () => {
-    it("returns a cursor for the query result", (done) => {
-      db.query("RETURN 23")
-        .then((cursor) => {
-          expect(cursor).to.be.an.instanceof(ArrayCursor);
-          done();
-        })
-        .catch(done);
+    it("returns a cursor for the query result", async () => {
+      const cursor = await db.query("RETURN 23");
+      allCursors.push(cursor);
+      expect(cursor).to.be.an.instanceof(ArrayCursor);
     });
     it("throws an exception on error", async () => {
       try {
-        await db.query("FOR i IN no RETURN i");
+        const cursor = await db.query("FOR i IN no RETURN i");
+        allCursors.push(cursor);
       } catch (err) {
         expect(err).is.instanceof(ArangoError);
         expect(err).to.have.property("code", 404);
@@ -49,7 +52,8 @@ describe("Query Management API", function () {
     });
     it("times out if a timeout is set and exceeded", async () => {
       try {
-        await db.query(aql`RETURN SLEEP(0.02)`, { timeout: 10 });
+        const cursor = await db.query(aql`RETURN SLEEP(0.02)`, { timeout: 10 });
+        allCursors.push(cursor);
       } catch (err) {
         expect(err).is.instanceof(Error);
         expect(err).is.not.instanceof(ArangoError);
@@ -60,13 +64,17 @@ describe("Query Management API", function () {
     });
     it("does not time out if a timeout is set and not exceeded", async () => {
       try {
-        await db.query(aql`RETURN SLEEP(0.01)`, { timeout: 1000 });
+        const cursor = await db.query(aql`RETURN SLEEP(0.01)`, {
+          timeout: 1000,
+        });
+        allCursors.push(cursor);
       } catch (err) {
         expect.fail();
       }
     });
     it("supports bindVars", async () => {
       const cursor = await db.query("RETURN @x", { x: 5 });
+      allCursors.push(cursor);
       const value = await cursor.next();
       expect(value).to.equal(5);
     });
@@ -75,16 +83,19 @@ describe("Query Management API", function () {
         batchSize: 2,
         count: true,
       });
+      allCursors.push(cursor);
       expect(cursor.count).to.equal(10);
       expect((cursor as any).batches.hasMore).to.equal(true);
     });
     it("supports AQB queries", async () => {
       const cursor = await db.query({ toAQL: () => "RETURN 42" });
+      allCursors.push(cursor);
       const value = await cursor.next();
       expect(value).to.equal(42);
     });
     it("supports query objects", async () => {
       const cursor = await db.query({ query: "RETURN 1337", bindVars: {} });
+      allCursors.push(cursor);
       const value = await cursor.next();
       expect(value).to.equal(1337);
     });
@@ -93,6 +104,7 @@ describe("Query Management API", function () {
         query: "RETURN @potato",
         bindVars: { potato: "tomato" },
       });
+      allCursors.push(cursor);
       const value = await cursor.next();
       expect(value).to.equal("tomato");
     });
@@ -102,6 +114,7 @@ describe("Query Management API", function () {
         bindVars: { max: 10 },
       };
       const cursor = await db.query(query, { batchSize: 2, count: true });
+      allCursors.push(cursor);
       expect(cursor.count).to.equal(10);
       expect((cursor as any).batches.hasMore).to.equal(true);
     });
@@ -166,6 +179,7 @@ describe("Query Management API", function () {
     it("returns a list of running queries", async () => {
       const query = "RETURN SLEEP(0.5)";
       const p1 = db.query(query);
+      p1.then((cursor) => allCursors.push(cursor));
       const queries = await db.listRunningQueries();
       expect(queries).to.have.lengthOf(1);
       expect(queries[0]).to.have.property("bindVars");
@@ -192,7 +206,8 @@ describe("Query Management API", function () {
     });
     it("returns a list of slow queries", async () => {
       const query = "RETURN SLEEP(0.2)";
-      await db.query(query);
+      const cursor = await db.query(query);
+      allCursors.push(cursor);
       const queries = await db.listSlowQueries();
       expect(queries).to.have.lengthOf(1);
       expect(queries[0]).to.have.property("query", query);
@@ -216,7 +231,8 @@ describe("Query Management API", function () {
       await db.clearSlowQueries();
     });
     it("clears the list of slow queries", async () => {
-      await db.query("RETURN SLEEP(0.2)");
+      const cursor = await db.query("RETURN SLEEP(0.2)");
+      allCursors.push(cursor);
       const queries1 = await db.listSlowQueries();
       expect(queries1).to.have.lengthOf(1);
       await db.clearSlowQueries();
@@ -231,6 +247,7 @@ describe("Query Management API", function () {
     it("kills the given query", async () => {
       const query = "RETURN SLEEP(5)";
       const p1 = db.query(query);
+      p1.then((cursor) => allCursors.push(cursor));
       const queries = await db.listRunningQueries();
       expect(queries).to.have.lengthOf(1);
       expect(queries[0]).to.have.property("bindVars");

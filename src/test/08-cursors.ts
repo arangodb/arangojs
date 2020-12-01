@@ -17,15 +17,21 @@ async function sleep(ms: number) {
 describe("Item-wise Cursor API", () => {
   let db: Database;
   let cursor: ArrayCursor;
+  let allCursors: (ArrayCursor | BatchedArrayCursor)[];
   before(async () => {
+    allCursors = [];
     db = new Database(config);
     if (Array.isArray(config.url)) await db.acquireHostList();
   });
-  after(() => {
+  after(async () => {
+    await Promise.all(
+      allCursors.map((cursor) => cursor.kill().catch(() => undefined))
+    );
     db.close();
   });
   beforeEach(async () => {
     cursor = await db.query(aqlQuery);
+    allCursors.push(cursor);
   });
   describe("for await of cursor", () => {
     it("returns each next result of the Cursor", async () => {
@@ -64,6 +70,7 @@ describe("Item-wise Cursor API", () => {
     });
     it("returns true after first batch is consumed", async () => {
       const cursor = await db.query(aqlQuery, { batchSize: 1 });
+      allCursors.push(cursor);
       expect((cursor.batches as any)._batches.length).to.equal(1);
       cursor.next();
       expect((cursor.batches as any)._batches.length).to.equal(0);
@@ -73,6 +80,7 @@ describe("Item-wise Cursor API", () => {
       const cursor = await db.query(aql`FOR i IN 0..1 RETURN i`, {
         batchSize: 2,
       });
+      allCursors.push(cursor);
       expect(cursor.hasNext).to.equal(true);
       expect((cursor.batches as any)._batches.length).to.equal(1);
       const val1 = await cursor.next();
@@ -88,6 +96,7 @@ describe("Item-wise Cursor API", () => {
       const cursor = await db.query(aql`FOR i IN 0..1 RETURN i`, {
         batchSize: 2,
       });
+      allCursors.push(cursor);
       expect(cursor.hasNext).to.equal(true);
       expect((cursor.batches as any)._batches.length).to.equal(1);
       const val1 = await cursor.next();
@@ -104,6 +113,7 @@ describe("Item-wise Cursor API", () => {
         batchSize: 1,
         ttl: 1,
       });
+      allCursors.push(cursor);
       expect(cursor.hasNext).to.equal(true);
       expect((cursor as any)._batches.length).to.equal(1);
       const val = await cursor.next();
@@ -130,10 +140,12 @@ describe("Item-wise Cursor API", () => {
         }
       }
       const cursor = await db.query(`FOR i IN 1..${EXPECTED_LENGTH} RETURN i`);
+      allCursors.push(cursor);
       await loadMore(cursor, 0);
     });
     it("returns false if there are no results", async () => {
       const cursor = await db.query(aql`FOR i IN [] RETURN i`);
+      allCursors.push(cursor);
       expect(cursor.hasNext).to.equal(false);
       expect((cursor.batches as any)._batches.length).to.equal(0);
     });
@@ -148,6 +160,7 @@ describe("Item-wise Cursor API", () => {
     });
     it("correctly handles empty results", async () => {
       const cursor = await db.query(aql`FOR i IN [] RETURN i`);
+      allCursors.push(cursor);
       const results: any[] = [];
       await cursor.forEach((value) => {
         results.push(value);
@@ -198,6 +211,7 @@ describe("Item-wise Cursor API", () => {
       const cursor = await db.query(aql`FOR i IN 1..5 RETURN i`, {
         batchSize: 2,
       });
+      allCursors.push(cursor);
       const { _host: host, _id: id } = cursor as any;
       expect(cursor.batches.hasMore).to.equal(true);
       await cursor.kill();
@@ -220,15 +234,21 @@ describe("Item-wise Cursor API", () => {
 describe("Batch-wise Cursor API", () => {
   let db: Database;
   let cursor: BatchedArrayCursor;
+  let allCursors: (ArrayCursor | BatchedArrayCursor)[];
   before(async () => {
+    allCursors = [];
     db = new Database(config);
     if (Array.isArray(config.url)) await db.acquireHostList();
   });
-  after(() => {
+  after(async () => {
+    await Promise.all(
+      allCursors.map((cursor) => cursor.kill().catch(() => undefined))
+    );
     db.close();
   });
   beforeEach(async () => {
     cursor = (await db.query(aqlQuery, { batchSize: 1 })).batches;
+    allCursors.push(cursor);
   });
   describe("for await of cursor", () => {
     it("returns each next result of the Cursor", async () => {
@@ -268,6 +288,7 @@ describe("Batch-wise Cursor API", () => {
     });
     it("returns true after first batch is consumed", async () => {
       const cursor = (await db.query(aqlQuery, { batchSize: 1 })).batches;
+      allCursors.push(cursor);
       expect((cursor as any)._batches.length).to.equal(1);
       cursor.next();
       expect((cursor as any)._batches.length).to.equal(0);
@@ -279,6 +300,7 @@ describe("Batch-wise Cursor API", () => {
           batchSize: 1,
         })
       ).batches;
+      allCursors.push(cursor);
       expect(cursor.hasNext).to.equal(true);
       expect((cursor as any)._batches.length).to.equal(1);
       const val1 = await cursor.next();
@@ -295,6 +317,7 @@ describe("Batch-wise Cursor API", () => {
         batchSize: 1,
         ttl: 1,
       });
+      allCursors.push(cursor);
       expect(cursor.hasNext).to.equal(true);
       expect((cursor as any)._batches.length).to.equal(1);
       const val = await cursor.next();
@@ -321,6 +344,7 @@ describe("Batch-wise Cursor API", () => {
         }
       }
       const cursor = await db.query(`FOR i IN 1..${EXPECTED_LENGTH} RETURN i`);
+      allCursors.push(cursor);
       await loadMore(cursor, 0);
     });
   });
@@ -375,6 +399,7 @@ describe("Batch-wise Cursor API", () => {
     beforeEach(async () => {
       cursor = (await db.query(aql`FOR i IN 1..10 RETURN i`, { batchSize: 5 }))
         .batches;
+      allCursors.push(cursor);
     });
     it("fetches the next batch when empty", async () => {
       const result: LinkedList<LinkedList<any>> = (cursor as any)._batches;
@@ -395,6 +420,7 @@ describe("Batch-wise Cursor API", () => {
       const cursor = await db.query(aql`FOR i IN 1..5 RETURN i`, {
         batchSize: 2,
       });
+      allCursors.push(cursor);
       const { _host: host, _id: id } = cursor as any;
       expect(cursor.batches.hasMore).to.equal(true);
       await cursor.kill();

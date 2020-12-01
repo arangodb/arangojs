@@ -10,7 +10,9 @@ const itRdb = process.env.ARANGO_STORAGE_ENGINE !== "mmfiles" ? it : it.skip;
 describe34("AQL Stream queries", function () {
   let name = `testdb_${Date.now()}`;
   let db: Database;
+  let allCursors: ArrayCursor[];
   before(async () => {
+    allCursors = [];
     db = new Database(config);
     if (Array.isArray(config.url)) await db.acquireHostList();
     await db.createDatabase(name);
@@ -24,13 +26,20 @@ describe34("AQL Stream queries", function () {
       db.close();
     }
   });
+  after(async () => {
+    await Promise.all(
+      allCursors.map((cursor) => cursor.kill().catch(() => undefined))
+    );
+  });
   describe("database.query", () => {
     it("returns a cursor for the query result", async () => {
       const cursor = await db.query("RETURN 23", {}, { stream: true });
+      allCursors.push(cursor);
       expect(cursor).to.be.an.instanceof(ArrayCursor);
     });
     it("supports bindVars", async () => {
       const cursor = await db.query("RETURN @x", { x: 5 }, { stream: true });
+      allCursors.push(cursor);
       const value = await cursor.next();
       expect(value).to.equal(5);
     });
@@ -40,6 +49,7 @@ describe34("AQL Stream queries", function () {
         count: true, // should be ignored
         stream: true,
       });
+      allCursors.push(cursor);
       expect(cursor.count).to.equal(undefined);
       expect((cursor as any).batches.hasMore).to.equal(true);
     });
@@ -53,6 +63,7 @@ describe34("AQL Stream queries", function () {
         count: true,
         stream: true,
       });
+      allCursors.push(cursor);
       expect(cursor.count).to.equal(undefined); // count will be ignored
       expect((cursor as any).batches.hasMore).to.equal(true);
     });
@@ -79,6 +90,7 @@ describe34("AQL Stream queries", function () {
       const cursors = await Promise.all(
         Array.from(Array(25)).map(() => db.query(query, options))
       );
+      allCursors.push(...cursors);
       await Promise.all(
         cursors.map((c) =>
           (c as ArrayCursor).forEach(() => {
@@ -100,6 +112,7 @@ describe34("AQL Stream queries", function () {
 
       // the read cursor should always win
       const c = await Promise.race([readCursor, writeCursor]);
+      allCursors.push(await readCursor, await writeCursor);
       // therefore no document should have been written here
       for await (const d of c) {
         expect(d).not.to.haveOwnProperty("forbidden");
