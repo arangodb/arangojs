@@ -807,26 +807,12 @@ export class Connection {
         await this.request({ ...request, host });
       } catch (e) {
         if (started + timeout < Date.now()) {
-          console.error(
-            request.path,
-            `Timeout after ${((Date.now() - started) / 1000).toFixed(
-              2
-            )} secs with ${propagated.length} of ${numHosts} propagated!`,
-            String(e)
-          );
           throw e;
         }
         await new Promise((resolve) => setTimeout(resolve, 1000));
         continue;
       }
       if (!propagated.includes(host)) {
-        console.error(
-          request.path,
-          `Host ${host} propagated, ${
-            numHosts - (propagated.length + 1)
-          } remaining.`,
-          `${((Date.now() - started) / 1000).toFixed(2)} secs elapsed...`
-        );
         propagated.push(host);
       }
     }
