@@ -2,7 +2,7 @@ import { Config } from "../connection";
 
 const ARANGO_URL = process.env.TEST_ARANGODB_URL || "http://localhost:8529";
 const ARANGO_VERSION = Number(
-  process.env.ARANGO_VERSION || process.env.ARANGOJS_DEVEL_VERSION || 30400
+  process.env.ARANGO_VERSION || process.env.ARANGOJS_DEVEL_VERSION || 39999
 );
 
 export const config: {
