@@ -5,6 +5,10 @@ import { config } from "./_config";
 
 const describe34 = config.arangoVersion! >= 30400 ? describe : describe.skip;
 
+// NOTE These tests will not reliably work in a cluster.
+const describeNLB =
+  config.loadBalancingStrategy === "ROUND_ROBIN" ? describe.skip : describe;
+
 describe34("Manipulating views", function () {
   const name = `testdb_${Date.now()}`;
   let db: Database;
@@ -84,13 +88,8 @@ describe34("Manipulating views", function () {
       );
     });
   });
-  describe("view.rename", () => {
+  describeNLB("view.rename", () => {
     it("should rename a view", async () => {
-      const res = await db.route("/_admin/server/role").get();
-      if (res.body.role !== "SINGLE") {
-        console.warn("Skipping rename view test in cluster");
-        return;
-      }
       const name = `v2-${Date.now()}`;
       const info = await view.rename(name);
       expect(info).to.have.property("name", name);
