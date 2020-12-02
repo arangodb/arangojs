@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import { aql } from "../aql";
 import { ArrayCursor } from "../cursor";
-import { Database } from "../database";
+import { Database, QueryOptions } from "../database";
 import { config } from "./_config";
 
 const describe34 = config.arangoVersion! >= 30400 ? describe : describe.skip;
@@ -101,16 +101,20 @@ describe34("AQL Stream queries", function () {
     itRdb("can do writes and reads", async () => {
       let collection = db.collection(cname);
       let readQ = aql`FOR doc in ${collection} RETURN doc`;
-      let writeQ = aql`FOR i in 1..1000 LET y = SLEEP(1) INSERT {forbidden: i} INTO ${collection}`;
-      const options = { batchSize: 500, ttl: 5, stream: true };
+      let writeQ = aql`FOR i in 1..10000 LET y = SLEEP(1) INSERT {forbidden: i} INTO ${collection}`;
+      const options: QueryOptions = {
+        batchSize: 500,
+        ttl: 5,
+        maxRuntime: 5,
+        stream: true,
+      };
 
-      // 900s lock timeout + 5s ttl
       let readCursor = db.query(readQ, options);
       let writeCursor = db.query(writeQ, options);
 
       // the read cursor should always win
       const c = await Promise.race([readCursor, writeCursor]);
-      allCursors.push(await readCursor, await writeCursor);
+      allCursors.push(c);
       // therefore no document should have been written here
       for await (const d of c) {
         expect(d).not.to.haveOwnProperty("forbidden");
