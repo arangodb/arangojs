@@ -47,7 +47,7 @@
     "!test/**"
   ],
   "scripts": {
-    "arango-test": "mocha --reporter json --require source-map-support/register --timeout 30000 build/test",
+    "arango-test": "mocha --reporter json --require source-map-support/register --timeout 60000 build/test",
     "jenkins": "mocha --reporter spec --require source-map-support/register --timeout 0 build/test",
     "test": "mocha --reporter spec --require source-map-support/register --timeout 10000 build/test",
     "pretest": "yarn build",

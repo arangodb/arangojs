@@ -5,8 +5,11 @@ import { DocumentCollection } from "../collection";
 import { Connection } from "../connection";
 import { Database } from "../database";
 
-const sleep = (timeout: number) =>
-  new Promise((resolve) => setTimeout(resolve, timeout));
+async function sleep(ms: number) {
+  return new Promise<void>((resolve) => {
+    setTimeout(() => resolve(), ms);
+  });
+}
 
 let ARANGO_PATH: string;
 let ARANGO_RUNNER: "local" | "docker";
