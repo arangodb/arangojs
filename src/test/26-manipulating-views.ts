@@ -30,6 +30,7 @@ describe34("Manipulating views", function () {
   beforeEach(async () => {
     view = db.view(`v-${Date.now()}`);
     await view.create();
+    await db.waitForPropagation({ path: `/_api/view/${view.name}` }, 30000);
   });
   afterEach(async () => {
     try {
@@ -43,6 +44,7 @@ describe34("Manipulating views", function () {
     it("creates a new arangosearch view", async () => {
       const view = db.view(`asv-${Date.now()}`);
       await view.create();
+      await db.waitForPropagation({ path: `/_api/view/${view.name}` }, 30000);
       const info = await view.get();
       expect(info).to.have.property("name", view.name);
       expect(info).to.have.property("type", "arangosearch");

@@ -109,6 +109,10 @@ describeIm("Single-server with follower", function () {
     conn = (db as any)._connection;
     await db.acquireHostList();
     collection = await db.createCollection("test");
+    await db.waitForPropagation(
+      { path: `/_api/collection/${collection.name}` },
+      30000
+    );
     await collection.save({ _key: "abc" });
     await sleep(3000);
   });

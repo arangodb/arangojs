@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { ArangoCollection, DocumentCollection } from "../collection";
+import { DocumentCollection } from "../collection";
 import { Database } from "../database";
 import { ArangoError } from "../error";
 import { Graph, GraphVertexCollection } from "../graph";
@@ -11,9 +11,21 @@ async function createCollections(db: Database) {
   const vertexCollectionNames = range(2).map((i) => `vc_${Date.now()}_${i}`);
   const edgeCollectionNames = range(2).map((i) => `ec_${Date.now()}_${i}`);
   await Promise.all([
-    ...vertexCollectionNames.map((name) => db.createCollection(name)),
-    ...edgeCollectionNames.map((name) => db.createEdgeCollection(name)),
-  ] as Promise<ArangoCollection>[]);
+    ...vertexCollectionNames.map(async (name) => {
+      const collection = await db.createCollection(name);
+      await db.waitForPropagation(
+        { path: `/_api/collection/${collection.name}` },
+        30000
+      );
+    }),
+    ...edgeCollectionNames.map(async (name) => {
+      const collection = await db.createEdgeCollection(name);
+      await db.waitForPropagation(
+        { path: `/_api/collection/${collection.name}` },
+        30000
+      );
+    }),
+  ] as Promise<void>[]);
   return [vertexCollectionNames, edgeCollectionNames];
 }
 
@@ -22,13 +34,18 @@ async function createGraph(
   vertexCollectionNames: string[],
   edgeCollectionNames: string[]
 ) {
-  return await graph.create(
+  const result = await graph.create(
     edgeCollectionNames.map((name) => ({
       collection: name,
       from: vertexCollectionNames,
       to: vertexCollectionNames,
     }))
   );
+  await (graph as any)._db.waitForPropagation(
+    { path: `/_api/gharial/${graph.name}` },
+    30000
+  );
+  return result;
 }
 
 describe("Manipulating graph vertices", function () {
@@ -74,6 +91,10 @@ describe("Manipulating graph vertices", function () {
     let vertexCollection: DocumentCollection;
     beforeEach(async () => {
       vertexCollection = await db.createCollection(`xc_${Date.now()}`);
+      await db.waitForPropagation(
+        { path: `/_api/collection/${vertexCollection.name}` },
+        30000
+      );
     });
     afterEach(async () => {
       await vertexCollection.drop();
@@ -87,6 +108,10 @@ describe("Manipulating graph vertices", function () {
     let vertexCollection: DocumentCollection;
     beforeEach(async () => {
       vertexCollection = await db.createCollection(`xc_${Date.now()}`);
+      await db.waitForPropagation(
+        { path: `/_api/collection/${vertexCollection.name}` },
+        30000
+      );
       await graph.addVertexCollection(vertexCollection.name);
     });
     it("removes the given vertex collection from the graph", async () => {

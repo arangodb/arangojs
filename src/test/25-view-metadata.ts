@@ -17,6 +17,7 @@ describe34("View metadata", function () {
     db.useDatabase(dbName);
     view = db.view(viewName);
     await view.create();
+    await db.waitForPropagation({ path: `/_api/view/${view.name}` }, 30000);
   });
   after(async () => {
     db.useDatabase("_system");

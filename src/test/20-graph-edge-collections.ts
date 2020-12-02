@@ -21,6 +21,7 @@ describe("GraphEdgeCollection API", function () {
         to: ["person"],
       },
     ]);
+    await db.waitForPropagation({ path: `/_api/gharial/${graph.name}` }, 30000);
     collection = graph.edgeCollection("knows");
     await graph
       .vertexCollection("person")

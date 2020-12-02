@@ -27,6 +27,10 @@ describe("Simple queries", function () {
   });
   beforeEach(async () => {
     collection = await db.createCollection(`c_${Date.now()}`);
+    await db.waitForPropagation(
+      { path: `/_api/collection/${collection.name}` },
+      30000
+    );
     await Promise.all(
       range(10).map((i) =>
         collection.save({

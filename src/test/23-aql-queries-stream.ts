@@ -69,7 +69,11 @@ describe34("AQL Stream queries", function () {
   describe("with some data", () => {
     let cname = "MyTestCollection";
     before(async () => {
-      let collection = await db.createCollection(cname);
+      const collection = await db.createCollection(cname);
+      await db.waitForPropagation(
+        { path: `/_api/collection/${collection.name}` },
+        30000
+      );
       await Promise.all(
         Array.from(Array(1000).keys()).map((i: number) =>
           collection.save({ hallo: i })

@@ -17,6 +17,10 @@ describe("Managing indexes", function () {
     await db.createDatabase(dbName);
     db.useDatabase(dbName);
     collection = await db.createCollection(collectionName);
+    await db.waitForPropagation(
+      { path: `/_api/collection/${collection.name}` },
+      30000
+    );
   });
   after(async () => {
     try {

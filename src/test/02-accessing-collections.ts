@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { ArangoCollection, isArangoCollection } from "../collection";
+import { isArangoCollection } from "../collection";
 import { Database } from "../database";
 import { config } from "./_config";
 
@@ -40,11 +40,22 @@ describe("Accessing collections", function () {
     const systemCollectionNames = range(4).map((i) => `_c_${Date.now()}_${i}`);
     before(async () => {
       await Promise.all([
-        ...nonSystemCollectionNames.map((name) => db.createCollection(name)),
-        ...systemCollectionNames.map((name) =>
-          db.collection(name).create({ isSystem: true })
-        ),
-      ] as Promise<ArangoCollection>[]);
+        ...nonSystemCollectionNames.map(async (name) => {
+          const collection = await db.createCollection(name);
+          await db.waitForPropagation(
+            { path: `/_api/collection/${collection.name}` },
+            30000
+          );
+        }),
+        ...systemCollectionNames.map(async (name) => {
+          const collection = db.collection(name);
+          await collection.create({ isSystem: true });
+          await db.waitForPropagation(
+            { path: `/_api/collection/${collection.name}` },
+            30000
+          );
+        }),
+      ] as Promise<void>[]);
     });
     after(async () => {
       await Promise.all([
@@ -81,12 +92,29 @@ describe("Accessing collections", function () {
     const systemCollectionNames = range(4).map((i) => `_c_${Date.now()}_${i}`);
     before(async () => {
       await Promise.all([
-        ...documentCollectionNames.map((name) => db.createCollection(name)),
-        ...edgeCollectionNames.map((name) => db.createEdgeCollection(name)),
-        ...systemCollectionNames.map((name) =>
-          db.collection(name).create({ isSystem: true })
-        ),
-      ] as Promise<ArangoCollection>[]);
+        ...documentCollectionNames.map(async (name) => {
+          const collection = await db.createCollection(name);
+          await db.waitForPropagation(
+            { path: `/_api/collection/${collection.name}` },
+            30000
+          );
+        }),
+        ...edgeCollectionNames.map(async (name) => {
+          const collection = await db.createEdgeCollection(name);
+          await db.waitForPropagation(
+            { path: `/_api/collection/${collection.name}` },
+            30000
+          );
+        }),
+        ...systemCollectionNames.map(async (name) => {
+          const collection = db.collection(name);
+          await collection.create({ isSystem: true });
+          await db.waitForPropagation(
+            { path: `/_api/collection/${collection.name}` },
+            30000
+          );
+        }),
+      ] as Promise<void>[]);
     });
     after(async () => {
       await Promise.all([

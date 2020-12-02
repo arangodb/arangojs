@@ -1532,6 +1532,45 @@ export class Database {
   close(): void {
     this._connection.close();
   }
+
+  /**
+   * Performs a request against every known coordinator and returns when the
+   * request has succeeded against every coordinator or the timeout is reached.
+   *
+   * **Note**: This method is primarily intended to make database setup easier
+   * in cluster scenarios and requires all coordinators to be known to arangojs
+   * before the method is invoked. The method is not useful in single-server or
+   * leader-follower replication scenarios.
+   *
+   * @example
+   * ```js
+   * const db = new Database({ loadBalancingStrategy: "ROUND_ROBIN" });
+   * await db.acquireHostList();
+   * const analyzer = db.analyzer("my-analyzer");
+   * await analyzer.create();
+   * await db.waitForPropagation(
+   *   { path: `/_api/analyzer/${analyzer.name}` },
+   *   30000
+   * );
+   * // Analyzer has been propagated to all coordinators and can safely be used
+   * ```
+   *
+   * @param request - Request to perform against each known coordinator.
+   * @param timeout - Maximum number of milliseconds to wait for propagation.
+   */
+  async waitForPropagation(
+    request: RequestOptions,
+    timeout?: number
+  ): Promise<void>;
+  async waitForPropagation(
+    { basePath, ...request }: RequestOptions,
+    timeout?: number
+  ): Promise<void> {
+    await this._connection.waitForPropagation(
+      { ...request, basePath: `/_db/${this.name}${basePath || ""}` },
+      timeout
+    );
+  }
   //#endregion
 
   //#region auth

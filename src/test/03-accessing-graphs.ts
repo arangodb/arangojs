@@ -1,5 +1,4 @@
 import { expect } from "chai";
-import { ArangoCollection } from "../collection";
 import { Database } from "../database";
 import { Graph } from "../graph";
 import { config } from "./_config";
@@ -37,19 +36,36 @@ describe("Accessing graphs", function () {
     const graphNames = range(4).map((i) => `g_${Date.now()}_${i}`);
     before(async () => {
       await Promise.all([
-        ...vertexCollectionNames.map((name) => db.createCollection(name)),
-        ...edgeCollectionNames.map((name) => db.createEdgeCollection(name)),
-      ] as Promise<ArangoCollection>[]);
+        ...vertexCollectionNames.map(async (name) => {
+          const collection = await db.createCollection(name);
+          await db.waitForPropagation(
+            { path: `/_api/collection/${collection.name}` },
+            30000
+          );
+        }),
+        ...edgeCollectionNames.map(async (name) => {
+          const collection = await db.createEdgeCollection(name);
+          await db.waitForPropagation(
+            { path: `/_api/collection/${collection.name}` },
+            30000
+          );
+        }),
+      ] as Promise<void>[]);
       await Promise.all([
-        ...graphNames.map((name) =>
-          db.graph(name).create(
+        ...graphNames.map(async (name) => {
+          const graph = db.graph(name);
+          await graph.create(
             edgeCollectionNames.map((name) => ({
               collection: name,
               from: vertexCollectionNames,
               to: vertexCollectionNames,
             }))
-          )
-        ),
+          );
+          await db.waitForPropagation(
+            { path: `/_api/gharial/${graph.name}` },
+            30000
+          );
+        }),
       ]);
     });
     after(async () => {
@@ -72,19 +88,36 @@ describe("Accessing graphs", function () {
     const graphNames = range(4).map((i) => `g_${Date.now()}_${i}`);
     before(async () => {
       await Promise.all([
-        ...vertexCollectionNames.map((name) => db.createCollection(name)),
-        ...edgeCollectionNames.map((name) => db.createEdgeCollection(name)),
-      ] as Promise<ArangoCollection>[]);
+        ...vertexCollectionNames.map(async (name) => {
+          const collection = await db.createCollection(name);
+          await db.waitForPropagation(
+            { path: `/_api/collection/${collection.name}` },
+            30000
+          );
+        }),
+        ...edgeCollectionNames.map(async (name) => {
+          const collection = await db.createEdgeCollection(name);
+          await db.waitForPropagation(
+            { path: `/_api/collection/${collection.name}` },
+            30000
+          );
+        }),
+      ] as Promise<void>[]);
       await Promise.all([
-        ...graphNames.map((name) =>
-          db.graph(name).create(
+        ...graphNames.map(async (name) => {
+          const graph = db.graph(name);
+          await graph.create(
             edgeCollectionNames.map((name) => ({
               collection: name,
               from: vertexCollectionNames,
               to: vertexCollectionNames,
             }))
-          )
-        ),
+          );
+          await db.waitForPropagation(
+            { path: `/_api/gharial/${graph.name}` },
+            30000
+          );
+        }),
       ]);
     });
     after(async () => {

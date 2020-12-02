@@ -14,6 +14,15 @@ This driver uses semantic versioning:
 - A change in the major version (e.g. 1.Y.Z -> 2.0.0) indicates _breaking_
   changes that require changes in your code to upgrade.
 
+## [Unreleased]
+
+### Added
+
+- Added `db.waitForPropagation` method
+
+  This method helps with setting up databases in a cluster scenario by waiting
+  for a request to succeed on every known coordinator.
+
 ## [7.1.1] - 2020-11-30
 
 This is a maintenance release and contains no bugfixes or features.

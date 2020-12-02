@@ -1,5 +1,4 @@
 import { expect } from "chai";
-import { ArangoCollection } from "../collection";
 import { Database } from "../database";
 import { Graph } from "../graph";
 import { config } from "./_config";
@@ -10,9 +9,21 @@ async function createCollections(db: Database) {
   const vertexCollectionNames = range(2).map((i) => `vc_${Date.now()}_${i}`);
   const edgeCollectionNames = range(2).map((i) => `ec_${Date.now()}_${i}`);
   await Promise.all([
-    ...vertexCollectionNames.map((name) => db.createCollection(name)),
-    ...edgeCollectionNames.map((name) => db.createEdgeCollection(name)),
-  ] as Promise<ArangoCollection>[]);
+    ...vertexCollectionNames.map(async (name) => {
+      const collection = await db.createCollection(name);
+      await db.waitForPropagation(
+        { path: `/_api/collection/${collection.name}` },
+        30000
+      );
+    }),
+    ...edgeCollectionNames.map(async (name) => {
+      const collection = await db.createEdgeCollection(name);
+      await db.waitForPropagation(
+        { path: `/_api/collection/${collection.name}` },
+        30000
+      );
+    }),
+  ] as Promise<void>[]);
   return [vertexCollectionNames, edgeCollectionNames];
 }
 
@@ -90,6 +101,10 @@ describe("Graph API", function () {
           from: vertexCollectionNames,
           to: vertexCollectionNames,
         }))
+      );
+      await db.waitForPropagation(
+        { path: `/_api/gharial/${graph.name}` },
+        30000
       );
       const data = await graph.get();
       expect(data).to.have.property("name", graph.name);

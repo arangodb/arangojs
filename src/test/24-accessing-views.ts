@@ -35,7 +35,16 @@ describe34("Accessing views", function () {
   describe("database.listViews", () => {
     let viewNames = range(4).map((i) => `v_${Date.now()}_${i}`);
     before(async () => {
-      await Promise.all(viewNames.map((name) => db.view(name).create()));
+      await Promise.all(
+        viewNames.map(async (name) => {
+          const view = db.view(name);
+          await view.create();
+          await db.waitForPropagation(
+            { path: `/_api/view/${view.name}` },
+            30000
+          );
+        })
+      );
     });
     after(async () => {
       await Promise.all(viewNames.map((name) => db.view(name).drop()));
@@ -50,7 +59,14 @@ describe34("Accessing views", function () {
     let arangoSearchViewNames = range(4).map((i) => `asv_${Date.now()}_${i}`);
     before(async () => {
       await Promise.all(
-        arangoSearchViewNames.map((name) => db.view(name).create())
+        arangoSearchViewNames.map(async (name) => {
+          const view = db.view(name);
+          await view.create();
+          await db.waitForPropagation(
+            { path: `/_api/view/${view.name}` },
+            30000
+          );
+        })
       );
     });
     after(async () => {

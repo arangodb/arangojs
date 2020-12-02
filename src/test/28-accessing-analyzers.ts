@@ -41,9 +41,14 @@ describe35("Accessing analyzers", function () {
     before(async () => {
       allNames = [...builtins, ...analyzerNames].sort();
       await Promise.all(
-        analyzerNames.map((name) =>
-          db.analyzer(name.replace(/^[^:]+::/, "")).create({ type: "identity" })
-        )
+        analyzerNames.map(async (name) => {
+          const analyzer = db.analyzer(name.replace(/^[^:]+::/, ""));
+          await analyzer.create({ type: "identity" });
+          await db.waitForPropagation(
+            { path: `/_api/analyzer/${analyzer.name}` },
+            120000
+          );
+        })
       );
     });
     after(async () => {
@@ -64,9 +69,14 @@ describe35("Accessing analyzers", function () {
     before(async () => {
       allNames = [...builtins, ...analyzerNames].sort();
       await Promise.all(
-        analyzerNames.map((name) =>
-          db.analyzer(name.replace(/^[^:]+::/, "")).create({ type: "identity" })
-        )
+        analyzerNames.map(async (name) => {
+          const analyzer = db.analyzer(name.replace(/^[^:]+::/, ""));
+          await analyzer.create({ type: "identity" });
+          await db.waitForPropagation(
+            { path: `/_api/analyzer/${analyzer.name}` },
+            120000
+          );
+        })
       );
     });
     after(async () => {
