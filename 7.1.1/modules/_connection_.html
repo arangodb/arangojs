@@ -1,0 +1,844 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>&quot;connection&quot; | arangojs - v7.1.1</title>
+	<meta name="description" content="Documentation for arangojs - v7.1.1">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.json" data-base="..">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="../index.html" class="title">arangojs - v7.1.1</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="../globals.html">Globals</a>
+				</li>
+				<li>
+					<a href="_connection_.html">&quot;connection&quot;</a>
+				</li>
+			</ul>
+			<h1>Module &quot;connection&quot;</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<pre><code class="language-ts"><span class="hljs-keyword">import</span> <span class="hljs-keyword">type</span> { Config } <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;arangojs/connection&quot;</span>;</code></pre>
+					</div>
+					<p>The &quot;connection&quot; module provides connection and configuration related types
+					for TypeScript.</p>
+				</div>
+			</section>
+			<section class="tsd-panel-group tsd-index-group">
+				<h2>Index</h2>
+				<section class="tsd-panel tsd-index-panel">
+					<div class="tsd-index-content">
+						<section class="tsd-index-section ">
+							<h3>Type aliases</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="_connection_.html#agentoptions" class="tsd-kind-icon">Agent<wbr>Options</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="_connection_.html#arangoresponsemetadata" class="tsd-kind-icon">Arango<wbr>Response<wbr>Metadata</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="_connection_.html#basicauthcredentials" class="tsd-kind-icon">Basic<wbr>Auth<wbr>Credentials</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="_connection_.html#bearerauthcredentials" class="tsd-kind-icon">Bearer<wbr>Auth<wbr>Credentials</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="_connection_.html#config" class="tsd-kind-icon">Config</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-module tsd-has-type-parameter"><a href="_connection_.html#dict" class="tsd-kind-icon">Dict</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="_connection_.html#headers-1" class="tsd-kind-icon">Headers</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="_connection_.html#loadbalancingstrategy-1" class="tsd-kind-icon">Load<wbr>Balancing<wbr>Strategy</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="_connection_.html#params" class="tsd-kind-icon">Params</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="_connection_.html#requestinterceptors" class="tsd-kind-icon">Request<wbr>Interceptors</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="_connection_.html#requestoptions" class="tsd-kind-icon">Request<wbr>Options</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="_connection_.html#xhroptions" class="tsd-kind-icon">Xhr<wbr>Options</a></li>
+							</ul>
+						</section>
+					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Type aliases</h2>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
+					<a name="agentoptions" class="tsd-anchor"></a>
+					<h3>Agent<wbr>Options</h3>
+					<div class="tsd-signature tsd-kind-icon">Agent<wbr>Options<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">NodeAgentOptions</span><span class="tsd-signature-symbol"> | </span><a href="_connection_.html#xhroptions" class="tsd-signature-type">XhrOptions</a></div>
+					<aside class="tsd-sources">
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Options for creating the Node.js <code>http.Agent</code> or <code>https.Agent</code>.</p>
+						</div>
+						<p>In browser environments this option can be used to pass additional options
+							to the underlying calls of the
+						<a href="https://www.npmjs.com/package/xhr" class="external">xhr module</a>.</p>
+						<p>See also <a href="https://nodejs.org/api/http.html#http_new_agent_options" class="external"><code>http.Agent</code></a>
+							and <a href="https://nodejs.org/api/https.html#https_new_agent_options" class="external"><code>https.Agent</code></a>
+						(when using TLS).</p>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
+					<a name="arangoresponsemetadata" class="tsd-anchor"></a>
+					<h3>Arango<wbr>Response<wbr>Metadata</h3>
+					<div class="tsd-signature tsd-kind-icon">Arango<wbr>Response<wbr>Metadata<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>code<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>error<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> }</span></div>
+					<aside class="tsd-sources">
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Generic properties shared by all ArangoDB HTTP API responses.</p>
+						</div>
+					</div>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter">
+								<h5>code<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Response status code, typically <code>200</code>.</p>
+									</div>
+								</div>
+							</li>
+							<li class="tsd-parameter">
+								<h5>error<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">false</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Indicates that the request was successful.</p>
+									</div>
+								</div>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
+					<a name="basicauthcredentials" class="tsd-anchor"></a>
+					<h3>Basic<wbr>Auth<wbr>Credentials</h3>
+					<div class="tsd-signature tsd-kind-icon">Basic<wbr>Auth<wbr>Credentials<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>password<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>username<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span></div>
+					<aside class="tsd-sources">
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Credentials for HTTP Basic authentication.</p>
+						</div>
+					</div>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter">
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> password<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Password to use for authentication. Defaults to an empty string.</p>
+									</div>
+								</div>
+							</li>
+							<li class="tsd-parameter">
+								<h5>username<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Username to use for authentication, e.g. <code>&quot;root&quot;</code>.</p>
+									</div>
+								</div>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
+					<a name="bearerauthcredentials" class="tsd-anchor"></a>
+					<h3>Bearer<wbr>Auth<wbr>Credentials</h3>
+					<div class="tsd-signature tsd-kind-icon">Bearer<wbr>Auth<wbr>Credentials<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>token<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span></div>
+					<aside class="tsd-sources">
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Credentials for HTTP Bearer token authentication.</p>
+						</div>
+					</div>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter">
+								<h5>token<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Bearer token to use for authentication.</p>
+									</div>
+								</div>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
+					<a name="config" class="tsd-anchor"></a>
+					<h3>Config</h3>
+					<div class="tsd-signature tsd-kind-icon">Config<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>agent<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">; </span>agentOptions<span class="tsd-signature-symbol">?: </span><a href="_connection_.html#agentoptions" class="tsd-signature-type">AgentOptions</a><span class="tsd-signature-symbol"> &amp; </span><a href="_connection_.html#requestinterceptors" class="tsd-signature-type">RequestInterceptors</a><span class="tsd-signature-symbol">; </span>arangoVersion<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>auth<span class="tsd-signature-symbol">?: </span><a href="_connection_.html#basicauthcredentials" class="tsd-signature-type">BasicAuthCredentials</a><span class="tsd-signature-symbol"> | </span><a href="_connection_.html#bearerauthcredentials" class="tsd-signature-type">BearerAuthCredentials</a><span class="tsd-signature-symbol">; </span>databaseName<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>headers<span class="tsd-signature-symbol">?: </span><a href="_connection_.html#headers-1" class="tsd-signature-type">Headers</a><span class="tsd-signature-symbol">; </span>loadBalancingStrategy<span class="tsd-signature-symbol">?: </span><a href="_connection_.html#loadbalancingstrategy-1" class="tsd-signature-type">LoadBalancingStrategy</a><span class="tsd-signature-symbol">; </span>maxRetries<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>precaptureStackTraces<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span><span class="tsd-signature-symbol">; </span>url<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> }</span></div>
+					<aside class="tsd-sources">
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Options for configuring arangojs.</p>
+						</div>
+					</div>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter">
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> agent<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>An http <code>Agent</code> instance to use for connections.</p>
+									</div>
+									<p>By default a new <code>Agent</code> instance will be created using the <code>agentOptions</code>.</p>
+									<p>This option has no effect when using the browser version of arangojs.</p>
+									<p>See also: <a href="https://nodejs.org/api/http.html#http_new_agent_options" class="external"><code>http.Agent</code></a>
+										and <a href="https://nodejs.org/api/https.html#https_new_agent_options" class="external"><code>https.Agent</code></a>
+									(when using TLS).</p>
+								</div>
+							</li>
+							<li class="tsd-parameter">
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> agent<wbr>Options<span class="tsd-signature-symbol">?: </span><a href="_connection_.html#agentoptions" class="tsd-signature-type">AgentOptions</a><span class="tsd-signature-symbol"> &amp; </span><a href="_connection_.html#requestinterceptors" class="tsd-signature-type">RequestInterceptors</a></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Options used to create that underlying HTTP/HTTPS <code>Agent</code> (or the <code>xhr</code>
+											module when using arangojs in the browser). This will be ignored if
+										<code>agent</code> is also provided.</p>
+									</div>
+									<p>The option <code>maxSockets</code> can also be used to limit how many requests
+										arangojs will perform concurrently. The maximum number of requests is
+										equal to <code>maxSockets * 2</code> with <code>keepAlive: true</code> or equal to <code>maxSockets</code>
+									with <code>keepAlive: false</code> (or in the browser).</p>
+									<p>Default (Node.js): <code>{ maxSockets: 3, keepAlive: true, keepAliveMsecs: 1000 }</code></p>
+									<p>Default (browser): <code>{ maxSockets: 3, useXDR: true, withCredentials: true }</code></p>
+								</div>
+							</li>
+							<li class="tsd-parameter">
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> arango<wbr>Version<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Numeric representation of the ArangoDB version the driver should expect.
+											The format is defined as <code>XYYZZ</code> where <code>X</code> is the major version, <code>Y</code> is
+											the zero-filled two-digit minor version and <code>Z</code> is the zero-filled two-digit
+										bugfix version, e.g. <code>30102</code> for 3.1.2, <code>20811</code> for 2.8.11.</p>
+									</div>
+									<p>Depending on this value certain methods may become unavailable or change
+									their behavior to remain compatible with different versions of ArangoDB.</p>
+									<p>Default: <code>30400</code></p>
+								</div>
+							</li>
+							<li class="tsd-parameter">
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> auth<span class="tsd-signature-symbol">?: </span><a href="_connection_.html#basicauthcredentials" class="tsd-signature-type">BasicAuthCredentials</a><span class="tsd-signature-symbol"> | </span><a href="_connection_.html#bearerauthcredentials" class="tsd-signature-type">BearerAuthCredentials</a></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Credentials to use for authentication.</p>
+									</div>
+									<p>See also <a href="../classes/_database_.database.html#usebasicauth">Database.useBasicAuth</a> and <a href="../classes/_database_.database.html#usebearerauth">Database.useBearerAuth</a>.</p>
+									<p>Default: <code>{ username: &quot;root&quot;, password: &quot;&quot; }</code></p>
+								</div>
+							</li>
+							<li class="tsd-parameter">
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> database<wbr>Name<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Name of the database to use.</p>
+									</div>
+									<p>Default: <code>&quot;_system&quot;</code></p>
+								</div>
+							</li>
+							<li class="tsd-parameter">
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> headers<span class="tsd-signature-symbol">?: </span><a href="_connection_.html#headers-1" class="tsd-signature-type">Headers</a></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>An object with additional headers to send with every request.</p>
+									</div>
+									<p>If an <code>&quot;authorization&quot;</code> header is provided, it will be overridden when
+										using <a href="../classes/_database_.database.html#usebasicauth">Database.useBasicAuth</a>, <a href="../classes/_database_.database.html#usebearerauth">Database.useBearerAuth</a> or
+									the <code>auth</code> configuration option.</p>
+								</div>
+							</li>
+							<li class="tsd-parameter">
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> load<wbr>Balancing<wbr>Strategy<span class="tsd-signature-symbol">?: </span><a href="_connection_.html#loadbalancingstrategy-1" class="tsd-signature-type">LoadBalancingStrategy</a></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Determines the behavior when multiple URLs are provided:</p>
+									</div>
+									<ul>
+										<li><p><code>&quot;NONE&quot;</code>: No load balancing. All requests will be handled by the first
+												URL in the list until a network error is encountered. On network error,
+											arangojs will advance to using the next URL in the list.</p>
+										</li>
+										<li><p><code>&quot;ONE_RANDOM&quot;</code>: Randomly picks one URL from the list initially, then
+											behaves like <code>&quot;NONE&quot;</code>.</p>
+										</li>
+										<li><p><code>&quot;ROUND_ROBIN&quot;</code>: Every sequential request uses the next URL in the list.</p>
+										</li>
+									</ul>
+									<p>Default: <code>&quot;NONE&quot;</code></p>
+								</div>
+							</li>
+							<li class="tsd-parameter">
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> max<wbr>Retries<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Determines the behavior when a request fails because the underlying
+											connection to the server could not be opened
+										(i.e. <a href="https://nodejs.org/api/errors.html#errors_common_system_errors" class="external"><code>ECONNREFUSED</code> in Node.js</a>):</p>
+									</div>
+									<ul>
+										<li><p><code>false</code>: the request fails immediately.</p>
+										</li>
+										<li><p><code>0</code>: the request is retried until a server can be reached but only a
+												total number of times matching the number of known servers (including
+											the initial failed request).</p>
+										</li>
+										<li><p>any other number: the request is retried until a server can be reached
+												the request has been retried a total of <code>maxRetries</code> number of times
+											(not including the initial failed request).</p>
+										</li>
+									</ul>
+									<p>When working with a single server without leader/follower failover, the
+									retries (if any) will be made to the same server.</p>
+									<p>This setting currently has no effect when using arangojs in a browser.</p>
+									<p><strong>Note</strong>: Requests bound to a specific server (e.g. fetching query results)
+									will never be retried automatically and ignore this setting.</p>
+									<p>Default: <code>0</code></p>
+								</div>
+							</li>
+							<li class="tsd-parameter">
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> precapture<wbr>Stack<wbr>Traces<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>If set to <code>true</code>, arangojs will generate stack traces every time a request
+										is initiated and augment the stack traces of any errors it generates.</p>
+									</div>
+									<p><strong>Warning</strong>: This will cause arangojs to generate stack traces in advance
+										even if the request does not result in an error. Generating stack traces
+									may negatively impact performance.</p>
+								</div>
+							</li>
+							<li class="tsd-parameter">
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> url<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Base URL of the ArangoDB server or list of server URLs.</p>
+									</div>
+									<p>When working with a cluster or a single server with leader/follower
+										failover, the method <a href="../classes/_database_.database.html#acquirehostlist">Database.acquireHostList</a> can be used to
+									automatically pick up additional coordinators/followers at any point.</p>
+									<p>When running ArangoDB on a unix socket, e.g. <code>/tmp/arangodb.sock</code>, the
+									following URL formats are supported for unix sockets:</p>
+									<ul>
+										<li><code>unix:///tmp/arangodb.sock</code> (no SSL)</li>
+										<li><code>http+unix:///tmp/arangodb.sock</code> (or <code>https+unix://</code> for SSL)</li>
+										<li><code>http://unix:/tmp/arangodb.sock</code> (or <code>https://unix:</code> for SSL)</li>
+									</ul>
+									<p>Additionally <code>ssl</code> and <code>tls</code> are treated as synonymous with <code>https</code> and
+										<code>tcp</code> is treated as synonymous with <code>http</code>, so the following URLs are
+									considered identical:</p>
+									<ul>
+										<li><code>tcp://localhost:8529</code> and <code>http://localhost:8529</code></li>
+										<li><code>ssl://localhost:8529</code> and <code>https://localhost:8529</code></li>
+										<li><code>tcp+unix:///tmp/arangodb.sock</code> and <code>http+unix:///tmp/arangodb.sock</code></li>
+										<li><code>ssl+unix:///tmp/arangodb.sock</code> and <code>https+unix:///tmp/arangodb.sock</code></li>
+										<li><code>tcp://unix:/tmp/arangodb.sock</code> and <code>http://unix:/tmp/arangodb.sock</code></li>
+										<li><code>ssl://unix:/tmp/arangodb.sock</code> and <code>https://unix:/tmp/arangodb.sock</code></li>
+									</ul>
+									<p>See also <code>auth</code> for passing authentication credentials.</p>
+									<p>Default: <code>&quot;http://localhost:8529&quot;</code></p>
+								</div>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module tsd-has-type-parameter">
+					<a name="dict" class="tsd-anchor"></a>
+					<h3>Dict</h3>
+					<div class="tsd-signature tsd-kind-icon">Dict&lt;T&gt;<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{}</span></div>
+					<aside class="tsd-sources">
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Generic type representing an object with values of a given value type.</p>
+						</div>
+					</div>
+					<h4 class="tsd-type-parameters-title">Type parameters</h4>
+					<ul class="tsd-type-parameters">
+						<li>
+							<h4>T</h4>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Type of the object&#39;s property values.</p>
+								</div>
+							</div>
+						</li>
+					</ul>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-index-signature">
+								<h5><span class="tsd-signature-symbol">[</span>key: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]: </span><span class="tsd-signature-type">T</span></h5>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
+					<a name="headers-1" class="tsd-anchor"></a>
+					<h3>Headers</h3>
+					<div class="tsd-signature tsd-kind-icon">Headers<span class="tsd-signature-symbol">:</span> <a href="_connection_.html#dict" class="tsd-signature-type">Dict</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></div>
+					<aside class="tsd-sources">
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>An arbitrary object with string values representing HTTP headers and their
+							values.</p>
+						</div>
+						<p>Header names should always be lowercase.</p>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
+					<a name="loadbalancingstrategy-1" class="tsd-anchor"></a>
+					<h3>Load<wbr>Balancing<wbr>Strategy</h3>
+					<div class="tsd-signature tsd-kind-icon">Load<wbr>Balancing<wbr>Strategy<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"NONE"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"ROUND_ROBIN"</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">"ONE_RANDOM"</span></div>
+					<aside class="tsd-sources">
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Determines the behavior when multiple URLs are used:</p>
+						</div>
+						<ul>
+							<li><p><code>&quot;NONE&quot;</code>: No load balancing. All requests will be handled by the first
+									URL in the list until a network error is encountered. On network error,
+								arangojs will advance to using the next URL in the list.</p>
+							</li>
+							<li><p><code>&quot;ONE_RANDOM&quot;</code>: Randomly picks one URL from the list initially, then
+								behaves like <code>&quot;NONE&quot;</code>.</p>
+							</li>
+							<li><p><code>&quot;ROUND_ROBIN&quot;</code>: Every sequential request uses the next URL in the list.</p>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
+					<a name="params" class="tsd-anchor"></a>
+					<h3>Params</h3>
+					<div class="tsd-signature tsd-kind-icon">Params<span class="tsd-signature-symbol">:</span> <a href="_connection_.html#dict" class="tsd-signature-type">Dict</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></div>
+					<aside class="tsd-sources">
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>An arbitrary object with scalar values representing query string parameters
+							and their values.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
+					<a name="requestinterceptors" class="tsd-anchor"></a>
+					<h3>Request<wbr>Interceptors</h3>
+					<div class="tsd-signature tsd-kind-icon">Request<wbr>Interceptors<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>after<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span>err<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ArangojsError</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span>, res<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">ArangojsResponse</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">; </span>before<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span>req<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ClientRequest</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> }</span></div>
+					<aside class="tsd-sources">
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Additional options for intercepting the request/response. These methods
+							are primarily intended for tracking network related metrics.</p>
+						</div>
+					</div>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter">
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> after<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span>err<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ArangojsError</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span>, res<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">ArangojsResponse</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Callback that will be invoked when the server response has been received
+										and processed or when the request has been failed without a response.</p>
+									</div>
+									<p>The originating request will be available as the <code>request</code> property
+									on either the error or response object.</p>
+									<dl class="tsd-comment-tags">
+										<dt>param</dt>
+										<dd><p>Error encountered when handling this request or <code>null</code>.</p>
+										</dd>
+										<dt>param</dt>
+										<dd><p>Response object for this request, if no error occurred.</p>
+										</dd>
+									</dl>
+								</div>
+							</li>
+							<li class="tsd-parameter">
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> before<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span>req<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ClientRequest</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Callback that will be invoked with the finished request object before it
+										is finalized. In the browser the request may already have been sent.</p>
+									</div>
+									<dl class="tsd-comment-tags">
+										<dt>param</dt>
+										<dd><p>Request object or XHR instance used for this request.</p>
+										</dd>
+									</dl>
+								</div>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
+					<a name="requestoptions" class="tsd-anchor"></a>
+					<h3>Request<wbr>Options</h3>
+					<div class="tsd-signature tsd-kind-icon">Request<wbr>Options<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>allowDirtyRead<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span><span class="tsd-signature-symbol">; </span>basePath<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>body<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">; </span>expectBinary<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span><span class="tsd-signature-symbol">; </span>headers<span class="tsd-signature-symbol">?: </span><a href="_connection_.html#headers-1" class="tsd-signature-type">Headers</a><span class="tsd-signature-symbol">; </span>host<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>isBinary<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span><span class="tsd-signature-symbol">; </span>method<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>path<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>qs<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="_connection_.html#params" class="tsd-signature-type">Params</a><span class="tsd-signature-symbol">; </span>timeout<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span></div>
+					<aside class="tsd-sources">
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Options for performing a request with arangojs.</p>
+						</div>
+					</div>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter">
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> allow<wbr>Dirty<wbr>Read<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Whether ArangoDB is allowed to perform a dirty read to respond to this
+											request. If set to <code>true</code>, the response may reflect a dirty state from
+										a non-authoritative server.</p>
+									</div>
+								</div>
+							</li>
+							<li class="tsd-parameter">
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> base<wbr>Path<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Optional prefix path to prepend to the <code>path</code>.</p>
+									</div>
+								</div>
+							</li>
+							<li class="tsd-parameter">
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> body<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Request body data.</p>
+									</div>
+								</div>
+							</li>
+							<li class="tsd-parameter">
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> expect<wbr>Binary<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>If set to <code>true</code>, the response body will not be interpreted as JSON and
+										instead passed as-is.</p>
+									</div>
+								</div>
+							</li>
+							<li class="tsd-parameter">
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> headers<span class="tsd-signature-symbol">?: </span><a href="_connection_.html#headers-1" class="tsd-signature-type">Headers</a></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>HTTP headers to pass along with this request in addition to the default
+										headers generated by arangojs.</p>
+									</div>
+								</div>
+							</li>
+							<li class="tsd-parameter">
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> host<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<dl class="tsd-comment-tags">
+										<dt>internal</dt>
+										<dd><p>Identifier of a specific ArangoDB host to use when more than one is known.</p>
+										</dd>
+									</dl>
+								</div>
+							</li>
+							<li class="tsd-parameter">
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> is<wbr>Binary<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>If set to <code>true</code>, the request body will not be converted to JSON and
+										instead passed as-is.</p>
+									</div>
+								</div>
+							</li>
+							<li class="tsd-parameter">
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> method<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>HTTP method to use in order to perform the request.</p>
+									</div>
+									<p>Default: <code>&quot;GET&quot;</code></p>
+								</div>
+							</li>
+							<li class="tsd-parameter">
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> path<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>URL path, relative to the <code>basePath</code> and server domain.</p>
+									</div>
+								</div>
+							</li>
+							<li class="tsd-parameter">
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> qs<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="_connection_.html#params" class="tsd-signature-type">Params</a></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>URL parameters to pass as part of the query string.</p>
+									</div>
+								</div>
+							</li>
+							<li class="tsd-parameter">
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> timeout<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Time in milliseconds after which arangojs will abort the request if the
+										socket has not already timed out.</p>
+									</div>
+									<p>See also <code>agentOptions.timeout</code> in <a href="_connection_.html#config">Config</a>.</p>
+								</div>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
+					<a name="xhroptions" class="tsd-anchor"></a>
+					<h3>Xhr<wbr>Options</h3>
+					<div class="tsd-signature tsd-kind-icon">Xhr<wbr>Options<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>beforeSend<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span>xhrObject<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">; </span>maxSockets<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>timeout<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>useXdr<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span><span class="tsd-signature-symbol">; </span>withCredentials<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span><span class="tsd-signature-symbol">; </span>xhr<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> }</span></div>
+					<aside class="tsd-sources">
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Options of the <code>xhr</code> module that can be set using <code>agentOptions</code> when using
+								arangojs in the browser. Additionally <code>maxSockets</code> can be used to control
+							the maximum number of parallel requests.</p>
+						</div>
+						<p>See also: <a href="https://www.npmjs.com/package/xhr" class="external"><code>xhr</code> on npm</a>.</p>
+					</div>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter">
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> before<wbr>Send<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span>xhrObject<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Callback that will be invoked immediately before the <code>send</code> method of the
+										request is called.</p>
+									</div>
+									<p>See also <a href="_connection_.html#requestinterceptors">RequestInterceptors</a>.</p>
+								</div>
+							</li>
+							<li class="tsd-parameter">
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> max<wbr>Sockets<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Maximum number of parallel requests arangojs will perform. If any
+											additional requests are attempted, they will be enqueued until one of the
+										active requests has completed.</p>
+									</div>
+								</div>
+							</li>
+							<li class="tsd-parameter">
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> timeout<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Number of milliseconds to wait for a response.</p>
+									</div>
+									<p>Default: <code>0</code> (disabled)</p>
+								</div>
+							</li>
+							<li class="tsd-parameter">
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> use<wbr>Xdr<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>(Internet Explorer 10 and lower only.) Whether <code>XDomainRequest</code> should be
+											used instead of <code>XMLHttpRequest</code>. Only required for performing
+										cross-domain requests in older versions of Internet Explorer.</p>
+									</div>
+								</div>
+							</li>
+							<li class="tsd-parameter">
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> with<wbr>Credentials<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Specifies whether browser credentials (e.g. cookies) should be sent if
+										performing a cross-domain request.</p>
+									</div>
+									<p>See <a href="https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/withCredentials" class="external"><code>XMLHttpRequest.withCredentials</code></a>.</p>
+								</div>
+							</li>
+							<li class="tsd-parameter">
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> xhr<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p><code>XMLHttpRequest</code> object to use instead of the native implementation.</p>
+									</div>
+								</div>
+							</li>
+						</ul>
+					</div>
+				</section>
+			</section>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="../globals.html"><em>Globals</em></a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="_analyzer_.html">&quot;analyzer&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="_aql_.html">&quot;aql&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="_collection_.html">&quot;collection&quot;</a>
+					</li>
+					<li class="current tsd-kind-module">
+						<a href="_connection_.html">&quot;connection&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="_cursor_.html">&quot;cursor&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="_database_.html">&quot;database&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="_documents_.html">&quot;documents&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="_error_.html">&quot;error&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="_foxx_manifest_.html">&quot;foxx-<wbr>manifest&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="_graph_.html">&quot;graph&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="_index_.html">&quot;index&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="_indexes_.html">&quot;indexes&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="_route_.html">&quot;route&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="_transaction_.html">&quot;transaction&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="_view_.html">&quot;view&quot;</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
+						<a href="_connection_.html#agentoptions" class="tsd-kind-icon">Agent<wbr>Options</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
+						<a href="_connection_.html#arangoresponsemetadata" class="tsd-kind-icon">Arango<wbr>Response<wbr>Metadata</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
+						<a href="_connection_.html#basicauthcredentials" class="tsd-kind-icon">Basic<wbr>Auth<wbr>Credentials</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
+						<a href="_connection_.html#bearerauthcredentials" class="tsd-kind-icon">Bearer<wbr>Auth<wbr>Credentials</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
+						<a href="_connection_.html#config" class="tsd-kind-icon">Config</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module tsd-has-type-parameter">
+						<a href="_connection_.html#dict" class="tsd-kind-icon">Dict</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
+						<a href="_connection_.html#headers-1" class="tsd-kind-icon">Headers</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
+						<a href="_connection_.html#loadbalancingstrategy-1" class="tsd-kind-icon">Load<wbr>Balancing<wbr>Strategy</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
+						<a href="_connection_.html#params" class="tsd-kind-icon">Params</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
+						<a href="_connection_.html#requestinterceptors" class="tsd-kind-icon">Request<wbr>Interceptors</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
+						<a href="_connection_.html#requestoptions" class="tsd-kind-icon">Request<wbr>Options</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
+						<a href="_connection_.html#xhroptions" class="tsd-kind-icon">Xhr<wbr>Options</a>
+					</li>
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-namespace"><span class="tsd-kind-icon">Namespace</span></li>
+				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
+				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
+				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
+				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="../assets/js/main.js"></script>
+</body>
+</html>
