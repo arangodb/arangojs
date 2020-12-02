@@ -19,17 +19,15 @@ describe34("AQL Stream queries", function () {
     db.useDatabase(name);
   });
   after(async () => {
+    await Promise.all(
+      allCursors.map((cursor) => cursor.kill().catch(() => undefined))
+    );
     try {
       db.useDatabase("_system");
       await db.dropDatabase(name);
     } finally {
       db.close();
     }
-  });
-  after(async () => {
-    await Promise.all(
-      allCursors.map((cursor) => cursor.kill().catch(() => undefined))
-    );
   });
   describe("database.query", () => {
     it("returns a cursor for the query result", async () => {
