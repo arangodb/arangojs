@@ -13,14 +13,14 @@ async function createCollections(db: Database) {
       const collection = await db.createCollection(name);
       await db.waitForPropagation(
         { path: `/_api/collection/${collection.name}` },
-        30000
+        10000
       );
     }),
     ...edgeCollectionNames.map(async (name) => {
       const collection = await db.createEdgeCollection(name);
       await db.waitForPropagation(
         { path: `/_api/collection/${collection.name}` },
-        30000
+        10000
       );
     }),
   ] as Promise<void>[]);
@@ -104,7 +104,7 @@ describe("Graph API", function () {
       );
       await db.waitForPropagation(
         { path: `/_api/gharial/${graph.name}` },
-        30000
+        10000
       );
       const data = await graph.get();
       expect(data).to.have.property("name", graph.name);

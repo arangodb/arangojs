@@ -30,7 +30,7 @@ describe("EdgeCollection API", function () {
     collection = await db.createEdgeCollection(`c_${Date.now()}`);
     await db.waitForPropagation(
       { path: `/_api/collection/${collection.name}` },
-      30000
+      10000
     );
   });
   afterEach(async () => {
@@ -180,11 +180,11 @@ describe("EdgeCollection API", function () {
       >([db.createEdgeCollection("knows"), db.createCollection("person")]);
       await db.waitForPropagation(
         { path: `/_api/collection/${person.name}` },
-        30000
+        10000
       );
       await db.waitForPropagation(
         { path: `/_api/collection/${knows.name}` },
-        30000
+        10000
       );
       await Promise.all([
         person.import([

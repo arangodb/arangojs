@@ -48,7 +48,7 @@ describe("Transactions", () => {
       collection = await db.createCollection(`collection-${Date.now()}`);
       await db.waitForPropagation(
         { path: `/_api/collection/${collection.name}` },
-        30000
+        10000
       );
     });
     afterEach(async () => {

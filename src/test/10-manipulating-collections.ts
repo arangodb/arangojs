@@ -25,7 +25,7 @@ describe("Manipulating collections", function () {
     collection = await db.createCollection(`collection-${Date.now()}`);
     await db.waitForPropagation(
       { path: `/_api/collection/${collection.name}` },
-      30000
+      10000
     );
   });
   afterEach(async () => {
@@ -43,7 +43,7 @@ describe("Manipulating collections", function () {
       );
       await db.waitForPropagation(
         { path: `/_api/collection/${collection.name}` },
-        30000
+        10000
       );
       const info = await db.collection(collection.name).get();
       expect(info).to.have.property("name", collection.name);
@@ -57,7 +57,7 @@ describe("Manipulating collections", function () {
       );
       await db.waitForPropagation(
         { path: `/_api/collection/${collection.name}` },
-        30000
+        10000
       );
       const info = await db.collection(collection.name).get();
       expect(info).to.have.property("name", collection.name);

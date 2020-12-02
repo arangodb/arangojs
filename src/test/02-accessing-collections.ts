@@ -44,7 +44,7 @@ describe("Accessing collections", function () {
           const collection = await db.createCollection(name);
           await db.waitForPropagation(
             { path: `/_api/collection/${collection.name}` },
-            30000
+            10000
           );
         }),
         ...systemCollectionNames.map(async (name) => {
@@ -52,7 +52,7 @@ describe("Accessing collections", function () {
           await collection.create({ isSystem: true });
           await db.waitForPropagation(
             { path: `/_api/collection/${collection.name}` },
-            30000
+            10000
           );
         }),
       ] as Promise<void>[]);
@@ -96,14 +96,14 @@ describe("Accessing collections", function () {
           const collection = await db.createCollection(name);
           await db.waitForPropagation(
             { path: `/_api/collection/${collection.name}` },
-            30000
+            10000
           );
         }),
         ...edgeCollectionNames.map(async (name) => {
           const collection = await db.createEdgeCollection(name);
           await db.waitForPropagation(
             { path: `/_api/collection/${collection.name}` },
-            30000
+            10000
           );
         }),
         ...systemCollectionNames.map(async (name) => {
@@ -111,7 +111,7 @@ describe("Accessing collections", function () {
           await collection.create({ isSystem: true });
           await db.waitForPropagation(
             { path: `/_api/collection/${collection.name}` },
-            30000
+            10000
           );
         }),
       ] as Promise<void>[]);

@@ -111,7 +111,7 @@ describeIm("Single-server with follower", function () {
     collection = await db.createCollection("test");
     await db.waitForPropagation(
       { path: `/_api/collection/${collection.name}` },
-      30000
+      10000
     );
     await collection.save({ _key: "abc" });
     await sleep(3000);

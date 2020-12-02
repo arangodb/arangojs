@@ -37,6 +37,10 @@ describe("Route API", function () {
     await db.createDatabase(name);
     db.useDatabase(name);
     collection = await db.createCollection(`c_${Date.now()}`);
+    await db.waitForPropagation(
+      { path: `/_api/collection/${collection.name}` },
+      10000
+    );
   });
   after(async () => {
     try {

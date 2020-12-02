@@ -41,7 +41,7 @@ describe34("Accessing views", function () {
           await view.create();
           await db.waitForPropagation(
             { path: `/_api/view/${view.name}` },
-            30000
+            10000
           );
         })
       );
@@ -64,7 +64,7 @@ describe34("Accessing views", function () {
           await view.create();
           await db.waitForPropagation(
             { path: `/_api/view/${view.name}` },
-            30000
+            10000
           );
         })
       );

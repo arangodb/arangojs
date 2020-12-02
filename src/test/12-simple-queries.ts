@@ -29,7 +29,7 @@ describe("Simple queries", function () {
     collection = await db.createCollection(`c_${Date.now()}`);
     await db.waitForPropagation(
       { path: `/_api/collection/${collection.name}` },
-      30000
+      10000
     );
     await Promise.all(
       range(10).map((i) =>

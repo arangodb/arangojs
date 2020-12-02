@@ -21,7 +21,7 @@ describe("GraphVertexCollection API", function () {
         to: ["person"],
       },
     ]);
-    await db.waitForPropagation({ path: `/_api/gharial/${graph.name}` }, 30000);
+    await db.waitForPropagation({ path: `/_api/gharial/${graph.name}` }, 10000);
     collection = graph.vertexCollection("person");
   });
   after(async () => {

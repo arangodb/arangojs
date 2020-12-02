@@ -40,14 +40,14 @@ describe("Accessing graphs", function () {
           const collection = await db.createCollection(name);
           await db.waitForPropagation(
             { path: `/_api/collection/${collection.name}` },
-            30000
+            10000
           );
         }),
         ...edgeCollectionNames.map(async (name) => {
           const collection = await db.createEdgeCollection(name);
           await db.waitForPropagation(
             { path: `/_api/collection/${collection.name}` },
-            30000
+            10000
           );
         }),
       ] as Promise<void>[]);
@@ -63,7 +63,7 @@ describe("Accessing graphs", function () {
           );
           await db.waitForPropagation(
             { path: `/_api/gharial/${graph.name}` },
-            30000
+            10000
           );
         }),
       ]);
@@ -92,14 +92,14 @@ describe("Accessing graphs", function () {
           const collection = await db.createCollection(name);
           await db.waitForPropagation(
             { path: `/_api/collection/${collection.name}` },
-            30000
+            10000
           );
         }),
         ...edgeCollectionNames.map(async (name) => {
           const collection = await db.createEdgeCollection(name);
           await db.waitForPropagation(
             { path: `/_api/collection/${collection.name}` },
-            30000
+            10000
           );
         }),
       ] as Promise<void>[]);
@@ -115,7 +115,7 @@ describe("Accessing graphs", function () {
           );
           await db.waitForPropagation(
             { path: `/_api/gharial/${graph.name}` },
-            30000
+            10000
           );
         }),
       ]);

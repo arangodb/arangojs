@@ -15,14 +15,14 @@ async function createCollections(db: Database) {
       const collection = await db.createCollection(name);
       await db.waitForPropagation(
         { path: `/_api/collection/${collection.name}` },
-        30000
+        10000
       );
     }),
     ...edgeCollectionNames.map(async (name) => {
       const collection = await db.createEdgeCollection(name);
       await db.waitForPropagation(
         { path: `/_api/collection/${collection.name}` },
-        30000
+        10000
       );
     }),
   ] as Promise<void>[]);
@@ -43,7 +43,7 @@ async function createGraph(
   );
   await (graph as any)._db.waitForPropagation(
     { path: `/_api/gharial/${graph.name}` },
-    30000
+    10000
   );
   return result;
 }
@@ -93,7 +93,7 @@ describe("Manipulating graph vertices", function () {
       vertexCollection = await db.createCollection(`xc_${Date.now()}`);
       await db.waitForPropagation(
         { path: `/_api/collection/${vertexCollection.name}` },
-        30000
+        10000
       );
     });
     afterEach(async () => {
@@ -110,7 +110,7 @@ describe("Manipulating graph vertices", function () {
       vertexCollection = await db.createCollection(`xc_${Date.now()}`);
       await db.waitForPropagation(
         { path: `/_api/collection/${vertexCollection.name}` },
-        30000
+        10000
       );
       await graph.addVertexCollection(vertexCollection.name);
     });

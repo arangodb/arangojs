@@ -29,7 +29,7 @@ describe35("Manipulating analyzers", function () {
       await analyzer.create({ type: "identity" });
       await db.waitForPropagation(
         { path: `/_api/analyzer/${analyzer.name}` },
-        120000
+        30000
       );
       expect(await analyzer.exists()).to.equal(true);
     });
@@ -41,7 +41,7 @@ describe35("Manipulating analyzers", function () {
       await analyzer.create({ type: "identity" });
       await db.waitForPropagation(
         { path: `/_api/analyzer/${analyzer.name}` },
-        120000
+        30000
       );
     });
     after(async () => {
@@ -60,7 +60,7 @@ describe35("Manipulating analyzers", function () {
       await analyzer.create({ type: "identity" });
       await db.waitForPropagation(
         { path: `/_api/analyzer/${analyzer.name}` },
-        120000
+        30000
       );
       const data = await analyzer.get();
       expect(data).to.have.property("name", `${name}::${analyzer.name}`);
@@ -73,7 +73,7 @@ describe35("Manipulating analyzers", function () {
       await analyzer.create({ type: "identity" });
       await db.waitForPropagation(
         { path: `/_api/analyzer/${analyzer.name}` },
-        120000
+        30000
       );
       await analyzer.drop();
       expect(await analyzer.exists()).to.equal(false);
