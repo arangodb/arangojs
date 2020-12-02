@@ -3,6 +3,12 @@ import { Analyzer } from "../analyzer";
 import { Database } from "../database";
 import { config } from "./_config";
 
+async function sleep(ms: number) {
+  return new Promise<void>((resolve) => {
+    setTimeout(() => resolve(), ms);
+  });
+}
+
 const describe35 = config.arangoVersion! >= 30500 ? describe : describe.skip;
 
 describe35("Manipulating analyzers", function () {
@@ -37,7 +43,9 @@ describe35("Manipulating analyzers", function () {
       await analyzer.create({ type: "identity" });
     });
     after(async () => {
-      await analyzer.drop();
+      try {
+        await analyzer.drop();
+      } catch {}
     });
     it("fetches information about the analyzer", async () => {
       const data = await analyzer.get();
@@ -54,12 +62,10 @@ describe35("Manipulating analyzers", function () {
     });
   });
   describe("analyzer.drop", () => {
-    let analyzer: Analyzer;
-    beforeEach(async () => {
-      analyzer = db.analyzer(`a_${Date.now()}`);
-      await analyzer.create({ type: "identity" });
-    });
     it("destroys the analyzer", async () => {
+      const analyzer = db.analyzer(`a_${Date.now()}`);
+      await analyzer.create({ type: "identity" });
+      await sleep(3000);
       await analyzer.drop();
       expect(await analyzer.exists()).to.equal(false);
     });
