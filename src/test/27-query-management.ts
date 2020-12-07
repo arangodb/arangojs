@@ -177,10 +177,15 @@ describe("Query Management API", function () {
 
   describeNLB("database.listRunningQueries", () => {
     it("returns a list of running queries", async () => {
-      const query = "RETURN SLEEP(0.5)";
+      // the sleep time here needs to be relatively high, so that in a slow
+      // environment it is likely that the query still runs when we retrieve the
+      // list of currently running queries
+      const query = "RETURN SLEEP(3)";
       const p1 = db.query(query);
       p1.then((cursor) => allCursors.push(cursor));
-      const queries = await db.listRunningQueries();
+      // must filter the list here, as there could be other (system) queries
+      // ongoing at the same time
+      const queries = (await db.listRunningQueries()).filter((i: any) => i.query === query);
       expect(queries).to.have.lengthOf(1);
       expect(queries[0]).to.have.property("bindVars");
       expect(queries[0]).to.have.property("query", query);
@@ -208,7 +213,8 @@ describe("Query Management API", function () {
       const query = "RETURN SLEEP(0.2)";
       const cursor = await db.query(query);
       allCursors.push(cursor);
-      const queries = await db.listSlowQueries();
+      // must filter the list here, as there could have been other (system) queries
+      const queries = (await db.listSlowQueries()).filter((i: any) => i.query === query);
       expect(queries).to.have.lengthOf(1);
       expect(queries[0]).to.have.property("query", query);
     });
@@ -231,12 +237,14 @@ describe("Query Management API", function () {
       await db.clearSlowQueries();
     });
     it("clears the list of slow queries", async () => {
-      const cursor = await db.query("RETURN SLEEP(0.2)");
+      const query = "RETURN SLEEP(0.2)";
+      const cursor = await db.query(query);
       allCursors.push(cursor);
-      const queries1 = await db.listSlowQueries();
+      // must filter the list here, as there could have been other (system) queries
+      const queries1 = (await db.listSlowQueries()).filter((i: any) => i.query === query);
       expect(queries1).to.have.lengthOf(1);
       await db.clearSlowQueries();
-      const queries2 = await db.listSlowQueries();
+      const queries2 = (await db.listSlowQueries()).filter((i: any) => i.query === query);
       expect(queries2).to.have.lengthOf(0);
     });
   });
@@ -248,7 +256,7 @@ describe("Query Management API", function () {
       const query = "RETURN SLEEP(5)";
       const p1 = db.query(query);
       p1.then((cursor) => allCursors.push(cursor));
-      const queries = await db.listRunningQueries();
+      const queries = (await db.listSlowQueries()).filter((i: any) => i.query === query);
       expect(queries).to.have.lengthOf(1);
       expect(queries[0]).to.have.property("bindVars");
       expect(queries[0]).to.have.property("query", query);

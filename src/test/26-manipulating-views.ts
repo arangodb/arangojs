@@ -92,6 +92,9 @@ describe34("Manipulating views", function () {
   });
   describeNLB("view.rename", () => {
     it("should rename a view", async () => {
+      // view renamign is only implemented for single servers
+      const res = await db.route("/_admin/server/role").get();
+      if (res.body.role !== "SINGLE") return;
       const name = `v2-${Date.now()}`;
       const info = await view.rename(name);
       expect(info).to.have.property("name", name);
