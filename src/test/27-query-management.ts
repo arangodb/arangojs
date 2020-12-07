@@ -16,9 +16,17 @@ describe("Query Management API", function () {
   before(async () => {
     allCursors = [];
     db = new Database(config);
-    if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE") await db.acquireHostList();
+    if (Array.isArray(config.url)) await db.acquireHostList();
     await db.createDatabase(dbName);
     db.useDatabase(dbName);
+    // the following makes calls to /_db/${name} on all coordinators, thus waiting
+    // long enough for the database to become available on all instances
+    if (Array.isArray(config.url)) {
+      await db.waitForPropagation(
+        { path: `/_api/version` },
+        10000
+      );
+    }
   });
   after(async () => {
     await Promise.all(
