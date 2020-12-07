@@ -21,7 +21,7 @@ describe("Item-wise Cursor API", () => {
   before(async () => {
     allCursors = [];
     db = new Database(config);
-    if (Array.isArray(config.url)) await db.acquireHostList();
+    if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE") await db.acquireHostList();
   });
   after(async () => {
     await Promise.all(
@@ -238,7 +238,7 @@ describe("Batch-wise Cursor API", () => {
   before(async () => {
     allCursors = [];
     db = new Database(config);
-    if (Array.isArray(config.url)) await db.acquireHostList();
+    if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE") await db.acquireHostList();
   });
   after(async () => {
     await Promise.all(

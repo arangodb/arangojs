@@ -7,7 +7,7 @@ describe("Manipulating databases", function () {
   let db: Database;
   beforeEach(async () => {
     db = new Database(config);
-    if (Array.isArray(config.url)) await db.acquireHostList();
+    if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE") await db.acquireHostList();
   });
   afterEach(() => {
     db.close();

@@ -10,7 +10,7 @@ describe("Manipulating graph edges", function () {
   let graph: Graph;
   before(async () => {
     db = new Database(config);
-    if (Array.isArray(config.url)) await db.acquireHostList();
+    if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE") await db.acquireHostList();
     await db.createDatabase(dbName);
     db.useDatabase(dbName);
   });

@@ -10,7 +10,7 @@ describe("DocumentCollection API", function () {
   let collection: DocumentCollection;
   before(async () => {
     db = new Database(config);
-    if (Array.isArray(config.url)) await db.acquireHostList();
+    if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE") await db.acquireHostList();
     await db.createDatabase(name);
     db.useDatabase(name);
   });

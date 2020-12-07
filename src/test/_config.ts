@@ -13,7 +13,7 @@ export const config: {
   ? {
       url: ARANGO_URL.split(",").filter((s) => Boolean(s)),
       arangoVersion: ARANGO_VERSION,
-      loadBalancingStrategy: "ROUND_ROBIN",
+      loadBalancingStrategy: (process.env.TEST_ARANGO_LOAD_BALANCING_STRATEGY === "NONE" ? "NONE" : "ROUND_ROBIN"),
     }
   : {
       url: ARANGO_URL,

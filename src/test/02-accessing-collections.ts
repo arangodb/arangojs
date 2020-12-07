@@ -11,7 +11,7 @@ describe("Accessing collections", function () {
   let builtinSystemCollections: string[];
   before(async () => {
     db = new Database(config);
-    if (Array.isArray(config.url)) await db.acquireHostList();
+    if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE") await db.acquireHostList();
     await db.createDatabase(name);
     db.useDatabase(name);
     const collections = await db.listCollections(false);

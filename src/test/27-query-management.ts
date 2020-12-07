@@ -16,7 +16,7 @@ describe("Query Management API", function () {
   before(async () => {
     allCursors = [];
     db = new Database(config);
-    if (Array.isArray(config.url)) await db.acquireHostList();
+    if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE") await db.acquireHostList();
     await db.createDatabase(dbName);
     db.useDatabase(dbName);
   });
