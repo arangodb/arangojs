@@ -92,12 +92,22 @@ describe34("Manipulating views", function () {
   });
   describeNLB("view.rename", () => {
     it("should rename a view", async () => {
-      // view renamign is only implemented for single servers
-      const res = await db.route("/_admin/server/role").get();
-      if (res.body.role !== "SINGLE") return;
       const name = `v2-${Date.now()}`;
-      const info = await view.rename(name);
-      expect(info).to.have.property("name", name);
+      const res = await db.route("/_admin/server/role").get();
+      if (res.body.role === "SINGLE") {
+        // view renaming is only implemented for single servers
+        const info = await view.rename(name);
+        expect(info).to.have.property("name", name);
+      } else {
+        try {
+          await view.rename(name);
+        } catch (e) {
+          // "unsupported operation" in cluster
+          expect(e).to.have.property("errorNum", 1470);
+          return;
+        }
+        expect.fail("should throw");
+      }
     });
   });
   describe("view.drop", () => {
