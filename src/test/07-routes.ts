@@ -8,7 +8,7 @@ describe("Arbitrary HTTP routes", () => {
   let db: Database;
   before(async () => {
     db = new Database(config);
-    if (Array.isArray(config.url)) await db.acquireHostList();
+    if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE") await db.acquireHostList();
   });
   describe("database.route", () => {
     it("returns a Route instance", () => {
@@ -33,7 +33,7 @@ describe("Route API", function () {
   let collection: DocumentCollection;
   before(async () => {
     db = new Database(config);
-    if (Array.isArray(config.url)) await db.acquireHostList();
+    if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE") await db.acquireHostList();
     await db.createDatabase(name);
     db.useDatabase(name);
     collection = await db.createCollection(`c_${Date.now()}`);

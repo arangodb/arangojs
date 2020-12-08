@@ -12,7 +12,7 @@ describe34("View metadata", function () {
   let view: ArangoSearchView;
   before(async () => {
     db = new Database(config);
-    if (Array.isArray(config.url)) await db.acquireHostList();
+    if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE") await db.acquireHostList();
     await db.createDatabase(dbName);
     db.useDatabase(dbName);
     view = db.view(viewName);

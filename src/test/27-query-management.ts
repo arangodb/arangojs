@@ -9,6 +9,12 @@ import { config } from "./_config";
 const describeNLB =
   config.loadBalancingStrategy === "ROUND_ROBIN" ? describe.skip : describe;
 
+async function sleep(ms: number) {
+  return new Promise<void>((resolve) => {
+    setTimeout(() => resolve(), ms);
+  });
+}
+
 describe("Query Management API", function () {
   const dbName = `testdb_${Date.now()}`;
   let db: Database;
@@ -19,6 +25,14 @@ describe("Query Management API", function () {
     if (Array.isArray(config.url)) await db.acquireHostList();
     await db.createDatabase(dbName);
     db.useDatabase(dbName);
+    // the following makes calls to /_db/${name} on all coordinators, thus waiting
+    // long enough for the database to become available on all instances
+    if (Array.isArray(config.url)) {
+      await db.waitForPropagation(
+        { path: `/_api/version` },
+        10000
+      );
+    }
   });
   after(async () => {
     await Promise.all(
@@ -183,9 +197,19 @@ describe("Query Management API", function () {
       const query = "RETURN SLEEP(3)";
       const p1 = db.query(query);
       p1.then((cursor) => allCursors.push(cursor));
-      // must filter the list here, as there could be other (system) queries
-      // ongoing at the same time
-      const queries = (await db.listRunningQueries()).filter((i: any) => i.query === query);
+      let queries: any;
+      // query was dispatched in an async way, so now we need to wait for the query
+      // to actually start running on the server
+      for (let tries = 0; tries < 100; tries++) {
+        // must filter the list here, as there could be other (system) queries
+        // ongoing at the same time
+        queries = (await db.listRunningQueries()).filter((i: any) => i.query === query);
+        if (queries.length > 0) {
+          break;
+        }
+        await sleep(100);
+      }
+
       expect(queries).to.have.lengthOf(1);
       expect(queries[0]).to.have.property("bindVars");
       expect(queries[0]).to.have.property("query", query);
