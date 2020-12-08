@@ -197,15 +197,14 @@ describe("Query Management API", function () {
       const query = "RETURN SLEEP(3)";
       const p1 = db.query(query);
       p1.then((cursor) => allCursors.push(cursor));
-      let tries: number = 0;
       let queries: any;
       // query was dispatched in an async way, so now we need to wait for the query
       // to actually start running on the server
-      while (tries++ < 100) {
+      for (let tries = 0; tries < 100; tries++) {
         // must filter the list here, as there could be other (system) queries
         // ongoing at the same time
         queries = (await db.listRunningQueries()).filter((i: any) => i.query === query);
-        if (queries.length === 1) {
+        if (queries.length > 0) {
           break;
         }
         await sleep(100);
