@@ -74,7 +74,7 @@ describe35("Accessing analyzers", function () {
           await analyzer.create({ type: "identity" });
           await db.waitForPropagation(
             { path: `/_api/analyzer/${analyzer.name}` },
-            30000
+            65000
           );
         })
       );
