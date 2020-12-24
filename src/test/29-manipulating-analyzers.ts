@@ -5,6 +5,25 @@ import { config } from "./_config";
 
 const describe35 = config.arangoVersion! >= 30500 ? describe : describe.skip;
 
+function waitForAnalyzer(db: Database, name: string) {
+  if (config.arangoVersion >= 30700) {
+    // analyzer propagation in the cluster has an up-to 60 seconds
+    // delay in 3.6. this is changed in 3.7, and analyzer changes
+    // are replicated near-instantaneously via the agency in 3.7+
+    return db.waitForPropagation(
+      { path: `/_api/analyzer/${name}` },
+      30000
+    );
+  } else {
+    // make a call only to /_api/version in the target database, as
+    // we can't be sure analyzers will be propagated in time
+    return db.waitForPropagation(
+      { path: `/_api/version` },
+      10000
+    );
+  }
+}
+
 describe35("Manipulating analyzers", function () {
   const name = `testdb_${Date.now()}`;
   let db: Database;
@@ -27,10 +46,7 @@ describe35("Manipulating analyzers", function () {
       const analyzer = db.analyzer(`a_${Date.now()}`);
       expect(await analyzer.exists()).to.equal(false);
       await analyzer.create({ type: "identity" });
-      await db.waitForPropagation(
-        { path: `/_api/analyzer/${analyzer.name}` },
-        30000
-      );
+      await waitForAnalyzer(db, analyzer.name); 
       expect(await analyzer.exists()).to.equal(true);
     });
   });
@@ -39,10 +55,7 @@ describe35("Manipulating analyzers", function () {
     before(async () => {
       analyzer = db.analyzer(`a_${Date.now()}`);
       await analyzer.create({ type: "identity" });
-      await db.waitForPropagation(
-        { path: `/_api/analyzer/${analyzer.name}` },
-        30000
-      );
+      await waitForAnalyzer(db, analyzer.name); 
     });
     after(async () => {
       try {
@@ -58,10 +71,7 @@ describe35("Manipulating analyzers", function () {
     it("creates the analyzer", async () => {
       const analyzer = db.analyzer(`a_${Date.now()}`);
       await analyzer.create({ type: "identity" });
-      await db.waitForPropagation(
-        { path: `/_api/analyzer/${analyzer.name}` },
-        30000
-      );
+      await waitForAnalyzer(db, analyzer.name); 
       const data = await analyzer.get();
       expect(data).to.have.property("name", `${name}::${analyzer.name}`);
       expect(data).to.have.property("type", "identity");
@@ -71,10 +81,7 @@ describe35("Manipulating analyzers", function () {
     it("destroys the analyzer", async () => {
       const analyzer = db.analyzer(`a_${Date.now()}`);
       await analyzer.create({ type: "identity" });
-      await db.waitForPropagation(
-        { path: `/_api/analyzer/${analyzer.name}` },
-        30000
-      );
+      await waitForAnalyzer(db, analyzer.name); 
       await analyzer.drop();
       expect(await analyzer.exists()).to.equal(false);
     });
