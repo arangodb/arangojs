@@ -1,9 +1,9 @@
-name: Continuous Integration
+name: Tests
 
 on: [push]
 
 jobs:
-  tests:
+  node:
     runs-on: ubuntu-latest
 
     strategy:
@@ -28,3 +28,25 @@ jobs:
         env:
           TEST_ARANGODB_URL: http://arangodb:8529
           CI: true
+
+  web:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        arangodb-version: [3.5, 3.6, 3.7]
+
+    container:
+      image: buildkite/puppeteer:latest
+
+    services:
+      arangodb:
+        image: arangodb:${{ matrix.arangodb-version }}
+        env:
+          ARANGO_NO_AUTH: 1
+
+    steps:
+      - uses: actions/checkout@v2
+      - run: npm install -g npm@7
+      - run: npm install
+      - run: node smoke-test.js
