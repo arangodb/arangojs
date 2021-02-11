@@ -50,13 +50,13 @@
     "arango-test": "mocha --reporter json --require source-map-support/register --timeout 30000 build/test",
     "jenkins": "mocha --reporter spec --require source-map-support/register --timeout 0 build/test",
     "test": "mocha --reporter spec --require source-map-support/register --timeout 10000 build/test",
-    "pretest": "yarn build",
+    "pretest": "npm run build",
     "build:package": "cat package.json | jq 'delpaths([[\"private\"],[\"scripts\"],[\"devDependencies\"],[\"babel\"],[\"browserslist\"]])' | sed 's/build\\///g' | sed -r 's/src\\/([^\"]+)\\.ts/\\1.js/g' > build/package.json",
     "build:cjs": "tsc -p . --outDir ./build/ --target es2018 --declarationMap true",
     "build:text": "cp *.md build/",
     "build:web": "webpack",
     "build": "rm -rf build && mkdir build && npm-run-all --parallel build:*",
-    "prepare": "yarn build && node -e 'require(\".\");'"
+    "prepare": "npm run build && node -e 'require(\".\");'"
   },
   "dependencies": {
     "@types/node": ">=13.13.4",

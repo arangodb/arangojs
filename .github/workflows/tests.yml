@@ -22,8 +22,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - run: yarn
-      - run: yarn test
+      - run: npm install
+      - run: npm test
         env:
           TEST_ARANGODB_URL: http://arangodb:8529
           CI: true
