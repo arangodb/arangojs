@@ -519,6 +519,7 @@ export class Connection {
           maxSockets: 3,
           keepAlive: true,
           keepAliveMsecs: 1000,
+          scheduling: "lifo",
           ...config.agentOptions,
         };
     this._maxTasks = this._agentOptions.maxSockets;
