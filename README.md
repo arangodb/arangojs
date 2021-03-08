@@ -345,6 +345,8 @@ Please refer to the documentation of this method for additional examples.
 
 ### Streaming transactions timeout in cluster
 
+Example messages: `transaction not found`, `transaction already expired`.
+
 Transactions have
 [different guarantees](https://www.arangodb.com/docs/stable/transactions-limitations.html#in-clusters)
 in a cluster.
