@@ -432,10 +432,16 @@ export type Config = {
    * module when using arangojs in the browser). This will be ignored if
    * `agent` is also provided.
    *
-   * The option `maxSockets` can also be used to limit how many requests
+   * The option `maxSockets` is also used to limit how many requests
    * arangojs will perform concurrently. The maximum number of requests is
-   * equal to `maxSockets * 2` with `keepAlive: true` or equal to `maxSockets`
-   * with `keepAlive: false` (or in the browser).
+   * equal to `maxSockets`.
+   *
+   * **Note:** arangojs will limit the number of concurrent requests based on
+   * this value even if an `agent` is provided.
+   *
+   * **Note:** when using `ROUND_ROBIN` load balancing and passing an array of
+   * URLs in the `url` option, the default value of `maxSockets` will be set
+   * to `3 * url.length` instead of `3`.
    *
    * Default (Node.js): `{ maxSockets: 3, keepAlive: true, keepAliveMsecs: 1000 }`
    *
@@ -509,24 +515,30 @@ export class Connection {
    * @hidden
    */
   constructor(config: Omit<Config, "databaseName"> = {}) {
+    const URLS = config.url
+      ? Array.isArray(config.url)
+        ? config.url
+        : [config.url]
+      : ["http://localhost:8529"];
+    const MAX_SOCKETS =
+      3 * (config.loadBalancingStrategy === "ROUND_ROBIN" ? URLS.length : 1);
+
     if (config.arangoVersion !== undefined) {
       this._arangoVersion = config.arangoVersion;
     }
     this._agent = config.agent;
     this._agentOptions = isBrowser
-      ? { maxSockets: 3, ...config.agentOptions }
+      ? { maxSockets: MAX_SOCKETS, ...config.agentOptions }
       : {
-          maxSockets: 3,
+          maxSockets: MAX_SOCKETS,
           keepAlive: true,
           keepAliveMsecs: 1000,
           scheduling: "lifo",
           ...config.agentOptions,
         };
     this._maxTasks = this._agentOptions.maxSockets;
-    if (this._agentOptions.keepAlive) this._maxTasks *= 2;
-
     this._headers = { ...config.headers };
-    this._loadBalancingStrategy = config.loadBalancingStrategy || "NONE";
+    this._loadBalancingStrategy = config.loadBalancingStrategy ?? "NONE";
     this._useFailOver = this._loadBalancingStrategy !== "ROUND_ROBIN";
     this._precaptureStackTraces = Boolean(config.precaptureStackTraces);
     if (config.maxRetries === false) {
@@ -534,15 +546,10 @@ export class Connection {
       this._maxRetries = 0;
     } else {
       this._shouldRetry = true;
-      this._maxRetries = config.maxRetries || 0;
+      this._maxRetries = config.maxRetries ?? 0;
     }
 
-    const urls = config.url
-      ? Array.isArray(config.url)
-        ? config.url
-        : [config.url]
-      : ["http://localhost:8529"];
-    this.addToHostList(urls);
+    this.addToHostList(URLS);
 
     if (config.auth) {
       if (isBearerAuth(config.auth)) {

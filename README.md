@@ -9,11 +9,11 @@ The official ArangoDB JavaScript client for Node.js and the browser.
 
 ## Links
 
-* [API Documentation](https://arangodb.github.io/arangojs/latest/modules/_index_.html)
+- [API Documentation](https://arangodb.github.io/arangojs/latest/modules/_index_.html)
 
-* [Changelog](https://arangodb.github.io/arangojs/CHANGELOG)
+- [Changelog](https://arangodb.github.io/arangojs/CHANGELOG)
 
-* [Migration Guide](http://arangodb.github.io/arangojs/MIGRATING)
+- [Migration Guide](http://arangodb.github.io/arangojs/MIGRATING)
 
 ## Install
 
@@ -321,7 +321,7 @@ HTTPS certificate validation entirely, but note this has
 When using arangojs in the browser, self-signed HTTPS certificates need to
 be trusted by the browser or use a trusted root certificate.
 
-### Streaming transactions
+### Streaming transactions leak
 
 When using the `transaction.step` method it is important to be aware of the
 limitations of what a callback passed to this method is allowed to do.
@@ -342,6 +342,22 @@ await trx.step(() => collection.save(doc2));
 ```
 
 Please refer to the documentation of this method for additional examples.
+
+### Streaming transactions timeout in cluster
+
+Transactions have
+[different guarantees](https://www.arangodb.com/docs/stable/transactions-limitations.html#in-clusters)
+in a cluster.
+
+When using arangojs in a cluster with load balancing, you may need to adjust
+the value of `agentOptions.maxSockets` to accommodate the number of transactions
+you need to be able to run in parallel. The default value is likely to be too
+low for most cluster scenarios involving frequent streaming transactions.
+
+**Note**: When using a high value for `agentOptions.maxSockets` you may have
+to adjust the maximum number of threads in the ArangoDB configuration using
+[the `server.maximal-threads` option](https://www.arangodb.com/docs/3.7/programs-arangod-server.html#server-threads)
+to support larger numbers of concurrent transactions on the server side.
 
 ## License
 

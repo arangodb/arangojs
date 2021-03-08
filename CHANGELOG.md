@@ -24,6 +24,23 @@ This driver uses semantic versioning:
   sockets expiring, especially with larger connection pools and infrequent
   requests.
 
+- Removed `keepAlive`-specific throughput optimization
+
+  Previously arangojs would allow `agentOptions.maxSockets * 2` concurrent
+  requests, to optimize socket reuse by avoiding idle time. This behavior
+  could trigger deadlocks when attempting to perform multiple transactions
+  in parallel and only marginally improved throughput in some high-load
+  scenarios. The connection pool size now always reflects the value set in
+  `agentOptions.maxSockets` regardless of whether `keepAlive` is enabled.
+
+- Changed `agentOptions.maxSockets` default value when using `ROUND_ROBIN`
+
+  As the connection pool is shared across all server connections when using
+  `ROUND_ROBIN` load balancing, the default value of `3` is too limiting for
+  most scenarios involving multiple coordinators. When passing multiple URLs
+  via the `url` option and specifying `ROUND_ROBIN` load balancing, arangojs
+  will now default this value to `url.length * 3` instead.
+
 ## [7.2.0] - 2020-12-02
 
 ### Added
