@@ -243,10 +243,14 @@
 											module when using arangojs in the browser). This will be ignored if
 										<code>agent</code> is also provided.</p>
 									</div>
-									<p>The option <code>maxSockets</code> can also be used to limit how many requests
+									<p>The option <code>maxSockets</code> is also used to limit how many requests
 										arangojs will perform concurrently. The maximum number of requests is
-										equal to <code>maxSockets * 2</code> with <code>keepAlive: true</code> or equal to <code>maxSockets</code>
-									with <code>keepAlive: false</code> (or in the browser).</p>
+									equal to <code>maxSockets</code>.</p>
+									<p><strong>Note:</strong> arangojs will limit the number of concurrent requests based on
+									this value even if an <code>agent</code> is provided.</p>
+									<p><strong>Note:</strong> when using <code>ROUND_ROBIN</code> load balancing and passing an array of
+										URLs in the <code>url</code> option, the default value of <code>maxSockets</code> will be set
+									to <code>3 * url.length</code> instead of <code>3</code>.</p>
 									<p>Default (Node.js): <code>{ maxSockets: 3, keepAlive: true, keepAliveMsecs: 1000 }</code></p>
 									<p>Default (browser): <code>{ maxSockets: 3, useXDR: true, withCredentials: true }</code></p>
 								</div>
