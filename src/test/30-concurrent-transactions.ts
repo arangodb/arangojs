@@ -36,7 +36,9 @@ describe35("Transactions", function () {
         )
       );
       db.useDatabase("_system");
-      await db.dropDatabase(name);
+      try {
+        await db.dropDatabase(name);
+      } catch {}
     });
     beforeEach(async () => {
       collection = await db.createCollection(`collection-${Date.now()}`);
