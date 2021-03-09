@@ -7,7 +7,9 @@ const ARANGO_VERSION = Number(
 const ARANGO_LOAD_BALANCING_STRATEGY = process.env
   .TEST_ARANGO_LOAD_BALANCING_STRATEGY as LoadBalancingStrategy | undefined;
 
-export const config: Config = ARANGO_URL.includes(",")
+export const config: Config & {
+  arangoVersion: NonNullable<Config["arangoVersion"]>;
+} = ARANGO_URL.includes(",")
   ? {
       url: ARANGO_URL.split(",").filter((s) => Boolean(s)),
       arangoVersion: ARANGO_VERSION,
