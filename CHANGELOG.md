@@ -14,6 +14,16 @@ This driver uses semantic versioning:
 - A change in the major version (e.g. 1.Y.Z -> 2.0.0) indicates _breaking_
   changes that require changes in your code to upgrade.
 
+## [Unreleased]
+
+### Fixed
+
+- Stack traces are now improved for most errors when using `precaptureStackTraces`
+
+  Previously this option would only affect network errors, making it far less
+  useful than intended. Now parsing errors, `ArangoError` instances and HTTP
+  errors also receive improved error stack traces when this option is enabled.
+
 ## [7.3.0] - 2021-03-08
 
 ### Changed

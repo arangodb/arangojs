@@ -894,6 +894,9 @@ export class Connection {
                   parsedBody = res.body.toString("utf-8");
                 }
                 e.response = res;
+                if (task.stack) {
+                  e.stack += task.stack;
+                }
                 reject(e);
                 return;
               }
@@ -905,10 +908,18 @@ export class Connection {
           }
           if (isArangoErrorResponse(parsedBody)) {
             res.body = parsedBody;
-            reject(new ArangoError(res));
+            const err = new ArangoError(res);
+            if (task.stack) {
+              err.stack += task.stack;
+            }
+            reject(err);
           } else if (res.statusCode && res.statusCode >= 400) {
             res.body = parsedBody;
-            reject(new HttpError(res));
+            const err = new HttpError(res);
+            if (task.stack) {
+              err.stack += task.stack;
+            }
+            reject(err);
           } else {
             if (!expectBinary) res.body = parsedBody;
             resolve(transform ? transform(res) : (res as any));
