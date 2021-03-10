@@ -10,7 +10,7 @@ const delay = (ms: number) =>
 const describe35 = config.arangoVersion! >= 30500 ? describe : describe.skip;
 
 describe35("Transactions", function () {
-  describe("stream transactions", function () {
+  describe.skip("stream transactions", function () {
     this.timeout(0);
     let db: Database;
     before(async () => {
