@@ -13,11 +13,11 @@ export const config: Config & {
   ? {
       url: ARANGO_URL.split(",").filter((s) => Boolean(s)),
       arangoVersion: ARANGO_VERSION,
-      precaptureStackTraces: !process.env.CI,
+      precaptureStackTraces: true,
       loadBalancingStrategy: ARANGO_LOAD_BALANCING_STRATEGY || "ROUND_ROBIN",
     }
   : {
       url: ARANGO_URL,
       arangoVersion: ARANGO_VERSION,
-      precaptureStackTraces: !process.env.CI,
+      precaptureStackTraces: true,
     };
