@@ -133,7 +133,7 @@ function generateStackTrace() {
       err = e;
     }
   }
-  return err.stack;
+  return err;
 }
 
 /**
@@ -286,7 +286,7 @@ export type RequestOptions = {
  */
 type Task = {
   host?: number;
-  stack?: string;
+  stack?: () => string;
   allowDirtyRead: boolean;
   resolve: Function;
   reject: Function;
@@ -614,7 +614,7 @@ export class Connection {
           this._queue.push(task);
         } else {
           if (task.stack) {
-            err.stack += task.stack;
+            err.stack += task.stack();
           }
           task.reject(err);
         }
@@ -895,7 +895,7 @@ export class Connection {
                 }
                 e.response = res;
                 if (task.stack) {
-                  e.stack += task.stack;
+                  e.stack += task.stack();
                 }
                 reject(e);
                 return;
@@ -910,14 +910,14 @@ export class Connection {
             res.body = parsedBody;
             const err = new ArangoError(res);
             if (task.stack) {
-              err.stack += task.stack;
+              err.stack += task.stack();
             }
             reject(err);
           } else if (res.statusCode && res.statusCode >= 400) {
             res.body = parsedBody;
             const err = new HttpError(res);
             if (task.stack) {
-              err.stack += task.stack;
+              err.stack += task.stack();
             }
             reject(err);
           } else {
@@ -929,12 +929,15 @@ export class Connection {
 
       if (this._precaptureStackTraces) {
         if (typeof Error.captureStackTrace === "function") {
-          Error.captureStackTrace(task);
-          task.stack = `\n${task.stack!.split("\n").slice(3).join("\n")}`;
+          const capture = {} as { readonly stack: string };
+          Error.captureStackTrace(capture);
+          task.stack = () =>
+            `\n${capture.stack.split("\n").slice(3).join("\n")}`;
         } else {
-          const stack = generateStackTrace();
-          if (stack) {
-            task.stack = `\n${stack.split("\n").slice(4).join("\n")}`;
+          const capture = generateStackTrace() as { readonly stack: string };
+          if (Object.prototype.hasOwnProperty.call(capture, "stack")) {
+            task.stack = () =>
+              `\n${capture.stack.split("\n").slice(4).join("\n")}`;
           }
         }
       }

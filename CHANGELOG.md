@@ -24,6 +24,13 @@ This driver uses semantic versioning:
   useful than intended. Now parsing errors, `ArangoError` instances and HTTP
   errors also receive improved error stack traces when this option is enabled.
 
+- Improved performance for `precaptureStackTraces` when no errors occur
+
+  The generated stack is now only accessed on demand, allowing the runtime to
+  delay generation of the stack trace string. Previously the stack would always
+  be accessed prior to the request being sent, causing a noticeable delay even
+  when no error occurs.
+
 ## [7.3.0] - 2021-03-08
 
 ### Changed
