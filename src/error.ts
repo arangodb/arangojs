@@ -155,6 +155,15 @@ export class ArangoError extends ExtendableError {
   get isArangoError(): true {
     return true;
   }
+
+  toJSON() {
+    return {
+      error: true,
+      errorMessage: this.message,
+      errorNum: this.errorNum,
+      code: this.code,
+    };
+  }
 }
 
 /**
@@ -185,5 +194,12 @@ export class HttpError extends ExtendableError {
     for (const key of nativeErrorKeys) {
       if (err[key]) this[key] = err[key]!;
     }
+  }
+
+  toJSON() {
+    return {
+      error: true,
+      code: this.code,
+    };
   }
 }
