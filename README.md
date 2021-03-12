@@ -69,12 +69,12 @@ Modern JavaScript/TypeScript with async/await:
 const { Database, aql } = require("arangojs");
 
 const db = new Database();
-const pokemons = db.collection("my-pokemons");
+const Pokemons = db.collection("my-pokemons");
 
 async function main() {
   try {
     const pokemons = await db.query(aql`
-      FOR pokemon IN ${pokemons}
+      FOR pokemon IN ${Pokemons}
       FILTER pokemon.type == "fire"
       RETURN pokemon
     `);
