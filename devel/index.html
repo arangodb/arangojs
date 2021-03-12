@@ -119,12 +119,12 @@ yarn add arangojs</code></pre>
 <span class="hljs-keyword">const</span> { Database, aql } = <span class="hljs-built_in">require</span>(<span class="hljs-string">&quot;arangojs&quot;</span>);
 
 <span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
-<span class="hljs-keyword">const</span> pokemons = db.collection(<span class="hljs-string">&quot;my-pokemons&quot;</span>);
+<span class="hljs-keyword">const</span> Pokemons = db.collection(<span class="hljs-string">&quot;my-pokemons&quot;</span>);
 
 <span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">main</span>(<span class="hljs-params"></span>) </span>{
   <span class="hljs-keyword">try</span> {
     <span class="hljs-keyword">const</span> pokemons = <span class="hljs-keyword">await</span> db.query(aql<span class="hljs-string">`
-      FOR pokemon IN <span class="hljs-subst">${pokemons}</span>
+      FOR pokemon IN <span class="hljs-subst">${Pokemons}</span>
       FILTER pokemon.type == &quot;fire&quot;
       RETURN pokemon
     `</span>);
