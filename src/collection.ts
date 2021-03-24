@@ -3629,7 +3629,7 @@ export class Collection<T extends object = any>
         path: `/_api/edges/${this._name}`,
         qs: {
           direction,
-          vertex: _documentHandle(selector, this._name),
+          vertex: _documentHandle(selector, this._name, false),
         },
       },
       (res) => res.body

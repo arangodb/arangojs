@@ -112,7 +112,8 @@ export type DocumentSelector = ObjectWithId | ObjectWithKey | string;
  */
 export function _documentHandle(
   selector: DocumentSelector,
-  collectionName: string
+  collectionName: string,
+  strict: boolean = true
 ): string {
   if (typeof selector !== "string") {
     if (selector._id) {
@@ -126,7 +127,7 @@ export function _documentHandle(
     );
   }
   if (selector.includes("/")) {
-    if (!selector.startsWith(`${collectionName}/`)) {
+    if (strict && !selector.startsWith(`${collectionName}/`)) {
       throw new Error(
         `Document ID "${selector}" does not match collection name "${collectionName}"`
       );
