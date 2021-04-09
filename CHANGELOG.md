@@ -14,6 +14,21 @@ This driver uses semantic versioning:
 - A change in the major version (e.g. 1.Y.Z -> 2.0.0) indicates _breaking_
   changes that require changes in your code to upgrade.
 
+## [7.5.0] - 2021-04-22
+
+### Added
+
+- Added support for new ArangoDB 3.8 Analyzer types
+
+  This adds the `PipelineAnalyzer`, `AqlAnalyzer`, `GeoJsonAnalyzer`,
+  `GeoPointAnalyzer` and `StopwordsAnalyzer` types in TypeScript, as well as
+  the Analyzer-specific properties types.
+
+- Added support for new ArangoDB 3.8 `estimates` option for indexes
+
+  This affects the `PersistentIndex`, `HashIndex` and `SkiplistIndex` types
+  in TypeScript.
+
 ## [7.4.0] - 2021-04-09
 
 ### Added
@@ -1185,6 +1200,7 @@ For a detailed list of changes between pre-release versions of v7 see the
 
   Graph methods now only return the relevant part of the response body.
 
+[7.5.0]: https://github.com/arangodb/arangojs/compare/v7.4.0...v7.5.0
 [7.4.0]: https://github.com/arangodb/arangojs/compare/v7.3.0...v7.4.0
 [7.3.0]: https://github.com/arangodb/arangojs/compare/v7.2.0...v7.3.0
 [7.2.0]: https://github.com/arangodb/arangojs/compare/v7.1.1...v7.2.0
