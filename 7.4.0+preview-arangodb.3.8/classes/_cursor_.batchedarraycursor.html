@@ -1,0 +1,1053 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>BatchedArrayCursor | arangojs - v7.4.0+preview-arangodb.3.8</title>
+	<meta name="description" content="Documentation for arangojs - v7.4.0+preview-arangodb.3.8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.json" data-base="..">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="../index.html" class="title">arangojs - v7.4.0+preview-arangodb.3.8</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="../globals.html">Globals</a>
+				</li>
+				<li>
+					<a href="../modules/_cursor_.html">&quot;cursor&quot;</a>
+				</li>
+				<li>
+					<a href="_cursor_.batchedarraycursor.html">BatchedArrayCursor</a>
+				</li>
+			</ul>
+			<h1>Class BatchedArrayCursor&lt;T&gt;</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p>The <code>BatchedArrayCursor</code> provides a batch-wise API to an <a href="_cursor_.arraycursor.html">ArrayCursor</a>.</p>
+					</div>
+					<p>When using TypeScript, cursors can be cast to a specific item type in order
+					to increase type safety.</p>
+					<dl class="tsd-comment-tags">
+						<dt>example</dt>
+						<dd><pre><code class="language-ts"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> query = aql<span class="hljs-string">`FOR x IN 1..5 RETURN x`</span>;
+<span class="hljs-keyword">const</span> cursor = <span class="hljs-keyword">await</span> db.query(query) <span class="hljs-keyword">as</span> ArrayCursor&lt;<span class="hljs-built_in">number</span>&gt;;
+<span class="hljs-keyword">const</span> batches = cursor.batches;</code></pre>
+						</dd>
+						<dt>example</dt>
+						<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> query = aql<span class="hljs-string">`FOR x IN 1..10000 RETURN x`</span>;
+<span class="hljs-keyword">const</span> cursor = <span class="hljs-keyword">await</span> db.query(query, { <span class="hljs-attr">batchSize</span>: <span class="hljs-number">10</span> });
+<span class="hljs-keyword">for</span> <span class="hljs-keyword">await</span> (<span class="hljs-keyword">const</span> batch <span class="hljs-keyword">of</span> cursor.batches) {
+  <span class="hljs-comment">// Process all values in a batch in parallel</span>
+  <span class="hljs-keyword">await</span> <span class="hljs-built_in">Promise</span>.all(batch.map(
+    <span class="hljs-function"><span class="hljs-params">value</span> =&gt;</span> asyncProcessValue(value)
+  ));
+}</code></pre>
+						</dd>
+					</dl>
+				</div>
+			</section>
+			<section class="tsd-panel tsd-type-parameters">
+				<h3>Type parameters</h3>
+				<ul class="tsd-type-parameters">
+					<li>
+						<h4>T</h4>
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>Type to use for each item. Defaults to <code>any</code>.</p>
+							</div>
+						</div>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-hierarchy">
+				<h3>Hierarchy</h3>
+				<ul class="tsd-hierarchy">
+					<li>
+						<span class="target">BatchedArrayCursor</span>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel-group tsd-index-group">
+				<h2>Index</h2>
+				<section class="tsd-panel tsd-index-panel">
+					<div class="tsd-index-content">
+						<section class="tsd-index-section ">
+							<h3>Accessors</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="_cursor_.batchedarraycursor.html#count" class="tsd-kind-icon">count</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="_cursor_.batchedarraycursor.html#extra" class="tsd-kind-icon">extra</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="_cursor_.batchedarraycursor.html#hasmore" class="tsd-kind-icon">has<wbr>More</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="_cursor_.batchedarraycursor.html#hasnext" class="tsd-kind-icon">has<wbr>Next</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="_cursor_.batchedarraycursor.html#items" class="tsd-kind-icon">items</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Methods</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_cursor_.batchedarraycursor.html#_symbol_asynciterator_" class="tsd-kind-icon">[<wbr>Symbol.async<wbr>Iterator]</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_cursor_.batchedarraycursor.html#all" class="tsd-kind-icon">all</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter"><a href="_cursor_.batchedarraycursor.html#flatmap" class="tsd-kind-icon">flat<wbr>Map</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_cursor_.batchedarraycursor.html#foreach" class="tsd-kind-icon">for<wbr>Each</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_cursor_.batchedarraycursor.html#kill" class="tsd-kind-icon">kill</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_cursor_.batchedarraycursor.html#loadall" class="tsd-kind-icon">load<wbr>All</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter"><a href="_cursor_.batchedarraycursor.html#map" class="tsd-kind-icon">map</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_cursor_.batchedarraycursor.html#next" class="tsd-kind-icon">next</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter"><a href="_cursor_.batchedarraycursor.html#reduce" class="tsd-kind-icon">reduce</a></li>
+							</ul>
+						</section>
+					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Accessors</h2>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="count" class="tsd-anchor"></a>
+					<h3>count</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> count<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Total number of documents in the query result. Only available if the
+									<code>count</code> option was used.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="extra" class="tsd-anchor"></a>
+					<h3>extra</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> extra<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Readonly</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/_cursor_.cursorextras.html" class="tsd-signature-type">CursorExtras</a><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Additional information about the cursor.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Readonly</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/_cursor_.cursorextras.html" class="tsd-signature-type">CursorExtras</a><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="hasmore" class="tsd-anchor"></a>
+					<h3>has<wbr>More</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> hasMore<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Whether the cursor has any remaining batches that haven&#39;t yet been
+										fetched. If set to <code>false</code>, all batches have been fetched and no
+										additional requests to the server will be made when consuming any
+									remaining batches from this cursor.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="hasnext" class="tsd-anchor"></a>
+					<h3>has<wbr>Next</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> hasNext<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Whether the cursor has more batches. If set to <code>false</code>, the cursor has
+									already been depleted and contains no more batches.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="items" class="tsd-anchor"></a>
+					<h3>items</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> items<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_cursor_.arraycursor.html" class="tsd-signature-type">ArrayCursor</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>An <a href="_cursor_.arraycursor.html">ArrayCursor</a> providing item-wise access to the cursor result set.</p>
+								</div>
+								<p>See also <a href="_cursor_.arraycursor.html#batches">ArrayCursor.batches</a>.</p>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="_cursor_.arraycursor.html" class="tsd-signature-type">ArrayCursor</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Methods</h2>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="_symbol_asynciterator_" class="tsd-anchor"></a>
+					<h3>[<wbr>Symbol.async<wbr>Iterator]</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">[<wbr>Symbol.async<wbr>Iterator]<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">AsyncGenerator</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Enables use with <code>for await</code> to deplete the cursor by asynchronously
+									yielding every batch in the cursor&#39;s remaining result set.</p>
+								</div>
+								<p><strong>Note</strong>: If the result set spans multiple batches, any remaining batches
+									will only be fetched on demand. Depending on the cursor&#39;s TTL and the
+									processing speed, this may result in the server discarding the cursor
+								before it is fully depleted.</p>
+								<dl class="tsd-comment-tags">
+									<dt>example</dt>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> cursor = <span class="hljs-keyword">await</span> db.query(aql<span class="hljs-string">`
+  FOR user IN users
+  FILTER user.isActive
+  RETURN user
+`</span>);
+<span class="hljs-keyword">for</span> <span class="hljs-keyword">await</span> (<span class="hljs-keyword">const</span> users <span class="hljs-keyword">of</span> cursor.batches) {
+  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">const</span> user <span class="hljs-keyword">of</span> users) {
+    <span class="hljs-built_in">console</span>.log(user.email, user.isAdmin);
+  }
+}</code></pre>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">AsyncGenerator</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="all" class="tsd-anchor"></a>
+					<h3>all</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">all<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Depletes the cursor, then returns an array containing all batches in the
+									cursor&#39;s remaining result list.</p>
+								</div>
+								<dl class="tsd-comment-tags">
+									<dt>example</dt>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> cursor = <span class="hljs-keyword">await</span> db.query(
+  aql<span class="hljs-string">`FOR x IN 1..5 RETURN x`</span>,
+  { <span class="hljs-attr">batchSize</span>: <span class="hljs-number">2</span> }
+);
+<span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> cursor.batches.all(); <span class="hljs-comment">// [[1, 2], [3, 4], [5]]</span>
+<span class="hljs-built_in">console</span>.log(cursor.hasNext); <span class="hljs-comment">// false</span></code></pre>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
+					<a name="flatmap" class="tsd-anchor"></a>
+					<h3>flat<wbr>Map</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
+						<li class="tsd-signature tsd-kind-icon">flat<wbr>Map&lt;R&gt;<span class="tsd-signature-symbol">(</span>callback<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>currentBatch<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">[]</span>, index<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, self<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">this</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">R</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">R</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">R</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Depletes the cursor by applying the <code>callback</code> function to each batch in
+										the cursor&#39;s remaining result list. Returns an array containing the
+									return values of <code>callback</code> for each batch, flattened to a depth of 1.</p>
+								</div>
+								<p><strong>Note</strong>: If the result set spans multiple batches, any remaining batches
+									will only be fetched on demand. Depending on the cursor&#39;s TTL and the
+									processing speed, this may result in the server discarding the cursor
+								before it is fully depleted.</p>
+								<p>See also:
+								<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/flatMap" class="external"><code>Array.prototype.flatMap</code></a>.</p>
+								<dl class="tsd-comment-tags">
+									<dt>example</dt>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> cursor = <span class="hljs-keyword">await</span> db.query(
+  aql<span class="hljs-string">`FOR x IN 1..5 RETURN x`</span>,
+  { <span class="hljs-attr">batchSize</span>: <span class="hljs-number">2</span> }
+);
+<span class="hljs-keyword">const</span> squares = <span class="hljs-keyword">await</span> cursor.batches.flatMap(<span class="hljs-function">(<span class="hljs-params">currentBatch</span>) =&gt;</span> {
+  <span class="hljs-keyword">return</span> currentBatch.map(<span class="hljs-function">(<span class="hljs-params">value</span>) =&gt;</span> value ** <span class="hljs-number">2</span>);
+});
+<span class="hljs-built_in">console</span>.log(squares); <span class="hljs-comment">// [1, 1, 2, 4, 3, 9, 4, 16, 5, 25]</span>
+<span class="hljs-built_in">console</span>.log(cursor.hasNext); <span class="hljs-comment">// false</span></code></pre>
+									</dd>
+									<dt>example</dt>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> cursor = <span class="hljs-keyword">await</span> db.query(
+  aql<span class="hljs-string">`FOR x IN 1..5 RETURN x`</span>,
+  { <span class="hljs-attr">batchSize</span>: <span class="hljs-number">1</span> }
+);
+<span class="hljs-keyword">const</span> odds = <span class="hljs-keyword">await</span> cursor.batches.flatMap(<span class="hljs-function">(<span class="hljs-params">currentBatch</span>) =&gt;</span> {
+  <span class="hljs-keyword">if</span> (currentBatch[<span class="hljs-number">0</span>] % <span class="hljs-number">2</span> === <span class="hljs-number">0</span>) {
+    <span class="hljs-keyword">return</span> []; <span class="hljs-comment">// empty array flattens into nothing</span>
+  }
+  <span class="hljs-keyword">return</span> currentBatch;
+});
+<span class="hljs-built_in">console</span>.logs(odds); <span class="hljs-comment">// [1, 3, 5]</span></code></pre>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-type-parameters-title">Type parameters</h4>
+							<ul class="tsd-type-parameters">
+								<li>
+									<h4>R</h4>
+									<div class="tsd-comment tsd-typography">
+										<p>Return type of the <code>callback</code> function.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>callback: <span class="tsd-signature-symbol">(</span>currentBatch<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">[]</span>, index<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, self<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">this</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">R</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">R</span><span class="tsd-signature-symbol">[]</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Function to execute on each element.</p>
+									</div>
+									<ul class="tsd-parameters">
+										<li class="tsd-parameter-signature">
+											<ul class="tsd-signatures tsd-kind-type-literal">
+												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>currentBatch<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">[]</span>, index<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, self<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">this</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">R</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">R</span><span class="tsd-signature-symbol">[]</span></li>
+											</ul>
+											<ul class="tsd-descriptions">
+												<li class="tsd-description">
+													<h4 class="tsd-parameters-title">Parameters</h4>
+													<ul class="tsd-parameters">
+														<li>
+															<h5>currentBatch: <span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">[]</span></h5>
+														</li>
+														<li>
+															<h5>index: <span class="tsd-signature-type">number</span></h5>
+														</li>
+														<li>
+															<h5>self: <span class="tsd-signature-type">this</span></h5>
+														</li>
+													</ul>
+													<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">R</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">R</span><span class="tsd-signature-symbol">[]</span></h4>
+												</li>
+											</ul>
+										</li>
+									</ul>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">R</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="foreach" class="tsd-anchor"></a>
+					<h3>for<wbr>Each</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">for<wbr>Each<span class="tsd-signature-symbol">(</span>callback<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>currentBatch<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">[]</span>, index<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, self<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">this</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Advances the cursor by applying the <code>callback</code> function to each item in
+										the cursor&#39;s remaining result list until the cursor is depleted or
+										<code>callback</code> returns the exact value <code>false</code>. Returns a promise that
+									evalues to <code>true</code> unless the function returned <code>false</code>.</p>
+								</div>
+								<p><strong>Note</strong>: If the result set spans multiple batches, any remaining batches
+									will only be fetched on demand. Depending on the cursor&#39;s TTL and the
+									processing speed, this may result in the server discarding the cursor
+								before it is fully depleted.</p>
+								<p>See also:
+								<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach" class="external"><code>Array.prototype.forEach</code></a>.</p>
+								<dl class="tsd-comment-tags">
+									<dt>example</dt>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> cursor = <span class="hljs-keyword">await</span> db.query(
+  aql<span class="hljs-string">`FOR x IN 1..5 RETURN x`</span>,
+  { <span class="hljs-attr">batchSize</span>: <span class="hljs-number">2</span> }
+);
+<span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> cursor.batches.forEach(<span class="hljs-function">(<span class="hljs-params">currentBatch</span>) =&gt;</span> {
+  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">const</span> value <span class="hljs-keyword">of</span> currentBatch) {
+    <span class="hljs-built_in">console</span>.log(value);
+  }
+});
+<span class="hljs-built_in">console</span>.log(result) <span class="hljs-comment">// true</span>
+<span class="hljs-built_in">console</span>.log(cursor.hasNext); <span class="hljs-comment">// false</span></code></pre>
+									</dd>
+									<dt>example</dt>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> cursor = <span class="hljs-keyword">await</span> db.query(
+  aql<span class="hljs-string">`FOR x IN 1..5 RETURN x`</span>,
+  { <span class="hljs-attr">batchSize</span>: <span class="hljs-number">2</span> }
+);
+<span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> cursor.batches.forEach(<span class="hljs-function">(<span class="hljs-params">currentBatch</span>) =&gt;</span> {
+  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">const</span> value <span class="hljs-keyword">of</span> currentBatch) {
+    <span class="hljs-built_in">console</span>.log(value);
+  }
+  <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>; <span class="hljs-comment">// stop after the first batch</span>
+});
+<span class="hljs-built_in">console</span>.log(result); <span class="hljs-comment">// false</span>
+<span class="hljs-built_in">console</span>.log(cursor.hasNext); <span class="hljs-comment">// true</span></code></pre>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>callback: <span class="tsd-signature-symbol">(</span>currentBatch<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">[]</span>, index<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, self<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">this</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">void</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Function to execute on each element.</p>
+									</div>
+									<ul class="tsd-parameters">
+										<li class="tsd-parameter-signature">
+											<ul class="tsd-signatures tsd-kind-type-literal">
+												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>currentBatch<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">[]</span>, index<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, self<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">this</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">void</span></li>
+											</ul>
+											<ul class="tsd-descriptions">
+												<li class="tsd-description">
+													<h4 class="tsd-parameters-title">Parameters</h4>
+													<ul class="tsd-parameters">
+														<li>
+															<h5>currentBatch: <span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">[]</span></h5>
+														</li>
+														<li>
+															<h5>index: <span class="tsd-signature-type">number</span></h5>
+														</li>
+														<li>
+															<h5>self: <span class="tsd-signature-type">this</span></h5>
+														</li>
+													</ul>
+													<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">void</span></h4>
+												</li>
+											</ul>
+										</li>
+									</ul>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="kill" class="tsd-anchor"></a>
+					<h3>kill</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">kill<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Drains the cursor and frees up associated database resources.</p>
+								</div>
+								<p>This method has no effect if all batches have already been consumed.</p>
+								<dl class="tsd-comment-tags">
+									<dt>example</dt>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> cursor1 = <span class="hljs-keyword">await</span> db.query(aql<span class="hljs-string">`FOR x IN 1..5 RETURN x`</span>);
+<span class="hljs-built_in">console</span>.log(cursor1.hasMore); <span class="hljs-comment">// false</span>
+<span class="hljs-keyword">await</span> cursor1.kill(); <span class="hljs-comment">// no effect</span>
+
+<span class="hljs-keyword">const</span> cursor2 = <span class="hljs-keyword">await</span> db.query(
+  aql<span class="hljs-string">`FOR x IN 1..5 RETURN x`</span>,
+  { <span class="hljs-attr">batchSize</span>: <span class="hljs-number">2</span> }
+);
+<span class="hljs-built_in">console</span>.log(cursor2.hasMore); <span class="hljs-comment">// true</span>
+<span class="hljs-keyword">await</span> cursor2.kill(); <span class="hljs-comment">// cursor is depleted</span></code></pre>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="loadall" class="tsd-anchor"></a>
+					<h3>load<wbr>All</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">load<wbr>All<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Loads all remaining batches from the server.</p>
+								</div>
+								<p><strong>Warning</strong>: This may impact memory use when working with very large
+								query result sets.</p>
+								<dl class="tsd-comment-tags">
+									<dt>example</dt>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> cursor = <span class="hljs-keyword">await</span> db.query(
+  aql<span class="hljs-string">`FOR x IN 1..5 RETURN x`</span>,
+  { <span class="hljs-attr">batchSize</span>: <span class="hljs-number">1</span> }
+);
+<span class="hljs-built_in">console</span>.log(cursor.hasMore); <span class="hljs-comment">// true</span>
+<span class="hljs-keyword">await</span> cursor.batches.loadAll();
+<span class="hljs-built_in">console</span>.log(cursor.hasMore); <span class="hljs-comment">// false</span>
+<span class="hljs-built_in">console</span>.log(cursor.hasNext); <span class="hljs-comment">// true</span>
+<span class="hljs-keyword">for</span> <span class="hljs-keyword">await</span> (<span class="hljs-keyword">const</span> item <span class="hljs-keyword">of</span> cursor) {
+  <span class="hljs-built_in">console</span>.log(item);
+  <span class="hljs-comment">// No server roundtrips necessary any more</span>
+}</code></pre>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
+					<a name="map" class="tsd-anchor"></a>
+					<h3>map</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
+						<li class="tsd-signature tsd-kind-icon">map&lt;R&gt;<span class="tsd-signature-symbol">(</span>callback<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>currentBatch<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">[]</span>, index<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, self<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">this</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">R</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">R</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Depletes the cursor by applying the <code>callback</code> function to each batch in
+										the cursor&#39;s remaining result list. Returns an array containing the
+									return values of <code>callback</code> for each batch.</p>
+								</div>
+								<p><strong>Note</strong>: This creates an array of all return values, which may impact
+									memory use when working with very large query result sets. Consider using
+									<a href="_cursor_.batchedarraycursor.html#foreach">BatchedArrayCursor.forEach</a>, <a href="_cursor_.batchedarraycursor.html#reduce">BatchedArrayCursor.reduce</a> or
+								<a href="_cursor_.batchedarraycursor.html#flatmap">BatchedArrayCursor.flatMap</a> instead.</p>
+								<p>See also:
+								<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map" class="external"><code>Array.prototype.map</code></a>.</p>
+								<dl class="tsd-comment-tags">
+									<dt>example</dt>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> cursor = <span class="hljs-keyword">await</span> db.query(
+  aql<span class="hljs-string">`FOR x IN 1..5 RETURN x`</span>,
+  { <span class="hljs-attr">batchSize</span>: <span class="hljs-number">2</span> }
+);
+<span class="hljs-keyword">const</span> squares = <span class="hljs-keyword">await</span> cursor.batches.map(<span class="hljs-function">(<span class="hljs-params">currentBatch</span>) =&gt;</span> {
+  <span class="hljs-keyword">return</span> currentBatch.map(<span class="hljs-function">(<span class="hljs-params">value</span>) =&gt;</span> value ** <span class="hljs-number">2</span>);
+});
+<span class="hljs-built_in">console</span>.log(squares); <span class="hljs-comment">// [[1, 4], [9, 16], [25]]</span>
+<span class="hljs-built_in">console</span>.log(cursor.hasNext); <span class="hljs-comment">// false</span></code></pre>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-type-parameters-title">Type parameters</h4>
+							<ul class="tsd-type-parameters">
+								<li>
+									<h4>R</h4>
+									<div class="tsd-comment tsd-typography">
+										<p>Return type of the <code>callback</code> function.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>callback: <span class="tsd-signature-symbol">(</span>currentBatch<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">[]</span>, index<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, self<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">this</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">R</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Function to execute on each element.</p>
+									</div>
+									<ul class="tsd-parameters">
+										<li class="tsd-parameter-signature">
+											<ul class="tsd-signatures tsd-kind-type-literal">
+												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>currentBatch<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">[]</span>, index<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, self<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">this</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">R</span></li>
+											</ul>
+											<ul class="tsd-descriptions">
+												<li class="tsd-description">
+													<h4 class="tsd-parameters-title">Parameters</h4>
+													<ul class="tsd-parameters">
+														<li>
+															<h5>currentBatch: <span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">[]</span></h5>
+														</li>
+														<li>
+															<h5>index: <span class="tsd-signature-type">number</span></h5>
+														</li>
+														<li>
+															<h5>self: <span class="tsd-signature-type">this</span></h5>
+														</li>
+													</ul>
+													<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">R</span></h4>
+												</li>
+											</ul>
+										</li>
+									</ul>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">R</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="next" class="tsd-anchor"></a>
+					<h3>next</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">next<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Advances the cursor and returns all remaining values in the cursor&#39;s
+										current batch. If the current batch has already been exhausted, fetches
+										the next batch from the server and returns it, or <code>undefined</code> if the
+									cursor has been depleted.</p>
+								</div>
+								<p><strong>Note</strong>: If the result set spans multiple batches, any remaining batches
+									will only be fetched on demand. Depending on the cursor&#39;s TTL and the
+									processing speed, this may result in the server discarding the cursor
+								before it is fully depleted.</p>
+								<dl class="tsd-comment-tags">
+									<dt>example</dt>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> cursor = <span class="hljs-keyword">await</span> db.query(
+  aql<span class="hljs-string">`FOR i IN 1..10 RETURN i`</span>,
+  { <span class="hljs-attr">batchSize</span>: <span class="hljs-number">5</span> }
+);
+<span class="hljs-keyword">const</span> firstBatch = <span class="hljs-keyword">await</span> cursor.batches.next(); <span class="hljs-comment">// [1, 2, 3, 4, 5]</span>
+<span class="hljs-keyword">await</span> cursor.next(); <span class="hljs-comment">// 6</span>
+<span class="hljs-keyword">const</span> lastBatch = <span class="hljs-keyword">await</span> cursor.batches.next(); <span class="hljs-comment">// [7, 8, 9, 10]</span>
+<span class="hljs-built_in">console</span>.log(cursor.hasNext); <span class="hljs-comment">// false</span></code></pre>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
+					<a name="reduce" class="tsd-anchor"></a>
+					<h3>reduce</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
+						<li class="tsd-signature tsd-kind-icon">reduce&lt;R&gt;<span class="tsd-signature-symbol">(</span>reducer<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>accumulator<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">R</span>, currentBatch<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">[]</span>, index<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, self<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">this</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">R</span>, initialValue<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">R</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">R</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">reduce&lt;R&gt;<span class="tsd-signature-symbol">(</span>reducer<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>accumulator<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">R</span>, currentBatch<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">[]</span>, index<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, self<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">this</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">R</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">R</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Depletes the cursor by applying the <code>reducer</code> function to each batch in
+										the cursor&#39;s remaining result list. Returns the return value of <code>reducer</code>
+									for the last batch.</p>
+								</div>
+								<p><strong>Note</strong>: Most complex uses of the <code>reduce</code> method can be replaced with
+									simpler code using <a href="_cursor_.batchedarraycursor.html#foreach">BatchedArrayCursor.forEach</a> or the <code>for await</code>
+								syntax.</p>
+								<p><strong>Note</strong>: If the result set spans multiple batches, any remaining batches
+									will only be fetched on demand. Depending on the cursor&#39;s TTL and the
+									processing speed, this may result in the server discarding the cursor
+								before it is fully depleted.</p>
+								<p>See also:
+								<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reduce" class="external"><code>Array.prototype.reduce</code></a>.</p>
+								<dl class="tsd-comment-tags">
+									<dt>example</dt>
+									<dd><pre><code class="language-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">largestValue</span>(<span class="hljs-params">baseline, values</span>) </span>{
+  <span class="hljs-keyword">return</span> <span class="hljs-built_in">Math</span>.max(baseline, ...values);
+}
+<span class="hljs-keyword">const</span> cursor = <span class="hljs-keyword">await</span> db.query(
+  aql<span class="hljs-string">`FOR x IN 1..5 RETURN x`</span>,
+  { <span class="hljs-attr">batchSize</span>: <span class="hljs-number">3</span> }
+);
+<span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> cursor.batches.reduce(largestValue, <span class="hljs-number">0</span>);
+<span class="hljs-built_in">console</span>.log(result); <span class="hljs-comment">// 5</span>
+<span class="hljs-built_in">console</span>.log(cursor.hasNext); <span class="hljs-comment">// false</span>
+<span class="hljs-keyword">const</span> emptyResult = <span class="hljs-keyword">await</span> cursor.batches.reduce(largestValue, <span class="hljs-number">0</span>);
+<span class="hljs-built_in">console</span>.log(emptyResult); <span class="hljs-comment">// 0</span></code></pre>
+									</dd>
+									<dt>example</dt>
+									<dd><pre><code class="language-js"><span class="hljs-comment">// BAD! NEEDLESSLY COMPLEX!</span>
+<span class="hljs-keyword">const</span> cursor = <span class="hljs-keyword">await</span> db.query(
+  aql<span class="hljs-string">`FOR x IN 1..5 RETURN x`</span>,
+  { <span class="hljs-attr">batchSize</span>: <span class="hljs-number">1</span> }
+);
+<span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> cursor.reduce(<span class="hljs-function">(<span class="hljs-params">accumulator, currentBatch</span>) =&gt;</span> {
+  accumulator[
+    currentBatch[<span class="hljs-number">0</span>] % <span class="hljs-number">2</span> === <span class="hljs-number">0</span> ? <span class="hljs-string">&quot;even&quot;</span> : <span class="hljs-string">&quot;odd&quot;</span>
+  ].push(...currentBatch);
+  <span class="hljs-keyword">return</span> accumulator;
+}, { <span class="hljs-attr">odd</span>: [], <span class="hljs-attr">even</span>: [] });
+<span class="hljs-built_in">console</span>.log(result); <span class="hljs-comment">// { odd: [1, 3, 5], even: [2, 4] }</span>
+
+<span class="hljs-comment">// GOOD! MUCH SIMPLER!</span>
+<span class="hljs-keyword">const</span> cursor = <span class="hljs-keyword">await</span> db.query(aql<span class="hljs-string">`FOR x IN 1..5 RETURN x`</span>);
+<span class="hljs-keyword">const</span> odd = [];
+<span class="hljs-keyword">const</span> even = [];
+<span class="hljs-keyword">for</span> <span class="hljs-keyword">await</span> (<span class="hljs-keyword">const</span> item <span class="hljs-keyword">of</span> cursor) {
+  <span class="hljs-keyword">if</span> (currentBatch[<span class="hljs-number">0</span>] % <span class="hljs-number">2</span> === <span class="hljs-number">0</span>) {
+    even.push(...currentBatch);
+  } <span class="hljs-keyword">else</span> {
+    odd.push(...currentBatch);
+  }
+}
+<span class="hljs-built_in">console</span>.log({ odd, even }); <span class="hljs-comment">// { odd: [1, 3, 5], even: [2, 4] }</span></code></pre>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-type-parameters-title">Type parameters</h4>
+							<ul class="tsd-type-parameters">
+								<li>
+									<h4>R</h4>
+									<div class="tsd-comment tsd-typography">
+										<p>Return type of the <code>reducer</code> function.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>reducer: <span class="tsd-signature-symbol">(</span>accumulator<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">R</span>, currentBatch<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">[]</span>, index<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, self<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">this</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">R</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Function to execute on each element.</p>
+									</div>
+									<ul class="tsd-parameters">
+										<li class="tsd-parameter-signature">
+											<ul class="tsd-signatures tsd-kind-type-literal">
+												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>accumulator<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">R</span>, currentBatch<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">[]</span>, index<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, self<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">this</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">R</span></li>
+											</ul>
+											<ul class="tsd-descriptions">
+												<li class="tsd-description">
+													<h4 class="tsd-parameters-title">Parameters</h4>
+													<ul class="tsd-parameters">
+														<li>
+															<h5>accumulator: <span class="tsd-signature-type">R</span></h5>
+														</li>
+														<li>
+															<h5>currentBatch: <span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">[]</span></h5>
+														</li>
+														<li>
+															<h5>index: <span class="tsd-signature-type">number</span></h5>
+														</li>
+														<li>
+															<h5>self: <span class="tsd-signature-type">this</span></h5>
+														</li>
+													</ul>
+													<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">R</span></h4>
+												</li>
+											</ul>
+										</li>
+									</ul>
+								</li>
+								<li>
+									<h5>initialValue: <span class="tsd-signature-type">R</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Initial value of the <code>accumulator</code> value passed to
+										the <code>reducer</code> function.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">R</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Depletes the cursor by applying the <code>reducer</code> function to each batch in
+										the cursor&#39;s remaining result list. Returns the return value of <code>reducer</code>
+									for the last batch.</p>
+								</div>
+								<p><strong>Note</strong>: If the result set spans multiple batches, any remaining batches
+									will only be fetched on demand. Depending on the cursor&#39;s TTL and the
+									processing speed, this may result in the server discarding the cursor
+								before it is fully depleted.</p>
+								<p>See also:
+								<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reduce" class="external"><code>Array.prototype.reduce</code></a>.</p>
+								<dl class="tsd-comment-tags">
+									<dt>example</dt>
+									<dd><pre><code class="language-js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">largestValue</span>(<span class="hljs-params">values1, values2</span>) </span>{
+  <span class="hljs-keyword">return</span> [<span class="hljs-built_in">Math</span>.max(...values1, ...values2)];
+}
+<span class="hljs-keyword">const</span> cursor = <span class="hljs-keyword">await</span> db.query(
+  aql<span class="hljs-string">`FOR x IN 1..5 RETURN x`</span>,
+  { <span class="hljs-attr">batchSize</span>: <span class="hljs-number">3</span> }
+);
+<span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> cursor.batches.reduce(largestValue);
+<span class="hljs-built_in">console</span>.log(result); <span class="hljs-comment">// [5]</span>
+<span class="hljs-built_in">console</span>.log(cursor.hasNext); <span class="hljs-comment">// false</span></code></pre>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-type-parameters-title">Type parameters</h4>
+							<ul class="tsd-type-parameters">
+								<li>
+									<h4>R</h4>
+									<div class="tsd-comment tsd-typography">
+										<p>Return type of the <code>reducer</code> function.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>reducer: <span class="tsd-signature-symbol">(</span>accumulator<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">R</span>, currentBatch<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">[]</span>, index<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, self<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">this</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">R</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Function to execute on each element.</p>
+									</div>
+									<ul class="tsd-parameters">
+										<li class="tsd-parameter-signature">
+											<ul class="tsd-signatures tsd-kind-type-literal">
+												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>accumulator<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">R</span>, currentBatch<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">[]</span>, index<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, self<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">this</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">R</span></li>
+											</ul>
+											<ul class="tsd-descriptions">
+												<li class="tsd-description">
+													<h4 class="tsd-parameters-title">Parameters</h4>
+													<ul class="tsd-parameters">
+														<li>
+															<h5>accumulator: <span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">R</span></h5>
+														</li>
+														<li>
+															<h5>currentBatch: <span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">[]</span></h5>
+														</li>
+														<li>
+															<h5>index: <span class="tsd-signature-type">number</span></h5>
+														</li>
+														<li>
+															<h5>self: <span class="tsd-signature-type">this</span></h5>
+														</li>
+													</ul>
+													<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">R</span></h4>
+												</li>
+											</ul>
+										</li>
+									</ul>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">R</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="../globals.html"><em>Globals</em></a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="../modules/_analyzer_.html">&quot;analyzer&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="../modules/_aql_.html">&quot;aql&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="../modules/_collection_.html">&quot;collection&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="../modules/_connection_.html">&quot;connection&quot;</a>
+					</li>
+					<li class="current tsd-kind-module">
+						<a href="../modules/_cursor_.html">&quot;cursor&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="../modules/_database_.html">&quot;database&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="../modules/_documents_.html">&quot;documents&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="../modules/_error_.html">&quot;error&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="../modules/_foxx_manifest_.html">&quot;foxx-<wbr>manifest&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="../modules/_graph_.html">&quot;graph&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="../modules/_index_.html">&quot;index&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="../modules/_indexes_.html">&quot;indexes&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="../modules/_route_.html">&quot;route&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="../modules/_transaction_.html">&quot;transaction&quot;</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="../modules/_view_.html">&quot;view&quot;</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+					<li class=" tsd-kind-class tsd-parent-kind-module tsd-has-type-parameter">
+						<a href="_cursor_.arraycursor.html" class="tsd-kind-icon">Array<wbr>Cursor</a>
+					</li>
+				</ul>
+				<ul class="current">
+					<li class="current tsd-kind-class tsd-parent-kind-module tsd-has-type-parameter">
+						<a href="_cursor_.batchedarraycursor.html" class="tsd-kind-icon">Batched<wbr>Array<wbr>Cursor</a>
+						<ul>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="_cursor_.batchedarraycursor.html#count" class="tsd-kind-icon">count</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="_cursor_.batchedarraycursor.html#extra" class="tsd-kind-icon">extra</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="_cursor_.batchedarraycursor.html#hasmore" class="tsd-kind-icon">has<wbr>More</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="_cursor_.batchedarraycursor.html#hasnext" class="tsd-kind-icon">has<wbr>Next</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="_cursor_.batchedarraycursor.html#items" class="tsd-kind-icon">items</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="_cursor_.batchedarraycursor.html#_symbol_asynciterator_" class="tsd-kind-icon">[<wbr>Symbol.async<wbr>Iterator]</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="_cursor_.batchedarraycursor.html#all" class="tsd-kind-icon">all</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
+								<a href="_cursor_.batchedarraycursor.html#flatmap" class="tsd-kind-icon">flat<wbr>Map</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="_cursor_.batchedarraycursor.html#foreach" class="tsd-kind-icon">for<wbr>Each</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="_cursor_.batchedarraycursor.html#kill" class="tsd-kind-icon">kill</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="_cursor_.batchedarraycursor.html#loadall" class="tsd-kind-icon">load<wbr>All</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
+								<a href="_cursor_.batchedarraycursor.html#map" class="tsd-kind-icon">map</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="_cursor_.batchedarraycursor.html#next" class="tsd-kind-icon">next</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter">
+								<a href="_cursor_.batchedarraycursor.html#reduce" class="tsd-kind-icon">reduce</a>
+							</li>
+						</ul>
+					</li>
+				</ul>
+				<ul class="after-current">
+					<li class=" tsd-kind-interface tsd-parent-kind-module">
+						<a href="../interfaces/_cursor_.cursorextras.html" class="tsd-kind-icon">Cursor<wbr>Extras</a>
+					</li>
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-namespace"><span class="tsd-kind-icon">Namespace</span></li>
+				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
+				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
+				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
+				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
+				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="../assets/js/main.js"></script>
+</body>
+</html>
