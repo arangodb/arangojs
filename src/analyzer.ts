@@ -54,7 +54,12 @@ export type AnalyzerInfo =
   | StemAnalyzerInfo
   | NormAnalyzerInfo
   | NgramAnalyzerInfo
-  | TextAnalyzerInfo;
+  | TextAnalyzerInfo
+  | PipelineAnalyzer
+  | AqlAnalyzer
+  | GeoJsonAnalyzer
+  | GeoPointAnalyzer
+  | StopwordsAnalyzer;
 
 /**
  * Analyzer type and type-specific properties for an Identity Analyzer.
@@ -219,6 +224,10 @@ export type TextAnalyzerProperties = {
    * Default: `true`
    */
   stemming?: boolean;
+  /**
+   * If present, then edge n-grams are generated for each token (word).
+   */
+  edgeNgram?: { min?: number; max?: number; preserveOriginal?: boolean };
 };
 
 /**
@@ -233,6 +242,181 @@ export type TextAnalyzerInfo = {
    * Additional properties for the Analyzer.
    */
   properties: TextAnalyzerProperties;
+};
+
+/**
+ * Properties of a Pipeline Analyzer.
+ */
+export type PipelineAnalyzerProperties = {
+  /**
+   * Definitions for Analyzers to chain in this Pipeline Analyzer.
+   */
+  pipeline: AnalyzerInfo[];
+};
+
+/**
+ * Analyzer type and type-specific properties for a Pipeline Analyzer
+ */
+export type PipelineAnalyzer = {
+  /**
+   * Type of the Analyzer.
+   */
+  type: "pipeline";
+  /**
+   * Additional properties for the Analyzer.
+   */
+  properties: PipelineAnalyzerProperties;
+};
+
+/**
+ * Properties of an AQL Analyzer.
+ */
+export type AqlAnalyzerProperties = {
+  /**
+   * AQL query to be executed.
+   */
+  queryString: string;
+  /**
+   * If set to `true`, the position is set to `0` for all members of the query result array.
+   *
+   * Default: `false`
+   */
+  collapsePositions?: boolean;
+  /**
+   * If set to `false`, `null` values will be discarded from the View index.
+   *
+   * Default: `true`
+   */
+  keepNull?: boolean;
+  /**
+   * Number between `1` and `1000` that determines the batch size for reading
+   * data from the query.
+   *
+   * Default: `1`
+   */
+  batchSize?: number;
+  /**
+   * Memory limit for query execution in bytes.
+   *
+   * Default: `1048576` (1 MiB)
+   */
+  memoryLimit?: number;
+  /**
+   * Data type of the returned tokens.
+   *
+   * Default: `"string"`
+   */
+  returnType?: "string" | "number" | "bool";
+};
+
+/**
+ * Analyzer type and type-specific properties for an AQL Analyzer
+ */
+export type AqlAnalyzer = {
+  /**
+   * Type of the Analyzer.
+   */
+  type: "aql";
+  /**
+   * Additional properties for the Analyzer.
+   */
+  properties: AqlAnalyzerProperties;
+};
+
+/**
+ * Properties of a GeoJSON Analyzer.
+ */
+export type GeoJsonAnalyzerProperties = {
+  /**
+   * If set to `"centroid"`, only the centroid of the input geometry will be
+   * computed and indexed.
+   *
+   * If set to `"point"` only GeoJSON objects of type Point will be indexed and
+   * all other geometry types will be ignored.
+   *
+   * Default: `"shape"`
+   */
+  type?: "shape" | "centroid" | "point";
+  /**
+   * Options for fine-tuning geo queries.
+   *
+   * Default: `{ maxCells: 20, minLevel: 4, maxLevel: 23 }`
+   */
+  options?: { maxCells?: number; minLevel?: number; maxLevel?: number };
+};
+
+/**
+ * Analyzer type and type-specific properties for a GeoJSON Analyzer
+ */
+export type GeoJsonAnalyzer = {
+  /**
+   * Type of the Analyzer.
+   */
+  type: "geojson";
+  /**
+   * Additional properties for the Analyzer.
+   */
+  properties: GeoJsonAnalyzerProperties;
+};
+
+/**
+ * Properties of a GeoPoint Analyzer.
+ */
+export type GeoPointAnalyzerProperties = {
+  /**
+   * Attribute paths of the latitude value relative to the field for which the
+   * Analyzer is defined in the View.
+   */
+  latitude?: string[];
+  /**
+   * Attribute paths of the longitude value relative to the field for which the
+   * Analyzer is defined in the View.
+   */
+  longitude?: string[];
+  /**
+   * Options for fine-tuning geo queries.
+   *
+   * Default: `{ maxCells: 20, minLevel: 4, maxLevel: 23 }`
+   */
+  options?: { minCells?: number; minLevel?: number; maxLevel?: number };
+};
+
+/**
+ * Analyzer type and type-specific properties for a GeoPoint Analyzer
+ */
+export type GeoPointAnalyzer = {
+  /**
+   * Type of the Analyzer.
+   */
+  type: "geopoint";
+  /**
+   * Additional properties for the Analyzer.
+   */
+  properties: GeoPointAnalyzerProperties;
+};
+
+/**
+ * Properties of a Stopwords Analyzer.
+ */
+export type StopwordsAnalyzerProperties = {
+  /**
+   * Hex-encoded strings that describe the tokens to be discarded.
+   */
+  stopwords: string[];
+};
+
+/**
+ * Analyzer type and type-specific properties for a Stopwords Analyzer
+ */
+export type StopwordsAnalyzer = {
+  /**
+   * Type of the Analyzer.
+   */
+  type: "stopwords";
+  /**
+   * Additional properties for the Analyzer.
+   */
+  properties: StopwordsAnalyzerProperties;
 };
 
 /**

@@ -55,6 +55,13 @@ export type EnsureHashIndexOptions = {
    * Default: `true`
    */
   deduplicate?: boolean;
+  /**
+   * If set to `false`, index selectivity estimates will be disabled for this
+   * index.
+   *
+   * Default: `true`
+   */
+  estimates?: boolean;
 };
 
 /**
@@ -96,6 +103,13 @@ export type EnsureSkiplistIndexOptions = {
    * Default: `true`
    */
   deduplicate?: boolean;
+  /**
+   * If set to `false`, index selectivity estimates will be disabled for this
+   * index.
+   *
+   * Default: `true`
+   */
+  estimates?: boolean;
 };
 
 /**
@@ -128,6 +142,13 @@ export type EnsurePersistentIndexOptions = {
    * Default: `false`
    */
   sparse?: boolean;
+  /**
+   * If set to `false`, index selectivity estimates will be disabled for this
+   * index.
+   *
+   * Default: `true`
+   */
+  estimates?: boolean;
 };
 
 /**
