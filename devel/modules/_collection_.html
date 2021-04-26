@@ -98,6 +98,7 @@
 						<section class="tsd-index-section ">
 							<h3>Type aliases</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="_collection_.html#collectionbatchreadoptions" class="tsd-kind-icon">Collection<wbr>Batch<wbr>Read<wbr>Options</a></li>
 								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="_collection_.html#collectionchecksumoptions" class="tsd-kind-icon">Collection<wbr>Checksum<wbr>Options</a></li>
 								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="_collection_.html#collectiondropoptions" class="tsd-kind-icon">Collection<wbr>Drop<wbr>Options</a></li>
 								<li class="tsd-kind-type-alias tsd-parent-kind-module tsd-has-type-parameter"><a href="_collection_.html#collectionedgesresult" class="tsd-kind-icon">Collection<wbr>Edges<wbr>Result</a></li>
@@ -146,6 +147,33 @@
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Type aliases</h2>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
+					<a name="collectionbatchreadoptions" class="tsd-anchor"></a>
+					<h3>Collection<wbr>Batch<wbr>Read<wbr>Options</h3>
+					<div class="tsd-signature tsd-kind-icon">Collection<wbr>Batch<wbr>Read<wbr>Options<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>allowDirtyRead<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span><span class="tsd-signature-symbol"> }</span></div>
+					<aside class="tsd-sources">
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Options for retrieving multiple documents from a collection.</p>
+						</div>
+					</div>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter">
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> allow<wbr>Dirty<wbr>Read<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>If set to <code>true</code>, the request will explicitly permit ArangoDB to return a
+											potentially dirty or stale result and arangojs will load balance the
+										request without distinguishing between leaders and followers.</p>
+									</div>
+								</div>
+							</li>
+						</ul>
+					</div>
+				</section>
 				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
 					<a name="collectionchecksumoptions" class="tsd-anchor"></a>
 					<h3>Collection<wbr>Checksum<wbr>Options</h3>
@@ -2242,6 +2270,9 @@
 					</li>
 					<li class=" tsd-kind-interface tsd-parent-kind-module tsd-has-type-parameter">
 						<a href="../interfaces/_collection_.edgecollection.html" class="tsd-kind-icon">Edge<wbr>Collection</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
+						<a href="_collection_.html#collectionbatchreadoptions" class="tsd-kind-icon">Collection<wbr>Batch<wbr>Read<wbr>Options</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
 						<a href="_collection_.html#collectionchecksumoptions" class="tsd-kind-icon">Collection<wbr>Checksum<wbr>Options</a>

@@ -139,6 +139,7 @@
 								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-overwrite"><a href="_collection_.edgecollection.html#document" class="tsd-kind-icon">document</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-inherited"><a href="_collection_.edgecollection.html#documentexists" class="tsd-kind-icon">document<wbr>Exists</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-inherited"><a href="_collection_.edgecollection.html#documentid" class="tsd-kind-icon">document<wbr>Id</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-overwrite"><a href="_collection_.edgecollection.html#documents" class="tsd-kind-icon">documents</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-inherited"><a href="_collection_.edgecollection.html#drop" class="tsd-kind-icon">drop</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-inherited"><a href="_collection_.edgecollection.html#dropindex" class="tsd-kind-icon">drop<wbr>Index</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="_collection_.edgecollection.html#edges" class="tsd-kind-icon">edges</a></li>
@@ -682,6 +683,56 @@
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface tsd-is-overwrite">
+					<a name="documents" class="tsd-anchor"></a>
+					<h3>documents</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface tsd-is-overwrite">
+						<li class="tsd-signature tsd-kind-icon">documents<span class="tsd-signature-symbol">(</span>selectors<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">{ </span>_key<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">[]</span>, options<span class="tsd-signature-symbol">?: </span><a href="../modules/_collection_.html#collectionbatchreadoptions" class="tsd-signature-type">CollectionBatchReadOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/_documents_.html#edge" class="tsd-signature-type">Edge</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Overrides <a href="_collection_.documentcollection.html">DocumentCollection</a>.<a href="_collection_.documentcollection.html#documents">documents</a></p>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Retrieves the documents matching the given key or id values.</p>
+								</div>
+								<p>Throws an exception when passed a document or <code>_id</code> from a different
+								collection, or if the document does not exist.</p>
+								<dl class="tsd-comment-tags">
+									<dt>example</dt>
+									<dd><pre><code class="language-js"><span class="hljs-keyword">const</span> db = <span class="hljs-keyword">new</span> Database();
+<span class="hljs-keyword">const</span> collection = db.collection(<span class="hljs-string">&quot;some-collection&quot;</span>);
+<span class="hljs-keyword">try</span> {
+  <span class="hljs-keyword">const</span> documents = <span class="hljs-keyword">await</span> collection.documents([<span class="hljs-string">&quot;abc123&quot;</span>, <span class="hljs-string">&quot;xyz456&quot;</span>]);
+  <span class="hljs-built_in">console</span>.log(documents);
+} <span class="hljs-keyword">catch</span> (e) {
+  <span class="hljs-built_in">console</span>.error(<span class="hljs-string">&quot;Could not find document&quot;</span>);
+}</code></pre>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>selectors: <span class="tsd-signature-symbol">(</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">{ </span>_key<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">[]</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Array of document <code>_key</code>, <code>_id</code> or objects with either
+										of those properties (e.g. a document from this collection).</p>
+									</div>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> options: <a href="../modules/_collection_.html#collectionbatchreadoptions" class="tsd-signature-type">CollectionBatchReadOptions</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Options for retrieving the documents.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/_documents_.html#edge" class="tsd-signature-type">Edge</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -2858,6 +2909,9 @@
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface tsd-is-inherited">
 								<a href="_collection_.edgecollection.html#documentid" class="tsd-kind-icon">document<wbr>Id</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-interface tsd-is-overwrite">
+								<a href="_collection_.edgecollection.html#documents" class="tsd-kind-icon">documents</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface tsd-is-inherited">
 								<a href="_collection_.edgecollection.html#drop" class="tsd-kind-icon">drop</a>
