@@ -76,7 +76,7 @@ describe("DocumentCollection API", function () {
     });
   });
   describe("documentCollection.documentExists", () => {
-    let data = { foo: "bar" };
+    const data = { foo: "bar" };
     let meta: DocumentMetadata;
     beforeEach(async () => {
       meta = await collection.save(data);

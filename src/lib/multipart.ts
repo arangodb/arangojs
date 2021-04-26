@@ -15,6 +15,7 @@ declare class MultiPart {
   stream(): Readable;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const Multipart = require("multi-part") as typeof MultiPart;
 
 /**

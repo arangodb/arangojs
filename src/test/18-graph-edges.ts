@@ -10,7 +10,8 @@ describe("Manipulating graph edges", function () {
   let graph: Graph;
   before(async () => {
     db = new Database(config);
-    if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE") await db.acquireHostList();
+    if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE")
+      await db.acquireHostList();
     await db.createDatabase(dbName);
     db.useDatabase(dbName);
   });
@@ -49,18 +50,8 @@ describe("Manipulating graph edges", function () {
       const edgeDefinition = info.edgeDefinitions.filter(
         (e: any) => e.collection === "knows"
       );
-      expect(
-        [].concat.apply(
-          [],
-          edgeDefinition.map((e: any) => e.from)
-        )
-      ).to.contain("person");
-      expect(
-        [].concat.apply(
-          [],
-          edgeDefinition.map((e: any) => e.to)
-        )
-      ).to.contain("person");
+      expect(edgeDefinition.map((e: any) => e.from)).to.contain("person");
+      expect(edgeDefinition.map((e: any) => e.to)).to.contain("person");
     });
   });
   describe("graph.edgeCollections", () => {
@@ -104,18 +95,8 @@ describe("Manipulating graph edges", function () {
       const edgeDefinition = info.edgeDefinitions.filter(
         (e: any) => e.collection === "works_in"
       );
-      expect(
-        [].concat.apply(
-          [],
-          edgeDefinition.map((e: any) => e.from)
-        )
-      ).to.contain("person");
-      expect(
-        [].concat.apply(
-          [],
-          edgeDefinition.map((e: any) => e.to)
-        )
-      ).to.contain("city");
+      expect(edgeDefinition.map((e: any) => e.from)).to.contain("person");
+      expect(edgeDefinition.map((e: any) => e.to)).to.contain("city");
     });
   });
   describe("graph.replaceEdgeDefinition", () => {
@@ -135,18 +116,8 @@ describe("Manipulating graph edges", function () {
       const edgeDefinition = info.edgeDefinitions.filter(
         (e: any) => e.collection === "knows"
       );
-      expect(
-        [].concat.apply(
-          [],
-          edgeDefinition.map((e: any) => e.from)
-        )
-      ).to.contain("person");
-      expect(
-        [].concat.apply(
-          [],
-          edgeDefinition.map((e: any) => e.to)
-        )
-      ).to.contain("city");
+      expect(edgeDefinition.map((e: any) => e.from)).to.contain("person");
+      expect(edgeDefinition.map((e: any) => e.to)).to.contain("city");
     });
   });
   describe("graph.removeEdgeDefinition", () => {

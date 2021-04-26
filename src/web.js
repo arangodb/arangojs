@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 "use strict";
 const { aql } = require("./aql");
 const { CollectionStatus, CollectionType } = require("./collection");

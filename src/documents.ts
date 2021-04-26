@@ -45,28 +45,30 @@ export type EdgeMetadata = {
 /**
  * Type representing an object that can be stored in a collection.
  */
-export type DocumentData<T extends object = any> = T &
+export type DocumentData<T extends Record<string, unknown> = any> = T &
   Partial<DocumentMetadata> &
   Partial<EdgeMetadata>;
 
 /**
  * Type representing an object that can be stored in an edge collection.
  */
-export type EdgeData<T extends object = any> = T &
+export type EdgeData<T extends Record<string, unknown> = any> = T &
   Partial<DocumentMetadata> &
   EdgeMetadata;
 
 /**
  * Type representing a document stored in a collection.
  */
-export type Document<T extends object = any> = T &
+export type Document<T extends Record<string, unknown> = any> = T &
   DocumentMetadata &
   Partial<EdgeMetadata>;
 
 /**
  * Type representing an edge document stored in an edge collection.
  */
-export type Edge<T extends object = any> = T & DocumentMetadata & EdgeMetadata;
+export type Edge<T extends Record<string, unknown> = any> = T &
+  DocumentMetadata &
+  EdgeMetadata;
 
 /**
  * Type representing patch data for a given object type to represent a payload
@@ -75,7 +77,9 @@ export type Edge<T extends object = any> = T & DocumentMetadata & EdgeMetadata;
  * This differs from `Partial` in that it also applies itself to any nested
  * objects recursively.
  */
-export type Patch<T = object> = { [K in keyof T]?: T[K] | Patch<T[K]> };
+export type Patch<T = Record<string, unknown>> = {
+  [K in keyof T]?: T[K] | Patch<T[K]>;
+};
 
 /**
  * An object with an ArangoDB document `_id` property.

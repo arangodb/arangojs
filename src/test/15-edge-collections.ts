@@ -176,7 +176,7 @@ describe("EdgeCollection API", function () {
     });
   });
   describe("edgeCollection.traversal", () => {
-    let knows: EdgeCollection<{}>;
+    let knows: EdgeCollection<Record<string, unknown>>;
     beforeEach(async () => {
       let person;
       [knows, person] = await Promise.all<

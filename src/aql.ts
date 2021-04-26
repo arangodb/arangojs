@@ -78,7 +78,7 @@ export type AqlValue =
   | boolean
   | null
   | undefined
-  | object
+  | Record<string, unknown>
   | any[];
 
 /**
@@ -259,6 +259,7 @@ export function aql(
   };
 }
 
+// eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace aql {
   /**
    * Marks an arbitrary scalar value (i.e. a string, number or boolean) as

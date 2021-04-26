@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 "use strict";
 var resolve = require("path").resolve;
 var webpack = require("webpack");
@@ -23,6 +24,10 @@ module.exports = {
   },
   resolve: {
     extensions: [".web.js", ".web.ts", ".js", ".ts", ".json"],
+    fallback: {
+      url: require.resolve("url/"),
+      querystring: require.resolve("querystring/"),
+    },
   },
   plugins: [
     new webpack.DefinePlugin({

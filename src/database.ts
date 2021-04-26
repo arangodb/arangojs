@@ -1934,7 +1934,7 @@ export class Database {
    * const edges = db.collection("friends") as EdgeCollection<Friend>;
    * ```
    */
-  collection<T extends object = any>(
+  collection<T extends Record<string, unknown> = any>(
     collectionName: string
   ): DocumentCollection<T> & EdgeCollection<T> {
     if (!this._collections.has(collectionName)) {
@@ -1969,7 +1969,7 @@ export class Database {
    * const documents = db.createCollection<Person>("persons");
    * ```
    */
-  async createCollection<T extends object = any>(
+  async createCollection<T extends Record<string, unknown> = any>(
     collectionName: string,
     options?: CreateCollectionOptions & {
       type?: CollectionType.DOCUMENT_COLLECTION;
@@ -2004,13 +2004,13 @@ export class Database {
    * });
    * ```
    */
-  async createCollection<T extends object = any>(
+  async createCollection<T extends Record<string, unknown> = any>(
     collectionName: string,
     options: CreateCollectionOptions & {
       type: CollectionType.EDGE_COLLECTION;
     }
   ): Promise<EdgeCollection<T>>;
-  async createCollection<T extends object = any>(
+  async createCollection<T extends Record<string, unknown> = any>(
     collectionName: string,
     options?: CreateCollectionOptions & { type?: CollectionType }
   ): Promise<DocumentCollection<T> & EdgeCollection<T>> {
@@ -2047,7 +2047,7 @@ export class Database {
    * const edges = db.createEdgeCollection<Friend>("friends");
    * ```
    */
-  async createEdgeCollection<T extends object = any>(
+  async createEdgeCollection<T extends Record<string, unknown> = any>(
     collectionName: string,
     options?: CreateCollectionOptions
   ): Promise<EdgeCollection<T>> {

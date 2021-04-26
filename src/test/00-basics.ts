@@ -72,7 +72,7 @@ describe("Configuring the driver", () => {
       options = undefined;
     });
     before(() => {
-      let Agent = (proto: any) =>
+      const Agent = (proto: any) =>
         function (opts: any) {
           protocol = proto;
           options = opts;
@@ -109,7 +109,7 @@ describe("Configuring the driver", () => {
       options = undefined;
     });
     before(() => {
-      let Request = (proto: any) => (opts: any) => {
+      const Request = (proto: any) => (opts: any) => {
         protocol = proto;
         options = opts;
         return {

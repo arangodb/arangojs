@@ -8,13 +8,14 @@ const describe34 = config.arangoVersion! >= 30400 ? describe : describe.skip;
 const itRdb = process.env.ARANGO_STORAGE_ENGINE !== "mmfiles" ? it : it.skip;
 
 describe34("AQL Stream queries", function () {
-  let name = `testdb_${Date.now()}`;
+  const name = `testdb_${Date.now()}`;
   let db: Database;
   let allCursors: ArrayCursor[];
   before(async () => {
     allCursors = [];
     db = new Database(config);
-    if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE") await db.acquireHostList();
+    if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE")
+      await db.acquireHostList();
     await db.createDatabase(name);
     db.useDatabase(name);
   });
@@ -52,7 +53,7 @@ describe34("AQL Stream queries", function () {
       expect((cursor as any).batches.hasMore).to.equal(true);
     });
     it("supports compact queries with options", async () => {
-      let query: any = {
+      const query: any = {
         query: "FOR x IN RANGE(1, @max) RETURN x",
         bindVars: { max: 10 },
       };
@@ -67,7 +68,7 @@ describe34("AQL Stream queries", function () {
     });
   });
   describe("with some data", () => {
-    let cname = "MyTestCollection";
+    const cname = "MyTestCollection";
     before(async () => {
       const collection = await db.createCollection(cname);
       await db.waitForPropagation(
@@ -84,8 +85,8 @@ describe34("AQL Stream queries", function () {
       await db.collection(cname).drop()
     });*/
     it("can access large collection in parallel", async () => {
-      let collection = db.collection(cname);
-      let query = aql`FOR doc in ${collection} RETURN doc`;
+      const collection = db.collection(cname);
+      const query = aql`FOR doc in ${collection} RETURN doc`;
       const options = { batchSize: 250, stream: true };
 
       let count = 0;
@@ -103,9 +104,9 @@ describe34("AQL Stream queries", function () {
       expect(count).to.equal(25 * 1000);
     });
     itRdb("can do writes and reads", async () => {
-      let collection = db.collection(cname);
-      let readQ = aql`FOR doc in ${collection} RETURN doc`;
-      let writeQ = aql`FOR i in 1..10000 LET y = SLEEP(1) INSERT {forbidden: i} INTO ${collection}`;
+      const collection = db.collection(cname);
+      const readQ = aql`FOR doc in ${collection} RETURN doc`;
+      const writeQ = aql`FOR i in 1..10000 LET y = SLEEP(1) INSERT {forbidden: i} INTO ${collection}`;
       const options: QueryOptions = {
         batchSize: 500,
         ttl: 5,
@@ -113,8 +114,8 @@ describe34("AQL Stream queries", function () {
         stream: true,
       };
 
-      let readCursor = db.query(readQ, options);
-      let writeCursor = db.query(writeQ, options);
+      const readCursor = db.query(readQ, options);
+      const writeCursor = db.query(writeQ, options);
 
       // the read cursor should always win
       const c = await Promise.race([readCursor, writeCursor]);

@@ -62,7 +62,7 @@ describe("AQL helpers", function () {
     });
     it("supports ArangoDB collection parameters", () => {
       class ArangoCollection {
-        isArangoCollection = true;
+        isArangoCollection = true as const;
         name = "tomato";
       }
       const collection = new ArangoCollection();

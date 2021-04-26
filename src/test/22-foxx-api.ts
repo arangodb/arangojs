@@ -1,3 +1,4 @@
+/* eslint-disable security/detect-non-literal-fs-filename */
 import { expect } from "chai";
 import * as fs from "fs";
 import * as path from "path";
@@ -29,7 +30,8 @@ describe("Foxx service", () => {
   let arangoPaths: any;
   before(async () => {
     db = new Database(config);
-    if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE") await db.acquireHostList();
+    if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE")
+      await db.acquireHostList();
     await db.installService(
       serviceServiceMount,
       fs.readFileSync(path.resolve("fixtures", "service-service-service.zip"))
@@ -770,7 +772,7 @@ describe("Foxx service", () => {
     expect(resp.paths["/"]).to.have.property("get");
   });
 
-  const routes: [string, Function][] = [
+  const routes: [string, (...args: any[]) => Promise<unknown>][] = [
     ["getService", (mount: string) => db.getService(mount)],
     [
       "getServiceConfiguration",

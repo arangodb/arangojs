@@ -332,8 +332,8 @@ export type ArangoSearchViewPropertiesOptions = {
  * ArangoSearch View.
  */
 export class View<
-  PropertiesOptions extends object = any,
-  Properties extends object = any
+  PropertiesOptions extends Record<string, unknown> = any,
+  Properties extends Record<string, unknown> = any
 > {
   protected _name: string;
   protected _db: Database;
@@ -564,6 +564,7 @@ export class View<
 /**
  * Represents an ArangoSearch View in a {@link Database}.
  */
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface ArangoSearchView
   extends View<
     ArangoSearchViewPropertiesOptions,

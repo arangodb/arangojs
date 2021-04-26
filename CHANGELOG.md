@@ -16,6 +16,13 @@ This driver uses semantic versioning:
 
 ## [Unreleased]
 
+### Changed
+
+- Updated TypeScript to version 4
+
+  This may result in type signatures that are incompatible with TypeScript 3
+  being added in future releases (including patch releases).
+
 ### Added
 
 - Added `collection.documents` for fetching multiple documents

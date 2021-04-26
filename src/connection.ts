@@ -288,8 +288,8 @@ type Task = {
   host?: number;
   stack?: () => string;
   allowDirtyRead: boolean;
-  resolve: Function;
-  reject: Function;
+  resolve: (res: ArangojsResponse) => void;
+  reject: (error: Error) => void;
   retries: number;
   options: {
     method: string;

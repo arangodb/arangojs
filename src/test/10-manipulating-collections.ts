@@ -9,7 +9,8 @@ describe("Manipulating collections", function () {
   let collection: DocumentCollection;
   before(async () => {
     db = new Database(config);
-    if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE") await db.acquireHostList();
+    if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE")
+      await db.acquireHostList();
     await db.createDatabase(name);
     db.useDatabase(name);
   });
@@ -93,6 +94,7 @@ describe("Manipulating collections", function () {
       const res = await db.route("/_admin/server/role").get();
       if (res.body.role !== "SINGLE") return;
       const name = `rename-collection-${Date.now()}`;
+      // eslint-disable-next-line security/detect-non-literal-fs-filename
       const info = await collection.rename(name);
       expect(info).to.have.property("name", name);
     });
