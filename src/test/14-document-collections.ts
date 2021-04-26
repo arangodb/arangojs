@@ -10,7 +10,8 @@ describe("DocumentCollection API", function () {
   let collection: DocumentCollection;
   before(async () => {
     db = new Database(config);
-    if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE") await db.acquireHostList();
+    if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE")
+      await db.acquireHostList();
     await db.createDatabase(name);
     db.useDatabase(name);
   });
@@ -49,6 +50,29 @@ describe("DocumentCollection API", function () {
     it("does not throw on not found when graceful", async () => {
       const doc = await collection.document("does-not-exist", true);
       expect(doc).to.equal(null);
+    });
+  });
+  describe("documentCollection.documents", () => {
+    const data = { foo: "bar" };
+    let meta: DocumentMetadata[];
+    beforeEach(async () => {
+      meta = await Promise.all([
+        collection.save(data),
+        collection.save(data),
+        collection.save(data),
+      ]);
+    });
+    it("returns multiple documents in the collection", async () => {
+      const docs = await collection.documents(meta);
+      let i = 0;
+      for (const doc of docs) {
+        expect(doc).to.have.keys("_key", "_id", "_rev", "foo");
+        expect(doc._id).to.equal(meta[i]._id);
+        expect(doc._key).to.equal(meta[i]._key);
+        expect(doc._rev).to.equal(meta[i]._rev);
+        expect(doc.foo).to.equal(data.foo);
+        i++;
+      }
     });
   });
   describe("documentCollection.documentExists", () => {

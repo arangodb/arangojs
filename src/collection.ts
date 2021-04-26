@@ -21,6 +21,7 @@ import {
   DocumentSelector,
   Edge,
   EdgeData,
+  ObjectWithKey,
   Patch,
   _documentHandle,
 } from "./documents";
@@ -532,6 +533,18 @@ export type CollectionReadOptions = {
    * if the document does not exist.
    */
   graceful?: boolean;
+  /**
+   * If set to `true`, the request will explicitly permit ArangoDB to return a
+   * potentially dirty or stale result and arangojs will load balance the
+   * request without distinguishing between leaders and followers.
+   */
+  allowDirtyRead?: boolean;
+};
+
+/**
+ * Options for retrieving multiple documents from a collection.
+ */
+export type CollectionBatchReadOptions = {
   /**
    * If set to `true`, the request will explicitly permit ArangoDB to return a
    * potentially dirty or stale result and arangojs will load balance the
@@ -1670,6 +1683,32 @@ export interface DocumentCollection<T extends object = any>
    */
   document(selector: DocumentSelector, graceful: boolean): Promise<Document<T>>;
   /**
+   * Retrieves the documents matching the given key or id values.
+   *
+   * Throws an exception when passed a document or `_id` from a different
+   * collection, or if the document does not exist.
+   *
+   * @param selectors - Array of document `_key`, `_id` or objects with either
+   * of those properties (e.g. a document from this collection).
+   * @param options - Options for retrieving the documents.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
+   * try {
+   *   const documents = await collection.documents(["abc123", "xyz456"]);
+   *   console.log(documents);
+   * } catch (e) {
+   *   console.error("Could not find document");
+   * }
+   * ```
+   */
+  documents(
+    selectors: (string | ObjectWithKey)[],
+    options?: CollectionBatchReadOptions
+  ): Promise<Document<T>[]>;
+  /**
    * Inserts a new document with the given `data` into the collection.
    *
    * @param data - The contents of the new document.
@@ -2616,6 +2655,32 @@ export interface EdgeCollection<T extends object = any>
    */
   document(selector: DocumentSelector, graceful: boolean): Promise<Edge<T>>;
   /**
+   * Retrieves the documents matching the given key or id values.
+   *
+   * Throws an exception when passed a document or `_id` from a different
+   * collection, or if the document does not exist.
+   *
+   * @param selectors - Array of document `_key`, `_id` or objects with either
+   * of those properties (e.g. a document from this collection).
+   * @param options - Options for retrieving the documents.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
+   * try {
+   *   const documents = await collection.documents(["abc123", "xyz456"]);
+   *   console.log(documents);
+   * } catch (e) {
+   *   console.error("Could not find document");
+   * }
+   * ```
+   */
+  documents(
+    selectors: (string | ObjectWithKey)[],
+    options?: CollectionBatchReadOptions
+  ): Promise<Edge<T>[]>;
+  /**
    * Inserts a new document with the given `data` into the collection.
    *
    * @param data - The contents of the new document.
@@ -3456,6 +3521,23 @@ export class Collection<T extends object = any>
       }
       throw err;
     }
+  }
+
+  documents(
+    selectors: (string | ObjectWithKey)[],
+    options: CollectionBatchReadOptions = {}
+  ) {
+    const { allowDirtyRead = undefined } = options;
+    return this._db.request(
+      {
+        method: "PUT",
+        path: `/_api/document/${this._name}`,
+        qs: { onlyget: true },
+        allowDirtyRead,
+        body: selectors,
+      },
+      (res) => res.body
+    );
   }
 
   async document(

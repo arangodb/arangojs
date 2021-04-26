@@ -14,7 +14,8 @@ describe("EdgeCollection API", function () {
   }>;
   before(async () => {
     db = new Database(config);
-    if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE") await db.acquireHostList();
+    if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE")
+      await db.acquireHostList();
     await db.createDatabase(name);
     db.useDatabase(name);
   });
@@ -37,7 +38,7 @@ describe("EdgeCollection API", function () {
     await collection.drop();
   });
 
-  describe("edgeCollection.edge", () => {
+  describe("edgeCollection.document", () => {
     const data = { _from: "d/1", _to: "d/2" };
     let meta: DocumentMetadata;
     beforeEach(async () => {
@@ -57,24 +58,28 @@ describe("EdgeCollection API", function () {
       expect(doc).to.equal(null);
     });
   });
-  describe("edgeCollection.document", () => {
+  describe("documentCollection.documents", () => {
     const data = { _from: "d/1", _to: "d/2" };
-    let meta: DocumentMetadata;
+    let meta: DocumentMetadata[];
     beforeEach(async () => {
-      meta = await collection.save(data);
+      meta = await Promise.all([
+        collection.save(data),
+        collection.save(data),
+        collection.save(data),
+      ]);
     });
-    it("returns an edge in the collection", async () => {
-      const doc = await collection.document(meta._id);
-      expect(doc).to.have.keys("_key", "_id", "_rev", "_from", "_to");
-      expect(doc._id).to.equal(meta._id);
-      expect(doc._key).to.equal(meta._key);
-      expect(doc._rev).to.equal(meta._rev);
-      expect(doc._from).to.equal(data._from);
-      expect(doc._to).to.equal(data._to);
-    });
-    it("does not throw on not found when graceful", async () => {
-      const doc = await collection.document("does-not-exist", true);
-      expect(doc).to.equal(null);
+    it("returns multiple edges in the collection", async () => {
+      const docs = await collection.documents(meta);
+      let i = 0;
+      for (const doc of docs) {
+        expect(doc).to.have.keys("_key", "_id", "_rev", "_from", "_to");
+        expect(doc._id).to.equal(meta[i]._id);
+        expect(doc._key).to.equal(meta[i]._key);
+        expect(doc._rev).to.equal(meta[i]._rev);
+        expect(doc._from).to.equal(data._from);
+        expect(doc._to).to.equal(data._to);
+        i++;
+      }
     });
   });
   describe("edgeCollection.documentExists", () => {
