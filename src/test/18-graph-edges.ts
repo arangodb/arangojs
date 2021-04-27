@@ -43,15 +43,15 @@ describe("Manipulating graph edges", function () {
       expect(info).to.have.property("name", graphName);
       expect(info).to.have.property("edgeDefinitions");
       expect(info.edgeDefinitions).to.be.instanceOf(Array);
-      expect(info.edgeDefinitions.map((e: any) => e.collection)).to.contain(
+      expect(info.edgeDefinitions.flatMap((e: any) => e.collection)).to.contain(
         "knows"
       );
       expect(info.edgeDefinitions.length).to.equal(1);
       const edgeDefinition = info.edgeDefinitions.filter(
         (e: any) => e.collection === "knows"
       );
-      expect(edgeDefinition.map((e: any) => e.from)).to.contain("person");
-      expect(edgeDefinition.map((e: any) => e.to)).to.contain("person");
+      expect(edgeDefinition.flatMap((e: any) => e.from)).to.contain("person");
+      expect(edgeDefinition.flatMap((e: any) => e.to)).to.contain("person");
     });
   });
   describe("graph.edgeCollections", () => {
@@ -88,15 +88,15 @@ describe("Manipulating graph edges", function () {
       expect(info).to.have.property("name", graphName);
       expect(info).to.have.property("edgeDefinitions");
       expect(info.edgeDefinitions).to.be.instanceOf(Array);
-      expect(info.edgeDefinitions.map((e: any) => e.collection)).to.contain(
+      expect(info.edgeDefinitions.flatMap((e: any) => e.collection)).to.contain(
         "works_in"
       );
       expect(info.edgeDefinitions.length).to.equal(2);
       const edgeDefinition = info.edgeDefinitions.filter(
         (e: any) => e.collection === "works_in"
       );
-      expect(edgeDefinition.map((e: any) => e.from)).to.contain("person");
-      expect(edgeDefinition.map((e: any) => e.to)).to.contain("city");
+      expect(edgeDefinition.flatMap((e: any) => e.from)).to.contain("person");
+      expect(edgeDefinition.flatMap((e: any) => e.to)).to.contain("city");
     });
   });
   describe("graph.replaceEdgeDefinition", () => {
@@ -109,15 +109,15 @@ describe("Manipulating graph edges", function () {
       expect(info).to.have.property("name", graphName);
       expect(info).to.have.property("edgeDefinitions");
       expect(info.edgeDefinitions).to.be.instanceOf(Array);
-      expect(info.edgeDefinitions.map((e: any) => e.collection)).to.contain(
+      expect(info.edgeDefinitions.flatMap((e: any) => e.collection)).to.contain(
         "knows"
       );
       expect(info.edgeDefinitions.length).to.equal(1);
       const edgeDefinition = info.edgeDefinitions.filter(
         (e: any) => e.collection === "knows"
       );
-      expect(edgeDefinition.map((e: any) => e.from)).to.contain("person");
-      expect(edgeDefinition.map((e: any) => e.to)).to.contain("city");
+      expect(edgeDefinition.flatMap((e: any) => e.from)).to.contain("person");
+      expect(edgeDefinition.flatMap((e: any) => e.to)).to.contain("city");
     });
   });
   describe("graph.removeEdgeDefinition", () => {
