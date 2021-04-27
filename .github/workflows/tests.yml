@@ -9,8 +9,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: [10, 12, 14]
-        arangodb-version: [3.5, 3.6, 3.7]
+        node-version: [10, 12, 14, 16]
+        arangodb-version: [3.6, 3.7]
 
     container:
       image: node:${{ matrix.node-version }}
