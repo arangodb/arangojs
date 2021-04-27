@@ -64,6 +64,6 @@ jobs:
       - uses: actions/checkout@v2
       - run: git fetch origin main
       - run: git fetch origin stable
-      - run: git checkout main
-      - run: git fetch . main:stable
+      - run: git checkout stable
+      - run: git merge --ff main
       - run: git push origin stable
