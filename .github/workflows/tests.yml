@@ -61,5 +61,5 @@ jobs:
       - uses: actions/checkout@v2
       - name: promote to stable
         run: |
-          git fetch . HEAD:stable
+          git fetch origin HEAD:stable
           git push origin stable
