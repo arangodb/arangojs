@@ -62,6 +62,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - run: git status
-      - run: git fetch origin HEAD:stable
+      - run: git fetch origin stable
+      - run: git checkout stable
+      - run: git merge --ff main
       - run: git push origin stable
