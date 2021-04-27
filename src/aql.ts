@@ -11,7 +11,6 @@
  * @packageDocumentation
  */
 import { ArangoCollection, isArangoCollection } from "./collection";
-import { Dict } from "./connection";
 import { isArangoView, View } from "./view";
 
 /**
@@ -29,7 +28,7 @@ export interface AqlQuery {
    * Names of parameters representing collections are prefixed with an
    * at-symbol.
    */
-  bindVars: Dict<any>;
+  bindVars: Record<string, any>;
 }
 
 /**
@@ -205,7 +204,7 @@ export function aql(
   ...args: AqlValue[]
 ): GeneratedAqlQuery {
   const strings = [...templateStrings];
-  const bindVars: Dict<any> = {};
+  const bindVars: Record<string, any> = {};
   const bindValues = [];
   let query = strings[0];
   for (let i = 0; i < args.length; i++) {

@@ -34,13 +34,6 @@ const MIME_JSON = /\/(json|javascript)(\W|$)/;
 const LEADER_ENDPOINT_HEADER = "x-arango-endpoint";
 
 /**
- * Generic type representing an object with values of a given value type.
- *
- * @param T - Type of the object's property values.
- */
-export type Dict<T> = { [key: string]: T };
-
-/**
  * Determines the behavior when multiple URLs are used:
  *
  * - `"NONE"`: No load balancing. All requests will be handled by the first
@@ -60,13 +53,13 @@ export type LoadBalancingStrategy = "NONE" | "ROUND_ROBIN" | "ONE_RANDOM";
  *
  * Header names should always be lowercase.
  */
-export type Headers = Dict<string>;
+export type Headers = Record<string, string>;
 
 /**
  * An arbitrary object with scalar values representing query string parameters
  * and their values.
  */
-export type Params = Dict<any>;
+export type Params = Record<string, any>;
 
 /**
  * Generic properties shared by all ArangoDB HTTP API responses.

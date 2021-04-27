@@ -16,6 +16,13 @@ This driver uses semantic versioning:
 
 ## [Unreleased]
 
+### Removed
+
+- Removed `Dict` type from `connection` module
+
+  The `Dict<T>` type was identical to `Record<string, T>` and has been replaced
+  with this built-in type across arangojs.
+
 ### Changed
 
 - Updated TypeScript to version 4

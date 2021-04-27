@@ -7,7 +7,7 @@
  *
  * @packageDocumentation
  */
-import { ArangoResponseMetadata, Dict } from "./connection";
+import { ArangoResponseMetadata } from "./connection";
 import { Database } from "./database";
 import { isArangoError } from "./error";
 import { VIEW_NOT_FOUND } from "./lib/codes";
@@ -65,7 +65,7 @@ export type ArangoSearchViewLink = {
    * An object mapping names of attributes to process for each document to
    * {@link ArangoSearchViewLink} definitions.
    */
-  fields?: Dict<ArangoSearchViewLink | undefined>;
+  fields?: Record<string, ArangoSearchViewLink | undefined>;
   /**
    * If set to `true`, all document attributes will be processed, otherwise
    * only the attributes in `fields` will be processed.
@@ -152,7 +152,7 @@ export type ArangoSearchViewProperties = {
    * An object mapping names of linked collections to
    * {@link ArangoSearchViewLink} definitions.
    */
-  links: Dict<ArangoSearchViewLink | undefined>;
+  links: Record<string, ArangoSearchViewLink | undefined>;
 };
 
 /**
@@ -322,7 +322,7 @@ export type ArangoSearchViewPropertiesOptions = {
    * An object mapping names of linked collections to
    * {@link ArangoSearchViewLink} definitions.
    */
-  links?: Dict<ArangoSearchViewLink | undefined>;
+  links?: Record<string, ArangoSearchViewLink | undefined>;
 };
 
 /**
