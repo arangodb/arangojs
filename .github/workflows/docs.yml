@@ -5,7 +5,7 @@ on:
     tags:
       - "v7.*.*" # all v7 semver release tags
     branches:
-      - main
+      - stable
 
 jobs:
   publish-docs:
