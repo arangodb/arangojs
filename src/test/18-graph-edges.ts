@@ -43,18 +43,17 @@ describe("Manipulating graph edges", function () {
       expect(info).to.have.property("name", graphName);
       expect(info).to.have.property("edgeDefinitions");
       expect(info.edgeDefinitions).to.be.instanceOf(Array);
-      expect(
-        info.edgeDefinitions.reduce(
-          (arr, e) => [...arr, ...e.collection],
-          [] as string[]
-        )
-      ).to.contain("knows");
+      expect(info.edgeDefinitions.map((e) => e.collection)).to.contain("knows");
       expect(info.edgeDefinitions.length).to.equal(1);
       const edgeDefinition = info.edgeDefinitions.filter(
         (e) => e.collection === "knows"
       );
-      expect(edgeDefinition.map((e) => e.from)).to.contain("person");
-      expect(edgeDefinition.map((e) => e.to)).to.contain("person");
+      expect(
+        edgeDefinition.reduce((arr, e) => [...arr, ...e.from], [] as string[])
+      ).to.contain("person");
+      expect(
+        edgeDefinition.reduce((arr, e) => [...arr, ...e.to], [] as string[])
+      ).to.contain("person");
     });
   });
   describe("graph.edgeCollections", () => {
@@ -98,8 +97,12 @@ describe("Manipulating graph edges", function () {
       const edgeDefinition = info.edgeDefinitions.filter(
         (e) => e.collection === "works_in"
       );
-      expect(edgeDefinition.map((e) => e.from)).to.contain("person");
-      expect(edgeDefinition.map((e) => e.to)).to.contain("city");
+      expect(
+        edgeDefinition.reduce((arr, e) => [...arr, ...e.from], [] as string[])
+      ).to.contain("person");
+      expect(
+        edgeDefinition.reduce((arr, e) => [...arr, ...e.to], [] as string[])
+      ).to.contain("city");
     });
   });
   describe("graph.replaceEdgeDefinition", () => {
@@ -117,8 +120,12 @@ describe("Manipulating graph edges", function () {
       const edgeDefinition = info.edgeDefinitions.filter(
         (e) => e.collection === "knows"
       );
-      expect(edgeDefinition.map((e) => e.from)).to.contain("person");
-      expect(edgeDefinition.map((e) => e.to)).to.contain("city");
+      expect(
+        edgeDefinition.reduce((arr, e) => [...arr, ...e.from], [] as string[])
+      ).to.contain("person");
+      expect(
+        edgeDefinition.reduce((arr, e) => [...arr, ...e.to], [] as string[])
+      ).to.contain("city");
     });
   });
   describe("graph.removeEdgeDefinition", () => {
