@@ -62,8 +62,11 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
       - run: git fetch origin main
       - run: git fetch origin stable
       - run: git checkout stable
-      - run: git merge --ff --allow-unrelated-histories main
+      - run: git merge --ff main
       - run: git push origin stable
