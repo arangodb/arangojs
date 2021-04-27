@@ -64,5 +64,6 @@ jobs:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
+          token: ${{ secrets.GH_TOKEN }}
       - run: git fetch . HEAD:stable
       - run: git push origin stable
