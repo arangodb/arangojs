@@ -10,7 +10,8 @@ module.exports = {
   output: {
     path: resolve(__dirname, "build"),
     filename: "web.js",
-    library: { name: "arangojs", type: "umd" },
+    library: "arangojs",
+    libraryTarget: "umd",
   },
   module: {
     rules: [
@@ -23,10 +24,6 @@ module.exports = {
   },
   resolve: {
     extensions: [".web.js", ".web.ts", ".js", ".ts", ".json"],
-    fallback: {
-      url: require.resolve("url/"),
-      querystring: require.resolve("querystring/"),
-    },
   },
   plugins: [
     new webpack.DefinePlugin({
