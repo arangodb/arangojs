@@ -41,11 +41,12 @@ jobs:
           echo "TAG=${TAG}" >> $GITHUB_ENV
           echo "LATEST=$(node -p "Number(require('semver').gt('${TAG}','$(cat gh-pages/VERSION)'))")" >> $GITHUB_ENV
 
-      - name: Update VERSION
+      - name: Update VERSION / latest
         if: env.TAG != 'devel' && env.LATEST == 1
         run: |
           echo $'---\npermalink: /VERSION\ntitle: "VERSION"\n---\n' > gh-pages/VERSION.md
           echo $TAG >> gh-pages/VERSION
+          ln -s $TAG gh-pages/latest
 
       - name: Update CHANGELOG
         if: env.LATEST == 1 # don't overwrite for backport versions
