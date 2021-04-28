@@ -1306,6 +1306,95 @@ export type SwaggerJson = {
 };
 
 /**
+ * Access level for an ArangoDB user's access to a collection or database.
+ */
+export type AccessLevel = "rw" | "ro" | "none";
+
+/**
+ * Properties of an ArangoDB user object.
+ */
+export type ArangoUser = {
+  /**
+   * ArangoDB username of the user.
+   */
+  user: string;
+  /**
+   * Whether the ArangoDB user account is enabled and can authenticate.
+   */
+  active: boolean;
+  /**
+   * Additional information to store about this user.
+   */
+  extra: Record<string, any>;
+};
+
+/**
+ * Options for creating an ArangoDB user.
+ */
+export type CreateUserOptions = {
+  /**
+   * ArangoDB username of the user.
+   */
+  user: string;
+  /**
+   * Password the ArangoDB user will use for authentication.
+   */
+  passwd: string;
+  /**
+   * Whether the ArangoDB user account is enabled and can authenticate.
+   *
+   * Default: `true`
+   */
+  active?: boolean;
+  /**
+   * Additional information to store about this user.
+   *
+   * Default: `{}`
+   */
+  extra?: Record<string, unknown>;
+};
+
+/**
+ * Options for modifying an ArangoDB user.
+ */
+export type UserOptions = {
+  /**
+   * Password the ArangoDB user will use for authentication.
+   */
+  passwd: string;
+  /**
+   * Whether the ArangoDB user account is enabled and can authenticate.
+   *
+   * Default: `true`
+   */
+  active?: boolean;
+  /**
+   * Additional information to store about this user.
+   *
+   * Default: `{}`
+   */
+  extra?: Record<string, unknown>;
+};
+
+/**
+ * Options for accessing or manipulating access levels.
+ */
+export type UserAccessLevelOptions = {
+  /**
+   * The database to access or manipulate the access level of.
+   *
+   * If `collection` is an `ArangoCollection`, this option defaults to the
+   * database the collection is contained in. Otherwise this option defaults to
+   * the current database.
+   */
+  database?: Database | string;
+  /**
+   * The collection to access or manipulate the access level of.
+   */
+  collection?: ArangoCollection | string;
+};
+
+/**
  * An object representing a single ArangoDB database. All arangojs collections,
  * cursors, analyzers and so on are linked to a `Database` object.
  */
@@ -2420,6 +2509,539 @@ export class Database {
   async analyzers(): Promise<Analyzer[]> {
     const analyzers = await this.listAnalyzers();
     return analyzers.map((data) => this.analyzer(data.name));
+  }
+  //#endregion
+
+  //#region users
+  /**
+   * Fetches all ArangoDB users visible to the authenticated user and returns
+   * an array of user objects.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const users = await db.listUsers();
+   * // users is an array of user objects
+   * ```
+   */
+  listUsers(): Promise<ArangoUser[]> {
+    return this.request({
+      absolutePath: true,
+      path: "/_api/user",
+    });
+  }
+
+  /**
+   * Fetches the user data of a single ArangoDB user.
+   *
+   * @param username - Name of the ArangoDB user to fetch.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const user = await db.getUser("steve");
+   * // user is the user object for the user named "steve"
+   * ```
+   */
+  getUser(username: string): Promise<ArangoUser & ArangoResponseMetadata> {
+    return this.request({
+      absolutePath: true,
+      path: `/_api/user/${username}`,
+    });
+  }
+
+  /**
+   * Creates a new ArangoDB user with the given password.
+   *
+   * @param username - Name of the ArangoDB user to create.
+   * @param passwd - Password of the new ArangoDB user.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const user = await db.createUser("steve", "hunter2");
+   * // The user "steve" has been created
+   * ```
+   */
+  createUser(
+    username: string,
+    passwd: string
+  ): Promise<ArangoUser & ArangoResponseMetadata>;
+  /**
+   * Creates a new ArangoDB user with the given options.
+   *
+   * @param username - Name of the ArangoDB user to create.
+   * @param options - Additional options for creating the ArangoDB user.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const user = await db.createUser("steve", { passwd: "hunter2" });
+   * // The user "steve" has been created
+   * ```
+   */
+  createUser(
+    username: string,
+    options: UserOptions
+  ): Promise<ArangoUser & ArangoResponseMetadata>;
+  createUser(
+    username: string,
+    options: string | UserOptions
+  ): Promise<ArangoUser & ArangoResponseMetadata> {
+    if (typeof options === "string") {
+      options = { passwd: options };
+    }
+    return this.request(
+      {
+        absolutePath: true,
+        method: "POST",
+        path: "/_api/user",
+        body: { user: username, ...options },
+      },
+      (res) => res.body
+    );
+  }
+
+  /**
+   * Sets the password of a given ArangoDB user to the new value.
+   *
+   * @param username - Name of the ArangoDB user to change the password for.
+   * @param passwd - New password for the ArangoDB user.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const user = await db.updateUser("steve", "hunter2");
+   * // The user "steve" has received a new password
+   * ```
+   */
+  updateUser(
+    username: string,
+    passwd: string
+  ): Promise<ArangoUser & ArangoResponseMetadata>;
+  /**
+   * Updates the ArangoDB user with the new options.
+   *
+   * @param username - Name of the ArangoDB user to modify.
+   * @param options - Options of the ArangoDB user to modify.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const user = await db.updateUser("steve", { active: false });
+   * // The user "steve" has been set to inactive
+   * ```
+   */
+  updateUser(
+    username: string,
+    options: Partial<UserOptions>
+  ): Promise<ArangoUser & ArangoResponseMetadata>;
+  updateUser(
+    username: string,
+    options: string | Partial<UserOptions>
+  ): Promise<ArangoUser & ArangoResponseMetadata> {
+    if (typeof options === "string") {
+      options = { passwd: options };
+    }
+    return this.request(
+      {
+        absolutePath: true,
+        method: "PATCH",
+        path: `/api/user/${username}`,
+        body: options,
+      },
+      (res) => res.body
+    );
+  }
+
+  /**
+   * Replaces the ArangoDB user's option with the new options.
+   *
+   * @param username - Name of the ArangoDB user to modify.
+   * @param options - New options to replace the user's existing options.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const user = await db.replaceUser("steve", { passwd: "", active: false });
+   * // The user "steve" has been set to inactive with an empty password
+   * ```
+   */
+  replaceUser(
+    username: string,
+    options: UserOptions
+  ): Promise<ArangoUser & ArangoResponseMetadata> {
+    if (typeof options === "string") {
+      options = { passwd: options };
+    }
+    return this.request(
+      {
+        absolutePath: true,
+        method: "PUT",
+        path: `/api/user/${username}`,
+        body: options,
+      },
+      (res) => res.body
+    );
+  }
+
+  /**
+   * Removes the ArangoDB user with the given username from the server.
+   *
+   * @param username - Name of the ArangoDB user to remove.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * await db.removeUser("steve");
+   * // The user "steve" has been removed
+   * ```
+   */
+  removeUser(username: string): Promise<ArangoResponseMetadata> {
+    return this.request(
+      {
+        absolutePath: true,
+        method: "DELETE",
+        path: `/_api/user/${username}`,
+      },
+      (res) => res.body
+    );
+  }
+
+  /**
+   * Fetches the given ArangoDB user's access level for the database, or the
+   * given collection in the given database.
+   *
+   * @param username - Name of the ArangoDB user to fetch the access level for.
+   * @param database - Database to fetch the access level for.
+   * @param collection - Collection to fetch the access level for.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const accessLevel = await db.getUserAccessLevel("steve");
+   * // The access level of the user "steve" has been fetched for the current
+   * // database.
+   * ```
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const accessLevel = await db.getUserAccessLevel("steve", {
+   *   database: "staging"
+   * });
+   * // The access level of the user "steve" has been fetched for the "staging"
+   * // database.
+   * ```
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const accessLevel = await db.getUserAccessLevel("steve", {
+   *   collection: "pokemons"
+   * });
+   * // The access level of the user "steve" has been fetched for the
+   * // "pokemons" collection in the current database.
+   * ```
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const accessLevel = await db.getUserAccessLevel("steve", {
+   *   database: "staging",
+   *   collection: "pokemons"
+   * });
+   * // The access level of the user "steve" has been fetched for the
+   * // "pokemons" collection in the "staging" database.
+   * ```
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const staging = db.database("staging");
+   * const accessLevel = await db.getUserAccessLevel("steve", {
+   *   database: staging
+   * });
+   * // The access level of the user "steve" has been fetched for the "staging"
+   * // database.
+   * ```
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const staging = db.database("staging");
+   * const accessLevel = await db.getUserAccessLevel("steve", {
+   *   collection: staging.collection("pokemons")
+   * });
+   * // The access level of the user "steve" has been fetched for the
+   * // "pokemons" collection in database "staging".
+   */
+  getUserAccessLevel(
+    username: string,
+    { database, collection }: UserAccessLevelOptions
+  ): Promise<AccessLevel> {
+    const databaseName = isArangoDatabase(database)
+      ? database.name
+      : database ??
+        (isArangoCollection(collection)
+          ? ((collection as any)._db as Database).name
+          : this.name);
+    const suffix = collection
+      ? `/${isArangoCollection(collection) ? collection.name : collection}`
+      : "";
+    return this.request(
+      {
+        absolutePath: true,
+        path: `/_api/user/${username}/database/${databaseName}${suffix}`,
+      },
+      (res) => res.body
+    );
+  }
+
+  /**
+   * Sets the given ArangoDB user's access level for the database, or the
+   * given collection in the given database.
+   *
+   * @param username - Name of the ArangoDB user to set the access level for.
+   * @param database - Database to set the access level for.
+   * @param collection - Collection to set the access level for.
+   * @param grant - Access level to set for the given user.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * await db.setUserAccessLevel("steve", { grant: "rw" });
+   * // The user "steve" now has read-write access to the current database.
+   * ```
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * await db.setUserAccessLevel("steve", {
+   *   database: "staging",
+   *   grant: "rw"
+   * });
+   * // The user "steve" now has read-write access to the "staging" database.
+   * ```
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * await db.setUserAccessLevel("steve", {
+   *   collection: "pokemons",
+   *   grant: "rw"
+   * });
+   * // The user "steve" now has read-write access to the "pokemons" collection
+   * // in the current database.
+   * ```
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * await db.setUserAccessLevel("steve", {
+   *   database: "staging",
+   *   collection: "pokemons",
+   *   grant: "rw"
+   * });
+   * // The user "steve" now has read-write access to the "pokemons" collection
+   * // in the "staging" database.
+   * ```
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const staging = db.database("staging");
+   * await db.setUserAccessLevel("steve", {
+   *   database: staging,
+   *   grant: "rw"
+   * });
+   * // The user "steve" now has read-write access to the "staging" database.
+   * ```
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const staging = db.database("staging");
+   * await db.setUserAccessLevel("steve", {
+   *   collection: staging.collection("pokemons"),
+   *   grant: "rw"
+   * });
+   * // The user "steve" now has read-write access to the "pokemons" collection
+   * // in database "staging".
+   * ```
+   */
+  setUserAccessLevel(
+    username: string,
+    {
+      database,
+      collection,
+      grant,
+    }: UserAccessLevelOptions & { grant: AccessLevel }
+  ): Promise<Record<string, AccessLevel> & ArangoResponseMetadata> {
+    const databaseName = isArangoDatabase(database)
+      ? database.name
+      : database ??
+        (isArangoCollection(collection)
+          ? ((collection as any)._db as Database).name
+          : this.name);
+    const suffix = collection
+      ? `/${isArangoCollection(collection) ? collection.name : collection}`
+      : "";
+    return this.request(
+      {
+        absolutePath: true,
+        method: "PUT",
+        path: `/_api/user/${username}/database/${databaseName}${suffix}`,
+        body: { grant },
+      },
+      (res) => res.body
+    );
+  }
+
+  /**
+   * Clears the given ArangoDB user's access level for the database, or the
+   * given collection in the given database.
+   *
+   * @param username - Name of the ArangoDB user to clear the access level for.
+   * @param database - Database to clear the access level for.
+   * @param collection - Collection to clear the access level for.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * await db.clearUserAccessLevel("steve");
+   * // The access level of the user "steve" has been cleared for the current
+   * // database.
+   * ```
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * await db.clearUserAccessLevel("steve", { database: "staging" });
+   * // The access level of the user "steve" has been cleared for the "staging"
+   * // database.
+   * ```
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * await db.clearUserAccessLevel("steve", { collection: "pokemons" });
+   * // The access level of the user "steve" has been cleared for the
+   * // "pokemons" collection in the current database.
+   * ```
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * await db.clearUserAccessLevel("steve", {
+   *   database: "staging",
+   *   collection: "pokemons"
+   * });
+   * // The access level of the user "steve" has been cleared for the
+   * // "pokemons" collection in the "staging" database.
+   * ```
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const staging = db.database("staging");
+   * await db.clearUserAccessLevel("steve", { database: staging });
+   * // The access level of the user "steve" has been cleared for the "staging"
+   * // database.
+   * ```
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const staging = db.database("staging");
+   * await db.clearUserAccessLevel("steve", {
+   *   collection: staging.collection("pokemons")
+   * });
+   * // The access level of the user "steve" has been cleared for the
+   * // "pokemons" collection in database "staging".
+   * ```
+   */
+  clearUserAccessLevel(
+    username: string,
+    { database, collection }: UserAccessLevelOptions
+  ): Promise<Record<string, AccessLevel> & ArangoResponseMetadata> {
+    const databaseName = isArangoDatabase(database)
+      ? database.name
+      : database ??
+        (isArangoCollection(collection)
+          ? ((collection as any)._db as Database).name
+          : this.name);
+    const suffix = collection
+      ? `/${isArangoCollection(collection) ? collection.name : collection}`
+      : "";
+    return this.request(
+      {
+        absolutePath: true,
+        method: "DELETE",
+        path: `/_api/user/${username}/database/${databaseName}${suffix}`,
+      },
+      (res) => res.body
+    );
+  }
+
+  /**
+   * Fetches an object mapping names of databases to the access level of the
+   * given ArangoDB user for those databases.
+   *
+   * @param username - Name of the ArangoDB user to fetch the access levels for.
+   * @param full - Whether access levels for collections should be included.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const accessLevels = await db.getUserDatabases("steve");
+   * for (const [databaseName, accessLevel] of Object.entries(accessLevels)) {
+   *   console.log(`${databaseName}: ${accessLevel}`);
+   * }
+   * ```
+   */
+  getUserDatabases(
+    username: string,
+    full?: false
+  ): Promise<Record<string, AccessLevel>>;
+  /**
+   * Fetches an object mapping names of databases to the access level of the
+   * given ArangoDB user for those databases and the collections within each
+   * database.
+   *
+   * @param username - Name of the ArangoDB user to fetch the access levels for.
+   * @param full - Whether access levels for collections should be included.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const accessLevels = await db.getUserDatabases("steve", true);
+   * for (const [databaseName, obj] of Object.entries(accessLevels)) {
+   *   console.log(`${databaseName}: ${obj.permission}`);
+   *   for (const [collectionName, accessLevel] of Object.entries(obj.collections)) {
+   *     console.log(`${databaseName}/${collectionName}: ${accessLevel}`);
+   *   }
+   * }
+   * ```
+   */
+  getUserDatabases(
+    username: string,
+    full: true
+  ): Promise<
+    Record<
+      string,
+      {
+        permission: AccessLevel;
+        collections: Record<string, AccessLevel | "undefined">;
+      }
+    >
+  >;
+  getUserDatabases(username: string, full?: boolean) {
+    return this.request({
+      absolutePath: true,
+      path: `/_api/user/${username}/database`,
+      qs: { full },
+    });
   }
   //#endregion
 

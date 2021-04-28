@@ -36,6 +36,11 @@ This driver uses semantic versioning:
 
 - Added support for `fillBlockCache` query option
 
+- Added User Management API [#664](https://github.com/arangodb/arangojs/issues/664)
+
+  This implements the endpoints of the
+  [HTTP Interface for User Management](https://www.arangodb.com/docs/stable/http/user-management.html)
+
 ## [7.5.0] - 2021-04-22
 
 ### Added
