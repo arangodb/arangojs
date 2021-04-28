@@ -3404,29 +3404,6 @@ export class Collection<T extends Record<string, any> = any>
     this._db = db;
   }
 
-  //#region internals
-  protected _get<T extends Record<string, any>>(
-    path: string,
-    qs?: any
-  ): Promise<ArangoResponseMetadata & T> {
-    return this._db.request({
-      path: `/_api/collection/${encodeURIComponent(this._name)}/${path}`,
-      qs,
-    });
-  }
-
-  protected _put<T extends Record<string, any>>(
-    path: string,
-    body?: any
-  ): Promise<ArangoResponseMetadata & T> {
-    return this._db.request({
-      method: "PUT",
-      path: `/_api/collection/${encodeURIComponent(this._name)}/${path}`,
-      body,
-    });
-  }
-  //#endregion
-
   //#region metadata
   get isArangoCollection(): true {
     return true;
@@ -3482,24 +3459,42 @@ export class Collection<T extends Record<string, any> = any>
     });
   }
 
-  properties(properties?: CollectionPropertiesOptions) {
-    if (!properties)
-      return this._get<CollectionMetadata & CollectionProperties>("properties");
-    return this._put<CollectionMetadata & CollectionProperties>(
-      "properties",
-      properties
+  properties(
+    properties?: CollectionPropertiesOptions
+  ): Promise<
+    CollectionMetadata & CollectionProperties & ArangoResponseMetadata
+  > {
+    if (!properties) {
+      return this._db.request({
+        path: `/_api/collection/${encodeURIComponent(this._name)}/properties`,
+      });
+    }
+    return this._db.request({
+      method: "PUT",
+      path: `/_api/collection/${encodeURIComponent(this._name)}/properties`,
+      body: properties,
+    });
+  }
+
+  count(): Promise<
+    CollectionMetadata &
+      CollectionProperties & { count: number } & ArangoResponseMetadata
+  > {
+    return this._db.request({
+      path: `/_api/collection/${encodeURIComponent(this._name)}/count`,
+    });
+  }
+
+  async recalculateCount(): Promise<boolean> {
+    return this._db.request(
+      {
+        method: "PUT",
+        path: `/_api/collection/${encodeURIComponent(
+          this._name
+        )}/recalculateCount`,
+      },
+      (res) => res.body.result
     );
-  }
-
-  count() {
-    return this._get<
-      CollectionMetadata & CollectionProperties & { count: number }
-    >("count");
-  }
-
-  async recalculateCount() {
-    const body = await this._put<{ result: boolean }>("recalculateCount");
-    return body.result;
   }
 
   figures(details = false): Promise<
@@ -3515,32 +3510,54 @@ export class Collection<T extends Record<string, any> = any>
     });
   }
 
-  revision() {
-    return this._get<
-      CollectionMetadata & CollectionProperties & { revision: string }
-    >("revision");
+  revision(): Promise<
+    CollectionMetadata &
+      CollectionProperties & { revision: string } & ArangoResponseMetadata
+  > {
+    return this._db.request({
+      path: `/_api/collection/${encodeURIComponent(this._name)}/revision`,
+    });
   }
 
-  checksum(options?: CollectionChecksumOptions) {
-    return this._get<
-      CollectionMetadata & { revision: string; checksum: string }
-    >("checksum", options);
+  checksum(options?: CollectionChecksumOptions): Promise<
+    CollectionMetadata & {
+      revision: string;
+      checksum: string;
+    } & ArangoResponseMetadata
+  > {
+    return this._db.request({
+      path: `/_api/collection/${encodeURIComponent(this._name)}/checksum`,
+      qs: options,
+    });
   }
 
-  load(count?: boolean) {
-    return this._put<CollectionMetadata & { count: number }>(
-      "load",
-      typeof count === "boolean" ? { count } : undefined
+  load(
+    count?: boolean
+  ): Promise<CollectionMetadata & { count: number } & ArangoResponseMetadata> {
+    return this._db.request({
+      method: "PUT",
+      path: `/_api/collection/${encodeURIComponent(this._name)}/load`,
+      body: typeof count === "boolean" ? { count } : undefined,
+    });
+  }
+
+  async loadIndexes(): Promise<boolean> {
+    return this._db.request(
+      {
+        method: "PUT",
+        path: `/_api/collection/${encodeURIComponent(
+          this._name
+        )}/loadIndexesIntoMemory`,
+      },
+      (res) => res.body.result
     );
   }
 
-  async loadIndexes() {
-    const body = await this._put<{ result: boolean }>("loadIndexesIntoMemory");
-    return body.result;
-  }
-
-  unload() {
-    return this._put<CollectionMetadata>("unload");
+  unload(): Promise<CollectionMetadata & ArangoResponseMetadata> {
+    return this._db.request({
+      method: "PUT",
+      path: `/_api/collection/${encodeURIComponent(this._name)}/unload`,
+    });
   }
 
   async rename(newName: string) {
