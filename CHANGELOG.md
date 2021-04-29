@@ -25,6 +25,11 @@ This driver uses semantic versioning:
 
 ### Changed
 
+- Removed Node.js 10 support
+
+  With Node.js 10 moving from its LTS phase into maintenance, arangojs will no
+  longer support this version of Node.js going forward.
+
 - Updated TypeScript to version 4
 
   This may result in type signatures that are incompatible with TypeScript 3
