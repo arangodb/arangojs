@@ -10,8 +10,7 @@ module.exports = {
   output: {
     path: resolve(__dirname, "build"),
     filename: "web.js",
-    library: "arangojs",
-    libraryTarget: "umd",
+    library: { name: "arangojs", type: "umd" },
   },
   module: {
     rules: [

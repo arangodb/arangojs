@@ -31,7 +31,7 @@ When using modern JavaScript tooling with a bundler and compiler (e.g. Babel),
 arangojs can be installed using `npm` or `yarn` like any other dependency.
 
 For use without a compiler, the npm release comes with a precompiled browser
-build for evergreen browsers and Internet Explorer 11:
+build for evergreen browsers:
 
 ```js
 var arangojs = require("arangojs/web");
@@ -47,11 +47,6 @@ You can also use [unpkg](https://unpkg.com) during development:
   // ...
 </script>
 ```
-
-If you are targetting browsers older than Internet Explorer 11 you may want to
-use [babel](https://babeljs.io) with a
-[polyfill](https://babeljs.io/docs/usage/polyfill) to provide missing
-functionality needed to use arangojs.
 
 When loading the browser build with a script tag make sure to load the polyfill first:
 

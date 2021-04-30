@@ -1,3 +1,5 @@
+/// <reference lib="dom" />
+
 /**
  * Node.js implementation of the HTTP(S) request function.
  *
@@ -6,11 +8,9 @@
  * @hidden
  */
 
-import { format as formatUrl, parse as parseUrl } from "url";
 import { RequestInterceptors, XhrOptions } from "../connection";
 import { btoa } from "./btoa";
 import { Errback } from "./errback";
-import { joinPath } from "./joinPath";
 import { omit } from "./omit";
 import {
   ArangojsError,
@@ -37,27 +37,30 @@ export function createRequest(
   baseUrl: string,
   agentOptions: XhrOptions & RequestInterceptors
 ) {
-  const { auth, ...baseUrlParts } = parseUrl(baseUrl);
+  const base = new URL(baseUrl);
+  const auth = btoa(`${base.username || "root"}:${base.password}`);
+  base.username = "";
+  base.password = "";
   const options = omit(agentOptions, ["maxSockets"]);
   return function request(
-    { method, url, headers, body, timeout, expectBinary }: RequestOptions,
+    {
+      method,
+      url: reqUrl,
+      headers,
+      body,
+      timeout,
+      expectBinary,
+    }: RequestOptions,
     cb: Errback<ArangojsResponse>
   ) {
-    const urlParts = {
-      ...baseUrlParts,
-      pathname: url.pathname
-        ? baseUrlParts.pathname
-          ? joinPath(baseUrlParts.pathname, url.pathname)
-          : url.pathname
-        : baseUrlParts.pathname,
-      search: url.search
-        ? baseUrlParts.search
-          ? `${baseUrlParts.search}&${url.search.slice(1)}`
-          : url.search
-        : baseUrlParts.search,
-    };
+    const url = new URL(reqUrl.pathname, base);
+    if (base.search || reqUrl.search) {
+      url.search = reqUrl.search
+        ? `${base.search}&${reqUrl.search.slice(1)}`
+        : base.search;
+    }
     if (!headers["authorization"]) {
-      headers["authorization"] = `Basic ${btoa(auth || "root:")}`;
+      headers["authorization"] = `Basic ${auth}`;
     }
 
     let callback: Errback<ArangojsResponse> = (err, res) => {
@@ -70,7 +73,7 @@ export function createRequest(
         withCredentials: true,
         ...options,
         responseType: expectBinary ? "blob" : "text",
-        url: formatUrl(urlParts),
+        url: String(url),
         body,
         method,
         headers,

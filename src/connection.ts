@@ -10,7 +10,6 @@
  */
 import { ClientRequest } from "http";
 import { AgentOptions as NodeAgentOptions } from "https";
-import { stringify as querystringify } from "querystring";
 import { LinkedList } from "x3-linkedlist";
 import { Database } from "./database";
 import {
@@ -24,6 +23,7 @@ import { btoa } from "./lib/btoa";
 import { ERROR_ARANGO_CONFLICT } from "./lib/codes";
 import { Errback } from "./lib/errback";
 import { normalizeUrl } from "./lib/normalizeUrl";
+import { querystringify } from "./lib/querystringify";
 import {
   ArangojsError,
   ArangojsResponse,
@@ -76,16 +76,6 @@ export type ArangoResponseMetadata = {
    */
   code: number;
 };
-
-function clean<T>(obj: T) {
-  const result = {} as typeof obj;
-  for (const key of Object.keys(obj)) {
-    const value = (obj as any)[key];
-    if (value === undefined) continue;
-    (result as any)[key] = value;
-  }
-  return result;
-}
 
 /**
  * Credentials for HTTP Basic authentication.
@@ -689,7 +679,7 @@ export class Connection {
     let search;
     if (qs) {
       if (typeof qs === "string") search = `?${qs}`;
-      else search = `?${querystringify(clean(qs))}`;
+      else search = `?${querystringify(qs)}`;
     }
     return search ? { pathname, search } : { pathname };
   }

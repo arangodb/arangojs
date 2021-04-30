@@ -2,6 +2,10 @@
 
 ## v7 to v8
 
+Version 8 drops support for Internet Explorer 11 and Node.js 10. If you need to
+continue supporting Internet Explorer, you can try transpiling arangojs as a
+dependency using Babel with the relevant polyfills.
+
 ### General
 
 In TypeScript the type `Dict<T>` has been removed from the `connection` module.

@@ -30,6 +30,12 @@ This driver uses semantic versioning:
   With Node.js 10 moving from its LTS phase into maintenance, arangojs will no
   longer support this version of Node.js going forward.
 
+- Removed Internet Explorer support
+
+  As of version 8 arangojs no longer maintains compatibility for IE11 in the
+  pre-built browser bundle. You may still be able to use arangojs in IE11 when
+  bundling arangojs yourself but this may require polyfills and transformation.
+
 - Updated TypeScript to version 4
 
   This may result in type signatures that are incompatible with TypeScript 3
@@ -45,6 +51,12 @@ This driver uses semantic versioning:
   still be forced by passing `false` instead of a callback function.
 
   This change has no effect on other methods like `route.request`.
+
+- Replaced node core module polyfills with native APIs in browser build
+
+  As part of upgrading to webpack 5, arangojs now no longer requires node core
+  modules to be polyfilled to work in the browser. This also drastically
+  reduces the file size of the pre-built browser bundle `arangojs/web`.
 
 ## [7.8.0] - 2022-05-19
 
