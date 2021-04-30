@@ -1536,14 +1536,11 @@ export class Database {
    * ```
    */
   version(details?: boolean): Promise<VersionInfo> {
-    return this.request(
-      {
-        method: "GET",
-        path: "/_api/version",
-        qs: { details },
-      },
-      (res) => res.body
-    );
+    return this.request({
+      method: "GET",
+      path: "/_api/version",
+      qs: { details },
+    });
   }
 
   /**
@@ -1585,22 +1582,25 @@ export class Database {
    * @param transform - An optional function to transform the low-level
    * response object to a more useful return value.
    */
-  request<T = ArangojsResponse>(
+  request<T = any>(
     options: RequestOptions & { absolutePath?: boolean },
-    transform?: (res: ArangojsResponse) => T
+    transform?: false | ((res: ArangojsResponse) => T)
   ): Promise<T>;
-  request<T = ArangojsResponse>(
+  request<T = any>(
     {
       absolutePath = false,
       basePath,
       ...opts
     }: RequestOptions & { absolutePath?: boolean },
-    transform?: (res: ArangojsResponse) => T
+    transform: false | ((res: ArangojsResponse) => T) = (res) => res.body
   ): Promise<T> {
     if (!absolutePath) {
       basePath = `/_db/${encodeURIComponent(this._name)}${basePath || ""}`;
     }
-    return this._connection.request({ basePath, ...opts }, transform);
+    return this._connection.request(
+      { basePath, ...opts },
+      transform || undefined
+    );
   }
 
   /**
@@ -2227,14 +2227,11 @@ export class Database {
     newName: string
   ): Promise<ArangoResponseMetadata & CollectionMetadata> {
     collectionName = collectionName.normalize("NFC");
-    const result = await this.request(
-      {
-        method: "PUT",
-        path: `/_api/collection/${encodeURIComponent(collectionName)}/rename`,
-        body: { name: newName.normalize("NFC") },
-      },
-      (res) => res.body
-    );
+    const result = await this.request({
+      method: "PUT",
+      path: `/_api/collection/${encodeURIComponent(collectionName)}/rename`,
+      body: { name: newName.normalize("NFC") },
+    });
     this._collections.delete(collectionName);
     return result;
   }
@@ -2448,14 +2445,11 @@ export class Database {
     newName: string
   ): Promise<ArangoResponseMetadata & ViewDescription> {
     viewName = viewName.normalize("NFC");
-    const result = await this.request(
-      {
-        method: "PUT",
-        path: `/_api/view/${encodeURIComponent(viewName)}/rename`,
-        body: { name: newName.normalize("NFC") },
-      },
-      (res) => res.body
-    );
+    const result = await this.request({
+      method: "PUT",
+      path: `/_api/view/${encodeURIComponent(viewName)}/rename`,
+      body: { name: newName.normalize("NFC") },
+    });
     this._views.delete(viewName);
     return result;
   }
@@ -3747,14 +3741,11 @@ export class Database {
     } else if (isAqlLiteral(query)) {
       query = query.toAQL();
     }
-    return this.request(
-      {
-        method: "POST",
-        path: "/_api/explain",
-        body: { query, bindVars, options },
-      },
-      (res) => res.body
-    );
+    return this.request({
+      method: "POST",
+      path: "/_api/explain",
+      body: { query, bindVars, options },
+    });
   }
 
   /**
@@ -3785,14 +3776,11 @@ export class Database {
     } else if (isAqlLiteral(query)) {
       query = query.toAQL();
     }
-    return this.request(
-      {
-        method: "POST",
-        path: "/_api/query",
-        body: { query },
-      },
-      (res) => res.body
-    );
+    return this.request({
+      method: "POST",
+      path: "/_api/query",
+      body: { query },
+    });
   }
 
   /**
@@ -3835,8 +3823,7 @@ export class Database {
         : {
             method: "GET",
             path: "/_api/query/properties",
-          },
-      (res) => res.body
+          }
     );
   }
 
@@ -3852,13 +3839,10 @@ export class Database {
    * ```
    */
   listRunningQueries(): Promise<QueryInfo[]> {
-    return this.request(
-      {
-        method: "GET",
-        path: "/_api/query/current",
-      },
-      (res) => res.body
-    );
+    return this.request({
+      method: "GET",
+      path: "/_api/query/current",
+    });
   }
 
   /**
@@ -3875,13 +3859,10 @@ export class Database {
    * ```
    */
   listSlowQueries(): Promise<QueryInfo[]> {
-    return this.request(
-      {
-        method: "GET",
-        path: "/_api/query/slow",
-      },
-      (res) => res.body
-    );
+    return this.request({
+      method: "GET",
+      path: "/_api/query/slow",
+    });
   }
 
   /**
@@ -3991,14 +3972,11 @@ export class Database {
     code: string,
     isDeterministic: boolean = false
   ): Promise<ArangoResponseMetadata & { isNewlyCreated: boolean }> {
-    return this.request(
-      {
-        method: "POST",
-        path: "/_api/aqlfunction",
-        body: { name, code, isDeterministic },
-      },
-      (res) => res.body
-    );
+    return this.request({
+      method: "POST",
+      path: "/_api/aqlfunction",
+      body: { name, code, isDeterministic },
+    });
   }
 
   /**
@@ -4020,14 +3998,11 @@ export class Database {
     name: string,
     group: boolean = false
   ): Promise<ArangoResponseMetadata & { deletedCount: number }> {
-    return this.request(
-      {
-        method: "DELETE",
-        path: `/_api/aqlfunction/${encodeURIComponent(name)}`,
-        qs: { group },
-      },
-      (res) => res.body
-    );
+    return this.request({
+      method: "DELETE",
+      path: `/_api/aqlfunction/${encodeURIComponent(name)}`,
+      qs: { group },
+    });
   }
   //#endregion
 
@@ -4050,13 +4025,10 @@ export class Database {
    * ```
    */
   listServices(excludeSystem: boolean = true): Promise<ServiceSummary[]> {
-    return this.request(
-      {
-        path: "/_api/foxx",
-        qs: { excludeSystem },
-      },
-      (res) => res.body
-    );
+    return this.request({
+      path: "/_api/foxx",
+      qs: { excludeSystem },
+    });
   }
 
   /**
@@ -4102,16 +4074,13 @@ export class Database {
       dependencies,
       source,
     });
-    return await this.request(
-      {
-        ...req,
-        method: "POST",
-        path: "/_api/foxx",
-        isBinary: true,
-        qs: { ...qs, mount },
-      },
-      (res) => res.body
-    );
+    return await this.request({
+      ...req,
+      method: "POST",
+      path: "/_api/foxx",
+      isBinary: true,
+      qs: { ...qs, mount },
+    });
   }
 
   /**
@@ -4158,16 +4127,13 @@ export class Database {
       dependencies,
       source,
     });
-    return await this.request(
-      {
-        ...req,
-        method: "PUT",
-        path: "/_api/foxx/service",
-        isBinary: true,
-        qs: { ...qs, mount },
-      },
-      (res) => res.body
-    );
+    return await this.request({
+      ...req,
+      method: "PUT",
+      path: "/_api/foxx/service",
+      isBinary: true,
+      qs: { ...qs, mount },
+    });
   }
 
   /**
@@ -4214,16 +4180,13 @@ export class Database {
       dependencies,
       source,
     });
-    return await this.request(
-      {
-        ...req,
-        method: "PATCH",
-        path: "/_api/foxx/service",
-        isBinary: true,
-        qs: { ...qs, mount },
-      },
-      (res) => res.body
-    );
+    return await this.request({
+      ...req,
+      method: "PATCH",
+      path: "/_api/foxx/service",
+      isBinary: true,
+      qs: { ...qs, mount },
+    });
   }
 
   /**
@@ -4265,13 +4228,10 @@ export class Database {
    * ```
    */
   getService(mount: string): Promise<ServiceInfo> {
-    return this.request(
-      {
-        path: "/_api/foxx/service",
-        qs: { mount },
-      },
-      (res) => res.body
-    );
+    return this.request({
+      path: "/_api/foxx/service",
+      qs: { mount },
+    });
   }
 
   /**
@@ -4325,13 +4285,10 @@ export class Database {
     minimal: true
   ): Promise<Record<string, any>>;
   async getServiceConfiguration(mount: string, minimal: boolean = false) {
-    const result = await this.request(
-      {
-        path: "/_api/foxx/configuration",
-        qs: { mount, minimal },
-      },
-      (res) => res.body
-    );
+    const result = await this.request({
+      path: "/_api/foxx/configuration",
+      qs: { mount, minimal },
+    });
     if (
       !minimal ||
       !Object.keys(result).every((key: string) => result[key].title)
@@ -4419,15 +4376,12 @@ export class Database {
     cfg: Record<string, any>,
     minimal: boolean = false
   ) {
-    const result = await this.request(
-      {
-        method: "PUT",
-        path: "/_api/foxx/configuration",
-        body: cfg,
-        qs: { mount, minimal },
-      },
-      (res) => res.body
-    );
+    const result = await this.request({
+      method: "PUT",
+      path: "/_api/foxx/configuration",
+      body: cfg,
+      qs: { mount, minimal },
+    });
     if (
       minimal ||
       !result.values ||
@@ -4523,15 +4477,12 @@ export class Database {
     cfg: Record<string, any>,
     minimal: boolean = false
   ) {
-    const result = await this.request(
-      {
-        method: "PATCH",
-        path: "/_api/foxx/configuration",
-        body: cfg,
-        qs: { mount, minimal },
-      },
-      (res) => res.body
-    );
+    const result = await this.request({
+      method: "PATCH",
+      path: "/_api/foxx/configuration",
+      body: cfg,
+      qs: { mount, minimal },
+    });
     if (
       minimal ||
       !result.values ||
@@ -4604,13 +4555,10 @@ export class Database {
     minimal: true
   ): Promise<Record<string, string | string[] | undefined>>;
   async getServiceDependencies(mount: string, minimal: boolean = false) {
-    const result = await this.request(
-      {
-        path: "/_api/foxx/dependencies",
-        qs: { mount, minimal },
-      },
-      (res) => res.body
-    );
+    const result = await this.request({
+      path: "/_api/foxx/dependencies",
+      qs: { mount, minimal },
+    });
     if (
       !minimal ||
       !Object.keys(result).every((key: string) => result[key].title)
@@ -4706,15 +4654,12 @@ export class Database {
     deps: Record<string, string>,
     minimal: boolean = false
   ) {
-    const result = await this.request(
-      {
-        method: "PUT",
-        path: "/_api/foxx/dependencies",
-        body: deps,
-        qs: { mount, minimal },
-      },
-      (res) => res.body
-    );
+    const result = await this.request({
+      method: "PUT",
+      path: "/_api/foxx/dependencies",
+      body: deps,
+      qs: { mount, minimal },
+    });
     if (
       minimal ||
       !result.values ||
@@ -4820,15 +4765,12 @@ export class Database {
     deps: Record<string, string>,
     minimal: boolean = false
   ) {
-    const result = await this.request(
-      {
-        method: "PATCH",
-        path: "/_api/foxx/dependencies",
-        body: deps,
-        qs: { mount, minimal },
-      },
-      (res) => res.body
-    );
+    const result = await this.request({
+      method: "PATCH",
+      path: "/_api/foxx/dependencies",
+      body: deps,
+      qs: { mount, minimal },
+    });
     if (
       minimal ||
       !result.values ||
@@ -4870,14 +4812,11 @@ export class Database {
     mount: string,
     enabled: boolean = true
   ): Promise<ServiceInfo> {
-    return this.request(
-      {
-        method: enabled ? "POST" : "DELETE",
-        path: "/_api/foxx/development",
-        qs: { mount },
-      },
-      (res) => res.body
-    );
+    return this.request({
+      method: enabled ? "POST" : "DELETE",
+      path: "/_api/foxx/development",
+      qs: { mount },
+    });
   }
 
   /**
@@ -4896,13 +4835,10 @@ export class Database {
    * ```
    */
   listServiceScripts(mount: string): Promise<Record<string, string>> {
-    return this.request(
-      {
-        path: "/_api/foxx/scripts",
-        qs: { mount },
-      },
-      (res) => res.body
-    );
+    return this.request({
+      path: "/_api/foxx/scripts",
+      qs: { mount },
+    });
   }
 
   /**
@@ -4930,15 +4866,12 @@ export class Database {
    * ```
    */
   runServiceScript(mount: string, name: string, params?: any): Promise<any> {
-    return this.request(
-      {
-        method: "POST",
-        path: `/_api/foxx/scripts/${encodeURIComponent(name)}`,
-        body: params,
-        qs: { mount },
-      },
-      (res) => res.body
-    );
+    return this.request({
+      method: "POST",
+      path: `/_api/foxx/scripts/${encodeURIComponent(name)}`,
+      body: params,
+      qs: { mount },
+    });
   }
 
   /**
@@ -5211,17 +5144,14 @@ export class Database {
       filter?: string;
     }
   ) {
-    return this.request(
-      {
-        method: "POST",
-        path: "/_api/foxx/tests",
-        qs: {
-          ...options,
-          mount,
-        },
+    return this.request({
+      method: "POST",
+      path: "/_api/foxx/tests",
+      qs: {
+        ...options,
+        mount,
       },
-      (res) => res.body
-    );
+    });
   }
 
   /**
@@ -5240,13 +5170,10 @@ export class Database {
    * ```
    */
   getServiceReadme(mount: string): Promise<string | undefined> {
-    return this.request(
-      {
-        path: "/_api/foxx/readme",
-        qs: { mount },
-      },
-      (res) => res.body
-    );
+    return this.request({
+      path: "/_api/foxx/readme",
+      qs: { mount },
+    });
   }
 
   /**
@@ -5263,13 +5190,10 @@ export class Database {
    * ```
    */
   getServiceDocumentation(mount: string): Promise<SwaggerJson> {
-    return this.request(
-      {
-        path: "/_api/foxx/swagger",
-        qs: { mount },
-      },
-      (res) => res.body
-    );
+    return this.request({
+      path: "/_api/foxx/swagger",
+      qs: { mount },
+    });
   }
 
   /**
@@ -5286,15 +5210,12 @@ export class Database {
    * ```
    */
   downloadService(mount: string): Promise<Buffer | Blob> {
-    return this.request(
-      {
-        method: "POST",
-        path: "/_api/foxx/download",
-        qs: { mount },
-        expectBinary: true,
-      },
-      (res) => res.body
-    );
+    return this.request({
+      method: "POST",
+      path: "/_api/foxx/download",
+      qs: { mount },
+      expectBinary: true,
+    });
   }
 
   /**

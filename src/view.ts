@@ -382,10 +382,9 @@ export class View<
    * ```
    */
   get(): Promise<ViewDescription & ArangoResponseMetadata> {
-    return this._db.request(
-      { path: `/_api/view/${encodeURIComponent(this._name)}` },
-      (res) => res.body
-    );
+    return this._db.request({
+      path: `/_api/view/${encodeURIComponent(this._name)}`,
+    });
   }
 
   /**
@@ -427,18 +426,15 @@ export class View<
   create(
     options?: PropertiesOptions & { type: ViewType }
   ): Promise<ViewDescription & Properties> {
-    return this._db.request(
-      {
-        method: "POST",
-        path: "/_api/view",
-        body: {
-          type: ViewType.ARANGOSEARCH_VIEW,
-          ...(options || {}),
-          name: this._name,
-        },
+    return this._db.request({
+      method: "POST",
+      path: "/_api/view",
+      body: {
+        type: ViewType.ARANGOSEARCH_VIEW,
+        ...(options || {}),
+        name: this._name,
       },
-      (res) => res.body
-    );
+    });
   }
 
   /**
@@ -483,10 +479,9 @@ export class View<
    * ```
    */
   properties(): Promise<ViewDescription & Properties & ArangoResponseMetadata> {
-    return this._db.request(
-      { path: `/_api/view/${encodeURIComponent(this._name)}/properties` },
-      (res) => res.body
-    );
+    return this._db.request({
+      path: `/_api/view/${encodeURIComponent(this._name)}/properties`,
+    });
   }
 
   /**
@@ -507,14 +502,11 @@ export class View<
   updateProperties(
     properties?: PropertiesOptions
   ): Promise<ViewDescription & Properties> {
-    return this._db.request(
-      {
-        method: "PATCH",
-        path: `/_api/view/${encodeURIComponent(this._name)}/properties`,
-        body: properties || {},
-      },
-      (res) => res.body
-    );
+    return this._db.request({
+      method: "PATCH",
+      path: `/_api/view/${encodeURIComponent(this._name)}/properties`,
+      body: properties || {},
+    });
   }
 
   /**
@@ -535,14 +527,11 @@ export class View<
   replaceProperties(
     properties?: PropertiesOptions
   ): Promise<ViewDescription & Properties> {
-    return this._db.request(
-      {
-        method: "PUT",
-        path: `/_api/view/${encodeURIComponent(this._name)}/properties`,
-        body: properties || {},
-      },
-      (res) => res.body
-    );
+    return this._db.request({
+      method: "PUT",
+      path: `/_api/view/${encodeURIComponent(this._name)}/properties`,
+      body: properties || {},
+    });
   }
 
   /**

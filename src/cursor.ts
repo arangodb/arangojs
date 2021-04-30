@@ -129,14 +129,14 @@ export class BatchedArrayCursor<T = any> {
 
   protected async _more(): Promise<void> {
     if (!this.hasMore) return;
-    const res = await this._db.request({
+    const body = await this._db.request({
       method: "PUT",
       path: `/_api/cursor/${encodeURIComponent(this._id!)}`,
       host: this._host,
       allowDirtyRead: this._allowDirtyRead,
     });
-    this._batches.push(new LinkedList(res.body.result));
-    this._hasMore = res.body.hasMore;
+    this._batches.push(new LinkedList(body.result));
+    this._hasMore = body.hasMore;
   }
 
   /**

@@ -3405,25 +3405,25 @@ export class Collection<T extends Record<string, any> = any>
   }
 
   //#region internals
-  protected _get<T extends Record<string, any>>(path: string, qs?: any) {
-    return this._db.request(
-      {
-        path: `/_api/collection/${encodeURIComponent(this._name)}/${path}`,
-        qs,
-      },
-      (res) => res.body as ArangoResponseMetadata & T
-    );
+  protected _get<T extends Record<string, any>>(
+    path: string,
+    qs?: any
+  ): Promise<ArangoResponseMetadata & T> {
+    return this._db.request({
+      path: `/_api/collection/${encodeURIComponent(this._name)}/${path}`,
+      qs,
+    });
   }
 
-  protected _put<T extends Record<string, any>>(path: string, body?: any) {
-    return this._db.request(
-      {
-        method: "PUT",
-        path: `/_api/collection/${encodeURIComponent(this._name)}/${path}`,
-        body,
-      },
-      (res) => res.body as ArangoResponseMetadata & T
-    );
+  protected _put<T extends Record<string, any>>(
+    path: string,
+    body?: any
+  ): Promise<ArangoResponseMetadata & T> {
+    return this._db.request({
+      method: "PUT",
+      path: `/_api/collection/${encodeURIComponent(this._name)}/${path}`,
+      body,
+    });
   }
   //#endregion
 
@@ -3437,10 +3437,9 @@ export class Collection<T extends Record<string, any> = any>
   }
 
   get() {
-    return this._db.request(
-      { path: `/_api/collection/${encodeURIComponent(this._name)}` },
-      (res) => res.body
-    );
+    return this._db.request({
+      path: `/_api/collection/${encodeURIComponent(this._name)}`,
+    });
   }
 
   async exists() {
@@ -3472,18 +3471,15 @@ export class Collection<T extends Record<string, any> = any>
     if (typeof enforceReplicationFactor === "boolean") {
       qs.enforceReplicationFactor = enforceReplicationFactor ? 1 : 0;
     }
-    return this._db.request(
-      {
-        method: "POST",
-        path: "/_api/collection",
-        qs,
-        body: {
-          ...opts,
-          name: this._name,
-        },
+    return this._db.request({
+      method: "POST",
+      path: "/_api/collection",
+      qs,
+      body: {
+        ...opts,
+        name: this._name,
       },
-      (res) => res.body
-    );
+    });
   }
 
   properties(properties?: CollectionPropertiesOptions) {
@@ -3554,23 +3550,28 @@ export class Collection<T extends Record<string, any> = any>
   }
 
   async rotate() {
-    const body = await this._put<{ result: boolean }>("rotate");
-    return body.result;
+    return this._db.request(
+      {
+        method: "PUT",
+        path: `/_api/collection/${this._name}/rotate`,
+      },
+      (res) => res.body.result
+    );
   }
 
-  truncate() {
-    return this._put<CollectionMetadata>("truncate");
+  truncate(): Promise<CollectionMetadata & ArangoResponseMetadata> {
+    return this._db.request({
+      method: "PUT",
+      path: `/_api/collection/${this._name}/truncate`,
+    });
   }
 
   drop(options?: CollectionDropOptions) {
-    return this._db.request(
-      {
-        method: "DELETE",
-        path: `/_api/collection/${encodeURIComponent(this._name)}`,
-        qs: options,
-      },
-      (res) => res.body
-    );
+    return this._db.request({
+      method: "DELETE",
+      path: `/_api/collection/${encodeURIComponent(this._name)}`,
+      qs: options,
+    });
   }
   //#endregion
 
@@ -3616,16 +3617,13 @@ export class Collection<T extends Record<string, any> = any>
     options: CollectionBatchReadOptions = {}
   ) {
     const { allowDirtyRead = undefined } = options;
-    return this._db.request(
-      {
-        method: "PUT",
-        path: `/_api/document/${encodeURIComponent(this._name)}`,
-        qs: { onlyget: true },
-        allowDirtyRead,
-        body: selectors,
-      },
-      (res) => res.body
-    );
+    return this._db.request({
+      method: "PUT",
+      path: `/_api/document/${encodeURIComponent(this._name)}`,
+      qs: { onlyget: true },
+      allowDirtyRead,
+      body: selectors,
+    });
   }
 
   async document(
@@ -3636,15 +3634,12 @@ export class Collection<T extends Record<string, any> = any>
       options = { graceful: options };
     }
     const { allowDirtyRead = undefined, graceful = false } = options;
-    const result = this._db.request(
-      {
-        path: `/_api/document/${encodeURI(
-          _documentHandle(selector, this._name)
-        )}`,
-        allowDirtyRead,
-      },
-      (res) => res.body
-    );
+    const result = this._db.request({
+      path: `/_api/document/${encodeURI(
+        _documentHandle(selector, this._name)
+      )}`,
+      allowDirtyRead,
+    });
     if (!graceful) return result;
     try {
       return await result;
@@ -3787,31 +3782,25 @@ export class Collection<T extends Record<string, any> = any>
       const lines = data as any[];
       data = lines.map((line) => JSON.stringify(line)).join("\r\n") + "\r\n";
     }
-    return this._db.request(
-      {
-        method: "POST",
-        path: "/_api/import",
-        body: data,
-        isBinary: true,
-        qs,
-      },
-      (res) => res.body
-    );
+    return this._db.request({
+      method: "POST",
+      path: "/_api/import",
+      body: data,
+      isBinary: true,
+      qs,
+    });
   }
   //#endregion
 
   //#region edges
   protected _edges(selector: DocumentSelector, direction?: "in" | "out") {
-    return this._db.request(
-      {
-        path: `/_api/edges/${encodeURIComponent(this._name)}`,
-        qs: {
-          direction,
-          vertex: _documentHandle(selector, this._name, false),
-        },
+    return this._db.request({
+      path: `/_api/edges/${encodeURIComponent(this._name)}`,
+      qs: {
+        direction,
+        vertex: _documentHandle(selector, this._name, false),
       },
-      (res) => res.body
-    );
+    });
   }
 
   edges(vertex: DocumentSelector) {
@@ -3918,18 +3907,15 @@ export class Collection<T extends Record<string, any> = any>
     example: Partial<DocumentData<T>>,
     options?: SimpleQueryRemoveByExampleOptions
   ) {
-    return this._db.request(
-      {
-        method: "PUT",
-        path: "/_api/simple/remove-by-example",
-        body: {
-          ...options,
-          example,
-          collection: this._name,
-        },
+    return this._db.request({
+      method: "PUT",
+      path: "/_api/simple/remove-by-example",
+      body: {
+        ...options,
+        example,
+        collection: this._name,
       },
-      (res) => res.body
-    );
+    });
   }
 
   replaceByExample(
@@ -3937,19 +3923,16 @@ export class Collection<T extends Record<string, any> = any>
     newValue: DocumentData<T>,
     options?: SimpleQueryReplaceByExampleOptions
   ) {
-    return this._db.request(
-      {
-        method: "PUT",
-        path: "/_api/simple/replace-by-example",
-        body: {
-          ...options,
-          example,
-          newValue,
-          collection: this._name,
-        },
+    return this._db.request({
+      method: "PUT",
+      path: "/_api/simple/replace-by-example",
+      body: {
+        ...options,
+        example,
+        newValue,
+        collection: this._name,
       },
-      (res) => res.body
-    );
+    });
   }
 
   updateByExample(
@@ -3957,19 +3940,16 @@ export class Collection<T extends Record<string, any> = any>
     newValue: Patch<DocumentData<T>>,
     options?: SimpleQueryUpdateByExampleOptions
   ) {
-    return this._db.request(
-      {
-        method: "PUT",
-        path: "/_api/simple/update-by-example",
-        body: {
-          ...options,
-          example,
-          newValue,
-          collection: this._name,
-        },
+    return this._db.request({
+      method: "PUT",
+      path: "/_api/simple/update-by-example",
+      body: {
+        ...options,
+        example,
+        newValue,
+        collection: this._name,
       },
-      (res) => res.body
-    );
+    });
   }
 
   lookupByKeys(keys: string[]) {
@@ -3987,18 +3967,15 @@ export class Collection<T extends Record<string, any> = any>
   }
 
   removeByKeys(keys: string[], options?: SimpleQueryRemoveByKeysOptions) {
-    return this._db.request(
-      {
-        method: "PUT",
-        path: "/_api/simple/remove-by-keys",
-        body: {
-          options: options,
-          keys,
-          collection: this._name,
-        },
+    return this._db.request({
+      method: "PUT",
+      path: "/_api/simple/remove-by-keys",
+      body: {
+        options: options,
+        keys,
+        collection: this._name,
       },
-      (res) => res.body
-    );
+    });
   }
   //#endregion
 
@@ -4014,12 +3991,9 @@ export class Collection<T extends Record<string, any> = any>
   }
 
   index(selector: IndexSelector) {
-    return this._db.request(
-      {
-        path: `/_api/index/${encodeURI(_indexHandle(selector, this._name))}`,
-      },
-      (res) => res.body
-    );
+    return this._db.request({
+      path: `/_api/index/${encodeURI(_indexHandle(selector, this._name))}`,
+    });
   }
 
   ensureIndex(
@@ -4032,25 +4006,19 @@ export class Collection<T extends Record<string, any> = any>
       | EnsureTtlIndexOptions
       | EnsureZkdIndexOptions
   ) {
-    return this._db.request(
-      {
-        method: "POST",
-        path: "/_api/index",
-        body: options,
-        qs: { collection: this._name },
-      },
-      (res) => res.body
-    );
+    return this._db.request({
+      method: "POST",
+      path: "/_api/index",
+      body: options,
+      qs: { collection: this._name },
+    });
   }
 
   dropIndex(selector: IndexSelector) {
-    return this._db.request(
-      {
-        method: "DELETE",
-        path: `/_api/index/${encodeURI(_indexHandle(selector, this._name))}`,
-      },
-      (res) => res.body
-    );
+    return this._db.request({
+      method: "DELETE",
+      path: `/_api/index/${encodeURI(_indexHandle(selector, this._name))}`,
+    });
   }
 
   fulltext(

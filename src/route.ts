@@ -82,7 +82,7 @@ export class Route {
     opts.basePath = this._path;
     opts.headers = { ...this._headers, ...opts.headers };
     opts.method = opts.method ? opts.method.toUpperCase() : "GET";
-    return this._db.request(opts);
+    return this._db.request(opts, false);
   }
 
   /**

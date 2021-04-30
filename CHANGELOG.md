@@ -30,6 +30,15 @@ This driver uses semantic versioning:
   This may result in type signatures that are incompatible with TypeScript 3
   being added in future releases (including patch releases).
 
+- Changed default behavior of _internal_ `db.request` method
+
+  Previously this method would always return the full response object if no
+  `transform` callback was provided. The method now defaults to a `transform`
+  callback that extracts the response body instead. The previous behavior can
+  still be forced by passing `false` instead of a callback function.
+
+  This change has no effect on other methods like `route.request`.
+
 ## [7.8.0] - 2022-05-19
 
 ### Added

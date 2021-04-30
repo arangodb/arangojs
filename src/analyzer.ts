@@ -554,10 +554,9 @@ export class Analyzer {
    * ```
    */
   get(): Promise<ArangoResponseMetadata & AnalyzerDescription> {
-    return this._db.request(
-      { path: `/_api/analyzer/${encodeURIComponent(this._name)}` },
-      (res) => res.body
-    );
+    return this._db.request({
+      path: `/_api/analyzer/${encodeURIComponent(this._name)}`,
+    });
   }
 
   /**
@@ -576,14 +575,11 @@ export class Analyzer {
    * ```
    */
   create(options: CreateAnalyzerOptions): Promise<AnalyzerDescription> {
-    return this._db.request(
-      {
-        method: "POST",
-        path: "/_api/analyzer",
-        body: { name: this._name, ...options },
-      },
-      (res) => res.body
-    );
+    return this._db.request({
+      method: "POST",
+      path: "/_api/analyzer",
+      body: { name: this._name, ...options },
+    });
   }
 
   /**
@@ -603,13 +599,10 @@ export class Analyzer {
   drop(
     force: boolean = false
   ): Promise<ArangoResponseMetadata & { name: string }> {
-    return this._db.request(
-      {
-        method: "DELETE",
-        path: `/_api/analyzer/${encodeURIComponent(this._name)}`,
-        qs: { force },
-      },
-      (res) => res.body
-    );
+    return this._db.request({
+      method: "DELETE",
+      path: `/_api/analyzer/${encodeURIComponent(this._name)}`,
+      qs: { force },
+    });
   }
 }
