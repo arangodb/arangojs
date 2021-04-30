@@ -1,5 +1,22 @@
 # Migrating
 
+## v7 to v8
+
+### General
+
+In TypeScript the type `Dict<T>` has been removed from the `connection` module.
+The built-in type `Record<string, T>` can be used as a replacement:
+
+```diff
+ import { Database } from "arangojs";
+-import type { Dict } from "arangojs/connection";
+
+ const db = new Database();
+-let deps: Dict<string, string[], undefined>;
++let deps: Record<string, string | string[] | undefined>;
+ deps = await db.getServiceDependencies("/my-foxx-service", true);
+```
+
 ## v6 to v7
 
 ### Configuration changes
