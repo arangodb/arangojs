@@ -17,6 +17,16 @@ The built-in type `Record<string, T>` can be used as a replacement:
  deps = await db.getServiceDependencies("/my-foxx-service", true);
 ```
 
+### Graphs
+
+In TypeScript the type `GraphCreateOptions` has been renamed to
+`CreateGraphOptions`:
+
+```diff
+-import type { GraphCreateOptions } from "arangojs/graph";
++import type { CreateGraphOptions } from "arangojs/graph";
+```
+
 ## v6 to v7
 
 ### Configuration changes

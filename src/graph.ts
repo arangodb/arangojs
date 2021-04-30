@@ -307,7 +307,7 @@ export type GraphInfo = {
 /**
  * Option for creating a graph.
  */
-export type GraphCreateOptions = {
+export type CreateGraphOptions = {
   /**
    * If set to `true`, the request will wait until all modifications have been
    * synchronized to disk before returning successfully.
@@ -1313,7 +1313,7 @@ export class Graph {
    */
   create(
     edgeDefinitions: EdgeDefinitionOptions[],
-    options?: GraphCreateOptions
+    options?: CreateGraphOptions
   ): Promise<GraphInfo> {
     const {
       orphanCollections,

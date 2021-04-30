@@ -30,6 +30,8 @@ This driver uses semantic versioning:
   This may result in type signatures that are incompatible with TypeScript 3
   being added in future releases (including patch releases).
 
+- Renamed type `GraphCreateOptions` to `CreateGraphOptions`
+
 - Changed default behavior of _internal_ `db.request` method
 
   Previously this method would always return the full response object if no

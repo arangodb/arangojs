@@ -39,9 +39,9 @@ import { ArrayCursor, BatchedArrayCursor } from "./cursor";
 import { isArangoError } from "./error";
 import { FoxxManifest } from "./foxx-manifest";
 import {
+  CreateGraphOptions,
   EdgeDefinitionOptions,
   Graph,
-  GraphCreateOptions,
   GraphInfo,
 } from "./graph";
 import { Blob } from "./lib/blob";
@@ -2342,7 +2342,7 @@ export class Database {
   async createGraph(
     graphName: string,
     edgeDefinitions: EdgeDefinitionOptions[],
-    options?: GraphCreateOptions
+    options?: CreateGraphOptions
   ): Promise<Graph> {
     const graph = this.graph(graphName.normalize("NFC"));
     await graph.create(edgeDefinitions, options);
