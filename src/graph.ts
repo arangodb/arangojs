@@ -1186,7 +1186,7 @@ export class GraphEdgeCollection<T extends Record<string, unknown> = any>
 /**
  * Represents a graph in a {@link Database}.
  */
-export class Graph {
+export class Graph implements ArangoCollection {
   protected _name: string;
 
   protected _db: Database;
@@ -1205,6 +1205,15 @@ export class Graph {
    */
   get name() {
     return this._name;
+  }
+
+  /**
+   * @internal
+   *
+   * Indicates that this object represents an ArangoDB collection.
+   */
+  get isArangoCollection(): true {
+    return true;
   }
 
   /**

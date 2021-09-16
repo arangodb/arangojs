@@ -60,6 +60,13 @@ describe("AQL helpers", function () {
       expect(Object.keys(query.bindVars)).to.eql(["@value0"]);
       expect(query.bindVars["@value0"]).to.equal("banana");
     });
+    it("supports arangojs graph parameters", () => {
+      const graph = db.graph("banana");
+      const query = aql`${graph}`;
+      expect(query.query).to.equal("@@value0");
+      expect(Object.keys(query.bindVars)).to.eql(["@value0"]);
+      expect(query.bindVars["@value0"]).to.equal("banana");
+    });
     it("supports ArangoDB collection parameters", () => {
       class ArangoCollection {
         isArangoCollection = true as const;
