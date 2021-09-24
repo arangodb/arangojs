@@ -34,6 +34,8 @@ This driver uses semantic versioning:
 
 - Added `collection.documents` for fetching multiple documents
 
+- Added support for `fillBlockCache` query option
+
 ## [7.5.0] - 2021-04-22
 
 ### Added

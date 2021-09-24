@@ -294,6 +294,12 @@ export type QueryOptions = {
    */
   fullCount?: boolean;
   /**
+   * If set to `false`, the query data will not be stored in the RocksDB block
+   * cache. This can be used to avoid thrashing he block cache when reading a
+   * lot of data.
+   */
+  fillBlockCache?: boolean;
+  /**
    * An object with a `rules` property specifying a list of optimizer rules to
    * be included or excluded by the optimizer for this query. Prefix a rule
    * name with `+` to include it, or `-` to exclude it. The name `all` acts as
