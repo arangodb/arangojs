@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 "use strict";
 var resolve = require("path").resolve;
 var webpack = require("webpack");

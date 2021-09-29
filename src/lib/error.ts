@@ -6,6 +6,7 @@
  * @hidden
  */
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const Es6Error = require("es6-error");
 
 /**

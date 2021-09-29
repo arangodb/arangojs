@@ -13,7 +13,8 @@ describe35("Accessing analyzers", function () {
   let db: Database;
   before(async () => {
     db = new Database(config);
-    if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE") await db.acquireHostList();
+    if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE")
+      await db.acquireHostList();
     await db.createDatabase(name);
     db.useDatabase(name);
     builtins.push(...(await db.listAnalyzers()).map((a) => a.name));
@@ -29,8 +30,8 @@ describe35("Accessing analyzers", function () {
   });
   describe("database.analyzer", () => {
     it("returns a Analyzer instance for the analyzer", () => {
-      let name = "potato";
-      let analyzer = db.analyzer(name);
+      const name = "potato";
+      const analyzer = db.analyzer(name);
       expect(analyzer).to.be.an.instanceof(Analyzer);
       expect(analyzer).to.have.property("name").that.equals(name);
     });

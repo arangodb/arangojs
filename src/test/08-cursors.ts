@@ -21,7 +21,8 @@ describe("Item-wise Cursor API", () => {
   before(async () => {
     allCursors = [];
     db = new Database(config);
-    if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE") await db.acquireHostList();
+    if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE")
+      await db.acquireHostList();
   });
   after(async () => {
     await Promise.all(
@@ -130,7 +131,7 @@ describe("Item-wise Cursor API", () => {
       expect.fail();
     });
     it("returns false after last result is consumed (with large amount of results)", async () => {
-      const EXPECTED_LENGTH = 100000;
+      const EXPECTED_LENGTH = 10000;
       async function loadMore(cursor: ArrayCursor, totalLength: number) {
         await cursor.next();
         totalLength++;
@@ -238,7 +239,8 @@ describe("Batch-wise Cursor API", () => {
   before(async () => {
     allCursors = [];
     db = new Database(config);
-    if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE") await db.acquireHostList();
+    if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE")
+      await db.acquireHostList();
   });
   after(async () => {
     await Promise.all(
@@ -334,7 +336,7 @@ describe("Batch-wise Cursor API", () => {
       expect.fail();
     });
     it("returns false after last result is consumed (with large amount of results)", async () => {
-      const EXPECTED_LENGTH = 100000;
+      const EXPECTED_LENGTH = 10000;
       async function loadMore(cursor: ArrayCursor, totalLength: number) {
         await cursor.next();
         totalLength++;

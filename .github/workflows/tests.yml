@@ -1,6 +1,9 @@
 name: Tests
 
-on: [push]
+on:
+  push:
+    branches-ignore:
+      - "stable"
 
 jobs:
   node:
@@ -9,8 +12,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: [10, 12, 14]
-        arangodb-version: [3.5, 3.6, 3.7]
+        node-version: [10, 12, 14, 16]
+        arangodb-version: [3.6, 3.7]
 
     container:
       image: node:${{ matrix.node-version }}
@@ -51,3 +54,16 @@ jobs:
       - run: npm install -g npm@7
       - run: npm install
       - run: node smoke-test.js
+
+  promote:
+    runs-on: ubuntu-latest
+    needs: ["node", "web"]
+    if: ${{ github.ref == 'refs/heads/main' }}
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GH_TOKEN }}
+      - run: git fetch . HEAD:stable
+      - run: git push origin stable

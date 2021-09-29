@@ -13,6 +13,7 @@ import { Errback } from "./errback";
  * @internal
  * @hidden
  */
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 export default require("xhr") as (
   options: any,
   cb: Errback<any>

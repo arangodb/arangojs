@@ -15,7 +15,7 @@ import {
   request as httpRequest,
 } from "http";
 import { Agent as HttpsAgent, request as httpsRequest } from "https";
-import { parse as parseUrl } from "url";
+import { parse as parseUrl, UrlWithStringQuery } from "url";
 import { Headers, RequestInterceptors } from "../connection";
 import { btoa } from "./btoa";
 import { Errback } from "./errback";
@@ -83,7 +83,7 @@ export function createRequest(
   agentOptions: AgentOptions & RequestInterceptors,
   agent?: any
 ): RequestFunction {
-  const baseUrlParts = parseUrl(baseUrl);
+  const baseUrlParts = parseUrl(baseUrl) as Partial<UrlWithStringQuery>;
   if (!baseUrlParts.protocol) {
     throw new Error(`Invalid URL (no protocol): ${baseUrl}`);
   }

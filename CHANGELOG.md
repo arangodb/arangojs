@@ -14,7 +14,29 @@ This driver uses semantic versioning:
 - A change in the major version (e.g. 1.Y.Z -> 2.0.0) indicates _breaking_
   changes that require changes in your code to upgrade.
 
-## [7.5.0-preview-arangodb.3.8] - 2021-04-09
+## [Unreleased]
+
+### Removed
+
+- Removed `Dict` type from `connection` module
+
+  The `Dict<T>` type was identical to `Record<string, T>` and has been replaced
+  with this built-in type across arangojs.
+
+### Changed
+
+- Updated TypeScript to version 4
+
+  This may result in type signatures that are incompatible with TypeScript 3
+  being added in future releases (including patch releases).
+
+### Added
+
+- Added `collection.documents` for fetching multiple documents
+
+- Added support for `fillBlockCache` query option
+
+## [7.5.0] - 2021-04-22
 
 ### Added
 
@@ -1200,7 +1222,8 @@ For a detailed list of changes between pre-release versions of v7 see the
 
   Graph methods now only return the relevant part of the response body.
 
-[7.5.0-preview-arangodb.3.8]: https://github.com/arangodb/arangojs/compare/v7.4.0...v7.5.0-preview-arangodb.3.8
+[unreleased]: https://github.com/arangodb/arangojs/compare/v7.5.0...HEAD
+[7.5.0]: https://github.com/arangodb/arangojs/compare/v7.4.0...v7.5.0
 [7.4.0]: https://github.com/arangodb/arangojs/compare/v7.3.0...v7.4.0
 [7.3.0]: https://github.com/arangodb/arangojs/compare/v7.2.0...v7.3.0
 [7.2.0]: https://github.com/arangodb/arangojs/compare/v7.1.1...v7.2.0

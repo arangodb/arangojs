@@ -8,11 +8,12 @@ const range = (n: number): number[] => Array.from(Array(n).keys());
 const describe34 = config.arangoVersion! >= 30400 ? describe : describe.skip;
 
 describe34("Accessing views", function () {
-  let name = `testdb_${Date.now()}`;
+  const name = `testdb_${Date.now()}`;
   let db: Database;
   before(async () => {
     db = new Database(config);
-    if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE") await db.acquireHostList();
+    if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE")
+      await db.acquireHostList();
     await db.createDatabase(name);
     db.useDatabase(name);
   });
@@ -26,14 +27,14 @@ describe34("Accessing views", function () {
   });
   describe("database.arangoSearchView", () => {
     it("returns a View instance for the view", () => {
-      let name = "potato";
-      let view = db.view(name);
+      const name = "potato";
+      const view = db.view(name);
       expect(view).to.be.an.instanceof(View);
       expect(view).to.have.property("name").that.equals(name);
     });
   });
   describe("database.listViews", () => {
-    let viewNames = range(4).map((i) => `v_${Date.now()}_${i}`);
+    const viewNames = range(4).map((i) => `v_${Date.now()}_${i}`);
     before(async () => {
       await Promise.all(
         viewNames.map(async (name) => {
@@ -56,7 +57,7 @@ describe34("Accessing views", function () {
     });
   });
   describe("database.views", () => {
-    let arangoSearchViewNames = range(4).map((i) => `asv_${Date.now()}_${i}`);
+    const arangoSearchViewNames = range(4).map((i) => `asv_${Date.now()}_${i}`);
     before(async () => {
       await Promise.all(
         arangoSearchViewNames.map(async (name) => {
@@ -76,7 +77,7 @@ describe34("Accessing views", function () {
     });
     it("creates View instances", async () => {
       const views = await db.views();
-      let arangoSearchViews = views.filter((v) => v instanceof View).sort();
+      const arangoSearchViews = views.filter((v) => v instanceof View).sort();
       expect(arangoSearchViews.length).to.equal(arangoSearchViewNames.length);
       expect(arangoSearchViews.map((v) => v.name).sort()).to.eql(
         arangoSearchViewNames

@@ -7,7 +7,8 @@ describe("Manipulating databases", function () {
   let db: Database;
   beforeEach(async () => {
     db = new Database(config);
-    if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE") await db.acquireHostList();
+    if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE")
+      await db.acquireHostList();
   });
   afterEach(() => {
     db.close();
@@ -25,7 +26,7 @@ describe("Manipulating databases", function () {
     });
   });
   describe("database.createDatabase", () => {
-    let name = `testdb_${Date.now()}`;
+    const name = `testdb_${Date.now()}`;
     afterEach(async () => {
       db.useDatabase("_system");
       await db.dropDatabase(name);
@@ -66,13 +67,13 @@ describe("Manipulating databases", function () {
     it("returns a list of databases accessible to the active user");
   });
   describe("database.dropDatabase", () => {
-    let name = `testdb_${Date.now()}`;
+    const name = `testdb_${Date.now()}`;
     beforeEach(async () => {
       await db.createDatabase(name);
     });
     it("deletes the given database from the server", async () => {
       await db.dropDatabase(name);
-      let temp = new Database().useDatabase(name);
+      const temp = new Database().useDatabase(name);
       try {
         await temp.get();
       } catch (e) {

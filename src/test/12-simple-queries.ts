@@ -8,12 +8,13 @@ const range = (n: number): number[] => Array.from(Array(n).keys());
 const alpha = (i: number): string => String.fromCharCode("a".charCodeAt(0) + i);
 
 describe("Simple queries", function () {
-  let name = `testdb_${Date.now()}`;
+  const name = `testdb_${Date.now()}`;
   let db: Database;
   let collection: DocumentCollection;
   before(async () => {
     db = new Database(config);
-    if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE") await db.acquireHostList();
+    if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE")
+      await db.acquireHostList();
     await db.createDatabase(name);
     db.useDatabase(name);
   });

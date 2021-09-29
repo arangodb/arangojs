@@ -43,6 +43,7 @@ describeIm("Single-server active failover", function () {
   afterEach(async function () {
     im.moveServerLogs(this.currentTest);
     const logs = await im.cleanup(this.currentTest!.isFailed());
+    // eslint-disable-next-line no-console
     if (logs) console.error(`IM Logs:\n${logs}`);
   });
   async function getServerId(): Promise<string | undefined> {

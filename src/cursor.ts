@@ -8,7 +8,6 @@
  * @packageDocumentation
  */
 import { LinkedList } from "x3-linkedlist";
-import { Dict } from "./connection";
 import { Database } from "./database";
 
 /**
@@ -33,7 +32,7 @@ export interface CursorExtras {
   /**
    * Additional statistics about the query execution.
    */
-  stats?: Dict<any>;
+  stats?: Record<string, any>;
 }
 
 interface BatchView<T = any> {
@@ -389,7 +388,7 @@ export class BatchedArrayCursor<T = any> {
     callback: (currentBatch: T[], index: number, self: this) => R
   ): Promise<R[]> {
     let index = 0;
-    let result: any[] = [];
+    const result: any[] = [];
     while (this.hasNext) {
       const currentBatch = await this.next();
       result.push(callback(currentBatch!, index, this));
@@ -446,7 +445,7 @@ export class BatchedArrayCursor<T = any> {
     callback: (currentBatch: T[], index: number, self: this) => R | R[]
   ): Promise<R[]> {
     let index = 0;
-    let result: any[] = [];
+    const result: any[] = [];
     while (this.hasNext) {
       const currentBatch = await this.next();
       const value = callback(currentBatch!, index, this);
@@ -862,7 +861,7 @@ export class ArrayCursor<T = any> {
     callback: (currentValue: T, index: number, self: this) => R
   ): Promise<R[]> {
     let index = 0;
-    let result: any[] = [];
+    const result: any[] = [];
     while (this.hasNext) {
       const value = await this.next();
       result.push(callback(value!, index, this));
@@ -913,7 +912,7 @@ export class ArrayCursor<T = any> {
     callback: (currentValue: T, index: number, self: this) => R | R[]
   ): Promise<R[]> {
     let index = 0;
-    let result: any[] = [];
+    const result: any[] = [];
     while (this.hasNext) {
       const value = await this.next();
       const item = callback(value!, index, this);

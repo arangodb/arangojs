@@ -15,7 +15,8 @@ describe34("Manipulating views", function () {
   let view: ArangoSearchView;
   before(async () => {
     db = new Database(config);
-    if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE") await db.acquireHostList();
+    if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE")
+      await db.acquireHostList();
     await db.createDatabase(name);
     db.useDatabase(name);
   });
@@ -96,10 +97,12 @@ describe34("Manipulating views", function () {
       const res = await db.route("/_admin/server/role").get();
       if (res.body.role === "SINGLE") {
         // view renaming is only implemented for single servers
+        // eslint-disable-next-line security/detect-non-literal-fs-filename
         const info = await view.rename(name);
         expect(info).to.have.property("name", name);
       } else {
         try {
+          // eslint-disable-next-line security/detect-non-literal-fs-filename
           await view.rename(name);
         } catch (e) {
           // "unsupported operation" in cluster

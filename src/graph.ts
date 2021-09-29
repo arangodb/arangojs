@@ -371,7 +371,7 @@ export type GraphCreateOptions = {
  *
  * @param T - Type to use for document data. Defaults to `any`.
  */
-export class GraphVertexCollection<T extends object = any>
+export class GraphVertexCollection<T extends Record<string, unknown> = any>
   implements ArangoCollection {
   protected _db: Database;
   protected _name: string;
@@ -778,7 +778,7 @@ export class GraphVertexCollection<T extends object = any>
  *
  * @param T - Type to use for document data. Defaults to `any`.
  */
-export class GraphEdgeCollection<T extends object = any>
+export class GraphEdgeCollection<T extends Record<string, unknown> = any>
   implements ArangoCollection {
   protected _db: Database;
   protected _name: string;
@@ -1329,7 +1329,7 @@ export class Graph {
    * @param T - Type to use for document data. Defaults to `any`.
    * @param collection - Name of the vertex collection.
    */
-  vertexCollection<T extends object = any>(
+  vertexCollection<T extends Record<string, unknown> = any>(
     collection: string | ArangoCollection
   ): GraphVertexCollection<T> {
     if (isArangoCollection(collection)) {
@@ -1492,7 +1492,7 @@ export class Graph {
    * const edgeCollection = graphEdgeCollection.collection;
    * ```
    */
-  edgeCollection<T extends object = any>(
+  edgeCollection<T extends Record<string, unknown> = any>(
     collection: string | ArangoCollection
   ): GraphEdgeCollection<T> {
     if (isArangoCollection(collection)) {

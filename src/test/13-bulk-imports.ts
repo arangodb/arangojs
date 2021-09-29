@@ -5,12 +5,13 @@ import { config } from "./_config";
 
 describe("Bulk imports", function () {
   let db: Database;
-  let dbName = `testdb_${Date.now()}`;
+  const dbName = `testdb_${Date.now()}`;
   let collection: DocumentCollection<{ data: string }>;
-  let collectionName = `collection-${Date.now()}`;
+  const collectionName = `collection-${Date.now()}`;
   before(async () => {
     db = new Database(config);
-    if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE") await db.acquireHostList();
+    if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE")
+      await db.acquireHostList();
     await db.createDatabase(dbName);
     db.useDatabase(dbName);
     collection = await db.createCollection(collectionName);

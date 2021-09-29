@@ -11,7 +11,7 @@
  *
  * @packageDocumentation
  */
-import { ArangoResponseMetadata, Dict, Params } from "./connection";
+import { ArangoResponseMetadata, Params } from "./connection";
 import { ArrayCursor, BatchedArrayCursor } from "./cursor";
 import { Database } from "./database";
 import {
@@ -21,6 +21,7 @@ import {
   DocumentSelector,
   Edge,
   EdgeData,
+  ObjectWithKey,
   Patch,
   _documentHandle,
 } from "./documents";
@@ -532,6 +533,18 @@ export type CollectionReadOptions = {
    * if the document does not exist.
    */
   graceful?: boolean;
+  /**
+   * If set to `true`, the request will explicitly permit ArangoDB to return a
+   * potentially dirty or stale result and arangojs will load balance the
+   * request without distinguishing between leaders and followers.
+   */
+  allowDirtyRead?: boolean;
+};
+
+/**
+ * Options for retrieving multiple documents from a collection.
+ */
+export type CollectionBatchReadOptions = {
   /**
    * If set to `true`, the request will explicitly permit ArangoDB to return a
    * potentially dirty or stale result and arangojs will load balance the
@@ -1117,7 +1130,7 @@ export type CollectionImportResult = {
 /**
  * Result of retrieving edges in a collection.
  */
-export type CollectionEdgesResult<T extends object = any> = {
+export type CollectionEdgesResult<T extends Record<string, unknown> = any> = {
   edges: Edge<T>[];
   stats: {
     scannedIndex: number;
@@ -1178,7 +1191,9 @@ export type SimpleQueryUpdateByExampleResult = {
  * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
  * replaced with AQL queries.
  */
-export type SimpleQueryRemoveByKeysResult<T extends object = any> = {
+export type SimpleQueryRemoveByKeysResult<
+  T extends Record<string, unknown> = any
+> = {
   /**
    * Number of documents removed.
    */
@@ -1215,7 +1230,7 @@ export type SimpleQueryRemoveByKeysResult<T extends object = any> = {
  * const documents = db.collection("persons") as DocumentCollection<Person>;
  * ```
  */
-export interface DocumentCollection<T extends object = any>
+export interface DocumentCollection<T extends Record<string, unknown> = any>
   extends ArangoCollection {
   /**
    * Checks whether the collection exists.
@@ -1368,7 +1383,7 @@ export interface DocumentCollection<T extends object = any>
   figures(): Promise<
     ArangoResponseMetadata &
       CollectionMetadata &
-      CollectionProperties & { count: number; figures: Dict<any> }
+      CollectionProperties & { count: number; figures: Record<string, any> }
   >;
   /**
    * Retrieves the collection revision ID.
@@ -1669,6 +1684,32 @@ export interface DocumentCollection<T extends object = any>
    * ```
    */
   document(selector: DocumentSelector, graceful: boolean): Promise<Document<T>>;
+  /**
+   * Retrieves the documents matching the given key or id values.
+   *
+   * Throws an exception when passed a document or `_id` from a different
+   * collection, or if the document does not exist.
+   *
+   * @param selectors - Array of document `_key`, `_id` or objects with either
+   * of those properties (e.g. a document from this collection).
+   * @param options - Options for retrieving the documents.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
+   * try {
+   *   const documents = await collection.documents(["abc123", "xyz456"]);
+   *   console.log(documents);
+   * } catch (e) {
+   *   console.error("Could not find document");
+   * }
+   * ```
+   */
+  documents(
+    selectors: (string | ObjectWithKey)[],
+    options?: CollectionBatchReadOptions
+  ): Promise<Document<T>[]>;
   /**
    * Inserts a new document with the given `data` into the collection.
    *
@@ -2539,7 +2580,7 @@ export interface DocumentCollection<T extends object = any>
  * const edges = db.collection("friends") as EdgeCollection<Friend>;
  * ```
  */
-export interface EdgeCollection<T extends object = any>
+export interface EdgeCollection<T extends Record<string, unknown> = any>
   extends DocumentCollection<T> {
   /**
    * Retrieves the document matching the given key or id.
@@ -2615,6 +2656,32 @@ export interface EdgeCollection<T extends object = any>
    * ```
    */
   document(selector: DocumentSelector, graceful: boolean): Promise<Edge<T>>;
+  /**
+   * Retrieves the documents matching the given key or id values.
+   *
+   * Throws an exception when passed a document or `_id` from a different
+   * collection, or if the document does not exist.
+   *
+   * @param selectors - Array of document `_key`, `_id` or objects with either
+   * of those properties (e.g. a document from this collection).
+   * @param options - Options for retrieving the documents.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
+   * try {
+   *   const documents = await collection.documents(["abc123", "xyz456"]);
+   *   console.log(documents);
+   * } catch (e) {
+   *   console.error("Could not find document");
+   * }
+   * ```
+   */
+  documents(
+    selectors: (string | ObjectWithKey)[],
+    options?: CollectionBatchReadOptions
+  ): Promise<Edge<T>[]>;
   /**
    * Inserts a new document with the given `data` into the collection.
    *
@@ -3248,7 +3315,7 @@ export interface EdgeCollection<T extends object = any>
  * @internal
  * @hidden
  */
-export class Collection<T extends object = any>
+export class Collection<T extends Record<string, unknown> = any>
   implements EdgeCollection<T>, DocumentCollection<T> {
   //#region attributes
   protected _name: string;
@@ -3265,14 +3332,14 @@ export class Collection<T extends object = any>
   }
 
   //#region internals
-  protected _get<T extends {}>(path: string, qs?: any) {
+  protected _get<T extends Record<string, unknown>>(path: string, qs?: any) {
     return this._db.request(
       { path: `/_api/collection/${this._name}/${path}`, qs },
       (res) => res.body as ArangoResponseMetadata & T
     );
   }
 
-  protected _put<T extends {}>(path: string, body?: any) {
+  protected _put<T extends Record<string, unknown>>(path: string, body?: any) {
     return this._db.request(
       {
         method: "PUT",
@@ -3366,7 +3433,10 @@ export class Collection<T extends object = any>
   figures() {
     return this._get<
       CollectionMetadata &
-        CollectionProperties & { count: number; figures: Dict<any> }
+        CollectionProperties & {
+          count: number;
+          figures: Record<string, any>;
+        }
     >("figures");
   }
 
@@ -3456,6 +3526,23 @@ export class Collection<T extends object = any>
       }
       throw err;
     }
+  }
+
+  documents(
+    selectors: (string | ObjectWithKey)[],
+    options: CollectionBatchReadOptions = {}
+  ) {
+    const { allowDirtyRead = undefined } = options;
+    return this._db.request(
+      {
+        method: "PUT",
+        path: `/_api/document/${this._name}`,
+        qs: { onlyget: true },
+        allowDirtyRead,
+        body: selectors,
+      },
+      (res) => res.body
+    );
   }
 
   async document(
