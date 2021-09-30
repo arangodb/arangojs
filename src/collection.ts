@@ -1372,6 +1372,8 @@ export interface DocumentCollection<T extends Record<string, unknown> = any>
   /**
    * Retrieves statistics for a collection.
    *
+   * @param details - When true, gets extra engine figures (slow).
+   *
    * @example
    * ```js
    * const db = new Database();
@@ -1380,7 +1382,7 @@ export interface DocumentCollection<T extends Record<string, unknown> = any>
    * // data contains the collection's figures
    * ```
    */
-  figures(): Promise<
+  figures(details: boolean): Promise<
     ArangoResponseMetadata &
       CollectionMetadata &
       CollectionProperties & { count: number; figures: Record<string, any> }
@@ -3430,14 +3432,14 @@ export class Collection<T extends Record<string, unknown> = any>
     return body.result;
   }
 
-  figures() {
+  figures(details: boolean = false) {
     return this._get<
       CollectionMetadata &
         CollectionProperties & {
           count: number;
           figures: Record<string, any>;
         }
-    >("figures");
+    >("figures", (details ? { details: true } : undefined));
   }
 
   revision() {
