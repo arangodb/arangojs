@@ -3,6 +3,8 @@ import { DocumentCollection } from "../collection";
 import { Database } from "../database";
 import { config } from "./_config";
 
+const itPre39 = config.arangoVersion! < 30900 ? it : it.skip;
+
 describe("Manipulating collections", function () {
   const name = `testdb_${Date.now()}`;
   let db: Database;
@@ -75,7 +77,7 @@ describe("Manipulating collections", function () {
     });
   });
   describe("collection.unload", () => {
-    it("should unload a collection", async () => {
+    itPre39("should unload a collection", async () => {
       const info = await collection.unload();
       expect(info).to.have.property("name", collection.name);
       expect(info).to.have.property("status");
