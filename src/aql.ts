@@ -11,6 +11,7 @@
  * @packageDocumentation
  */
 import { ArangoCollection, isArangoCollection } from "./collection";
+import { Graph, isArangoGraph } from "./graph";
 import { isArangoView, View } from "./view";
 
 /**
@@ -70,6 +71,7 @@ export interface AqlLiteral {
 export type AqlValue =
   | ArangoCollection
   | View
+  | Graph
   | GeneratedAqlQuery
   | AqlLiteral
   | string
@@ -241,7 +243,11 @@ export function aql(
     const index = bindValues.indexOf(rawValue);
     const isKnown = index !== -1;
     let name = `value${isKnown ? index : bindValues.length}`;
-    if (isArangoCollection(rawValue) || isArangoView(rawValue)) {
+    if (
+      isArangoCollection(rawValue) ||
+      isArangoGraph(rawValue) ||
+      isArangoView(rawValue)
+    ) {
       name = `@${name}`;
       value = rawValue.name;
     }

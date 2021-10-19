@@ -38,6 +38,10 @@ This driver uses semantic versioning:
 
 - Added support for `fillBlockCache` query option
 
+- Added support for passing `Graph` objects in AQL queries [#740](https://github.com/arangodb/arangojs/issues/740)
+
+  This also adds the `isArangoGraph` helper function for type checking.
+
 - Added User Management API [#664](https://github.com/arangodb/arangojs/issues/664)
 
   This implements the endpoints of the

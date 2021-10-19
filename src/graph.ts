@@ -36,6 +36,15 @@ import { isArangoError } from "./error";
 import { DOCUMENT_NOT_FOUND, GRAPH_NOT_FOUND } from "./lib/codes";
 
 /**
+ * Indicates whether the given value represents a {@link Graph}.
+ *
+ * @param graph - A value that might be a Graph.
+ */
+export function isArangoGraph(graph: any): graph is Graph {
+  return Boolean(graph && graph.isArangoGraph);
+}
+
+/**
  * @internal
  * @hidden
  */
@@ -1198,6 +1207,15 @@ export class Graph {
   constructor(db: Database, name: string) {
     this._name = name;
     this._db = db;
+  }
+
+  /**
+   * @internal
+   *
+   * Indicates that this object represents an ArangoDB Graph.
+   */
+  get isArangoGraph(): true {
+    return true;
   }
 
   /**
