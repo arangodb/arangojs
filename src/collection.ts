@@ -1372,6 +1372,9 @@ export interface DocumentCollection<T extends Record<string, unknown> = any>
   /**
    * Retrieves statistics for a collection.
    *
+   * @param details - whether to return extended storage engine-specific details
+   * to the figures, which may cause additional load and impact performance
+   *
    * @example
    * ```js
    * const db = new Database();
@@ -1380,7 +1383,9 @@ export interface DocumentCollection<T extends Record<string, unknown> = any>
    * // data contains the collection's figures
    * ```
    */
-  figures(): Promise<
+  figures(
+    details?: boolean
+  ): Promise<
     ArangoResponseMetadata &
       CollectionMetadata &
       CollectionProperties & { count: number; figures: Record<string, any> }
@@ -3430,14 +3435,19 @@ export class Collection<T extends Record<string, unknown> = any>
     return body.result;
   }
 
-  figures() {
-    return this._get<
-      CollectionMetadata &
-        CollectionProperties & {
-          count: number;
-          figures: Record<string, any>;
-        }
-    >("figures");
+  figures(
+    details = false
+  ): Promise<
+    CollectionMetadata &
+      CollectionProperties & {
+        count: number;
+        figures: Record<string, any>;
+      } & ArangoResponseMetadata
+  > {
+    return this._db.request({
+      path: `/_api/collection/${this._name}/figures`,
+      qs: { details },
+    });
   }
 
   revision() {

@@ -34,6 +34,8 @@ This driver uses semantic versioning:
 
 - Added `collection.documents` for fetching multiple documents
 
+- Added missing `details` flag to `collection.figures` [#728](https://github.com/arangodb/arangojs/issues/728)
+
 - Added support for `fillBlockCache` query option
 
 - Added User Management API [#664](https://github.com/arangodb/arangojs/issues/664)
