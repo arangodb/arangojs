@@ -400,9 +400,15 @@ export type GeoPointAnalyzer = {
  */
 export type StopwordsAnalyzerProperties = {
   /**
-   * Hex-encoded strings that describe the tokens to be discarded.
+   * Array of strings that describe the tokens to be discarded.
    */
   stopwords: string[];
+  /**
+   * Whether stopword values should be interpreted as hex-encoded strings.
+   *
+   * Default: `false`
+   */
+  hex?: boolean;
 };
 
 /**

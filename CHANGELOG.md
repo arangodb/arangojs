@@ -34,6 +34,8 @@ This driver uses semantic versioning:
 
 - Added `collection.documents` for fetching multiple documents
 
+- Added missing `hex` flag to `StopwordsAnalyzer` type [#732](https://github.com/arangodb/arangojs/issues/732)
+
 - Added missing `details` flag to `collection.figures` [#728](https://github.com/arangodb/arangojs/issues/728)
 
 - Added support for `fillBlockCache` query option
