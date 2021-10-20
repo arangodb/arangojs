@@ -506,9 +506,11 @@ export class BatchedArrayCursor<T = any> {
    *   { batchSize: 1 }
    * );
    * const result = await cursor.reduce((accumulator, currentBatch) => {
-   *   accumulator[
-   *     currentBatch[0] % 2 === 0 ? "even" : "odd"
-   *   ].push(...currentBatch);
+   *   if (currentBatch[0] % 2 === 0) {
+   *     accumulator.even.push(...currentBatch);
+   *   } else {
+   *     accumulator.odd.push(...currentBatch);
+   *   }
    *   return accumulator;
    * }, { odd: [], even: [] });
    * console.log(result); // { odd: [1, 3, 5], even: [2, 4] }
@@ -517,7 +519,7 @@ export class BatchedArrayCursor<T = any> {
    * const cursor = await db.query(aql`FOR x IN 1..5 RETURN x`);
    * const odd = [];
    * const even = [];
-   * for await (const item of cursor) {
+   * for await (const currentBatch of cursor) {
    *   if (currentBatch[0] % 2 === 0) {
    *     even.push(...currentBatch);
    *   } else {
@@ -966,7 +968,11 @@ export class ArrayCursor<T = any> {
    * // BAD! NEEDLESSLY COMPLEX!
    * const cursor = await db.query(aql`FOR x IN 1..5 RETURN x`);
    * const result = await cursor.reduce((accumulator, currentValue) => {
-   *   accumulator[currentValue % 2 === 0 ? "even" : "odd"].push(currentValue);
+   *   if (currentValue % 2 === 0) {
+   *     accumulator.even.push(...currentValue);
+   *   } else {
+   *     accumulator.odd.push(...currentValue);
+   *   }
    *   return accumulator;
    * }, { odd: [], even: [] });
    * console.log(result); // { odd: [1, 3, 5], even: [2, 4] }
@@ -975,7 +981,7 @@ export class ArrayCursor<T = any> {
    * const cursor = await db.query(aql`FOR x IN 1..5 RETURN x`);
    * const odd = [];
    * const even = [];
-   * for await (const item of cursor) {
+   * for await (const currentValue of cursor) {
    *   if (currentValue % 2 === 0) {
    *     even.push(currentValue);
    *   } else {
