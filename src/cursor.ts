@@ -8,6 +8,7 @@
  * @packageDocumentation
  */
 import { LinkedList } from "x3-linkedlist";
+import { Dict } from "./connection";
 import { Database } from "./database";
 
 /**
@@ -32,7 +33,7 @@ export interface CursorExtras {
   /**
    * Additional statistics about the query execution.
    */
-  stats?: Record<string, any>;
+  stats?: Dict<any>;
 }
 
 interface BatchView<T = any> {

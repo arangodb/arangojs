@@ -11,6 +11,8 @@
  * @packageDocumentation
  */
 
+import { Dict } from "./connection";
+
 /**
  * Schema for ArangoDB Foxx service manifests.
  */
@@ -18,7 +20,7 @@ export type FoxxManifest = {
   /**
    * An object defining the configuration options this service requires.
    */
-  configuration?: Record<string, Configuration>;
+  configuration?: Dict<Configuration>;
   /**
    * If specified, the / (root) route of the service will automatically redirect to the given relative path, e.g. "index.html".
    */
@@ -26,21 +28,21 @@ export type FoxxManifest = {
   /**
    * The dependencies this service uses, i.e. which APIs its dependencies need to be compatible with.
    */
-  dependencies?: Record<string, string | Dependency>;
+  dependencies?: Dict<string | Dependency>;
   /**
    * The dependencies this provides, i.e. which APIs it claims to be compatible with.
    */
-  provides?: Record<string, string>;
+  provides?: Dict<string>;
   /**
    * An object indicating the semantic version ranges of ArangoDB (or compatible environments) the service will be compatible with.
    */
-  engines?: Record<string, string> & {
+  engines?: Dict<string> & {
     arangodb?: string;
   };
   /**
    * An object defining file assets served by this service.
    */
-  files?: Record<string, string | File>;
+  files?: Dict<string | File>;
   /**
    * The relative path to the Foxx JavaScript files in the service, e.g. "lib". Defaults to the folder containing this manifest.
    */
@@ -52,7 +54,7 @@ export type FoxxManifest = {
   /**
    * An object defining named scripts provided by this service, which can either be used directly or as queued jobs by other services.
    */
-  scripts?: Record<string, string>;
+  scripts?: Dict<string>;
   /**
    * A path/pattern or list of paths/patterns of JavaScript tests provided for this service.
    */

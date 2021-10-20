@@ -11,7 +11,7 @@
  *
  * @packageDocumentation
  */
-import { ArangoResponseMetadata, Params } from "./connection";
+import { ArangoResponseMetadata, Dict, Params } from "./connection";
 import { ArrayCursor, BatchedArrayCursor } from "./cursor";
 import { Database } from "./database";
 import {
@@ -1388,7 +1388,7 @@ export interface DocumentCollection<T extends Record<string, unknown> = any>
   ): Promise<
     ArangoResponseMetadata &
       CollectionMetadata &
-      CollectionProperties & { count: number; figures: Record<string, any> }
+      CollectionProperties & { count: number; figures: Dict<any> }
   >;
   /**
    * Retrieves the collection revision ID.
@@ -3441,7 +3441,7 @@ export class Collection<T extends Record<string, unknown> = any>
     CollectionMetadata &
       CollectionProperties & {
         count: number;
-        figures: Record<string, any>;
+        figures: Dict<any>;
       } & ArangoResponseMetadata
   > {
     return this._db.request({

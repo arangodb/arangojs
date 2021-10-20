@@ -16,20 +16,6 @@ This driver uses semantic versioning:
 
 ## [Unreleased]
 
-### Removed
-
-- Removed `Dict` type from `connection` module
-
-  The `Dict<T>` type was identical to `Record<string, T>` and has been replaced
-  with this built-in type across arangojs.
-
-### Changed
-
-- Updated TypeScript to version 4
-
-  This may result in type signatures that are incompatible with TypeScript 3
-  being added in future releases (including patch releases).
-
 ### Added
 
 - Added `collection.documents` for fetching multiple documents
