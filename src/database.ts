@@ -32,7 +32,6 @@ import {
   ArangoResponseMetadata,
   Config,
   Connection,
-  Dict,
   Headers,
   RequestOptions,
 } from "./connection";
@@ -628,7 +627,7 @@ export type QueryInfo = {
   /**
    * Bind parameters used in the query.
    */
-  bindVars: Dict<any>;
+  bindVars: Record<string, any>;
   /**
    * Query's running time in seconds.
    */
@@ -670,7 +669,7 @@ export type CreateDatabaseUser = {
   /**
    * Additional data to store with the user object.
    */
-  extra?: Dict<any>;
+  extra?: Record<string, any>;
 };
 
 /**
@@ -809,13 +808,13 @@ export type InstallServiceOptions = {
    *
    * See also {@link Database.getServiceConfiguration}.
    */
-  configuration?: Dict<any>;
+  configuration?: Record<string, any>;
   /**
    * An object mapping dependency aliases to mount points.
    *
    * See also {@link Database.getServiceDependencies}.
    */
-  dependencies?: Dict<string>;
+  dependencies?: Record<string, string>;
   /**
    * Whether the service should be installed in development mode.
    *
@@ -851,13 +850,13 @@ export type ReplaceServiceOptions = {
    *
    * See also {@link Database.getServiceConfiguration}.
    */
-  configuration?: Dict<any>;
+  configuration?: Record<string, any>;
   /**
    * An object mapping dependency aliases to mount points.
    *
    * See also {@link Database.getServiceDependencies}.
    */
-  dependencies?: Dict<string>;
+  dependencies?: Record<string, string>;
   /**
    * Whether the service should be installed in development mode.
    *
@@ -907,13 +906,13 @@ export type UpgradeServiceOptions = {
    *
    * See also {@link Database.getServiceConfiguration}.
    */
-  configuration?: Dict<any>;
+  configuration?: Record<string, any>;
   /**
    * An object mapping dependency aliases to mount points.
    *
    * See also {@link Database.getServiceDependencies}.
    */
-  dependencies?: Dict<string>;
+  dependencies?: Record<string, string>;
   /**
    * Whether the service should be installed in development mode.
    *
@@ -994,7 +993,7 @@ export type ServiceSummary = {
    * Service dependencies the service expects to be able to match as a mapping
    * from dependency names to versions the service is compatible with.
    */
-  provides: Dict<string>;
+  provides: Record<string, string>;
   /**
    * Whether development mode is enabled for this service.
    */
@@ -1048,11 +1047,11 @@ export type ServiceInfo = {
     /**
      * Configuration values set for this service.
      */
-    configuration: Dict<any>;
+    configuration: Record<string, any>;
     /**
      * Service dependency configuration of this service.
      */
-    dependencies: Dict<string>;
+    dependencies: Record<string, string>;
   };
 };
 
@@ -3120,10 +3119,7 @@ export class Database {
       }
     >
   >;
-  getUserDatabases(
-    username: string,
-    full?: boolean
-  ): Promise<Record<string, any>> {
+  getUserDatabases(username: string, full?: boolean) {
     return this.request({
       absolutePath: true,
       path: `/_api/user/${encodeURIComponent(username)}/database`,
@@ -3569,12 +3565,12 @@ export class Database {
    */
   query(
     query: string | AqlLiteral,
-    bindVars?: Dict<any>,
+    bindVars?: Record<string, any>,
     options?: QueryOptions
   ): Promise<ArrayCursor>;
   query(
     query: string | AqlQuery | AqlLiteral,
-    bindVars?: Dict<any>,
+    bindVars?: Record<string, any>,
     options?: QueryOptions
   ): Promise<ArrayCursor> {
     if (isAqlQuery(query)) {
@@ -3704,7 +3700,7 @@ export class Database {
    */
   explain(
     query: string | AqlLiteral,
-    bindVars?: Dict<any>,
+    bindVars?: Record<string, any>,
     options?: ExplainOptions & { allPlans?: false }
   ): Promise<ArangoResponseMetadata & SingleExplainResult>;
   /**
@@ -3734,12 +3730,12 @@ export class Database {
    */
   explain(
     query: string | AqlLiteral,
-    bindVars?: Dict<any>,
+    bindVars?: Record<string, any>,
     options?: ExplainOptions & { allPlans: true }
   ): Promise<ArangoResponseMetadata & MultiExplainResult>;
   explain(
     query: string | AqlQuery | AqlLiteral,
-    bindVars?: Dict<any>,
+    bindVars?: Record<string, any>,
     options?: ExplainOptions
   ): Promise<
     ArangoResponseMetadata & (SingleExplainResult | MultiExplainResult)
@@ -4302,7 +4298,7 @@ export class Database {
   async getServiceConfiguration(
     mount: string,
     minimal?: false
-  ): Promise<Dict<ServiceConfiguration>>;
+  ): Promise<Record<string, ServiceConfiguration>>;
   /**
    * Retrieves information about the service's configuration options and their
    * current values.
@@ -4327,7 +4323,7 @@ export class Database {
   async getServiceConfiguration(
     mount: string,
     minimal: true
-  ): Promise<Dict<any>>;
+  ): Promise<Record<string, any>>;
   async getServiceConfiguration(mount: string, minimal: boolean = false) {
     const result = await this.request(
       {
@@ -4379,9 +4375,9 @@ export class Database {
    */
   async replaceServiceConfiguration(
     mount: string,
-    cfg: Dict<any>,
+    cfg: Record<string, any>,
     minimal?: false
-  ): Promise<Dict<ServiceConfiguration & { warning?: string }>>;
+  ): Promise<Record<string, ServiceConfiguration & { warning?: string }>>;
   /**
    * Replaces the configuration of the given service, discarding any existing
    * values for options not specified.
@@ -4412,15 +4408,15 @@ export class Database {
    */
   async replaceServiceConfiguration(
     mount: string,
-    cfg: Dict<any>,
+    cfg: Record<string, any>,
     minimal: true
   ): Promise<{
-    values: Dict<any>;
-    warnings: Dict<string | undefined>;
+    values: Record<string, any>;
+    warnings: Record<string, string | undefined>;
   }>;
   async replaceServiceConfiguration(
     mount: string,
-    cfg: Dict<any>,
+    cfg: Record<string, any>,
     minimal: boolean = false
   ) {
     const result = await this.request(
@@ -4441,9 +4437,10 @@ export class Database {
     ) {
       return result;
     }
-    const result2 = (await this.getServiceConfiguration(mount, false)) as Dict<
-      ServiceConfiguration & { warning?: string }
-    >;
+    const result2 = (await this.getServiceConfiguration(
+      mount,
+      false
+    )) as Record<string, ServiceConfiguration & { warning?: string }>;
     if (result.warnings) {
       for (const key of Object.keys(result2)) {
         result2[key].warning = result.warnings[key];
@@ -4482,9 +4479,9 @@ export class Database {
    */
   async updateServiceConfiguration(
     mount: string,
-    cfg: Dict<any>,
+    cfg: Record<string, any>,
     minimal?: false
-  ): Promise<Dict<ServiceConfiguration & { warning?: string }>>;
+  ): Promise<Record<string, ServiceConfiguration & { warning?: string }>>;
   /**
    * Updates the configuration of the given service while maintaining any
    * existing values for options not specified.
@@ -4515,15 +4512,15 @@ export class Database {
    */
   async updateServiceConfiguration(
     mount: string,
-    cfg: Dict<any>,
+    cfg: Record<string, any>,
     minimal: true
   ): Promise<{
-    values: Dict<any>;
-    warnings: Dict<string | undefined>;
+    values: Record<string, any>;
+    warnings: Record<string, string | undefined>;
   }>;
   async updateServiceConfiguration(
     mount: string,
-    cfg: Dict<any>,
+    cfg: Record<string, any>,
     minimal: boolean = false
   ) {
     const result = await this.request(
@@ -4544,9 +4541,10 @@ export class Database {
     ) {
       return result;
     }
-    const result2 = (await this.getServiceConfiguration(mount, false)) as Dict<
-      ServiceConfiguration & { warning?: string }
-    >;
+    const result2 = (await this.getServiceConfiguration(
+      mount,
+      false
+    )) as Record<string, ServiceConfiguration & { warning?: string }>;
     if (result.warnings) {
       for (const key of Object.keys(result2)) {
         result2[key].warning = result.warnings[key];
@@ -4579,7 +4577,7 @@ export class Database {
   async getServiceDependencies(
     mount: string,
     minimal?: false
-  ): Promise<Dict<SingleServiceDependency | MultiServiceDependency>>;
+  ): Promise<Record<string, SingleServiceDependency | MultiServiceDependency>>;
   /**
    * Retrieves information about the service's dependencies and their current
    * mount points.
@@ -4604,7 +4602,7 @@ export class Database {
   async getServiceDependencies(
     mount: string,
     minimal: true
-  ): Promise<Dict<string | string[] | undefined>>;
+  ): Promise<Record<string, string | string[] | undefined>>;
   async getServiceDependencies(mount: string, minimal: boolean = false) {
     const result = await this.request(
       {
@@ -4655,10 +4653,11 @@ export class Database {
    */
   async replaceServiceDependencies(
     mount: string,
-    deps: Dict<string>,
+    deps: Record<string, string>,
     minimal?: false
   ): Promise<
-    Dict<
+    Record<
+      string,
       (SingleServiceDependency | MultiServiceDependency) & { warning?: string }
     >
   >;
@@ -4696,15 +4695,15 @@ export class Database {
    */
   async replaceServiceDependencies(
     mount: string,
-    deps: Dict<string>,
+    deps: Record<string, string>,
     minimal: true
   ): Promise<{
-    values: Dict<string>;
-    warnings: Dict<string | undefined>;
+    values: Record<string, string>;
+    warnings: Record<string, string | undefined>;
   }>;
   async replaceServiceDependencies(
     mount: string,
-    deps: Dict<string>,
+    deps: Record<string, string>,
     minimal: boolean = false
   ) {
     const result = await this.request(
@@ -4726,7 +4725,8 @@ export class Database {
       return result;
     }
     // Work around "minimal" flag not existing in 3.3
-    const result2 = (await this.getServiceDependencies(mount, false)) as Dict<
+    const result2 = (await this.getServiceDependencies(mount, false)) as Record<
+      string,
       (SingleServiceDependency | MultiServiceDependency) & { warning?: string }
     >;
     if (result.warnings) {
@@ -4767,10 +4767,11 @@ export class Database {
    */
   async updateServiceDependencies(
     mount: string,
-    deps: Dict<string>,
+    deps: Record<string, string>,
     minimal?: false
   ): Promise<
-    Dict<
+    Record<
+      string,
       (SingleServiceDependency | MultiServiceDependency) & { warning?: string }
     >
   >;
@@ -4808,15 +4809,15 @@ export class Database {
    */
   async updateServiceDependencies(
     mount: string,
-    deps: Dict<string>,
+    deps: Record<string, string>,
     minimal: true
   ): Promise<{
-    values: Dict<string>;
-    warnings: Dict<string | undefined>;
+    values: Record<string, string>;
+    warnings: Record<string, string | undefined>;
   }>;
   async updateServiceDependencies(
     mount: string,
-    deps: Dict<string>,
+    deps: Record<string, string>,
     minimal: boolean = false
   ) {
     const result = await this.request(
@@ -4838,7 +4839,8 @@ export class Database {
       return result;
     }
     // Work around "minimal" flag not existing in 3.3
-    const result2 = (await this.getServiceDependencies(mount, false)) as Dict<
+    const result2 = (await this.getServiceDependencies(mount, false)) as Record<
+      string,
       (SingleServiceDependency | MultiServiceDependency) & { warning?: string }
     >;
     if (result.warnings) {
@@ -4893,7 +4895,7 @@ export class Database {
    * }
    * ```
    */
-  listServiceScripts(mount: string): Promise<Dict<string>> {
+  listServiceScripts(mount: string): Promise<Record<string, string>> {
     return this.request(
       {
         path: "/_api/foxx/scripts",
