@@ -58,6 +58,15 @@ This driver uses semantic versioning:
   modules to be polyfilled to work in the browser. This also drastically
   reduces the file size of the pre-built browser bundle `arangojs/web`.
 
+### Added
+
+- Added `toJSON` method to system errors
+
+  ArangoJS already adds the `request` object to system errors encountered
+  while attempting to make network requests. This change makes it easier
+  to serialize these error objects to JSON the same way `ArangoError` and
+  `HttpError` objects can already be serialized.
+
 ## [7.8.0] - 2022-05-19
 
 ### Added

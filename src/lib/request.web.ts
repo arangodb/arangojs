@@ -22,6 +22,17 @@ import xhr from "./xhr";
 export const isBrowser = true;
 
 /**
+ * @internal
+ * @hidden
+ */
+function errorToJSON(this: Error) {
+  return {
+    error: true,
+    message: this.message,
+  };
+}
+
+/**
  * Create a function for performing requests against a given host.
  *
  * @param baseUrl - Base URL of the host, i.e. protocol, port and domain name.
@@ -91,6 +102,7 @@ export function createRequest(
         } else {
           const error = err as ArangojsError;
           error.request = req;
+          error.toJSON = errorToJSON;
           if (options.after) {
             options.after(error);
           }

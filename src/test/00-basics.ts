@@ -2,6 +2,7 @@ import { expect } from "chai";
 import * as http from "http";
 import * as https from "https";
 import arangojs, { Database } from "..";
+import { config } from "./_config";
 
 describe("Creating a Database", () => {
   describe("using the factory", () => {
@@ -167,6 +168,50 @@ describe("Configuring the driver", () => {
       expect(agent._destroyed).to.equal(false);
       db.close();
       expect(agent._destroyed).to.equal(true);
+    });
+  });
+});
+
+describe("JSON serialization", () => {
+  describe("for ArangoError", () => {
+    const name = `testdb_${Date.now()}`;
+    let db: Database;
+    before(async () => {
+      db = new Database(config);
+      if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE")
+        await db.acquireHostList();
+      await db.createDatabase(name);
+      db.useDatabase(name);
+    });
+    after(async () => {
+      try {
+        db.useDatabase("_system");
+        await db.dropDatabase(name);
+      } finally {
+        db.close();
+      }
+    });
+    it("should be serializable to JSON", async () => {
+      try {
+        await db.collection("does-not-exist").get();
+      } catch (e) {
+        JSON.stringify(e);
+        return;
+      }
+      expect.fail("Should have raised an exception");
+    });
+  });
+  describe("for SystemError", () => {
+    it("should be serializable to JSON", async () => {
+      const db = new Database({ url: "http://does.not.exist.example:9999" });
+      try {
+        await db.collection("does-not-exist").get();
+      } catch (e) {
+        console.error(e);
+        JSON.stringify(e);
+        return;
+      }
+      expect.fail("Should have raised an exception");
     });
   });
 });

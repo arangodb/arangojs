@@ -17,10 +17,24 @@ import {
 import { Agent as HttpsAgent, request as httpsRequest } from "https";
 import { parse as parseUrl, UrlWithStringQuery } from "url";
 import { Headers, RequestInterceptors } from "../connection";
+import { SystemError } from "../error";
 import { btoa } from "./btoa";
 import { Errback } from "./errback";
 import { joinPath } from "./joinPath";
 import { omit } from "./omit";
+
+/**
+ * @internal
+ * @hidden
+ */
+function systemErrorToJSON(this: SystemError) {
+  return {
+    error: true,
+    errno: this.errno,
+    code: this.code,
+    syscall: this.syscall,
+  };
+}
 
 /**
  * @internal
@@ -38,6 +52,7 @@ export interface ArangojsResponse extends IncomingMessage {
  */
 export interface ArangojsError extends Error {
   request: ClientRequest;
+  toJSON: () => Record<string, any>;
 }
 
 /**
@@ -175,6 +190,7 @@ export function createRequest(
         req.on("error", (err) => {
           const error = err as ArangojsError;
           error.request = req;
+          error.toJSON = systemErrorToJSON;
           if (called) return;
           called = true;
           if (agentOptions.after) {
