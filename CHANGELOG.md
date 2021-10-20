@@ -38,6 +38,8 @@ This driver uses semantic versioning:
 
 - Added missing `details` flag to `collection.figures` [#728](https://github.com/arangodb/arangojs/issues/728)
 
+- Added missing `inBackground` flag to index options [#734](https://github.com/arangodb/arangojs/issues/734)
+
 - Added support for `fillBlockCache` query option
 
 - Added support for passing `Graph` objects in AQL queries [#740](https://github.com/arangodb/arangojs/issues/740)

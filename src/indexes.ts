@@ -62,6 +62,13 @@ export type EnsureHashIndexOptions = {
    * Default: `true`
    */
   estimates?: boolean;
+  /**
+   * If set to `true`, the index will be created in the background to reduce
+   * the write-lock duration for the collection during index creation.
+   *
+   * Default: `false`
+   */
+  inBackground?: boolean;
 };
 
 /**
@@ -110,6 +117,13 @@ export type EnsureSkiplistIndexOptions = {
    * Default: `true`
    */
   estimates?: boolean;
+  /**
+   * If set to `true`, the index will be created in the background to reduce
+   * the write-lock duration for the collection during index creation.
+   *
+   * Default: `false`
+   */
+  inBackground?: boolean;
 };
 
 /**
@@ -149,6 +163,13 @@ export type EnsurePersistentIndexOptions = {
    * Default: `true`
    */
   estimates?: boolean;
+  /**
+   * If set to `true`, the index will be created in the background to reduce
+   * the write-lock duration for the collection during index creation.
+   *
+   * Default: `false`
+   */
+  inBackground?: boolean;
 };
 
 /**
@@ -174,6 +195,13 @@ export type EnsureGeoIndexOptions =
        * A unique name for this index.
        */
       name?: string;
+      /**
+       * If set to `true`, the index will be created in the background to reduce
+       * the write-lock duration for the collection during index creation.
+       *
+       * Default: `false`
+       */
+      inBackground?: boolean;
     }
   | {
       type: "geo";
@@ -197,6 +225,13 @@ export type EnsureGeoIndexOptions =
        * A unique name for this index.
        */
       name?: string;
+      /**
+       * If set to `true`, the index will be created in the background to reduce
+       * the write-lock duration for the collection during index creation.
+       *
+       * Default: `false`
+       */
+      inBackground?: boolean;
     };
 
 /**
@@ -219,6 +254,13 @@ export type EnsureFulltextIndexOptions = {
    * Minimum character length of words to index.
    */
   minLength?: number;
+  /**
+   * If set to `true`, the index will be created in the background to reduce
+   * the write-lock duration for the collection during index creation.
+   *
+   * Default: `false`
+   */
+  inBackground?: boolean;
 };
 
 /**
@@ -242,6 +284,13 @@ export type EnsureTtlIndexOptions = {
    * be considered as expired.
    */
   expireAfter: number;
+  /**
+   * If set to `true`, the index will be created in the background to reduce
+   * the write-lock duration for the collection during index creation.
+   *
+   * Default: `false`
+   */
+  inBackground?: boolean;
 };
 
 /**
