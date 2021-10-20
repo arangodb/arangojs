@@ -89,10 +89,13 @@
 						<section class="tsd-index-section ">
 							<h3>Type aliases</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="database.html#accesslevel" class="tsd-kind-icon">Access<wbr>Level</a></li>
 								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="database.html#aqluserfunction" class="tsd-kind-icon">Aql<wbr>User<wbr>Function</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="database.html#arangouser" class="tsd-kind-icon">Arango<wbr>User</a></li>
 								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="database.html#astnode" class="tsd-kind-icon">Ast<wbr>Node</a></li>
 								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="database.html#createdatabaseoptions" class="tsd-kind-icon">Create<wbr>Database<wbr>Options</a></li>
 								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="database.html#createdatabaseuser" class="tsd-kind-icon">Create<wbr>Database<wbr>User</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="database.html#createuseroptions" class="tsd-kind-icon">Create<wbr>User<wbr>Options</a></li>
 								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="database.html#databaseinfo" class="tsd-kind-icon">Database<wbr>Info</a></li>
 								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="database.html#explainoptions" class="tsd-kind-icon">Explain<wbr>Options</a></li>
 								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="database.html#explainplan" class="tsd-kind-icon">Explain<wbr>Plan</a></li>
@@ -127,6 +130,8 @@
 								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="database.html#transactionoptions" class="tsd-kind-icon">Transaction<wbr>Options</a></li>
 								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="database.html#uninstallserviceoptions" class="tsd-kind-icon">Uninstall<wbr>Service<wbr>Options</a></li>
 								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="database.html#upgradeserviceoptions" class="tsd-kind-icon">Upgrade<wbr>Service<wbr>Options</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="database.html#useraccessleveloptions" class="tsd-kind-icon">User<wbr>Access<wbr>Level<wbr>Options</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="database.html#useroptions" class="tsd-kind-icon">User<wbr>Options</a></li>
 								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="database.html#versioninfo" class="tsd-kind-icon">Version<wbr>Info</a></li>
 							</ul>
 						</section>
@@ -141,6 +146,18 @@
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Type aliases</h2>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
+					<a name="accesslevel" class="tsd-anchor"></a>
+					<h3>Access<wbr>Level</h3>
+					<div class="tsd-signature tsd-kind-icon">Access<wbr>Level<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;rw&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;ro&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;none&quot;</span></div>
+					<aside class="tsd-sources">
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Access level for an ArangoDB user&#39;s access to a collection or database.</p>
+						</div>
+					</div>
+				</section>
 				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
 					<a name="aqluserfunction" class="tsd-anchor"></a>
 					<h3>Aql<wbr>User<wbr>Function</h3>
@@ -177,6 +194,47 @@
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
 										<p>Name of the AQL User Function.</p>
+									</div>
+								</div>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
+					<a name="arangouser" class="tsd-anchor"></a>
+					<h3>Arango<wbr>User</h3>
+					<div class="tsd-signature tsd-kind-icon">Arango<wbr>User<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>active<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>extra<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">; </span>user<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span></div>
+					<aside class="tsd-sources">
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Properties of an ArangoDB user object.</p>
+						</div>
+					</div>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter">
+								<h5>active<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Whether the ArangoDB user account is enabled and can authenticate.</p>
+									</div>
+								</div>
+							</li>
+							<li class="tsd-parameter">
+								<h5>extra<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Additional information to store about this user.</p>
+									</div>
+								</div>
+							</li>
+							<li class="tsd-parameter">
+								<h5>user<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>ArangoDB username of the user.</p>
 									</div>
 								</div>
 							</li>
@@ -281,7 +339,7 @@
 				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
 					<a name="createdatabaseuser" class="tsd-anchor"></a>
 					<h3>Create<wbr>Database<wbr>User</h3>
-					<div class="tsd-signature tsd-kind-icon">Create<wbr>Database<wbr>User<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>active<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>extra<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">; </span>passwd<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>username<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span></div>
+					<div class="tsd-signature tsd-kind-icon">Create<wbr>Database<wbr>User<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>active<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>extra<span class="tsd-signature-symbol">?: </span><a href="connection.html#dict" class="tsd-signature-type" data-tsd-kind="Type alias">Dict</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">; </span>passwd<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>username<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -302,7 +360,7 @@
 								</div>
 							</li>
 							<li class="tsd-parameter">
-								<h5><span class="tsd-flag ts-flagOptional">Optional</span> extra<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h5>
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> extra<span class="tsd-signature-symbol">?: </span><a href="connection.html#dict" class="tsd-signature-type" data-tsd-kind="Type alias">Dict</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
 										<p>Additional data to store with the user object.</p>
@@ -323,6 +381,57 @@
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
 										<p>Username of the user to create.</p>
+									</div>
+								</div>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
+					<a name="createuseroptions" class="tsd-anchor"></a>
+					<h3>Create<wbr>User<wbr>Options</h3>
+					<div class="tsd-signature tsd-kind-icon">Create<wbr>User<wbr>Options<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>active<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>extra<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">; </span>passwd<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>user<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span></div>
+					<aside class="tsd-sources">
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Options for creating an ArangoDB user.</p>
+						</div>
+					</div>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter">
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> active<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Whether the ArangoDB user account is enabled and can authenticate.</p>
+									</div>
+									<p>Default: <code>true</code></p>
+								</div>
+							</li>
+							<li class="tsd-parameter">
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> extra<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">&gt;</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Additional information to store about this user.</p>
+									</div>
+									<p>Default: <code>{}</code></p>
+								</div>
+							</li>
+							<li class="tsd-parameter">
+								<h5>passwd<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Password the ArangoDB user will use for authentication.</p>
+									</div>
+								</div>
+							</li>
+							<li class="tsd-parameter">
+								<h5>user<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>ArangoDB username of the user.</p>
 									</div>
 								</div>
 							</li>
@@ -550,7 +659,7 @@
 				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
 					<a name="installserviceoptions" class="tsd-anchor"></a>
 					<h3>Install<wbr>Service<wbr>Options</h3>
-					<div class="tsd-signature tsd-kind-icon">Install<wbr>Service<wbr>Options<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>configuration<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">; </span>dependencies<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">; </span>development<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>legacy<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>setup<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> }</span></div>
+					<div class="tsd-signature tsd-kind-icon">Install<wbr>Service<wbr>Options<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>configuration<span class="tsd-signature-symbol">?: </span><a href="connection.html#dict" class="tsd-signature-type" data-tsd-kind="Type alias">Dict</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">; </span>dependencies<span class="tsd-signature-symbol">?: </span><a href="connection.html#dict" class="tsd-signature-type" data-tsd-kind="Type alias">Dict</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">; </span>development<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>legacy<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>setup<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -563,7 +672,7 @@
 						<h4>Type declaration</h4>
 						<ul class="tsd-parameters">
 							<li class="tsd-parameter">
-								<h5><span class="tsd-flag ts-flagOptional">Optional</span> configuration<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h5>
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> configuration<span class="tsd-signature-symbol">?: </span><a href="connection.html#dict" class="tsd-signature-type" data-tsd-kind="Type alias">Dict</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
 										<p>An object mapping configuration option names to values.</p>
@@ -572,7 +681,7 @@
 								</div>
 							</li>
 							<li class="tsd-parameter">
-								<h5><span class="tsd-flag ts-flagOptional">Optional</span> dependencies<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></h5>
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> dependencies<span class="tsd-signature-symbol">?: </span><a href="connection.html#dict" class="tsd-signature-type" data-tsd-kind="Type alias">Dict</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
 										<p>An object mapping dependency aliases to mount points.</p>
@@ -813,7 +922,7 @@
 				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
 					<a name="queryinfo" class="tsd-anchor"></a>
 					<h3>Query<wbr>Info</h3>
-					<div class="tsd-signature tsd-kind-icon">Query<wbr>Info<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>bindVars<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">; </span>id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>query<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>runTime<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>started<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>state<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;executing&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;finished&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;killed&quot;</span><span class="tsd-signature-symbol">; </span>stream<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> }</span></div>
+					<div class="tsd-signature tsd-kind-icon">Query<wbr>Info<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>bindVars<span class="tsd-signature-symbol">: </span><a href="connection.html#dict" class="tsd-signature-type" data-tsd-kind="Type alias">Dict</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">; </span>id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>query<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>runTime<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>started<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>state<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;executing&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;finished&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;killed&quot;</span><span class="tsd-signature-symbol">; </span>stream<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -825,7 +934,7 @@
 						<h4>Type declaration</h4>
 						<ul class="tsd-parameters">
 							<li class="tsd-parameter">
-								<h5>bind<wbr>Vars<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h5>
+								<h5>bind<wbr>Vars<span class="tsd-signature-symbol">: </span><a href="connection.html#dict" class="tsd-signature-type" data-tsd-kind="Type alias">Dict</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
 										<p>Bind parameters used in the query.</p>
@@ -1258,7 +1367,7 @@
 				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
 					<a name="replaceserviceoptions" class="tsd-anchor"></a>
 					<h3>Replace<wbr>Service<wbr>Options</h3>
-					<div class="tsd-signature tsd-kind-icon">Replace<wbr>Service<wbr>Options<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>configuration<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">; </span>dependencies<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">; </span>development<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>force<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>legacy<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>setup<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>teardown<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> }</span></div>
+					<div class="tsd-signature tsd-kind-icon">Replace<wbr>Service<wbr>Options<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>configuration<span class="tsd-signature-symbol">?: </span><a href="connection.html#dict" class="tsd-signature-type" data-tsd-kind="Type alias">Dict</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">; </span>dependencies<span class="tsd-signature-symbol">?: </span><a href="connection.html#dict" class="tsd-signature-type" data-tsd-kind="Type alias">Dict</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">; </span>development<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>force<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>legacy<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>setup<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>teardown<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1271,7 +1380,7 @@
 						<h4>Type declaration</h4>
 						<ul class="tsd-parameters">
 							<li class="tsd-parameter">
-								<h5><span class="tsd-flag ts-flagOptional">Optional</span> configuration<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h5>
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> configuration<span class="tsd-signature-symbol">?: </span><a href="connection.html#dict" class="tsd-signature-type" data-tsd-kind="Type alias">Dict</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
 										<p>An object mapping configuration option names to values.</p>
@@ -1280,7 +1389,7 @@
 								</div>
 							</li>
 							<li class="tsd-parameter">
-								<h5><span class="tsd-flag ts-flagOptional">Optional</span> dependencies<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></h5>
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> dependencies<span class="tsd-signature-symbol">?: </span><a href="connection.html#dict" class="tsd-signature-type" data-tsd-kind="Type alias">Dict</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
 										<p>An object mapping dependency aliases to mount points.</p>
@@ -1422,7 +1531,7 @@
 				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
 					<a name="serviceinfo" class="tsd-anchor"></a>
 					<h3>Service<wbr>Info</h3>
-					<div class="tsd-signature tsd-kind-icon">Service<wbr>Info<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>checksum<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>development<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>legacy<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>manifest<span class="tsd-signature-symbol">: </span><a href="foxx_manifest.html#foxxmanifest" class="tsd-signature-type" data-tsd-kind="Type alias">FoxxManifest</a><span class="tsd-signature-symbol">; </span>mount<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>name<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>options<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>configuration<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">; </span>dependencies<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">; </span>path<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>version<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span></div>
+					<div class="tsd-signature tsd-kind-icon">Service<wbr>Info<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>checksum<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>development<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>legacy<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>manifest<span class="tsd-signature-symbol">: </span><a href="foxx_manifest.html#foxxmanifest" class="tsd-signature-type" data-tsd-kind="Type alias">FoxxManifest</a><span class="tsd-signature-symbol">; </span>mount<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>name<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>options<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>configuration<span class="tsd-signature-symbol">: </span><a href="connection.html#dict" class="tsd-signature-type" data-tsd-kind="Type alias">Dict</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">; </span>dependencies<span class="tsd-signature-symbol">: </span><a href="connection.html#dict" class="tsd-signature-type" data-tsd-kind="Type alias">Dict</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">; </span>path<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>version<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1482,7 +1591,7 @@
 								</div>
 							</li>
 							<li class="tsd-parameter">
-								<h5>options<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>configuration<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">; </span>dependencies<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> }</span></h5>
+								<h5>options<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{ </span>configuration<span class="tsd-signature-symbol">: </span><a href="connection.html#dict" class="tsd-signature-type" data-tsd-kind="Type alias">Dict</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">; </span>dependencies<span class="tsd-signature-symbol">: </span><a href="connection.html#dict" class="tsd-signature-type" data-tsd-kind="Type alias">Dict</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> }</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
 										<p>Options for this service.</p>
@@ -1490,7 +1599,7 @@
 								</div>
 								<ul class="tsd-parameters">
 									<li class="tsd-parameter">
-										<h5>configuration<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h5>
+										<h5>configuration<span class="tsd-signature-symbol">: </span><a href="connection.html#dict" class="tsd-signature-type" data-tsd-kind="Type alias">Dict</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h5>
 										<div class="tsd-comment tsd-typography">
 											<div class="lead">
 												<p>Configuration values set for this service.</p>
@@ -1498,7 +1607,7 @@
 										</div>
 									</li>
 									<li class="tsd-parameter">
-										<h5>dependencies<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></h5>
+										<h5>dependencies<span class="tsd-signature-symbol">: </span><a href="connection.html#dict" class="tsd-signature-type" data-tsd-kind="Type alias">Dict</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></h5>
 										<div class="tsd-comment tsd-typography">
 											<div class="lead">
 												<p>Service dependency configuration of this service.</p>
@@ -1529,7 +1638,7 @@
 				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
 					<a name="servicesummary" class="tsd-anchor"></a>
 					<h3>Service<wbr>Summary</h3>
-					<div class="tsd-signature tsd-kind-icon">Service<wbr>Summary<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>development<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>legacy<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>mount<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>name<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>provides<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">; </span>version<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span></div>
+					<div class="tsd-signature tsd-kind-icon">Service<wbr>Summary<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>development<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>legacy<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>mount<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>name<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>provides<span class="tsd-signature-symbol">: </span><a href="connection.html#dict" class="tsd-signature-type" data-tsd-kind="Type alias">Dict</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">; </span>version<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -1573,7 +1682,7 @@
 								</div>
 							</li>
 							<li class="tsd-parameter">
-								<h5>provides<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></h5>
+								<h5>provides<span class="tsd-signature-symbol">: </span><a href="connection.html#dict" class="tsd-signature-type" data-tsd-kind="Type alias">Dict</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
 										<p>Service dependencies the service expects to be able to match as a mapping
@@ -2268,7 +2377,7 @@
 				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
 					<a name="upgradeserviceoptions" class="tsd-anchor"></a>
 					<h3>Upgrade<wbr>Service<wbr>Options</h3>
-					<div class="tsd-signature tsd-kind-icon">Upgrade<wbr>Service<wbr>Options<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>configuration<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">; </span>dependencies<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">; </span>development<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>force<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>legacy<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>setup<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>teardown<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> }</span></div>
+					<div class="tsd-signature tsd-kind-icon">Upgrade<wbr>Service<wbr>Options<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>configuration<span class="tsd-signature-symbol">?: </span><a href="connection.html#dict" class="tsd-signature-type" data-tsd-kind="Type alias">Dict</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">; </span>dependencies<span class="tsd-signature-symbol">?: </span><a href="connection.html#dict" class="tsd-signature-type" data-tsd-kind="Type alias">Dict</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">; </span>development<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>force<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>legacy<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>setup<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>teardown<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -2281,7 +2390,7 @@
 						<h4>Type declaration</h4>
 						<ul class="tsd-parameters">
 							<li class="tsd-parameter">
-								<h5><span class="tsd-flag ts-flagOptional">Optional</span> configuration<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h5>
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> configuration<span class="tsd-signature-symbol">?: </span><a href="connection.html#dict" class="tsd-signature-type" data-tsd-kind="Type alias">Dict</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
 										<p>An object mapping configuration option names to values.</p>
@@ -2290,7 +2399,7 @@
 								</div>
 							</li>
 							<li class="tsd-parameter">
-								<h5><span class="tsd-flag ts-flagOptional">Optional</span> dependencies<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></h5>
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> dependencies<span class="tsd-signature-symbol">?: </span><a href="connection.html#dict" class="tsd-signature-type" data-tsd-kind="Type alias">Dict</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
 										<p>An object mapping dependency aliases to mount points.</p>
@@ -2345,6 +2454,85 @@
 										prior to upgrading that service.</p>
 									</div>
 									<p>Default: <code>false</code></p>
+								</div>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
+					<a name="useraccessleveloptions" class="tsd-anchor"></a>
+					<h3>User<wbr>Access<wbr>Level<wbr>Options</h3>
+					<div class="tsd-signature tsd-kind-icon">User<wbr>Access<wbr>Level<wbr>Options<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>collection<span class="tsd-signature-symbol">?: </span><a href="../interfaces/collection.arangocollection.html" class="tsd-signature-type" data-tsd-kind="Interface">ArangoCollection</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>database<span class="tsd-signature-symbol">?: </span><a href="../classes/database.database-1.html" class="tsd-signature-type" data-tsd-kind="Class">Database</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span></div>
+					<aside class="tsd-sources">
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Options for accessing or manipulating access levels.</p>
+						</div>
+					</div>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter">
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> collection<span class="tsd-signature-symbol">?: </span><a href="../interfaces/collection.arangocollection.html" class="tsd-signature-type" data-tsd-kind="Interface">ArangoCollection</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>The collection to access or manipulate the access level of.</p>
+									</div>
+								</div>
+							</li>
+							<li class="tsd-parameter">
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> database<span class="tsd-signature-symbol">?: </span><a href="../classes/database.database-1.html" class="tsd-signature-type" data-tsd-kind="Class">Database</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>The database to access or manipulate the access level of.</p>
+									</div>
+									<p>If <code>collection</code> is an <code>ArangoCollection</code>, this option defaults to the
+										database the collection is contained in. Otherwise this option defaults to
+									the current database.</p>
+								</div>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
+					<a name="useroptions" class="tsd-anchor"></a>
+					<h3>User<wbr>Options</h3>
+					<div class="tsd-signature tsd-kind-icon">User<wbr>Options<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>active<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>extra<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">; </span>passwd<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span></div>
+					<aside class="tsd-sources">
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Options for modifying an ArangoDB user.</p>
+						</div>
+					</div>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter">
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> active<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Whether the ArangoDB user account is enabled and can authenticate.</p>
+									</div>
+									<p>Default: <code>true</code></p>
+								</div>
+							</li>
+							<li class="tsd-parameter">
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> extra<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">unknown</span><span class="tsd-signature-symbol">&gt;</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Additional information to store about this user.</p>
+									</div>
+									<p>Default: <code>{}</code></p>
+								</div>
+							</li>
+							<li class="tsd-parameter">
+								<h5>passwd<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Password the ArangoDB user will use for authentication.</p>
+									</div>
 								</div>
 							</li>
 						</ul>
@@ -2496,7 +2684,13 @@
 						<a href="../classes/database.database-1.html" class="tsd-kind-icon">Database</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
+						<a href="database.html#accesslevel" class="tsd-kind-icon">Access<wbr>Level</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
 						<a href="database.html#aqluserfunction" class="tsd-kind-icon">Aql<wbr>User<wbr>Function</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
+						<a href="database.html#arangouser" class="tsd-kind-icon">Arango<wbr>User</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
 						<a href="database.html#astnode" class="tsd-kind-icon">Ast<wbr>Node</a>
@@ -2506,6 +2700,9 @@
 					</li>
 					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
 						<a href="database.html#createdatabaseuser" class="tsd-kind-icon">Create<wbr>Database<wbr>User</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
+						<a href="database.html#createuseroptions" class="tsd-kind-icon">Create<wbr>User<wbr>Options</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
 						<a href="database.html#databaseinfo" class="tsd-kind-icon">Database<wbr>Info</a>
@@ -2608,6 +2805,12 @@
 					</li>
 					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
 						<a href="database.html#upgradeserviceoptions" class="tsd-kind-icon">Upgrade<wbr>Service<wbr>Options</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
+						<a href="database.html#useraccessleveloptions" class="tsd-kind-icon">User<wbr>Access<wbr>Level<wbr>Options</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
+						<a href="database.html#useroptions" class="tsd-kind-icon">User<wbr>Options</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
 						<a href="database.html#versioninfo" class="tsd-kind-icon">Version<wbr>Info</a>

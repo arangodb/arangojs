@@ -21,25 +21,28 @@ This driver uses semantic versioning:
 
 ## [Unreleased]
 
-### Removed
-
-- Removed `Dict` type from `connection` module
-
-  The `Dict<T>` type was identical to `Record<string, T>` and has been replaced
-  with this built-in type across arangojs.
-
-### Changed
-
-- Updated TypeScript to version 4
-
-  This may result in type signatures that are incompatible with TypeScript 3
-  being added in future releases (including patch releases).
-
 ### Added
 
 - Added `collection.documents` for fetching multiple documents
 
 - Added support for `fillBlockCache` query option
+
+- Added support for passing `Graph` objects in AQL queries [#740](https://github.com/arangodb/arangojs/issues/740)
+
+  This also adds the `isArangoGraph` helper function for type checking.
+
+- Added User Management API [#664](https://github.com/arangodb/arangojs/issues/664)
+
+  This implements the endpoints of the
+  [HTTP Interface for User Management](https://www.arangodb.com/docs/stable/http/user-management.html)
+
+### Fixed
+
+- Added missing `hex` flag to `StopwordsAnalyzer` type [#732](https://github.com/arangodb/arangojs/issues/732)
+
+- Added missing `details` flag to `collection.figures` [#728](https://github.com/arangodb/arangojs/issues/728)
+
+- Added missing `inBackground` flag to index options [#734](https://github.com/arangodb/arangojs/issues/734)
 
 ## [7.5.0] - 2021-04-22
 
