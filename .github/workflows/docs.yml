@@ -26,7 +26,7 @@ jobs:
           ref: gh-pages
           path: gh-pages
 
-      - run: apt update && apt install jq -y
+      - run: apt-get update && apt-get install jq -y
       - run: npm install -g npm@7
       - run: npm install
 
