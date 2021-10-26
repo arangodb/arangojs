@@ -55,7 +55,8 @@ describe("Manipulating graph vertices", function () {
   let collectionNames: string[];
   before(async () => {
     db = new Database(config);
-    if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE") await db.acquireHostList();
+    if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE")
+      await db.acquireHostList();
     await db.createDatabase(name);
     db.useDatabase(name);
   });
@@ -127,7 +128,7 @@ describe("Manipulating graph vertices", function () {
       expect(data.orphanCollections).not.to.contain(vertexCollection.name);
       try {
         await vertexCollection.get();
-      } catch (err) {
+      } catch (err: any) {
         expect(err).to.be.an.instanceof(ArangoError);
         return;
       }

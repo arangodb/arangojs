@@ -402,7 +402,7 @@ export class View<
     try {
       await this.get();
       return true;
-    } catch (err) {
+    } catch (err: any) {
       if (isArangoError(err) && err.errorNum === VIEW_NOT_FOUND) {
         return false;
       }

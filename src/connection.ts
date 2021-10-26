@@ -114,7 +114,7 @@ function generateStackTrace() {
   if (!err.stack) {
     try {
       throw err;
-    } catch (e) {
+    } catch (e: any) {
       err = e;
     }
   }
@@ -669,7 +669,7 @@ export class Connection {
     };
     try {
       this._hosts[host](task.options, callback);
-    } catch (e) {
+    } catch (e: any) {
       callback(e);
     }
   }
@@ -852,7 +852,7 @@ export class Connection {
       }
       try {
         await this.request({ ...request, host });
-      } catch (e) {
+      } catch (e: any) {
         if (started + timeout < Date.now()) {
           throw e;
         }
@@ -936,7 +936,7 @@ export class Connection {
             try {
               parsedBody = res.body;
               parsedBody = JSON.parse(parsedBody);
-            } catch (e) {
+            } catch (e: any) {
               if (!expectBinary) {
                 if (typeof parsedBody !== "string") {
                   parsedBody = res.body.toString("utf-8");

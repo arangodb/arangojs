@@ -11,7 +11,8 @@ describe("Transactions", () => {
   let db: Database;
   before(async () => {
     db = new Database(config);
-    if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE") await db.acquireHostList();
+    if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE")
+      await db.acquireHostList();
   });
   after(() => {
     db.close();
@@ -54,7 +55,7 @@ describe("Transactions", () => {
     afterEach(async () => {
       try {
         await collection.get();
-      } catch (e) {
+      } catch (e: any) {
         return;
       }
       await collection.drop();
@@ -122,7 +123,7 @@ describe("Transactions", () => {
       let doc: any;
       try {
         doc = await collection.document("test");
-      } catch (e) {}
+      } catch (e: any) {}
       if (doc) expect.fail("Document should not exist yet.");
       const { id, status } = await trx.commit();
       expect(id).to.equal(trx.id);
@@ -139,11 +140,11 @@ describe("Transactions", () => {
         let doc: any;
         try {
           doc = await collection.document("test1");
-        } catch (e) {}
+        } catch (e: any) {}
         if (doc) expect.fail("Document should not exist yet.");
         try {
           doc = await collection.document("test2");
-        } catch (e) {}
+        } catch (e: any) {}
         if (doc) expect.fail("Document should not exist yet.");
         const { id, status } = await trx.commit();
         expect(id).to.equal(trx.id);
@@ -162,7 +163,7 @@ describe("Transactions", () => {
       let doc: any;
       try {
         doc = await collection.document("test");
-      } catch (e) {}
+      } catch (e: any) {}
       if (doc) expect.fail("Document should not exist yet.");
     });
 

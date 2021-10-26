@@ -51,7 +51,7 @@ describe35("Transactions", function () {
     afterEach(async () => {
       try {
         await collection.get();
-      } catch (e) {
+      } catch (e: any) {
         return;
       }
       await collection.drop();
@@ -96,7 +96,7 @@ describe35("Transactions", function () {
               Date.now() - started,
               "ms elapsed"
             );
-          } catch (e) {
+          } catch (e: any) {
             console.error(
               i,
               "trx",
@@ -142,7 +142,7 @@ describe35("Transactions", function () {
             console.log(value, "committing");
             await trx.commit();
             console.log(value, "done");
-          } catch (e) {
+          } catch (e: any) {
             console.error(value, "failed:", String(e));
             failed++;
           }

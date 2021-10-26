@@ -288,7 +288,7 @@ describe("EdgeCollection API", function () {
       await collection.remove(key);
       try {
         await collection.document(key);
-      } catch (e) {
+      } catch (e: any) {
         return;
       }
       expect.fail();

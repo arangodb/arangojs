@@ -71,7 +71,7 @@ export function toForm(fields: Fields): Promise<MultipartRequest> {
       stream.on("error", (e) => {
         reject(e);
       });
-    } catch (e) {
+    } catch (e: any) {
       reject(e);
     }
   });

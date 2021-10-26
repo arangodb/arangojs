@@ -1660,7 +1660,7 @@ export interface DocumentCollection<T extends Record<string, any> = any>
    * try {
    *   const document = await collection.document("abc123");
    *   console.log(document);
-   * } catch (e) {
+   * } catch (e: any) {
    *   console.error("Could not find document");
    * }
    * ```
@@ -1699,7 +1699,7 @@ export interface DocumentCollection<T extends Record<string, any> = any>
    * try {
    *   const document = await collection.document("abc123", false);
    *   console.log(document);
-   * } catch (e) {
+   * } catch (e: any) {
    *   console.error("Could not find document");
    * }
    * ```
@@ -1734,7 +1734,7 @@ export interface DocumentCollection<T extends Record<string, any> = any>
    * try {
    *   const documents = await collection.documents(["abc123", "xyz456"]);
    *   console.log(documents);
-   * } catch (e) {
+   * } catch (e: any) {
    *   console.error("Could not find document");
    * }
    * ```
@@ -2671,7 +2671,7 @@ export interface EdgeCollection<T extends Record<string, any> = any>
    * try {
    *   const document = await collection.document("abc123");
    *   console.log(document);
-   * } catch (e) {
+   * } catch (e: any) {
    *   console.error("Could not find document");
    * }
    * ```
@@ -2710,7 +2710,7 @@ export interface EdgeCollection<T extends Record<string, any> = any>
    * try {
    *   const document = await collection.document("abc123", false);
    *   console.log(document);
-   * } catch (e) {
+   * } catch (e: any) {
    *   console.error("Could not find document");
    * }
    * ```
@@ -2745,7 +2745,7 @@ export interface EdgeCollection<T extends Record<string, any> = any>
    * try {
    *   const documents = await collection.documents(["abc123", "xyz456"]);
    *   console.log(documents);
-   * } catch (e) {
+   * } catch (e: any) {
    *   console.error("Could not find document");
    * }
    * ```
@@ -3423,7 +3423,7 @@ export class Collection<T extends Record<string, any> = any>
     try {
       await this.get();
       return true;
-    } catch (err) {
+    } catch (err: any) {
       if (isArangoError(err) && err.errorNum === COLLECTION_NOT_FOUND) {
         return false;
       }
@@ -3621,7 +3621,7 @@ export class Collection<T extends Record<string, any> = any>
         },
         () => true
       );
-    } catch (err) {
+    } catch (err: any) {
       if (err.code === 404) {
         return false;
       }
@@ -3660,7 +3660,7 @@ export class Collection<T extends Record<string, any> = any>
     if (!graceful) return result;
     try {
       return await result;
-    } catch (err) {
+    } catch (err: any) {
       if (isArangoError(err) && err.errorNum === DOCUMENT_NOT_FOUND) {
         return null;
       }

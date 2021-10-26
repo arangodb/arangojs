@@ -36,7 +36,7 @@ describe34("Manipulating views", function () {
   afterEach(async () => {
     try {
       await view.get();
-    } catch (e) {
+    } catch (e: any) {
       return;
     }
     await view.drop();
@@ -104,7 +104,7 @@ describe34("Manipulating views", function () {
         try {
           // eslint-disable-next-line security/detect-non-literal-fs-filename
           await view.rename(name);
-        } catch (e) {
+        } catch (e: any) {
           // "unsupported operation" in cluster
           expect(e).to.have.property("errorNum", 1470);
           return;
@@ -118,7 +118,7 @@ describe34("Manipulating views", function () {
       await view.drop();
       try {
         await view.get();
-      } catch (e) {
+      } catch (e: any) {
         expect(e).to.have.property("errorNum", 1203);
         return;
       }

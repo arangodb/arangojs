@@ -89,7 +89,7 @@ export class Transaction {
     try {
       await this.get();
       return true;
-    } catch (err) {
+    } catch (err: any) {
       if (isArangoError(err) && err.errorNum === TRANSACTION_NOT_FOUND) {
         return false;
       }

@@ -194,7 +194,7 @@ describe("JSON serialization", () => {
     it("should be serializable to JSON", async () => {
       try {
         await db.collection("does-not-exist").get();
-      } catch (e) {
+      } catch (e: any) {
         JSON.stringify(e);
         return;
       }
@@ -206,7 +206,7 @@ describe("JSON serialization", () => {
       const db = new Database({ url: "http://does.not.exist.example:9999" });
       try {
         await db.collection("does-not-exist").get();
-      } catch (e) {
+      } catch (e: any) {
         console.error(e);
         JSON.stringify(e);
         return;

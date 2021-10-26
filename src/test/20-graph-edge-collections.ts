@@ -10,7 +10,8 @@ describe("GraphEdgeCollection API", function () {
   let collection: GraphEdgeCollection;
   before(async () => {
     db = new Database(config);
-    if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE") await db.acquireHostList();
+    if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE")
+      await db.acquireHostList();
     await db.createDatabase(dbName);
     db.useDatabase(dbName);
     const graph = db.graph(`testgraph_${Date.now()}`);
@@ -214,7 +215,7 @@ describe("GraphEdgeCollection API", function () {
       await collection.remove(key);
       try {
         await collection.edge(key);
-      } catch (e) {
+      } catch (e: any) {
         return;
       }
       expect.fail();

@@ -46,7 +46,8 @@ describe("Graph API", function () {
   const name = `testdb_${Date.now()}`;
   before(async () => {
     db = new Database(config);
-    if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE") await db.acquireHostList();
+    if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE")
+      await db.acquireHostList();
     await db.createDatabase(name);
     db.useDatabase(name);
   });
@@ -135,7 +136,7 @@ describe("Graph API", function () {
       await graph.drop();
       try {
         await graph.get();
-      } catch (e) {
+      } catch (e: any) {
         const collections = await db.listCollections();
         expect(collections.map((c: any) => c.name)).to.include.members([
           ...edgeCollectionNames,
@@ -149,7 +150,7 @@ describe("Graph API", function () {
       await graph.drop(true);
       try {
         await graph.get();
-      } catch (e) {
+      } catch (e: any) {
         const collections = await db.listCollections();
         expect(collections.map((c: any) => c.name)).not.to.include.members([
           ...edgeCollectionNames,

@@ -12,7 +12,8 @@ describe34("View metadata", function () {
   let view: ArangoSearchView;
   before(async () => {
     db = new Database(config);
-    if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE") await db.acquireHostList();
+    if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE")
+      await db.acquireHostList();
     await db.createDatabase(dbName);
     db.useDatabase(dbName);
     view = db.view(viewName);
@@ -33,7 +34,7 @@ describe34("View metadata", function () {
     it("should throw if view does not exists", async () => {
       try {
         await db.view("no").get();
-      } catch (err) {
+      } catch (err: any) {
         expect(err).to.have.property("errorNum", 1203);
         return;
       }

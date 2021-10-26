@@ -28,10 +28,7 @@ describe("Query Management API", function () {
     // the following makes calls to /_db/${name} on all coordinators, thus waiting
     // long enough for the database to become available on all instances
     if (Array.isArray(config.url)) {
-      await db.waitForPropagation(
-        { path: `/_api/version` },
-        10000
-      );
+      await db.waitForPropagation({ path: `/_api/version` }, 10000);
     }
   });
   after(async () => {
@@ -56,7 +53,7 @@ describe("Query Management API", function () {
       try {
         const cursor = await db.query("FOR i IN no RETURN i");
         allCursors.push(cursor);
-      } catch (err) {
+      } catch (err: any) {
         expect(err).is.instanceof(ArangoError);
         expect(err).to.have.property("code", 404);
         expect(err).to.have.property("errorNum", 1203);
@@ -68,7 +65,7 @@ describe("Query Management API", function () {
       try {
         const cursor = await db.query(aql`RETURN SLEEP(0.02)`, { timeout: 10 });
         allCursors.push(cursor);
-      } catch (err) {
+      } catch (err: any) {
         expect(err).is.instanceof(Error);
         expect(err).is.not.instanceof(ArangoError);
         expect(err).to.have.property("code", "ECONNRESET");
@@ -82,7 +79,7 @@ describe("Query Management API", function () {
           timeout: 1000,
         });
         allCursors.push(cursor);
-      } catch (err) {
+      } catch (err: any) {
         expect.fail();
       }
     });
@@ -203,7 +200,9 @@ describe("Query Management API", function () {
       for (let tries = 0; tries < 100; tries++) {
         // must filter the list here, as there could be other (system) queries
         // ongoing at the same time
-        queries = (await db.listRunningQueries()).filter((i: any) => i.query === query);
+        queries = (await db.listRunningQueries()).filter(
+          (i: any) => i.query === query
+        );
         if (queries.length > 0) {
           break;
         }
@@ -238,7 +237,9 @@ describe("Query Management API", function () {
       const cursor = await db.query(query);
       allCursors.push(cursor);
       // must filter the list here, as there could have been other (system) queries
-      const queries = (await db.listSlowQueries()).filter((i: any) => i.query === query);
+      const queries = (await db.listSlowQueries()).filter(
+        (i: any) => i.query === query
+      );
       expect(queries).to.have.lengthOf(1);
       expect(queries[0]).to.have.property("query", query);
     });
@@ -265,10 +266,14 @@ describe("Query Management API", function () {
       const cursor = await db.query(query);
       allCursors.push(cursor);
       // must filter the list here, as there could have been other (system) queries
-      const queries1 = (await db.listSlowQueries()).filter((i: any) => i.query === query);
+      const queries1 = (await db.listSlowQueries()).filter(
+        (i: any) => i.query === query
+      );
       expect(queries1).to.have.lengthOf(1);
       await db.clearSlowQueries();
-      const queries2 = (await db.listSlowQueries()).filter((i: any) => i.query === query);
+      const queries2 = (await db.listSlowQueries()).filter(
+        (i: any) => i.query === query
+      );
       expect(queries2).to.have.lengthOf(0);
     });
   });
@@ -280,14 +285,16 @@ describe("Query Management API", function () {
       const query = "RETURN SLEEP(5)";
       const p1 = db.query(query);
       p1.then((cursor) => allCursors.push(cursor));
-      const queries = (await db.listSlowQueries()).filter((i: any) => i.query === query);
+      const queries = (await db.listSlowQueries()).filter(
+        (i: any) => i.query === query
+      );
       expect(queries).to.have.lengthOf(1);
       expect(queries[0]).to.have.property("bindVars");
       expect(queries[0]).to.have.property("query", query);
       await db.killQuery(queries[0].id);
       try {
         await p1;
-      } catch (e) {
+      } catch (e: any) {
         expect(e).to.be.instanceOf(ArangoError);
         expect(e).to.have.property("errorNum", 1500);
         expect(e).to.have.property("code", 410);

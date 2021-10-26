@@ -11,7 +11,8 @@ describe("Collection metadata", function () {
   const collectionName = `collection-${Date.now()}`;
   before(async () => {
     db = new Database(config);
-    if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE") await db.acquireHostList();
+    if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE")
+      await db.acquireHostList();
     await db.createDatabase(dbName);
     db.useDatabase(dbName);
     collection = await db.createCollection(collectionName);
@@ -35,7 +36,7 @@ describe("Collection metadata", function () {
     it("should throw if collection does not exist", async () => {
       try {
         await db.collection("no").get();
-      } catch (e) {
+      } catch (e: any) {
         expect(e).to.have.property("errorNum", COLLECTION_NOT_FOUND);
         return;
       }

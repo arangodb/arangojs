@@ -34,7 +34,7 @@ describe("Manipulating collections", function () {
   afterEach(async () => {
     try {
       await collection.get();
-    } catch (e) {
+    } catch (e: any) {
       return;
     }
     await collection.drop();
@@ -121,7 +121,7 @@ describe("Manipulating collections", function () {
       await collection.drop();
       try {
         await collection.get();
-      } catch (err) {
+      } catch (err: any) {
         expect(err).to.have.property("errorNum", 1203);
         return;
       }

@@ -488,7 +488,7 @@ export class GraphVertexCollection<T extends Record<string, any> = any>
         },
         () => true
       );
-    } catch (err) {
+    } catch (err: any) {
       if (err.code === 404) {
         return false;
       }
@@ -513,7 +513,7 @@ export class GraphVertexCollection<T extends Record<string, any> = any>
    * try {
    *   const vertex = await collection.vertex("abc123");
    *   console.log(vertex);
-   * } catch (e) {
+   * } catch (e: any) {
    *   console.error("Could not find vertex");
    * }
    * ```
@@ -552,7 +552,7 @@ export class GraphVertexCollection<T extends Record<string, any> = any>
    * try {
    *   const vertex = await collection.vertex("abc123", false);
    *   console.log(vertex);
-   * } catch (e) {
+   * } catch (e: any) {
    *   console.error("Could not find vertex");
    * }
    * ```
@@ -602,7 +602,7 @@ export class GraphVertexCollection<T extends Record<string, any> = any>
     if (!graceful) return result;
     try {
       return await result;
-    } catch (err) {
+    } catch (err: any) {
       if (isArangoError(err) && err.errorNum === DOCUMENT_NOT_FOUND) {
         return null;
       }
@@ -893,7 +893,7 @@ export class GraphEdgeCollection<T extends Record<string, any> = any>
         },
         () => true
       );
-    } catch (err) {
+    } catch (err: any) {
       if (err.code === 404) {
         return false;
       }
@@ -918,7 +918,7 @@ export class GraphEdgeCollection<T extends Record<string, any> = any>
    * try {
    *   const edge = await collection.edge("abc123");
    *   console.log(edge);
-   * } catch (e) {
+   * } catch (e: any) {
    *   console.error("Could not find edge");
    * }
    * ```
@@ -957,7 +957,7 @@ export class GraphEdgeCollection<T extends Record<string, any> = any>
    * try {
    *   const edge = await collection.edge("abc123", false);
    *   console.log(edge);
-   * } catch (e) {
+   * } catch (e: any) {
    *   console.error("Could not find edge");
    * }
    * ```
@@ -1003,7 +1003,7 @@ export class GraphEdgeCollection<T extends Record<string, any> = any>
     if (!graceful) return result;
     try {
       return await result;
-    } catch (err) {
+    } catch (err: any) {
       if (isArangoError(err) && err.errorNum === DOCUMENT_NOT_FOUND) {
         return null;
       }
@@ -1264,7 +1264,7 @@ export class Graph {
     try {
       await this.get();
       return true;
-    } catch (err) {
+    } catch (err: any) {
       if (isArangoError(err) && err.errorNum === GRAPH_NOT_FOUND) {
         return false;
       }

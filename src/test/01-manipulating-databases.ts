@@ -49,7 +49,7 @@ describe("Manipulating databases", function () {
       db.useDatabase("__does_not_exist__");
       try {
         await db.get();
-      } catch (e) {
+      } catch (e: any) {
         expect(e).to.be.an.instanceof(ArangoError);
         return;
       }
@@ -76,7 +76,7 @@ describe("Manipulating databases", function () {
       const temp = new Database().useDatabase(name);
       try {
         await temp.get();
-      } catch (e) {
+      } catch (e: any) {
         return;
       } finally {
         temp.close();

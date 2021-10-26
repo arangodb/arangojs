@@ -534,7 +534,7 @@ export class Analyzer {
     try {
       await this.get();
       return true;
-    } catch (err) {
+    } catch (err: any) {
       if (isArangoError(err) && err.errorNum === ANALYZER_NOT_FOUND) {
         return false;
       }

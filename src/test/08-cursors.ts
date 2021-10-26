@@ -124,7 +124,7 @@ describe("Item-wise Cursor API", () => {
       await sleep(3000);
       try {
         await cursor.next();
-      } catch (err) {
+      } catch (err: any) {
         expect(err.code).to.equal(404);
         return;
       }
@@ -223,7 +223,7 @@ describe("Item-wise Cursor API", () => {
           path: `/_api/cursor/${id}`,
           host: host,
         });
-      } catch (e) {
+      } catch (e: any) {
         expect(e).to.have.property("errorNum", 1600);
         return;
       }
@@ -329,7 +329,7 @@ describe("Batch-wise Cursor API", () => {
       await sleep(3000);
       try {
         await cursor.next();
-      } catch (err) {
+      } catch (err: any) {
         expect(err.code).to.equal(404);
         return;
       }
@@ -433,7 +433,7 @@ describe("Batch-wise Cursor API", () => {
           path: `/_api/cursor/${id}`,
           host: host,
         });
-      } catch (e) {
+      } catch (e: any) {
         expect(e).to.have.property("errorNum", 1600);
         return;
       }
