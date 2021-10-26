@@ -19,11 +19,13 @@ This driver uses semantic versioning:
 - A change in the major version (e.g. 1.Y.Z -> 2.0.0) indicates _breaking_
   changes that require changes in your code to upgrade.
 
+## [Unreleased]
+
 ## [7.6.1] - 2021-10-26
 
 ### Fixed
 
-- Changed all uses of `Record<string, unknown>` to `Record<string, any>` [#750](https://github.com/arangodb/arangojs/issues/750)
+- Changed all uses of `Record<string, unknown>` to `Record<string, any>` ([#750](https://github.com/arangodb/arangojs/issues/750))
 
   This should allow using more specific types without having to implement
   index signatures.
@@ -36,22 +38,22 @@ This driver uses semantic versioning:
 
 - Added support for `fillBlockCache` query option
 
-- Added support for passing `Graph` objects in AQL queries [#740](https://github.com/arangodb/arangojs/issues/740)
+- Added support for passing `Graph` objects in AQL queries ([#740](https://github.com/arangodb/arangojs/issues/740))
 
   This also adds the `isArangoGraph` helper function for type checking.
 
-- Added User Management API [#664](https://github.com/arangodb/arangojs/issues/664)
+- Added User Management API ([#664](https://github.com/arangodb/arangojs/issues/664))
 
   This implements the endpoints of the
   [HTTP Interface for User Management](https://www.arangodb.com/docs/stable/http/user-management.html)
 
 ### Fixed
 
-- Added missing `hex` flag to `StopwordsAnalyzer` type [#732](https://github.com/arangodb/arangojs/issues/732)
+- Added missing `hex` flag to `StopwordsAnalyzer` type ([#732](https://github.com/arangodb/arangojs/issues/732))
 
-- Added missing `details` flag to `collection.figures` [#728](https://github.com/arangodb/arangojs/issues/728)
+- Added missing `details` flag to `collection.figures` ([#728](https://github.com/arangodb/arangojs/issues/728))
 
-- Added missing `inBackground` flag to index options [#734](https://github.com/arangodb/arangojs/issues/734)
+- Added missing `inBackground` flag to index options ([#734](https://github.com/arangodb/arangojs/issues/734))
 
 ## [7.5.0] - 2021-04-22
 
@@ -1239,6 +1241,7 @@ For a detailed list of changes between pre-release versions of v7 see the
 
   Graph methods now only return the relevant part of the response body.
 
+[unreleased]: https://github.com/arangodb/arangojs/compare/v7.6.1...HEAD
 [7.6.1]: https://github.com/arangodb/arangojs/compare/v7.6.0...v7.6.1
 [7.6.0]: https://github.com/arangodb/arangojs/compare/v7.5.0...v7.6.0
 [7.5.0]: https://github.com/arangodb/arangojs/compare/v7.4.0...v7.5.0
