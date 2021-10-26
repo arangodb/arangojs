@@ -40,8 +40,8 @@ var arangojs = require("arangojs/web");
 You can also use [unpkg](https://unpkg.com) during development:
 
 ```html
-< !-- note the path includes the version number (e.g. 7.0.0) -- >
-<script src="https://unpkg.com/arangojs@7.0.0/web.js"></script>
+< !-- note the path includes the version number (e.g. 8.0.0) -- >
+<script src="https://unpkg.com/arangojs@8.0.0/web.js"></script>
 <script>
   var db = new arangojs.Database();
   // ...
@@ -52,7 +52,7 @@ When loading the browser build with a script tag make sure to load the polyfill 
 
 ```html
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/6.26.0/polyfill.js"></script>
-<script src="https://unpkg.com/arangojs@7.0.0/web.js"></script>
+<script src="https://unpkg.com/arangojs@8.0.0/web.js"></script>
 ```
 
 ## Basic usage example
@@ -170,7 +170,7 @@ receiving a response, the underlying system error will be thrown instead.
 Please make sure you are using the latest version of this driver and that the
 version of the arangojs documentation you are reading matches that version.
 
-Changes in the major version number of arangojs (e.g. 6.x.y -> 7.0.0) indicate
+Changes in the major version number of arangojs (e.g. 7.x.y -> 8.0.0) indicate
 backwards-incompatible changes in the arangojs API that may require changes in
 your code when upgrading your version of arangojs.
 
