@@ -18,7 +18,7 @@ This driver uses semantic versioning:
 
 ### Fixed
 
-- Changed all uses of `Record<string, unknown>` to `Record<string, any>` [#750](https://github.com/arangodb/arangojs/issues/750)
+- Changed all uses of `Record<string, unknown>` to `Record<string, any>` ([#750](https://github.com/arangodb/arangojs/issues/750))
 
   This should allow using more specific types without having to implement
   index signatures.
@@ -31,22 +31,22 @@ This driver uses semantic versioning:
 
 - Added support for `fillBlockCache` query option
 
-- Added support for passing `Graph` objects in AQL queries [#740](https://github.com/arangodb/arangojs/issues/740)
+- Added support for passing `Graph` objects in AQL queries ([#740](https://github.com/arangodb/arangojs/issues/740))
 
   This also adds the `isArangoGraph` helper function for type checking.
 
-- Added User Management API [#664](https://github.com/arangodb/arangojs/issues/664)
+- Added User Management API ([#664](https://github.com/arangodb/arangojs/issues/664))
 
   This implements the endpoints of the
   [HTTP Interface for User Management](https://www.arangodb.com/docs/stable/http/user-management.html)
 
 ### Fixed
 
-- Added missing `hex` flag to `StopwordsAnalyzer` type [#732](https://github.com/arangodb/arangojs/issues/732)
+- Added missing `hex` flag to `StopwordsAnalyzer` type ([#732](https://github.com/arangodb/arangojs/issues/732))
 
-- Added missing `details` flag to `collection.figures` [#728](https://github.com/arangodb/arangojs/issues/728)
+- Added missing `details` flag to `collection.figures` ([#728](https://github.com/arangodb/arangojs/issues/728))
 
-- Added missing `inBackground` flag to index options [#734](https://github.com/arangodb/arangojs/issues/734)
+- Added missing `inBackground` flag to index options ([#734](https://github.com/arangodb/arangojs/issues/734))
 
 ## [7.5.0] - 2021-04-22
 
