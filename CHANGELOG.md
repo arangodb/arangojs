@@ -16,6 +16,13 @@ This driver uses semantic versioning:
 
 ## [unreleased]
 
+### Fixed
+
+- Changed all uses of `Record<string, unknown>` to `Record<string, any>` [#750](https://github.com/arangodb/arangojs/issues/750)
+
+  This should allow using more specific types without having to implement
+  index signatures.
+
 ## [7.6.0] - 2021-10-20
 
 ### Added

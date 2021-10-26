@@ -1130,7 +1130,7 @@ export type CollectionImportResult = {
 /**
  * Result of retrieving edges in a collection.
  */
-export type CollectionEdgesResult<T extends Record<string, unknown> = any> = {
+export type CollectionEdgesResult<T extends Record<string, any> = any> = {
   edges: Edge<T>[];
   stats: {
     scannedIndex: number;
@@ -1192,7 +1192,7 @@ export type SimpleQueryUpdateByExampleResult = {
  * replaced with AQL queries.
  */
 export type SimpleQueryRemoveByKeysResult<
-  T extends Record<string, unknown> = any
+  T extends Record<string, any> = any
 > = {
   /**
    * Number of documents removed.
@@ -1230,7 +1230,7 @@ export type SimpleQueryRemoveByKeysResult<
  * const documents = db.collection("persons") as DocumentCollection<Person>;
  * ```
  */
-export interface DocumentCollection<T extends Record<string, unknown> = any>
+export interface DocumentCollection<T extends Record<string, any> = any>
   extends ArangoCollection {
   /**
    * Checks whether the collection exists.
@@ -2585,7 +2585,7 @@ export interface DocumentCollection<T extends Record<string, unknown> = any>
  * const edges = db.collection("friends") as EdgeCollection<Friend>;
  * ```
  */
-export interface EdgeCollection<T extends Record<string, unknown> = any>
+export interface EdgeCollection<T extends Record<string, any> = any>
   extends DocumentCollection<T> {
   /**
    * Retrieves the document matching the given key or id.
@@ -3320,7 +3320,7 @@ export interface EdgeCollection<T extends Record<string, unknown> = any>
  * @internal
  * @hidden
  */
-export class Collection<T extends Record<string, unknown> = any>
+export class Collection<T extends Record<string, any> = any>
   implements EdgeCollection<T>, DocumentCollection<T> {
   //#region attributes
   protected _name: string;
@@ -3337,14 +3337,14 @@ export class Collection<T extends Record<string, unknown> = any>
   }
 
   //#region internals
-  protected _get<T extends Record<string, unknown>>(path: string, qs?: any) {
+  protected _get<T extends Record<string, any>>(path: string, qs?: any) {
     return this._db.request(
       { path: `/_api/collection/${this._name}/${path}`, qs },
       (res) => res.body as ArangoResponseMetadata & T
     );
   }
 
-  protected _put<T extends Record<string, unknown>>(path: string, body?: any) {
+  protected _put<T extends Record<string, any>>(path: string, body?: any) {
     return this._db.request(
       {
         method: "PUT",

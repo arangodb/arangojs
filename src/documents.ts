@@ -45,28 +45,28 @@ export type EdgeMetadata = {
 /**
  * Type representing an object that can be stored in a collection.
  */
-export type DocumentData<T extends Record<string, unknown> = any> = T &
+export type DocumentData<T extends Record<string, any> = any> = T &
   Partial<DocumentMetadata> &
   Partial<EdgeMetadata>;
 
 /**
  * Type representing an object that can be stored in an edge collection.
  */
-export type EdgeData<T extends Record<string, unknown> = any> = T &
+export type EdgeData<T extends Record<string, any> = any> = T &
   Partial<DocumentMetadata> &
   EdgeMetadata;
 
 /**
  * Type representing a document stored in a collection.
  */
-export type Document<T extends Record<string, unknown> = any> = T &
+export type Document<T extends Record<string, any> = any> = T &
   DocumentMetadata &
   Partial<EdgeMetadata>;
 
 /**
  * Type representing an edge document stored in an edge collection.
  */
-export type Edge<T extends Record<string, unknown> = any> = T &
+export type Edge<T extends Record<string, any> = any> = T &
   DocumentMetadata &
   EdgeMetadata;
 
@@ -77,7 +77,7 @@ export type Edge<T extends Record<string, unknown> = any> = T &
  * This differs from `Partial` in that it also applies itself to any nested
  * objects recursively.
  */
-export type Patch<T = Record<string, unknown>> = {
+export type Patch<T = Record<string, any>> = {
   [K in keyof T]?: T[K] | Patch<T[K]>;
 };
 

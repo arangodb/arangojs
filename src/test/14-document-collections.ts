@@ -56,11 +56,8 @@ describe("DocumentCollection API", function () {
     const data = { foo: "bar" };
     let meta: DocumentMetadata[];
     beforeEach(async () => {
-      meta = await Promise.all([
-        collection.save(data),
-        collection.save(data),
-        collection.save(data),
-      ]);
+      const c = collection as DocumentCollection<{ foo: string }>;
+      meta = await Promise.all([c.save(data), c.save(data), c.save(data)]);
     });
     it("returns multiple documents in the collection", async () => {
       const docs = await collection.documents(meta);

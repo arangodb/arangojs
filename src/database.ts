@@ -1352,7 +1352,7 @@ export type CreateUserOptions = {
    *
    * Default: `{}`
    */
-  extra?: Record<string, unknown>;
+  extra?: Record<string, any>;
 };
 
 /**
@@ -1374,7 +1374,7 @@ export type UserOptions = {
    *
    * Default: `{}`
    */
-  extra?: Record<string, unknown>;
+  extra?: Record<string, any>;
 };
 
 /**
@@ -2029,7 +2029,7 @@ export class Database {
    * const edges = db.collection("friends") as EdgeCollection<Friend>;
    * ```
    */
-  collection<T extends Record<string, unknown> = any>(
+  collection<T extends Record<string, any> = any>(
     collectionName: string
   ): DocumentCollection<T> & EdgeCollection<T> {
     if (!this._collections.has(collectionName)) {
@@ -2064,7 +2064,7 @@ export class Database {
    * const documents = db.createCollection<Person>("persons");
    * ```
    */
-  async createCollection<T extends Record<string, unknown> = any>(
+  async createCollection<T extends Record<string, any> = any>(
     collectionName: string,
     options?: CreateCollectionOptions & {
       type?: CollectionType.DOCUMENT_COLLECTION;
@@ -2099,13 +2099,13 @@ export class Database {
    * });
    * ```
    */
-  async createCollection<T extends Record<string, unknown> = any>(
+  async createCollection<T extends Record<string, any> = any>(
     collectionName: string,
     options: CreateCollectionOptions & {
       type: CollectionType.EDGE_COLLECTION;
     }
   ): Promise<EdgeCollection<T>>;
-  async createCollection<T extends Record<string, unknown> = any>(
+  async createCollection<T extends Record<string, any> = any>(
     collectionName: string,
     options?: CreateCollectionOptions & { type?: CollectionType }
   ): Promise<DocumentCollection<T> & EdgeCollection<T>> {
@@ -2142,7 +2142,7 @@ export class Database {
    * const edges = db.createEdgeCollection<Friend>("friends");
    * ```
    */
-  async createEdgeCollection<T extends Record<string, unknown> = any>(
+  async createEdgeCollection<T extends Record<string, any> = any>(
     collectionName: string,
     options?: CreateCollectionOptions
   ): Promise<EdgeCollection<T>> {

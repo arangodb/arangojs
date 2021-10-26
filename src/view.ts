@@ -332,8 +332,8 @@ export type ArangoSearchViewPropertiesOptions = {
  * ArangoSearch View.
  */
 export class View<
-  PropertiesOptions extends Record<string, unknown> = any,
-  Properties extends Record<string, unknown> = any
+  PropertiesOptions extends Record<string, any> = any,
+  Properties extends Record<string, any> = any
 > {
   protected _name: string;
   protected _db: Database;

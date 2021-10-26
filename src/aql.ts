@@ -80,7 +80,7 @@ export type AqlValue =
   | boolean
   | null
   | undefined
-  | Record<string, unknown>
+  | Record<string, any>
   | any[];
 
 /**

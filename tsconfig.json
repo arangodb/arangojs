@@ -24,7 +24,11 @@
     "strict": true,
     "strictFunctionTypes": true,
     "strictNullChecks": true,
-    "target": "es2016"
+    "target": "es2016",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "declarationMap": true,
+    "resolveJsonModule": true
   },
   "exclude": ["node_modules", "build"]
 }
