@@ -1,0 +1,464 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>arangojs - v7.6.1</title>
+	<meta name="description" content="Documentation for arangojs - v7.6.1">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="assets/css/main.css">
+	<script async src="assets/js/search.js" id="search-script"></script>
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="assets/js/search.json" data-base=".">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="index.html" class="title">arangojs - v7.6.1</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<h1>arangojs - v7.6.1</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<div class="tsd-panel tsd-typography">
+				<a href="#arangodb-javascript-driver" id="arangodb-javascript-driver" style="color: inherit; text-decoration: none;">
+					<h1>ArangoDB JavaScript Driver</h1>
+				</a>
+				<p>The official ArangoDB JavaScript client for Node.js and the browser.</p>
+				<p><a href="http://opensource.org/licenses/APACHE-2.0"><img src="https://img.shields.io/npm/l/arangojs.svg" alt="license - APACHE-2.0"></a>
+				<a href="https://github.com/arangodb/arangojs/actions?query=workflow:%22Continuous+Integration%22"><img src="https://github.com/arangodb/arangojs/workflows/Continuous%20Integration/badge.svg" alt="Continuous Integration"></a></p>
+				<p><a href="https://npmjs.org/package/arangojs"><img src="https://nodei.co/npm/arangojs.png?downloads=true&stars=true" alt="npm package status"></a></p>
+				<a href="#links" id="links" style="color: inherit; text-decoration: none;">
+					<h2>Links</h2>
+				</a>
+				<ul>
+					<li><p><a href="https://arangodb.github.io/arangojs/latest/modules/_index_.html">API Documentation</a></p>
+					</li>
+					<li><p><a href="https://arangodb.github.io/arangojs/CHANGELOG">Changelog</a></p>
+					</li>
+					<li><p><a href="http://arangodb.github.io/arangojs/MIGRATING">Migration Guide</a></p>
+					</li>
+				</ul>
+				<a href="#install" id="install" style="color: inherit; text-decoration: none;">
+					<h2>Install</h2>
+				</a>
+				<a href="#with-npm-or-yarn" id="with-npm-or-yarn" style="color: inherit; text-decoration: none;">
+					<h3>With npm or yarn</h3>
+				</a>
+				<pre><code class="language-sh"><span style="color: #000000">npm install --save arangojs</span>
+<span style="color: #008000">## - or -</span>
+<span style="color: #000000">yarn add arangojs</span>
+</code></pre>
+				<a href="#for-browsers" id="for-browsers" style="color: inherit; text-decoration: none;">
+					<h3>For browsers</h3>
+				</a>
+				<p>When using modern JavaScript tooling with a bundler and compiler (e.g. Babel),
+				arangojs can be installed using <code>npm</code> or <code>yarn</code> like any other dependency.</p>
+				<p>For use without a compiler, the npm release comes with a precompiled browser
+				build for evergreen browsers and Internet Explorer 11:</p>
+				<pre><code class="language-js"><span style="color: #0000FF">var</span><span style="color: #000000"> </span><span style="color: #001080">arangojs</span><span style="color: #000000"> = </span><span style="color: #795E26">require</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;arangojs/web&quot;</span><span style="color: #000000">);</span>
+</code></pre>
+				<p>You can also use <a href="https://unpkg.com">unpkg</a> during development:</p>
+				<pre><code class="language-html"><span style="color: #CD3131">&lt;</span><span style="color: #000000"> !-- note the path includes the version number (e.g. 7.0.0) -- &gt;</span>
+<span style="color: #800000">&lt;script</span><span style="color: #000000FF"> </span><span style="color: #FF0000">src</span><span style="color: #000000FF">=</span><span style="color: #0000FF">&quot;https://unpkg.com/arangojs@7.0.0/web.js&quot;</span><span style="color: #800000">&gt;&lt;/script&gt;</span>
+<span style="color: #800000">&lt;script&gt;</span>
+<span style="color: #000000FF">  </span><span style="color: #0000FF">var</span><span style="color: #000000FF"> </span><span style="color: #001080">db</span><span style="color: #000000FF"> </span><span style="color: #000000">=</span><span style="color: #000000FF"> </span><span style="color: #0000FF">new</span><span style="color: #000000FF"> </span><span style="color: #001080">arangojs</span><span style="color: #000000FF">.</span><span style="color: #795E26">Database</span><span style="color: #000000FF">();</span>
+<span style="color: #000000FF">  </span><span style="color: #008000">// ...</span>
+<span style="color: #800000">&lt;/script&gt;</span>
+</code></pre>
+				<p>If you are targetting browsers older than Internet Explorer 11 you may want to
+					use <a href="https://babeljs.io">babel</a> with a
+					<a href="https://babeljs.io/docs/usage/polyfill">polyfill</a> to provide missing
+				functionality needed to use arangojs.</p>
+				<p>When loading the browser build with a script tag make sure to load the polyfill first:</p>
+				<pre><code class="language-html"><span style="color: #800000">&lt;script</span><span style="color: #000000FF"> </span><span style="color: #FF0000">src</span><span style="color: #000000FF">=</span><span style="color: #0000FF">&quot;https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/6.26.0/polyfill.js&quot;</span><span style="color: #800000">&gt;&lt;/script&gt;</span>
+<span style="color: #800000">&lt;script</span><span style="color: #000000FF"> </span><span style="color: #FF0000">src</span><span style="color: #000000FF">=</span><span style="color: #0000FF">&quot;https://unpkg.com/arangojs@7.0.0/web.js&quot;</span><span style="color: #800000">&gt;&lt;/script&gt;</span>
+</code></pre>
+				<a href="#basic-usage-example" id="basic-usage-example" style="color: inherit; text-decoration: none;">
+					<h2>Basic usage example</h2>
+				</a>
+				<p>Modern JavaScript/TypeScript with async/await:</p>
+				<pre><code class="language-js"><span style="color: #008000">// TS: import { Database, aql } from &quot;arangojs&quot;;</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> { </span><span style="color: #0070C1">Database</span><span style="color: #000000">, </span><span style="color: #0070C1">aql</span><span style="color: #000000"> } = </span><span style="color: #795E26">require</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;arangojs&quot;</span><span style="color: #000000">);</span>
+
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">db</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">Database</span><span style="color: #000000">();</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">Pokemons</span><span style="color: #000000"> = </span><span style="color: #001080">db</span><span style="color: #000000">.</span><span style="color: #795E26">collection</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;my-pokemons&quot;</span><span style="color: #000000">);</span>
+
+<span style="color: #0000FF">async</span><span style="color: #000000"> </span><span style="color: #0000FF">function</span><span style="color: #000000"> </span><span style="color: #795E26">main</span><span style="color: #000000">() {</span>
+<span style="color: #000000">  </span><span style="color: #AF00DB">try</span><span style="color: #000000"> {</span>
+<span style="color: #000000">    </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">pokemons</span><span style="color: #000000"> = </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">db</span><span style="color: #000000">.</span><span style="color: #795E26">query</span><span style="color: #000000">(</span><span style="color: #795E26">aql</span><span style="color: #A31515">`</span>
+<span style="color: #A31515">      FOR pokemon IN </span><span style="color: #0000FF">${</span><span style="color: #001080">Pokemons</span><span style="color: #0000FF">}</span>
+<span style="color: #A31515">      FILTER pokemon.type == &quot;fire&quot;</span>
+<span style="color: #A31515">      RETURN pokemon</span>
+<span style="color: #A31515">    `</span><span style="color: #000000">);</span>
+<span style="color: #000000">    </span><span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;My pokemons, let me show you them:&quot;</span><span style="color: #000000">);</span>
+<span style="color: #000000">    </span><span style="color: #AF00DB">for</span><span style="color: #000000"> </span><span style="color: #AF00DB">await</span><span style="color: #000000"> (</span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">pokemon</span><span style="color: #000000"> </span><span style="color: #0000FF">of</span><span style="color: #000000"> </span><span style="color: #001080">pokemons</span><span style="color: #000000">) {</span>
+<span style="color: #000000">      </span><span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #001080">pokemon</span><span style="color: #000000">.</span><span style="color: #001080">name</span><span style="color: #000000">);</span>
+<span style="color: #000000">    }</span>
+<span style="color: #000000">  } </span><span style="color: #AF00DB">catch</span><span style="color: #000000"> (</span><span style="color: #001080">err</span><span style="color: #000000">) {</span>
+<span style="color: #000000">    </span><span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">error</span><span style="color: #000000">(</span><span style="color: #001080">err</span><span style="color: #000000">.</span><span style="color: #001080">message</span><span style="color: #000000">);</span>
+<span style="color: #000000">  }</span>
+<span style="color: #000000">}</span>
+
+<span style="color: #795E26">main</span><span style="color: #000000">();</span>
+</code></pre>
+				<p>Using a different database:</p>
+				<pre><code class="language-js"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">db</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">Database</span><span style="color: #000000">({</span>
+<span style="color: #000000">  </span><span style="color: #001080">url:</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;http://localhost:8529&quot;</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">databaseName:</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;pancakes&quot;</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">auth:</span><span style="color: #000000"> { </span><span style="color: #001080">username:</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;root&quot;</span><span style="color: #000000">, </span><span style="color: #001080">password:</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;hunter2&quot;</span><span style="color: #000000"> },</span>
+<span style="color: #000000">});</span>
+
+<span style="color: #008000">// The database can be swapped at any time</span>
+<span style="color: #001080">db</span><span style="color: #000000">.</span><span style="color: #795E26">useDatabase</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;waffles&quot;</span><span style="color: #000000">);</span>
+<span style="color: #001080">db</span><span style="color: #000000">.</span><span style="color: #795E26">useBasicAuth</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;admin&quot;</span><span style="color: #000000">, </span><span style="color: #A31515">&quot;maplesyrup&quot;</span><span style="color: #000000">);</span>
+</code></pre>
+				<p>Old-school JavaScript with promises:</p>
+				<pre><code class="language-js"><span style="color: #0000FF">var</span><span style="color: #000000"> </span><span style="color: #001080">arangojs</span><span style="color: #000000"> = </span><span style="color: #795E26">require</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;arangojs&quot;</span><span style="color: #000000">);</span>
+<span style="color: #0000FF">var</span><span style="color: #000000"> </span><span style="color: #001080">Database</span><span style="color: #000000"> = </span><span style="color: #001080">arangojs</span><span style="color: #000000">.</span><span style="color: #001080">Database</span><span style="color: #000000">;</span>
+
+<span style="color: #0000FF">var</span><span style="color: #000000"> </span><span style="color: #001080">db</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">Database</span><span style="color: #000000">();</span>
+<span style="color: #0000FF">var</span><span style="color: #000000"> </span><span style="color: #001080">pokemons</span><span style="color: #000000"> = </span><span style="color: #001080">db</span><span style="color: #000000">.</span><span style="color: #795E26">collection</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;pokemons&quot;</span><span style="color: #000000">);</span>
+
+<span style="color: #001080">db</span><span style="color: #000000">.</span><span style="color: #795E26">query</span><span style="color: #000000">({</span>
+<span style="color: #000000">  </span><span style="color: #001080">query:</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;FOR p IN @@c FILTER p.type === &#039;fire&#039; RETURN p&quot;</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">bindVars:</span><span style="color: #000000"> { </span><span style="color: #001080">c:</span><span style="color: #000000"> </span><span style="color: #001080">pokemons</span><span style="color: #000000"> },</span>
+<span style="color: #000000">})</span>
+<span style="color: #000000">  .</span><span style="color: #795E26">then</span><span style="color: #000000">(</span><span style="color: #0000FF">function</span><span style="color: #000000"> (</span><span style="color: #001080">cursor</span><span style="color: #000000">) {</span>
+<span style="color: #000000">    </span><span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;My pokemons, let me show you them:&quot;</span><span style="color: #000000">);</span>
+<span style="color: #000000">    </span><span style="color: #AF00DB">return</span><span style="color: #000000"> </span><span style="color: #001080">cursor</span><span style="color: #000000">.</span><span style="color: #795E26">forEach</span><span style="color: #000000">(</span><span style="color: #0000FF">function</span><span style="color: #000000"> (</span><span style="color: #001080">pokemon</span><span style="color: #000000">) {</span>
+<span style="color: #000000">      </span><span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">log</span><span style="color: #000000">(</span><span style="color: #001080">pokemon</span><span style="color: #000000">.</span><span style="color: #001080">name</span><span style="color: #000000">);</span>
+<span style="color: #000000">    });</span>
+<span style="color: #000000">  })</span>
+<span style="color: #000000">  .</span><span style="color: #795E26">catch</span><span style="color: #000000">(</span><span style="color: #0000FF">function</span><span style="color: #000000"> (</span><span style="color: #001080">err</span><span style="color: #000000">) {</span>
+<span style="color: #000000">    </span><span style="color: #001080">console</span><span style="color: #000000">.</span><span style="color: #795E26">error</span><span style="color: #000000">(</span><span style="color: #001080">err</span><span style="color: #000000">.</span><span style="color: #001080">message</span><span style="color: #000000">);</span>
+<span style="color: #000000">  });</span>
+</code></pre>
+				<p><strong>Note</strong>: The examples throughout this documentation use <code>async</code>/<code>await</code>
+					and other modern language features like multi-line strings and template tags.
+					When developing for an environment without support for these language features,
+				substitute promises for <code>await</code> syntax as in the above example.</p>
+				<a href="#compatibility" id="compatibility" style="color: inherit; text-decoration: none;">
+					<h2>Compatibility</h2>
+				</a>
+				<p>The arangojs driver is compatible with the latest stable version of ArangoDB
+					available at the time of the driver release and remains compatible with the
+					two most recent Node.js LTS versions in accordance with the official
+				<a href="https://github.com/nodejs/LTS">Node.js long-term support schedule</a>.</p>
+				<p>For a list of changes between recent versions of the driver, see the
+				<a href="https://arangodb.github.io/arangojs/CHANGELOG">CHANGELOG</a>.</p>
+				<p><strong>Note:</strong> arangojs is only intended to be used in Node.js or a browser to access
+					ArangoDB <strong>from outside the database</strong>. If you are looking for the ArangoDB
+					JavaScript API for <a href="https://foxx.arangodb.com">Foxx</a> or for accessing ArangoDB
+					from within the <code>arangosh</code> interactive shell, please refer to the documentation
+					of the <a href="https://www.arangodb.com/docs/stable/foxx-reference-modules.html#the-arangodb-module"><code>@arangodb</code> module</a>
+				and <a href="https://www.arangodb.com/docs/stable/appendix-references-dbobject.html">the <code>db</code> object</a> instead.</p>
+				<a href="#error-responses" id="error-responses" style="color: inherit; text-decoration: none;">
+					<h2>Error responses</h2>
+				</a>
+				<p>If arangojs encounters an API error, it will throw an <code>ArangoError</code> with
+					an <code>errorNum</code> property indicating the ArangoDB error code and the <code>code</code>
+				property indicating the HTTP status code from the response body.</p>
+				<p>For any other non-ArangoDB error responses (4xx/5xx status code), it will throw
+				an <code>HttpError</code> error with the status code indicated by the <code>code</code> property.</p>
+				<p>If the server response did not indicate an error but the response body could
+				not be parsed, a regular <code>SyntaxError</code> may be thrown instead.</p>
+				<p>In all of these cases the server response object will be exposed as the
+				<code>response</code> property on the error object.</p>
+				<p>If the request failed at a network level or the connection was closed without
+				receiving a response, the underlying system error will be thrown instead.</p>
+				<a href="#common-issues" id="common-issues" style="color: inherit; text-decoration: none;">
+					<h2>Common issues</h2>
+				</a>
+				<a href="#missing-functions-or-unexpected-server-errors" id="missing-functions-or-unexpected-server-errors" style="color: inherit; text-decoration: none;">
+					<h3>Missing functions or unexpected server errors</h3>
+				</a>
+				<p>Please make sure you are using the latest version of this driver and that the
+				version of the arangojs documentation you are reading matches that version.</p>
+				<p>Changes in the major version number of arangojs (e.g. 6.x.y -&gt; 7.0.0) indicate
+					backwards-incompatible changes in the arangojs API that may require changes in
+				your code when upgrading your version of arangojs.</p>
+				<p>Additionally please ensure that your version of Node.js (or browser) and
+					ArangoDB are supported by the version of arangojs you are trying to use. See
+				the <a href="#compatibility">compatibility section</a> for additional information.</p>
+				<p><strong>Note</strong>: As of June 2018 ArangoDB 2.8 has reached its End of Life and is no
+					longer supported in arangojs 7 and later. If your code needs to work with
+					ArangoDB 2.8 you can continue using arangojs 6 and enable ArangoDB 2.8
+					compatibility mode by setting the config option <code>arangoVersion: 20800</code> to
+				enable the ArangoDB 2.8 compatibility mode in arangojs 6.</p>
+				<p>You can install an older version of arangojs using <code>npm</code> or <code>yarn</code>:</p>
+				<pre><code class="language-sh"><span style="color: #008000"># for version 6.x.x</span>
+<span style="color: #000000">yarn add arangojs@6</span>
+<span style="color: #008000"># - or -</span>
+<span style="color: #000000">npm install --save arangojs@6</span>
+</code></pre>
+				<a href="#no-code-intelligence-when-using-require-instead-of-import" id="no-code-intelligence-when-using-require-instead-of-import" style="color: inherit; text-decoration: none;">
+					<h3>No code intelligence when using require instead of import</h3>
+				</a>
+				<p>If you are using <code>require</code> to import the <code>arangojs</code> module in JavaScript, the
+					default export might not be recognized as a function by the code intelligence
+					of common editors like Visual Studio Code, breaking auto-complete and other
+				useful features.</p>
+				<p>As a workaround, use the <code>arangojs</code> function exported by that module instead
+				of calling the module itself:</p>
+				<pre><code class="language-diff"><span style="color: #000000">  const arangojs = require(&quot;arangojs&quot;);</span>
+
+<span style="color: #A31515">- const db = arangojs({</span>
+<span style="color: #098658">+ const db = arangojs.arangojs({</span>
+<span style="color: #000000">    url: ARANGODB_SERVER,</span>
+<span style="color: #000000">  });</span>
+</code></pre>
+				<p>Alternatively you can use the <code>Database</code> class directly:</p>
+				<pre><code class="language-diff"><span style="color: #000000">  const arangojs = require(&quot;arangojs&quot;);</span>
+<span style="color: #098658">+ const Database = arangojs.Database;</span>
+
+<span style="color: #A31515">- const db = arangojs({</span>
+<span style="color: #098658">+ const db = new Database({</span>
+<span style="color: #000000">    url: ARANGODB_SERVER,</span>
+<span style="color: #000000">  });</span>
+</code></pre>
+				<p>Or using object destructuring:</p>
+				<pre><code class="language-diff"><span style="color: #A31515">- const arangojs = require(&quot;arangojs&quot;);</span>
+<span style="color: #098658">+ const { Database } = require(&quot;arangojs&quot;);</span>
+
+<span style="color: #A31515">- const db = arangojs({</span>
+<span style="color: #098658">+ const db = new Database({</span>
+<span style="color: #000000">    url: ARANGODB_SERVER,</span>
+<span style="color: #000000">  });</span>
+</code></pre>
+				<a href="#error-stack-traces-contain-no-useful-information" id="error-stack-traces-contain-no-useful-information" style="color: inherit; text-decoration: none;">
+					<h3>Error stack traces contain no useful information</h3>
+				</a>
+				<p>Due to the async, queue-based behavior of arangojs, the stack traces generated
+					when an error occur rarely provide enough information to determine the location
+				in your own code where the request was initiated.</p>
+				<p>Using the <code>precaptureStackTraces</code> configuration option, arangojs will attempt
+					to always generate stack traces proactively when a request is performed,
+					allowing arangojs to provide more meaningful stack traces at the cost of an
+				impact to performance even when no error occurs.</p>
+				<pre><code class="language-diff"><span style="color: #000000">  const { Database } = require(&quot;arangojs&quot;);</span>
+
+<span style="color: #000000">  const db = new Database({</span>
+<span style="color: #000000">    url: ARANGODB_SERVER,</span>
+<span style="color: #098658">+   precaptureStackTraces: true,</span>
+<span style="color: #000000">  });</span>
+</code></pre>
+				<p>Note that arangojs will attempt to use <code>Error.captureStackTrace</code> if available
+					and fall back to generating a stack trace by throwing an error. In environments
+					that do not support the <code>stack</code> property on error objects, this option will
+					still impact performance but not result in any additional information becoming
+				available.</p>
+				<a href="#nodejs-referenceerror-window-is-not-defined" id="nodejs-referenceerror-window-is-not-defined" style="color: inherit; text-decoration: none;">
+					<h3>Node.js <code>ReferenceError: window is not defined</code></h3>
+				</a>
+				<p>If you compile your Node project using a build tool like Webpack, you may need
+					to tell it to
+				<a href="https://webpack.js.org/configuration/target/">target the correct environment</a>:</p>
+				<pre><code class="language-diff"><span style="color: #000000">// webpack.config.js</span>
+<span style="color: #098658">+ &quot;target&quot;: &quot;node&quot;,</span>
+</code></pre>
+				<p>To support use in both browser and Node environments arangojs uses the
+					<a href="https://github.com/defunctzombie/package-browser-field-spec"><code>package.json</code> <code>browser</code> field</a>,
+					to substitute browser-specific implementations for certain modules.
+					Build tools like Webpack will respect this field when targetting a browser
+				environment and may need to be explicitly told you are targetting Node instead.</p>
+				<a href="#nodejs-with-self-signed-https-certificates" id="nodejs-with-self-signed-https-certificates" style="color: inherit; text-decoration: none;">
+					<h3>Node.js with self-signed HTTPS certificates</h3>
+				</a>
+				<p>If you need to support self-signed HTTPS certificates, you may have to add
+				your certificates to the <code>agentOptions</code>, e.g.:</p>
+				<pre><code class="language-diff"><span style="color: #000000">  const { Database } = require(&quot;arangojs&quot;);</span>
+
+<span style="color: #000000">  const db = new Database({</span>
+<span style="color: #000000">    url: ARANGODB_SERVER,</span>
+<span style="color: #098658">+   agentOptions: {</span>
+<span style="color: #098658">+     ca: [</span>
+<span style="color: #098658">+       fs.readFileSync(&quot;.ssl/sub.class1.server.ca.pem&quot;),</span>
+<span style="color: #098658">+       fs.readFileSync(&quot;.ssl/ca.pem&quot;)</span>
+<span style="color: #098658">+     ]</span>
+<span style="color: #098658">+   },</span>
+<span style="color: #000000">  });</span>
+</code></pre>
+				<p>Although this is <strong>strongly discouraged</strong>, it&#39;s also possible to disable
+					HTTPS certificate validation entirely, but note this has
+				<strong>extremely dangerous</strong> security implications:</p>
+				<pre><code class="language-diff"><span style="color: #000000">  const { Database } = require(&quot;arangojs&quot;);</span>
+
+<span style="color: #000000">  const db = new Database({</span>
+<span style="color: #000000">    url: ARANGODB_SERVER,</span>
+<span style="color: #098658">+   agentOptions: {</span>
+<span style="color: #098658">+     rejectUnauthorized: false</span>
+<span style="color: #098658">+   },</span>
+<span style="color: #000000">  });</span>
+</code></pre>
+				<p>When using arangojs in the browser, self-signed HTTPS certificates need to
+				be trusted by the browser or use a trusted root certificate.</p>
+				<a href="#streaming-transactions-leak" id="streaming-transactions-leak" style="color: inherit; text-decoration: none;">
+					<h3>Streaming transactions leak</h3>
+				</a>
+				<p>When using the <code>transaction.step</code> method it is important to be aware of the
+				limitations of what a callback passed to this method is allowed to do.</p>
+				<pre><code class="language-js"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">collection</span><span style="color: #000000"> = </span><span style="color: #001080">db</span><span style="color: #000000">.</span><span style="color: #795E26">collection</span><span style="color: #000000">(</span><span style="color: #001080">collectionName</span><span style="color: #000000">);</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">trx</span><span style="color: #000000"> = </span><span style="color: #001080">db</span><span style="color: #000000">.</span><span style="color: #795E26">transaction</span><span style="color: #000000">(</span><span style="color: #001080">transactionId</span><span style="color: #000000">);</span>
+
+<span style="color: #008000">// WARNING: This code will not work as intended!</span>
+<span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">trx</span><span style="color: #000000">.</span><span style="color: #795E26">step</span><span style="color: #000000">(</span><span style="color: #0000FF">async</span><span style="color: #000000"> () </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
+<span style="color: #000000">  </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">collection</span><span style="color: #000000">.</span><span style="color: #795E26">save</span><span style="color: #000000">(</span><span style="color: #001080">doc1</span><span style="color: #000000">);</span>
+<span style="color: #000000">  </span><span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">collection</span><span style="color: #000000">.</span><span style="color: #795E26">save</span><span style="color: #000000">(</span><span style="color: #001080">doc2</span><span style="color: #000000">); </span><span style="color: #008000">// Not part of the transaction!</span>
+<span style="color: #000000">});</span>
+
+<span style="color: #008000">// INSTEAD: Always perform a single operation per step:</span>
+<span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">trx</span><span style="color: #000000">.</span><span style="color: #795E26">step</span><span style="color: #000000">(() </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> </span><span style="color: #001080">collection</span><span style="color: #000000">.</span><span style="color: #795E26">save</span><span style="color: #000000">(</span><span style="color: #001080">doc1</span><span style="color: #000000">));</span>
+<span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">trx</span><span style="color: #000000">.</span><span style="color: #795E26">step</span><span style="color: #000000">(() </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> </span><span style="color: #001080">collection</span><span style="color: #000000">.</span><span style="color: #795E26">save</span><span style="color: #000000">(</span><span style="color: #001080">doc2</span><span style="color: #000000">));</span>
+</code></pre>
+				<p>Please refer to the documentation of this method for additional examples.</p>
+				<a href="#streaming-transactions-timeout-in-cluster" id="streaming-transactions-timeout-in-cluster" style="color: inherit; text-decoration: none;">
+					<h3>Streaming transactions timeout in cluster</h3>
+				</a>
+				<p>Example messages: <code>transaction not found</code>, <code>transaction already expired</code>.</p>
+				<p>Transactions have
+					<a href="https://www.arangodb.com/docs/stable/transactions-limitations.html#in-clusters">different guarantees</a>
+				in a cluster.</p>
+				<p>When using arangojs in a cluster with load balancing, you may need to adjust
+					the value of <code>agentOptions.maxSockets</code> to accommodate the number of transactions
+					you need to be able to run in parallel. The default value is likely to be too
+				low for most cluster scenarios involving frequent streaming transactions.</p>
+				<p><strong>Note</strong>: When using a high value for <code>agentOptions.maxSockets</code> you may have
+					to adjust the maximum number of threads in the ArangoDB configuration using
+					<a href="https://www.arangodb.com/docs/3.7/programs-arangod-server.html#server-threads">the <code>server.maximal-threads</code> option</a>
+				to support larger numbers of concurrent transactions on the server side.</p>
+				<a href="#license" id="license" style="color: inherit; text-decoration: none;">
+					<h2>License</h2>
+				</a>
+				<p>The Apache License, Version 2.0. For more information, see the accompanying
+				LICENSE file.</p>
+			</div>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class=" ">
+						<a href="modules.html">Exports</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/analyzer.html">analyzer</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/aql.html">aql</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/collection.html">collection</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/connection.html">connection</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/cursor.html">cursor</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/database.html">database</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/documents.html">documents</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/error.html">error</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/foxx_manifest.html">foxx-<wbr>manifest</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/graph.html">graph</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/index.html">index</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/indexes.html">indexes</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/route.html">route</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/transaction.html">transaction</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/view.html">view</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-namespace"><span class="tsd-kind-icon">Namespace</span></li>
+				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
+				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
+				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
+				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="assets/js/main.js"></script>
+</body>
+</html>
