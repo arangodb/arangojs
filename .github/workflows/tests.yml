@@ -26,6 +26,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+      - run: apt install jq -y
       - run: npm install -g npm@7
       - run: npm install
       - run: npm test
@@ -52,6 +53,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+      - run: apt install jq -y
       - run: npm install -g npm@7
       - run: npm install
       - run: node smoke-test.js
