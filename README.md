@@ -114,8 +114,8 @@ var db = new Database();
 var pokemons = db.collection("pokemons");
 
 db.query({
-  query: "FOR p IN @@c FILTER p.type === 'fire' RETURN p",
-  bindVars: { c: pokemons },
+  query: "FOR p IN @@c FILTER p.type == 'fire' RETURN p",
+  bindVars: { "@c": "pokemons" },
 })
   .then(function (cursor) {
     console.log("My pokemons, let me show you them:");
