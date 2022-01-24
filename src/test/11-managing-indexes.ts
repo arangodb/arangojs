@@ -6,6 +6,7 @@ import { config } from "./_config";
 const itPre34 = config.arangoVersion! < 30400 ? it : it.skip;
 const itPre39 = config.arangoVersion! < 30900 ? it : it.skip;
 const it34 = config.arangoVersion! >= 30400 ? it : it.skip;
+const it39 = config.arangoVersion! >= 30900 ? it : it.skip;
 
 describe("Managing indexes", function () {
   let db: Database;
@@ -14,7 +15,8 @@ describe("Managing indexes", function () {
   const collectionName = `collection-${Date.now()}`;
   before(async () => {
     db = new Database(config);
-    if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE") await db.acquireHostList();
+    if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE")
+      await db.acquireHostList();
     await db.createDatabase(dbName);
     db.useDatabase(dbName);
     collection = await db.createCollection(collectionName);
@@ -126,6 +128,20 @@ describe("Managing indexes", function () {
       expect(info).to.have.property("type", "fulltext");
       expect(info).to.have.property("fields");
       expect(info.fields).to.eql(["value"]);
+      expect(info).to.have.property("isNewlyCreated", true);
+    });
+  });
+  describe("collection.ensureIndex#zkd", () => {
+    it39("should create a zkd index", async () => {
+      const info = await collection.ensureIndex({
+        type: "zkd",
+        fields: ["x", "y", "z"],
+        fieldValueTypes: "double",
+      });
+      expect(info).to.have.property("id");
+      expect(info).to.have.property("type", "zkd");
+      expect(info).to.have.property("fields");
+      expect(info.fields).to.eql(["x", "y", "z"]);
       expect(info).to.have.property("isNewlyCreated", true);
     });
   });
