@@ -465,6 +465,15 @@ export type Config = {
    * may negatively impact performance.
    */
   precaptureStackTraces?: boolean;
+  /**
+   * Limits the number of values of server-reported response queue times that
+   * will be stored and accessible using {@link Database.queueTime}. If set to
+   * a finite value, older values will be discarded to make room for new values
+   * when that limit is reached.
+   *
+   * Default: `10`
+   */
+  responseQueueTimeSamples?: number;
 };
 
 /**
@@ -504,6 +513,8 @@ export class Connection {
   protected _activeDirtyHost: number;
   protected _transactionId: string | null = null;
   protected _precaptureStackTraces: boolean;
+  protected _responseQueueTimeSamples: number;
+  protected _queueTimes = new LinkedList<[number, number]>();
 
   /**
    * @internal
@@ -541,6 +552,7 @@ export class Connection {
     this._loadBalancingStrategy = config.loadBalancingStrategy ?? "NONE";
     this._useFailOver = this._loadBalancingStrategy !== "ROUND_ROBIN";
     this._precaptureStackTraces = Boolean(config.precaptureStackTraces);
+    this._responseQueueTimeSamples = config.responseQueueTimeSamples ?? 10;
     if (config.maxRetries === false) {
       this._shouldRetry = false;
       this._maxRetries = 0;
@@ -575,6 +587,18 @@ export class Connection {
    */
   get isArangoConnection(): true {
     return true;
+  }
+
+  get queueTime() {
+    return {
+      getLatest: () => this._queueTimes.last?.value[1],
+      getValues: () => new Map(this._queueTimes.values()),
+      getAvg: () =>
+        this._queueTimes.reduce(
+          (acc, [_, value]) => acc + value / this._queueTimes.length,
+          0
+        ),
+    };
   }
 
   protected _runQueue() {
@@ -664,6 +688,10 @@ export class Connection {
       "authorization",
       `Basic ${btoa(`${auth.username}:${auth.password}`)}`
     );
+  }
+
+  setResponseQueueTimeSamples(responseQueueTimeSamples: number) {
+    this._responseQueueTimeSamples = responseQueueTimeSamples;
   }
 
   /**
@@ -883,6 +911,13 @@ export class Connection {
         reject,
         resolve: (res: ArangojsResponse) => {
           const contentType = res.headers["content-type"];
+          const queueTime = res.headers["x-arango-queue-time-seconds"];
+          if (queueTime) {
+            this._queueTimes.push([Date.now(), Number(queueTime)]);
+            while (this._responseQueueTimeSamples < this._queueTimes.length) {
+              this._queueTimes.shift();
+            }
+          }
           let parsedBody: any = undefined;
           if (res.body.length && contentType && contentType.match(MIME_JSON)) {
             try {

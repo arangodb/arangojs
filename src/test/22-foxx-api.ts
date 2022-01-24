@@ -79,17 +79,22 @@ describe("Foxx service", () => {
           path.resolve(localAppsPath, "minimal-working-service.zip")
         ),
     },
-    {
-      name: "remoteJsFile",
-      source: (arangoPaths: any) =>
-        makeSelfReachable(db, arangoPaths.remote.js),
-    },
-    {
-      name: "remoteZipFile",
-      source: (arangoPaths: any) =>
-        makeSelfReachable(db, arangoPaths.remote.zip),
-    },
   ];
+
+  if (config.arangoVersion! < 30900) {
+    cases.push(
+      {
+        name: "remoteJsFile",
+        source: (arangoPaths: any) =>
+          makeSelfReachable(db, arangoPaths.remote.js),
+      },
+      {
+        name: "remoteZipFile",
+        source: (arangoPaths: any) =>
+          makeSelfReachable(db, arangoPaths.remote.zip),
+      }
+    );
+  }
 
   for (const c of cases) {
     it(`installed via ${c.name} should be available`, async () => {

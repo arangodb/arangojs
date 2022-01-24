@@ -16,6 +16,38 @@ This driver uses semantic versioning:
 
 ## [Unreleased]
 
+### Changed
+
+- Unicode names are now automatically NFC normalized
+
+  This change affects all database, collection, graph, view and analyzer names
+  using unicode characters. **The change has no effect when using non-unicode
+  (ASCII) names.** At this time, ArangoDB does not support unicode characters
+  in any of these names but experimental support for unicode database names is
+  available in ArangoDB 3.9 using the `--database.extended-names-databases`
+  startup option.
+
+  Any names used to create `Database`, `Collection`, etc instances or passed to
+  methods will automatically be NFC normalized. Additionally the collection
+  name part of any value passed as a `DocumentSelector` and the collection name
+  part of values returned by `collection.documentId` will automatically be NFC
+  normalized.
+
+### Added
+
+- Added support for new ArangoDB 3.9 `CollationAnalyzer` and
+  `SegmentationAnalyzer` types
+
+- Added support for new ArangoDB 3.9 (multi-dimensional) `ZkdIndex` type
+
+- Added support for new ArangoDB 3.9 Hybrid SmartGraphs graph options
+
+- Added support for new ArangoDB 3.9 response queue time reporting
+
+  This adds the `db.queueTime` property, which provides methods for accessing
+  queue time metrics reported by the most recently received server responses if
+  the server supports this feature.
+
 ## [7.6.1] - 2021-10-26
 
 ### Fixed

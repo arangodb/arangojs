@@ -131,12 +131,14 @@ export function _documentHandle(
     );
   }
   if (selector.includes("/")) {
-    if (strict && !selector.startsWith(`${collectionName}/`)) {
+    const [head, ...tail] = selector.split("/");
+    const normalizedHead = head.normalize("NFC");
+    if (strict && normalizedHead !== collectionName) {
       throw new Error(
         `Document ID "${selector}" does not match collection name "${collectionName}"`
       );
     }
-    return selector;
+    return [normalizedHead, ...tail].join("/");
   }
   return `${collectionName}/${selector}`;
 }

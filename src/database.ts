@@ -313,6 +313,13 @@ export type QueryOptions = {
    */
   maxPlans?: number;
   /**
+   * Controls after how many execution nodes in a query a stack split should be
+   * performed.
+   *
+   * Default: `250` (`200` on macOS)
+   */
+  maxNodesPerCallstack?: number;
+  /**
    * (RocksDB only.) Maximum size of transactions in bytes.
    */
   maxTransactionSize?: number;
@@ -1396,6 +1403,27 @@ export type UserAccessLevelOptions = {
 };
 
 /**
+ * An object providing methods for accessing queue time metrics of the most
+ * recently received server responses if the server supports this feature.
+ */
+export type QueueTimeMetrics = {
+  /**
+   * Returns the queue time of the most recently received response in seconds.
+   */
+  getLatest: () => number | undefined;
+  /**
+   * Returns a map of the most recently received queue times in seconds by
+   * timestamp of the response being processed in milliseconds.
+   */
+  getValues: () => Map<number, number>;
+  /**
+   * Returns the average queue time of the most recently received responses
+   * in seconds.
+   */
+  getAvg: () => number;
+};
+
+/**
  * An object representing a single ArangoDB database. All arangojs collections,
  * cursors, analyzers and so on are linked to a `Database` object.
  */
@@ -1451,7 +1479,7 @@ export class Database {
   ) {
     if (isArangoDatabase(configOrDatabase)) {
       const connection = configOrDatabase._connection;
-      const databaseName = name || configOrDatabase.name;
+      const databaseName = (name || configOrDatabase.name).normalize("NFC");
       this._connection = connection;
       this._name = databaseName;
       const database = connection.database(databaseName);
@@ -1463,7 +1491,7 @@ export class Database {
           ? { databaseName: name, url: config }
           : config;
       this._connection = new Connection(options);
-      this._name = databaseName || "_system";
+      this._name = databaseName?.normalize("NFC") || "_system";
     }
   }
 
@@ -1563,7 +1591,7 @@ export class Database {
     transform?: (res: ArangojsResponse) => T
   ): Promise<T> {
     if (!absolutePath) {
-      basePath = `/_db/${this.name}${basePath || ""}`;
+      basePath = `/_db/${encodeURIComponent(this._name)}${basePath || ""}`;
     }
     return this._connection.request({ basePath, ...opts }, transform);
   }
@@ -1644,7 +1672,7 @@ export class Database {
    * const analyzer = db.analyzer("my-analyzer");
    * await analyzer.create();
    * await db.waitForPropagation(
-   *   { path: `/_api/analyzer/${analyzer.name}` },
+   *   { path: `/_api/analyzer/${encodeURIComponent(analyzer.name)}` },
    *   30000
    * );
    * // Analyzer has been propagated to all coordinators and can safely be used
@@ -1662,9 +1690,31 @@ export class Database {
     timeout?: number
   ): Promise<void> {
     await this._connection.waitForPropagation(
-      { ...request, basePath: `/_db/${this.name}${basePath || ""}` },
+      {
+        ...request,
+        basePath: `/_db/${encodeURIComponent(this._name)}${basePath || ""}`,
+      },
       timeout
     );
+  }
+
+  /**
+   * Methods for accessing the server-reported queue times of the mostly
+   * recently received responses.
+   */
+  get queueTime(): QueueTimeMetrics {
+    return this._connection.queueTime;
+  }
+
+  /**
+   * Sets the limit for the number of values of the most recently received
+   * server-reported queue times that can be accessed using
+   * {@link Database.queueTime}.
+   *
+   * @param responseQueueTimeSamples - Number of values to maintain.
+   */
+  setResponseQueueTimeSamples(responseQueueTimeSamples: number) {
+    this._connection.setResponseQueueTimeSamples(responseQueueTimeSamples);
   }
   //#endregion
 
@@ -1690,7 +1740,7 @@ export class Database {
    */
   useDatabase(databaseName: string): this {
     this._connection.database(this._name, null);
-    this._name = databaseName;
+    this._name = databaseName.normalize("NFC");
     return this;
   }
 
@@ -1782,8 +1832,7 @@ export class Database {
    * ```
    */
   database(databaseName: string) {
-    const db = new (Database as any)(this, databaseName) as Database;
-    return db;
+    return new Database(this as any, databaseName);
   }
 
   /**
@@ -1878,7 +1927,7 @@ export class Database {
       {
         method: "POST",
         path: "/_api/database",
-        body: { name: databaseName, users, options },
+        body: { name: databaseName.normalize("NFC"), users, options },
       },
       () => this.database(databaseName)
     );
@@ -1979,10 +2028,11 @@ export class Database {
    * ```
    */
   dropDatabase(databaseName: string): Promise<boolean> {
+    databaseName = databaseName.normalize("NFC");
     return this.request(
       {
         method: "DELETE",
-        path: `/_api/database/${databaseName}`,
+        path: `/_api/database/${encodeURIComponent(databaseName)}`,
       },
       (res) => res.body.result
     );
@@ -2032,6 +2082,7 @@ export class Database {
   collection<T extends Record<string, any> = any>(
     collectionName: string
   ): DocumentCollection<T> & EdgeCollection<T> {
+    collectionName = collectionName.normalize("NFC");
     if (!this._collections.has(collectionName)) {
       this._collections.set(
         collectionName,
@@ -2168,11 +2219,12 @@ export class Database {
     collectionName: string,
     newName: string
   ): Promise<ArangoResponseMetadata & CollectionMetadata> {
+    collectionName = collectionName.normalize("NFC");
     const result = await this.request(
       {
         method: "PUT",
-        path: `/_api/collection/${collectionName}/rename`,
-        body: { name: newName },
+        path: `/_api/collection/${encodeURIComponent(collectionName)}/rename`,
+        body: { name: newName.normalize("NFC") },
       },
       (res) => res.body
     );
@@ -2268,6 +2320,7 @@ export class Database {
    * ```
    */
   graph(graphName: string): Graph {
+    graphName = graphName.normalize("NFC");
     if (!this._graphs.has(graphName)) {
       this._graphs.set(graphName, new Graph(this, graphName));
     }
@@ -2287,7 +2340,7 @@ export class Database {
     edgeDefinitions: EdgeDefinitionOptions[],
     options?: GraphCreateOptions
   ): Promise<Graph> {
-    const graph = this.graph(graphName);
+    const graph = this.graph(graphName.normalize("NFC"));
     await graph.create(edgeDefinitions, options);
     return graph;
   }
@@ -2341,6 +2394,7 @@ export class Database {
    * ```
    */
   view(viewName: string): ArangoSearchView {
+    viewName = viewName.normalize("NFC");
     if (!this._views.has(viewName)) {
       this._views.set(viewName, new View(this, viewName));
     }
@@ -2365,7 +2419,7 @@ export class Database {
     viewName: string,
     options?: ArangoSearchViewPropertiesOptions
   ): Promise<ArangoSearchView> {
-    const view = this.view(viewName);
+    const view = this.view(viewName.normalize("NFC"));
     await view.create({ ...options, type: ViewType.ARANGOSEARCH_VIEW });
     return view;
   }
@@ -2386,11 +2440,12 @@ export class Database {
     viewName: string,
     newName: string
   ): Promise<ArangoResponseMetadata & ViewDescription> {
+    viewName = viewName.normalize("NFC");
     const result = await this.request(
       {
         method: "PUT",
-        path: `/_api/view/${viewName}/rename`,
-        body: { name: newName },
+        path: `/_api/view/${encodeURIComponent(viewName)}/rename`,
+        body: { name: newName.normalize("NFC") },
       },
       (res) => res.body
     );
@@ -2448,6 +2503,7 @@ export class Database {
    * ```
    */
   analyzer(analyzerName: string): Analyzer {
+    analyzerName = analyzerName.normalize("NFC");
     if (!this._analyzers.has(analyzerName)) {
       this._analyzers.set(analyzerName, new Analyzer(this, analyzerName));
     }
@@ -2547,7 +2603,7 @@ export class Database {
   getUser(username: string): Promise<ArangoUser & ArangoResponseMetadata> {
     return this.request({
       absolutePath: true,
-      path: `/_api/user/${username}`,
+      path: `/_api/user/${encodeURIComponent(username)}`,
     });
   }
 
@@ -2648,7 +2704,7 @@ export class Database {
       {
         absolutePath: true,
         method: "PATCH",
-        path: `/api/user/${username}`,
+        path: `/api/user/${encodeURIComponent(username)}`,
         body: options,
       },
       (res) => res.body
@@ -2679,7 +2735,7 @@ export class Database {
       {
         absolutePath: true,
         method: "PUT",
-        path: `/api/user/${username}`,
+        path: `/api/user/${encodeURIComponent(username)}`,
         body: options,
       },
       (res) => res.body
@@ -2703,7 +2759,7 @@ export class Database {
       {
         absolutePath: true,
         method: "DELETE",
-        path: `/_api/user/${username}`,
+        path: `/_api/user/${encodeURIComponent(username)}`,
       },
       (res) => res.body
     );
@@ -2776,6 +2832,7 @@ export class Database {
    * });
    * // The access level of the user "steve" has been fetched for the
    * // "pokemons" collection in database "staging".
+   * ```
    */
   getUserAccessLevel(
     username: string,
@@ -2783,17 +2840,23 @@ export class Database {
   ): Promise<AccessLevel> {
     const databaseName = isArangoDatabase(database)
       ? database.name
-      : database ??
+      : database?.normalize("NFC") ??
         (isArangoCollection(collection)
           ? ((collection as any)._db as Database).name
-          : this.name);
+          : this._name);
     const suffix = collection
-      ? `/${isArangoCollection(collection) ? collection.name : collection}`
+      ? `/${encodeURIComponent(
+          isArangoCollection(collection)
+            ? collection.name
+            : collection.normalize("NFC")
+        )}`
       : "";
     return this.request(
       {
         absolutePath: true,
-        path: `/_api/user/${username}/database/${databaseName}${suffix}`,
+        path: `/_api/user/${encodeURIComponent(
+          username
+        )}/database/${encodeURIComponent(databaseName)}${suffix}`,
       },
       (res) => res.body
     );
@@ -2881,18 +2944,24 @@ export class Database {
   ): Promise<Record<string, AccessLevel> & ArangoResponseMetadata> {
     const databaseName = isArangoDatabase(database)
       ? database.name
-      : database ??
+      : database?.normalize("NFC") ??
         (isArangoCollection(collection)
           ? ((collection as any)._db as Database).name
-          : this.name);
+          : this._name);
     const suffix = collection
-      ? `/${isArangoCollection(collection) ? collection.name : collection}`
+      ? `/${encodeURIComponent(
+          isArangoCollection(collection)
+            ? collection.name
+            : collection.normalize("NFC")
+        )}`
       : "";
     return this.request(
       {
         absolutePath: true,
         method: "PUT",
-        path: `/_api/user/${username}/database/${databaseName}${suffix}`,
+        path: `/_api/user/${encodeURIComponent(
+          username
+        )}/database/${encodeURIComponent(databaseName)}${suffix}`,
         body: { grant },
       },
       (res) => res.body
@@ -2968,18 +3037,24 @@ export class Database {
   ): Promise<Record<string, AccessLevel> & ArangoResponseMetadata> {
     const databaseName = isArangoDatabase(database)
       ? database.name
-      : database ??
+      : database?.normalize("NFC") ??
         (isArangoCollection(collection)
           ? ((collection as any)._db as Database).name
-          : this.name);
+          : this._name);
     const suffix = collection
-      ? `/${isArangoCollection(collection) ? collection.name : collection}`
+      ? `/${encodeURIComponent(
+          isArangoCollection(collection)
+            ? collection.name
+            : collection.normalize("NFC")
+        )}`
       : "";
     return this.request(
       {
         absolutePath: true,
         method: "DELETE",
-        path: `/_api/user/${username}/database/${databaseName}${suffix}`,
+        path: `/_api/user/${encodeURIComponent(
+          username
+        )}/database/${encodeURIComponent(databaseName)}${suffix}`,
       },
       (res) => res.body
     );
@@ -3043,7 +3118,7 @@ export class Database {
   ): Promise<Record<string, any>> {
     return this.request({
       absolutePath: true,
-      path: `/_api/user/${username}/database`,
+      path: `/_api/user/${encodeURIComponent(username)}/database`,
       qs: { full },
     });
   }
@@ -3849,7 +3924,7 @@ export class Database {
     return this.request(
       {
         method: "DELETE",
-        path: `/_api/query/${queryId}`,
+        path: `/_api/query/${encodeURIComponent(queryId)}`,
       },
       () => undefined
     );
@@ -3942,7 +4017,7 @@ export class Database {
     return this.request(
       {
         method: "DELETE",
-        path: `/_api/aqlfunction/${name}`,
+        path: `/_api/aqlfunction/${encodeURIComponent(name)}`,
         qs: { group },
       },
       (res) => res.body
@@ -4846,7 +4921,7 @@ export class Database {
     return this.request(
       {
         method: "POST",
-        path: `/_api/foxx/scripts/${name}`,
+        path: `/_api/foxx/scripts/${encodeURIComponent(name)}`,
         body: params,
         qs: { mount },
       },

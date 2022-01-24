@@ -132,7 +132,7 @@ export class BatchedArrayCursor<T = any> {
     if (!this.hasMore) return;
     const res = await this._db.request({
       method: "PUT",
-      path: `/_api/cursor/${this._id}`,
+      path: `/_api/cursor/${encodeURIComponent(this._id!)}`,
       host: this._host,
       allowDirtyRead: this._allowDirtyRead,
     });
@@ -632,7 +632,7 @@ export class BatchedArrayCursor<T = any> {
     return this._db.request(
       {
         method: "DELETE",
-        path: `/_api/cursor/${this._id}`,
+        path: `/_api/cursor/${encodeURIComponent(this._id!)}`,
       },
       () => {
         this._hasMore = false;

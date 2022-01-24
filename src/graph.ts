@@ -17,7 +17,6 @@ import {
   collectionToString,
   DocumentCollection,
   EdgeCollection,
-  isArangoCollection,
   TraversalOptions,
 } from "./collection";
 import { Headers } from "./connection";
@@ -373,6 +372,35 @@ export type GraphCreateOptions = {
    * Default: `false`
    */
   isDisjoint?: boolean;
+  /**
+   * (Enterprise Edition cluster only.) Collections to be included in a Hybrid
+   * SmartGraph.
+   */
+  satellites?: (string | ArangoCollection)[];
+};
+
+export type AddVertexCollectionOptions = {
+  /**
+   * (Enterprise Edition cluster only.) Collections to be included in a Hybrid
+   * SmartGraph.
+   */
+  satellites?: (string | ArangoCollection)[];
+};
+
+export type AddEdgeDefinitionOptions = {
+  /**
+   * (Enterprise Edition cluster only.) Collections to be included in a Hybrid
+   * SmartGraph.
+   */
+  satellites?: (string | ArangoCollection)[];
+};
+
+export type ReplaceEdgeDefinitionOptions = {
+  /**
+   * (Enterprise Edition cluster only.) Collections to be included in a Hybrid
+   * SmartGraph.
+   */
+  satellites?: string[];
 };
 
 /**
@@ -381,7 +409,8 @@ export type GraphCreateOptions = {
  * @param T - Type to use for document data. Defaults to `any`.
  */
 export class GraphVertexCollection<T extends Record<string, any> = any>
-  implements ArangoCollection {
+  implements ArangoCollection
+{
   protected _db: Database;
   protected _name: string;
   protected _graph: Graph;
@@ -393,9 +422,9 @@ export class GraphVertexCollection<T extends Record<string, any> = any>
    */
   constructor(db: Database, name: string, graph: Graph) {
     this._db = db;
-    this._name = name;
-    this._graph = graph;
     this._collection = db.collection(name);
+    this._name = this._collection.name;
+    this._graph = graph;
   }
 
   /**
@@ -453,10 +482,9 @@ export class GraphVertexCollection<T extends Record<string, any> = any>
       return await this._db.request(
         {
           method: "HEAD",
-          path: `/_api/gharial/${this.graph.name}/vertex/${_documentHandle(
-            selector,
-            this._name
-          )}`,
+          path: `/_api/gharial/${encodeURIComponent(
+            this.graph.name
+          )}/vertex/${encodeURI(_documentHandle(selector, this._name))}`,
         },
         () => true
       );
@@ -562,10 +590,9 @@ export class GraphVertexCollection<T extends Record<string, any> = any>
     if (rev) headers["if-match"] = rev;
     const result = this._db.request(
       {
-        path: `/_api/gharial/${this.graph.name}/vertex/${_documentHandle(
-          selector,
-          this._name
-        )}`,
+        path: `/_api/gharial/${encodeURIComponent(
+          this.graph.name
+        )}/vertex/${encodeURI(_documentHandle(selector, this._name))}`,
         headers,
         qs,
         allowDirtyRead,
@@ -608,7 +635,9 @@ export class GraphVertexCollection<T extends Record<string, any> = any>
     return this._db.request(
       {
         method: "POST",
-        path: `/_api/gharial/${this.graph.name}/vertex/${this._name}`,
+        path: `/_api/gharial/${encodeURIComponent(
+          this.graph.name
+        )}/vertex/${encodeURIComponent(this._name)}`,
         body: data,
         qs: options,
       },
@@ -659,10 +688,9 @@ export class GraphVertexCollection<T extends Record<string, any> = any>
     return this._db.request(
       {
         method: "PUT",
-        path: `/_api/gharial/${this.graph.name}/vertex/${_documentHandle(
-          selector,
-          this._name
-        )}`,
+        path: `/_api/gharial/${encodeURIComponent(
+          this.graph.name
+        )}/vertex/${encodeURI(_documentHandle(selector, this._name))}`,
         body: newValue,
         qs,
         headers,
@@ -714,10 +742,9 @@ export class GraphVertexCollection<T extends Record<string, any> = any>
     return this._db.request(
       {
         method: "PATCH",
-        path: `/_api/gharial/${this.graph.name}/vertex/${_documentHandle(
-          selector,
-          this._name
-        )}`,
+        path: `/_api/gharial/${encodeURIComponent(
+          this.graph.name
+        )}/vertex/${encodeURI(_documentHandle(selector, this._name))}`,
         body: newValue,
         qs,
         headers,
@@ -770,10 +797,9 @@ export class GraphVertexCollection<T extends Record<string, any> = any>
     return this._db.request(
       {
         method: "DELETE",
-        path: `/_api/gharial/${this.graph.name}/vertex/${_documentHandle(
-          selector,
-          this._name
-        )}`,
+        path: `/_api/gharial/${encodeURIComponent(
+          this.graph.name
+        )}/vertex/${encodeURI(_documentHandle(selector, this._name))}`,
         qs,
         headers,
       },
@@ -788,7 +814,8 @@ export class GraphVertexCollection<T extends Record<string, any> = any>
  * @param T - Type to use for document data. Defaults to `any`.
  */
 export class GraphEdgeCollection<T extends Record<string, any> = any>
-  implements ArangoCollection {
+  implements ArangoCollection
+{
   protected _db: Database;
   protected _name: string;
   protected _graph: Graph;
@@ -800,9 +827,9 @@ export class GraphEdgeCollection<T extends Record<string, any> = any>
    */
   constructor(db: Database, name: string, graph: Graph) {
     this._db = db;
-    this._name = name;
-    this._graph = graph;
     this._collection = db.collection(name);
+    this._name = this._collection.name;
+    this._graph = graph;
   }
 
   /**
@@ -860,10 +887,9 @@ export class GraphEdgeCollection<T extends Record<string, any> = any>
       return await this._db.request(
         {
           method: "HEAD",
-          path: `/_api/gharial/${this.graph.name}/edge/${_documentHandle(
-            selector,
-            this._name
-          )}`,
+          path: `/_api/gharial/${encodeURIComponent(
+            this.graph.name
+          )}/edge/${encodeURI(_documentHandle(selector, this._name))}`,
         },
         () => true
       );
@@ -966,10 +992,9 @@ export class GraphEdgeCollection<T extends Record<string, any> = any>
     if (rev) headers["if-match"] = rev;
     const result = this._db.request(
       {
-        path: `/_api/gharial/${this.graph.name}/edge/${_documentHandle(
-          selector,
-          this._name
-        )}`,
+        path: `/_api/gharial/${encodeURIComponent(
+          this.graph.name
+        )}/edge/${encodeURI(_documentHandle(selector, this._name))}`,
         qs,
         allowDirtyRead,
       },
@@ -1010,7 +1035,9 @@ export class GraphEdgeCollection<T extends Record<string, any> = any>
     return this._db.request(
       {
         method: "POST",
-        path: `/_api/gharial/${this.graph.name}/edge/${this._name}`,
+        path: `/_api/gharial/${encodeURIComponent(
+          this.graph.name
+        )}/edge/${encodeURIComponent(this._name)}`,
         body: data,
         qs: options,
       },
@@ -1069,10 +1096,9 @@ export class GraphEdgeCollection<T extends Record<string, any> = any>
     return this._db.request(
       {
         method: "PUT",
-        path: `/_api/gharial/${this.graph.name}/edge/${_documentHandle(
-          selector,
-          this._name
-        )}`,
+        path: `/_api/gharial/${encodeURIComponent(
+          this.graph.name
+        )}/edge/${encodeURI(_documentHandle(selector, this._name))}`,
         body: newValue,
         qs,
         headers,
@@ -1132,10 +1158,9 @@ export class GraphEdgeCollection<T extends Record<string, any> = any>
     return this._db.request(
       {
         method: "PATCH",
-        path: `/_api/gharial/${this.graph.name}/edge/${_documentHandle(
-          selector,
-          this._name
-        )}`,
+        path: `/_api/gharial/${encodeURIComponent(
+          this.graph.name
+        )}/edge/${encodeURI(_documentHandle(selector, this._name))}`,
         body: newValue,
         qs,
         headers,
@@ -1180,10 +1205,9 @@ export class GraphEdgeCollection<T extends Record<string, any> = any>
     return this._db.request(
       {
         method: "DELETE",
-        path: `/_api/gharial/${this.graph.name}/edge/${_documentHandle(
-          selector,
-          this._name
-        )}`,
+        path: `/_api/gharial/${encodeURIComponent(
+          this.graph.name
+        )}/edge/${encodeURI(_documentHandle(selector, this._name))}`,
         qs,
         headers,
       },
@@ -1205,7 +1229,7 @@ export class Graph {
    * @hidden
    */
   constructor(db: Database, name: string) {
-    this._name = name;
+    this._name = name.normalize("NFC");
     this._db = db;
   }
 
@@ -1261,7 +1285,7 @@ export class Graph {
    */
   get(): Promise<GraphInfo> {
     return this._db.request(
-      { path: `/_api/gharial/${this._name}` },
+      { path: `/_api/gharial/${encodeURIComponent(this._name)}` },
       (res) => res.body.graph
     );
   }
@@ -1291,8 +1315,14 @@ export class Graph {
     edgeDefinitions: EdgeDefinitionOptions[],
     options?: GraphCreateOptions
   ): Promise<GraphInfo> {
-    const { orphanCollections, waitForSync, isSmart, isDisjoint, ...opts } =
-      options || {};
+    const {
+      orphanCollections,
+      satellites,
+      waitForSync,
+      isSmart,
+      isDisjoint,
+      ...opts
+    } = options ?? {};
     return this._db.request(
       {
         method: "POST",
@@ -1307,7 +1337,7 @@ export class Graph {
           isSmart,
           isDisjoint,
           name: this._name,
-          options: opts,
+          options: { ...opts, satellites: satellites?.map(collectionToString) },
         },
         qs: { waitForSync },
       },
@@ -1333,7 +1363,7 @@ export class Graph {
     return this._db.request(
       {
         method: "DELETE",
-        path: `/_api/gharial/${this._name}`,
+        path: `/_api/gharial/${encodeURIComponent(this._name)}`,
         qs: { dropCollections },
       },
       (res) => res.body.removed
@@ -1350,10 +1380,11 @@ export class Graph {
   vertexCollection<T extends Record<string, any> = any>(
     collection: string | ArangoCollection
   ): GraphVertexCollection<T> {
-    if (isArangoCollection(collection)) {
-      collection = collection.name;
-    }
-    return new GraphVertexCollection<T>(this._db, collection, this);
+    return new GraphVertexCollection<T>(
+      this._db,
+      collectionToString(collection),
+      this
+    );
   }
 
   /**
@@ -1379,7 +1410,7 @@ export class Graph {
    */
   listVertexCollections(): Promise<string[]> {
     return this._db.request(
-      { path: `/_api/gharial/${this._name}/vertex` },
+      { path: `/_api/gharial/${encodeURIComponent(this._name)}/vertex` },
       (res) => res.body.collections
     );
   }
@@ -1431,16 +1462,18 @@ export class Graph {
    * ```
    */
   addVertexCollection(
-    collection: string | ArangoCollection
+    collection: string | ArangoCollection,
+    options?: AddVertexCollectionOptions
   ): Promise<GraphInfo> {
-    if (isArangoCollection(collection)) {
-      collection = collection.name;
-    }
+    const { satellites, ...opts } = options ?? {};
     return this._db.request(
       {
         method: "POST",
-        path: `/_api/gharial/${this._name}/vertex`,
-        body: { collection },
+        path: `/_api/gharial/${encodeURIComponent(this._name)}/vertex`,
+        body: {
+          collection: collectionToString(collection),
+          options: { ...opts, satellites: satellites?.map(collectionToString) },
+        },
       },
       (res) => res.body.graph
     );
@@ -1472,13 +1505,12 @@ export class Graph {
     collection: string | ArangoCollection,
     dropCollection: boolean = false
   ): Promise<GraphInfo> {
-    if (isArangoCollection(collection)) {
-      collection = collection.name;
-    }
     return this._db.request(
       {
         method: "DELETE",
-        path: `/_api/gharial/${this._name}/vertex/${collection}`,
+        path: `/_api/gharial/${encodeURIComponent(
+          this._name
+        )}/vertex/${encodeURIComponent(collectionToString(collection))}`,
         qs: {
           dropCollection,
         },
@@ -1513,10 +1545,11 @@ export class Graph {
   edgeCollection<T extends Record<string, any> = any>(
     collection: string | ArangoCollection
   ): GraphEdgeCollection<T> {
-    if (isArangoCollection(collection)) {
-      collection = collection.name;
-    }
-    return new GraphEdgeCollection<T>(this._db, collection, this);
+    return new GraphEdgeCollection<T>(
+      this._db,
+      collectionToString(collection),
+      this
+    );
   }
 
   /**
@@ -1542,7 +1575,7 @@ export class Graph {
    */
   listEdgeCollections(): Promise<string[]> {
     return this._db.request(
-      { path: `/_api/gharial/${this._name}/edge` },
+      { path: `/_api/gharial/${encodeURIComponent(this._name)}/edge` },
       (res) => res.body.collections
     );
   }
@@ -1593,12 +1626,19 @@ export class Graph {
    * // The edge definition has been added to the graph
    * ```
    */
-  addEdgeDefinition(edgeDefinition: EdgeDefinitionOptions): Promise<GraphInfo> {
+  addEdgeDefinition(
+    edgeDefinition: EdgeDefinitionOptions,
+    options?: AddEdgeDefinitionOptions
+  ): Promise<GraphInfo> {
+    const { satellites, ...opts } = options ?? {};
     return this._db.request(
       {
         method: "POST",
-        path: `/_api/gharial/${this._name}/edge`,
-        body: coerceEdgeDefinition(edgeDefinition),
+        path: `/_api/gharial/${encodeURIComponent(this._name)}/edge`,
+        body: {
+          ...coerceEdgeDefinition(edgeDefinition),
+          options: { ...opts, satellites: satellites?.map(collectionToString) },
+        },
       },
       (res) => res.body.graph
     );
@@ -1630,7 +1670,8 @@ export class Graph {
    * ```
    */
   replaceEdgeDefinition(
-    edgeDefinition: EdgeDefinitionOptions
+    edgeDefinition: EdgeDefinitionOptions,
+    options?: ReplaceEdgeDefinitionOptions
   ): Promise<GraphInfo>;
   /**
    * Replaces an edge definition in this graph. The existing edge definition
@@ -1660,24 +1701,46 @@ export class Graph {
    */
   replaceEdgeDefinition(
     collection: string | ArangoCollection,
-    edgeDefinition: EdgeDefinitionOptions
+    edgeDefinition: EdgeDefinitionOptions,
+    options?: ReplaceEdgeDefinitionOptions
   ): Promise<GraphInfo>;
   replaceEdgeDefinition(
-    collection: string | ArangoCollection | EdgeDefinitionOptions,
-    edgeDefinition?: EdgeDefinitionOptions
+    collectionOrEdgeDefinitionOptions:
+      | string
+      | ArangoCollection
+      | EdgeDefinitionOptions,
+    edgeDefinitionOrOptions?:
+      | EdgeDefinitionOptions
+      | ReplaceEdgeDefinitionOptions,
+    options?: ReplaceEdgeDefinitionOptions
   ) {
-    if (!edgeDefinition) {
-      edgeDefinition = collection as EdgeDefinitionOptions;
+    let collection = collectionOrEdgeDefinitionOptions as
+      | string
+      | ArangoCollection;
+    let edgeDefinition = edgeDefinitionOrOptions as EdgeDefinitionOptions;
+    if (
+      edgeDefinitionOrOptions &&
+      !edgeDefinitionOrOptions.hasOwnProperty("collection")
+    ) {
+      options = edgeDefinitionOrOptions as ReplaceEdgeDefinitionOptions;
+      edgeDefinitionOrOptions = undefined;
+    }
+    if (!edgeDefinitionOrOptions) {
+      edgeDefinition =
+        collectionOrEdgeDefinitionOptions as EdgeDefinitionOptions;
       collection = edgeDefinition.collection;
     }
-    if (isArangoCollection(collection)) {
-      collection = collection.name;
-    }
+    const { satellites, ...opts } = options ?? {};
     return this._db.request(
       {
         method: "PUT",
-        path: `/_api/gharial/${this._name}/edge/${collection}`,
-        body: coerceEdgeDefinition(edgeDefinition),
+        path: `/_api/gharial/${encodeURIComponent(
+          this._name
+        )}/edge/${encodeURIComponent(collectionToString(collection))}`,
+        body: {
+          ...coerceEdgeDefinition(edgeDefinition),
+          options: { ...opts, satellites: satellites?.map(collectionToString) },
+        },
       },
       (res) => res.body.graph
     );
@@ -1709,13 +1772,12 @@ export class Graph {
     collection: string | ArangoCollection,
     dropCollection: boolean = false
   ): Promise<GraphInfo> {
-    if (isArangoCollection(collection)) {
-      collection = collection.name;
-    }
     return this._db.request(
       {
         method: "DELETE",
-        path: `/_api/gharial/${this._name}/edge/${collection}`,
+        path: `/_api/gharial/${encodeURIComponent(
+          this._name
+        )}/edge/${encodeURIComponent(collectionToString(collection))}`,
         qs: {
           dropCollection,
         },

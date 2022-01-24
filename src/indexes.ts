@@ -294,6 +294,35 @@ export type EnsureTtlIndexOptions = {
 };
 
 /**
+ * Options for creating a ZKD index.
+ */
+export type EnsureZkdIndexOptions = {
+  /**
+   * Type of this index.
+   */
+  type: "zkd";
+  /**
+   * An array containing attribute paths for the dimensions.
+   */
+  fields: string[];
+  /**
+   * Data type of the dimension attributes.
+   */
+  fieldValueTypes: "double";
+  /**
+   * A unique name for this index.
+   */
+  name?: string;
+  /**
+   * If set to `true`, the index will be created in the background to reduce
+   * the write-lock duration for the collection during index creation.
+   *
+   * Default: `false`
+   */
+  inBackground?: boolean;
+};
+
+/**
  * Shared attributes of all index types.
  */
 export type GenericIndex = {
@@ -382,6 +411,15 @@ export type TtlIndex = GenericIndex & {
 };
 
 /**
+ * An object representing a TTL index.
+ */
+export type ZkdIndex = GenericIndex & {
+  type: "zkd";
+  fields: string[];
+  fieldValueTypes: "double";
+};
+
+/**
  * An object representing an index.
  */
 export type Index =
@@ -391,7 +429,8 @@ export type Index =
   | PrimaryIndex
   | HashIndex
   | SkiplistIndex
-  | TtlIndex;
+  | TtlIndex
+  | ZkdIndex;
 
 export type ObjectWithId = {
   [key: string]: any;
@@ -425,12 +464,14 @@ export function _indexHandle(
     );
   }
   if (selector.includes("/")) {
-    if (!selector.startsWith(`${collectionName}/`)) {
+    const [head, ...tail] = selector.split("/");
+    const normalizedHead = head.normalize("NFC");
+    if (normalizedHead !== collectionName) {
       throw new Error(
         `Index ID "${selector}" does not match collection name "${collectionName}"`
       );
     }
-    return selector;
+    return [normalizedHead, ...tail].join("/");
   }
   return `${collectionName}/${selector}`;
 }

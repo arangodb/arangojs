@@ -59,7 +59,9 @@ export type AnalyzerInfo =
   | AqlAnalyzer
   | GeoJsonAnalyzer
   | GeoPointAnalyzer
-  | StopwordsAnalyzer;
+  | StopwordsAnalyzer
+  | SegmentationAnalyzer
+  | CollationAnalyzer;
 
 /**
  * Analyzer type and type-specific properties for an Identity Analyzer.
@@ -426,6 +428,64 @@ export type StopwordsAnalyzer = {
 };
 
 /**
+ * Properties of a Segmentation Analyzer.
+ */
+export type SegmentationAnalyzerProperties = {
+  /**
+   * Which tokens should be returned.
+   *
+   * Default: `"alpha"`
+   */
+  break?: "all" | "alpha" | "graphic";
+  /**
+   * What case all returned tokens should be converted to if applicable.
+   *
+   * Default: `"none"`
+   */
+  case?: "lower" | "upper" | "none";
+};
+
+/**
+ * Analyzer type and type-specific properties for a Segmentation Analyzer
+ */
+export type SegmentationAnalyzer = {
+  /**
+   * Type of the Analyzer.
+   */
+  type: "segmentation";
+  /**
+   * Additional properties for the Analyzer.
+   */
+  properties: SegmentationAnalyzerProperties;
+};
+
+/**
+ * Properties of a Collation Analyzer.
+ */
+export type CollationAnalyzerProperties = {
+  /**
+   * Text locale.
+   *
+   * Format: `language[_COUNTRY][.encoding][@variant]`
+   */
+  locale: string;
+};
+
+/**
+ * Analyzer type and type-specific properties for a Collation Analyzer
+ */
+export type CollationAnalyzer = {
+  /**
+   * Type of the Analyzer.
+   */
+  type: "collation";
+  /**
+   * Additional properties for the Analyzer.
+   */
+  properties: CollationAnalyzerProperties;
+};
+
+/**
  * Represents an Analyzer in a {@link Database}.
  */
 export class Analyzer {
@@ -438,7 +498,7 @@ export class Analyzer {
    */
   constructor(db: Database, name: string) {
     this._db = db;
-    this._name = name;
+    this._name = name.normalize("NFC");
   }
 
   /**
@@ -495,7 +555,7 @@ export class Analyzer {
    */
   get(): Promise<ArangoResponseMetadata & AnalyzerDescription> {
     return this._db.request(
-      { path: `/_api/analyzer/${this.name}` },
+      { path: `/_api/analyzer/${encodeURIComponent(this._name)}` },
       (res) => res.body
     );
   }
@@ -520,7 +580,7 @@ export class Analyzer {
       {
         method: "POST",
         path: "/_api/analyzer",
-        body: { name: this.name, ...options },
+        body: { name: this._name, ...options },
       },
       (res) => res.body
     );
@@ -546,7 +606,7 @@ export class Analyzer {
     return this._db.request(
       {
         method: "DELETE",
-        path: `/_api/analyzer/${this.name}`,
+        path: `/_api/analyzer/${encodeURIComponent(this._name)}`,
         qs: { force },
       },
       (res) => res.body

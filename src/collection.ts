@@ -33,6 +33,7 @@ import {
   EnsurePersistentIndexOptions,
   EnsureSkiplistIndexOptions,
   EnsureTtlIndexOptions,
+  EnsureZkdIndexOptions,
   FulltextIndex,
   GeoIndex,
   HashIndex,
@@ -41,6 +42,7 @@ import {
   PersistentIndex,
   SkiplistIndex,
   TtlIndex,
+  ZkdIndex,
   _indexHandle,
 } from "./indexes";
 import { Blob } from "./lib/blob";
@@ -68,7 +70,7 @@ export function collectionToString(
 ): string {
   if (isArangoCollection(collection)) {
     return String(collection.name);
-  } else return String(collection);
+  } else return String(collection).normalize("NFC");
 }
 
 /**
@@ -893,7 +895,8 @@ export type SimpleQueryRemoveByExampleOptions = {
  * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
  * replaced with AQL queries.
  */
-export type SimpleQueryReplaceByExampleOptions = SimpleQueryRemoveByExampleOptions;
+export type SimpleQueryReplaceByExampleOptions =
+  SimpleQueryRemoveByExampleOptions;
 
 /**
  * Options for removing documents by keys.
@@ -1191,22 +1194,21 @@ export type SimpleQueryUpdateByExampleResult = {
  * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
  * replaced with AQL queries.
  */
-export type SimpleQueryRemoveByKeysResult<
-  T extends Record<string, any> = any
-> = {
-  /**
-   * Number of documents removed.
-   */
-  removed: number;
-  /**
-   * Number of documents not removed.
-   */
-  ignored: number;
-  /**
-   * Documents that have been removed.
-   */
-  old?: DocumentMetadata[] | Document<T>[];
-};
+export type SimpleQueryRemoveByKeysResult<T extends Record<string, any> = any> =
+  {
+    /**
+     * Number of documents removed.
+     */
+    removed: number;
+    /**
+     * Number of documents not removed.
+     */
+    ignored: number;
+    /**
+     * Documents that have been removed.
+     */
+    old?: DocumentMetadata[] | Document<T>[];
+  };
 
 // Collections
 
@@ -2501,6 +2503,27 @@ export interface DocumentCollection<T extends Record<string, any> = any>
     details: EnsureTtlIndexOptions
   ): Promise<ArangoResponseMetadata & TtlIndex & { isNewlyCreated: boolean }>;
   /**
+   * Creates a multi-dimensional index on the collection if it does not already exist.
+   *
+   * @param details - Options for creating the multi-dimensional index.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collection = db.collection("some-points");
+   * // Create a multi-dimensional index for the attributes x, y and z
+   * await collection.ensureIndex({
+   *   type: "zkd",
+   *   fields: ["x", "y", "z"],
+   *   fieldValueTypes: "double"
+   * });
+   * ```
+   * ```
+   */
+  ensureIndex(
+    details: EnsureZkdIndexOptions
+  ): Promise<ArangoResponseMetadata & ZkdIndex & { isNewlyCreated: boolean }>;
+  /**
    * Creates a fulltext index on the collection if it does not already exist.
    *
    * @param details - Options for creating the fulltext index.
@@ -3321,7 +3344,8 @@ export interface EdgeCollection<T extends Record<string, any> = any>
  * @hidden
  */
 export class Collection<T extends Record<string, any> = any>
-  implements EdgeCollection<T>, DocumentCollection<T> {
+  implements EdgeCollection<T>, DocumentCollection<T>
+{
   //#region attributes
   protected _name: string;
   protected _db: Database;
@@ -3332,14 +3356,17 @@ export class Collection<T extends Record<string, any> = any>
    * @hidden
    */
   constructor(db: Database, name: string) {
-    this._name = name;
+    this._name = name.normalize("NFC");
     this._db = db;
   }
 
   //#region internals
   protected _get<T extends Record<string, any>>(path: string, qs?: any) {
     return this._db.request(
-      { path: `/_api/collection/${this._name}/${path}`, qs },
+      {
+        path: `/_api/collection/${encodeURIComponent(this._name)}/${path}`,
+        qs,
+      },
       (res) => res.body as ArangoResponseMetadata & T
     );
   }
@@ -3348,7 +3375,7 @@ export class Collection<T extends Record<string, any> = any>
     return this._db.request(
       {
         method: "PUT",
-        path: `/_api/collection/${this._name}/${path}`,
+        path: `/_api/collection/${encodeURIComponent(this._name)}/${path}`,
         body,
       },
       (res) => res.body as ArangoResponseMetadata & T
@@ -3367,7 +3394,7 @@ export class Collection<T extends Record<string, any> = any>
 
   get() {
     return this._db.request(
-      { path: `/_api/collection/${this._name}` },
+      { path: `/_api/collection/${encodeURIComponent(this._name)}` },
       (res) => res.body
     );
   }
@@ -3408,7 +3435,7 @@ export class Collection<T extends Record<string, any> = any>
         qs,
         body: {
           ...opts,
-          name: this.name,
+          name: this._name,
         },
       },
       (res) => res.body
@@ -3435,9 +3462,7 @@ export class Collection<T extends Record<string, any> = any>
     return body.result;
   }
 
-  figures(
-    details = false
-  ): Promise<
+  figures(details = false): Promise<
     CollectionMetadata &
       CollectionProperties & {
         count: number;
@@ -3445,7 +3470,7 @@ export class Collection<T extends Record<string, any> = any>
       } & ArangoResponseMetadata
   > {
     return this._db.request({
-      path: `/_api/collection/${this._name}/figures`,
+      path: `/_api/collection/${encodeURIComponent(this._name)}/figures`,
       qs: { details },
     });
   }
@@ -3480,7 +3505,7 @@ export class Collection<T extends Record<string, any> = any>
 
   async rename(newName: string) {
     const result = await this._db.renameCollection(this._name, newName);
-    this._name = newName;
+    this._name = newName.normalize("NFC");
     return result;
   }
 
@@ -3497,7 +3522,7 @@ export class Collection<T extends Record<string, any> = any>
     return this._db.request(
       {
         method: "DELETE",
-        path: `/_api/collection/${this._name}`,
+        path: `/_api/collection/${encodeURIComponent(this._name)}`,
         qs: options,
       },
       (res) => res.body
@@ -3510,7 +3535,9 @@ export class Collection<T extends Record<string, any> = any>
     return this._db.request(
       {
         method: "PUT",
-        path: `/_api/collection/${this.name}/responsibleShard`,
+        path: `/_api/collection/${encodeURIComponent(
+          this._name
+        )}/responsibleShard`,
         body: document,
       },
       (res) => res.body.shardId
@@ -3526,7 +3553,9 @@ export class Collection<T extends Record<string, any> = any>
       return await this._db.request(
         {
           method: "HEAD",
-          path: `/_api/document/${_documentHandle(selector, this._name)}`,
+          path: `/_api/document/${encodeURI(
+            _documentHandle(selector, this._name)
+          )}`,
         },
         () => true
       );
@@ -3546,7 +3575,7 @@ export class Collection<T extends Record<string, any> = any>
     return this._db.request(
       {
         method: "PUT",
-        path: `/_api/document/${this._name}`,
+        path: `/_api/document/${encodeURIComponent(this._name)}`,
         qs: { onlyget: true },
         allowDirtyRead,
         body: selectors,
@@ -3565,7 +3594,9 @@ export class Collection<T extends Record<string, any> = any>
     const { allowDirtyRead = undefined, graceful = false } = options;
     const result = this._db.request(
       {
-        path: `/_api/document/${_documentHandle(selector, this._name)}`,
+        path: `/_api/document/${encodeURI(
+          _documentHandle(selector, this._name)
+        )}`,
         allowDirtyRead,
       },
       (res) => res.body
@@ -3585,7 +3616,7 @@ export class Collection<T extends Record<string, any> = any>
     return this._db.request(
       {
         method: "POST",
-        path: `/_api/document/${this._name}`,
+        path: `/_api/document/${encodeURIComponent(this._name)}`,
         body: data,
         qs: options,
       },
@@ -3597,7 +3628,7 @@ export class Collection<T extends Record<string, any> = any>
     return this._db.request(
       {
         method: "POST",
-        path: `/_api/document/${this._name}`,
+        path: `/_api/document/${encodeURIComponent(this._name)}`,
         body: data,
         qs: options,
       },
@@ -3613,7 +3644,9 @@ export class Collection<T extends Record<string, any> = any>
     return this._db.request(
       {
         method: "PUT",
-        path: `/_api/document/${_documentHandle(selector, this._name)}`,
+        path: `/_api/document/${encodeURI(
+          _documentHandle(selector, this._name)
+        )}`,
         body: newData,
         qs: options,
       },
@@ -3628,7 +3661,7 @@ export class Collection<T extends Record<string, any> = any>
     return this._db.request(
       {
         method: "PUT",
-        path: `/_api/document/${this._name}`,
+        path: `/_api/document/${encodeURIComponent(this._name)}`,
         body: newData,
         qs: options,
       },
@@ -3644,7 +3677,9 @@ export class Collection<T extends Record<string, any> = any>
     return this._db.request(
       {
         method: "PATCH",
-        path: `/_api/document/${_documentHandle(selector, this._name)}`,
+        path: `/_api/document/${encodeURI(
+          _documentHandle(selector, this._name)
+        )}`,
         body: newData,
         qs: options,
       },
@@ -3661,7 +3696,7 @@ export class Collection<T extends Record<string, any> = any>
     return this._db.request(
       {
         method: "PATCH",
-        path: `/_api/document/${this._name}`,
+        path: `/_api/document/${encodeURIComponent(this._name)}`,
         body: newData,
         qs: options,
       },
@@ -3673,7 +3708,9 @@ export class Collection<T extends Record<string, any> = any>
     return this._db.request(
       {
         method: "DELETE",
-        path: `/_api/document/${_documentHandle(selector, this._name)}`,
+        path: `/_api/document/${encodeURI(
+          _documentHandle(selector, this._name)
+        )}`,
         qs: options,
       },
       (res) => (options && options.silent ? undefined : res.body)
@@ -3684,7 +3721,7 @@ export class Collection<T extends Record<string, any> = any>
     return this._db.request(
       {
         method: "DELETE",
-        path: `/_api/document/${this._name}`,
+        path: `/_api/document/${encodeURIComponent(this._name)}`,
         body: selectors.map((selector) =>
           _documentHandle(selector, this._name)
         ),
@@ -3723,7 +3760,7 @@ export class Collection<T extends Record<string, any> = any>
   protected _edges(selector: DocumentSelector, direction?: "in" | "out") {
     return this._db.request(
       {
-        path: `/_api/edges/${this._name}`,
+        path: `/_api/edges/${encodeURIComponent(this._name)}`,
         qs: {
           direction,
           vertex: _documentHandle(selector, this._name, false),
@@ -3934,7 +3971,9 @@ export class Collection<T extends Record<string, any> = any>
 
   index(selector: IndexSelector) {
     return this._db.request(
-      { path: `/_api/index/${_indexHandle(selector, this._name)}` },
+      {
+        path: `/_api/index/${encodeURI(_indexHandle(selector, this._name))}`,
+      },
       (res) => res.body
     );
   }
@@ -3947,6 +3986,7 @@ export class Collection<T extends Record<string, any> = any>
       | EnsureGeoIndexOptions
       | EnsureFulltextIndexOptions
       | EnsureTtlIndexOptions
+      | EnsureZkdIndexOptions
   ) {
     return this._db.request(
       {
@@ -3963,7 +4003,7 @@ export class Collection<T extends Record<string, any> = any>
     return this._db.request(
       {
         method: "DELETE",
-        path: `/_api/index/${_indexHandle(selector, this._name)}`,
+        path: `/_api/index/${encodeURI(_indexHandle(selector, this._name))}`,
       },
       (res) => res.body
     );

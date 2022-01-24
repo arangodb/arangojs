@@ -344,7 +344,7 @@ export class View<
    */
   constructor(db: Database, name: string) {
     this._db = db;
-    this._name = name;
+    this._name = name.normalize("NFC");
   }
 
   /**
@@ -376,7 +376,7 @@ export class View<
    */
   get(): Promise<ViewDescription & ArangoResponseMetadata> {
     return this._db.request(
-      { path: `/_api/view/${this.name}` },
+      { path: `/_api/view/${encodeURIComponent(this._name)}` },
       (res) => res.body
     );
   }
@@ -427,7 +427,7 @@ export class View<
         body: {
           type: ViewType.ARANGOSEARCH_VIEW,
           ...(options || {}),
-          name: this.name,
+          name: this._name,
         },
       },
       (res) => res.body
@@ -460,7 +460,7 @@ export class View<
     newName: string
   ): Promise<ViewDescription & ArangoResponseMetadata> {
     const result = this._db.renameView(this._name, newName);
-    this._name = newName;
+    this._name = newName.normalize("NFC");
     return result;
   }
 
@@ -477,7 +477,7 @@ export class View<
    */
   properties(): Promise<ViewDescription & Properties & ArangoResponseMetadata> {
     return this._db.request(
-      { path: `/_api/view/${this.name}/properties` },
+      { path: `/_api/view/${encodeURIComponent(this._name)}/properties` },
       (res) => res.body
     );
   }
@@ -503,7 +503,7 @@ export class View<
     return this._db.request(
       {
         method: "PATCH",
-        path: `/_api/view/${this.name}/properties`,
+        path: `/_api/view/${encodeURIComponent(this._name)}/properties`,
         body: properties || {},
       },
       (res) => res.body
@@ -531,7 +531,7 @@ export class View<
     return this._db.request(
       {
         method: "PUT",
-        path: `/_api/view/${this.name}/properties`,
+        path: `/_api/view/${encodeURIComponent(this._name)}/properties`,
         body: properties || {},
       },
       (res) => res.body
@@ -554,7 +554,7 @@ export class View<
     return this._db.request(
       {
         method: "DELETE",
-        path: `/_api/view/${this.name}`,
+        path: `/_api/view/${encodeURIComponent(this._name)}`,
       },
       (res) => res.body.result
     );
