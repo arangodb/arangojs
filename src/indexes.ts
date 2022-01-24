@@ -21,6 +21,9 @@
  *
  * When using the RocksDB storage engine, this index type behaves identically
  * to {@link EnsurePersistentIndexOptions}.
+ *
+ * @deprecated Hash indexes have been deprecated in ArangoDB 3.9 and should be
+ * replaced with persistent indexes.
  */
 export type EnsureHashIndexOptions = {
   /**
@@ -76,6 +79,9 @@ export type EnsureHashIndexOptions = {
  *
  * When using the RocksDB storage engine, this index type behaves identically
  * to {@link EnsurePersistentIndexOptions}.
+ *
+ * @deprecated Skiplist indexes have been deprecated in ArangoDB 3.9 and should
+ * be replaced with persistent indexes.
  */
 export type EnsureSkiplistIndexOptions = {
   /**

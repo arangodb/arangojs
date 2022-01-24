@@ -2442,6 +2442,9 @@ export interface DocumentCollection<T extends Record<string, any> = any>
    *   unique: true
    * });
    * ```
+   *
+   * @deprecated Hash indexes have been deprecated in ArangoDB 3.9 and should
+   * be replaced with persistent indexes.
    */
   ensureIndex(
     details: EnsureHashIndexOptions
@@ -2464,6 +2467,9 @@ export interface DocumentCollection<T extends Record<string, any> = any>
    *   fields: ["email"]
    * });
    * ```
+   *
+   * @deprecated Skiplist indexes have been deprecated in ArangoDB 3.9 and
+   * should be replaced with persistent indexes.
    */
   ensureIndex(
     details: EnsureSkiplistIndexOptions

@@ -4,6 +4,7 @@ import { Database } from "../database";
 import { config } from "./_config";
 
 const itPre34 = config.arangoVersion! < 30400 ? it : it.skip;
+const itPre39 = config.arangoVersion! < 30900 ? it : it.skip;
 const it34 = config.arangoVersion! >= 30400 ? it : it.skip;
 
 describe("Managing indexes", function () {
@@ -31,7 +32,7 @@ describe("Managing indexes", function () {
     }
   });
   describe("collection.ensureIndex#hash", () => {
-    it("should create a hash index", async () => {
+    itPre39("should create a hash index", async () => {
       const info = await collection.ensureIndex({
         type: "hash",
         fields: ["value"],
@@ -44,7 +45,7 @@ describe("Managing indexes", function () {
     });
   });
   describe("collection.ensureIndex#skiplist", () => {
-    it("should create a skiplist index", async () => {
+    itPre39("should create a skiplist index", async () => {
       const info = await collection.ensureIndex({
         type: "skiplist",
         fields: ["value"],
@@ -131,7 +132,7 @@ describe("Managing indexes", function () {
   describe("collection.index", () => {
     it("should return information about a index", async () => {
       const info = await collection.ensureIndex({
-        type: "hash",
+        type: "persistent",
         fields: ["test"],
       });
       const index = await collection.index(info.id);
@@ -142,7 +143,7 @@ describe("Managing indexes", function () {
   describe("collection.indexes", () => {
     it("should return a list of indexes", async () => {
       const index = await collection.ensureIndex({
-        type: "hash",
+        type: "persistent",
         fields: ["test"],
       });
       const indexes = await collection.indexes();
@@ -154,7 +155,7 @@ describe("Managing indexes", function () {
   describe("collection.dropIndex", () => {
     it("should drop existing index", async () => {
       const info = await collection.ensureIndex({
-        type: "hash",
+        type: "persistent",
         fields: ["test"],
       });
       const index = await collection.dropIndex(info.id);
