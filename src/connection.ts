@@ -553,6 +553,9 @@ export class Connection {
     this._useFailOver = this._loadBalancingStrategy !== "ROUND_ROBIN";
     this._precaptureStackTraces = Boolean(config.precaptureStackTraces);
     this._responseQueueTimeSamples = config.responseQueueTimeSamples ?? 10;
+    if (this._responseQueueTimeSamples < 0) {
+      this._responseQueueTimeSamples = Infinity;
+    }
     if (config.maxRetries === false) {
       this._shouldRetry = false;
       this._maxRetries = 0;
@@ -592,12 +595,14 @@ export class Connection {
   get queueTime() {
     return {
       getLatest: () => this._queueTimes.last?.value[1],
-      getValues: () => new Map(this._queueTimes.values()),
-      getAvg: () =>
-        this._queueTimes.reduce(
-          (acc, [_, value]) => acc + value / this._queueTimes.length,
-          0
-        ),
+      getValues: () => Array.from(this._queueTimes.values()),
+      getAvg: () => {
+        let avg = 0;
+        for (const [, [, value]] of this._queueTimes) {
+          avg += value / this._queueTimes.length;
+        }
+        return avg;
+      },
     };
   }
 
@@ -691,7 +696,13 @@ export class Connection {
   }
 
   setResponseQueueTimeSamples(responseQueueTimeSamples: number) {
+    if (responseQueueTimeSamples < 0) {
+      responseQueueTimeSamples = Infinity;
+    }
     this._responseQueueTimeSamples = responseQueueTimeSamples;
+    while (this._responseQueueTimeSamples < this._queueTimes.length) {
+      this._queueTimes.shift();
+    }
   }
 
   /**

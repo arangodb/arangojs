@@ -1412,10 +1412,11 @@ export type QueueTimeMetrics = {
    */
   getLatest: () => number | undefined;
   /**
-   * Returns a map of the most recently received queue times in seconds by
-   * timestamp of the response being processed in milliseconds.
+   * Returns a list of the most recently received queue time values as tuples
+   * of the timestamp of the response being processed in milliseconds and the
+   * queue time in seconds.
    */
-  getValues: () => Map<number, number>;
+  getValues: () => [number, number][];
   /**
    * Returns the average queue time of the most recently received responses
    * in seconds.
