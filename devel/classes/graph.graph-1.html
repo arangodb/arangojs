@@ -167,7 +167,7 @@
 					<a name="addedgedefinition" class="tsd-anchor"></a>
 					<h3>add<wbr>Edge<wbr>Definition</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">add<wbr>Edge<wbr>Definition<span class="tsd-signature-symbol">(</span>edgeDefinition<span class="tsd-signature-symbol">: </span><a href="../modules/graph.html#edgedefinitionoptions" class="tsd-signature-type" data-tsd-kind="Type alias">EdgeDefinitionOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/graph.html#graphinfo" class="tsd-signature-type" data-tsd-kind="Type alias">GraphInfo</a><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">add<wbr>Edge<wbr>Definition<span class="tsd-signature-symbol">(</span>edgeDefinition<span class="tsd-signature-symbol">: </span><a href="../modules/graph.html#edgedefinitionoptions" class="tsd-signature-type" data-tsd-kind="Type alias">EdgeDefinitionOptions</a>, options<span class="tsd-signature-symbol">?: </span><a href="../modules/graph.html#addedgedefinitionoptions" class="tsd-signature-type" data-tsd-kind="Type alias">AddEdgeDefinitionOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/graph.html#graphinfo" class="tsd-signature-type" data-tsd-kind="Type alias">GraphInfo</a><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -199,6 +199,9 @@
 										<p>Definition of a relation in this graph.</p>
 									</div>
 								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> options: <a href="../modules/graph.html#addedgedefinitionoptions" class="tsd-signature-type" data-tsd-kind="Type alias">AddEdgeDefinitionOptions</a></h5>
+								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/graph.html#graphinfo" class="tsd-signature-type" data-tsd-kind="Type alias">GraphInfo</a><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
@@ -208,7 +211,7 @@
 					<a name="addvertexcollection" class="tsd-anchor"></a>
 					<h3>add<wbr>Vertex<wbr>Collection</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">add<wbr>Vertex<wbr>Collection<span class="tsd-signature-symbol">(</span>collection<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="../interfaces/collection.arangocollection.html" class="tsd-signature-type" data-tsd-kind="Interface">ArangoCollection</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/graph.html#graphinfo" class="tsd-signature-type" data-tsd-kind="Type alias">GraphInfo</a><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">add<wbr>Vertex<wbr>Collection<span class="tsd-signature-symbol">(</span>collection<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="../interfaces/collection.arangocollection.html" class="tsd-signature-type" data-tsd-kind="Interface">ArangoCollection</a>, options<span class="tsd-signature-symbol">?: </span><a href="../modules/graph.html#addvertexcollectionoptions" class="tsd-signature-type" data-tsd-kind="Type alias">AddVertexCollectionOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/graph.html#graphinfo" class="tsd-signature-type" data-tsd-kind="Type alias">GraphInfo</a><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -238,6 +241,9 @@
 									<div class="tsd-comment tsd-typography">
 										<p>Collection to add to the graph.</p>
 									</div>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> options: <a href="../modules/graph.html#addvertexcollectionoptions" class="tsd-signature-type" data-tsd-kind="Type alias">AddVertexCollectionOptions</a></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/graph.html#graphinfo" class="tsd-signature-type" data-tsd-kind="Type alias">GraphInfo</a><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -663,8 +669,8 @@
 					<a name="replaceedgedefinition" class="tsd-anchor"></a>
 					<h3>replace<wbr>Edge<wbr>Definition</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">replace<wbr>Edge<wbr>Definition<span class="tsd-signature-symbol">(</span>edgeDefinition<span class="tsd-signature-symbol">: </span><a href="../modules/graph.html#edgedefinitionoptions" class="tsd-signature-type" data-tsd-kind="Type alias">EdgeDefinitionOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/graph.html#graphinfo" class="tsd-signature-type" data-tsd-kind="Type alias">GraphInfo</a><span class="tsd-signature-symbol">&gt;</span></li>
-						<li class="tsd-signature tsd-kind-icon">replace<wbr>Edge<wbr>Definition<span class="tsd-signature-symbol">(</span>collection<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="../interfaces/collection.arangocollection.html" class="tsd-signature-type" data-tsd-kind="Interface">ArangoCollection</a>, edgeDefinition<span class="tsd-signature-symbol">: </span><a href="../modules/graph.html#edgedefinitionoptions" class="tsd-signature-type" data-tsd-kind="Type alias">EdgeDefinitionOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/graph.html#graphinfo" class="tsd-signature-type" data-tsd-kind="Type alias">GraphInfo</a><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">replace<wbr>Edge<wbr>Definition<span class="tsd-signature-symbol">(</span>edgeDefinition<span class="tsd-signature-symbol">: </span><a href="../modules/graph.html#edgedefinitionoptions" class="tsd-signature-type" data-tsd-kind="Type alias">EdgeDefinitionOptions</a>, options<span class="tsd-signature-symbol">?: </span><a href="../modules/graph.html#replaceedgedefinitionoptions" class="tsd-signature-type" data-tsd-kind="Type alias">ReplaceEdgeDefinitionOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/graph.html#graphinfo" class="tsd-signature-type" data-tsd-kind="Type alias">GraphInfo</a><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">replace<wbr>Edge<wbr>Definition<span class="tsd-signature-symbol">(</span>collection<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><a href="../interfaces/collection.arangocollection.html" class="tsd-signature-type" data-tsd-kind="Interface">ArangoCollection</a>, edgeDefinition<span class="tsd-signature-symbol">: </span><a href="../modules/graph.html#edgedefinitionoptions" class="tsd-signature-type" data-tsd-kind="Type alias">EdgeDefinitionOptions</a>, options<span class="tsd-signature-symbol">?: </span><a href="../modules/graph.html#replaceedgedefinitionoptions" class="tsd-signature-type" data-tsd-kind="Type alias">ReplaceEdgeDefinitionOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/graph.html#graphinfo" class="tsd-signature-type" data-tsd-kind="Type alias">GraphInfo</a><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -703,6 +709,9 @@
 									<div class="tsd-comment tsd-typography">
 										<p>Definition of a relation in this graph.</p>
 									</div>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> options: <a href="../modules/graph.html#replaceedgedefinitionoptions" class="tsd-signature-type" data-tsd-kind="Type alias">ReplaceEdgeDefinitionOptions</a></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/graph.html#graphinfo" class="tsd-signature-type" data-tsd-kind="Type alias">GraphInfo</a><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -749,6 +758,9 @@
 									<div class="tsd-comment tsd-typography">
 										<p>Definition of a relation in this graph.</p>
 									</div>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> options: <a href="../modules/graph.html#replaceedgedefinitionoptions" class="tsd-signature-type" data-tsd-kind="Type alias">ReplaceEdgeDefinitionOptions</a></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/graph.html#graphinfo" class="tsd-signature-type" data-tsd-kind="Type alias">GraphInfo</a><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -1021,6 +1033,12 @@
 						<a href="graph.graphvertexcollection.html" class="tsd-kind-icon">Graph<wbr>Vertex<wbr>Collection</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
+						<a href="../modules/graph.html#addedgedefinitionoptions" class="tsd-kind-icon">Add<wbr>Edge<wbr>Definition<wbr>Options</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
+						<a href="../modules/graph.html#addvertexcollectionoptions" class="tsd-kind-icon">Add<wbr>Vertex<wbr>Collection<wbr>Options</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
 						<a href="../modules/graph.html#edgedefinition" class="tsd-kind-icon">Edge<wbr>Definition</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
@@ -1043,6 +1061,9 @@
 					</li>
 					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
 						<a href="../modules/graph.html#graphinfo" class="tsd-kind-icon">Graph<wbr>Info</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
+						<a href="../modules/graph.html#replaceedgedefinitionoptions" class="tsd-kind-icon">Replace<wbr>Edge<wbr>Definition<wbr>Options</a>
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-module">
 						<a href="../modules/graph.html#isarangograph" class="tsd-kind-icon">is<wbr>Arango<wbr>Graph</a>

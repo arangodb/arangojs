@@ -99,6 +99,7 @@
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="database.database-1.html#isarangodatabase" class="tsd-kind-icon">is<wbr>Arango<wbr>Database</a></li>
 								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="database.database-1.html#name" class="tsd-kind-icon">name</a></li>
+								<li class="tsd-kind-get-signature tsd-parent-kind-class"><a href="database.database-1.html#queuetime" class="tsd-kind-icon">queue<wbr>Time</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
@@ -171,6 +172,7 @@
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="database.database-1.html#route" class="tsd-kind-icon">route</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="database.database-1.html#runservicescript" class="tsd-kind-icon">run<wbr>Service<wbr>Script</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="database.database-1.html#runservicetests" class="tsd-kind-icon">run<wbr>Service<wbr>Tests</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="database.database-1.html#setresponsequeuetimesamples" class="tsd-kind-icon">set<wbr>Response<wbr>Queue<wbr>Time<wbr>Samples</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="database.database-1.html#setservicedevelopmentmode" class="tsd-kind-icon">set<wbr>Service<wbr>Development<wbr>Mode</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="database.database-1.html#setuseraccesslevel" class="tsd-kind-icon">set<wbr>User<wbr>Access<wbr>Level</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="database.database-1.html#transaction" class="tsd-kind-icon">transaction</a></li>
@@ -306,6 +308,26 @@
 								</div>
 							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-get-signature tsd-parent-kind-class">
+					<a name="queuetime" class="tsd-anchor"></a>
+					<h3>queue<wbr>Time</h3>
+					<ul class="tsd-signatures tsd-kind-get-signature tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> queueTime<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../modules/database.html#queuetimemetrics" class="tsd-signature-type" data-tsd-kind="Type alias">QueueTimeMetrics</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Methods for accessing the server-reported queue times of the mostly
+									recently received responses.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="../modules/database.html#queuetimemetrics" class="tsd-signature-type" data-tsd-kind="Type alias">QueueTimeMetrics</a></h4>
 						</li>
 					</ul>
 				</section>
@@ -4532,6 +4554,36 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="setresponsequeuetimesamples" class="tsd-anchor"></a>
+					<h3>set<wbr>Response<wbr>Queue<wbr>Time<wbr>Samples</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">set<wbr>Response<wbr>Queue<wbr>Time<wbr>Samples<span class="tsd-signature-symbol">(</span>responseQueueTimeSamples<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Sets the limit for the number of values of the most recently received
+										server-reported queue times that can be accessed using
+									<a href="database.database-1.html#queuetime">Database.queueTime</a>.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>responseQueueTimeSamples: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Number of values to maintain.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 					<a name="setservicedevelopmentmode" class="tsd-anchor"></a>
 					<h3>set<wbr>Service<wbr>Development<wbr>Mode</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -5422,7 +5474,7 @@
 <span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">analyzer</span><span style="color: #000000"> = </span><span style="color: #001080">db</span><span style="color: #000000">.</span><span style="color: #795E26">analyzer</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;my-analyzer&quot;</span><span style="color: #000000">);</span>
 <span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">analyzer</span><span style="color: #000000">.</span><span style="color: #795E26">create</span><span style="color: #000000">();</span>
 <span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">db</span><span style="color: #000000">.</span><span style="color: #795E26">waitForPropagation</span><span style="color: #000000">(</span>
-<span style="color: #000000">  { </span><span style="color: #001080">path:</span><span style="color: #000000"> </span><span style="color: #A31515">`/_api/analyzer/</span><span style="color: #0000FF">${</span><span style="color: #001080">analyzer</span><span style="color: #000000FF">.</span><span style="color: #001080">name</span><span style="color: #0000FF">}</span><span style="color: #A31515">`</span><span style="color: #000000"> },</span>
+<span style="color: #000000">  { </span><span style="color: #001080">path:</span><span style="color: #000000"> </span><span style="color: #A31515">`/_api/analyzer/</span><span style="color: #0000FF">${</span><span style="color: #795E26">encodeURIComponent</span><span style="color: #000000FF">(</span><span style="color: #001080">analyzer</span><span style="color: #000000FF">.</span><span style="color: #001080">name</span><span style="color: #000000FF">)</span><span style="color: #0000FF">}</span><span style="color: #A31515">`</span><span style="color: #000000"> },</span>
 <span style="color: #000000">  </span><span style="color: #098658">30000</span>
 <span style="color: #000000">);</span>
 <span style="color: #008000">// Analyzer has been propagated to all coordinators and can safely be used</span>
@@ -5519,6 +5571,9 @@
 							</li>
 							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
 								<a href="database.database-1.html#name" class="tsd-kind-icon">name</a>
+							</li>
+							<li class=" tsd-kind-get-signature tsd-parent-kind-class">
+								<a href="database.database-1.html#queuetime" class="tsd-kind-icon">queue<wbr>Time</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="database.database-1.html#acquirehostlist" class="tsd-kind-icon">acquire<wbr>Host<wbr>List</a>
@@ -5720,6 +5775,9 @@
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="database.database-1.html#runservicetests" class="tsd-kind-icon">run<wbr>Service<wbr>Tests</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-class">
+								<a href="database.database-1.html#setresponsequeuetimesamples" class="tsd-kind-icon">set<wbr>Response<wbr>Queue<wbr>Time<wbr>Samples</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
 								<a href="database.database-1.html#setservicedevelopmentmode" class="tsd-kind-icon">set<wbr>Service<wbr>Development<wbr>Mode</a>
