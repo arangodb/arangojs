@@ -38,6 +38,13 @@ This driver uses semantic versioning:
   part of values returned by `collection.documentId` will automatically be NFC
   normalized.
 
+### Deprecated
+
+- Deprecated `EnsureHashIndexOptions` and `EnsureSkiplistIndexOptions` types
+
+  The hash and skiplist index types have been deprecated in ArangoDB 3.9 and
+  should be replaced with persistent indexes which behave identically.
+
 ### Added
 
 - Added support for new ArangoDB 3.9 `CollationAnalyzer` and
