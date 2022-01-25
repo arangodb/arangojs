@@ -30,6 +30,7 @@ jobs:
       - run: npm install
       - run: npm test
         env:
+          ARANGO_RELEASE: ${{ matrix.arangodb-version }}
           TEST_ARANGODB_URL: http://arangodb:8529
           CI: true
 
@@ -38,7 +39,7 @@ jobs:
 
     strategy:
       matrix:
-        arangodb-version: [3.5, 3.6, 3.7]
+        arangodb-version: [3.6, 3.7, 3.8]
 
     container:
       image: buildkite/puppeteer:latest
