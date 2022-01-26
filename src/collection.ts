@@ -2593,6 +2593,18 @@ export interface DocumentCollection<T extends Record<string, any> = any>
   dropIndex(
     selector: IndexSelector
   ): Promise<ArangoResponseMetadata & { id: string }>;
+  /**
+   * Triggers compaction for a collection.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
+   * await collection.compact();
+   * // Background compaction is triggered on the collection
+   * ```
+   */
+  compact(): Promise<ArangoResponseMetadata>;
   //#endregion
 }
 
@@ -4040,6 +4052,16 @@ export class Collection<T extends Record<string, any> = any>
       },
       (res) =>
         new BatchedArrayCursor(this._db, res.body, res.arangojsHostId).items
+    );
+  }
+
+  compact() {
+    return this._db.request(
+      {
+        method: "PUT",
+        path: `/_api/collection/${this._name}/compact`
+      },
+      (res) => res.body
     );
   }
   //#endregion
