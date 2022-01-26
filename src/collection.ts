@@ -274,20 +274,28 @@ export type CollectionProperties = {
   shardingStrategy?: ShardingStrategy;
   /**
    * (MMFiles only.) Whether the collection will be compacted.
+   *
+   * @deprecated The MMFiles storage engine was removed in ArangoDB 3.7.
    */
   doCompact?: boolean;
   /**
    * (MMFiles only.) Maximum size for each journal or datafile in bytes.
+   *
+   * @deprecated The MMFiles storage engine was removed in ArangoDB 3.7.
    */
   journalSize?: number;
   /**
    * (MMFiles only.) Number of buckets into which indexes using hash tables are
    * split.
+   *
+   * @deprecated The MMFiles storage engine was removed in ArangoDB 3.7.
    */
   indexBuckets?: number;
   /**
    * (MMFiles only.) If set to `true`, the collection will only be kept
    * in-memory and discarded when unloaded, resulting in full data loss.
+   *
+   * @deprecated The MMFiles storage engine was removed in ArangoDB 3.7.
    */
   isVolatile?: boolean;
   /**
@@ -344,6 +352,8 @@ export type CollectionPropertiesOptions = {
    * (MMFiles only.) Maximum size for each journal or datafile in bytes.
    *
    * Must be a number greater than or equal to `1048576` (1 MiB).
+   *
+   * @deprecated The MMFiles storage engine was removed in ArangoDB 3.7.
    */
   journalSize?: number;
 };
@@ -492,18 +502,24 @@ export type CreateCollectionOptions = {
    * Must be a power of 2 and less than or equal to `1024`.
    *
    * Default: `16`
+   *
+   * @deprecated The MMFiles storage engine was removed in ArangoDB 3.7.
    */
   indexBuckets?: number;
   /**
    * (MMFiles only.) Whether the collection will be compacted.
    *
    * Default: `true`
+   *
+   * @deprecated The MMFiles storage engine was removed in ArangoDB 3.7.
    */
   doCompact?: boolean;
   /**
    * (MMFiles only.) Maximum size for each journal or datafile in bytes.
    *
    * Must be a number greater than or equal to `1048576` (1 MiB).
+   *
+   * @deprecated The MMFiles storage engine was removed in ArangoDB 3.7.
    */
   journalSize?: number;
   /**
@@ -511,6 +527,8 @@ export type CreateCollectionOptions = {
    * in-memory and discarded when unloaded, resulting in full data loss.
    *
    * Default: `false`
+   *
+   * @deprecated The MMFiles storage engine was removed in ArangoDB 3.7.
    */
   isVolatile?: boolean;
   /**
@@ -1524,6 +1542,8 @@ export interface DocumentCollection<T extends Record<string, any> = any>
    * const collection = db.collection("some-collection");
    * const rotated = await collection.rotate();
    * ```
+   *
+   * @deprecated The MMFiles storage engine was removed in ArangoDB 3.7.
    */
   rotate(): Promise<boolean>;
   /**
@@ -4059,7 +4079,7 @@ export class Collection<T extends Record<string, any> = any>
     return this._db.request(
       {
         method: "PUT",
-        path: `/_api/collection/${this._name}/compact`
+        path: `/_api/collection/${this._name}/compact`,
       },
       (res) => res.body
     );

@@ -40,10 +40,9 @@ This driver uses semantic versioning:
   The hash and skiplist index types have been deprecated in ArangoDB 3.9 and
   should be replaced with persistent indexes which behave identically.
 
-- Deprecated `collection.load` and `collection.unload` methods
+- Deprecated all MMFiles related options and methods
 
-  These methods have been deprecated in ArangoDB 3.8 as they no longer have any
-  effect since the MMFiles storage engine was removed in ArangoDB 3.7.
+  The MMFiles storage engine was removed in ArangoDB 3.7.
 
 ### Added
 
