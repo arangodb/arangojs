@@ -489,7 +489,7 @@ export class GraphVertexCollection<T extends Record<string, any> = any>
         () => true
       );
     } catch (err) {
-      if (isArangoError(err) && err.errorNum === DOCUMENT_NOT_FOUND) {
+      if (err.code === 404) {
         return false;
       }
       throw err;
@@ -894,7 +894,7 @@ export class GraphEdgeCollection<T extends Record<string, any> = any>
         () => true
       );
     } catch (err) {
-      if (isArangoError(err) && err.errorNum === DOCUMENT_NOT_FOUND) {
+      if (err.code === 404) {
         return false;
       }
       throw err;
