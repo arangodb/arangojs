@@ -62,6 +62,8 @@ This driver uses semantic versioning:
 
 - Added `ArangoSearchViewLink#inBackground` ([#759](https://github.com/arangodb/arangojs/issues/759))
 
+- Added `collection.compact` ([#630](https://github.com/arangodb/arangojs/issues/630))
+
 ## [7.6.1] - 2021-10-26
 
 ### Fixed
