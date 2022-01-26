@@ -136,6 +136,7 @@
 								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-overwrite"><a href="collection.edgecollection.html#any" class="tsd-kind-icon">any</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-overwrite"><a href="collection.edgecollection.html#byexample" class="tsd-kind-icon">by<wbr>Example</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-inherited"><a href="collection.edgecollection.html#checksum" class="tsd-kind-icon">checksum</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-inherited"><a href="collection.edgecollection.html#compact" class="tsd-kind-icon">compact</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-inherited"><a href="collection.edgecollection.html#count" class="tsd-kind-icon">count</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-inherited"><a href="collection.edgecollection.html#create" class="tsd-kind-icon">create</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-overwrite"><a href="collection.edgecollection.html#document" class="tsd-kind-icon">document</a></li>
@@ -390,6 +391,35 @@
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/connection.html#arangoresponsemetadata" class="tsd-signature-type" data-tsd-kind="Type alias">ArangoResponseMetadata</a><span class="tsd-signature-symbol"> &amp; </span><a href="../modules/collection.html#collectionmetadata" class="tsd-signature-type" data-tsd-kind="Type alias">CollectionMetadata</a><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{ </span>checksum<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>revision<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface tsd-is-inherited">
+					<a name="compact" class="tsd-anchor"></a>
+					<h3>compact</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface tsd-is-inherited">
+						<li class="tsd-signature tsd-kind-icon">compact<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/connection.html#arangoresponsemetadata" class="tsd-signature-type" data-tsd-kind="Type alias">ArangoResponseMetadata</a><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<p>Inherited from <a href="collection.documentcollection.html">DocumentCollection</a>.<a href="collection.documentcollection.html#compact">compact</a></p>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Triggers compaction for a collection.</p>
+								</div>
+								<dl class="tsd-comment-tags">
+									<dt>example</dt>
+									<dd><pre><code class="language-js"><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">db</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">Database</span><span style="color: #000000">();</span>
+<span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">collection</span><span style="color: #000000"> = </span><span style="color: #001080">db</span><span style="color: #000000">.</span><span style="color: #795E26">collection</span><span style="color: #000000">(</span><span style="color: #A31515">&quot;some-collection&quot;</span><span style="color: #000000">);</span>
+<span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">collection</span><span style="color: #000000">.</span><span style="color: #795E26">compact</span><span style="color: #000000">();</span>
+<span style="color: #008000">// Background compaction is triggered on the collection</span>
+</code></pre>
+									</dd>
+								</dl>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/connection.html#arangoresponsemetadata" class="tsd-signature-type" data-tsd-kind="Type alias">ArangoResponseMetadata</a><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -3027,6 +3057,9 @@
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface tsd-is-inherited">
 								<a href="collection.edgecollection.html#checksum" class="tsd-kind-icon">checksum</a>
+							</li>
+							<li class=" tsd-kind-method tsd-parent-kind-interface tsd-is-inherited">
+								<a href="collection.edgecollection.html#compact" class="tsd-kind-icon">compact</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-interface tsd-is-inherited">
 								<a href="collection.edgecollection.html#count" class="tsd-kind-icon">count</a>
