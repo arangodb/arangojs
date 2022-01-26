@@ -84,6 +84,13 @@ export type ArangoSearchViewLink = {
    * Default: `"none"`
    */
   storeValues?: "none" | "id";
+  /**
+   * If set to `true`, then no exclusive lock is used on the source collection
+   * during View index creation, so that it remains basically available.
+   *
+   * Default: `false`
+   */
+  inBackground?: boolean;
 };
 
 /**
