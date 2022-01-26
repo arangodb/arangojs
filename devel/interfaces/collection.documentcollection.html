@@ -1615,7 +1615,7 @@
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Instructs ArangoDB to load the collection into memory.</p>
+									<p>(MMFiles only.) Instructs ArangoDB to load the collection into memory.</p>
 								</div>
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
@@ -1624,6 +1624,10 @@
 <span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">collection</span><span style="color: #000000">.</span><span style="color: #795E26">load</span><span style="color: #000000">();</span>
 <span style="color: #008000">// the collection has now been loaded into memory</span>
 </code></pre>
+									</dd>
+									<dt>deprecated</dt>
+									<dd><p>This method was deprecated in ArangoDB 3.8 as it no longer has
+										any effect since the MMFiles storage engine was removed in ArangoDB 3.7.</p>
 									</dd>
 								</dl>
 							</div>
@@ -2459,7 +2463,7 @@
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Instructs ArangoDB to remove the collection from memory.</p>
+									<p>(MMFiles only.) Instructs ArangoDB to remove the collection from memory.</p>
 								</div>
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
@@ -2468,6 +2472,10 @@
 <span style="color: #AF00DB">await</span><span style="color: #000000"> </span><span style="color: #001080">collection</span><span style="color: #000000">.</span><span style="color: #795E26">unload</span><span style="color: #000000">();</span>
 <span style="color: #008000">// the collection has now been unloaded from memory</span>
 </code></pre>
+									</dd>
+									<dt>deprecated</dt>
+									<dd><p>This method was deprecated in ArangoDB 3.8 as it no longer has
+										any effect since the MMFiles storage engine was removed in ArangoDB 3.7.</p>
 									</dd>
 								</dl>
 							</div>
