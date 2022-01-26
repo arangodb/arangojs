@@ -176,13 +176,13 @@ describe("EdgeCollection API", function () {
     });
   });
   describe("edgeCollection.traversal", () => {
-    let knows: EdgeCollection<Record<string, any>>;
+    let knows: EdgeCollection;
     beforeEach(async () => {
-      let person;
-      [knows, person] = await Promise.all<
-        EdgeCollection<any>,
-        DocumentCollection<any>
-      >([db.createEdgeCollection("knows"), db.createCollection("person")]);
+      let person: DocumentCollection;
+      [knows, person] = await Promise.all([
+        db.createEdgeCollection("knows"),
+        db.createCollection("person"),
+      ]);
       await db.waitForPropagation(
         { path: `/_api/collection/${person.name}` },
         10000
