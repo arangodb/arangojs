@@ -1428,7 +1428,7 @@ export interface DocumentCollection<T extends Record<string, any> = any>
       CollectionMetadata & { revision: string; checksum: string }
   >;
   /**
-   * Instructs ArangoDB to load the collection into memory.
+   * (MMFiles only.) Instructs ArangoDB to load the collection into memory.
    *
    * @param count - Whether the number of documents in the collection should
    * be included in the server response. Disabling this may speed up this
@@ -1441,6 +1441,9 @@ export interface DocumentCollection<T extends Record<string, any> = any>
    * await collection.load();
    * // the collection has now been loaded into memory
    * ```
+   *
+   * @deprecated This method was deprecated in ArangoDB 3.8 as it no longer has
+   * any effect since the MMFiles storage engine was removed in ArangoDB 3.7.
    */
   load(
     count?: true
@@ -1475,7 +1478,7 @@ export interface DocumentCollection<T extends Record<string, any> = any>
    */
   loadIndexes(): Promise<boolean>;
   /**
-   * Instructs ArangoDB to remove the collection from memory.
+   * (MMFiles only.) Instructs ArangoDB to remove the collection from memory.
    *
    * @example
    * ```js
@@ -1484,6 +1487,9 @@ export interface DocumentCollection<T extends Record<string, any> = any>
    * await collection.unload();
    * // the collection has now been unloaded from memory
    * ```
+   *
+   * @deprecated This method was deprecated in ArangoDB 3.8 as it no longer has
+   * any effect since the MMFiles storage engine was removed in ArangoDB 3.7.
    */
   unload(): Promise<ArangoResponseMetadata & CollectionMetadata>;
   /**
