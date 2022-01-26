@@ -3,25 +3,21 @@ import { DocumentCollection } from "../collection";
 import { Database } from "../database";
 import { config } from "./_config";
 
-const itPre39 = config.arangoVersion! < 30900 ? it : it.skip;
-
 describe("Manipulating collections", function () {
   const name = `testdb_${Date.now()}`;
-  let db: Database;
+  let system: Database, db: Database;
   let collection: DocumentCollection;
   before(async () => {
-    db = new Database(config);
+    system = new Database(config);
     if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE")
-      await db.acquireHostList();
-    await db.createDatabase(name);
-    db.useDatabase(name);
+      await system.acquireHostList();
+    db = await system.createDatabase(name);
   });
   after(async () => {
     try {
-      db.useDatabase("_system");
-      await db.dropDatabase(name);
+      await system.dropDatabase(name);
     } finally {
-      db.close();
+      system.close();
     }
   });
   beforeEach(async () => {
@@ -67,21 +63,6 @@ describe("Manipulating collections", function () {
       expect(info).to.have.property("isSystem", false);
       expect(info).to.have.property("status", 3); // loaded
       expect(info).to.have.property("type", 3); // edge collection
-    });
-  });
-  describe("collection.load", () => {
-    it("should load a collection", async () => {
-      const info = await collection.load();
-      expect(info).to.have.property("name", collection.name);
-      expect(info).to.have.property("status", 3); // loaded
-    });
-  });
-  describe("collection.unload", () => {
-    itPre39("should unload a collection", async () => {
-      const info = await collection.unload();
-      expect(info).to.have.property("name", collection.name);
-      expect(info).to.have.property("status");
-      expect(info.status === 2 || info.status === 4).to.be.true; // unloaded
     });
   });
   describe("collection.setProperties", () => {

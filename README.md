@@ -94,8 +94,7 @@ const db = new Database({
   auth: { username: "root", password: "hunter2" },
 });
 
-// The database can be swapped at any time
-db.useDatabase("waffles");
+// The credentials can be swapped at any time
 db.useBasicAuth("admin", "maplesyrup");
 ```
 

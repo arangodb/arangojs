@@ -4,49 +4,44 @@ import { ArangoError } from "../error";
 import { config } from "./_config";
 
 describe("Manipulating databases", function () {
-  let db: Database;
+  let system: Database;
   beforeEach(async () => {
-    db = new Database(config);
+    system = new Database(config);
     if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE")
-      await db.acquireHostList();
+      await system.acquireHostList();
   });
-  afterEach(() => {
-    db.close();
-  });
-  describe("database.useDatabase", () => {
-    it("updates the database name", () => {
-      const name = "example";
-      expect(db.name).to.equal("_system"); // default
-      db.useDatabase(name);
-      expect(db.name).to.equal(name);
-    });
-    it("returns itself", () => {
-      const db2 = db.useDatabase("nope");
-      expect(db).to.equal(db2);
-    });
+  afterEach(async () => {
+    system.close();
   });
   describe("database.createDatabase", () => {
     const name = `testdb_${Date.now()}`;
+    let db: Database;
     afterEach(async () => {
-      db.useDatabase("_system");
-      await db.dropDatabase(name);
+      await system.dropDatabase(name);
     });
     it("creates a database with the given name", async () => {
-      await db.createDatabase(name);
-      db.useDatabase(name);
+      db = await system.createDatabase(name);
       const info = await db.get();
       expect(info.name).to.equal(name);
     });
     it("adds the given users to the database");
   });
   describe("database.get", () => {
+    const name = `testdb_${Date.now()}`;
+    let db: Database;
+    before(async () => {
+      db = await system.createDatabase(name);
+    });
+    after(async () => {
+      await system.dropDatabase(name);
+    });
     it("fetches the database description if the database exists", async () => {
       const info = await db.get();
       expect(info.name).to.equal(db.name);
-      expect(db.name).to.equal("_system");
+      expect(db.name).to.equal(name);
     });
     it("fails if the database does not exist", async () => {
-      db.useDatabase("__does_not_exist__");
+      db = system.database("__does_not_exist__");
       try {
         await db.get();
       } catch (e: any) {
@@ -57,10 +52,17 @@ describe("Manipulating databases", function () {
     });
   });
   describe("database.listDatabases", () => {
+    const name = `testdb_${Date.now()}`;
+    before(async () => {
+      await system.createDatabase(name);
+    });
+    after(async () => {
+      await system.dropDatabase(name);
+    });
     it("returns a list of all databases", async () => {
-      const databases = await db.listDatabases();
+      const databases = await system.listDatabases();
       expect(databases).to.be.an.instanceof(Array);
-      expect(databases.indexOf("_system")).to.be.greaterThan(-1);
+      expect(databases.indexOf(name)).to.be.greaterThan(-1);
     });
   });
   describe("database.listUserDatabases", () => {
@@ -68,18 +70,23 @@ describe("Manipulating databases", function () {
   });
   describe("database.dropDatabase", () => {
     const name = `testdb_${Date.now()}`;
-    beforeEach(async () => {
-      await db.createDatabase(name);
+    let db: Database;
+    before(async () => {
+      db = await system.createDatabase(name);
+    });
+    after(async () => {
+      try {
+        await system.dropDatabase(name);
+      } catch {}
     });
     it("deletes the given database from the server", async () => {
-      await db.dropDatabase(name);
-      const temp = new Database().useDatabase(name);
+      await system.dropDatabase(name);
       try {
-        await temp.get();
+        await db.get();
       } catch (e: any) {
         return;
       } finally {
-        temp.close();
+        system.close();
       }
       expect.fail("should not succeed");
     });

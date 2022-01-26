@@ -4,20 +4,25 @@ import { Database } from "../database";
 import { Transaction } from "../transaction";
 import { config } from "./_config";
 
-const describe35 = config.arangoVersion! >= 30500 ? describe : describe.skip;
-const itRdb = process.env.ARANGO_STORAGE_ENGINE !== "mmfiles" ? it : it.skip;
-
 describe("Transactions", () => {
-  let db: Database;
+  let system: Database;
   before(async () => {
-    db = new Database(config);
+    system = new Database(config);
     if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE")
-      await db.acquireHostList();
+      await system.acquireHostList();
   });
   after(() => {
-    db.close();
+    system.close();
   });
   describe("database.executeTransaction", () => {
+    const name = `testdb_${Date.now()}`;
+    let db: Database;
+    before(async () => {
+      db = await system.createDatabase(name);
+    });
+    after(async () => {
+      await system.dropDatabase(name);
+    });
     it("should execute a transaction and return the result", async () => {
       const result = await db.executeTransaction(
         [],
@@ -27,14 +32,14 @@ describe("Transactions", () => {
       expect(result).to.equal("test");
     });
   });
-  describe35("stream transactions", () => {
+  describe("stream transactions", () => {
     const name = `testdb_${Date.now()}`;
+    let db: Database;
     let collection: DocumentCollection;
     let allTransactions: Transaction[];
     before(async () => {
       allTransactions = [];
-      await db.createDatabase(name);
-      db.useDatabase(name);
+      db = await system.createDatabase(name);
     });
     after(async () => {
       await Promise.all(
@@ -42,8 +47,7 @@ describe("Transactions", () => {
           transaction.abort().catch(() => undefined)
         )
       );
-      db.useDatabase("_system");
-      await db.dropDatabase(name);
+      await system.dropDatabase(name);
     });
     beforeEach(async () => {
       collection = await db.createCollection(`collection-${Date.now()}`);
@@ -116,7 +120,7 @@ describe("Transactions", () => {
       expect(doc2).to.have.property("_key", "test2");
     });
 
-    itRdb("does not leak when inserting a document", async () => {
+    it("does not leak when inserting a document", async () => {
       const trx = await db.beginTransaction(collection);
       allTransactions.push(trx);
       await trx.step(() => collection.save({ _key: "test" }));
@@ -130,27 +134,24 @@ describe("Transactions", () => {
       expect(status).to.equal("committed");
     });
 
-    itRdb(
-      "does not leak when inserting two documents sequentially",
-      async () => {
-        const trx = await db.beginTransaction(collection);
-        allTransactions.push(trx);
-        await trx.step(() => collection.save({ _key: "test1" }));
-        await trx.step(() => collection.save({ _key: "test2" }));
-        let doc: any;
-        try {
-          doc = await collection.document("test1");
-        } catch (e: any) {}
-        if (doc) expect.fail("Document should not exist yet.");
-        try {
-          doc = await collection.document("test2");
-        } catch (e: any) {}
-        if (doc) expect.fail("Document should not exist yet.");
-        const { id, status } = await trx.commit();
-        expect(id).to.equal(trx.id);
-        expect(status).to.equal("committed");
-      }
-    );
+    it("does not leak when inserting two documents sequentially", async () => {
+      const trx = await db.beginTransaction(collection);
+      allTransactions.push(trx);
+      await trx.step(() => collection.save({ _key: "test1" }));
+      await trx.step(() => collection.save({ _key: "test2" }));
+      let doc: any;
+      try {
+        doc = await collection.document("test1");
+      } catch (e: any) {}
+      if (doc) expect.fail("Document should not exist yet.");
+      try {
+        doc = await collection.document("test2");
+      } catch (e: any) {}
+      if (doc) expect.fail("Document should not exist yet.");
+      const { id, status } = await trx.commit();
+      expect(id).to.equal(trx.id);
+      expect(status).to.equal("committed");
+    });
 
     it("does not insert a document when aborted", async () => {
       const trx = await db.beginTransaction(collection);
@@ -167,7 +168,7 @@ describe("Transactions", () => {
       if (doc) expect.fail("Document should not exist yet.");
     });
 
-    itRdb("does not revert unrelated changes when aborted", async () => {
+    it("does not revert unrelated changes when aborted", async () => {
       const trx = await db.beginTransaction(collection);
       allTransactions.push(trx);
       const meta = await collection.save({ _key: "test" });

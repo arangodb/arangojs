@@ -4,16 +4,16 @@ import { Database } from "../database";
 import { config } from "./_config";
 
 describe("Bulk imports", function () {
-  let db: Database;
+  let system: Database, db: Database;
   const dbName = `testdb_${Date.now()}`;
   let collection: DocumentCollection<{ data: string }>;
   const collectionName = `collection-${Date.now()}`;
   before(async () => {
-    db = new Database(config);
+    system = new Database(config);
     if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE")
-      await db.acquireHostList();
-    await db.createDatabase(dbName);
-    db.useDatabase(dbName);
+      await system.acquireHostList();
+    await system.createDatabase(dbName);
+    db = system.database(dbName);
     collection = await db.createCollection(collectionName);
     await db.waitForPropagation(
       { path: `/_api/collection/${collection.name}` },
@@ -22,10 +22,9 @@ describe("Bulk imports", function () {
   });
   after(async () => {
     try {
-      db.useDatabase("_system");
-      await db.dropDatabase(dbName);
+      await system.dropDatabase(dbName);
     } finally {
-      db.close();
+      system.close();
     }
   });
   describe("collection.import", () => {

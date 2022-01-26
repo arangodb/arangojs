@@ -3,11 +3,10 @@
  * import type {
  *   FulltextIndex,
  *   GeoIndex,
- *   HashIndex,
  *   PersistentIndex,
  *   PrimaryIndex,
- *   SkiplistIndex,
  *   TtlIndex,
+ *   ZkdIndex,
  * } from "arangojs/indexes";
  * ```
  *
@@ -15,122 +14,6 @@
  *
  * @packageDocumentation
  */
-
-/**
- * (MMFiles only.) Options for creating a hash index.
- *
- * When using the RocksDB storage engine, this index type behaves identically
- * to {@link EnsurePersistentIndexOptions}.
- *
- * @deprecated Hash indexes have been deprecated in ArangoDB 3.9 and should be
- * replaced with persistent indexes.
- */
-export type EnsureHashIndexOptions = {
-  /**
-   * Type of this index.
-   */
-  type: "hash";
-  /**
-   * An array of attribute paths.
-   */
-  fields: string[];
-  /**
-   * A unique name for this index.
-   */
-  name?: string;
-  /**
-   * If set to `true`, a unique index will be created.
-   *
-   * Default: `false`
-   */
-  unique?: boolean;
-  /**
-   * If set to `true`, the index will omit documents that do not contain at
-   * least one of the attribute paths in `fields` and these documents will be
-   * ignored for uniqueness checks.
-   *
-   * Default: `false`
-   */
-  sparse?: boolean;
-  /**
-   * If set to `false`, array values will not be deduplicated.
-   *
-   * Default: `true`
-   */
-  deduplicate?: boolean;
-  /**
-   * If set to `false`, index selectivity estimates will be disabled for this
-   * index.
-   *
-   * Default: `true`
-   */
-  estimates?: boolean;
-  /**
-   * If set to `true`, the index will be created in the background to reduce
-   * the write-lock duration for the collection during index creation.
-   *
-   * Default: `false`
-   */
-  inBackground?: boolean;
-};
-
-/**
- * (MMFiles only.) Options for creating a skiplist index.
- *
- * When using the RocksDB storage engine, this index type behaves identically
- * to {@link EnsurePersistentIndexOptions}.
- *
- * @deprecated Skiplist indexes have been deprecated in ArangoDB 3.9 and should
- * be replaced with persistent indexes.
- */
-export type EnsureSkiplistIndexOptions = {
-  /**
-   * Type of this index.
-   */
-  type: "skiplist";
-  /**
-   * An array of attribute paths.
-   */
-  fields: string[];
-  /**
-   * A unique name for this index.
-   */
-  name?: string;
-  /**
-   * If set to `true`, a unique index will be created.
-   *
-   * Default: `false`
-   */
-  unique?: boolean;
-  /**
-   * If set to `true`, the index will omit documents that do not contain at
-   * least one of the attribute paths in `fields` and these documents will be
-   * ignored for uniqueness checks.
-   *
-   * Default: `false`
-   */
-  sparse?: boolean;
-  /**
-   * If set to `false`, array values will not be deduplicated.
-   *
-   * Default: `true`
-   */
-  deduplicate?: boolean;
-  /**
-   * If set to `false`, index selectivity estimates will be disabled for this
-   * index.
-   *
-   * Default: `true`
-   */
-  estimates?: boolean;
-  /**
-   * If set to `true`, the index will be created in the background to reduce
-   * the write-lock duration for the collection during index creation.
-   *
-   * Default: `false`
-   */
-  inBackground?: boolean;
-};
 
 /**
  * Options for creating a persistent index.
@@ -360,23 +243,6 @@ export type PersistentIndex = GenericIndex & {
 };
 
 /**
- * An object representing a skiplist index.
- */
-export type SkiplistIndex = GenericIndex & {
-  type: "skiplist";
-  fields: string[];
-};
-
-/**
- * An object representing a hash index.
- */
-export type HashIndex = GenericIndex & {
-  type: "hash";
-  fields: string[];
-  selectivityEstimate: number;
-};
-
-/**
  * An object representing a primary index.
  */
 export type PrimaryIndex = GenericIndex & {
@@ -433,8 +299,6 @@ export type Index =
   | FulltextIndex
   | PersistentIndex
   | PrimaryIndex
-  | HashIndex
-  | SkiplistIndex
   | TtlIndex
   | ZkdIndex;
 

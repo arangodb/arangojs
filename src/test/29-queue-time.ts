@@ -9,15 +9,15 @@ const describe39 = config.arangoVersion! >= 30900 ? describe : describe.skip;
 
 describe39("Queue time metrics", function () {
   const dbName = `testdb_${Date.now()}`;
-  let db: Database;
+  let system: Database, db: Database;
   let collection: DocumentCollection;
   before(async () => {
-    db = new Database(config);
-    db.setResponseQueueTimeSamples(10);
+    system = new Database(config);
+    system.setResponseQueueTimeSamples(10);
     if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE")
-      await db.acquireHostList();
-    await db.createDatabase(dbName);
-    db.useDatabase(dbName);
+      await system.acquireHostList();
+    await system.createDatabase(dbName);
+    db = system.database(dbName);
     collection = await db.createCollection(`c_${Date.now()}`);
     await db.waitForPropagation(
       { path: `/_api/collection/${collection.name}` },
@@ -25,15 +25,14 @@ describe39("Queue time metrics", function () {
     );
   });
   after(async () => {
-    db.useDatabase("_system");
-    await db.dropDatabase(dbName);
+    await system.dropDatabase(dbName);
   });
   beforeEach(async () => {
-    (db as any)._connection._queueTimes.clear();
+    (system as any)._connection._queueTimes.clear();
   });
   describe("db.setResponseQueueTimeSamples", () => {
     afterEach(() => {
-      db.setResponseQueueTimeSamples(10);
+      system.setResponseQueueTimeSamples(10);
     });
     it("should trim existing queue times when set to a lower value", async () => {
       await Promise.all(

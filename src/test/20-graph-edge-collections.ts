@@ -6,14 +6,14 @@ import { config } from "./_config";
 
 describe("GraphEdgeCollection API", function () {
   const dbName = `testdb_${Date.now()}`;
-  let db: Database;
+  let system: Database, db: Database;
   let collection: GraphEdgeCollection;
   before(async () => {
-    db = new Database(config);
+    system = new Database(config);
     if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE")
-      await db.acquireHostList();
-    await db.createDatabase(dbName);
-    db.useDatabase(dbName);
+      await system.acquireHostList();
+    await system.createDatabase(dbName);
+    db = system.database(dbName);
     const graph = db.graph(`testgraph_${Date.now()}`);
     await graph.create([
       {
@@ -36,10 +36,9 @@ describe("GraphEdgeCollection API", function () {
   });
   after(async () => {
     try {
-      db.useDatabase("_system");
-      await db.dropDatabase(dbName);
+      await system.dropDatabase(dbName);
     } finally {
-      db.close();
+      system.close();
     }
   });
   beforeEach(async () => {

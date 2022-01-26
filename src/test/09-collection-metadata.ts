@@ -5,16 +5,16 @@ import { COLLECTION_NOT_FOUND } from "../lib/codes";
 import { config } from "./_config";
 
 describe("Collection metadata", function () {
-  let db: Database;
+  let system: Database, db: Database;
   let collection: DocumentCollection;
   const dbName = `testdb_${Date.now()}`;
   const collectionName = `collection-${Date.now()}`;
   before(async () => {
-    db = new Database(config);
+    system = new Database(config);
     if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE")
-      await db.acquireHostList();
-    await db.createDatabase(dbName);
-    db.useDatabase(dbName);
+      await system.acquireHostList();
+    await system.createDatabase(dbName);
+    db = system.database(dbName);
     collection = await db.createCollection(collectionName);
     await db.waitForPropagation(
       { path: `/_api/collection/${collection.name}` },
@@ -22,8 +22,7 @@ describe("Collection metadata", function () {
     );
   });
   after(async () => {
-    db.useDatabase("_system");
-    await db.dropDatabase(dbName);
+    await system.dropDatabase(dbName);
   });
   describe("collection.get", () => {
     it("should return information about a collection", async () => {

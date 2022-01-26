@@ -7,8 +7,7 @@ import { config } from "./_config";
 describe("Arbitrary HTTP routes", () => {
   let db: Database;
   before(async () => {
-    db = new Database(config);
-    if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE") await db.acquireHostList();
+    db = new Database();
   });
   describe("database.route", () => {
     it("returns a Route instance", () => {
@@ -29,13 +28,13 @@ describe("Arbitrary HTTP routes", () => {
 
 describe("Route API", function () {
   const name = `testdb_${Date.now()}`;
-  let db: Database;
+  let system: Database, db: Database;
   let collection: DocumentCollection;
   before(async () => {
-    db = new Database(config);
-    if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE") await db.acquireHostList();
-    await db.createDatabase(name);
-    db.useDatabase(name);
+    system = new Database(config);
+    if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE")
+      await system.acquireHostList();
+    db = await system.createDatabase(name);
     collection = await db.createCollection(`c_${Date.now()}`);
     await db.waitForPropagation(
       { path: `/_api/collection/${collection.name}` },
@@ -44,10 +43,9 @@ describe("Route API", function () {
   });
   after(async () => {
     try {
-      db.useDatabase("_system");
-      await db.dropDatabase(name);
+      await system.dropDatabase(name);
     } finally {
-      db.close();
+      system.close();
     }
   });
   beforeEach(async () => {

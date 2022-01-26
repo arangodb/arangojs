@@ -15,20 +15,26 @@ async function sleep(ms: number) {
 }
 
 describe("Item-wise Cursor API", () => {
-  let db: Database;
+  const name = `testdb_${Date.now()}`;
+  let system: Database, db: Database;
   let cursor: ArrayCursor;
   let allCursors: (ArrayCursor | BatchedArrayCursor)[];
   before(async () => {
     allCursors = [];
-    db = new Database(config);
+    system = new Database(config);
     if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE")
-      await db.acquireHostList();
+      await system.acquireHostList();
+    db = await system.createDatabase(name);
   });
   after(async () => {
     await Promise.all(
       allCursors.map((cursor) => cursor.kill().catch(() => undefined))
     );
-    db.close();
+    try {
+      await system.dropDatabase(name);
+    } finally {
+      system.close();
+    }
   });
   beforeEach(async () => {
     cursor = await db.query(aqlQuery);
@@ -233,20 +239,26 @@ describe("Item-wise Cursor API", () => {
 });
 
 describe("Batch-wise Cursor API", () => {
-  let db: Database;
+  const name = `testdb_${Date.now()}`;
+  let system: Database, db: Database;
   let cursor: BatchedArrayCursor;
   let allCursors: (ArrayCursor | BatchedArrayCursor)[];
   before(async () => {
     allCursors = [];
-    db = new Database(config);
+    system = new Database(config);
     if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE")
-      await db.acquireHostList();
+      await system.acquireHostList();
+    db = await system.createDatabase(name);
   });
   after(async () => {
     await Promise.all(
       allCursors.map((cursor) => cursor.kill().catch(() => undefined))
     );
-    db.close();
+    try {
+      await system.dropDatabase(name);
+    } finally {
+      system.close();
+    }
   });
   beforeEach(async () => {
     cursor = (await db.query(aqlQuery, { batchSize: 1 })).batches;

@@ -17,14 +17,14 @@ async function sleep(ms: number) {
 
 describe("Query Management API", function () {
   const dbName = `testdb_${Date.now()}`;
-  let db: Database;
+  let system: Database, db: Database;
   let allCursors: ArrayCursor[];
   before(async () => {
     allCursors = [];
-    db = new Database(config);
-    if (Array.isArray(config.url)) await db.acquireHostList();
-    await db.createDatabase(dbName);
-    db.useDatabase(dbName);
+    system = new Database(config);
+    if (Array.isArray(config.url)) await system.acquireHostList();
+    await system.createDatabase(dbName);
+    db = system.database(dbName);
     // the following makes calls to /_db/${name} on all coordinators, thus waiting
     // long enough for the database to become available on all instances
     if (Array.isArray(config.url)) {
@@ -36,10 +36,9 @@ describe("Query Management API", function () {
       allCursors.map((cursor) => cursor.kill().catch(() => undefined))
     );
     try {
-      db.useDatabase("_system");
-      await db.dropDatabase(dbName);
+      await system.dropDatabase(dbName);
     } finally {
-      db.close();
+      system.close();
     }
   });
 

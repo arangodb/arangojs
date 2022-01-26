@@ -3,22 +3,19 @@ import { DocumentCollection } from "../collection";
 import { Database } from "../database";
 import { config } from "./_config";
 
-const itPre34 = config.arangoVersion! < 30400 ? it : it.skip;
-const itPre39 = config.arangoVersion! < 30900 ? it : it.skip;
-const it34 = config.arangoVersion! >= 30400 ? it : it.skip;
 const it39 = config.arangoVersion! >= 30900 ? it : it.skip;
 
 describe("Managing indexes", function () {
-  let db: Database;
+  let system: Database, db: Database;
   let collection: DocumentCollection;
   const dbName = `testdb_${Date.now()}`;
   const collectionName = `collection-${Date.now()}`;
   before(async () => {
-    db = new Database(config);
+    system = new Database(config);
     if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE")
-      await db.acquireHostList();
-    await db.createDatabase(dbName);
-    db.useDatabase(dbName);
+      await system.acquireHostList();
+    await system.createDatabase(dbName);
+    db = system.database(dbName);
     collection = await db.createCollection(collectionName);
     await db.waitForPropagation(
       { path: `/_api/collection/${collection.name}` },
@@ -27,37 +24,10 @@ describe("Managing indexes", function () {
   });
   after(async () => {
     try {
-      db.useDatabase("_system");
-      await db.dropDatabase(dbName);
+      await system.dropDatabase(dbName);
     } finally {
-      db.close();
+      system.close();
     }
-  });
-  describe("collection.ensureIndex#hash", () => {
-    itPre39("should create a hash index", async () => {
-      const info = await collection.ensureIndex({
-        type: "hash",
-        fields: ["value"],
-      });
-      expect(info).to.have.property("id");
-      expect(info).to.have.property("type", "hash");
-      expect(info).to.have.property("fields");
-      expect(info.fields).to.eql(["value"]);
-      expect(info).to.have.property("isNewlyCreated", true);
-    });
-  });
-  describe("collection.ensureIndex#skiplist", () => {
-    itPre39("should create a skiplist index", async () => {
-      const info = await collection.ensureIndex({
-        type: "skiplist",
-        fields: ["value"],
-      });
-      expect(info).to.have.property("id");
-      expect(info).to.have.property("type", "skiplist");
-      expect(info).to.have.property("fields");
-      expect(info.fields).to.eql(["value"]);
-      expect(info).to.have.property("isNewlyCreated", true);
-    });
   });
   describe("collection.ensureIndex#persistent", () => {
     it("should create a persistent index", async () => {
@@ -73,29 +43,7 @@ describe("Managing indexes", function () {
     });
   });
   describe("collection.ensureIndex#geo", () => {
-    itPre34("should create a geo1 index for one field", async () => {
-      const info = await collection.ensureIndex({
-        type: "geo",
-        fields: ["value"],
-      });
-      expect(info).to.have.property("id");
-      expect(info).to.have.property("type", "geo1");
-      expect(info).to.have.property("fields");
-      expect(info.fields).to.eql(["value"]);
-      expect(info).to.have.property("isNewlyCreated", true);
-    });
-    itPre34("should create a geo2 index for two fields", async () => {
-      const info = await collection.ensureIndex({
-        type: "geo",
-        fields: ["value1", "value2"],
-      });
-      expect(info).to.have.property("id");
-      expect(info).to.have.property("type", "geo2");
-      expect(info).to.have.property("fields");
-      expect(info.fields).to.eql(["value1", "value2"]);
-      expect(info).to.have.property("isNewlyCreated", true);
-    });
-    it34("should create a geo index for one field", async () => {
+    it("should create a geo index for one field", async () => {
       const info = await collection.ensureIndex({
         type: "geo",
         fields: ["value"],
@@ -106,7 +54,7 @@ describe("Managing indexes", function () {
       expect(info.fields).to.eql(["value"]);
       expect(info).to.have.property("isNewlyCreated", true);
     });
-    it34("should create a geo index for two fields", async () => {
+    it("should create a geo index for two fields", async () => {
       const info = await collection.ensureIndex({
         type: "geo",
         fields: ["value1", "value2"],

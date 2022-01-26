@@ -6,21 +6,19 @@ import { config } from "./_config";
 
 describe("DocumentCollection API", function () {
   const name = `testdb_${Date.now()}`;
-  let db: Database;
+  let system: Database, db: Database;
   let collection: DocumentCollection;
   before(async () => {
-    db = new Database(config);
+    system = new Database(config);
     if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE")
-      await db.acquireHostList();
-    await db.createDatabase(name);
-    db.useDatabase(name);
+      await system.acquireHostList();
+    db = await system.createDatabase(name);
   });
   after(async () => {
     try {
-      db.useDatabase("_system");
-      await db.dropDatabase(name);
+      await system.dropDatabase(name);
     } finally {
-      db.close();
+      system.close();
     }
   });
   beforeEach(async () => {

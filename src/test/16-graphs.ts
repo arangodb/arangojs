@@ -42,21 +42,19 @@ async function createGraph(
 }
 
 describe("Graph API", function () {
-  let db: Database;
+  let system: Database, db: Database;
   const name = `testdb_${Date.now()}`;
   before(async () => {
-    db = new Database(config);
+    system = new Database(config);
     if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE")
-      await db.acquireHostList();
-    await db.createDatabase(name);
-    db.useDatabase(name);
+      await system.acquireHostList();
+    db = await system.createDatabase(name);
   });
   after(async () => {
     try {
-      db.useDatabase("_system");
-      await db.dropDatabase(name);
+      await system.dropDatabase(name);
     } finally {
-      db.close();
+      system.close();
     }
   });
   describe("graph.get", () => {

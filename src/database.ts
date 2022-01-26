@@ -135,9 +135,6 @@ export type TransactionCollections = {
   /**
    * An array of collections or a single collection that will be read from or
    * written to during the transaction.
-   *
-   * If ArangoDB is using the MMFiles storage engine, this option behaves
-   * exactly like `exclusive`, i.e. no other writes will run in parallel.
    */
   write?: (string | ArangoCollection)[] | string | ArangoCollection;
   /**
@@ -173,20 +170,6 @@ export type TransactionOptions = {
    * (RocksDB only.) Determines the transaction size limit in bytes.
    */
   maxTransactionSize?: number;
-  /**
-   * (RocksDB only.) Determines the maximum number of operations after which an
-   * intermediate commit is performed automatically.
-   *
-   * @deprecated Removed in ArangoDB 3.4.
-   */
-  intermediateCommitCount?: number;
-  /**
-   * (RocksDB only.) Determine the maximum total size of operations after which
-   * an intermediate commit is performed automatically.
-   *
-   * @deprecated Removed in ArangoDB 3.4.
-   */
-  intermediateCommitSize?: number;
 };
 
 /**
@@ -1623,7 +1606,7 @@ export class Database {
    *
    * // later
    * clearInterval(interval);
-   * db.close();
+   * system.close();
    * ```
    */
   async acquireHostList(): Promise<void> {
@@ -1655,7 +1638,7 @@ export class Database {
    *     REMOVE session IN ${sessions}
    *   `);
    *   // Making sure to close the connections because they're no longer used
-   *   db.close();
+   *   system.close();
    * }, 1000 * 60 * 60);
    * ```
    */
@@ -1675,7 +1658,7 @@ export class Database {
    * @example
    * ```js
    * const db = new Database({ loadBalancingStrategy: "ROUND_ROBIN" });
-   * await db.acquireHostList();
+   * await system.acquireHostList();
    * const analyzer = db.analyzer("my-analyzer");
    * await analyzer.create();
    * await db.waitForPropagation(
@@ -1727,31 +1710,6 @@ export class Database {
 
   //#region auth
   /**
-   * Updates the `Database` instance and its connection string to use the given
-   * `databaseName`, then returns itself.
-   *
-   * **Note**: This also affects all collections, cursors and other arangojs
-   * objects originating from this database object, which may cause unexpected
-   * results.
-   *
-   * @param databaseName - Name of the database to use.
-   *
-   * @deprecated Use {@link Database.database} instead.
-   *
-   * @example
-   * ```js
-   * const systemDb = new Database();
-   * // systemDb.useDatabase("my_database"); // deprecated
-   * const myDb = systemDb.database("my_database");
-   * ```
-   */
-  useDatabase(databaseName: string): this {
-    this._connection.database(this._name, null);
-    this._name = databaseName.normalize("NFC");
-    return this;
-  }
-
-  /**
    * Updates the `Database` instance's `authorization` header to use Basic
    * authentication with the given `username` and `password`, then returns
    * itself.
@@ -1762,9 +1720,7 @@ export class Database {
    * @example
    * ```js
    * const db = new Database();
-   * db.useDatabase("test");
    * db.useBasicAuth("admin", "hunter2");
-   * // The database instance now uses the database "test"
    * // with the username "admin" and password "hunter2".
    * ```
    */
@@ -1802,9 +1758,7 @@ export class Database {
    * @example
    * ```js
    * const db = new Database();
-   * db.useDatabase("test");
    * await db.login("admin", "hunter2");
-   * // The database instance now uses the database "test"
    * // with an authentication token for the "admin" user.
    * ```
    */
@@ -1895,8 +1849,6 @@ export class Database {
    *   users: [{ username: "root" }]
    * });
    * // the database has been created
-   * db.useDatabase("mydb");
-   * db.useBasicAuth("root", "");
    * ```
    */
   createDatabase(
@@ -1915,8 +1867,6 @@ export class Database {
    * const db = new Database();
    * const info = await db.createDatabase("mydb", [{ username: "root" }]);
    * // the database has been created
-   * db.useDatabase("mydb");
-   * db.useBasicAuth("root", "");
    * ```
    */
   createDatabase(

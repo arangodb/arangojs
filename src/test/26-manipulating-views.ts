@@ -3,29 +3,25 @@ import { Database } from "../database";
 import { ArangoSearchView } from "../view";
 import { config } from "./_config";
 
-const describe34 = config.arangoVersion! >= 30400 ? describe : describe.skip;
-
 // NOTE These tests will not reliably work in a cluster.
 const describeNLB =
   config.loadBalancingStrategy === "ROUND_ROBIN" ? describe.skip : describe;
 
-describe34("Manipulating views", function () {
+describe("Manipulating views", function () {
   const name = `testdb_${Date.now()}`;
-  let db: Database;
+  let system: Database, db: Database;
   let view: ArangoSearchView;
   before(async () => {
-    db = new Database(config);
+    system = new Database(config);
     if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE")
-      await db.acquireHostList();
-    await db.createDatabase(name);
-    db.useDatabase(name);
+      await system.acquireHostList();
+    db = await system.createDatabase(name);
   });
   after(async () => {
     try {
-      db.useDatabase("_system");
-      await db.dropDatabase(name);
+      await system.dropDatabase(name);
     } finally {
-      db.close();
+      system.close();
     }
   });
   beforeEach(async () => {

@@ -23,6 +23,15 @@ This driver uses semantic versioning:
   The `Dict<T>` type was identical to `Record<string, T>` and has been replaced
   with this built-in type across arangojs.
 
+- Removed deprecated `db.useDatabase` method
+
+  The method was previously deprecated and can be replaced with `db.database`,
+  which returns a new `Database` object instead of modifying the existing one.
+
+- Removed deprecated MMFiles methods and types
+
+  The MMFiles storage engine was removed in ArangoDB 3.7.
+
 ### Changed
 
 - Removed Node.js 10 support

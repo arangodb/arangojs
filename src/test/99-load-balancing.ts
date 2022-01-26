@@ -27,7 +27,7 @@ describeIm("Single-server active failover", function () {
   let im: InstanceManager;
   let uuid: string;
   let leader: Instance;
-  let db: Database;
+  let system: Database, db: Database;
   let conn: Connection;
   beforeEach(async () => {
     im = new InstanceManager(ARANGO_PATH, ARANGO_RUNNER, "rocksdb");
@@ -38,7 +38,7 @@ describeIm("Single-server active failover", function () {
     leader = (await im.resolveUUID(uuid))!;
     db = new Database({ url: leader.endpoint });
     conn = (db as any)._connection;
-    await db.acquireHostList();
+    await system.acquireHostList();
   });
   afterEach(async function () {
     im.moveServerLogs(this.currentTest);
@@ -97,7 +97,7 @@ describeIm("Single-server with follower", function () {
   this.timeout(Infinity);
   let im: InstanceManager;
   let leader: Instance;
-  let db: Database;
+  let system: Database, db: Database;
   let conn: Connection;
   let collection: DocumentCollection;
   beforeEach(async () => {
@@ -108,7 +108,7 @@ describeIm("Single-server with follower", function () {
     leader = await im.asyncReplicationLeaderInstance();
     db = new Database({ url: leader.endpoint });
     conn = (db as any)._connection;
-    await db.acquireHostList();
+    await system.acquireHostList();
     collection = await db.createCollection("test");
     await db.waitForPropagation(
       { path: `/_api/collection/${collection.name}` },
@@ -173,7 +173,7 @@ describeIm("Cluster round robin", function () {
   this.timeout(Infinity);
   const NUM_COORDINATORS = 3;
   let im: InstanceManager;
-  let db: Database;
+  let system: Database, db: Database;
   let conn: Connection;
   beforeEach(async () => {
     im = new InstanceManager(ARANGO_PATH, ARANGO_RUNNER);
@@ -183,7 +183,7 @@ describeIm("Cluster round robin", function () {
       loadBalancingStrategy: "ROUND_ROBIN",
     });
     conn = (db as any)._connection;
-    await db.acquireHostList();
+    await system.acquireHostList();
   });
   afterEach(async () => {
     await im.cleanup();

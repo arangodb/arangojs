@@ -5,27 +5,23 @@ import { config } from "./_config";
 
 const range = (n: number): number[] => Array.from(Array(n).keys());
 
-const describe35 = config.arangoVersion! >= 30500 ? describe : describe.skip;
-
-describe35("Accessing analyzers", function () {
+describe("Accessing analyzers", function () {
   const builtins: string[] = [];
   const name = `testdb_${Date.now()}`;
-  let db: Database;
+  let system: Database, db: Database;
   before(async () => {
-    db = new Database(config);
+    system = new Database(config);
     if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE")
-      await db.acquireHostList();
-    await db.createDatabase(name);
-    db.useDatabase(name);
+      await system.acquireHostList();
+    db = await system.createDatabase(name);
     builtins.push(...(await db.listAnalyzers()).map((a) => a.name));
     expect(builtins).not.to.have.length(0);
   });
   after(async () => {
     try {
-      db.useDatabase("_system");
-      await db.dropDatabase(name);
+      await system.dropDatabase(name);
     } finally {
-      db.close();
+      system.close();
     }
   });
   describe("database.analyzer", () => {

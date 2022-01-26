@@ -29,18 +29,14 @@ import { isArangoError } from "./error";
 import {
   EnsureFulltextIndexOptions,
   EnsureGeoIndexOptions,
-  EnsureHashIndexOptions,
   EnsurePersistentIndexOptions,
-  EnsureSkiplistIndexOptions,
   EnsureTtlIndexOptions,
   EnsureZkdIndexOptions,
   FulltextIndex,
   GeoIndex,
-  HashIndex,
   Index,
   IndexSelector,
   PersistentIndex,
-  SkiplistIndex,
   TtlIndex,
   ZkdIndex,
   _indexHandle,
@@ -273,32 +269,6 @@ export type CollectionProperties = {
    */
   shardingStrategy?: ShardingStrategy;
   /**
-   * (MMFiles only.) Whether the collection will be compacted.
-   *
-   * @deprecated The MMFiles storage engine was removed in ArangoDB 3.7.
-   */
-  doCompact?: boolean;
-  /**
-   * (MMFiles only.) Maximum size for each journal or datafile in bytes.
-   *
-   * @deprecated The MMFiles storage engine was removed in ArangoDB 3.7.
-   */
-  journalSize?: number;
-  /**
-   * (MMFiles only.) Number of buckets into which indexes using hash tables are
-   * split.
-   *
-   * @deprecated The MMFiles storage engine was removed in ArangoDB 3.7.
-   */
-  indexBuckets?: number;
-  /**
-   * (MMFiles only.) If set to `true`, the collection will only be kept
-   * in-memory and discarded when unloaded, resulting in full data loss.
-   *
-   * @deprecated The MMFiles storage engine was removed in ArangoDB 3.7.
-   */
-  isVolatile?: boolean;
-  /**
    * (Enterprise Edition cluster only.) If set to a collection name, sharding
    * of the new collection will follow the rules for that collection. As long
    * as the new collection exists, the indicated collection can not be dropped.
@@ -348,14 +318,6 @@ export type CollectionPropertiesOptions = {
    * Options for validating documents in this collection.
    */
   schema?: SchemaOptions;
-  /**
-   * (MMFiles only.) Maximum size for each journal or datafile in bytes.
-   *
-   * Must be a number greater than or equal to `1048576` (1 MiB).
-   *
-   * @deprecated The MMFiles storage engine was removed in ArangoDB 3.7.
-   */
-  journalSize?: number;
 };
 
 /**
@@ -495,42 +457,6 @@ export type CreateCollectionOptions = {
    * (Cluster only.) Sharding strategy to use.
    */
   shardingStrategy?: ShardingStrategy;
-  /**
-   * (MMFiles only.) Number of buckets into which indexes using hash tables are
-   * split.
-   *
-   * Must be a power of 2 and less than or equal to `1024`.
-   *
-   * Default: `16`
-   *
-   * @deprecated The MMFiles storage engine was removed in ArangoDB 3.7.
-   */
-  indexBuckets?: number;
-  /**
-   * (MMFiles only.) Whether the collection will be compacted.
-   *
-   * Default: `true`
-   *
-   * @deprecated The MMFiles storage engine was removed in ArangoDB 3.7.
-   */
-  doCompact?: boolean;
-  /**
-   * (MMFiles only.) Maximum size for each journal or datafile in bytes.
-   *
-   * Must be a number greater than or equal to `1048576` (1 MiB).
-   *
-   * @deprecated The MMFiles storage engine was removed in ArangoDB 3.7.
-   */
-  journalSize?: number;
-  /**
-   * (MMFiles only.) If set to `true`, the collection will only be kept
-   * in-memory and discarded when unloaded, resulting in full data loss.
-   *
-   * Default: `false`
-   *
-   * @deprecated The MMFiles storage engine was removed in ArangoDB 3.7.
-   */
-  isVolatile?: boolean;
   /**
    * (Enterprise Edition cluster only.) If set to a collection name, sharding
    * of the new collection will follow the rules for that collection. As long
@@ -1446,43 +1372,6 @@ export interface DocumentCollection<T extends Record<string, any> = any>
       CollectionMetadata & { revision: string; checksum: string }
   >;
   /**
-   * (MMFiles only.) Instructs ArangoDB to load the collection into memory.
-   *
-   * @param count - Whether the number of documents in the collection should
-   * be included in the server response. Disabling this may speed up this
-   * process in future versions of ArangoDB.
-   *
-   * @example
-   * ```js
-   * const db = new Database();
-   * const collection = db.collection("some-collection");
-   * await collection.load();
-   * // the collection has now been loaded into memory
-   * ```
-   *
-   * @deprecated This method was deprecated in ArangoDB 3.8 as it no longer has
-   * any effect since the MMFiles storage engine was removed in ArangoDB 3.7.
-   */
-  load(
-    count?: true
-  ): Promise<ArangoResponseMetadata & CollectionMetadata & { count: number }>;
-  /**
-   * Instructs ArangoDB to load the collection into memory.
-   *
-   * @param count - Whether the number of documents in the collection should
-   * be included in the server response. Disabling this may speed up this
-   * process in future versions of ArangoDB.
-   *
-   * @example
-   * ```js
-   * const db = new Database();
-   * const collection = db.collection("some-collection");
-   * await collection.load(false);
-   * // the collection has now been loaded into memory
-   * ```
-   */
-  load(count: false): Promise<ArangoResponseMetadata & CollectionMetadata>;
-  /**
    * (RocksDB only.) Instructs ArangoDB to load as many indexes of the
    * collection into memory as permitted by the memory limit.
    *
@@ -1495,21 +1384,6 @@ export interface DocumentCollection<T extends Record<string, any> = any>
    * ```
    */
   loadIndexes(): Promise<boolean>;
-  /**
-   * (MMFiles only.) Instructs ArangoDB to remove the collection from memory.
-   *
-   * @example
-   * ```js
-   * const db = new Database();
-   * const collection = db.collection("some-collection");
-   * await collection.unload();
-   * // the collection has now been unloaded from memory
-   * ```
-   *
-   * @deprecated This method was deprecated in ArangoDB 3.8 as it no longer has
-   * any effect since the MMFiles storage engine was removed in ArangoDB 3.7.
-   */
-  unload(): Promise<ArangoResponseMetadata & CollectionMetadata>;
   /**
    * Renames the collection and updates the instance's `name` to `newName`.
    *
@@ -1533,19 +1407,6 @@ export interface DocumentCollection<T extends Record<string, any> = any>
    * ```
    */
   rename(newName: string): Promise<ArangoResponseMetadata & CollectionMetadata>;
-  /**
-   * (MMFiles single-server only.) Rotates the journal of the collection.
-   *
-   * @example
-   * ```js
-   * const db = new Database();
-   * const collection = db.collection("some-collection");
-   * const rotated = await collection.rotate();
-   * ```
-   *
-   * @deprecated The MMFiles storage engine was removed in ArangoDB 3.7.
-   */
-  rotate(): Promise<boolean>;
   /**
    * Deletes all documents in the collection.
    *
@@ -2447,60 +2308,6 @@ export interface DocumentCollection<T extends Record<string, any> = any>
     details: EnsurePersistentIndexOptions
   ): Promise<
     ArangoResponseMetadata & PersistentIndex & { isNewlyCreated: boolean }
-  >;
-  /**
-   * Creates a hash index on the collection if it does not already exist.
-   *
-   * When using the RocksDB storage engine, hash indexes behave identically
-   * to persistent indexes.
-   *
-   * @param details - Options for creating the hash index.
-   *
-   * @example
-   * ```js
-   * const db = new Database();
-   * const collection = db.collection("some-collection");
-   * // Create a unique index for looking up documents by username
-   * await collection.ensureIndex({
-   *   type: "hash",
-   *   fields: ["username"],
-   *   name: "unique-usernames",
-   *   unique: true
-   * });
-   * ```
-   *
-   * @deprecated Hash indexes have been deprecated in ArangoDB 3.9 and should
-   * be replaced with persistent indexes.
-   */
-  ensureIndex(
-    details: EnsureHashIndexOptions
-  ): Promise<ArangoResponseMetadata & HashIndex & { isNewlyCreated: boolean }>;
-  /**
-   * Creates a skiplist index on the collection if it does not already exist.
-   *
-   * When using the RocksDB storage engine, skiplist indexes behave identically
-   * to persistent indexes.
-   *
-   * @param details - Options for creating the skiplist index.
-   *
-   * @example
-   * ```js
-   * const db = new Database();
-   * const collection = db.collection("some-collection");
-   * // Create an index for sorting email addresses
-   * await collection.ensureIndex({
-   *   type: "skiplist",
-   *   fields: ["email"]
-   * });
-   * ```
-   *
-   * @deprecated Skiplist indexes have been deprecated in ArangoDB 3.9 and
-   * should be replaced with persistent indexes.
-   */
-  ensureIndex(
-    details: EnsureSkiplistIndexOptions
-  ): Promise<
-    ArangoResponseMetadata & SkiplistIndex & { isNewlyCreated: boolean }
   >;
   /**
    * Creates a TTL index on the collection if it does not already exist.
@@ -3531,16 +3338,6 @@ export class Collection<T extends Record<string, any> = any>
     });
   }
 
-  load(
-    count?: boolean
-  ): Promise<CollectionMetadata & { count: number } & ArangoResponseMetadata> {
-    return this._db.request({
-      method: "PUT",
-      path: `/_api/collection/${encodeURIComponent(this._name)}/load`,
-      body: typeof count === "boolean" ? { count } : undefined,
-    });
-  }
-
   async loadIndexes(): Promise<boolean> {
     return this._db.request(
       {
@@ -3553,27 +3350,10 @@ export class Collection<T extends Record<string, any> = any>
     );
   }
 
-  unload(): Promise<CollectionMetadata & ArangoResponseMetadata> {
-    return this._db.request({
-      method: "PUT",
-      path: `/_api/collection/${encodeURIComponent(this._name)}/unload`,
-    });
-  }
-
   async rename(newName: string) {
     const result = await this._db.renameCollection(this._name, newName);
     this._name = newName.normalize("NFC");
     return result;
-  }
-
-  async rotate() {
-    return this._db.request(
-      {
-        method: "PUT",
-        path: `/_api/collection/${this._name}/rotate`,
-      },
-      (res) => res.body.result
-    );
   }
 
   truncate(): Promise<CollectionMetadata & ArangoResponseMetadata> {
@@ -4015,8 +3795,6 @@ export class Collection<T extends Record<string, any> = any>
 
   ensureIndex(
     options:
-      | EnsureHashIndexOptions
-      | EnsureSkiplistIndexOptions
       | EnsurePersistentIndexOptions
       | EnsureGeoIndexOptions
       | EnsureFulltextIndexOptions

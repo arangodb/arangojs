@@ -26,12 +26,14 @@ function makeSelfReachable(db: Database, returnedUrl: string) {
 }
 
 describe("Foxx service", () => {
-  let db: Database;
+  const name = `testdb_${Date.now()}`;
+  let system: Database, db: Database;
   let arangoPaths: any;
   before(async () => {
-    db = new Database(config);
+    system = new Database(config);
     if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE")
-      await db.acquireHostList();
+      await system.acquireHostList();
+    db = await system.createDatabase(name);
     await db.installService(
       serviceServiceMount,
       fs.readFileSync(path.resolve("fixtures", "service-service-service.zip"))
@@ -43,7 +45,11 @@ describe("Foxx service", () => {
     try {
       await db.uninstallService(serviceServiceMount, { force: true });
     } catch (e: any) {}
-    db.close();
+    try {
+      await system.dropDatabase(name);
+    } finally {
+      system.close();
+    }
   });
 
   afterEach(async () => {

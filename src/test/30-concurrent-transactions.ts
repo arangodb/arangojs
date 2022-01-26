@@ -8,27 +8,26 @@ import { config } from "./_config";
 
 const delay = (ms: number) =>
   new Promise<void>((resolve) => setTimeout(() => resolve(), ms));
-const describe35 = config.arangoVersion! >= 30500 ? describe : describe.skip;
 
-describe35("Transactions", function () {
+describe("Transactions", function () {
   describe.skip("stream transactions", function () {
     this.timeout(0);
-    let db: Database;
+    let system: Database, db: Database;
     before(async () => {
-      db = new Database(config);
+      system = new Database(config);
       if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE")
-        await db.acquireHostList();
+        await system.acquireHostList();
     });
     after(() => {
-      db.close();
+      system.close();
     });
     const name = `testdb_${Date.now()}`;
     let collection: DocumentCollection;
     let allTransactions: Transaction[];
     before(async () => {
       allTransactions = [];
-      await db.createDatabase(name);
-      db.useDatabase(name);
+      await system.createDatabase(name);
+      db = system.database(name);
     });
     after(async () => {
       await Promise.all(
@@ -36,9 +35,8 @@ describe35("Transactions", function () {
           transaction.abort().catch(() => undefined)
         )
       );
-      db.useDatabase("_system");
       try {
-        await db.dropDatabase(name);
+        await system.dropDatabase(name);
       } catch {}
     });
     beforeEach(async () => {

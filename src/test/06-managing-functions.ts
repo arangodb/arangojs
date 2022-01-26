@@ -2,32 +2,29 @@ import { expect } from "chai";
 import { Database } from "../database";
 import { config } from "./_config";
 
-const it34 = config.arangoVersion! >= 30400 ? it : it.skip;
-
 describe("Managing functions", function () {
   const name = `testdb_${Date.now()}`;
-  let db: Database;
+  let system: Database, db: Database;
   before(async () => {
-    db = new Database(config);
-    if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE") await db.acquireHostList();
-    await db.createDatabase(name);
-    db.useDatabase(name);
+    system = new Database(config);
+    if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE")
+      await system.acquireHostList();
+    db = await system.createDatabase(name);
   });
   after(async () => {
     try {
-      db.useDatabase("_system");
-      await db.dropDatabase(name);
+      await system.dropDatabase(name);
     } finally {
-      db.close();
+      system.close();
     }
   });
   describe("database.listFunctions", () => {
-    it34("should be empty per default", async () => {
+    it("should be empty per default", async () => {
       const result = await db.listFunctions();
       expect(result).to.be.instanceof(Array);
       expect(result).to.be.empty;
     });
-    it34("should include before created function", async () => {
+    it("should include before created function", async () => {
       const name = "myfunctions::temperature::celsiustofahrenheit";
       const code = "function (celsius) { return celsius * 1.8 + 32; }";
       await db.createFunction(name, code);
@@ -58,8 +55,7 @@ describe("Managing functions", function () {
           "function (celsius) { return celsius * 1.8 + 32; }"
         );
         const info = await db.dropFunction(name);
-        if (config.arangoVersion! >= 30400)
-          expect(info).to.have.property("deletedCount", 1);
+        expect(info).to.have.property("deletedCount", 1);
       });
     });
   });

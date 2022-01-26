@@ -3,26 +3,23 @@ import { Database } from "../database";
 import { ArangoSearchView } from "../view";
 import { config } from "./_config";
 
-const describe34 = config.arangoVersion! >= 30400 ? describe : describe.skip;
-
-describe34("View metadata", function () {
+describe("View metadata", function () {
   const dbName = `testdb_${Date.now()}`;
   const viewName = `view-${Date.now()}`;
-  let db: Database;
+  let system: Database, db: Database;
   let view: ArangoSearchView;
   before(async () => {
-    db = new Database(config);
+    system = new Database(config);
     if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE")
-      await db.acquireHostList();
-    await db.createDatabase(dbName);
-    db.useDatabase(dbName);
+      await system.acquireHostList();
+    await system.createDatabase(dbName);
+    db = system.database(dbName);
     view = db.view(viewName);
     await view.create();
     await db.waitForPropagation({ path: `/_api/view/${view.name}` }, 10000);
   });
   after(async () => {
-    db.useDatabase("_system");
-    await db.dropDatabase(dbName);
+    await system.dropDatabase(dbName);
   });
   describe("view.get", () => {
     it("should return information about a view", async () => {

@@ -4,30 +4,25 @@ import { ArrayCursor } from "../cursor";
 import { Database, QueryOptions } from "../database";
 import { config } from "./_config";
 
-const describe34 = config.arangoVersion! >= 30400 ? describe : describe.skip;
-const itRdb = process.env.ARANGO_STORAGE_ENGINE !== "mmfiles" ? it : it.skip;
-
-describe34("AQL Stream queries", function () {
+describe("AQL Stream queries", function () {
   const name = `testdb_${Date.now()}`;
-  let db: Database;
+  let system: Database, db: Database;
   let allCursors: ArrayCursor[];
   before(async () => {
     allCursors = [];
-    db = new Database(config);
+    system = new Database(config);
     if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE")
-      await db.acquireHostList();
-    await db.createDatabase(name);
-    db.useDatabase(name);
+      await system.acquireHostList();
+    db = await system.createDatabase(name);
   });
   after(async () => {
     await Promise.all(
       allCursors.map((cursor) => cursor.kill().catch(() => undefined))
     );
     try {
-      db.useDatabase("_system");
-      await db.dropDatabase(name);
+      await system.dropDatabase(name);
     } finally {
-      db.close();
+      system.close();
     }
   });
   describe("database.query", () => {
@@ -103,7 +98,7 @@ describe34("AQL Stream queries", function () {
       );
       expect(count).to.equal(25 * 1000);
     });
-    itRdb("can do writes and reads", async () => {
+    it("can do writes and reads", async () => {
       const collection = db.collection(cname);
       const readQ = aql`FOR doc in ${collection} RETURN doc`;
       const writeQ = aql`FOR i in 1..10000 LET y = SLEEP(1) INSERT {forbidden: i} INTO ${collection}`;

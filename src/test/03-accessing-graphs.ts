@@ -7,19 +7,18 @@ const range = (n: number): number[] => Array.from(Array(n).keys());
 
 describe("Accessing graphs", function () {
   const name = `testdb_${Date.now()}`;
-  let db: Database;
+  let system: Database, db: Database;
   before(async () => {
-    db = new Database(config);
-    if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE") await db.acquireHostList();
-    await db.createDatabase(name);
-    db.useDatabase(name);
+    system = new Database(config);
+    if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE")
+      await system.acquireHostList();
+    db = await system.createDatabase(name);
   });
   after(async () => {
     try {
-      db.useDatabase("_system");
-      await db.dropDatabase(name);
+      await system.dropDatabase(name);
     } finally {
-      db.close();
+      system.close();
     }
   });
   describe("database.graph", () => {
