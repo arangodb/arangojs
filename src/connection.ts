@@ -19,7 +19,7 @@ import {
   isArangoErrorResponse,
   isSystemError,
 } from "./error";
-import { btoa } from "./lib/btoa";
+import { base64Encode } from "./lib/btoa";
 import { ERROR_ARANGO_CONFLICT } from "./lib/codes";
 import { Errback } from "./lib/errback";
 import { normalizeUrl } from "./lib/normalizeUrl";
@@ -691,7 +691,7 @@ export class Connection {
   setBasicAuth(auth: BasicAuthCredentials) {
     this.setHeader(
       "authorization",
-      `Basic ${btoa(`${auth.username}:${auth.password}`)}`
+      `Basic ${base64Encode(`${auth.username}:${auth.password}`)}`
     );
   }
 

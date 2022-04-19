@@ -18,7 +18,7 @@ import { Agent as HttpsAgent, request as httpsRequest } from "https";
 import { parse as parseUrl, UrlWithStringQuery } from "url";
 import { Headers, RequestInterceptors } from "../connection";
 import { SystemError } from "../error";
-import { btoa } from "./btoa";
+import { base64Encode } from "./btoa";
 import { Errback } from "./errback";
 import { joinPath } from "./joinPath";
 import { omit } from "./omit";
@@ -150,7 +150,7 @@ export function createRequest(
         headers["content-length"] = String(Buffer.byteLength(body));
       }
       if (!headers["authorization"]) {
-        headers["authorization"] = `Basic ${btoa(
+        headers["authorization"] = `Basic ${base64Encode(
           baseUrlParts.auth || "root:"
         )}`;
       }

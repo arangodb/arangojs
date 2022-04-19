@@ -9,7 +9,7 @@
  */
 
 import { RequestInterceptors, XhrOptions } from "../connection";
-import { btoa } from "./btoa";
+import { base64Encode } from "./btoa";
 import { Errback } from "./errback";
 import { omit } from "./omit";
 import {
@@ -49,7 +49,7 @@ export function createRequest(
   agentOptions: XhrOptions & RequestInterceptors
 ) {
   const base = new URL(baseUrl);
-  const auth = btoa(`${base.username || "root"}:${base.password}`);
+  const auth = base64Encode(`${base.username || "root"}:${base.password}`);
   base.username = "";
   base.password = "";
   const options = omit(agentOptions, ["maxSockets"]);
