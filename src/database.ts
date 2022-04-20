@@ -3516,7 +3516,7 @@ export class Database {
    * });
    * ```
    */
-  query(query: AqlQuery, options?: QueryOptions): Promise<ArrayCursor>;
+  query<T = any>(query: AqlQuery, options?: QueryOptions): Promise<ArrayCursor<T>>;
   /**
    * Performs a database query using the given `query` and `bindVars`, then
    * returns a new {@link ArrayCursor} instance for the result set.
@@ -3560,16 +3560,16 @@ export class Database {
    * );
    * ```
    */
-  query(
+  query<T = any>(
     query: string | AqlLiteral,
     bindVars?: Dict<any>,
     options?: QueryOptions
-  ): Promise<ArrayCursor>;
-  query(
+  ): Promise<ArrayCursor<T>>;
+  query<T = any>(
     query: string | AqlQuery | AqlLiteral,
     bindVars?: Dict<any>,
     options?: QueryOptions
-  ): Promise<ArrayCursor> {
+  ): Promise<ArrayCursor<T>> {
     if (isAqlQuery(query)) {
       options = bindVars;
       bindVars = query.bindVars;
@@ -3605,7 +3605,7 @@ export class Database {
         timeout,
       },
       (res) =>
-        new BatchedArrayCursor(
+        new BatchedArrayCursor<T>(
           this,
           res.body,
           res.arangojsHostId,
