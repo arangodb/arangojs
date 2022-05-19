@@ -1,0 +1,22 @@
+#!/bin/bash -e
+
+CONTAINER_NAME="arangojs-test"
+
+function cleanup {
+  docker kill "$CONTAINER_NAME" > /dev/null
+  docker rm "$CONTAINER_NAME" > /dev/null
+}
+
+trap cleanup EXIT
+
+docker run \
+  --detach \
+  --env "ARANGO_NO_AUTH=1" \
+  --name "$CONTAINER_NAME" \
+  -p 127.0.0.1:8529:8529/tcp \
+  arangodb/arangodb
+
+echo "Waiting for ArangoDB..."
+npm exec wait-on http-get://localhost:8529
+
+npm test
