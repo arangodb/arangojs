@@ -1,0 +1,944 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>indexes | arangojs - v7.8.0</title>
+	<meta name="description" content="Documentation for arangojs - v7.8.0">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="../assets/css/main.css">
+	<script async src="../assets/js/search.js" id="search-script"></script>
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.json" data-base="..">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="../index.html" class="title">arangojs - v7.8.0</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="../modules.html">arangojs - v7.8.0</a>
+				</li>
+				<li>
+					<a href="indexes.html">indexes</a>
+				</li>
+			</ul>
+			<h1>Module indexes</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<pre><code class="language-ts"><span style="color: #AF00DB">import</span><span style="color: #000000"> </span><span style="color: #AF00DB">type</span><span style="color: #000000"> {</span>
+<span style="color: #000000">  </span><span style="color: #001080">FulltextIndex</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">GeoIndex</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">HashIndex</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">PersistentIndex</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">PrimaryIndex</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">SkiplistIndex</span><span style="color: #000000">,</span>
+<span style="color: #000000">  </span><span style="color: #001080">TtlIndex</span><span style="color: #000000">,</span>
+<span style="color: #000000">} </span><span style="color: #AF00DB">from</span><span style="color: #000000"> </span><span style="color: #A31515">&quot;arangojs/indexes&quot;</span><span style="color: #000000">;</span>
+</code></pre>
+					</div>
+					<p>The &quot;indexes&quot; module provides index-related types for TypeScript.</p>
+				</div>
+			</section>
+			<section class="tsd-panel-group tsd-index-group">
+				<h2>Index</h2>
+				<section class="tsd-panel tsd-index-panel">
+					<div class="tsd-index-content">
+						<section class="tsd-index-section ">
+							<h3>Type aliases</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="indexes.html#ensurefulltextindexoptions" class="tsd-kind-icon">Ensure<wbr>Fulltext<wbr>Index<wbr>Options</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="indexes.html#ensuregeoindexoptions" class="tsd-kind-icon">Ensure<wbr>Geo<wbr>Index<wbr>Options</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="indexes.html#ensurehashindexoptions" class="tsd-kind-icon">Ensure<wbr>Hash<wbr>Index<wbr>Options</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="indexes.html#ensurepersistentindexoptions" class="tsd-kind-icon">Ensure<wbr>Persistent<wbr>Index<wbr>Options</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="indexes.html#ensureskiplistindexoptions" class="tsd-kind-icon">Ensure<wbr>Skiplist<wbr>Index<wbr>Options</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="indexes.html#ensurettlindexoptions" class="tsd-kind-icon">Ensure<wbr>Ttl<wbr>Index<wbr>Options</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="indexes.html#ensurezkdindexoptions" class="tsd-kind-icon">Ensure<wbr>Zkd<wbr>Index<wbr>Options</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="indexes.html#fulltextindex" class="tsd-kind-icon">Fulltext<wbr>Index</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="indexes.html#genericindex" class="tsd-kind-icon">Generic<wbr>Index</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="indexes.html#geoindex" class="tsd-kind-icon">Geo<wbr>Index</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="indexes.html#hashindex" class="tsd-kind-icon">Hash<wbr>Index</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="indexes.html#index" class="tsd-kind-icon">Index</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="indexes.html#indexselector" class="tsd-kind-icon">Index<wbr>Selector</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="indexes.html#objectwithid" class="tsd-kind-icon">Object<wbr>With<wbr>Id</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="indexes.html#objectwithname" class="tsd-kind-icon">Object<wbr>With<wbr>Name</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="indexes.html#persistentindex" class="tsd-kind-icon">Persistent<wbr>Index</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="indexes.html#primaryindex" class="tsd-kind-icon">Primary<wbr>Index</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="indexes.html#skiplistindex" class="tsd-kind-icon">Skiplist<wbr>Index</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="indexes.html#ttlindex" class="tsd-kind-icon">Ttl<wbr>Index</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="indexes.html#zkdindex" class="tsd-kind-icon">Zkd<wbr>Index</a></li>
+							</ul>
+						</section>
+					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Type aliases</h2>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
+					<a name="ensurefulltextindexoptions" class="tsd-anchor"></a>
+					<h3>Ensure<wbr>Fulltext<wbr>Index<wbr>Options</h3>
+					<div class="tsd-signature tsd-kind-icon">Ensure<wbr>Fulltext<wbr>Index<wbr>Options<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>fields<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">; </span>inBackground<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>minLength<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>name<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>type<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;fulltext&quot;</span><span class="tsd-signature-symbol"> }</span></div>
+					<aside class="tsd-sources">
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Options for creating a fulltext index.</p>
+						</div>
+					</div>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter">
+								<h5>fields<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>An array containing exactly one attribute path.</p>
+									</div>
+								</div>
+							</li>
+							<li class="tsd-parameter">
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> in<wbr>Background<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>If set to <code>true</code>, the index will be created in the background to reduce
+										the write-lock duration for the collection during index creation.</p>
+									</div>
+									<p>Default: <code>false</code></p>
+								</div>
+							</li>
+							<li class="tsd-parameter">
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> min<wbr>Length<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Minimum character length of words to index.</p>
+									</div>
+								</div>
+							</li>
+							<li class="tsd-parameter">
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> name<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>A unique name for this index.</p>
+									</div>
+								</div>
+							</li>
+							<li class="tsd-parameter">
+								<h5>type<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;fulltext&quot;</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Type of this index.</p>
+									</div>
+								</div>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
+					<a name="ensuregeoindexoptions" class="tsd-anchor"></a>
+					<h3>Ensure<wbr>Geo<wbr>Index<wbr>Options</h3>
+					<div class="tsd-signature tsd-kind-icon">Ensure<wbr>Geo<wbr>Index<wbr>Options<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>fields<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">; </span>geoJson<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol">; </span>inBackground<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>name<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>type<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;geo&quot;</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">{ </span>fields<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">; </span>geoJson<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>inBackground<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>name<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>type<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;geo&quot;</span><span class="tsd-signature-symbol"> }</span></div>
+					<aside class="tsd-sources">
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Options for creating a geo index.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
+					<a name="ensurehashindexoptions" class="tsd-anchor"></a>
+					<h3>Ensure<wbr>Hash<wbr>Index<wbr>Options</h3>
+					<div class="tsd-signature tsd-kind-icon">Ensure<wbr>Hash<wbr>Index<wbr>Options<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>deduplicate<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>estimates<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>fields<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span>inBackground<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>name<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>sparse<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>type<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;hash&quot;</span><span class="tsd-signature-symbol">; </span>unique<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> }</span></div>
+					<aside class="tsd-sources">
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>(MMFiles only.) Options for creating a hash index.</p>
+						</div>
+						<p>When using the RocksDB storage engine, this index type behaves identically
+						to <a href="indexes.html#ensurepersistentindexoptions">EnsurePersistentIndexOptions</a>.</p>
+						<dl class="tsd-comment-tags">
+							<dt>deprecated</dt>
+							<dd><p>Hash indexes have been deprecated in ArangoDB 3.9 and should be
+								replaced with persistent indexes.</p>
+							</dd>
+						</dl>
+					</div>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter">
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> deduplicate<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>If set to <code>false</code>, array values will not be deduplicated.</p>
+									</div>
+									<p>Default: <code>true</code></p>
+								</div>
+							</li>
+							<li class="tsd-parameter">
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> estimates<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>If set to <code>false</code>, index selectivity estimates will be disabled for this
+										index.</p>
+									</div>
+									<p>Default: <code>true</code></p>
+								</div>
+							</li>
+							<li class="tsd-parameter">
+								<h5>fields<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>An array of attribute paths.</p>
+									</div>
+								</div>
+							</li>
+							<li class="tsd-parameter">
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> in<wbr>Background<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>If set to <code>true</code>, the index will be created in the background to reduce
+										the write-lock duration for the collection during index creation.</p>
+									</div>
+									<p>Default: <code>false</code></p>
+								</div>
+							</li>
+							<li class="tsd-parameter">
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> name<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>A unique name for this index.</p>
+									</div>
+								</div>
+							</li>
+							<li class="tsd-parameter">
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> sparse<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>If set to <code>true</code>, the index will omit documents that do not contain at
+											least one of the attribute paths in <code>fields</code> and these documents will be
+										ignored for uniqueness checks.</p>
+									</div>
+									<p>Default: <code>false</code></p>
+								</div>
+							</li>
+							<li class="tsd-parameter">
+								<h5>type<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;hash&quot;</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Type of this index.</p>
+									</div>
+								</div>
+							</li>
+							<li class="tsd-parameter">
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> unique<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>If set to <code>true</code>, a unique index will be created.</p>
+									</div>
+									<p>Default: <code>false</code></p>
+								</div>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
+					<a name="ensurepersistentindexoptions" class="tsd-anchor"></a>
+					<h3>Ensure<wbr>Persistent<wbr>Index<wbr>Options</h3>
+					<div class="tsd-signature tsd-kind-icon">Ensure<wbr>Persistent<wbr>Index<wbr>Options<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>estimates<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>fields<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span>inBackground<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>name<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>sparse<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>type<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;persistent&quot;</span><span class="tsd-signature-symbol">; </span>unique<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> }</span></div>
+					<aside class="tsd-sources">
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Options for creating a persistent index.</p>
+						</div>
+					</div>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter">
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> estimates<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>If set to <code>false</code>, index selectivity estimates will be disabled for this
+										index.</p>
+									</div>
+									<p>Default: <code>true</code></p>
+								</div>
+							</li>
+							<li class="tsd-parameter">
+								<h5>fields<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>An array of attribute paths.</p>
+									</div>
+								</div>
+							</li>
+							<li class="tsd-parameter">
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> in<wbr>Background<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>If set to <code>true</code>, the index will be created in the background to reduce
+										the write-lock duration for the collection during index creation.</p>
+									</div>
+									<p>Default: <code>false</code></p>
+								</div>
+							</li>
+							<li class="tsd-parameter">
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> name<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>A unique name for this index.</p>
+									</div>
+								</div>
+							</li>
+							<li class="tsd-parameter">
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> sparse<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>If set to <code>true</code>, the index will omit documents that do not contain at
+											least one of the attribute paths in <code>fields</code> and these documents will be
+										ignored for uniqueness checks.</p>
+									</div>
+									<p>Default: <code>false</code></p>
+								</div>
+							</li>
+							<li class="tsd-parameter">
+								<h5>type<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;persistent&quot;</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Type of this index.</p>
+									</div>
+								</div>
+							</li>
+							<li class="tsd-parameter">
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> unique<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>If set to <code>true</code>, a unique index will be created.</p>
+									</div>
+									<p>Default: <code>false</code></p>
+								</div>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
+					<a name="ensureskiplistindexoptions" class="tsd-anchor"></a>
+					<h3>Ensure<wbr>Skiplist<wbr>Index<wbr>Options</h3>
+					<div class="tsd-signature tsd-kind-icon">Ensure<wbr>Skiplist<wbr>Index<wbr>Options<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>deduplicate<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>estimates<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>fields<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span>inBackground<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>name<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>sparse<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>type<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;skiplist&quot;</span><span class="tsd-signature-symbol">; </span>unique<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> }</span></div>
+					<aside class="tsd-sources">
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>(MMFiles only.) Options for creating a skiplist index.</p>
+						</div>
+						<p>When using the RocksDB storage engine, this index type behaves identically
+						to <a href="indexes.html#ensurepersistentindexoptions">EnsurePersistentIndexOptions</a>.</p>
+						<dl class="tsd-comment-tags">
+							<dt>deprecated</dt>
+							<dd><p>Skiplist indexes have been deprecated in ArangoDB 3.9 and should
+								be replaced with persistent indexes.</p>
+							</dd>
+						</dl>
+					</div>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter">
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> deduplicate<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>If set to <code>false</code>, array values will not be deduplicated.</p>
+									</div>
+									<p>Default: <code>true</code></p>
+								</div>
+							</li>
+							<li class="tsd-parameter">
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> estimates<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>If set to <code>false</code>, index selectivity estimates will be disabled for this
+										index.</p>
+									</div>
+									<p>Default: <code>true</code></p>
+								</div>
+							</li>
+							<li class="tsd-parameter">
+								<h5>fields<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>An array of attribute paths.</p>
+									</div>
+								</div>
+							</li>
+							<li class="tsd-parameter">
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> in<wbr>Background<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>If set to <code>true</code>, the index will be created in the background to reduce
+										the write-lock duration for the collection during index creation.</p>
+									</div>
+									<p>Default: <code>false</code></p>
+								</div>
+							</li>
+							<li class="tsd-parameter">
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> name<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>A unique name for this index.</p>
+									</div>
+								</div>
+							</li>
+							<li class="tsd-parameter">
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> sparse<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>If set to <code>true</code>, the index will omit documents that do not contain at
+											least one of the attribute paths in <code>fields</code> and these documents will be
+										ignored for uniqueness checks.</p>
+									</div>
+									<p>Default: <code>false</code></p>
+								</div>
+							</li>
+							<li class="tsd-parameter">
+								<h5>type<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;skiplist&quot;</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Type of this index.</p>
+									</div>
+								</div>
+							</li>
+							<li class="tsd-parameter">
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> unique<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>If set to <code>true</code>, a unique index will be created.</p>
+									</div>
+									<p>Default: <code>false</code></p>
+								</div>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
+					<a name="ensurettlindexoptions" class="tsd-anchor"></a>
+					<h3>Ensure<wbr>Ttl<wbr>Index<wbr>Options</h3>
+					<div class="tsd-signature tsd-kind-icon">Ensure<wbr>Ttl<wbr>Index<wbr>Options<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>expireAfter<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>fields<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">; </span>inBackground<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>name<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>type<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;ttl&quot;</span><span class="tsd-signature-symbol"> }</span></div>
+					<aside class="tsd-sources">
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Options for creating a TTL index.</p>
+						</div>
+					</div>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter">
+								<h5>expire<wbr>After<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Duration in seconds after the attribute value at which the document will
+										be considered as expired.</p>
+									</div>
+								</div>
+							</li>
+							<li class="tsd-parameter">
+								<h5>fields<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>An array containing exactly one attribute path.</p>
+									</div>
+								</div>
+							</li>
+							<li class="tsd-parameter">
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> in<wbr>Background<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>If set to <code>true</code>, the index will be created in the background to reduce
+										the write-lock duration for the collection during index creation.</p>
+									</div>
+									<p>Default: <code>false</code></p>
+								</div>
+							</li>
+							<li class="tsd-parameter">
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> name<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>A unique name for this index.</p>
+									</div>
+								</div>
+							</li>
+							<li class="tsd-parameter">
+								<h5>type<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;ttl&quot;</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Type of this index.</p>
+									</div>
+								</div>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
+					<a name="ensurezkdindexoptions" class="tsd-anchor"></a>
+					<h3>Ensure<wbr>Zkd<wbr>Index<wbr>Options</h3>
+					<div class="tsd-signature tsd-kind-icon">Ensure<wbr>Zkd<wbr>Index<wbr>Options<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>fieldValueTypes<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;double&quot;</span><span class="tsd-signature-symbol">; </span>fields<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span>inBackground<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>name<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>type<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;zkd&quot;</span><span class="tsd-signature-symbol"> }</span></div>
+					<aside class="tsd-sources">
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Options for creating a ZKD index.</p>
+						</div>
+					</div>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter">
+								<h5>field<wbr>Value<wbr>Types<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;double&quot;</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Data type of the dimension attributes.</p>
+									</div>
+								</div>
+							</li>
+							<li class="tsd-parameter">
+								<h5>fields<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>An array containing attribute paths for the dimensions.</p>
+									</div>
+								</div>
+							</li>
+							<li class="tsd-parameter">
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> in<wbr>Background<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>If set to <code>true</code>, the index will be created in the background to reduce
+										the write-lock duration for the collection during index creation.</p>
+									</div>
+									<p>Default: <code>false</code></p>
+								</div>
+							</li>
+							<li class="tsd-parameter">
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> name<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>A unique name for this index.</p>
+									</div>
+								</div>
+							</li>
+							<li class="tsd-parameter">
+								<h5>type<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;zkd&quot;</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Type of this index.</p>
+									</div>
+								</div>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
+					<a name="fulltextindex" class="tsd-anchor"></a>
+					<h3>Fulltext<wbr>Index</h3>
+					<div class="tsd-signature tsd-kind-icon">Fulltext<wbr>Index<span class="tsd-signature-symbol">:</span> <a href="indexes.html#genericindex" class="tsd-signature-type" data-tsd-kind="Type alias">GenericIndex</a><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{ </span>fields<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">; </span>minLength<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>type<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;fulltext&quot;</span><span class="tsd-signature-symbol"> }</span></div>
+					<aside class="tsd-sources">
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>An object representing a fulltext index.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
+					<a name="genericindex" class="tsd-anchor"></a>
+					<h3>Generic<wbr>Index</h3>
+					<div class="tsd-signature tsd-kind-icon">Generic<wbr>Index<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>name<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>sparse<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>unique<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> }</span></div>
+					<aside class="tsd-sources">
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Shared attributes of all index types.</p>
+						</div>
+					</div>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter">
+								<h5>id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>A unique identifier for this index.</p>
+									</div>
+								</div>
+							</li>
+							<li class="tsd-parameter">
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> name<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>A unique name for this index.</p>
+									</div>
+								</div>
+							</li>
+							<li class="tsd-parameter">
+								<h5>sparse<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Whether documents not containing at least one of the attribute paths
+										are omitted by this index.</p>
+									</div>
+								</div>
+							</li>
+							<li class="tsd-parameter">
+								<h5>unique<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<div class="lead">
+										<p>Whether this index enforces uniqueness for values of its attribute paths.</p>
+									</div>
+								</div>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
+					<a name="geoindex" class="tsd-anchor"></a>
+					<h3>Geo<wbr>Index</h3>
+					<div class="tsd-signature tsd-kind-icon">Geo<wbr>Index<span class="tsd-signature-symbol">:</span> <a href="indexes.html#genericindex" class="tsd-signature-type" data-tsd-kind="Type alias">GenericIndex</a><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{ </span>bestIndexedLevel<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>fields<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">; </span>geoJson<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>maxNumCoverCells<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>type<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;geo&quot;</span><span class="tsd-signature-symbol">; </span>worstIndexedLevel<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span></div>
+					<aside class="tsd-sources">
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>An object representing a geo index.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
+					<a name="hashindex" class="tsd-anchor"></a>
+					<h3>Hash<wbr>Index</h3>
+					<div class="tsd-signature tsd-kind-icon">Hash<wbr>Index<span class="tsd-signature-symbol">:</span> <a href="indexes.html#genericindex" class="tsd-signature-type" data-tsd-kind="Type alias">GenericIndex</a><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{ </span>fields<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span>selectivityEstimate<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>type<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;hash&quot;</span><span class="tsd-signature-symbol"> }</span></div>
+					<aside class="tsd-sources">
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>An object representing a hash index.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
+					<a name="index" class="tsd-anchor"></a>
+					<h3>Index</h3>
+					<div class="tsd-signature tsd-kind-icon">Index<span class="tsd-signature-symbol">:</span> <a href="indexes.html#geoindex" class="tsd-signature-type" data-tsd-kind="Type alias">GeoIndex</a><span class="tsd-signature-symbol"> | </span><a href="indexes.html#fulltextindex" class="tsd-signature-type" data-tsd-kind="Type alias">FulltextIndex</a><span class="tsd-signature-symbol"> | </span><a href="indexes.html#persistentindex" class="tsd-signature-type" data-tsd-kind="Type alias">PersistentIndex</a><span class="tsd-signature-symbol"> | </span><a href="indexes.html#primaryindex" class="tsd-signature-type" data-tsd-kind="Type alias">PrimaryIndex</a><span class="tsd-signature-symbol"> | </span><a href="indexes.html#hashindex" class="tsd-signature-type" data-tsd-kind="Type alias">HashIndex</a><span class="tsd-signature-symbol"> | </span><a href="indexes.html#skiplistindex" class="tsd-signature-type" data-tsd-kind="Type alias">SkiplistIndex</a><span class="tsd-signature-symbol"> | </span><a href="indexes.html#ttlindex" class="tsd-signature-type" data-tsd-kind="Type alias">TtlIndex</a><span class="tsd-signature-symbol"> | </span><a href="indexes.html#zkdindex" class="tsd-signature-type" data-tsd-kind="Type alias">ZkdIndex</a></div>
+					<aside class="tsd-sources">
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>An object representing an index.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
+					<a name="indexselector" class="tsd-anchor"></a>
+					<h3>Index<wbr>Selector</h3>
+					<div class="tsd-signature tsd-kind-icon">Index<wbr>Selector<span class="tsd-signature-symbol">:</span> <a href="indexes.html#objectwithid" class="tsd-signature-type" data-tsd-kind="Type alias">ObjectWithId</a><span class="tsd-signature-symbol"> | </span><a href="indexes.html#objectwithname" class="tsd-signature-type" data-tsd-kind="Type alias">ObjectWithName</a><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></div>
+					<aside class="tsd-sources">
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Index name, id or object with a <code>name</code> or <code>id</code> property.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
+					<a name="objectwithid" class="tsd-anchor"></a>
+					<h3>Object<wbr>With<wbr>Id</h3>
+					<div class="tsd-signature tsd-kind-icon">Object<wbr>With<wbr>Id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span></div>
+					<aside class="tsd-sources">
+					</aside>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-index-signature">
+								<h5><span class="tsd-signature-symbol">[</span>key: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]: </span><span class="tsd-signature-type">any</span></h5>
+							</li>
+							<li class="tsd-parameter">
+								<h5>id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
+					<a name="objectwithname" class="tsd-anchor"></a>
+					<h3>Object<wbr>With<wbr>Name</h3>
+					<div class="tsd-signature tsd-kind-icon">Object<wbr>With<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span></div>
+					<aside class="tsd-sources">
+					</aside>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-index-signature">
+								<h5><span class="tsd-signature-symbol">[</span>key: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]: </span><span class="tsd-signature-type">any</span></h5>
+							</li>
+							<li class="tsd-parameter">
+								<h5>name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
+					<a name="persistentindex" class="tsd-anchor"></a>
+					<h3>Persistent<wbr>Index</h3>
+					<div class="tsd-signature tsd-kind-icon">Persistent<wbr>Index<span class="tsd-signature-symbol">:</span> <a href="indexes.html#genericindex" class="tsd-signature-type" data-tsd-kind="Type alias">GenericIndex</a><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{ </span>fields<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span>type<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;persistent&quot;</span><span class="tsd-signature-symbol"> }</span></div>
+					<aside class="tsd-sources">
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>An object representing a persistent index.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
+					<a name="primaryindex" class="tsd-anchor"></a>
+					<h3>Primary<wbr>Index</h3>
+					<div class="tsd-signature tsd-kind-icon">Primary<wbr>Index<span class="tsd-signature-symbol">:</span> <a href="indexes.html#genericindex" class="tsd-signature-type" data-tsd-kind="Type alias">GenericIndex</a><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{ </span>fields<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span>selectivityEstimate<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>type<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;primary&quot;</span><span class="tsd-signature-symbol"> }</span></div>
+					<aside class="tsd-sources">
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>An object representing a primary index.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
+					<a name="skiplistindex" class="tsd-anchor"></a>
+					<h3>Skiplist<wbr>Index</h3>
+					<div class="tsd-signature tsd-kind-icon">Skiplist<wbr>Index<span class="tsd-signature-symbol">:</span> <a href="indexes.html#genericindex" class="tsd-signature-type" data-tsd-kind="Type alias">GenericIndex</a><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{ </span>fields<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span>type<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;skiplist&quot;</span><span class="tsd-signature-symbol"> }</span></div>
+					<aside class="tsd-sources">
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>An object representing a skiplist index.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
+					<a name="ttlindex" class="tsd-anchor"></a>
+					<h3>Ttl<wbr>Index</h3>
+					<div class="tsd-signature tsd-kind-icon">Ttl<wbr>Index<span class="tsd-signature-symbol">:</span> <a href="indexes.html#genericindex" class="tsd-signature-type" data-tsd-kind="Type alias">GenericIndex</a><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{ </span>expireAfter<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>fields<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol">; </span>selectivityEstimate<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>type<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;ttl&quot;</span><span class="tsd-signature-symbol"> }</span></div>
+					<aside class="tsd-sources">
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>An object representing a TTL index.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
+					<a name="zkdindex" class="tsd-anchor"></a>
+					<h3>Zkd<wbr>Index</h3>
+					<div class="tsd-signature tsd-kind-icon">Zkd<wbr>Index<span class="tsd-signature-symbol">:</span> <a href="indexes.html#genericindex" class="tsd-signature-type" data-tsd-kind="Type alias">GenericIndex</a><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{ </span>fieldValueTypes<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;double&quot;</span><span class="tsd-signature-symbol">; </span>fields<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span>type<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;zkd&quot;</span><span class="tsd-signature-symbol"> }</span></div>
+					<aside class="tsd-sources">
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>An object representing a TTL index.</p>
+						</div>
+					</div>
+				</section>
+			</section>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class=" ">
+						<a href="../modules.html">Exports</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="analyzer.html">analyzer</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="aql.html">aql</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="collection.html">collection</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="connection.html">connection</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="cursor.html">cursor</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="database.html">database</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="documents.html">documents</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="error.html">error</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="foxx_manifest.html">foxx-<wbr>manifest</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="graph.html">graph</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="index.html">index</a>
+					</li>
+					<li class="current tsd-kind-module">
+						<a href="indexes.html">indexes</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="route.html">route</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="transaction.html">transaction</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="view.html">view</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
+						<a href="indexes.html#ensurefulltextindexoptions" class="tsd-kind-icon">Ensure<wbr>Fulltext<wbr>Index<wbr>Options</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
+						<a href="indexes.html#ensuregeoindexoptions" class="tsd-kind-icon">Ensure<wbr>Geo<wbr>Index<wbr>Options</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
+						<a href="indexes.html#ensurehashindexoptions" class="tsd-kind-icon">Ensure<wbr>Hash<wbr>Index<wbr>Options</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
+						<a href="indexes.html#ensurepersistentindexoptions" class="tsd-kind-icon">Ensure<wbr>Persistent<wbr>Index<wbr>Options</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
+						<a href="indexes.html#ensureskiplistindexoptions" class="tsd-kind-icon">Ensure<wbr>Skiplist<wbr>Index<wbr>Options</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
+						<a href="indexes.html#ensurettlindexoptions" class="tsd-kind-icon">Ensure<wbr>Ttl<wbr>Index<wbr>Options</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
+						<a href="indexes.html#ensurezkdindexoptions" class="tsd-kind-icon">Ensure<wbr>Zkd<wbr>Index<wbr>Options</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
+						<a href="indexes.html#fulltextindex" class="tsd-kind-icon">Fulltext<wbr>Index</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
+						<a href="indexes.html#genericindex" class="tsd-kind-icon">Generic<wbr>Index</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
+						<a href="indexes.html#geoindex" class="tsd-kind-icon">Geo<wbr>Index</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
+						<a href="indexes.html#hashindex" class="tsd-kind-icon">Hash<wbr>Index</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
+						<a href="indexes.html#index" class="tsd-kind-icon">Index</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
+						<a href="indexes.html#indexselector" class="tsd-kind-icon">Index<wbr>Selector</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
+						<a href="indexes.html#objectwithid" class="tsd-kind-icon">Object<wbr>With<wbr>Id</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
+						<a href="indexes.html#objectwithname" class="tsd-kind-icon">Object<wbr>With<wbr>Name</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
+						<a href="indexes.html#persistentindex" class="tsd-kind-icon">Persistent<wbr>Index</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
+						<a href="indexes.html#primaryindex" class="tsd-kind-icon">Primary<wbr>Index</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
+						<a href="indexes.html#skiplistindex" class="tsd-kind-icon">Skiplist<wbr>Index</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
+						<a href="indexes.html#ttlindex" class="tsd-kind-icon">Ttl<wbr>Index</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-module">
+						<a href="indexes.html#zkdindex" class="tsd-kind-icon">Zkd<wbr>Index</a>
+					</li>
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-namespace"><span class="tsd-kind-icon">Namespace</span></li>
+				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
+				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
+				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
+				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="../assets/js/main.js"></script>
+</body>
+</html>
