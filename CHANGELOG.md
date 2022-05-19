@@ -16,6 +16,13 @@ This driver uses semantic versioning:
 
 ## [Unreleased]
 
+### Added
+
+- Added `retryOnConflict` option to `db.query` and `route.request`
+
+  This option allows specifying the number of times the request will be retried
+  if it results in a write-write conflict.
+
 ## [7.7.0] - 2022-01-26
 
 ### Changed

@@ -219,6 +219,13 @@ export type QueryOptions = {
    */
   timeout?: number;
   /**
+   * If set to a positive number, the query will automatically be retried at
+   * most this many times if it results in a write-write conflict.
+   *
+   * Default: `0`
+   */
+  retryOnConflict?: number;
+  /**
    * Unless set to `false`, the number of result values in the result set will
    * be returned in the `count` attribute. This may be disabled by default in
    * a future version of ArangoDB if calculating this value has a performance
@@ -3579,6 +3586,7 @@ export class Database {
     }
     const {
       allowDirtyRead,
+      retryOnConflict,
       count,
       batchSize,
       cache,
@@ -3602,6 +3610,7 @@ export class Database {
           options: opts,
         },
         allowDirtyRead,
+        retryOnConflict,
         timeout,
       },
       (res) =>
