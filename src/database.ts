@@ -3437,10 +3437,13 @@ export class Database {
    * ```js
    * const db = new Database();
    * const active = true;
+   * const Users = db.collection("_users");
    *
-   * // Using an aql template string
+   * // Using an aql template string:
+   * // Bind parameters are automatically extracted and arangojs collections
+   * // are automatically passed as collection bind parameters.
    * const cursor = await db.query(aql`
-   *   FOR u IN _users
+   *   FOR u IN ${Users}
    *   FILTER u.authData.active == ${active}
    *   RETURN u.user
    * `);
@@ -3451,19 +3454,23 @@ export class Database {
    * ```js
    * const db = new Database();
    * const active = true;
+   * const Users = db.collection("_users");
    *
    * // Using an object with a regular multi-line string
    * const cursor = await db.query({
    *   query: `
-   *     FOR u IN _users
+   *     FOR u IN @@users
    *     FILTER u.authData.active == @active
    *     RETURN u.user
    *   `,
-   *   bindVars: { active: active }
+   *   bindVars: { active: active, "@users": Users.name }
    * });
    * ```
    */
-  query(query: AqlQuery, options?: QueryOptions): Promise<ArrayCursor>;
+  query<T = any>(
+    query: AqlQuery,
+    options?: QueryOptions
+  ): Promise<ArrayCursor<T>>;
   /**
    * Performs a database query using the given `query` and `bindVars`, then
    * returns a new {@link ArrayCursor} instance for the result set.
@@ -3479,15 +3486,16 @@ export class Database {
    * ```js
    * const db = new Database();
    * const active = true;
+   * const Users = db.collection("_users");
    *
    * const cursor = await db.query(
    *   // A normal multi-line string
    *   `
-   *     FOR u IN _users
+   *     FOR u IN @@users
    *     FILTER u.authData.active == @active
    *     RETURN u.user
    *   `,
-   *   { active: active }
+   *   { active: active, "@users": Users.name }
    * );
    * ```
    *
@@ -3495,28 +3503,29 @@ export class Database {
    * ```js
    * const db = new Database();
    * const active = true;
+   * const Users = db.collection("_users");
    *
    * const cursor = await db.query(
    *   // An AQL literal created from a normal multi-line string
    *   aql.literal(`
-   *     FOR u IN _users
+   *     FOR u IN @@users
    *     FILTER u.authData.active == @active
    *     RETURN u.user
    *   `),
-   *   { active: active }
+   *   { active: active, "@users": Users.name }
    * );
    * ```
    */
-  query(
+  query<T = any>(
     query: string | AqlLiteral,
     bindVars?: Record<string, any>,
     options?: QueryOptions
-  ): Promise<ArrayCursor>;
-  query(
+  ): Promise<ArrayCursor<T>>;
+  query<T = any>(
     query: string | AqlQuery | AqlLiteral,
     bindVars?: Record<string, any>,
     options?: QueryOptions
-  ): Promise<ArrayCursor> {
+  ): Promise<ArrayCursor<T>> {
     if (isAqlQuery(query)) {
       options = bindVars;
       bindVars = query.bindVars;
@@ -3554,7 +3563,7 @@ export class Database {
         timeout,
       },
       (res) =>
-        new BatchedArrayCursor(
+        new BatchedArrayCursor<T>(
           this,
           res.body,
           res.arangojsHostId,

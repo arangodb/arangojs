@@ -67,6 +67,25 @@ This driver uses semantic versioning:
   modules to be polyfilled to work in the browser. This also drastically
   reduces the file size of the pre-built browser bundle `arangojs/web`.
 
+- `db.query` now supports a generic return type ([#764](https://github.com/arangodb/arangojs/issues/764))
+
+  This allows explictly setting the item type of the `ArrayCursor` returned by
+  the query without using a type assertion on the promise result. Note that
+  arangojs can make no guarantees that the type matches the actual data
+  returned by the query.
+
+  ```ts
+  const numbers = await db.query<{ index: number; squared: number }>(aql`
+    FOR i IN 1..1000
+    RETURN {
+      index: i,
+      squared: i * i
+    }
+  `);
+  const first = await numbers.next();
+  console.log(first.index, first.squared); // 1 1
+  ```
+
 ### Added
 
 - Added `toJSON` method to system errors
