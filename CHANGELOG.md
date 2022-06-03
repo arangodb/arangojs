@@ -45,7 +45,7 @@ This driver uses semantic versioning:
   pre-built browser bundle. You may still be able to use arangojs in IE11 when
   bundling arangojs yourself but this may require polyfills and transformation.
 
-- Updated TypeScript to version 4
+- Updated TypeScript to version 4.7
 
   This may result in type signatures that are incompatible with TypeScript 3
   being added in future releases (including patch releases).
