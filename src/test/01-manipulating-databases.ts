@@ -101,7 +101,8 @@ describe("Manipulating databases", function () {
     })
     after(async () => {
       try {
-        await system.dropDatabase(username);
+        await system.dropDatabase(database);
+        await system.removeUser(username);
       } catch {}
     })
     it('read the access levels for a database', async () => {
@@ -118,7 +119,8 @@ describe("Manipulating databases", function () {
     })
     after(async () => {
       try {
-        await system.dropDatabase(username);
+        await system.dropDatabase(database);
+        await system.removeUser(username);
       } catch {}
     })
     it('set the access levels for a database', async () => {
@@ -135,7 +137,8 @@ describe("Manipulating databases", function () {
     })
     after(async () => {
       try {
-        await system.dropDatabase(username);
+        await system.dropDatabase(database);
+        await system.removeUser(username);
       } catch {}
     })
     it('clear the access levels for a database', async () => {
@@ -152,7 +155,8 @@ describe("Manipulating databases", function () {
     })
     after(async () => {
       try {
-        await system.dropDatabase(username);
+        await system.dropDatabase(database);
+        await system.removeUser(username);
       } catch {}
     })
     it('get users databases', async () => {
