@@ -2788,7 +2788,7 @@ export class Database {
   getUserAccessLevel(
     username: string,
     { database, collection }: UserAccessLevelOptions
-  ): Promise<AccessLevel> {
+  ): Promise<AccessLevel & ArangoResponseMetadata> {
     const databaseName = isArangoDatabase(database)
       ? database.name
       : database?.normalize("NFC") ??
@@ -2809,7 +2809,7 @@ export class Database {
           username
         )}/database/${encodeURIComponent(databaseName)}${suffix}`,
       },
-      (res) => res.body
+      ({body}) => (body.error ? body : body.result)
     );
   }
 
@@ -2985,7 +2985,7 @@ export class Database {
   clearUserAccessLevel(
     username: string,
     { database, collection }: UserAccessLevelOptions
-  ): Promise<Record<string, AccessLevel> & ArangoResponseMetadata> {
+  ): Promise<ArangoResponseMetadata> {
     const databaseName = isArangoDatabase(database)
       ? database.name
       : database?.normalize("NFC") ??
@@ -3030,7 +3030,7 @@ export class Database {
   getUserDatabases(
     username: string,
     full?: false
-  ): Promise<Record<string, AccessLevel>>;
+  ): Promise<Record<string, AccessLevel> & ArangoResponseMetadata>;
   /**
    * Fetches an object mapping names of databases to the access level of the
    * given ArangoDB user for those databases and the collections within each
@@ -3061,14 +3061,19 @@ export class Database {
         permission: AccessLevel;
         collections: Record<string, AccessLevel | "undefined">;
       }
-    >
+    > & ArangoResponseMetadata
   >;
-  getUserDatabases(username: string, full?: boolean) {
+  getUserDatabases(
+    username: string,
+    full?: boolean
+  ): Promise<Record<string, any> & ArangoResponseMetadata> {
     return this.request({
       absolutePath: true,
       path: `/_api/user/${encodeURIComponent(username)}/database`,
       qs: { full },
-    });
+    }, 
+    ({body}) => (body.error ? body : body.result)
+    );
   }
   //#endregion
 

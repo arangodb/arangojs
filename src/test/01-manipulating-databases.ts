@@ -13,6 +13,7 @@ describe("Manipulating databases", function () {
   afterEach(async () => {
     system.close();
   });
+
   describe("database.createDatabase", () => {
     const name = `testdb_${Date.now()}`;
     let db: Database;
@@ -91,4 +92,73 @@ describe("Manipulating databases", function () {
       expect.fail("should not succeed");
     });
   });
+
+  describe('database.getUserAccessLevel', () => {
+    const database = `testdb_foo_get_${Date.now()}`
+    const username = `foo`
+    before(async () => {
+        await system.createDatabase(database, { users: [{ username }] })
+    })
+    after(async () => {
+      try {
+        await system.dropDatabase(username);
+      } catch {}
+    })
+    it('read the access levels for a database', async () => {
+        const accessLevel = await system.getUserAccessLevel(username, { database })
+        expect(accessLevel).to.equal('rw')
+    })
+  })
+
+  describe('database.setUserAccessLevel', () => {
+    const database = `testdb_foo_set_${Date.now()}`
+    const username = `foo_${Date.now()}`
+    before(async () => {
+      await system.createDatabase(database, { users: [{ username }] })
+    })
+    after(async () => {
+      try {
+        await system.dropDatabase(username);
+      } catch {}
+    })
+    it('set the access levels for a database', async () => {
+        const userAccessLevel = await system.setUserAccessLevel(username, { database, grant: 'ro' })
+        expect(userAccessLevel[database]).to.equal('ro')
+    })
+  })
+
+  describe('database.clearUserAccessLevel', () => {
+    const database = `testdb_foo_clear_${Date.now()}`
+    const username = `foo_${Date.now()}`
+    before(async () => {
+      await system.createDatabase(database, { users: [{ username }] })
+    })
+    after(async () => {
+      try {
+        await system.dropDatabase(username);
+      } catch {}
+    })
+    it('clear the access levels for a database', async () => {
+        const response = await system.clearUserAccessLevel(username, { database })
+        expect(response).to.eql({ error: false, code: 202 })
+    })
+  })
+
+  describe('database.getUserDatabases', () => {
+    const database = `testdb_foo_get_me_${Date.now()}`
+    const username = `foo_me_${Date.now()}`
+    before(async () => {
+      await system.createDatabase(database, { users: [{ username }] })
+    })
+    after(async () => {
+      try {
+        await system.dropDatabase(username);
+      } catch {}
+    })
+    it('get users databases', async () => {
+        const usersDatabases = await system.getUserDatabases(username)
+        expect(usersDatabases).to.eql({[database]: 'rw'})
+    })
+  })
+
 });
