@@ -2,9 +2,9 @@
 
 ## v7 to v8
 
-Version 8 drops support for Internet Explorer 11 and Node.js 10. If you need to
-continue supporting Internet Explorer, you can try transpiling arangojs as a
-dependency using Babel with the relevant polyfills.
+Version 8 drops support for Internet Explorer 11 and Node.js 10 and 12. If you
+need to continue supporting Internet Explorer, you can try transpiling arangojs
+as a dependency using Babel with the relevant polyfills.
 
 ### General
 
@@ -19,6 +19,39 @@ The built-in type `Record<string, T>` can be used as a replacement:
 -let deps: Dict<string, string[], undefined>;
 +let deps: Record<string, string | string[] | undefined>;
  deps = await db.getServiceDependencies("/my-foxx-service", true);
+```
+
+### Default URL
+
+The default URL has been changed to `http://127.0.0.1:8529` to match the ArangoDB
+default. Previously the default URL was `http://localhost:8529`, which on some
+systems would resolve to the IPv6 address `::1` instead.
+
+If you don't want to use the IPv4 address `127.0.0.1` and instead want to continue
+letting the operating system resolve `localhost`, you can pass the URL explicitly:
+
+```diff
+ import { Database } from "arangojs";
+
+ const db = new Database({
++  url: "http://localhost:8529"
+ });
+```
+
+### Databases
+
+Previously arangojs allowed changing the database using the deprecated
+`db.useDatabase` method. This could make it difficult to remember which
+database you were interacting with. Instead, you should create a new `Database`
+instance for each database you want to interact with using the `db.database`
+method:
+
+```diff
+ import { Database } from "arangojs";
+
+ const db = new Database();
+-db.useDatabase("database2");
++const db2 = db.database("database2");
 ```
 
 ### Graphs
