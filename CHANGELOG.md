@@ -39,10 +39,10 @@ This driver uses semantic versioning:
   Previously arangojs would use `localhost` which on some systems resolves to
   the IPv6 address `::1` instead, resulting in confusing connection errors.
 
-- Removed Node.js 10 support
+- Removed Node.js 10 and Node.js 12 support
 
-  With Node.js 10 moving from its LTS phase into maintenance, arangojs will no
-  longer support this version of Node.js going forward.
+  With Node.js 10 and 12 having reached their end of life, arangojs will no
+  longer support these versions of Node.js going forward.
 
 - Removed Internet Explorer support
 

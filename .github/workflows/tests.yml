@@ -12,8 +12,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: [12, 14, 16]
-        arangodb-version: [3.7, 3.8]
+        node-version: [14, 16, 18]
+        arangodb-version: [3.8, 3.9]
 
     container:
       image: node:${{ matrix.node-version }}
@@ -27,7 +27,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: apt-get update && apt-get install jq -y
-      - run: npm install -g npm@7
+      - run: npm install -g npm@8
       - run: npm install
       - run: npm test
         env:
@@ -40,7 +40,7 @@ jobs:
 
     strategy:
       matrix:
-        arangodb-version: [3.7, 3.8]
+        arangodb-version: [3.8, 3.9]
 
     container:
       image: buildkite/puppeteer:latest
