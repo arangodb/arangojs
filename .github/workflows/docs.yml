@@ -18,8 +18,6 @@ jobs:
         with:
           node-version: ">= 16"
 
-      - uses: actions/checkout@v2
-
       - name: Checkout gh-pages
         uses: actions/checkout@v2
         with:
