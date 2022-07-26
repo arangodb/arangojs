@@ -16,6 +16,9 @@ jobs:
       image: node:16
 
     steps:
+      - name: Checkout current commit
+        uses: actions/checkout@v2
+
       - name: Checkout gh-pages
         uses: actions/checkout@v2
         with:
