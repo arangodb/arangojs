@@ -12,12 +12,10 @@ jobs:
   publish-docs:
     runs-on: ubuntu-latest
 
-    steps:
-      - name: Setup Node.js environment
-        uses: actions/setup-node@v1
-        with:
-          node-version: ">= 16"
+    container:
+      image: node:${{ matrix.node-version }}
 
+    steps:
       - name: Checkout gh-pages
         uses: actions/checkout@v2
         with:
@@ -82,4 +80,4 @@ jobs:
           ref: gh-pages
           message: Update ${{ env.TAG }} docs via ${{ github.sha }}
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
