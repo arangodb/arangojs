@@ -1,4 +1,4 @@
----
+$---
 permalink: /CHANGELOG
 title: "CHANGELOG"
 ---
@@ -20,6 +20,90 @@ This driver uses semantic versioning:
   changes that require changes in your code to upgrade.
 
 ## [Unreleased]
+
+### Removed
+
+- Removed `Dict` type from `connection` module
+
+  The `Dict<T>` type was identical to `Record<string, T>` and has been replaced
+  with this built-in type across arangojs.
+
+- Removed deprecated `db.useDatabase` method
+
+  The method was previously deprecated and can be replaced with `db.database`,
+  which returns a new `Database` object instead of modifying the existing one.
+
+- Removed deprecated MMFiles methods and types
+
+  The MMFiles storage engine was removed in ArangoDB 3.7.
+
+### Changed
+
+- Changed default URL to `http://127.0.0.1:8529` to match ArangoDB default
+
+  Previously arangojs would use `localhost` which on some systems resolves to
+  the IPv6 address `::1` instead, resulting in confusing connection errors.
+
+- Removed Node.js 10 and Node.js 12 support
+
+  With Node.js 10 and 12 having reached their end of life, arangojs will no
+  longer support these versions of Node.js going forward.
+
+- Removed Internet Explorer support
+
+  As of version 8 arangojs no longer maintains compatibility for IE11 in the
+  pre-built browser bundle. You may still be able to use arangojs in IE11 when
+  bundling arangojs yourself but this may require polyfills and transformation.
+
+- Updated TypeScript to version 4.7
+
+  This may result in type signatures that are incompatible with TypeScript 3
+  being added in future releases (including patch releases).
+
+- Renamed type `GraphCreateOptions` to `CreateGraphOptions`
+
+- Changed default behavior of _internal_ `db.request` method
+
+  Previously this method would always return the full response object if no
+  `transform` callback was provided. The method now defaults to a `transform`
+  callback that extracts the response body instead. The previous behavior can
+  still be forced by passing `false` instead of a callback function.
+
+  This change has no effect on other methods like `route.request`.
+
+- Replaced node core module polyfills with native APIs in browser build
+
+  As part of upgrading to webpack 5, arangojs now no longer requires node core
+  modules to be polyfilled to work in the browser. This also drastically
+  reduces the file size of the pre-built browser bundle `arangojs/web`.
+
+- `db.query` now supports a generic return type ([#764](https://github.com/arangodb/arangojs/issues/764))
+
+  This allows explictly setting the item type of the `ArrayCursor` returned by
+  the query without using a type assertion on the promise result. Note that
+  arangojs can make no guarantees that the type matches the actual data
+  returned by the query.
+
+  ```ts
+  const numbers = await db.query<{ index: number; squared: number }>(aql`
+    FOR i IN 1..1000
+    RETURN {
+      index: i,
+      squared: i * i
+    }
+  `);
+  const first = await numbers.next();
+  console.log(first.index, first.squared); // 1 1
+  ```
+
+### Added
+
+- Added `toJSON` method to system errors
+
+  ArangoJS already adds the `request` object to system errors encountered
+  while attempting to make network requests. This change makes it easier
+  to serialize these error objects to JSON the same way `ArangoError` and
+  `HttpError` objects can already be serialized.
 
 ## [7.8.0] - 2022-05-19
 
