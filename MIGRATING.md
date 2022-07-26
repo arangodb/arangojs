@@ -43,7 +43,7 @@ arangojs instance. The database name can now be specified using the
 
 ```diff
  const db = new Database({
-   url: "http://localhost:8529",
+   url: "http://127.0.0.1:8529",
 +  databaseName: "my_database",
  });
 -db.useDatabase("my_database");

@@ -34,6 +34,11 @@ This driver uses semantic versioning:
 
 ### Changed
 
+- Changed default URL to `http://127.0.0.1:8529` to match ArangoDB default
+
+  Previously arangojs would use `localhost` which on some systems resolves to
+  the IPv6 address `::1` instead, resulting in confusing connection errors.
+
 - Removed Node.js 10 support
 
   With Node.js 10 moving from its LTS phase into maintenance, arangojs will no

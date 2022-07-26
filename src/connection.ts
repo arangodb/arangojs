@@ -335,8 +335,8 @@ export type Config = {
    * `tcp` is treated as synonymous with `http`, so the following URLs are
    * considered identical:
    *
-   * - `tcp://localhost:8529` and `http://localhost:8529`
-   * - `ssl://localhost:8529` and `https://localhost:8529`
+   * - `tcp://127.0.0.1:8529` and `http://127.0.0.1:8529`
+   * - `ssl://127.0.0.1:8529` and `https://127.0.0.1:8529`
    * - `tcp+unix:///tmp/arangodb.sock` and `http+unix:///tmp/arangodb.sock`
    * - `ssl+unix:///tmp/arangodb.sock` and `https+unix:///tmp/arangodb.sock`
    * - `tcp://unix:/tmp/arangodb.sock` and `http://unix:/tmp/arangodb.sock`
@@ -344,7 +344,7 @@ export type Config = {
    *
    * See also `auth` for passing authentication credentials.
    *
-   * Default: `"http://localhost:8529"`
+   * Default: `"http://127.0.0.1:8529"`
    */
   url?: string | string[];
   /**
@@ -523,7 +523,7 @@ export class Connection {
       ? Array.isArray(config.url)
         ? config.url
         : [config.url]
-      : ["http://localhost:8529"];
+      : ["http://127.0.0.1:8529"];
     const MAX_SOCKETS =
       3 * (config.loadBalancingStrategy === "ROUND_ROBIN" ? URLS.length : 1);
 

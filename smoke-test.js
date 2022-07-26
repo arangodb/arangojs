@@ -25,7 +25,7 @@ app.listen(8529, () => {
     try {
       const browser = await puppeteer.launch({ args: ["--no-sandbox"] });
       const page = await browser.newPage();
-      await page.goto("http://localhost:8529/smoke", {
+      await page.goto("http://127.0.0.1:8529/smoke", {
         waitUntil: "networkidle2",
       });
       const response = await page.evaluate(async () => {

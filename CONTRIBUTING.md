@@ -20,7 +20,7 @@ yarn test
 ```
 
 By default the tests will be run against a server listening on
-`http://localhost:8529` (using username `root` with no password). To
+`http://127.0.0.1:8529` (using username `root` with no password). To
 override this, you can set the environment variable `TEST_ARANGODB_URL` to
 something different:
 

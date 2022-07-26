@@ -1435,7 +1435,7 @@ export class Database {
    * @example
    * ```js
    * const db = new Database({
-   *   url: "http://localhost:8529",
+   *   url: "http://127.0.0.1:8529",
    *   databaseName: "my_database",
    *   auth: { username: "admin", password: "hunter2" },
    * });
@@ -1452,7 +1452,7 @@ export class Database {
    *
    * @example
    * ```js
-   * const db = new Database("http://localhost:8529", "my_database");
+   * const db = new Database("http://127.0.0.1:8529", "my_database");
    * db.useBasicAuth("admin", "hunter2");
    * ```
    */

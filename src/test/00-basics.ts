@@ -94,9 +94,9 @@ describe("Configuring the driver", () => {
       // default: http
       new Database(); // eslint-disable-line no-new
       expect(protocol).to.equal("http");
-      new Database("https://localhost:8529"); // eslint-disable-line no-new
+      new Database("https://127.0.0.1:8529"); // eslint-disable-line no-new
       expect(protocol).to.equal("https");
-      new Database("http://localhost:8529"); // eslint-disable-line no-new
+      new Database("http://127.0.0.1:8529"); // eslint-disable-line no-new
       expect(protocol).to.equal("http");
     });
   });
@@ -136,11 +136,11 @@ describe("Configuring the driver", () => {
       db.request({ headers: {} }, () => {});
       expect(options).to.have.property("agent", agent);
       agent = Symbol("agent");
-      db = new Database({ agent, url: "https://localhost:8529" });
+      db = new Database({ agent, url: "https://127.0.0.1:8529" });
       db.request({ headers: {} }, () => {});
       expect(options).to.have.property("agent", agent);
       agent = Symbol("agent");
-      db = new Database({ agent, url: "http://localhost:8529" });
+      db = new Database({ agent, url: "http://127.0.0.1:8529" });
       db.request({ headers: {} }, () => {});
       expect(options).to.have.property("agent", agent);
     });
@@ -150,10 +150,10 @@ describe("Configuring the driver", () => {
       db = new Database({ agent }); // default: http
       db.request({ headers: {} }, () => {});
       expect(protocol).to.equal("http");
-      db = new Database({ agent, url: "https://localhost:8529" });
+      db = new Database({ agent, url: "https://127.0.0.1:8529" });
       db.request({ headers: {} }, () => {});
       expect(protocol).to.equal("https");
-      db = new Database({ agent, url: "http://localhost:8529" });
+      db = new Database({ agent, url: "http://127.0.0.1:8529" });
       db.request({ headers: {} }, () => {});
       expect(protocol).to.equal("http");
     });

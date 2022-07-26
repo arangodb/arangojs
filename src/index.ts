@@ -26,7 +26,7 @@ module.exports = exports = arangojs;
  * @example
  * ```js
  * const db = arangojs({
- *   url: "http://localhost:8529",
+ *   url: "http://127.0.0.1:8529",
  *   databaseName: "myDatabase",
  *   auth: { username: "admin", password: "hunter2" },
  * });
@@ -43,7 +43,7 @@ export function arangojs(config?: Config): Database;
  *
  * @example
  * ```js
- * const db = arangojs("http://localhost:8529", "myDatabase");
+ * const db = arangojs("http://127.0.0.1:8529", "myDatabase");
  * db.useBasicAuth("admin", "hunter2");
  * ```
  */
