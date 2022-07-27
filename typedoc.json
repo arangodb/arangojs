@@ -1,12 +1,25 @@
 {
   "out": "tsdoc",
-  "gitRemote": "https://github.com/arangodb/arangojs",
   "githubPages": true,
-  "disableSources": true,
+  "disableSources": false,
   "exclude": ["**/lib/*.ts", "**/test/*.ts"],
+  "basePath": "./src",
+  "visibilityFilters": {},
+  "intentionallyNotExported": [
+    "ArangojsError",
+    "ArangojsResponse",
+    "Blob",
+    "GeneratedAqlQuery"
+  ],
+  "excludeInternal": true,
   "excludeProtected": true,
   "excludePrivate": true,
   "includeVersion": false,
   "entryPoints": "src",
-  "entryPointStrategy": "expand"
+  "entryPointStrategy": "expand",
+  "validation": {
+    "notExported": true,
+    "invalidLink": true,
+    "notDocumented": false
+  }
 }
