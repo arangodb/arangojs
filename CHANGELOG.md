@@ -50,6 +50,12 @@ This driver uses semantic versioning:
   pre-built browser bundle. You may still be able to use arangojs in IE11 when
   bundling arangojs yourself but this may require polyfills and transformation.
 
+- Changed TypeScript compilation target to ES2020
+
+  Since all evergreen browsers including Firefox ESR and all active Node.js LTS
+  releases fully support ES2020, the compilation target for the browser bundle
+  and Node.js has been moved from ES2016 and ES2018 respectively to ES2020.
+
 - Updated TypeScript to version 4.7
 
   This may result in type signatures that are incompatible with TypeScript 3
