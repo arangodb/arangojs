@@ -1,10 +1,12 @@
 {
   "out": "tsdoc",
   "gitRemote": "https://github.com/arangodb/arangojs",
+  "githubPages": true,
   "disableSources": true,
   "exclude": ["**/lib/*.ts", "**/test/*.ts"],
   "excludeProtected": true,
   "excludePrivate": true,
   "includeVersion": false,
-  "entryPoints": "src"
+  "entryPoints": "src",
+  "entryPointStrategy": "expand"
 }
