@@ -58,7 +58,7 @@ their behavior to remain compatible with different versions of ArangoDB.</p>
 <li class="tsd-parameter">
 <h5><code class="tsd-tag ts-flagOptional">Optional</code> auth<span class="tsd-signature-symbol">?: </span><a href="connection.BasicAuthCredentials.html" class="tsd-signature-type" data-tsd-kind="Type alias">BasicAuthCredentials</a><span class="tsd-signature-symbol"> | </span><a href="connection.BearerAuthCredentials.html" class="tsd-signature-type" data-tsd-kind="Type alias">BearerAuthCredentials</a></h5>
 <div class="tsd-comment tsd-typography"><p>Credentials to use for authentication.</p>
-<p>See also Database.useBasicAuth and Database.useBearerAuth.</p>
+<p>See also <a href="../classes/database.Database.html#useBasicAuth">useBasicAuth</a> and <a href="../classes/database.Database.html#useBearerAuth">useBearerAuth</a>.</p>
 <p>Default: <code>{ username: &quot;root&quot;, password: &quot;&quot; }</code></p>
 </div></li>
 <li class="tsd-parameter">
@@ -70,7 +70,7 @@ their behavior to remain compatible with different versions of ArangoDB.</p>
 <h5><code class="tsd-tag ts-flagOptional">Optional</code> headers<span class="tsd-signature-symbol">?: </span><a href="connection.Headers.html" class="tsd-signature-type" data-tsd-kind="Type alias">Headers</a></h5>
 <div class="tsd-comment tsd-typography"><p>An object with additional headers to send with every request.</p>
 <p>If an <code>&quot;authorization&quot;</code> header is provided, it will be overridden when
-using Database.useBasicAuth, Database.useBearerAuth or
+using <a href="../classes/database.Database.html#useBasicAuth">useBasicAuth</a>, <a href="../classes/database.Database.html#useBearerAuth">useBearerAuth</a> or
 the <code>auth</code> configuration option.</p>
 </div></li>
 <li class="tsd-parameter">
@@ -124,7 +124,7 @@ may negatively impact performance.</p>
 <li class="tsd-parameter">
 <h5><code class="tsd-tag ts-flagOptional">Optional</code> response<wbr/>Queue<wbr/>Time<wbr/>Samples<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span></h5>
 <div class="tsd-comment tsd-typography"><p>Limits the number of values of server-reported response queue times that
-will be stored and accessible using Database.queueTime. If set to
+will be stored and accessible using <a href="../classes/database.Database.html#queueTime">queueTime</a>. If set to
 a finite value, older values will be discarded to make room for new values
 when that limit is reached.</p>
 <p>Default: <code>10</code></p>
@@ -133,7 +133,7 @@ when that limit is reached.</p>
 <h5><code class="tsd-tag ts-flagOptional">Optional</code> url<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5>
 <div class="tsd-comment tsd-typography"><p>Base URL of the ArangoDB server or list of server URLs.</p>
 <p>When working with a cluster or a single server with leader/follower
-failover, the method Database.acquireHostList can be used to
+failover, the method <a href="../classes/database.Database.html#acquireHostList">acquireHostList</a> can be used to
 automatically pick up additional coordinators/followers at any point.</p>
 <p>When running ArangoDB on a unix socket, e.g. <code>/tmp/arangodb.sock</code>, the
 following URL formats are supported for unix sockets:</p>

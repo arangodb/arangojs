@@ -15,7 +15,7 @@
 <li><a href="analyzer.Analyzer.html">Analyzer</a></li></ul>
 <h1>Class Analyzer</h1></div>
 <section class="tsd-panel tsd-comment">
-<div class="tsd-comment tsd-typography"><p>Represents an Analyzer in a Database.</p>
+<div class="tsd-comment tsd-typography"><p>Represents an Analyzer in a <a href="database.Database.html">Database</a>.</p>
 </div></section>
 <section class="tsd-panel tsd-hierarchy">
 <h4>Hierarchy</h4>
@@ -54,7 +54,7 @@
 <li class="tsd-signature" id="name.name-1"><span class="tsd-signature-symbol">get</span> name<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
 <li class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>Name of this Analyzer.</p>
-<p>See also Database.analyzer.</p>
+<p>See also <a href="database.Database.html#analyzer">analyzer</a>.</p>
 </div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4></li></ul></section></section>
 <section class="tsd-panel-group tsd-member-group">
@@ -65,7 +65,7 @@
 <li class="tsd-signature tsd-anchor-link" id="create.create-1">create<span class="tsd-signature-symbol">(</span>options<span class="tsd-signature-symbol">: </span><a href="../types/analyzer.CreateAnalyzerOptions.html" class="tsd-signature-type" data-tsd-kind="Type alias">CreateAnalyzerOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../types/analyzer.AnalyzerDescription.html" class="tsd-signature-type" data-tsd-kind="Type alias">AnalyzerDescription</a><span class="tsd-signature-symbol">&gt;</span><a href="#create.create-1" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
 <li class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>Creates a new Analyzer with the given <code>options</code> and the instance&#39;s name.</p>
-<p>See also Database.createAnalyzer.</p>
+<p>See also <a href="database.Database.html#createAnalyzer">createAnalyzer</a>.</p>
 
 <h3>Example</h3><pre><code class="language-js"><span class="hl-2">const</span><span class="hl-0"> </span><span class="hl-12">db</span><span class="hl-0"> = </span><span class="hl-2">new</span><span class="hl-0"> </span><span class="hl-4">Database</span><span class="hl-0">();</span><br/><span class="hl-2">const</span><span class="hl-0"> </span><span class="hl-12">analyzer</span><span class="hl-0"> = </span><span class="hl-3">db</span><span class="hl-0">.</span><span class="hl-4">analyzer</span><span class="hl-0">(</span><span class="hl-5">&quot;potatoes&quot;</span><span class="hl-0">);</span><br/><span class="hl-13">await</span><span class="hl-0"> </span><span class="hl-3">analyzer</span><span class="hl-0">.</span><span class="hl-4">create</span><span class="hl-0">({ </span><span class="hl-3">type:</span><span class="hl-0"> </span><span class="hl-5">&quot;identity&quot;</span><span class="hl-0"> });</span><br/><span class="hl-1">// the identity Analyzer &quot;potatoes&quot; now exists</span>
 </code></pre>

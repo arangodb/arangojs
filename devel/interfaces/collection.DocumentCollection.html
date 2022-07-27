@@ -15,7 +15,7 @@
 <li><a href="collection.DocumentCollection.html">DocumentCollection</a></li></ul>
 <h1>Interface DocumentCollection&lt;T&gt;</h1></div>
 <section class="tsd-panel tsd-comment">
-<div class="tsd-comment tsd-typography"><p>Represents an document collection in a Database.</p>
+<div class="tsd-comment tsd-typography"><p>Represents an document collection in a <a href="../classes/database.Database.html">Database</a>.</p>
 <p>See <a href="collection.EdgeCollection.html">EdgeCollection</a> for a variant of this interface more suited for
 edge collections.</p>
 <p>When using TypeScript, collections can be cast to a specific document data
@@ -217,8 +217,8 @@ replaced with AQL queries.</p>
 <li class="tsd-signature tsd-anchor-link" id="create.create-1">create<span class="tsd-signature-symbol">(</span>options<span class="tsd-signature-symbol">?: </span><a href="../types/collection.CreateCollectionOptions.html" class="tsd-signature-type" data-tsd-kind="Type alias">CreateCollectionOptions</a><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">{ </span>type<span class="tsd-signature-symbol">?: </span><a href="../enums/collection.CollectionType.html" class="tsd-signature-type" data-tsd-kind="Enumeration">CollectionType</a><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../types/connection.ArangoResponseMetadata.html" class="tsd-signature-type" data-tsd-kind="Type alias">ArangoResponseMetadata</a><span class="tsd-signature-symbol"> &amp; </span><a href="../types/collection.CollectionMetadata.html" class="tsd-signature-type" data-tsd-kind="Type alias">CollectionMetadata</a><span class="tsd-signature-symbol"> &amp; </span><a href="../types/collection.CollectionProperties.html" class="tsd-signature-type" data-tsd-kind="Type alias">CollectionProperties</a><span class="tsd-signature-symbol">&gt;</span><a href="#create.create-1" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
 <li class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>Creates a collection with the given <code>options</code> and the instance&#39;s name.</p>
-<p>See also Database.createCollection and
-Database.createEdgeCollection.</p>
+<p>See also <a href="../classes/database.Database.html#createCollection">createCollection</a> and
+<a href="../classes/database.Database.html#createEdgeCollection">createEdgeCollection</a>.</p>
 <p><strong>Note</strong>: When called on an <a href="collection.EdgeCollection.html">EdgeCollection</a> instance in TypeScript,
 the <code>type</code> option must still be set to the correct <a href="../enums/collection.CollectionType.html">CollectionType</a>.
 Otherwise this will result in the collection being created with the
@@ -905,7 +905,7 @@ replaced with AQL queries.</p>
 <li class="tsd-signature tsd-anchor-link" id="rename.rename-1">rename<span class="tsd-signature-symbol">(</span>newName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../types/connection.ArangoResponseMetadata.html" class="tsd-signature-type" data-tsd-kind="Type alias">ArangoResponseMetadata</a><span class="tsd-signature-symbol"> &amp; </span><a href="../types/collection.CollectionMetadata.html" class="tsd-signature-type" data-tsd-kind="Type alias">CollectionMetadata</a><span class="tsd-signature-symbol">&gt;</span><a href="#rename.rename-1" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
 <li class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>Renames the collection and updates the instance&#39;s <code>name</code> to <code>newName</code>.</p>
-<p>Additionally removes the instance from the Database&#39;s internal
+<p>Additionally removes the instance from the <a href="../classes/database.Database.html">Database</a>&#39;s internal
 cache.</p>
 <p><strong>Note</strong>: Renaming collections may not be supported when ArangoDB is
 running in a cluster configuration.</p>

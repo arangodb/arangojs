@@ -24,8 +24,8 @@ without having to worry about <code>bindVars</code> and the distinction between
 collections and regular parameters.</p>
 <p>Tagged template strings will return an <a href="../interfaces/aql.AqlQuery.html">AqlQuery</a> object with
 <code>query</code> and <code>bindVars</code> attributes reflecting any interpolated values.</p>
-<p>Any ArangoCollection instance used in a query string will be
-recognized as a collection reference and generate an AQL collection bind
+<p>Any <a href="../interfaces/collection.ArangoCollection.html">ArangoCollection</a> instance used in a query string will
+be recognized as a collection reference and generate an AQL collection bind
 parameter instead of a regular AQL value bind parameter.</p>
 <p><strong>Note</strong>: you should always use the <code>aql</code> template tag when writing
 dynamic AQL queries instead of using untagged (normal) template strings.
