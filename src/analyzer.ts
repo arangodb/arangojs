@@ -14,7 +14,7 @@ import { isArangoError } from "./error";
 import { ANALYZER_NOT_FOUND } from "./lib/codes";
 
 /**
- * Indicates whether the given value represents an {@link Analyzer}.
+ * Indicates whether the given value represents an {@link analyzer.Analyzer}.
  *
  * @param analyzer - A value that might be an Analyzer.
  */
@@ -486,7 +486,7 @@ export type CollationAnalyzer = {
 };
 
 /**
- * Represents an Analyzer in a {@link Database}.
+ * Represents an Analyzer in a {@link database.Database}.
  */
 export class Analyzer {
   protected _name: string;
@@ -513,7 +513,7 @@ export class Analyzer {
   /**
    * Name of this Analyzer.
    *
-   * See also {@link Database.analyzer}.
+   * See also {@link database.Database.analyzer}.
    */
   get name() {
     return this._name;
@@ -562,7 +562,7 @@ export class Analyzer {
   /**
    * Creates a new Analyzer with the given `options` and the instance's name.
    *
-   * See also {@link Database.createAnalyzer}.
+   * See also {@link database.Database.createAnalyzer}.
    *
    * @param options - Options for creating the Analyzer.
    *

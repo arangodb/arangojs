@@ -35,7 +35,7 @@ import { isArangoError } from "./error";
 import { DOCUMENT_NOT_FOUND, GRAPH_NOT_FOUND } from "./lib/codes";
 
 /**
- * Indicates whether the given value represents a {@link Graph}.
+ * Indicates whether the given value represents a {@link graph.Graph}.
  *
  * @param graph - A value that might be a Graph.
  */
@@ -79,7 +79,7 @@ export type GraphCollectionReadOptions = {
    * If set to a document revision, the document will only be returned if its
    * `_rev` property matches this value.
    *
-   * See also {@link DocumentMetadata}.
+   * See also {@link documents.DocumentMetadata}.
    */
   rev?: string;
   /**
@@ -126,7 +126,7 @@ export type GraphCollectionReplaceOptions = {
    * If set to a document revision, the document will only be modified if its
    * `_rev` property matches this value.
    *
-   * See also {@link DocumentMetadata}.
+   * See also {@link documents.DocumentMetadata}.
    */
   rev?: string;
   /**
@@ -166,7 +166,7 @@ export type GraphCollectionRemoveOptions = {
    * If set to a document revision, the document will only be removed if its
    * `_rev` property matches this value.
    *
-   * See also {@link DocumentMetadata}.
+   * See also {@link documents.DocumentMetadata}.
    */
   rev?: string;
   /**
@@ -185,7 +185,7 @@ export type GraphCollectionRemoveOptions = {
 };
 
 /**
- * Definition of a relation in a {@link Graph}.
+ * Definition of a relation in a {@link graph.Graph}.
  */
 export type EdgeDefinition = {
   /**
@@ -203,7 +203,7 @@ export type EdgeDefinition = {
 };
 
 /**
- * An edge definition used to define a collection of edges in a {@link Graph}.
+ * An edge definition used to define a collection of edges in a {@link graph.Graph}.
  */
 export type EdgeDefinitionOptions = {
   /**
@@ -227,7 +227,7 @@ export type GraphInfo = {
   /**
    * Key of the document internally representing this graph.
    *
-   * See {@link DocumentMetadata}.
+   * See {@link documents.DocumentMetadata}.
    *
    * @internal
    */
@@ -235,7 +235,7 @@ export type GraphInfo = {
   /**
    * Unique identifier of the document internally representing this graph.
    *
-   * See {@link DocumentMetadata}.
+   * See {@link documents.DocumentMetadata}.
    *
    * @internal
    */
@@ -243,7 +243,7 @@ export type GraphInfo = {
   /**
    * Revision of the document internally representing this graph.
    *
-   * See {@link DocumentMetadata}.
+   * See {@link documents.DocumentMetadata}.
    *
    * @internal
    */
@@ -404,7 +404,7 @@ export type ReplaceEdgeDefinitionOptions = {
 };
 
 /**
- * Represents a {@link DocumentCollection} of vertices in a {@link Graph}.
+ * Represents a {@link collection.DocumentCollection} of vertices in a {@link graph.Graph}.
  *
  * @param T - Type to use for document data. Defaults to `any`.
  */
@@ -444,14 +444,14 @@ export class GraphVertexCollection<T extends Record<string, any> = any>
   }
 
   /**
-   * A {@link DocumentCollection} instance for this vertex collection.
+   * A {@link collection.DocumentCollection} instance for this vertex collection.
    */
   get collection() {
     return this._collection;
   }
 
   /**
-   * The {@link Graph} instance this vertex collection is bound to.
+   * The {@link graph.Graph} instance this vertex collection is bound to.
    */
   get graph() {
     return this._graph;
@@ -809,7 +809,7 @@ export class GraphVertexCollection<T extends Record<string, any> = any>
 }
 
 /**
- * Represents a {@link EdgeCollection} of edges in a {@link Graph}.
+ * Represents a {@link collection.EdgeCollection} of edges in a {@link graph.Graph}.
  *
  * @param T - Type to use for document data. Defaults to `any`.
  */
@@ -849,14 +849,14 @@ export class GraphEdgeCollection<T extends Record<string, any> = any>
   }
 
   /**
-   * A {@link EdgeCollection} instance for this edge collection.
+   * A {@link collection.EdgeCollection} instance for this edge collection.
    */
   get collection() {
     return this._collection;
   }
 
   /**
-   * The {@link Graph} instance this edge collection is bound to.
+   * The {@link graph.Graph} instance this edge collection is bound to.
    */
   get graph() {
     return this._graph;
@@ -1217,7 +1217,7 @@ export class GraphEdgeCollection<T extends Record<string, any> = any>
 }
 
 /**
- * Represents a graph in a {@link Database}.
+ * Represents a graph in a {@link database.Database}.
  */
 export class Graph {
   protected _name: string;
@@ -1371,7 +1371,7 @@ export class Graph {
   }
 
   /**
-   * Returns a {@link GraphVertexCollection} instance for the given collection
+   * Returns a {@link graph.GraphVertexCollection} instance for the given collection
    * name representing the collection in this graph.
    *
    * @param T - Type to use for document data. Defaults to `any`.
@@ -1391,7 +1391,7 @@ export class Graph {
    * Fetches all vertex collections of this graph from the database and returns
    * an array of their names.
    *
-   * See also {@link Graph.vertexCollections}.
+   * See also {@link graph.Graph.vertexCollections}.
    *
    * @example
    * ```js
@@ -1417,9 +1417,9 @@ export class Graph {
 
   /**
    * Fetches all vertex collections of this graph from the database and returns
-   * an array of {@link GraphVertexCollection} instances.
+   * an array of {@link graph.GraphVertexCollection} instances.
    *
-   * See also {@link Graph.listVertexCollections}.
+   * See also {@link graph.Graph.listVertexCollections}.
    *
    * @example
    * ```js
@@ -1520,7 +1520,7 @@ export class Graph {
   }
 
   /**
-   * Returns a {@link GraphEdgeCollection} instance for the given collection
+   * Returns a {@link graph.GraphEdgeCollection} instance for the given collection
    * name representing the collection in this graph.
    *
    * @param T - Type to use for document data. Defaults to `any`.
@@ -1556,7 +1556,7 @@ export class Graph {
    * Fetches all edge collections of this graph from the database and returns
    * an array of their names.
    *
-   * See also {@link Graph.edgeCollections}.
+   * See also {@link graph.Graph.edgeCollections}.
    *
    * @example
    * ```js
@@ -1582,9 +1582,9 @@ export class Graph {
 
   /**
    * Fetches all edge collections of this graph from the database and returns
-   * an array of {@link GraphEdgeCollection} instances.
+   * an array of {@link graph.GraphEdgeCollection} instances.
    *
-   * See also {@link Graph.listEdgeCollections}.
+   * See also {@link graph.Graph.listEdgeCollections}.
    *
    * @example
    * ```js
@@ -1790,7 +1790,7 @@ export class Graph {
    * Performs a traversal starting from the given `startVertex` and following
    * edges contained in this graph.
    *
-   * See also {@link EdgeCollection.traversal}.
+   * See also {@link collection.EdgeCollection.traversal}.
    *
    * @param startVertex - Document `_id` of a vertex in this graph.
    * @param options - Options for performing the traversal.

@@ -20,7 +20,7 @@ export enum ViewType {
 }
 
 /**
- * Indicates whether the given value represents a {@link View}.
+ * Indicates whether the given value represents a {@link view.View}.
  *
  * @param view - A value that might be a View.
  */
@@ -63,7 +63,7 @@ export type ArangoSearchViewLink = {
   analyzers?: string[];
   /**
    * An object mapping names of attributes to process for each document to
-   * {@link ArangoSearchViewLink} definitions.
+   * {@link view.ArangoSearchViewLink} definitions.
    */
   fields?: Record<string, ArangoSearchViewLink | undefined>;
   /**
@@ -157,7 +157,7 @@ export type ArangoSearchViewProperties = {
   }[];
   /**
    * An object mapping names of linked collections to
-   * {@link ArangoSearchViewLink} definitions.
+   * {@link view.ArangoSearchViewLink} definitions.
    */
   links: Record<string, ArangoSearchViewLink | undefined>;
 };
@@ -327,15 +327,15 @@ export type ArangoSearchViewPropertiesOptions = {
   }[];
   /**
    * An object mapping names of linked collections to
-   * {@link ArangoSearchViewLink} definitions.
+   * {@link view.ArangoSearchViewLink} definitions.
    */
   links?: Record<string, ArangoSearchViewLink | undefined>;
 };
 
 /**
- * Represents a View in a {@link Database}.
+ * Represents a View in a {@link database.Database}.
  *
- * See {@link ArangoSearchView} for the concrete type representing an
+ * See {@link view.ArangoSearchView} for the concrete type representing an
  * ArangoSearch View.
  */
 export class View<
@@ -413,7 +413,7 @@ export class View<
   /**
    * Creates a View with the given `options` and the instance's name.
    *
-   * See also {@link Database.createView}.
+   * See also {@link database.Database.createView}.
    *
    * @example
    * ```js
@@ -440,7 +440,7 @@ export class View<
   /**
    * Renames the View and updates the instance's `name` to `newName`.
    *
-   * Additionally removes the instance from the {@link Database}'s internal
+   * Additionally removes the instance from the {@link database.Database}'s internal
    * cache.
    *
    * **Note**: Renaming Views may not be supported when ArangoDB is
@@ -558,7 +558,7 @@ export class View<
 }
 
 /**
- * Represents an ArangoSearch View in a {@link Database}.
+ * Represents an ArangoSearch View in a {@link database.Database}.
  */
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 export interface ArangoSearchView

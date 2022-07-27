@@ -122,8 +122,8 @@ export function isAqlLiteral(literal: any): literal is AqlLiteral {
  * Tagged template strings will return an {@link AqlQuery} object with
  * `query` and `bindVars` attributes reflecting any interpolated values.
  *
- * Any {@link ArangoCollection} instance used in a query string will be
- * recognized as a collection reference and generate an AQL collection bind
+ * Any {@link collection.ArangoCollection} instance used in a query string will
+ * be recognized as a collection reference and generate an AQL collection bind
  * parameter instead of a regular AQL value bind parameter.
  *
  * **Note**: you should always use the `aql` template tag when writing

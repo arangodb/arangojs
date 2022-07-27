@@ -27,7 +27,7 @@ export function isArangoTransaction(
 /**
  * Status of a given transaction.
  *
- * See also {@link TransactionDetails}.
+ * See also {@link database.TransactionDetails}.
  */
 export type TransactionStatus = {
   /**
@@ -41,7 +41,7 @@ export type TransactionStatus = {
 };
 
 /**
- * Represents a streaming transaction in a {@link Database}.
+ * Represents a streaming transaction in a {@link database.Database}.
  */
 export class Transaction {
   protected _db: Database;
@@ -68,7 +68,7 @@ export class Transaction {
   /**
    * Unique identifier of this transaction.
    *
-   * See {@link Database.transaction}.
+   * See {@link database.Database.transaction}.
    */
   get id() {
     return this._id;

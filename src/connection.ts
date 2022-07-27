@@ -321,7 +321,7 @@ export type Config = {
    * Base URL of the ArangoDB server or list of server URLs.
    *
    * When working with a cluster or a single server with leader/follower
-   * failover, the method {@link Database.acquireHostList} can be used to
+   * failover, the method {@link database.Database.acquireHostList} can be used to
    * automatically pick up additional coordinators/followers at any point.
    *
    * When running ArangoDB on a unix socket, e.g. `/tmp/arangodb.sock`, the
@@ -350,7 +350,7 @@ export type Config = {
   /**
    * Credentials to use for authentication.
    *
-   * See also {@link Database.useBasicAuth} and {@link Database.useBearerAuth}.
+   * See also {@link database.Database.useBasicAuth} and {@link database.Database.useBearerAuth}.
    *
    * Default: `{ username: "root", password: "" }`
    */
@@ -445,7 +445,7 @@ export type Config = {
    * An object with additional headers to send with every request.
    *
    * If an `"authorization"` header is provided, it will be overridden when
-   * using {@link Database.useBasicAuth}, {@link Database.useBearerAuth} or
+   * using {@link database.Database.useBasicAuth}, {@link database.Database.useBearerAuth} or
    * the `auth` configuration option.
    */
   headers?: Headers;
@@ -460,7 +460,7 @@ export type Config = {
   precaptureStackTraces?: boolean;
   /**
    * Limits the number of values of server-reported response queue times that
-   * will be stored and accessible using {@link Database.queueTime}. If set to
+   * will be stored and accessible using {@link database.Database.queueTime}. If set to
    * a finite value, older values will be discarded to make room for new values
    * when that limit is reached.
    *
@@ -708,7 +708,7 @@ export class Connection {
   /**
    * @internal
    *
-   * Fetches a {@link Database} instance for the given database name from the
+   * Fetches a {@link database.Database} instance for the given database name from the
    * internal cache, if available.
    *
    * @param databaseName - Name of the database.
@@ -717,7 +717,7 @@ export class Connection {
   /**
    * @internal
    *
-   * Adds a {@link Database} instance for the given database name to the
+   * Adds a {@link database.Database} instance for the given database name to the
    * internal cache.
    *
    * @param databaseName - Name of the database.
@@ -727,7 +727,7 @@ export class Connection {
   /**
    * @internal
    *
-   * Clears any {@link Database} instance stored for the given database name
+   * Clears any {@link database.Database} instance stored for the given database name
    * from the internal cache, if present.
    *
    * @param databaseName - Name of the database.
@@ -820,7 +820,7 @@ export class Connection {
    *
    * Closes all open connections.
    *
-   * See {@link Database.close}.
+   * See {@link database.Database.close}.
    */
   close() {
     for (const host of this._hosts) {
@@ -833,7 +833,7 @@ export class Connection {
    *
    * Waits for propagation.
    *
-   * See {@link Database.waitForPropagation}.
+   * See {@link database.Database.waitForPropagation}.
    *
    * @param request - Request to perform against each coordinator.
    * @param timeout - Maximum number of milliseconds to wait for propagation.

@@ -382,7 +382,7 @@ export type CollectionKeyOptions = {
 /**
  * Options for creating a collection.
  *
- * See {@link Database.createCollection}, {@link Database.createEdgeCollection}
+ * See {@link database.Database.createCollection}, {@link database.Database.createEdgeCollection}
  * and {@link DocumentCollection.create} or {@link EdgeCollection.create}.
  */
 export type CreateCollectionOptions = {
@@ -727,14 +727,14 @@ export type SimpleQueryByExampleOptions = {
    *
    * Must be greater than zero.
    *
-   * See also {@link QueryOptions}.
+   * See also {@link database.QueryOptions}.
    */
   batchSize?: number;
   /**
    * Time-to-live for the cursor in seconds. The cursor results may be
    * garbage collected by ArangoDB after this much time has passed.
    *
-   * See also {@link QueryOptions}.
+   * See also {@link database.QueryOptions}.
    */
   ttl?: number;
 };
@@ -760,20 +760,20 @@ export type SimpleQueryAllOptions = {
    *
    * Must be greater than zero.
    *
-   * See also {@link QueryOptions}.
+   * See also {@link database.QueryOptions}.
    */
   batchSize?: number;
   /**
    * Time-to-live for the cursor in seconds. The cursor results may be
    * garbage collected by ArangoDB after this much time has passed.
    *
-   * See also {@link QueryOptions}.
+   * See also {@link database.QueryOptions}.
    */
   ttl?: number;
   /**
    * If set to `true`, the query will be executed as a streaming query.
    *
-   * See also {@link QueryOptions}.
+   * See also {@link database.QueryOptions}.
    */
   stream?: boolean;
 };
@@ -1157,7 +1157,7 @@ export type SimpleQueryRemoveByKeysResult<T extends Record<string, any> = any> =
 // Collections
 
 /**
- * Represents an document collection in a {@link Database}.
+ * Represents an document collection in a {@link database.Database}.
  *
  * See {@link EdgeCollection} for a variant of this interface more suited for
  * edge collections.
@@ -1205,8 +1205,8 @@ export interface DocumentCollection<T extends Record<string, any> = any>
   /**
    * Creates a collection with the given `options` and the instance's name.
    *
-   * See also {@link Database.createCollection} and
-   * {@link Database.createEdgeCollection}.
+   * See also {@link database.Database.createCollection} and
+   * {@link database.Database.createEdgeCollection}.
    *
    * **Note**: When called on an {@link EdgeCollection} instance in TypeScript,
    * the `type` option must still be set to the correct {@link CollectionType}.
@@ -1387,7 +1387,7 @@ export interface DocumentCollection<T extends Record<string, any> = any>
   /**
    * Renames the collection and updates the instance's `name` to `newName`.
    *
-   * Additionally removes the instance from the {@link Database}'s internal
+   * Additionally removes the instance from the {@link database.Database}'s internal
    * cache.
    *
    * **Note**: Renaming collections may not be supported when ArangoDB is
@@ -2436,13 +2436,13 @@ export interface DocumentCollection<T extends Record<string, any> = any>
 }
 
 /**
- * Represents an edge collection in a {@link Database}.
+ * Represents an edge collection in a {@link database.Database}.
  *
  * See {@link DocumentCollection} for a more generic variant of this interface
  * more suited for regular document collections.
  *
- * See also {@link GraphEdgeCollection} for the type representing an edge
- * collection in a {@link Graph}.
+ * See also {@link graph.GraphEdgeCollection} for the type representing an edge
+ * collection in a {@link graph.Graph}.
  *
  * When using TypeScript, collections can be cast to a specific edge document
  * data type to increase type safety.
@@ -3156,7 +3156,7 @@ export interface EdgeCollection<T extends Record<string, any> = any>
    * Throws an exception when passed a document or `_id` from a different
    * collection.
    *
-   * See also {@link Graph.traversal}.
+   * See also {@link graph.Graph.traversal}.
    *
    * @param startVertex - Document `_key`, `_id` or object with either of those
    * properties (e.g. a document from this collection).

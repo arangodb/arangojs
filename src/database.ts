@@ -369,7 +369,7 @@ export type ExplainOptions = {
 /**
  * Details for a transaction.
  *
- * See also {@link TransactionStatus}.
+ * See also {@link transaction.TransactionStatus}.
  */
 export type TransactionDetails = {
   /**
@@ -1448,7 +1448,7 @@ export class Database {
    * See also {@link Database.database}.
    *
    * @param url - Base URL of the ArangoDB server or list of server URLs.
-   * Equivalent to the `url` option in {@link Config}.
+   * Equivalent to the `url` option in {@link connection.Config}.
    *
    * @example
    * ```js
@@ -1527,7 +1527,7 @@ export class Database {
   }
 
   /**
-   * Returns a new {@link Route} instance for the given path (relative to the
+   * Returns a new {@link route.Route} instance for the given path (relative to the
    * database) that can be used to perform arbitrary HTTP requests.
    *
    * @param path - The database-relative URL of the route. Defaults to the
@@ -1589,7 +1589,7 @@ export class Database {
   /**
    * Updates the URL list by requesting a list of all coordinators in the
    * cluster and adding any endpoints not initially specified in the
-   * {@link Config}.
+   * {@link connection.Config}.
    *
    * For long-running processes communicating with an ArangoDB cluster it is
    * recommended to run this method periodically (e.g. once per hour) to make
@@ -2001,8 +2001,8 @@ export class Database {
    * Returns a `Collection` instance for the given collection name.
    *
    * In TypeScript the collection implements both the
-   * {@link DocumentCollection} and {@link EdgeCollection} interfaces and can
-   * be cast to either type to enforce a stricter API.
+   * {@link collection.DocumentCollection} and {@link collection.EdgeCollection}
+   * interfaces and can be cast to either type to enforce a stricter API.
    *
    * @param T - Type to use for document data. Defaults to `any`.
    * @param collectionName - Name of the edge collection.
@@ -2051,7 +2051,7 @@ export class Database {
 
   /**
    * Creates a new collection with the given `collectionName` and `options`,
-   * then returns a {@link DocumentCollection} instance for the new collection.
+   * then returns a {@link collection.DocumentCollection} instance for the new collection.
    *
    * @param T - Type to use for document data. Defaults to `any`.
    * @param collectionName - Name of the new collection.
@@ -2080,7 +2080,7 @@ export class Database {
   ): Promise<DocumentCollection<T>>;
   /**
    * Creates a new edge collection with the given `collectionName` and
-   * `options`, then returns an {@link EdgeCollection} instance for the new
+   * `options`, then returns an {@link collection.EdgeCollection} instance for the new
    * edge collection.
    *
    * @param T - Type to use for edge document data. Defaults to `any`.
@@ -2124,7 +2124,7 @@ export class Database {
 
   /**
    * Creates a new edge collection with the given `collectionName` and
-   * `options`, then returns an {@link EdgeCollection} instance for the new
+   * `options`, then returns an {@link collection.EdgeCollection} instance for the new
    * edge collection.
    *
    * This is a convenience method for calling {@link Database.createCollection}
@@ -2227,7 +2227,7 @@ export class Database {
    * `Collection` instances.
    *
    * In TypeScript these instances implement both the
-   * {@link DocumentCollection} and {@link EdgeCollection} interfaces and can
+   * {@link collection.DocumentCollection} and {@link collection.EdgeCollection} interfaces and can
    * be cast to either type to enforce a stricter API.
    *
    * See also {@link Database.listCollections}.
@@ -2262,7 +2262,7 @@ export class Database {
 
   //#region graphs
   /**
-   * Returns a {@link Graph} instance representing the graph with the given
+   * Returns a {@link graph.Graph} instance representing the graph with the given
    * `graphName`.
    *
    * @param graphName - Name of the graph.
@@ -2283,7 +2283,7 @@ export class Database {
 
   /**
    * Creates a graph with the given `graphName` and `edgeDefinitions`, then
-   * returns a {@link Graph} instance for the new graph.
+   * returns a {@link graph.Graph} instance for the new graph.
    *
    * @param graphName - Name of the graph to be created.
    * @param edgeDefinitions - An array of edge definitions.
@@ -2317,7 +2317,7 @@ export class Database {
   }
 
   /**
-   * Fetches all graphs from the database and returns an array of {@link Graph}
+   * Fetches all graphs from the database and returns an array of {@link graph.Graph}
    * instances for those graphs.
    *
    * See also {@link Database.listGraphs}.
@@ -2337,7 +2337,7 @@ export class Database {
 
   //#region views
   /**
-   * Returns an {@link ArangoSearchView} instance for the given `viewName`.
+   * Returns an {@link view.ArangoSearchView} instance for the given `viewName`.
    *
    * @param viewName - Name of the ArangoSearch View.
    *
@@ -2357,7 +2357,7 @@ export class Database {
 
   /**
    * Creates a new ArangoSearch View with the given `viewName` and `options`
-   * and returns an {@link ArangoSearchView} instance for the created View.
+   * and returns an {@link view.ArangoSearchView} instance for the created View.
    *
    * @param viewName - Name of the ArangoSearch View.
    * @param options - An object defining the properties of the View.
@@ -2381,7 +2381,7 @@ export class Database {
   /**
    * Renames the view `viewName` to `newName`.
    *
-   * Additionally removes any stored {@link View} instance for `viewName` from
+   * Additionally removes any stored {@link view.View} instance for `viewName` from
    * the `Database` instance's internal cache.
    *
    * **Note**: Renaming views may not be supported when ArangoDB is running in
@@ -2424,7 +2424,7 @@ export class Database {
 
   /**
    * Fetches all Views from the database and returns an array of
-   * {@link ArangoSearchView} instances for the Views.
+   * {@link view.ArangoSearchView} instances for the Views.
    *
    * See also {@link Database.listViews}.
    *
@@ -2443,7 +2443,7 @@ export class Database {
 
   //#region analyzers
   /**
-   * Returns an {@link Analyzer} instance representing the Analyzer with the
+   * Returns an {@link analyzer.Analyzer} instance representing the Analyzer with the
    * given `analyzerName`.
    *
    * @example
@@ -2463,7 +2463,7 @@ export class Database {
 
   /**
    * Creates a new Analyzer with the given `analyzerName` and `options`, then
-   * returns an {@link Analyzer} instance for the new Analyzer.
+   * returns an {@link analyzer.Analyzer} instance for the new Analyzer.
    *
    * @param analyzerName - Name of the Analyzer.
    * @param options - An object defining the properties of the Analyzer.
@@ -2503,7 +2503,7 @@ export class Database {
 
   /**
    * Fetches all Analyzers visible in the database and returns an array of
-   * {@link Analyzer} instances for those Analyzers.
+   * {@link analyzer.Analyzer} instances for those Analyzers.
    *
    * See also {@link Database.listAnalyzers}.
    *
@@ -3078,9 +3078,9 @@ export class Database {
    * value.
    *
    * Collections can be specified as collection names (strings) or objects
-   * implementing the {@link ArangoCollection} interface: `Collection`,
-   * {@link GraphVertexCollection}, {@link GraphEdgeCollection} as well as
-   * (in TypeScript) {@link DocumentCollection} and {@link EdgeCollection}.
+   * implementing the {@link collection.ArangoCollection} interface: `Collection`,
+   * {@link graph.GraphVertexCollection}, {@link graph.GraphEdgeCollection} as well as
+   * (in TypeScript) {@link collection.DocumentCollection} and {@link collection.EdgeCollection}.
    *
    * **Note**: The `action` function will be evaluated and executed on the
    * server inside ArangoDB's embedded JavaScript environment and can not
@@ -3131,9 +3131,9 @@ export class Database {
    * Performs a server-side transaction and returns its return value.
    *
    * Collections can be specified as collection names (strings) or objects
-   * implementing the {@link ArangoCollection} interface: `Collection`,
-   * {@link GraphVertexCollection}, {@link GraphEdgeCollection} as well as
-   * (in TypeScript) {@link DocumentCollection} and {@link EdgeCollection}.
+   * implementing the {@link collection.ArangoCollection} interface: `Collection`,
+   * {@link graph.GraphVertexCollection}, {@link graph.GraphEdgeCollection} as well as
+   * (in TypeScript) {@link collection.DocumentCollection} and {@link collection.EdgeCollection}.
    *
    * **Note**: The `action` function will be evaluated and executed on the
    * server inside ArangoDB's embedded JavaScript environment and can not
@@ -3180,9 +3180,9 @@ export class Database {
    * Performs a server-side transaction and returns its return value.
    *
    * The Collection can be specified as a collection name (string) or an object
-   * implementing the {@link ArangoCollection} interface: `Collection`,
-   * {@link GraphVertexCollection}, {@link GraphEdgeCollection} as well as
-   * (in TypeScript) {@link DocumentCollection} and {@link EdgeCollection}.
+   * implementing the {@link collection.ArangoCollection} interface: `Collection`,
+   * {@link graph.GraphVertexCollection}, {@link graph.GraphEdgeCollection} as well as
+   * (in TypeScript) {@link collection.DocumentCollection} and {@link collection.EdgeCollection}.
    *
    * **Note**: The `action` function will be evaluated and executed on the
    * server inside ArangoDB's embedded JavaScript environment and can not
@@ -3249,7 +3249,7 @@ export class Database {
   }
 
   /**
-   * Returns a {@link Transaction} instance for an existing streaming
+   * Returns a {@link transaction.Transaction} instance for an existing streaming
    * transaction with the given `id`.
    *
    * See also {@link Database.beginTransaction}.
@@ -3271,12 +3271,13 @@ export class Database {
 
   /**
    * Begins a new streaming transaction for the given collections, then returns
-   * a {@link Transaction} instance for the transaction.
+   * a {@link transaction.Transaction} instance for the transaction.
    *
    * Collections can be specified as collection names (strings) or objects
-   * implementing the {@link ArangoCollection} interface: `Collection`,
-   * {@link GraphVertexCollection}, {@link GraphEdgeCollection} as well as
-   * (in TypeScript) {@link DocumentCollection} and {@link EdgeCollection}.
+   * implementing the {@link collection.ArangoCollection} interface: `Collection`,
+   * {@link graph.GraphVertexCollection}, {@link graph.GraphEdgeCollection} as
+   * well as (in TypeScript) {@link collection.DocumentCollection} and
+   * {@link collection.EdgeCollection}.
    *
    * @param collections - Collections involved in the transaction.
    * @param options - Options for the transaction.
@@ -3301,12 +3302,12 @@ export class Database {
   ): Promise<Transaction>;
   /**
    * Begins a new streaming transaction for the given collections, then returns
-   * a {@link Transaction} instance for the transaction.
+   * a {@link transaction.Transaction} instance for the transaction.
    *
    * Collections can be specified as collection names (strings) or objects
-   * implementing the {@link ArangoCollection} interface: `Collection`,
-   * {@link GraphVertexCollection}, {@link GraphEdgeCollection} as well as
-   * (in TypeScript) {@link DocumentCollection} and {@link EdgeCollection}.
+   * implementing the {@link collection.ArangoCollection} interface: `Collection`,
+   * {@link graph.GraphVertexCollection}, {@link graph.GraphEdgeCollection} as well as
+   * (in TypeScript) {@link collection.DocumentCollection} and {@link collection.EdgeCollection}.
    *
    * @param collections - Collections that can be read from and written to
    * during the transaction.
@@ -3332,12 +3333,12 @@ export class Database {
   ): Promise<Transaction>;
   /**
    * Begins a new streaming transaction for the given collections, then returns
-   * a {@link Transaction} instance for the transaction.
+   * a {@link transaction.Transaction} instance for the transaction.
    *
    * The Collection can be specified as a collection name (string) or an object
-   * implementing the {@link ArangoCollection} interface: `Collection`,
-   * {@link GraphVertexCollection}, {@link GraphEdgeCollection} as well as
-   * (in TypeScript) {@link DocumentCollection} and {@link EdgeCollection}.
+   * implementing the {@link collection.ArangoCollection} interface: `Collection`,
+   * {@link graph.GraphVertexCollection}, {@link graph.GraphEdgeCollection} as well as
+   * (in TypeScript) {@link collection.DocumentCollection} and {@link collection.EdgeCollection}.
    *
    * @param collections - A collection that can be read from and written to
    * during the transaction.
@@ -3403,7 +3404,7 @@ export class Database {
 
   /**
    * Fetches all active transactions from the database and returns an array of
-   * {@link Transaction} instances for those transactions.
+   * {@link transaction.Transaction} instances for those transactions.
    *
    * See also {@link Database.listTransactions}.
    *
@@ -3423,7 +3424,7 @@ export class Database {
   //#region queries
   /**
    * Performs a database query using the given `query`, then returns a new
-   * {@link ArrayCursor} instance for the result set.
+   * {@link cursor.ArrayCursor} instance for the result set.
    *
    * See the {@link aql} template string handler for information about how
    * to create a query string without manually defining bind parameters nor
@@ -3473,9 +3474,9 @@ export class Database {
   ): Promise<ArrayCursor<T>>;
   /**
    * Performs a database query using the given `query` and `bindVars`, then
-   * returns a new {@link ArrayCursor} instance for the result set.
+   * returns a new {@link cursor.ArrayCursor} instance for the result set.
    *
-   * See the {@link aql} template string handler for a safer and easier
+   * See the {@link aql.aql} template string handler for a safer and easier
    * alternative to passing strings directly.
    *
    * @param query - An AQL query string.

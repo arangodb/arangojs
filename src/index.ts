@@ -8,7 +8,7 @@
  *
  * If you are just getting started, you probably want to use the
  * {@link arangojs} function, which is also the default export of this module,
- * or the {@link Database} class for which it is a wrapper.
+ * or the {@link database.Database} class for which it is a wrapper.
  *
  * @packageDocumentation
  */
@@ -19,7 +19,7 @@ module.exports = exports = arangojs;
 /**
  * Creates a new `Database` instance with its own connection pool.
  *
- * This is a wrapper function for the {@link Database.constructor}.
+ * This is a wrapper function for the {@link database.Database.constructor}.
  *
  * @param config - An object with configuration options.
  *
@@ -36,10 +36,10 @@ export function arangojs(config?: Config): Database;
 /**
  * Creates a new `Database` instance with its own connection pool.
  *
- * This is a wrapper function for the {@link Database.constructor}.
+ * This is a wrapper function for the {@link database.Database.constructor}.
  *
  * @param url - Base URL of the ArangoDB server or list of server URLs.
- * Equivalent to the `url` option in {@link Config}.
+ * Equivalent to the `url` option in {@link connection.Config}.
  *
  * @example
  * ```js

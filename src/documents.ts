@@ -84,7 +84,7 @@ export type Patch<T = Record<string, any>> = {
 /**
  * An object with an ArangoDB document `_id` property.
  *
- * See {@link DocumentMetadata}.
+ * See {@link documents.DocumentMetadata}.
  */
 export type ObjectWithId = {
   [key: string]: any;
@@ -94,7 +94,7 @@ export type ObjectWithId = {
 /**
  * An object with an ArangoDB document `_key` property.
  *
- * See {@link DocumentMetadata}.
+ * See {@link documents.DocumentMetadata}.
  */
 export type ObjectWithKey = {
   [key: string]: any;
@@ -106,7 +106,7 @@ export type ObjectWithKey = {
  * arangojs methods, i.e. a partial ArangoDB document or the value of a
  * document's `_key` or `_id`.
  *
- * See {@link DocumentMetadata}.
+ * See {@link documents.DocumentMetadata}.
  */
 export type DocumentSelector = ObjectWithId | ObjectWithKey | string;
 

@@ -643,7 +643,7 @@ export class BatchedArrayCursor<T = any> {
 
 /**
  * The `ArrayCursor` type represents a cursor returned from a
- * {@link Database.query}.
+ * {@link database.Database.query}.
  *
  * When using TypeScript, cursors can be cast to a specific item type in order
  * to increase type safety.
