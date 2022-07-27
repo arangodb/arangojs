@@ -42,7 +42,6 @@ export interface AqlQuery {
 export interface GeneratedAqlQuery extends AqlQuery {
   /**
    * @internal
-   * @hidden
    */
   _source: () => { strings: string[]; args: AqlValue[] };
 }
@@ -97,7 +96,6 @@ export function isAqlQuery(query: any): query is AqlQuery {
  * @param query - A value that might be a `GeneratedAqlQuery`.
  *
  * @internal
- * @hidden
  */
 export function isGeneratedAqlQuery(query: any): query is GeneratedAqlQuery {
   return isAqlQuery(query) && typeof (query as any)._source === "function";
@@ -344,7 +342,7 @@ export namespace aql {
    * @param values - Array of values to join. These values will behave exactly
    * like values interpolated in an `aql` template string.
    * @param sep - Seperator to insert between values. This value will behave
-   * exactly like a value passed to {@link aql.literal}, i.e. it will be
+   * exactly like a value passed to {@link literal}, i.e. it will be
    * inlined as-is, rather than being converted into a bind parameter.
    *
    * @example

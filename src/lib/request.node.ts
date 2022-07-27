@@ -3,7 +3,6 @@
  *
  * @packageDocumentation
  * @internal
- * @hidden
  */
 
 import {
@@ -25,7 +24,6 @@ import { omit } from "./omit";
 
 /**
  * @internal
- * @hidden
  */
 function systemErrorToJSON(this: SystemError) {
   return {
@@ -38,7 +36,6 @@ function systemErrorToJSON(this: SystemError) {
 
 /**
  * @internal
- * @hidden
  */
 export interface ArangojsResponse extends IncomingMessage {
   request: ClientRequest;
@@ -48,7 +45,6 @@ export interface ArangojsResponse extends IncomingMessage {
 
 /**
  * @internal
- * @hidden
  */
 export interface ArangojsError extends Error {
   request: ClientRequest;
@@ -57,7 +53,6 @@ export interface ArangojsError extends Error {
 
 /**
  * @internal
- * @hidden
  */
 export type RequestOptions = {
   method: string;
@@ -70,7 +65,6 @@ export type RequestOptions = {
 
 /**
  * @internal
- * @hidden
  */
 export type RequestFunction = {
   (options: RequestOptions, cb: Errback<ArangojsResponse>): void;
@@ -79,7 +73,6 @@ export type RequestFunction = {
 
 /**
  * @internal
- * @hidden
  */
 export const isBrowser = false;
 
@@ -91,7 +84,6 @@ export const isBrowser = false;
  * @param agent - Agent to use for performing requests.
  *
  * @internal
- * @hidden
  */
 export function createRequest(
   baseUrl: string,

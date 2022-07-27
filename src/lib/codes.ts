@@ -1,11 +1,10 @@
 /**
  * Error codes handled by arangojs.
  *
- * See also {@link https://www.arangodb.com/docs/stable/appendix-error-codes.html | ArangoDB error documentation}.
+ * See also [ArangoDB error documentation](https://www.arangodb.com/docs/stable/appendix-error-codes.html).
  *
  * @packageDocumentation
  * @internal
- * @hidden
  */
 
 export const TRANSACTION_NOT_FOUND = 10;

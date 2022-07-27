@@ -3,12 +3,10 @@
  *
  * @packageDocumentation
  * @internal
- * @hidden
  */
 
 /**
  * @internal
- * @hidden
  */
 export function normalizeUrl(url: string): string {
   const raw = url.match(/^(tcp|ssl|tls)((?::|\+).+)/);

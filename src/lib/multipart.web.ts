@@ -3,7 +3,6 @@
  *
  * @packageDocumentation
  * @internal
- * @hidden
  */
 
 import { Errback } from "./errback";
@@ -14,7 +13,6 @@ declare const Blob: any;
 
 /**
  * @internal
- * @hidden
  */
 export function toForm(fields: Fields, callback: Errback<MultipartRequest>) {
   let form;

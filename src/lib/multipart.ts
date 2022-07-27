@@ -3,7 +3,6 @@
  *
  * @packageDocumentation
  * @internal
- * @hidden
  */
 
 import { Readable } from "stream";
@@ -20,7 +19,6 @@ const Multipart = require("multi-part") as typeof MultiPart;
 
 /**
  * @internal
- * @hidden
  */
 export type Fields = {
   [key: string]: any;
@@ -28,7 +26,6 @@ export type Fields = {
 
 /**
  * @internal
- * @hidden
  */
 export interface MultipartRequest {
   headers?: Headers;
@@ -37,7 +34,6 @@ export interface MultipartRequest {
 
 /**
  * @internal
- * @hidden
  */
 export function toForm(fields: Fields): Promise<MultipartRequest> {
   return new Promise((resolve, reject) => {

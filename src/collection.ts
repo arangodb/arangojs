@@ -11,7 +11,7 @@
  *
  * @packageDocumentation
  */
-import { ArangoResponseMetadata, Params } from "./connection";
+import { ArangoApiResponse, Params } from "./connection";
 import { ArrayCursor, BatchedArrayCursor } from "./cursor";
 import { Database } from "./database";
 import {
@@ -73,7 +73,7 @@ export function collectionToString(
  * A marker interface identifying objects that can be used in AQL template
  * strings to create references to ArangoDB collections.
  *
- * See {@link aql}.
+ * See {@link aql!aql}.
  */
 export interface ArangoCollection {
   /**
@@ -126,7 +126,7 @@ export type ShardingStrategy =
 /**
  * Type of document reference.
  *
- * See {@link DocumentCollection.list} and {@link EdgeCollection.list}.
+ * See {@link DocumentCollection#list} and {@link EdgeCollection#list}.
  *
  * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
  * replaced with AQL queries.
@@ -306,7 +306,7 @@ export type SchemaOptions = {
 /**
  * Options for setting a collection's properties.
  *
- * See {@link DocumentCollection.properties} and {@link EdgeCollection.properties}.
+ * See {@link DocumentCollection#properties} and {@link EdgeCollection#properties}.
  */
 export type CollectionPropertiesOptions = {
   /**
@@ -382,8 +382,8 @@ export type CollectionKeyOptions = {
 /**
  * Options for creating a collection.
  *
- * See {@link database.Database.createCollection}, {@link database.Database.createEdgeCollection}
- * and {@link DocumentCollection.create} or {@link EdgeCollection.create}.
+ * See {@link database.Database#createCollection}, {@link database.Database#createEdgeCollection}
+ * and {@link DocumentCollection#create} or {@link EdgeCollection#create}.
  */
 export type CreateCollectionOptions = {
   /**
@@ -912,7 +912,7 @@ export type TraversalOptions = {
    * access any other variables.
    *
    * See the official ArangoDB documentation for
-   * {@link https://www.arangodb.com/docs/stable/appendix-java-script-modules-arango-db.html | the JavaScript `@arangodb` module}
+   * [the JavaScript `@arangodb` module](https://www.arangodb.com/docs/stable/appendix-java-script-modules-arango-db.html)
    * for information about accessing the database from within ArangoDB's
    * server-side JavaScript environment.
    */
@@ -934,7 +934,7 @@ export type TraversalOptions = {
    * access any other variables.
    *
    * See the official ArangoDB documentation for
-   * {@link https://www.arangodb.com/docs/stable/appendix-java-script-modules-arango-db.html | the JavaScript `@arangodb` module}
+   * [the JavaScript `@arangodb` module](https://www.arangodb.com/docs/stable/appendix-java-script-modules-arango-db.html)
    * for information about accessing the database from within ArangoDB's
    * server-side JavaScript environment.
    */
@@ -952,7 +952,7 @@ export type TraversalOptions = {
    * access any other variables.
    *
    * See the official ArangoDB documentation for
-   * {@link https://www.arangodb.com/docs/stable/appendix-java-script-modules-arango-db.html | the JavaScript `@arangodb` module}
+   * [the JavaScript `@arangodb` module](https://www.arangodb.com/docs/stable/appendix-java-script-modules-arango-db.html)
    * for information about accessing the database from within ArangoDB's
    * server-side JavaScript environment.
    */
@@ -970,7 +970,7 @@ export type TraversalOptions = {
    * access any other variables.
    *
    * See the official ArangoDB documentation for
-   * {@link https://www.arangodb.com/docs/stable/appendix-java-script-modules-arango-db.html | the JavaScript `@arangodb` module}
+   * [the JavaScript `@arangodb` module](https://www.arangodb.com/docs/stable/appendix-java-script-modules-arango-db.html)
    * for information about accessing the database from within ArangoDB's
    * server-side JavaScript environment.
    */
@@ -988,7 +988,7 @@ export type TraversalOptions = {
    * access any other variables.
    *
    * See the official ArangoDB documentation for
-   * {@link https://www.arangodb.com/docs/stable/appendix-java-script-modules-arango-db.html | the JavaScript `@arangodb` module}
+   * [the JavaScript `@arangodb` module](https://www.arangodb.com/docs/stable/appendix-java-script-modules-arango-db.html)
    * for information about accessing the database from within ArangoDB's
    * server-side JavaScript environment.
    */
@@ -1088,7 +1088,7 @@ export type CollectionEdgesResult<T extends Record<string, any> = any> = {
 /**
  * Result of removing documents by an example.
  *
- * See {@link DocumentCollection.removeByExample} and {@link EdgeCollection.removeByExample}.
+ * See {@link DocumentCollection#removeByExample} and {@link EdgeCollection#removeByExample}.
  *
  * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
  * replaced with AQL queries.
@@ -1103,7 +1103,7 @@ export type SimpleQueryRemoveByExampleResult = {
 /**
  * Result of replacing documents by an example.
  *
- * See {@link DocumentCollection.replaceByExample} and {@link EdgeCollection.replaceByExample}.
+ * See {@link DocumentCollection#replaceByExample} and {@link EdgeCollection#replaceByExample}.
  *
  * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
  * replaced with AQL queries.
@@ -1118,7 +1118,7 @@ export type SimpleQueryReplaceByExampleResult = {
 /**
  * Result of updating documents by an example.
  *
- * See {@link DocumentCollection.updateByExample} and {@link EdgeCollection.updateByExample}.
+ * See {@link DocumentCollection#updateByExample} and {@link EdgeCollection#updateByExample}.
  *
  * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
  * replaced with AQL queries.
@@ -1133,7 +1133,7 @@ export type SimpleQueryUpdateByExampleResult = {
 /**
  * Result of removing documents by keys.
  *
- * See {@link DocumentCollection.removeByKeys} and {@link EdgeCollection.removeByKeys}.
+ * See {@link DocumentCollection#removeByKeys} and {@link EdgeCollection#removeByKeys}.
  *
  * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
  * replaced with AQL queries.
@@ -1201,12 +1201,12 @@ export interface DocumentCollection<T extends Record<string, any> = any>
    * // data contains general information about the collection
    * ```
    */
-  get(): Promise<ArangoResponseMetadata & CollectionMetadata>;
+  get(): Promise<ArangoApiResponse<CollectionMetadata>>;
   /**
    * Creates a collection with the given `options` and the instance's name.
    *
-   * See also {@link database.Database.createCollection} and
-   * {@link database.Database.createEdgeCollection}.
+   * See also {@link database.Database#createCollection} and
+   * {@link database.Database#createEdgeCollection}.
    *
    * **Note**: When called on an {@link EdgeCollection} instance in TypeScript,
    * the `type` option must still be set to the correct {@link CollectionType}.
@@ -1249,9 +1249,7 @@ export interface DocumentCollection<T extends Record<string, any> = any>
     options?: CreateCollectionOptions & {
       type?: CollectionType;
     }
-  ): Promise<
-    ArangoResponseMetadata & CollectionMetadata & CollectionProperties
-  >;
+  ): Promise<ArangoApiResponse<CollectionMetadata & CollectionProperties>>;
   /**
    * Retrieves the collection's properties.
    *
@@ -1264,7 +1262,7 @@ export interface DocumentCollection<T extends Record<string, any> = any>
    * ```
    */
   properties(): Promise<
-    ArangoResponseMetadata & CollectionMetadata & CollectionProperties
+    ArangoApiResponse<CollectionMetadata & CollectionProperties>
   >;
   /**
    * Replaces the properties of the collection.
@@ -1280,9 +1278,7 @@ export interface DocumentCollection<T extends Record<string, any> = any>
    */
   properties(
     properties: CollectionPropertiesOptions
-  ): Promise<
-    ArangoResponseMetadata & CollectionMetadata & CollectionProperties
-  >;
+  ): Promise<ArangoApiResponse<CollectionMetadata & CollectionProperties>>;
   /**
    * Retrieves information about the number of documents in a collection.
    *
@@ -1295,9 +1291,9 @@ export interface DocumentCollection<T extends Record<string, any> = any>
    * ```
    */
   count(): Promise<
-    ArangoResponseMetadata &
-      CollectionMetadata &
-      CollectionProperties & { count: number }
+    ArangoApiResponse<
+      CollectionMetadata & CollectionProperties & { count: number }
+    >
   >;
   /**
    * (RocksDB only.) Instructs ArangoDB to recalculate the collection's
@@ -1332,9 +1328,10 @@ export interface DocumentCollection<T extends Record<string, any> = any>
   figures(
     details?: boolean
   ): Promise<
-    ArangoResponseMetadata &
+    ArangoApiResponse<
       CollectionMetadata &
-      CollectionProperties & { count: number; figures: Record<string, any> }
+        CollectionProperties & { count: number; figures: Record<string, any> }
+    >
   >;
   /**
    * Retrieves the collection revision ID.
@@ -1348,9 +1345,9 @@ export interface DocumentCollection<T extends Record<string, any> = any>
    * ```
    */
   revision(): Promise<
-    ArangoResponseMetadata &
-      CollectionMetadata &
-      CollectionProperties & { revision: string }
+    ArangoApiResponse<
+      CollectionMetadata & CollectionProperties & { revision: string }
+    >
   >;
   /**
    * Retrieves the collection checksum.
@@ -1368,8 +1365,9 @@ export interface DocumentCollection<T extends Record<string, any> = any>
   checksum(
     options?: CollectionChecksumOptions
   ): Promise<
-    ArangoResponseMetadata &
+    ArangoApiResponse<
       CollectionMetadata & { revision: string; checksum: string }
+    >
   >;
   /**
    * (RocksDB only.) Instructs ArangoDB to load as many indexes of the
@@ -1406,7 +1404,7 @@ export interface DocumentCollection<T extends Record<string, any> = any>
    * // collection1 and collection3 represent the same ArangoDB collection!
    * ```
    */
-  rename(newName: string): Promise<ArangoResponseMetadata & CollectionMetadata>;
+  rename(newName: string): Promise<ArangoApiResponse<CollectionMetadata>>;
   /**
    * Deletes all documents in the collection.
    *
@@ -1419,7 +1417,7 @@ export interface DocumentCollection<T extends Record<string, any> = any>
    * // the collection "some-collection" is now empty
    * ```
    */
-  truncate(): Promise<ArangoResponseMetadata & CollectionMetadata>;
+  truncate(): Promise<ArangoApiResponse<CollectionMetadata>>;
   /**
    * Deletes the collection from the database.
    *
@@ -1433,7 +1431,9 @@ export interface DocumentCollection<T extends Record<string, any> = any>
    * // The collection "some-collection" is now an ex-collection
    * ```
    */
-  drop(options?: CollectionDropOptions): Promise<ArangoResponseMetadata>;
+  drop(
+    options?: CollectionDropOptions
+  ): Promise<ArangoApiResponse<Record<string, never>>>;
 
   //#region crud
   /**
@@ -2104,7 +2104,7 @@ export interface DocumentCollection<T extends Record<string, any> = any>
   removeByExample(
     example: Partial<DocumentData<T>>,
     options?: SimpleQueryRemoveByExampleOptions
-  ): Promise<ArangoResponseMetadata & SimpleQueryRemoveByExampleResult>;
+  ): Promise<ArangoApiResponse<SimpleQueryRemoveByExampleResult>>;
 
   /**
    * Replaces all documents in the collection matching the given example.
@@ -2140,7 +2140,7 @@ export interface DocumentCollection<T extends Record<string, any> = any>
     example: Partial<DocumentData<T>>,
     newValue: DocumentData<T>,
     options?: SimpleQueryReplaceByExampleOptions
-  ): Promise<ArangoResponseMetadata & SimpleQueryReplaceByExampleResult>;
+  ): Promise<ArangoApiResponse<SimpleQueryReplaceByExampleResult>>;
 
   /**
    * Updates all documents in the collection matching the given example.
@@ -2176,7 +2176,7 @@ export interface DocumentCollection<T extends Record<string, any> = any>
     example: Partial<DocumentData<T>>,
     newValue: Patch<DocumentData<T>>,
     options?: SimpleQueryUpdateByExampleOptions
-  ): Promise<ArangoResponseMetadata & SimpleQueryUpdateByExampleResult>;
+  ): Promise<ArangoApiResponse<SimpleQueryUpdateByExampleResult>>;
 
   /**
    * Retrieves all documents matching the given document keys.
@@ -2231,7 +2231,7 @@ export interface DocumentCollection<T extends Record<string, any> = any>
   removeByKeys(
     keys: string[],
     options?: SimpleQueryRemoveByKeysOptions
-  ): Promise<ArangoResponseMetadata & SimpleQueryRemoveByKeysResult<T>>;
+  ): Promise<ArangoApiResponse<SimpleQueryRemoveByKeysResult<T>>>;
 
   /**
    * Performs a fulltext query in the given `attribute` on the collection.
@@ -2306,9 +2306,7 @@ export interface DocumentCollection<T extends Record<string, any> = any>
    */
   ensureIndex(
     details: EnsurePersistentIndexOptions
-  ): Promise<
-    ArangoResponseMetadata & PersistentIndex & { isNewlyCreated: boolean }
-  >;
+  ): Promise<ArangoApiResponse<PersistentIndex & { isNewlyCreated: boolean }>>;
   /**
    * Creates a TTL index on the collection if it does not already exist.
    *
@@ -2340,7 +2338,7 @@ export interface DocumentCollection<T extends Record<string, any> = any>
    */
   ensureIndex(
     details: EnsureTtlIndexOptions
-  ): Promise<ArangoResponseMetadata & TtlIndex & { isNewlyCreated: boolean }>;
+  ): Promise<ArangoApiResponse<TtlIndex & { isNewlyCreated: boolean }>>;
   /**
    * Creates a multi-dimensional index on the collection if it does not already exist.
    *
@@ -2361,7 +2359,7 @@ export interface DocumentCollection<T extends Record<string, any> = any>
    */
   ensureIndex(
     details: EnsureZkdIndexOptions
-  ): Promise<ArangoResponseMetadata & ZkdIndex & { isNewlyCreated: boolean }>;
+  ): Promise<ArangoApiResponse<ZkdIndex & { isNewlyCreated: boolean }>>;
   /**
    * Creates a fulltext index on the collection if it does not already exist.
    *
@@ -2381,9 +2379,7 @@ export interface DocumentCollection<T extends Record<string, any> = any>
    */
   ensureIndex(
     details: EnsureFulltextIndexOptions
-  ): Promise<
-    ArangoResponseMetadata & FulltextIndex & { isNewlyCreated: boolean }
-  >;
+  ): Promise<ArangoApiResponse<FulltextIndex & { isNewlyCreated: boolean }>>;
   /**
    * Creates a geo index on the collection if it does not already exist.
    *
@@ -2403,7 +2399,7 @@ export interface DocumentCollection<T extends Record<string, any> = any>
    */
   ensureIndex(
     details: EnsureGeoIndexOptions
-  ): Promise<ArangoResponseMetadata & GeoIndex & { isNewlyCreated: boolean }>;
+  ): Promise<ArangoApiResponse<GeoIndex & { isNewlyCreated: boolean }>>;
   /**
    * Deletes the index with the given name or `id` from the database.
    *
@@ -2419,7 +2415,7 @@ export interface DocumentCollection<T extends Record<string, any> = any>
    */
   dropIndex(
     selector: IndexSelector
-  ): Promise<ArangoResponseMetadata & { id: string }>;
+  ): Promise<ArangoApiResponse<{ id: string }>>;
   /**
    * Triggers compaction for a collection.
    *
@@ -2431,7 +2427,7 @@ export interface DocumentCollection<T extends Record<string, any> = any>
    * // Background compaction is triggered on the collection
    * ```
    */
-  compact(): Promise<ArangoResponseMetadata>;
+  compact(): Promise<ArangoApiResponse<Record<string, never>>>;
   //#endregion
 }
 
@@ -3093,7 +3089,7 @@ export interface EdgeCollection<T extends Record<string, any> = any>
    */
   edges(
     selector: DocumentSelector
-  ): Promise<ArangoResponseMetadata & CollectionEdgesResult<T>>;
+  ): Promise<ArangoApiResponse<CollectionEdgesResult<T>>>;
   /**
    * Retrieves a list of all incoming edges of the document matching the given
    * `selector`.
@@ -3120,7 +3116,7 @@ export interface EdgeCollection<T extends Record<string, any> = any>
    */
   inEdges(
     selector: DocumentSelector
-  ): Promise<ArangoResponseMetadata & CollectionEdgesResult<T>>;
+  ): Promise<ArangoApiResponse<CollectionEdgesResult<T>>>;
   /**
    * Retrieves a list of all outgoing edges of the document matching the given
    * `selector`.
@@ -3147,7 +3143,7 @@ export interface EdgeCollection<T extends Record<string, any> = any>
    */
   outEdges(
     selector: DocumentSelector
-  ): Promise<ArangoResponseMetadata & CollectionEdgesResult<T>>;
+  ): Promise<ArangoApiResponse<CollectionEdgesResult<T>>>;
 
   /**
    * Performs a traversal starting from the given `startVertex` and following
@@ -3156,7 +3152,7 @@ export interface EdgeCollection<T extends Record<string, any> = any>
    * Throws an exception when passed a document or `_id` from a different
    * collection.
    *
-   * See also {@link graph.Graph.traversal}.
+   * See also {@link graph.Graph#traversal}.
    *
    * @param startVertex - Document `_key`, `_id` or object with either of those
    * properties (e.g. a document from this collection).
@@ -3192,7 +3188,6 @@ export interface EdgeCollection<T extends Record<string, any> = any>
 
 /**
  * @internal
- * @hidden
  */
 export class Collection<T extends Record<string, any> = any>
   implements EdgeCollection<T>, DocumentCollection<T>
@@ -3204,7 +3199,6 @@ export class Collection<T extends Record<string, any> = any>
 
   /**
    * @internal
-   * @hidden
    */
   constructor(db: Database, name: string) {
     this._name = name.normalize("NFC");
@@ -3268,9 +3262,7 @@ export class Collection<T extends Record<string, any> = any>
 
   properties(
     properties?: CollectionPropertiesOptions
-  ): Promise<
-    CollectionMetadata & CollectionProperties & ArangoResponseMetadata
-  > {
+  ): Promise<ArangoApiResponse<CollectionMetadata & CollectionProperties>> {
     if (!properties) {
       return this._db.request({
         path: `/_api/collection/${encodeURIComponent(this._name)}/properties`,
@@ -3284,8 +3276,9 @@ export class Collection<T extends Record<string, any> = any>
   }
 
   count(): Promise<
-    CollectionMetadata &
-      CollectionProperties & { count: number } & ArangoResponseMetadata
+    ArangoApiResponse<
+      CollectionMetadata & CollectionProperties & { count: number }
+    >
   > {
     return this._db.request({
       path: `/_api/collection/${encodeURIComponent(this._name)}/count`,
@@ -3304,12 +3297,13 @@ export class Collection<T extends Record<string, any> = any>
     );
   }
 
-  figures(details = false): Promise<
+  figures(
+    details = false
+  ): Promise<
     CollectionMetadata &
-      CollectionProperties & {
-        count: number;
-        figures: Record<string, any>;
-      } & ArangoResponseMetadata
+      ArangoApiResponse<
+        CollectionProperties & { count: number; figures: Record<string, any> }
+      >
   > {
     return this._db.request({
       path: `/_api/collection/${encodeURIComponent(this._name)}/figures`,
@@ -3318,19 +3312,21 @@ export class Collection<T extends Record<string, any> = any>
   }
 
   revision(): Promise<
-    CollectionMetadata &
-      CollectionProperties & { revision: string } & ArangoResponseMetadata
+    ArangoApiResponse<
+      CollectionMetadata & CollectionProperties & { revision: string }
+    >
   > {
     return this._db.request({
       path: `/_api/collection/${encodeURIComponent(this._name)}/revision`,
     });
   }
 
-  checksum(options?: CollectionChecksumOptions): Promise<
-    CollectionMetadata & {
-      revision: string;
-      checksum: string;
-    } & ArangoResponseMetadata
+  checksum(
+    options?: CollectionChecksumOptions
+  ): Promise<
+    ArangoApiResponse<
+      CollectionMetadata & { revision: string; checksum: string }
+    >
   > {
     return this._db.request({
       path: `/_api/collection/${encodeURIComponent(this._name)}/checksum`,
@@ -3356,7 +3352,7 @@ export class Collection<T extends Record<string, any> = any>
     return result;
   }
 
-  truncate(): Promise<CollectionMetadata & ArangoResponseMetadata> {
+  truncate(): Promise<ArangoApiResponse<CollectionMetadata>> {
     return this._db.request({
       method: "PUT",
       path: `/_api/collection/${this._name}/truncate`,

@@ -319,7 +319,6 @@ export type IndexSelector = ObjectWithId | ObjectWithName | string;
 
 /**
  * @internal
- * @hidden
  */
 export function _indexHandle(
   selector: IndexSelector,

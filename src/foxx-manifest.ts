@@ -5,7 +5,7 @@
  *
  * The "foxx-manifest" module provides the Foxx manifest type for TypeScript.
  *
- * Generated from {@link http://json.schemastore.org/foxx-manifest | JSON Schema}
+ * Generated from [JSON Schema](http://json.schemastore.org/foxx-manifest)
  * using `json-schema-to-typescript`.
  *
  * @packageDocumentation

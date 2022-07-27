@@ -5,7 +5,6 @@
  *
  * @packageDocumentation
  * @internal
- * @hidden
  */
 
 import { RequestInterceptors, XhrOptions } from "../connection";
@@ -23,7 +22,6 @@ export const isBrowser = true;
 
 /**
  * @internal
- * @hidden
  */
 function errorToJSON(this: Error) {
   return {
@@ -42,7 +40,6 @@ function errorToJSON(this: Error) {
  * @param agentOptions
  *
  * @internal
- * @hidden
  */
 export function createRequest(
   baseUrl: string,

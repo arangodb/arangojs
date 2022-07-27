@@ -3,12 +3,10 @@
  *
  * @packageDocumentation
  * @internal
- * @hidden
  */
 
 /**
  * @internal
- * @hidden
  */
 export function omit<T>(obj: T, keys: (keyof T)[]): T {
   const result = {} as T;

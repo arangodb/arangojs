@@ -29,7 +29,7 @@ import {
   isArangoCollection,
 } from "./collection";
 import {
-  ArangoResponseMetadata,
+  ArangoApiResponse,
   Config,
   Connection,
   Headers,
@@ -69,7 +69,6 @@ export function isArangoDatabase(database: any): database is Database {
 
 /**
  * @internal
- * @hidden
  */
 function coerceTransactionCollections(
   collections:
@@ -113,7 +112,6 @@ function coerceTransactionCollections(
 
 /**
  * @internal
- * @hidden
  */
 type CoercedTransactionCollections = {
   allowImplicit?: boolean;
@@ -175,7 +173,7 @@ export type TransactionOptions = {
 /**
  * Options for executing a query.
  *
- * See {@link Database.query}.
+ * See {@link Database#query}.
  */
 export type QueryOptions = {
   /**
@@ -341,7 +339,7 @@ export type QueryOptions = {
 /**
  * Options for explaining a query.
  *
- * See {@link Database.explain}.
+ * See {@link Database#explain}.
  */
 export type ExplainOptions = {
   /**
@@ -564,7 +562,7 @@ export type QueryTracking = {
 /**
  * Options for query tracking.
  *
- * See {@link Database.queryTracking}.
+ * See {@link Database#queryTracking}.
  */
 export type QueryTrackingOptions = {
   /**
@@ -658,7 +656,7 @@ export type CreateDatabaseUser = {
 /**
  * Options for creating a database.
  *
- * See {@link Database.createDatabase}.
+ * See {@link Database#createDatabase}.
  */
 export type CreateDatabaseOptions = {
   /**
@@ -695,7 +693,7 @@ export type CreateDatabaseOptions = {
 /**
  * Object describing a database.
  *
- * See {@link Database.get}.
+ * See {@link Database#get}.
  */
 export type DatabaseInfo = {
   /**
@@ -775,7 +773,7 @@ export type AqlUserFunction = {
   /**
    * Whether the function is deterministic.
    *
-   * See {@link Database.createFunction}.
+   * See {@link Database#createFunction}.
    */
   isDeterministic: boolean;
 };
@@ -783,25 +781,25 @@ export type AqlUserFunction = {
 /**
  * Options for installing the service.
  *
- * See {@link Database.installService}.
+ * See {@link Database#installService}.
  */
 export type InstallServiceOptions = {
   /**
    * An object mapping configuration option names to values.
    *
-   * See also {@link Database.getServiceConfiguration}.
+   * See also {@link Database#getServiceConfiguration}.
    */
   configuration?: Record<string, any>;
   /**
    * An object mapping dependency aliases to mount points.
    *
-   * See also {@link Database.getServiceDependencies}.
+   * See also {@link Database#getServiceDependencies}.
    */
   dependencies?: Record<string, string>;
   /**
    * Whether the service should be installed in development mode.
    *
-   * See also {@link Database.setServiceDevelopmentMode}.
+   * See also {@link Database#setServiceDevelopmentMode}.
    *
    * Default: `false`
    */
@@ -825,25 +823,25 @@ export type InstallServiceOptions = {
 /**
  * Options for replacing a service.
  *
- * See {@link Database.replaceService}.
+ * See {@link Database#replaceService}.
  */
 export type ReplaceServiceOptions = {
   /**
    * An object mapping configuration option names to values.
    *
-   * See also {@link Database.getServiceConfiguration}.
+   * See also {@link Database#getServiceConfiguration}.
    */
   configuration?: Record<string, any>;
   /**
    * An object mapping dependency aliases to mount points.
    *
-   * See also {@link Database.getServiceDependencies}.
+   * See also {@link Database#getServiceDependencies}.
    */
   dependencies?: Record<string, string>;
   /**
    * Whether the service should be installed in development mode.
    *
-   * See also {@link Database.setServiceDevelopmentMode}.
+   * See also {@link Database#setServiceDevelopmentMode}.
    *
    * Default: `false`
    */
@@ -881,25 +879,25 @@ export type ReplaceServiceOptions = {
 /**
  * Options for upgrading a service.
  *
- * See {@link Database.upgradeService}.
+ * See {@link Database#upgradeService}.
  */
 export type UpgradeServiceOptions = {
   /**
    * An object mapping configuration option names to values.
    *
-   * See also {@link Database.getServiceConfiguration}.
+   * See also {@link Database#getServiceConfiguration}.
    */
   configuration?: Record<string, any>;
   /**
    * An object mapping dependency aliases to mount points.
    *
-   * See also {@link Database.getServiceDependencies}.
+   * See also {@link Database#getServiceDependencies}.
    */
   dependencies?: Record<string, string>;
   /**
    * Whether the service should be installed in development mode.
    *
-   * See also {@link Database.setServiceDevelopmentMode}.
+   * See also {@link Database#setServiceDevelopmentMode}.
    *
    * Default: `false`
    */
@@ -937,7 +935,7 @@ export type UpgradeServiceOptions = {
 /**
  * Options for uninstalling a service.
  *
- * See {@link Database.uninstallService}.
+ * See {@link Database#uninstallService}.
  */
 export type UninstallServiceOptions = {
   /**
@@ -1428,7 +1426,7 @@ export class Database {
   /**
    * Creates a new `Database` instance with its own connection pool.
    *
-   * See also {@link Database.database}.
+   * See also {@link Database#database}.
    *
    * @param config - An object with configuration options.
    *
@@ -1445,7 +1443,7 @@ export class Database {
   /**
    * Creates a new `Database` instance with its own connection pool.
    *
-   * See also {@link Database.database}.
+   * See also {@link Database#database}.
    *
    * @param url - Base URL of the ArangoDB server or list of server URLs.
    * Equivalent to the `url` option in {@link connection.Config}.
@@ -1457,12 +1455,10 @@ export class Database {
    * ```
    */
   constructor(url: string | string[], name?: string);
-  // There's currently no way to hide a single overload from typedoc
-  // /**
-  //  * @internal
-  //  * @hidden
-  //  */
-  // constructor(database: Database, name?: string);
+  /**
+   * @internal
+   */
+  constructor(database: Database, name?: string);
   constructor(
     configOrDatabase: string | string[] | Config | Database = {},
     name?: string
@@ -1699,7 +1695,7 @@ export class Database {
   /**
    * Sets the limit for the number of values of the most recently received
    * server-reported queue times that can be accessed using
-   * {@link Database.queueTime}.
+   * {@link Database#queueTime}.
    *
    * @param responseQueueTimeSamples - Number of values to maintain.
    */
@@ -1710,7 +1706,7 @@ export class Database {
 
   //#region auth
   /**
-   * Updates the `Database` instance's `authorization` header to use Basic
+   * Updates the underlying connection's `authorization` header to use Basic
    * authentication with the given `username` and `password`, then returns
    * itself.
    *
@@ -1730,7 +1726,7 @@ export class Database {
   }
 
   /**
-   * Updates the `Database` instance's `authorization` header to use Bearer
+   * Updates the underlying connection's `authorization` header to use Bearer
    * authentication with the given authentication `token`, then returns itself.
    *
    * @param token - The token to authenticate with.
@@ -1782,7 +1778,7 @@ export class Database {
    * Creates a new `Database` instance for the given `databaseName` that
    * shares this database's connection pool.
    *
-   * See also {@link Database.constructor}.
+   * See also {@link Database:constructor}.
    *
    * @param databaseName - Name of the database.
    *
@@ -1893,8 +1889,8 @@ export class Database {
   /**
    * Fetches all databases from the server and returns an array of their names.
    *
-   * See also {@link Database.databases} and
-   * {@link Database.listUserDatabases}.
+   * See also {@link Database#databases} and
+   * {@link Database#listUserDatabases}.
    *
    * @example
    * ```js
@@ -1911,8 +1907,8 @@ export class Database {
    * Fetches all databases accessible to the active user from the server and
    * returns an array of their names.
    *
-   * See also {@link Database.userDatabases} and
-   * {@link Database.listDatabases}.
+   * See also {@link Database#userDatabases} and
+   * {@link Database#listDatabases}.
    *
    * @example
    * ```js
@@ -1932,8 +1928,8 @@ export class Database {
    * Fetches all databases from the server and returns an array of `Database`
    * instances for those databases.
    *
-   * See also {@link Database.listDatabases} and
-   * {@link Database.userDatabases}.
+   * See also {@link Database#listDatabases} and
+   * {@link Database#userDatabases}.
    *
    * @example
    * ```js
@@ -1954,8 +1950,8 @@ export class Database {
    * Fetches all databases accessible to the active user from the server and
    * returns an array of `Database` instances for those databases.
    *
-   * See also {@link Database.listUserDatabases} and
-   * {@link Database.databases}.
+   * See also {@link Database#listUserDatabases} and
+   * {@link Database#databases}.
    *
    * @example
    * ```js
@@ -2127,7 +2123,7 @@ export class Database {
    * `options`, then returns an {@link collection.EdgeCollection} instance for the new
    * edge collection.
    *
-   * This is a convenience method for calling {@link Database.createCollection}
+   * This is a convenience method for calling {@link Database#createCollection}
    * with `options.type` set to `EDGE_COLLECTION`.
    *
    * @param T - Type to use for edge document data. Defaults to `any`.
@@ -2175,7 +2171,7 @@ export class Database {
   async renameCollection(
     collectionName: string,
     newName: string
-  ): Promise<ArangoResponseMetadata & CollectionMetadata> {
+  ): Promise<ArangoApiResponse<CollectionMetadata>> {
     collectionName = collectionName.normalize("NFC");
     const result = await this.request({
       method: "PUT",
@@ -2190,7 +2186,7 @@ export class Database {
    * Fetches all collections from the database and returns an array of
    * collection descriptions.
    *
-   * See also {@link Database.collections}.
+   * See also {@link Database#collections}.
    *
    * @param excludeSystem - Whether system collections should be excluded.
    *
@@ -2230,7 +2226,7 @@ export class Database {
    * {@link collection.DocumentCollection} and {@link collection.EdgeCollection} interfaces and can
    * be cast to either type to enforce a stricter API.
    *
-   * See also {@link Database.listCollections}.
+   * See also {@link Database#listCollections}.
    *
    * @param excludeSystem - Whether system collections should be excluded.
    *
@@ -2303,7 +2299,7 @@ export class Database {
    * Fetches all graphs from the database and returns an array of graph
    * descriptions.
    *
-   * See also {@link Database.graphs}.
+   * See also {@link Database#graphs}.
    *
    * @example
    * ```js
@@ -2320,7 +2316,7 @@ export class Database {
    * Fetches all graphs from the database and returns an array of {@link graph.Graph}
    * instances for those graphs.
    *
-   * See also {@link Database.listGraphs}.
+   * See also {@link Database#listGraphs}.
    *
    * @example
    * ```js
@@ -2393,7 +2389,7 @@ export class Database {
   async renameView(
     viewName: string,
     newName: string
-  ): Promise<ArangoResponseMetadata & ViewDescription> {
+  ): Promise<ArangoApiResponse<ViewDescription>> {
     viewName = viewName.normalize("NFC");
     const result = await this.request({
       method: "PUT",
@@ -2408,7 +2404,7 @@ export class Database {
    * Fetches all Views from the database and returns an array of View
    * descriptions.
    *
-   * See also {@link Database.views}.
+   * See also {@link Database#views}.
    *
    * @example
    * ```js
@@ -2426,7 +2422,7 @@ export class Database {
    * Fetches all Views from the database and returns an array of
    * {@link view.ArangoSearchView} instances for the Views.
    *
-   * See also {@link Database.listViews}.
+   * See also {@link Database#listViews}.
    *
    * @example
    * ```js
@@ -2488,7 +2484,7 @@ export class Database {
    * Fetches all Analyzers visible in the database and returns an array of
    * Analyzer descriptions.
    *
-   * See also {@link Database.analyzers}.
+   * See also {@link Database#analyzers}.
    *
    * @example
    * ```js
@@ -2505,7 +2501,7 @@ export class Database {
    * Fetches all Analyzers visible in the database and returns an array of
    * {@link analyzer.Analyzer} instances for those Analyzers.
    *
-   * See also {@link Database.listAnalyzers}.
+   * See also {@link Database#listAnalyzers}.
    *
    * @example
    * ```js
@@ -2551,7 +2547,7 @@ export class Database {
    * // user is the user object for the user named "steve"
    * ```
    */
-  getUser(username: string): Promise<ArangoUser & ArangoResponseMetadata> {
+  getUser(username: string): Promise<ArangoApiResponse<ArangoUser>> {
     return this.request({
       absolutePath: true,
       path: `/_api/user/${encodeURIComponent(username)}`,
@@ -2574,7 +2570,7 @@ export class Database {
   createUser(
     username: string,
     passwd: string
-  ): Promise<ArangoUser & ArangoResponseMetadata>;
+  ): Promise<ArangoApiResponse<ArangoUser>>;
   /**
    * Creates a new ArangoDB user with the given options.
    *
@@ -2591,11 +2587,11 @@ export class Database {
   createUser(
     username: string,
     options: UserOptions
-  ): Promise<ArangoUser & ArangoResponseMetadata>;
+  ): Promise<ArangoApiResponse<ArangoUser>>;
   createUser(
     username: string,
     options: string | UserOptions
-  ): Promise<ArangoUser & ArangoResponseMetadata> {
+  ): Promise<ArangoApiResponse<ArangoUser>> {
     if (typeof options === "string") {
       options = { passwd: options };
     }
@@ -2626,7 +2622,7 @@ export class Database {
   updateUser(
     username: string,
     passwd: string
-  ): Promise<ArangoUser & ArangoResponseMetadata>;
+  ): Promise<ArangoApiResponse<ArangoUser>>;
   /**
    * Updates the ArangoDB user with the new options.
    *
@@ -2643,11 +2639,11 @@ export class Database {
   updateUser(
     username: string,
     options: Partial<UserOptions>
-  ): Promise<ArangoUser & ArangoResponseMetadata>;
+  ): Promise<ArangoApiResponse<ArangoUser>>;
   updateUser(
     username: string,
     options: string | Partial<UserOptions>
-  ): Promise<ArangoUser & ArangoResponseMetadata> {
+  ): Promise<ArangoApiResponse<ArangoUser>> {
     if (typeof options === "string") {
       options = { passwd: options };
     }
@@ -2678,7 +2674,7 @@ export class Database {
   replaceUser(
     username: string,
     options: UserOptions
-  ): Promise<ArangoUser & ArangoResponseMetadata> {
+  ): Promise<ArangoApiResponse<ArangoUser>> {
     if (typeof options === "string") {
       options = { passwd: options };
     }
@@ -2705,7 +2701,9 @@ export class Database {
    * // The user "steve" has been removed
    * ```
    */
-  removeUser(username: string): Promise<ArangoResponseMetadata> {
+  removeUser(
+    username: string
+  ): Promise<ArangoApiResponse<Record<string, never>>> {
     return this.request(
       {
         absolutePath: true,
@@ -2892,7 +2890,7 @@ export class Database {
       collection,
       grant,
     }: UserAccessLevelOptions & { grant: AccessLevel }
-  ): Promise<Record<string, AccessLevel> & ArangoResponseMetadata> {
+  ): Promise<ArangoApiResponse<Record<string, AccessLevel>>> {
     const databaseName = isArangoDatabase(database)
       ? database.name
       : database?.normalize("NFC") ??
@@ -2985,7 +2983,7 @@ export class Database {
   clearUserAccessLevel(
     username: string,
     { database, collection }: UserAccessLevelOptions
-  ): Promise<Record<string, AccessLevel> & ArangoResponseMetadata> {
+  ): Promise<ArangoApiResponse<Record<string, AccessLevel>>> {
     const databaseName = isArangoDatabase(database)
       ? database.name
       : database?.normalize("NFC") ??
@@ -3087,7 +3085,7 @@ export class Database {
    * access any values other than those passed via the `params` option.
    *
    * See the official ArangoDB documentation for
-   * {@link https://www.arangodb.com/docs/stable/appendix-java-script-modules-arango-db.html | the JavaScript `@arangodb` module}
+   * [the JavaScript `@arangodb` module](https://www.arangodb.com/docs/stable/appendix-java-script-modules-arango-db.html)
    * for information about accessing the database from within ArangoDB's
    * server-side JavaScript environment.
    *
@@ -3139,7 +3137,7 @@ export class Database {
    * server inside ArangoDB's embedded JavaScript environment and can not
    * access any values other than those passed via the `params` option.
    * See the official ArangoDB documentation for
-   * {@link https://www.arangodb.com/docs/stable/appendix-java-script-modules-arango-db.html | the JavaScript `@arangodb` module}
+   * [the JavaScript `@arangodb` module](https://www.arangodb.com/docs/stable/appendix-java-script-modules-arango-db.html)
    * for information about accessing the database from within ArangoDB's
    * server-side JavaScript environment.
    *
@@ -3188,7 +3186,7 @@ export class Database {
    * server inside ArangoDB's embedded JavaScript environment and can not
    * access any values other than those passed via the `params` option.
    * See the official ArangoDB documentation for
-   * {@link https://www.arangodb.com/docs/stable/appendix-java-script-modules-arango-db.html | the JavaScript `@arangodb` module}
+   * [the JavaScript `@arangodb` module](https://www.arangodb.com/docs/stable/appendix-java-script-modules-arango-db.html)
    * for information about accessing the database from within ArangoDB's
    * server-side JavaScript environment.
    *
@@ -3252,7 +3250,7 @@ export class Database {
    * Returns a {@link transaction.Transaction} instance for an existing streaming
    * transaction with the given `id`.
    *
-   * See also {@link Database.beginTransaction}.
+   * See also {@link Database#beginTransaction}.
    *
    * @param id - The `id` of an existing stream transaction.
    *
@@ -3386,7 +3384,7 @@ export class Database {
    * Fetches all active transactions from the database and returns an array of
    * transaction descriptions.
    *
-   * See also {@link Database.transactions}.
+   * See also {@link Database#transactions}.
    *
    * @example
    * ```js
@@ -3406,7 +3404,7 @@ export class Database {
    * Fetches all active transactions from the database and returns an array of
    * {@link transaction.Transaction} instances for those transactions.
    *
-   * See also {@link Database.listTransactions}.
+   * See also {@link Database#listTransactions}.
    *
    * @example
    * ```js
@@ -3426,12 +3424,12 @@ export class Database {
    * Performs a database query using the given `query`, then returns a new
    * {@link cursor.ArrayCursor} instance for the result set.
    *
-   * See the {@link aql} template string handler for information about how
+   * See the {@link aql!aql} template string handler for information about how
    * to create a query string without manually defining bind parameters nor
    * having to worry about escaping variables.
    *
    * @param query - An object containing an AQL query string and bind
-   * parameters, e.g. the object returned from an {@link aql} template string.
+   * parameters, e.g. the object returned from an {@link aql!aql} template string.
    * @param options - Options for the query execution.
    *
    * @example
@@ -3476,7 +3474,7 @@ export class Database {
    * Performs a database query using the given `query` and `bindVars`, then
    * returns a new {@link cursor.ArrayCursor} instance for the result set.
    *
-   * See the {@link aql.aql} template string handler for a safer and easier
+   * See the {@link aql!aql} template string handler for a safer and easier
    * alternative to passing strings directly.
    *
    * @param query - An AQL query string.
@@ -3576,12 +3574,12 @@ export class Database {
   /**
    * Explains a database query using the given `query`.
    *
-   * See the {@link aql} template string handler for information about how
+   * See the {@link aql!aql} template string handler for information about how
    * to create a query string without manually defining bind parameters nor
    * having to worry about escaping variables.
    *
    * @param query - An object containing an AQL query string and bind
-   * parameters, e.g. the object returned from an {@link aql} template string.
+   * parameters, e.g. the object returned from an {@link aql!aql} template string.
    * @param options - Options for explaining the query.
    *
    * @example
@@ -3598,16 +3596,16 @@ export class Database {
   explain(
     query: AqlQuery,
     options?: ExplainOptions & { allPlans?: false }
-  ): Promise<ArangoResponseMetadata & SingleExplainResult>;
+  ): Promise<ArangoApiResponse<SingleExplainResult>>;
   /**
    * Explains a database query using the given `query`.
    *
-   * See the {@link aql} template string handler for information about how
+   * See the {@link aql!aql} template string handler for information about how
    * to create a query string without manually defining bind parameters nor
    * having to worry about escaping variables.
    *
    * @param query - An object containing an AQL query string and bind
-   * parameters, e.g. the object returned from an {@link aql} template string.
+   * parameters, e.g. the object returned from an {@link aql!aql} template string.
    * @param options - Options for explaining the query.
    *
    * @example
@@ -3627,11 +3625,11 @@ export class Database {
   explain(
     query: AqlQuery,
     options?: ExplainOptions & { allPlans: true }
-  ): Promise<ArangoResponseMetadata & MultiExplainResult>;
+  ): Promise<ArangoApiResponse<MultiExplainResult>>;
   /**
    * Explains a database query using the given `query` and `bindVars`.
    *
-   * See the {@link aql} template string handler for a safer and easier
+   * See the {@link aql!aql} template string handler for a safer and easier
    * alternative to passing strings directly.
    *
    * @param query - An AQL query string.
@@ -3656,11 +3654,11 @@ export class Database {
     query: string | AqlLiteral,
     bindVars?: Record<string, any>,
     options?: ExplainOptions & { allPlans?: false }
-  ): Promise<ArangoResponseMetadata & SingleExplainResult>;
+  ): Promise<ArangoApiResponse<SingleExplainResult>>;
   /**
    * Explains a database query using the given `query` and `bindVars`.
    *
-   * See the {@link aql} template string handler for a safer and easier
+   * See the {@link aql!aql} template string handler for a safer and easier
    * alternative to passing strings directly.
    *
    * @param query - An AQL query string.
@@ -3686,14 +3684,12 @@ export class Database {
     query: string | AqlLiteral,
     bindVars?: Record<string, any>,
     options?: ExplainOptions & { allPlans: true }
-  ): Promise<ArangoResponseMetadata & MultiExplainResult>;
+  ): Promise<ArangoApiResponse<MultiExplainResult>>;
   explain(
     query: string | AqlQuery | AqlLiteral,
     bindVars?: Record<string, any>,
     options?: ExplainOptions
-  ): Promise<
-    ArangoResponseMetadata & (SingleExplainResult | MultiExplainResult)
-  > {
+  ): Promise<ArangoApiResponse<SingleExplainResult | MultiExplainResult>> {
     if (isAqlQuery(query)) {
       options = bindVars;
       bindVars = query.bindVars;
@@ -3711,12 +3707,12 @@ export class Database {
   /**
    * Parses the given query and returns the result.
    *
-   * See the {@link aql} template string handler for information about how
+   * See the {@link aql!aql} template string handler for information about how
    * to create a query string without manually defining bind parameters nor
    * having to worry about escaping variables.
    *
    * @param query - An AQL query string or an object containing an AQL query
-   * string and bind parameters, e.g. the object returned from an {@link aql}
+   * string and bind parameters, e.g. the object returned from an {@link aql!aql}
    * template string.
    *
    * @example
@@ -3790,7 +3786,7 @@ export class Database {
   /**
    * Fetches a list of information for all currently running queries.
    *
-   * See also {@link Database.listSlowQueries} and {@link Database.killQuery}.
+   * See also {@link Database#listSlowQueries} and {@link Database#killQuery}.
    *
    * @example
    * ```js
@@ -3808,8 +3804,8 @@ export class Database {
   /**
    * Fetches a list of information for all recent slow queries.
    *
-   * See also {@link Database.listRunningQueries} and
-   * {@link Database.clearSlowQueries}.
+   * See also {@link Database#listRunningQueries} and
+   * {@link Database#clearSlowQueries}.
    *
    * @example
    * ```js
@@ -3828,7 +3824,7 @@ export class Database {
   /**
    * Clears the list of recent slow queries.
    *
-   * See also {@link Database.listSlowQueries}.
+   * See also {@link Database#listSlowQueries}.
    *
    * @example
    * ```js
@@ -3850,7 +3846,7 @@ export class Database {
   /**
    * Kills a running query with the given `queryId`.
    *
-   * See also {@link Database.listRunningQueries}.
+   * See also {@link Database#listRunningQueries}.
    *
    * @param queryId - The ID of a currently running query.
    *
@@ -3931,7 +3927,7 @@ export class Database {
     name: string,
     code: string,
     isDeterministic: boolean = false
-  ): Promise<ArangoResponseMetadata & { isNewlyCreated: boolean }> {
+  ): Promise<ArangoApiResponse<{ isNewlyCreated: boolean }>> {
     return this.request({
       method: "POST",
       path: "/_api/aqlfunction",
@@ -3957,7 +3953,7 @@ export class Database {
   dropFunction(
     name: string,
     group: boolean = false
-  ): Promise<ArangoResponseMetadata & { deletedCount: number }> {
+  ): Promise<ArangoApiResponse<{ deletedCount: number }>> {
     return this.request({
       method: "DELETE",
       path: `/_api/aqlfunction/${encodeURIComponent(name)}`,
@@ -4198,8 +4194,8 @@ export class Database {
    * Retrieves information about the service's configuration options and their
    * current values.
    *
-   * See also {@link Database.replaceServiceConfiguration} and
-   * {@link Database.updateServiceConfiguration}.
+   * See also {@link Database#replaceServiceConfiguration} and
+   * {@link Database#updateServiceConfiguration}.
    *
    * @param mount - The service's mount point, relative to the database.
    * @param minimal - If set to `true`, the result will only include each
@@ -4223,8 +4219,8 @@ export class Database {
    * Retrieves information about the service's configuration options and their
    * current values.
    *
-   * See also {@link Database.replaceServiceConfiguration} and
-   * {@link Database.updateServiceConfiguration}.
+   * See also {@link Database#replaceServiceConfiguration} and
+   * {@link Database#updateServiceConfiguration}.
    *
    * @param mount - The service's mount point, relative to the database.
    * @param minimal - If set to `true`, the result will only include each
@@ -4266,8 +4262,8 @@ export class Database {
    * Replaces the configuration of the given service, discarding any existing
    * values for options not specified.
    *
-   * See also {@link Database.updateServiceConfiguration} and
-   * {@link Database.getServiceConfiguration}.
+   * See also {@link Database#updateServiceConfiguration} and
+   * {@link Database#getServiceConfiguration}.
    *
    * @param mount - The service's mount point, relative to the database.
    * @param cfg - An object mapping configuration option names to values.
@@ -4299,8 +4295,8 @@ export class Database {
    * Replaces the configuration of the given service, discarding any existing
    * values for options not specified.
    *
-   * See also {@link Database.updateServiceConfiguration} and
-   * {@link Database.getServiceConfiguration}.
+   * See also {@link Database#updateServiceConfiguration} and
+   * {@link Database#getServiceConfiguration}.
    *
    * @param mount - The service's mount point, relative to the database.
    * @param cfg - An object mapping configuration option names to values.
@@ -4367,8 +4363,8 @@ export class Database {
    * Updates the configuration of the given service while maintaining any
    * existing values for options not specified.
    *
-   * See also {@link Database.replaceServiceConfiguration} and
-   * {@link Database.getServiceConfiguration}.
+   * See also {@link Database#replaceServiceConfiguration} and
+   * {@link Database#getServiceConfiguration}.
    *
    * @param mount - The service's mount point, relative to the database.
    * @param cfg - An object mapping configuration option names to values.
@@ -4400,8 +4396,8 @@ export class Database {
    * Updates the configuration of the given service while maintaining any
    * existing values for options not specified.
    *
-   * See also {@link Database.replaceServiceConfiguration} and
-   * {@link Database.getServiceConfiguration}.
+   * See also {@link Database#replaceServiceConfiguration} and
+   * {@link Database#getServiceConfiguration}.
    *
    * @param mount - The service's mount point, relative to the database.
    * @param cfg - An object mapping configuration option names to values.
@@ -4468,8 +4464,8 @@ export class Database {
    * Retrieves information about the service's dependencies and their current
    * mount points.
    *
-   * See also {@link Database.replaceServiceDependencies} and
-   * {@link Database.updateServiceDependencies}.
+   * See also {@link Database#replaceServiceDependencies} and
+   * {@link Database#updateServiceDependencies}.
    *
    * @param mount - The service's mount point, relative to the database.
    * @param minimal - If set to `true`, the result will only include each
@@ -4493,8 +4489,8 @@ export class Database {
    * Retrieves information about the service's dependencies and their current
    * mount points.
    *
-   * See also {@link Database.replaceServiceDependencies} and
-   * {@link Database.updateServiceDependencies}.
+   * See also {@link Database#replaceServiceDependencies} and
+   * {@link Database#updateServiceDependencies}.
    *
    * @param mount - The service's mount point, relative to the database.
    * @param minimal - If set to `true`, the result will only include each
@@ -4535,8 +4531,8 @@ export class Database {
    * Replaces the dependencies of the given service, discarding any existing
    * mount points for dependencies not specified.
    *
-   * See also {@link Database.updateServiceDependencies} and
-   * {@link Database.getServiceDependencies}.
+   * See also {@link Database#updateServiceDependencies} and
+   * {@link Database#getServiceDependencies}.
    *
    * @param mount - The service's mount point, relative to the database.
    * @param cfg - An object mapping dependency aliases to mount points.
@@ -4573,8 +4569,8 @@ export class Database {
    * Replaces the dependencies of the given service, discarding any existing
    * mount points for dependencies not specified.
    *
-   * See also {@link Database.updateServiceDependencies} and
-   * {@link Database.getServiceDependencies}.
+   * See also {@link Database#updateServiceDependencies} and
+   * {@link Database#getServiceDependencies}.
    *
    * @param mount - The service's mount point, relative to the database.
    * @param cfg - An object mapping dependency aliases to mount points.
@@ -4646,8 +4642,8 @@ export class Database {
    * Updates the dependencies of the given service while maintaining any
    * existing mount points for dependencies not specified.
    *
-   * See also {@link Database.replaceServiceDependencies} and
-   * {@link Database.getServiceDependencies}.
+   * See also {@link Database#replaceServiceDependencies} and
+   * {@link Database#getServiceDependencies}.
    *
    * @param mount - The service's mount point, relative to the database.
    * @param cfg - An object mapping dependency aliases to mount points.
@@ -4684,8 +4680,8 @@ export class Database {
    * Updates the dependencies of the given service while maintaining any
    * existing mount points for dependencies not specified.
    *
-   * See also {@link Database.replaceServiceDependencies} and
-   * {@link Database.getServiceDependencies}.
+   * See also {@link Database#replaceServiceDependencies} and
+   * {@link Database#getServiceDependencies}.
    *
    * @param mount - The service's mount point, relative to the database.
    * @param cfg - An object mapping dependency aliases to mount points.

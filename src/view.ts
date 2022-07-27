@@ -7,7 +7,7 @@
  *
  * @packageDocumentation
  */
-import { ArangoResponseMetadata } from "./connection";
+import { ArangoApiResponse } from "./connection";
 import { Database } from "./database";
 import { isArangoError } from "./error";
 import { VIEW_NOT_FOUND } from "./lib/codes";
@@ -347,7 +347,6 @@ export class View<
 
   /**
    * @internal
-   * @hidden
    */
   constructor(db: Database, name: string) {
     this._db = db;
@@ -381,7 +380,7 @@ export class View<
    * // data contains general information about the View
    * ```
    */
-  get(): Promise<ViewDescription & ArangoResponseMetadata> {
+  get(): Promise<ArangoApiResponse<ViewDescription>> {
     return this._db.request({
       path: `/_api/view/${encodeURIComponent(this._name)}`,
     });
@@ -413,7 +412,7 @@ export class View<
   /**
    * Creates a View with the given `options` and the instance's name.
    *
-   * See also {@link database.Database.createView}.
+   * See also {@link database.Database#createView}.
    *
    * @example
    * ```js
@@ -459,9 +458,7 @@ export class View<
    * // view1 and view3 represent the same ArangoDB view!
    * ```
    */
-  async rename(
-    newName: string
-  ): Promise<ViewDescription & ArangoResponseMetadata> {
+  async rename(newName: string): Promise<ArangoApiResponse<ViewDescription>> {
     const result = this._db.renameView(this._name, newName);
     this._name = newName.normalize("NFC");
     return result;
@@ -478,7 +475,7 @@ export class View<
    * // data contains the View's properties
    * ```
    */
-  properties(): Promise<ViewDescription & Properties & ArangoResponseMetadata> {
+  properties(): Promise<ArangoApiResponse<ViewDescription & Properties>> {
     return this._db.request({
       path: `/_api/view/${encodeURIComponent(this._name)}/properties`,
     });

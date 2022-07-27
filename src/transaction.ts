@@ -49,7 +49,6 @@ export class Transaction {
 
   /**
    * @internal
-   * @hidden
    */
   constructor(db: Database, id: string) {
     this._db = db;
@@ -68,7 +67,7 @@ export class Transaction {
   /**
    * Unique identifier of this transaction.
    *
-   * See {@link database.Database.transaction}.
+   * See {@link database.Database#transaction}.
    */
   get id() {
     return this._id;

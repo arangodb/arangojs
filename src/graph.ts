@@ -45,7 +45,6 @@ export function isArangoGraph(graph: any): graph is Graph {
 
 /**
  * @internal
- * @hidden
  */
 function mungeGharialResponse(body: any, prop: "vertex" | "edge" | "removed") {
   const { new: newDoc, old: oldDoc, [prop]: doc, ...meta } = body;
@@ -57,7 +56,6 @@ function mungeGharialResponse(body: any, prop: "vertex" | "edge" | "removed") {
 
 /**
  * @internal
- * @hidden
  */
 function coerceEdgeDefinition(options: EdgeDefinitionOptions): EdgeDefinition {
   const edgeDefinition = {} as EdgeDefinition;
@@ -418,7 +416,6 @@ export class GraphVertexCollection<T extends Record<string, any> = any>
 
   /**
    * @internal
-   * @hidden
    */
   constructor(db: Database, name: string, graph: Graph) {
     this._db = db;
@@ -823,7 +820,6 @@ export class GraphEdgeCollection<T extends Record<string, any> = any>
 
   /**
    * @internal
-   * @hidden
    */
   constructor(db: Database, name: string, graph: Graph) {
     this._db = db;
@@ -1226,7 +1222,6 @@ export class Graph {
 
   /**
    * @internal
-   * @hidden
    */
   constructor(db: Database, name: string) {
     this._name = name.normalize("NFC");
@@ -1391,7 +1386,7 @@ export class Graph {
    * Fetches all vertex collections of this graph from the database and returns
    * an array of their names.
    *
-   * See also {@link graph.Graph.vertexCollections}.
+   * See also {@link graph.Graph#vertexCollections}.
    *
    * @example
    * ```js
@@ -1419,7 +1414,7 @@ export class Graph {
    * Fetches all vertex collections of this graph from the database and returns
    * an array of {@link graph.GraphVertexCollection} instances.
    *
-   * See also {@link graph.Graph.listVertexCollections}.
+   * See also {@link graph.Graph#listVertexCollections}.
    *
    * @example
    * ```js
@@ -1556,7 +1551,7 @@ export class Graph {
    * Fetches all edge collections of this graph from the database and returns
    * an array of their names.
    *
-   * See also {@link graph.Graph.edgeCollections}.
+   * See also {@link graph.Graph#edgeCollections}.
    *
    * @example
    * ```js
@@ -1584,7 +1579,7 @@ export class Graph {
    * Fetches all edge collections of this graph from the database and returns
    * an array of {@link graph.GraphEdgeCollection} instances.
    *
-   * See also {@link graph.Graph.listEdgeCollections}.
+   * See also {@link graph.Graph#listEdgeCollections}.
    *
    * @example
    * ```js
@@ -1790,7 +1785,7 @@ export class Graph {
    * Performs a traversal starting from the given `startVertex` and following
    * edges contained in this graph.
    *
-   * See also {@link collection.EdgeCollection.traversal}.
+   * See also {@link collection.EdgeCollection#traversal}.
    *
    * @param startVertex - Document `_id` of a vertex in this graph.
    * @param options - Options for performing the traversal.

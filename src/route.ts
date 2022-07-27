@@ -21,7 +21,6 @@ export class Route {
 
   /**
    * @internal
-   * @hidden
    */
   constructor(db: Database, path: string = "", headers: Headers = {}) {
     if (!path) path = "";

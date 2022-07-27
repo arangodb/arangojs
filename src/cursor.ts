@@ -83,7 +83,6 @@ export class BatchedArrayCursor<T = any> {
 
   /**
    * @internal
-   * @hidden
    */
   constructor(
     db: Database,
@@ -142,7 +141,7 @@ export class BatchedArrayCursor<T = any> {
   /**
    * An {@link ArrayCursor} providing item-wise access to the cursor result set.
    *
-   * See also {@link ArrayCursor.batches}.
+   * See also {@link ArrayCursor#batches}.
    */
   get items() {
     return this._itemsCursor;
@@ -306,7 +305,7 @@ export class BatchedArrayCursor<T = any> {
    * before it is fully depleted.
    *
    * See also:
-   * {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach | `Array.prototype.forEach`}.
+   * [`Array.prototype.forEach`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach).
    *
    * @param callback - Function to execute on each element.
    *
@@ -362,11 +361,11 @@ export class BatchedArrayCursor<T = any> {
    *
    * **Note**: This creates an array of all return values, which may impact
    * memory use when working with very large query result sets. Consider using
-   * {@link BatchedArrayCursor.forEach}, {@link BatchedArrayCursor.reduce} or
-   * {@link BatchedArrayCursor.flatMap} instead.
+   * {@link BatchedArrayCursor#forEach}, {@link BatchedArrayCursor#reduce} or
+   * {@link BatchedArrayCursor#flatMap} instead.
    *
    * See also:
-   * {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map | `Array.prototype.map`}.
+   * [`Array.prototype.map`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map).
    *
    * @param R - Return type of the `callback` function.
    * @param callback - Function to execute on each element.
@@ -408,7 +407,7 @@ export class BatchedArrayCursor<T = any> {
    * before it is fully depleted.
    *
    * See also:
-   * {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/flatMap | `Array.prototype.flatMap`}.
+   * [`Array.prototype.flatMap`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/flatMap).
    *
    * @param R - Return type of the `callback` function.
    * @param callback - Function to execute on each element.
@@ -465,7 +464,7 @@ export class BatchedArrayCursor<T = any> {
    * for the last batch.
    *
    * **Note**: Most complex uses of the `reduce` method can be replaced with
-   * simpler code using {@link BatchedArrayCursor.forEach} or the `for await`
+   * simpler code using {@link BatchedArrayCursor#forEach} or the `for await`
    * syntax.
    *
    * **Note**: If the result set spans multiple batches, any remaining batches
@@ -474,7 +473,7 @@ export class BatchedArrayCursor<T = any> {
    * before it is fully depleted.
    *
    * See also:
-   * {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reduce | `Array.prototype.reduce`}.
+   * [`Array.prototype.reduce`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reduce).
    *
    * @param R - Return type of the `reducer` function.
    * @param reducer - Function to execute on each element.
@@ -549,7 +548,7 @@ export class BatchedArrayCursor<T = any> {
    * before it is fully depleted.
    *
    * See also:
-   * {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reduce | `Array.prototype.reduce`}.
+   * [`Array.prototype.reduce`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reduce).
    *
    * @param R - Return type of the `reducer` function.
    * @param reducer - Function to execute on each element.
@@ -643,7 +642,7 @@ export class BatchedArrayCursor<T = any> {
 
 /**
  * The `ArrayCursor` type represents a cursor returned from a
- * {@link database.Database.query}.
+ * {@link database.Database#query}.
  *
  * When using TypeScript, cursors can be cast to a specific item type in order
  * to increase type safety.
@@ -674,6 +673,9 @@ export class ArrayCursor<T = any> {
   protected _batches: BatchedArrayCursor<T>;
   protected _view: BatchView<T>;
 
+  /**
+   * @internal
+   */
   constructor(batchedCursor: BatchedArrayCursor, view: BatchView<T>) {
     this._batches = batchedCursor;
     this._view = view;
@@ -683,7 +685,7 @@ export class ArrayCursor<T = any> {
    * A {@link BatchedArrayCursor} providing batch-wise access to the cursor
    * result set.
    *
-   * See also {@link BatchedArrayCursor.items}.
+   * See also {@link BatchedArrayCursor#items}.
    */
   get batches() {
     return this._batches;
@@ -795,7 +797,7 @@ export class ArrayCursor<T = any> {
    * before it is fully depleted.
    *
    * See also:
-   * {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach | `Array.prototype.forEach`}.
+   * [`Array.prototype.forEach`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach).
    *
    * @param callback - Function to execute on each element.
    *
@@ -840,11 +842,11 @@ export class ArrayCursor<T = any> {
    *
    * **Note**: This creates an array of all return values, which may impact
    * memory use when working with very large query result sets. Consider using
-   * {@link ArrayCursor.forEach}, {@link ArrayCursor.reduce} or
-   * {@link ArrayCursor.flatMap} instead.
+   * {@link ArrayCursor#forEach}, {@link ArrayCursor#reduce} or
+   * {@link ArrayCursor#flatMap} instead.
    *
    * See also:
-   * {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map | `Array.prototype.map`}.
+   * [`Array.prototype.map`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map).
    *
    * @param R - Return type of the `callback` function.
    * @param callback - Function to execute on each element.
@@ -883,7 +885,7 @@ export class ArrayCursor<T = any> {
    * before it is fully depleted.
    *
    * See also:
-   * {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/flatMap | `Array.prototype.flatMap`}.
+   * [`Array.prototype.flatMap`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/flatMap).
    *
    * @param R - Return type of the `callback` function.
    * @param callback - Function to execute on each element.
@@ -934,7 +936,7 @@ export class ArrayCursor<T = any> {
    * for the last item.
    *
    * **Note**: Most complex uses of the `reduce` method can be replaced with
-   * simpler code using {@link ArrayCursor.forEach} or the `for await` syntax.
+   * simpler code using {@link ArrayCursor#forEach} or the `for await` syntax.
    *
    * **Note**: If the result set spans multiple batches, any remaining batches
    * will only be fetched on demand. Depending on the cursor's TTL and the
@@ -942,7 +944,7 @@ export class ArrayCursor<T = any> {
    * before it is fully depleted.
    *
    * See also:
-   * {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reduce | `Array.prototype.reduce`}.
+   * [`Array.prototype.reduce`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reduce).
    *
    * @param R - Return type of the `reducer` function.
    * @param reducer - Function to execute on each element.
@@ -1005,7 +1007,7 @@ export class ArrayCursor<T = any> {
    * before it is fully depleted.
    *
    * See also:
-   * {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reduce | `Array.prototype.reduce`}.
+   * [`Array.prototype.reduce`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/reduce).
    *
    * @param R - Return type of the `reducer` function.
    * @param reducer - Function to execute on each element.

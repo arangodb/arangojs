@@ -78,6 +78,11 @@ export type ArangoResponseMetadata = {
 };
 
 /**
+ * Extends the given base type `T` with the generic HTTP API response properties.
+ */
+export type ArangoApiResponse<T> = T & ArangoResponseMetadata;
+
+/**
  * Credentials for HTTP Basic authentication.
  */
 export type BasicAuthCredentials = {
@@ -107,7 +112,6 @@ function isBearerAuth(auth: any): auth is BearerAuthCredentials {
 
 /**
  * @internal
- * @hidden
  */
 function generateStackTrace() {
   let err = new Error();
@@ -123,7 +127,6 @@ function generateStackTrace() {
 
 /**
  * @internal
- * @hidden
  */
 type UrlInfo = {
   absolutePath?: boolean;
@@ -137,7 +140,7 @@ type UrlInfo = {
  * arangojs in the browser. Additionally `maxSockets` can be used to control
  * the maximum number of parallel requests.
  *
- * See also: {@link https://www.npmjs.com/package/xhr | `xhr` on npm }.
+ * See also: [`xhr` on npm](https://www.npmjs.com/package/xhr).
  */
 export type XhrOptions = {
   /**
@@ -173,7 +176,7 @@ export type XhrOptions = {
    * Specifies whether browser credentials (e.g. cookies) should be sent if
    * performing a cross-domain request.
    *
-   * See {@link https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/withCredentials | `XMLHttpRequest.withCredentials`}.
+   * See [`XMLHttpRequest.withCredentials`](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/withCredentials).
    */
   withCredentials?: boolean;
 };
@@ -274,7 +277,6 @@ export type RequestOptions = {
 
 /**
  * @internal
- * @hidden
  */
 type Task = {
   host?: number;
@@ -299,10 +301,10 @@ type Task = {
  *
  * In browser environments this option can be used to pass additional options
  * to the underlying calls of the
- * {@link https://www.npmjs.com/package/xhr | xhr module}.
+ * [xhr module](https://www.npmjs.com/package/xhr).
  *
- * See also {@link https://nodejs.org/api/http.html#http_new_agent_options | `http.Agent`}
- * and {@link https://nodejs.org/api/https.html#https_new_agent_options | `https.Agent`}
+ * See also [`http.Agent`](https://nodejs.org/api/http.html#http_new_agent_options)
+ * and [`https.Agent`](https://nodejs.org/api/https.html#https_new_agent_options)
  * (when using TLS).
  */
 export type AgentOptions = NodeAgentOptions | XhrOptions;
@@ -321,7 +323,7 @@ export type Config = {
    * Base URL of the ArangoDB server or list of server URLs.
    *
    * When working with a cluster or a single server with leader/follower
-   * failover, the method {@link database.Database.acquireHostList} can be used to
+   * failover, the method {@link database.Database#acquireHostList} can be used to
    * automatically pick up additional coordinators/followers at any point.
    *
    * When running ArangoDB on a unix socket, e.g. `/tmp/arangodb.sock`, the
@@ -350,7 +352,8 @@ export type Config = {
   /**
    * Credentials to use for authentication.
    *
-   * See also {@link database.Database.useBasicAuth} and {@link database.Database.useBearerAuth}.
+   * See also {@link database.Database#useBasicAuth} and
+   * {@link database.Database#useBearerAuth}.
    *
    * Default: `{ username: "root", password: "" }`
    */
@@ -385,7 +388,7 @@ export type Config = {
   /**
    * Determines the behavior when a request fails because the underlying
    * connection to the server could not be opened
-   * (i.e. {@link https://nodejs.org/api/errors.html#errors_common_system_errors | `ECONNREFUSED` in Node.js}):
+   * (i.e. [`ECONNREFUSED` in Node.js](https://nodejs.org/api/errors.html#errors_common_system_errors)):
    *
    * - `false`: the request fails immediately.
    *
@@ -415,8 +418,8 @@ export type Config = {
    *
    * This option has no effect when using the browser version of arangojs.
    *
-   * See also: {@link https://nodejs.org/api/http.html#http_new_agent_options | `http.Agent`}
-   * and {@link https://nodejs.org/api/https.html#https_new_agent_options | `https.Agent`}
+   * See also [`http.Agent`](https://nodejs.org/api/http.html#http_new_agent_options)
+   * and [`https.Agent`](https://nodejs.org/api/https.html#https_new_agent_options)
    * (when using TLS).
    */
   agent?: any;
@@ -445,7 +448,7 @@ export type Config = {
    * An object with additional headers to send with every request.
    *
    * If an `"authorization"` header is provided, it will be overridden when
-   * using {@link database.Database.useBasicAuth}, {@link database.Database.useBearerAuth} or
+   * using {@link database.Database#useBasicAuth}, {@link database.Database#useBearerAuth} or
    * the `auth` configuration option.
    */
   headers?: Headers;
@@ -460,7 +463,7 @@ export type Config = {
   precaptureStackTraces?: boolean;
   /**
    * Limits the number of values of server-reported response queue times that
-   * will be stored and accessible using {@link database.Database.queueTime}. If set to
+   * will be stored and accessible using {@link database.Database#queueTime}. If set to
    * a finite value, older values will be discarded to make room for new values
    * when that limit is reached.
    *
@@ -475,7 +478,6 @@ export type Config = {
  * @param connection - A value that might be a connection.
  *
  * @internal
- * @hidden
  */
 export function isArangoConnection(connection: any): connection is Connection {
   return Boolean(connection && connection.isArangoConnection);
@@ -485,7 +487,6 @@ export function isArangoConnection(connection: any): connection is Connection {
  * Represents a connection pool shared by one or more databases.
  *
  * @internal
- * @hidden
  */
 export class Connection {
   protected _activeTasks: number = 0;
@@ -516,7 +517,6 @@ export class Connection {
    *
    * @param config - An object with configuration options.
    *
-   * @hidden
    */
   constructor(config: Omit<Config, "databaseName"> = {}) {
     const URLS = config.url
@@ -754,7 +754,7 @@ export class Connection {
    *
    * Adds the given URL or URLs to the host list.
    *
-   * See {@link Connection.acquireHostList}.
+   * See {@link Connection#acquireHostList}.
    *
    * @param urls - URL or URLs to add.
    */
@@ -781,7 +781,7 @@ export class Connection {
    * within the transaction if possible. Setting the ID manually may cause
    * unexpected behavior.
    *
-   * See also {@link Connection.clearTransactionId}.
+   * See also {@link Connection#clearTransactionId}.
    *
    * @param transactionId - ID of the active transaction.
    */
@@ -820,7 +820,7 @@ export class Connection {
    *
    * Closes all open connections.
    *
-   * See {@link database.Database.close}.
+   * See {@link database.Database#close}.
    */
   close() {
     for (const host of this._hosts) {
@@ -833,7 +833,7 @@ export class Connection {
    *
    * Waits for propagation.
    *
-   * See {@link database.Database.waitForPropagation}.
+   * See {@link database.Database#waitForPropagation}.
    *
    * @param request - Request to perform against each coordinator.
    * @param timeout - Maximum number of milliseconds to wait for propagation.

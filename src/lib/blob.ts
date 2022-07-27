@@ -3,12 +3,10 @@
  *
  * @packageDocumentation
  * @internal
- * @hidden
  */
 
 /**
  * @internal
- * @hidden
  */
 export interface Blob {
   readonly size: number;

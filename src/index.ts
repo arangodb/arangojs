@@ -19,7 +19,7 @@ module.exports = exports = arangojs;
 /**
  * Creates a new `Database` instance with its own connection pool.
  *
- * This is a wrapper function for the {@link database.Database.constructor}.
+ * This is a wrapper function for the {@link database.Database:constructor}.
  *
  * @param config - An object with configuration options.
  *
@@ -36,7 +36,7 @@ export function arangojs(config?: Config): Database;
 /**
  * Creates a new `Database` instance with its own connection pool.
  *
- * This is a wrapper function for the {@link database.Database.constructor}.
+ * This is a wrapper function for the {@link database.Database:constructor}.
  *
  * @param url - Base URL of the ArangoDB server or list of server URLs.
  * Equivalent to the `url` option in {@link connection.Config}.

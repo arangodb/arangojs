@@ -8,13 +8,13 @@
  *
  * @packageDocumentation
  */
-import { ArangoResponseMetadata } from "./connection";
+import { ArangoApiResponse } from "./connection";
 import { Database } from "./database";
 import { isArangoError } from "./error";
 import { ANALYZER_NOT_FOUND } from "./lib/codes";
 
 /**
- * Indicates whether the given value represents an {@link analyzer.Analyzer}.
+ * Indicates whether the given value represents an {@link Analyzer}.
  *
  * @param analyzer - A value that might be an Analyzer.
  */
@@ -494,7 +494,6 @@ export class Analyzer {
 
   /**
    * @internal
-   * @hidden
    */
   constructor(db: Database, name: string) {
     this._db = db;
@@ -513,7 +512,7 @@ export class Analyzer {
   /**
    * Name of this Analyzer.
    *
-   * See also {@link database.Database.analyzer}.
+   * See also {@link database.Database}.
    */
   get name() {
     return this._name;
@@ -553,7 +552,7 @@ export class Analyzer {
    * // definition contains the Analyzer definition
    * ```
    */
-  get(): Promise<ArangoResponseMetadata & AnalyzerDescription> {
+  get(): Promise<ArangoApiResponse<AnalyzerDescription>> {
     return this._db.request({
       path: `/_api/analyzer/${encodeURIComponent(this._name)}`,
     });
@@ -562,7 +561,7 @@ export class Analyzer {
   /**
    * Creates a new Analyzer with the given `options` and the instance's name.
    *
-   * See also {@link database.Database.createAnalyzer}.
+   * See also {@link database.Database#createAnalyzer}.
    *
    * @param options - Options for creating the Analyzer.
    *
@@ -596,9 +595,7 @@ export class Analyzer {
    * // the Analyzer "some-analyzer" no longer exists
    * ```
    */
-  drop(
-    force: boolean = false
-  ): Promise<ArangoResponseMetadata & { name: string }> {
+  drop(force: boolean = false): Promise<ArangoApiResponse<{ name: string }>> {
     return this._db.request({
       method: "DELETE",
       path: `/_api/analyzer/${encodeURIComponent(this._name)}`,

@@ -118,7 +118,7 @@ export class ArangoError extends ExtendableError {
   /**
    * ArangoDB error code.
    *
-   * See {@link https://www.arangodb.com/docs/stable/appendix-error-codes.html | ArangoDB error documentation}.
+   * See [ArangoDB error documentation](https://www.arangodb.com/docs/stable/appendix-error-codes.html).
    */
   errorNum: number;
   /**
@@ -132,7 +132,6 @@ export class ArangoError extends ExtendableError {
 
   /**
    * @internal
-   * @hidden
    */
   constructor(response: any) {
     super();
@@ -182,7 +181,6 @@ export class HttpError extends ExtendableError {
 
   /**
    * @internal
-   * @hidden
    */
   constructor(response: any) {
     super();
