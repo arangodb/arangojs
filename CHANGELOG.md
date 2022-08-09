@@ -1,4 +1,4 @@
-$---
+---
 permalink: /CHANGELOG
 title: "CHANGELOG"
 ---
