@@ -60,7 +60,6 @@
   },
   "dependencies": {
     "@types/node": ">=13.13.4",
-    "es6-error": "^4.0.1",
     "multi-part": "^3.0.0",
     "x3-linkedlist": "1.2.0",
     "xhr": "^2.4.1"

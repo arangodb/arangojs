@@ -8,7 +8,6 @@
  *
  * @packageDocumentation
  */
-import { ExtendableError } from "./lib/error";
 
 const messages: { [key: number]: string } = {
   0: "Network Error",
@@ -113,7 +112,7 @@ export interface SystemError extends Error {
 /**
  * Represents an error returned by ArangoDB.
  */
-export class ArangoError extends ExtendableError {
+export class ArangoError extends Error {
   name = "ArangoError";
   /**
    * ArangoDB error code.
@@ -168,7 +167,7 @@ export class ArangoError extends ExtendableError {
 /**
  * Represents a plain HTTP error response.
  */
-export class HttpError extends ExtendableError {
+export class HttpError extends Error {
   name = "HttpError";
   /**
    * Server response object.
