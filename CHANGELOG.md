@@ -1,4 +1,4 @@
----
+$---
 permalink: /CHANGELOG
 title: "CHANGELOG"
 ---
@@ -101,6 +101,9 @@ This driver uses semantic versioning:
   const first = await numbers.next();
   console.log(first.index, first.squared); // 1 1
   ```
+
+- Changed return values of `db.getUserAccessLevel` and `db.getUserDatabases`
+  to match documented return types
 
 ### Added
 
