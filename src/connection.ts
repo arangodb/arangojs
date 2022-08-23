@@ -20,7 +20,10 @@ import {
   isSystemError,
 } from "./error";
 import { base64Encode } from "./lib/btoa";
-import { ERROR_ARANGO_CONFLICT } from "./lib/codes";
+import {
+  ERROR_ARANGO_CONFLICT,
+  ERROR_ARANGO_MAINTENANCE_MODE,
+} from "./lib/codes";
 import { Errback } from "./lib/errback";
 import { normalizeUrl } from "./lib/normalizeUrl";
 import { querystringify } from "./lib/querystringify";
@@ -283,8 +286,9 @@ type Task = {
   stack?: () => string;
   allowDirtyRead: boolean;
   retryOnConflict: number;
-  resolve: (res: ArangojsResponse) => void;
+  resolve: (result: any) => void;
   reject: (error: Error) => void;
+  transform?: (res: ArangojsResponse) => any;
   retries: number;
   options: {
     method: string;
@@ -495,9 +499,7 @@ export class Connection {
   protected _arangoVersion: number = 30900;
   protected _headers: Headers;
   protected _loadBalancingStrategy: LoadBalancingStrategy;
-  protected _useFailOver: boolean;
-  protected _shouldRetry: boolean;
-  protected _maxRetries: number;
+  protected _maxRetries: number | false;
   protected _maxTasks: number;
   protected _queue = new LinkedList<Task>();
   protected _databases = new Map<string, Database>();
@@ -507,8 +509,8 @@ export class Connection {
   protected _activeDirtyHost: number;
   protected _transactionId: string | null = null;
   protected _precaptureStackTraces: boolean;
-  protected _responseQueueTimeSamples: number;
   protected _queueTimes = new LinkedList<[number, number]>();
+  protected _responseQueueTimeSamples: number;
 
   /**
    * @internal
@@ -543,18 +545,15 @@ export class Connection {
     this._maxTasks = this._agentOptions.maxSockets;
     this._headers = { ...config.headers };
     this._loadBalancingStrategy = config.loadBalancingStrategy ?? "NONE";
-    this._useFailOver = this._loadBalancingStrategy !== "ROUND_ROBIN";
     this._precaptureStackTraces = Boolean(config.precaptureStackTraces);
     this._responseQueueTimeSamples = config.responseQueueTimeSamples ?? 10;
     if (this._responseQueueTimeSamples < 0) {
       this._responseQueueTimeSamples = Infinity;
     }
     if (config.maxRetries === false) {
-      this._shouldRetry = false;
-      this._maxRetries = 0;
+      this._maxRetries = false;
     } else {
-      this._shouldRetry = true;
-      this._maxRetries = config.maxRetries ?? 0;
+      this._maxRetries = Number(config.maxRetries ?? 0);
     }
 
     this.addToHostList(URLS);
@@ -615,12 +614,66 @@ export class Connection {
     this._activeTasks += 1;
     const callback: Errback<ArangojsResponse> = (err, res) => {
       this._activeTasks -= 1;
+      if (!err && res) {
+        if (res.statusCode === 503 && res.headers[LEADER_ENDPOINT_HEADER]) {
+          const url = res.headers[LEADER_ENDPOINT_HEADER]!;
+          const [index] = this.addToHostList(url);
+          task.host = index;
+          if (this._activeHost === host) {
+            this._activeHost = index;
+          }
+          this._queue.push(task);
+        } else {
+          res.arangojsHostId = host;
+          const contentType = res.headers["content-type"];
+          const queueTime = res.headers["x-arango-queue-time-seconds"];
+          if (queueTime) {
+            this._queueTimes.push([Date.now(), Number(queueTime)]);
+            while (this._responseQueueTimeSamples < this._queueTimes.length) {
+              this._queueTimes.shift();
+            }
+          }
+          let parsedBody: any = undefined;
+          if (res.body.length && contentType && contentType.match(MIME_JSON)) {
+            try {
+              parsedBody = res.body;
+              parsedBody = JSON.parse(parsedBody);
+            } catch (e: any) {
+              if (!task.options.expectBinary) {
+                if (typeof parsedBody !== "string") {
+                  parsedBody = res.body.toString("utf-8");
+                }
+                e.res = res;
+                if (task.stack) {
+                  e.stack += task.stack();
+                }
+                callback(e);
+                return;
+              }
+            }
+          } else if (res.body && !task.options.expectBinary) {
+            parsedBody = res.body.toString("utf-8");
+          } else {
+            parsedBody = res.body;
+          }
+          if (isArangoErrorResponse(parsedBody)) {
+            res.body = parsedBody;
+            err = new ArangoError(res);
+          } else if (res.statusCode && res.statusCode >= 400) {
+            res.body = parsedBody;
+            err = new HttpError(res);
+          } else {
+            if (!task.options.expectBinary) res.body = parsedBody;
+            task.resolve(task.transform ? task.transform(res) : (res as any));
+          }
+        }
+      }
       if (err) {
         if (
           !task.allowDirtyRead &&
           this._hosts.length > 1 &&
           this._activeHost === host &&
-          this._useFailOver
+          this._loadBalancingStrategy !== "ROUND_ROBIN"
         ) {
           this._activeHost = (this._activeHost + 1) % this._hosts.length;
         }
@@ -632,12 +685,14 @@ export class Connection {
           task.retryOnConflict -= 1;
           this._queue.push(task);
         } else if (
-          !task.host &&
-          this._shouldRetry &&
-          task.retries < (this._maxRetries || this._hosts.length - 1) &&
-          isSystemError(err) &&
-          err.syscall === "connect" &&
-          err.code === "ECONNREFUSED"
+          ((isSystemError(err) &&
+            err.syscall === "connect" &&
+            err.code === "ECONNREFUSED") ||
+            (isArangoError(err) &&
+              err.errorNum === ERROR_ARANGO_MAINTENANCE_MODE)) &&
+          task.host === undefined &&
+          this._maxRetries !== false &&
+          task.retries < (this._maxRetries || this._hosts.length - 1)
         ) {
           task.retries += 1;
           this._queue.push(task);
@@ -646,23 +701,6 @@ export class Connection {
             err.stack += task.stack();
           }
           task.reject(err);
-        }
-      } else {
-        const response = res!;
-        if (
-          response.statusCode === 503 &&
-          response.headers[LEADER_ENDPOINT_HEADER]
-        ) {
-          const url = response.headers[LEADER_ENDPOINT_HEADER]!;
-          const [index] = this.addToHostList(url);
-          task.host = index;
-          if (this._activeHost === host) {
-            this._activeHost = index;
-          }
-          this._queue.push(task);
-        } else {
-          response.arangojsHostId = host;
-          task.resolve(response);
         }
       }
       this._runQueue();
@@ -922,57 +960,8 @@ export class Connection {
           body,
         },
         reject,
-        resolve: (res: ArangojsResponse) => {
-          const contentType = res.headers["content-type"];
-          const queueTime = res.headers["x-arango-queue-time-seconds"];
-          if (queueTime) {
-            this._queueTimes.push([Date.now(), Number(queueTime)]);
-            while (this._responseQueueTimeSamples < this._queueTimes.length) {
-              this._queueTimes.shift();
-            }
-          }
-          let parsedBody: any = undefined;
-          if (res.body.length && contentType && contentType.match(MIME_JSON)) {
-            try {
-              parsedBody = res.body;
-              parsedBody = JSON.parse(parsedBody);
-            } catch (e: any) {
-              if (!expectBinary) {
-                if (typeof parsedBody !== "string") {
-                  parsedBody = res.body.toString("utf-8");
-                }
-                e.response = res;
-                if (task.stack) {
-                  e.stack += task.stack();
-                }
-                reject(e);
-                return;
-              }
-            }
-          } else if (res.body && !expectBinary) {
-            parsedBody = res.body.toString("utf-8");
-          } else {
-            parsedBody = res.body;
-          }
-          if (isArangoErrorResponse(parsedBody)) {
-            res.body = parsedBody;
-            const err = new ArangoError(res);
-            if (task.stack) {
-              err.stack += task.stack();
-            }
-            reject(err);
-          } else if (res.statusCode && res.statusCode >= 400) {
-            res.body = parsedBody;
-            const err = new HttpError(res);
-            if (task.stack) {
-              err.stack += task.stack();
-            }
-            reject(err);
-          } else {
-            if (!expectBinary) res.body = parsedBody;
-            resolve(transform ? transform(res) : (res as any));
-          }
-        },
+        resolve,
+        transform,
       };
 
       if (this._precaptureStackTraces) {

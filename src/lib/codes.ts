@@ -8,6 +8,7 @@
  */
 
 export const TRANSACTION_NOT_FOUND = 10;
+export const ERROR_ARANGO_MAINTENANCE_MODE = 503;
 export const ERROR_ARANGO_CONFLICT = 1200;
 export const ANALYZER_NOT_FOUND = 1202;
 export const DOCUMENT_NOT_FOUND = 1202;

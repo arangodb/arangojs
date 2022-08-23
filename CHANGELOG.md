@@ -100,6 +100,13 @@ This driver uses semantic versioning:
 - Changed return values of `db.getUserAccessLevel` and `db.getUserDatabases`
   to match documented return types
 
+- Retry requests resulting in status 503 `ArangoError` ([#710](https://github.com/arangodb/arangojs/issues/710))
+
+  Unless retries are explicitly disabled by setting `config.maxRetries` to
+  `false`, requests will now also be retried if the server responded with a
+  503 `ArangoError`, which ArangoDB uses to indicate the server is running in
+  maintenance mode. Previously this would always result in an error.
+
 ### Added
 
 - Added `toJSON` method to system errors
