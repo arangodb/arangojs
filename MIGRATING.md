@@ -54,6 +54,31 @@ method:
 +const db2 = db.database("database2");
 ```
 
+### Users
+
+The return values of `db.getUserDatabases` and `db.getUserAccessLevel` have
+been changed to match the documented return types:
+
+```diff
+ import { Database } from "arangojs";
+
+ const db = new Database();
+-const dbs = (await db.getUserDatabases("ash")).result;
++const dbs = await db.getUserDatabases("ash");
+for (const [db, obj] of Object.entries(dbs)) {
+  console.log(`${db}: ${obj.permission}`);
+  for (const [col, access] of Object.entries(obj.collections)) {
+    console.log(`${db}/${col}: ${access}`);
+  }
+}
+
+-const access = (await db.getUserAccessLevel("ash", "pokemons")).result;
++const access = await db.getUserAccessLevel("ash", "pokemons");
+ if (access === "rw") {
+   db.collection("pokemons").save({ name: "Pikachu" });
+ }
+```
+
 ### Graphs
 
 In TypeScript the type `GraphCreateOptions` has been renamed to

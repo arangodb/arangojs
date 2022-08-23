@@ -2807,7 +2807,7 @@ export class Database {
           username
         )}/database/${encodeURIComponent(databaseName)}${suffix}`,
       },
-      (res) => res.body
+      (res) => res.body.result
     );
   }
 
@@ -3062,11 +3062,14 @@ export class Database {
     >
   >;
   getUserDatabases(username: string, full?: boolean) {
-    return this.request({
-      absolutePath: true,
-      path: `/_api/user/${encodeURIComponent(username)}/database`,
-      qs: { full },
-    });
+    return this.request(
+      {
+        absolutePath: true,
+        path: `/_api/user/${encodeURIComponent(username)}/database`,
+        qs: { full },
+      },
+      (res) => res.body.result
+    );
   }
   //#endregion
 

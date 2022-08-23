@@ -97,6 +97,9 @@ This driver uses semantic versioning:
   console.log(first.index, first.squared); // 1 1
   ```
 
+- Changed return values of `db.getUserAccessLevel` and `db.getUserDatabases`
+  to match documented return types
+
 ### Added
 
 - Added `toJSON` method to system errors
