@@ -15,9 +15,6 @@ jobs:
         node-version: [14, 16, 18]
         arangodb-version: [3.8, 3.9]
 
-    container:
-      image: node:${{ matrix.node-version }}
-
     services:
       arangodb:
         image: arangodb:${{ matrix.arangodb-version }}
@@ -26,6 +23,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
       - run: apt-get update && apt-get install jq -y
       - run: npm install -g npm@8
       - run: npm install
@@ -44,11 +44,11 @@ jobs:
         node-version: [14, 16, 18]
         arangodb-version: [3.8, 3.9]
 
-    container:
-      image: node:${{ matrix.node-version }}
-
     steps:
       - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
       - run: apt-get update && apt-get install jq -y
       - run: npm install -g npm@8
       - run: npm install
