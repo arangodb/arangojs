@@ -77,7 +77,7 @@ export class BatchedArrayCursor<T = any> {
   protected _extra: CursorExtras;
   protected _hasMore: boolean;
   protected _id: string | undefined;
-  protected _host?: number;
+  protected _hostUrl?: string;
   protected _allowDirtyRead?: boolean;
   protected _itemsCursor: ArrayCursor<T>;
 
@@ -93,7 +93,7 @@ export class BatchedArrayCursor<T = any> {
       id: string;
       count: number;
     },
-    host?: number,
+    hostUrl?: string,
     allowDirtyRead?: boolean
   ) {
     const batches = new LinkedList(
@@ -103,7 +103,7 @@ export class BatchedArrayCursor<T = any> {
     this._batches = batches;
     this._id = body.id;
     this._hasMore = Boolean(body.id && body.hasMore);
-    this._host = host;
+    this._hostUrl = hostUrl;
     this._count = body.count;
     this._extra = body.extra;
     this._allowDirtyRead = allowDirtyRead;
@@ -131,7 +131,7 @@ export class BatchedArrayCursor<T = any> {
     const body = await this._db.request({
       method: "PUT",
       path: `/_api/cursor/${encodeURIComponent(this._id!)}`,
-      host: this._host,
+      hostUrl: this._hostUrl,
       allowDirtyRead: this._allowDirtyRead,
     });
     this._batches.push(new LinkedList(body.result));

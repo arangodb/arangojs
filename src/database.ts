@@ -1592,6 +1592,9 @@ export class Database {
    * sure new coordinators are picked up correctly and can be used for
    * fail-over or load balancing.
    *
+   * @param overwrite - If set to `true`, the existing host list will be
+   * replaced instead of extended.
+   *
    * @example
    * ```js
    * const db = new Database();
@@ -1605,12 +1608,15 @@ export class Database {
    * system.close();
    * ```
    */
-  async acquireHostList(): Promise<void> {
+  async acquireHostList(overwrite = false): Promise<void> {
     const urls: string[] = await this.request(
       { path: "/_api/cluster/endpoints" },
       (res) => res.body.endpoints.map((endpoint: any) => endpoint.endpoint)
     );
-    this._connection.addToHostList(urls);
+    if (urls.length > 0) {
+      if (overwrite) this._connection.setHostList(urls);
+      else this._connection.addToHostList(urls);
+    }
   }
 
   /**
@@ -3568,7 +3574,7 @@ export class Database {
         new BatchedArrayCursor<T>(
           this,
           res.body,
-          res.arangojsHostId,
+          res.arangojsHostUrl,
           allowDirtyRead
         ).items
     );

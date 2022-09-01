@@ -3633,7 +3633,7 @@ export class Collection<T extends Record<string, any> = any>
         body: { type, collection: this._name },
       },
       (res) =>
-        new BatchedArrayCursor(this._db, res.body, res.arangojsHostId).items
+        new BatchedArrayCursor(this._db, res.body, res.arangojsHostUrl).items
     );
   }
 
@@ -3648,7 +3648,7 @@ export class Collection<T extends Record<string, any> = any>
         },
       },
       (res) =>
-        new BatchedArrayCursor(this._db, res.body, res.arangojsHostId).items
+        new BatchedArrayCursor(this._db, res.body, res.arangojsHostUrl).items
     );
   }
 
@@ -3678,7 +3678,7 @@ export class Collection<T extends Record<string, any> = any>
         },
       },
       (res) =>
-        new BatchedArrayCursor(this._db, res.body, res.arangojsHostId).items
+        new BatchedArrayCursor(this._db, res.body, res.arangojsHostUrl).items
     );
   }
 
@@ -3830,7 +3830,7 @@ export class Collection<T extends Record<string, any> = any>
         },
       },
       (res) =>
-        new BatchedArrayCursor(this._db, res.body, res.arangojsHostId).items
+        new BatchedArrayCursor(this._db, res.body, res.arangojsHostUrl).items
     );
   }
 

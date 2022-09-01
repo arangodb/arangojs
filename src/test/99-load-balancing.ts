@@ -61,8 +61,8 @@ describeIm("Single-server active failover", function () {
     return res.headers;
   }
   it("failover to follower if leader is down", async () => {
-    expect((conn as any)._hosts).to.have.lengthOf(2);
-    (conn as any)._activeHost = 0;
+    expect((conn as any)._hostUrls).to.have.lengthOf(2);
+    (conn as any)._activeHostUrl = (conn as any)._hostUrls[0];
     const leaderId = await getServerId();
     expect(leaderId).not.to.be.empty;
     const headers = await responseHeaders();
@@ -78,30 +78,30 @@ describeIm("Single-server active failover", function () {
     expect(newLeaderId).not.to.equal(leaderId);
   });
   it("redirect to leader if server is not leader", async () => {
-    expect((conn as any)._hosts).to.have.lengthOf(2);
+    expect((conn as any)._hostUrls).to.have.lengthOf(2);
 
-    (conn as any)._activeHost = 0;
+    (conn as any)._activeHostUrl = (conn as any)._hostUrls[0];
     const leaderId = await getServerId();
     expect(leaderId).not.to.be.empty;
     const leaderHeaders = await responseHeaders();
     expect(leaderHeaders).not.to.include.keys("x-arango-endpoint");
 
-    (conn as any)._activeHost = 1;
+    (conn as any)._activeHostUrl = (conn as any)._hostUrls[1];
     const followerId = await getServerId();
     expect(followerId).not.to.be.empty;
     expect(followerId).not.to.equal(leaderId);
     const followerHeaders = await responseHeaders();
     expect(followerHeaders).to.include.keys("x-arango-endpoint");
     (conn as any)._hosts.shift();
-    (conn as any)._urls.shift();
-    (conn as any)._activeHost = 0;
-    expect((conn as any)._hosts).to.have.lengthOf(1);
+    (conn as any)._hostUrls.shift();
+    (conn as any)._activeHostUrl = (conn as any)._hostUrls[0];
+    expect((conn as any)._hostUrls).to.have.lengthOf(1);
 
     await db.createCollection(`test_${Date.now()}`);
     const newLeaderId = await getServerId();
     expect(newLeaderId).not.to.be.empty;
     expect(newLeaderId).to.equal(leaderId);
-    expect((conn as any)._hosts).to.have.lengthOf(2);
+    expect((conn as any)._hostUrls).to.have.lengthOf(2);
   });
 });
 
@@ -142,26 +142,26 @@ describeIm("Single-server with follower", function () {
     });
   }
   it("supports dirty reads", async () => {
-    expect((conn as any)._hosts).to.have.lengthOf(2);
+    expect((conn as any)._hostUrls).to.have.lengthOf(2);
     const res1 = await getResponse(true);
-    expect(res1.arangojsHostId).to.be.a("number");
+    expect(res1.arangojsHostUrl).to.be.a("number");
     const headers1 = res1.request.getHeaders();
     expect(headers1).to.include.keys("x-arango-allow-dirty-read");
     const res2 = await getResponse(true);
-    expect(res2.arangojsHostId).to.be.a("number");
-    expect(res2.arangojsHostId).not.to.equal(res1.arangojsHostId);
+    expect(res2.arangojsHostUrl).to.be.a("number");
+    expect(res2.arangojsHostUrl).not.to.equal(res1.arangojsHostUrl);
     const headers2 = res2.request.getHeaders();
     expect(headers2).to.include.keys("x-arango-allow-dirty-read");
   });
   it("supports non-dirty reads", async () => {
-    expect((conn as any)._hosts).to.have.lengthOf(2);
+    expect((conn as any)._hostUrls).to.have.lengthOf(2);
     const res1 = await getResponse();
-    expect(res1.arangojsHostId).to.be.a("number");
+    expect(res1.arangojsHostUrl).to.be.a("number");
     const headers1 = res1.request.getHeaders();
     expect(headers1).not.to.include.keys("x-arango-allow-dirty-read");
     const res2 = await getResponse();
-    expect(res2.arangojsHostId).to.be.a("number");
-    expect(res2.arangojsHostId).to.equal(res1.arangojsHostId);
+    expect(res2.arangojsHostUrl).to.be.a("number");
+    expect(res2.arangojsHostUrl).to.equal(res1.arangojsHostUrl);
     const headers2 = res2.request.getHeaders();
     expect(headers2).not.to.include.keys("x-arango-allow-dirty-read");
   });
@@ -205,7 +205,7 @@ describeIm("Cluster round robin", function () {
     return res.body.serverInfo && res.body.serverInfo.serverId;
   }
   it("cycles servers", async () => {
-    expect((conn as any)._hosts).to.have.lengthOf(NUM_COORDINATORS);
+    expect((conn as any)._hostUrls).to.have.lengthOf(NUM_COORDINATORS);
     const serverIds = new Set<string>();
     for (let i = 0; i < NUM_COORDINATORS; i++) {
       const serverId = await getServerId();
@@ -221,7 +221,7 @@ describeIm("Cluster round robin", function () {
     }
   });
   it("skips downed servers", async () => {
-    expect((conn as any)._hosts).to.have.lengthOf(NUM_COORDINATORS);
+    expect((conn as any)._hostUrls).to.have.lengthOf(NUM_COORDINATORS);
     const firstRun = new Set<string>();
     for (let i = 0; i < NUM_COORDINATORS; i++) {
       const serverId = await getServerId();
@@ -243,7 +243,7 @@ describeIm("Cluster round robin", function () {
     expect(firstRun.size - secondRun.size).to.equal(1);
   });
   it("it picks up restarted servers", async () => {
-    expect((conn as any)._hosts).to.have.lengthOf(NUM_COORDINATORS);
+    expect((conn as any)._hostUrls).to.have.lengthOf(NUM_COORDINATORS);
     const firstRun = new Set<string>();
     for (let i = 0; i < NUM_COORDINATORS; i++) {
       const serverId = await getServerId();
@@ -270,7 +270,7 @@ describeIm("Cluster round robin", function () {
     expect(firstRun.size).to.equal(secondRun.size);
   });
   it("treats cursors as sticky", async () => {
-    expect((conn as any)._hosts).to.have.lengthOf(NUM_COORDINATORS);
+    expect((conn as any)._hostUrls).to.have.lengthOf(NUM_COORDINATORS);
     const LENGTH = 2;
     const cursor = await db.query(
       `FOR i IN 1..${LENGTH} RETURN i`,

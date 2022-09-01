@@ -219,7 +219,7 @@ describe("Item-wise Cursor API", () => {
         batchSize: 2,
       });
       allCursors.push(cursor);
-      const { _host: host, _id: id } = cursor as any;
+      const { _hostUrl: hostUrl, _id: id } = cursor as any;
       expect(cursor.batches.hasMore).to.equal(true);
       await cursor.kill();
       expect(cursor.batches.hasMore).to.equal(false);
@@ -227,7 +227,7 @@ describe("Item-wise Cursor API", () => {
         await db.request({
           method: "PUT",
           path: `/_api/cursor/${id}`,
-          host: host,
+          hostUrl: hostUrl,
         });
       } catch (e: any) {
         expect(e).to.have.property("errorNum", 1600);
@@ -435,7 +435,7 @@ describe("Batch-wise Cursor API", () => {
         batchSize: 2,
       });
       allCursors.push(cursor);
-      const { _host: host, _id: id } = cursor as any;
+      const { _hostUrl: hostUrl, _id: id } = cursor as any;
       expect(cursor.batches.hasMore).to.equal(true);
       await cursor.kill();
       expect(cursor.batches.hasMore).to.equal(false);
@@ -443,7 +443,7 @@ describe("Batch-wise Cursor API", () => {
         await db.request({
           method: "PUT",
           path: `/_api/cursor/${id}`,
-          host: host,
+          hostUrl: hostUrl,
         });
       } catch (e: any) {
         expect(e).to.have.property("errorNum", 1600);

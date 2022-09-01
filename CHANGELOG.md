@@ -32,6 +32,14 @@ This driver uses semantic versioning:
 
   The MMFiles storage engine was removed in ArangoDB 3.7.
 
+- Removed internal `request.host` attribute
+
+  This attribute has been replaced with `request.hostUrl`.
+
+- Removed internal `response.arangojsHostId` attribute
+
+  This attribute has been replaced with `response.arangojsHostUrl`.
+
 ### Changed
 
 - Changed default URL to `http://127.0.0.1:8529` to match ArangoDB default
@@ -108,6 +116,11 @@ This driver uses semantic versioning:
   maintenance mode. Previously this would always result in an error.
 
 ### Added
+
+- Added `overwrite` flag to `db.acquireHostList` ([#711](https://github.com/arangodb/arangojs/711))
+
+  Setting this flag to `true` will replace the current host list, removing any
+  hosts no longer present in the cluster.
 
 - Added `toJSON` method to system errors
 

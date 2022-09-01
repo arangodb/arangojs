@@ -218,7 +218,7 @@ export type RequestOptions = {
    *
    * Identifier of a specific ArangoDB host to use when more than one is known.
    */
-  host?: number;
+  hostUrl?: string;
   /**
    * HTTP method to use in order to perform the request.
    *
@@ -282,7 +282,7 @@ export type RequestOptions = {
  * @internal
  */
 type Task = {
-  host?: number;
+  hostUrl?: string;
   stack?: () => string;
   allowDirtyRead: boolean;
   retryOnConflict: number;
@@ -504,9 +504,9 @@ export class Connection {
   protected _queue = new LinkedList<Task>();
   protected _databases = new Map<string, Database>();
   protected _hosts: RequestFunction[] = [];
-  protected _urls: string[] = [];
-  protected _activeHost: number;
-  protected _activeDirtyHost: number;
+  protected _hostUrls: string[] = [];
+  protected _activeHostUrl: string;
+  protected _activeDirtyHostUrl: string;
   protected _transactionId: string | null = null;
   protected _precaptureStackTraces: boolean;
   protected _queueTimes = new LinkedList<[number, number]>();
@@ -567,11 +567,13 @@ export class Connection {
     }
 
     if (this._loadBalancingStrategy === "ONE_RANDOM") {
-      this._activeHost = Math.floor(Math.random() * this._hosts.length);
-      this._activeDirtyHost = Math.floor(Math.random() * this._hosts.length);
+      this._activeHostUrl =
+        this._hostUrls[Math.floor(Math.random() * this._hostUrls.length)];
+      this._activeDirtyHostUrl =
+        this._hostUrls[Math.floor(Math.random() * this._hostUrls.length)];
     } else {
-      this._activeHost = 0;
-      this._activeDirtyHost = 0;
+      this._activeHostUrl = this._hostUrls[0];
+      this._activeDirtyHostUrl = this._hostUrls[0];
     }
   }
 
@@ -601,15 +603,23 @@ export class Connection {
   protected _runQueue() {
     if (!this._queue.length || this._activeTasks >= this._maxTasks) return;
     const task = this._queue.shift()!;
-    let host = this._activeHost;
-    if (task.host !== undefined) {
-      host = task.host;
+    let hostUrl = this._activeHostUrl;
+    if (task.hostUrl !== undefined) {
+      hostUrl = task.hostUrl;
     } else if (task.allowDirtyRead) {
-      host = this._activeDirtyHost;
-      this._activeDirtyHost = (this._activeDirtyHost + 1) % this._hosts.length;
+      hostUrl = this._activeDirtyHostUrl;
+      this._activeDirtyHostUrl =
+        this._hostUrls[
+          (this._hostUrls.indexOf(this._activeDirtyHostUrl) + 1) %
+            this._hostUrls.length
+        ];
       task.options.headers["x-arango-allow-dirty-read"] = "true";
     } else if (this._loadBalancingStrategy === "ROUND_ROBIN") {
-      this._activeHost = (this._activeHost + 1) % this._hosts.length;
+      this._activeHostUrl =
+        this._hostUrls[
+          (this._hostUrls.indexOf(this._activeHostUrl) + 1) %
+            this._hostUrls.length
+        ];
     }
     this._activeTasks += 1;
     const callback: Errback<ArangojsResponse> = (err, res) => {
@@ -617,14 +627,14 @@ export class Connection {
       if (!err && res) {
         if (res.statusCode === 503 && res.headers[LEADER_ENDPOINT_HEADER]) {
           const url = res.headers[LEADER_ENDPOINT_HEADER]!;
-          const [index] = this.addToHostList(url);
-          task.host = index;
-          if (this._activeHost === host) {
-            this._activeHost = index;
+          const [cleanUrl] = this.addToHostList(url);
+          task.hostUrl = cleanUrl;
+          if (this._activeHostUrl === hostUrl) {
+            this._activeHostUrl = cleanUrl;
           }
           this._queue.push(task);
         } else {
-          res.arangojsHostId = host;
+          res.arangojsHostUrl = hostUrl;
           const contentType = res.headers["content-type"];
           const queueTime = res.headers["x-arango-queue-time-seconds"];
           if (queueTime) {
@@ -672,10 +682,14 @@ export class Connection {
         if (
           !task.allowDirtyRead &&
           this._hosts.length > 1 &&
-          this._activeHost === host &&
+          this._activeHostUrl === hostUrl &&
           this._loadBalancingStrategy !== "ROUND_ROBIN"
         ) {
-          this._activeHost = (this._activeHost + 1) % this._hosts.length;
+          this._activeHostUrl =
+            this._hostUrls[
+              (this._hostUrls.indexOf(this._activeHostUrl) + 1) %
+                this._hostUrls.length
+            ];
         }
         if (
           isArangoError(err) &&
@@ -690,7 +704,7 @@ export class Connection {
             err.code === "ECONNREFUSED") ||
             (isArangoError(err) &&
               err.errorNum === ERROR_ARANGO_MAINTENANCE_MODE)) &&
-          task.host === undefined &&
+          task.hostUrl === undefined &&
           this._maxRetries !== false &&
           task.retries < (this._maxRetries || this._hosts.length - 1)
         ) {
@@ -706,7 +720,7 @@ export class Connection {
       this._runQueue();
     };
     try {
-      this._hosts[host](task.options, callback);
+      this._hosts[this._hostUrls.indexOf(hostUrl)](task.options, callback);
     } catch (e: any) {
       callback(e);
     }
@@ -790,24 +804,49 @@ export class Connection {
   /**
    * @internal
    *
+   * Replaces the host list with the given URLs.
+   *
+   * See {@link Connection#acquireHostList}.
+   *
+   * @param urls - URLs to use as host list.
+   */
+  setHostList(urls: string[]): void {
+    const cleanUrls = urls.map((url) => normalizeUrl(url));
+    this._hosts.splice(
+      0,
+      this._hosts.length,
+      ...cleanUrls.map((url) => {
+        const i = this._hostUrls.indexOf(url);
+        if (i !== -1) return this._hosts[i];
+        return createRequest(url, this._agentOptions, this._agent);
+      })
+    );
+    this._hostUrls.splice(0, this._hostUrls.length, ...cleanUrls);
+  }
+
+  /**
+   * @internal
+   *
    * Adds the given URL or URLs to the host list.
    *
    * See {@link Connection#acquireHostList}.
    *
    * @param urls - URL or URLs to add.
    */
-  addToHostList(urls: string | string[]): number[] {
+  addToHostList(urls: string | string[]): string[] {
     const cleanUrls = (Array.isArray(urls) ? urls : [urls]).map((url) =>
       normalizeUrl(url)
     );
-    const newUrls = cleanUrls.filter((url) => this._urls.indexOf(url) === -1);
-    this._urls.push(...newUrls);
+    const newUrls = cleanUrls.filter(
+      (url) => this._hostUrls.indexOf(url) === -1
+    );
+    this._hostUrls.push(...newUrls);
     this._hosts.push(
       ...newUrls.map((url: string) =>
         createRequest(url, this._agentOptions, this._agent)
       )
     );
-    return cleanUrls.map((url) => this._urls.indexOf(url));
+    return cleanUrls;
   }
 
   /**
@@ -878,18 +917,19 @@ export class Connection {
    */
   async waitForPropagation(request: RequestOptions, timeout = Infinity) {
     const numHosts = this._hosts.length;
-    const propagated = [] as number[];
+    const propagated = [] as string[];
     const started = Date.now();
-    let host = 0;
+    let index = 0;
     while (true) {
       if (propagated.length === numHosts) {
         return;
       }
-      while (propagated.includes(host)) {
-        host = (host + 1) % numHosts;
+      while (propagated.includes(this._hostUrls[index])) {
+        index = (index + 1) % numHosts;
       }
+      const hostUrl = this._hostUrls[index];
       try {
-        await this.request({ ...request, host });
+        await this.request({ ...request, hostUrl });
       } catch (e: any) {
         if (started + timeout < Date.now()) {
           throw e;
@@ -897,8 +937,8 @@ export class Connection {
         await new Promise((resolve) => setTimeout(resolve, 1000));
         continue;
       }
-      if (!propagated.includes(host)) {
-        propagated.push(host);
+      if (!propagated.includes(hostUrl)) {
+        propagated.push(hostUrl);
       }
     }
   }
@@ -910,7 +950,7 @@ export class Connection {
    */
   request<T = ArangojsResponse>(
     {
-      host,
+      hostUrl,
       method = "GET",
       body,
       expectBinary = false,
@@ -948,7 +988,7 @@ export class Connection {
 
       const task: Task = {
         retries: 0,
-        host,
+        hostUrl,
         allowDirtyRead,
         retryOnConflict,
         options: {

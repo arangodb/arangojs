@@ -15,7 +15,7 @@ const serviceServiceMount = "/foxx-crud-test-download";
 
 function makeSelfReachable(db: Database, returnedUrl: string) {
   const conn = (db as any)._connection;
-  const normalizedArangoUrl = normalizeUrl(conn._urls[conn._activeHost]);
+  const normalizedArangoUrl = normalizeUrl(conn._activeHostUrl);
   if (ARANGO_URL_SELF_REACHABLE) {
     return returnedUrl.replace(normalizedArangoUrl, ARANGO_URL_SELF_REACHABLE);
   }

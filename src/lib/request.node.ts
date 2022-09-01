@@ -40,7 +40,7 @@ function systemErrorToJSON(this: SystemError) {
 export interface ArangojsResponse extends IncomingMessage {
   request: ClientRequest;
   body?: any;
-  arangojsHostId?: number;
+  arangojsHostUrl?: string;
 }
 
 /**
