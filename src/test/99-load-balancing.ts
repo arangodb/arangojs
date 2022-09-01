@@ -85,17 +85,19 @@ describeIm("Single-server active failover", function () {
     (conn as any)._activeHost = 1;
     const followerId = await getServerId();
     expect(followerId).not.to.be.empty;
+    expect(followerId).not.to.equal(leaderId);
     const followerHeaders = await responseHeaders();
     expect(followerHeaders).to.include.keys("x-arango-endpoint");
+    (conn as any)._hosts.shift();
+    (conn as any)._urls.shift();
+    (conn as any)._activeHost = 0;
+    expect((conn as any)._hosts).to.have.lengthOf(1);
 
-    await im.kill(leader);
-    await im.asyncReplicationLeaderSelected(uuid as any);
-    await sleep(3000);
-    await db.version(); // cycle
-
+    await db.createCollection(`test_${Date.now()}`);
     const newLeaderId = await getServerId();
     expect(newLeaderId).not.to.be.empty;
-    expect(newLeaderId).to.equal(followerId);
+    expect(newLeaderId).to.equal(leaderId);
+    expect((conn as any)._hosts).to.have.lengthOf(2);
   });
 });
 
