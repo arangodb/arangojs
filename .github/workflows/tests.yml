@@ -26,7 +26,6 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
-      - run: apt-get update && apt-get install jq -y
       - run: npm install -g npm@8
       - run: npm install
       - run: npm test
@@ -49,7 +48,6 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: ${{ matrix.node-version }}
-      - run: apt-get update && apt-get install jq -y
       - run: npm install -g npm@8
       - run: npm install
       - run: npm test
