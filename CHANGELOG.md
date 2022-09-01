@@ -56,7 +56,7 @@ This driver uses semantic versioning:
   releases fully support ES2020, the compilation target for the browser bundle
   and Node.js has been moved from ES2016 and ES2018 respectively to ES2020.
 
-- Updated TypeScript to version 4.7
+- Updated TypeScript to version 4.8
 
   This may result in type signatures that are incompatible with TypeScript 3
   being added in future releases (including patch releases).
