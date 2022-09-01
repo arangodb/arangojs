@@ -1,6 +1,7 @@
 import { ParsedUrlQueryInput, stringify } from "querystring";
 
-function clean<T>(obj: T) {
+// eslint-disable-next-line @typescript-eslint/ban-types
+function clean<T extends {}>(obj: T) {
   const result = {} as typeof obj;
   for (const key of Object.keys(obj)) {
     const value = (obj as any)[key];
