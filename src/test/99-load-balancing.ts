@@ -15,14 +15,18 @@ async function sleep(ms: number) {
 let ARANGO_PATH = "";
 let ARANGO_RUNNER: "local" | "docker";
 if (process.env.RESILIENCE_ARANGO_BASEPATH) {
-  ARANGO_PATH = process.env.RESILIENCE_ARANGO_BASEPATH;
+  ARANGO_PATH = resolve(
+    __dirname,
+    "..",
+    "..",
+    process.env.RESILIENCE_ARANGO_BASEPATH
+  );
   ARANGO_RUNNER = "local";
 } else if (process.env.RESILIENCE_DOCKER_IMAGE) {
   ARANGO_PATH = process.env.RESILIENCE_DOCKER_IMAGE;
   ARANGO_RUNNER = "docker";
 }
 const describeIm = ARANGO_PATH ? describe.only : describe.skip;
-ARANGO_PATH = resolve(__dirname, "..", "..", ARANGO_PATH);
 
 describeIm("Single-server active failover", function () {
   this.timeout(Infinity);
