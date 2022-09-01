@@ -35,6 +35,29 @@ jobs:
           TEST_ARANGODB_URL: http://arangodb:8529
           CI: true
 
+  resilience:
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: [14, 16, 18]
+        arangodb-version: [3.8, 3.9]
+
+    container:
+      image: node:${{ matrix.node-version }}
+
+    steps:
+      - uses: actions/checkout@v2
+      - run: apt-get update && apt-get install jq -y
+      - run: npm install -g npm@8
+      - run: npm install
+      - run: npm test
+        env:
+          ARANGO_RELEASE: ${{ matrix.arangodb-version }}
+          RESILIENCE_DOCKER_IMAGE: arangodb:${{ matrix.arangodb-version }}
+          CI: true
+
   web:
     runs-on: ubuntu-latest
 
