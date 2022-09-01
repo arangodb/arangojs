@@ -15,6 +15,9 @@ jobs:
         node-version: [14, 16, 18]
         arangodb-version: [3.8, 3.9]
 
+    container:
+      image: node:${{ matrix.node-version }}
+
     services:
       arangodb:
         image: arangodb:${{ matrix.arangodb-version }}
@@ -23,37 +26,13 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
-        with:
-          node-version: ${{ matrix.node-version }}
+      - run: apt-get update && apt-get install jq -y
       - run: npm install -g npm@8
       - run: npm install
       - run: npm test
         env:
           ARANGO_RELEASE: ${{ matrix.arangodb-version }}
           TEST_ARANGODB_URL: http://arangodb:8529
-          CI: true
-
-  resilience:
-    runs-on: ubuntu-latest
-
-    strategy:
-      fail-fast: false
-      matrix:
-        node-version: [14, 16, 18]
-        arangodb-version: [3.8, 3.9]
-
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
-        with:
-          node-version: ${{ matrix.node-version }}
-      - run: npm install -g npm@8
-      - run: npm install
-      - run: npm test
-        env:
-          ARANGO_RELEASE: ${{ matrix.arangodb-version }}
-          RESILIENCE_DOCKER_IMAGE: arangodb:${{ matrix.arangodb-version }}
           CI: true
 
   web:
