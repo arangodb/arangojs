@@ -37,6 +37,14 @@ This driver uses semantic versioning:
 
   The MMFiles storage engine was removed in ArangoDB 3.7.
 
+- Removed internal `request.host` attribute
+
+  This attribute has been replaced with `request.hostUrl`.
+
+- Removed internal `response.arangojsHostId` attribute
+
+  This attribute has been replaced with `response.arangojsHostUrl`.
+
 ### Changed
 
 - Changed default URL to `http://127.0.0.1:8529` to match ArangoDB default
@@ -61,7 +69,7 @@ This driver uses semantic versioning:
   releases fully support ES2020, the compilation target for the browser bundle
   and Node.js has been moved from ES2016 and ES2018 respectively to ES2020.
 
-- Updated TypeScript to version 4.7
+- Updated TypeScript to version 4.8
 
   This may result in type signatures that are incompatible with TypeScript 3
   being added in future releases (including patch releases).
@@ -105,7 +113,19 @@ This driver uses semantic versioning:
 - Changed return values of `db.getUserAccessLevel` and `db.getUserDatabases`
   to match documented return types
 
+- Retry requests resulting in status 503 `ArangoError` ([#710](https://github.com/arangodb/arangojs/issues/710))
+
+  Unless retries are explicitly disabled by setting `config.maxRetries` to
+  `false`, requests will now also be retried if the server responded with a
+  503 `ArangoError`, which ArangoDB uses to indicate the server is running in
+  maintenance mode. Previously this would always result in an error.
+
 ### Added
+
+- Added `overwrite` flag to `db.acquireHostList` ([#711](https://github.com/arangodb/arangojs/711))
+
+  Setting this flag to `true` will replace the current host list, removing any
+  hosts no longer present in the cluster.
 
 - Added `toJSON` method to system errors
 
