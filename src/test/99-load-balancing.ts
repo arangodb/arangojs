@@ -144,11 +144,11 @@ describeIm("Single-server with follower", function () {
   it("supports dirty reads", async () => {
     expect((conn as any)._hostUrls).to.have.lengthOf(2);
     const res1 = await getResponse(true);
-    expect(res1.arangojsHostUrl).to.be.a("number");
+    expect(res1.arangojsHostUrl).to.be.a("string");
     const headers1 = res1.request.getHeaders();
     expect(headers1).to.include.keys("x-arango-allow-dirty-read");
     const res2 = await getResponse(true);
-    expect(res2.arangojsHostUrl).to.be.a("number");
+    expect(res2.arangojsHostUrl).to.be.a("string");
     expect(res2.arangojsHostUrl).not.to.equal(res1.arangojsHostUrl);
     const headers2 = res2.request.getHeaders();
     expect(headers2).to.include.keys("x-arango-allow-dirty-read");
@@ -156,11 +156,11 @@ describeIm("Single-server with follower", function () {
   it("supports non-dirty reads", async () => {
     expect((conn as any)._hostUrls).to.have.lengthOf(2);
     const res1 = await getResponse();
-    expect(res1.arangojsHostUrl).to.be.a("number");
+    expect(res1.arangojsHostUrl).to.be.a("string");
     const headers1 = res1.request.getHeaders();
     expect(headers1).not.to.include.keys("x-arango-allow-dirty-read");
     const res2 = await getResponse();
-    expect(res2.arangojsHostUrl).to.be.a("number");
+    expect(res2.arangojsHostUrl).to.be.a("string");
     expect(res2.arangojsHostUrl).to.equal(res1.arangojsHostUrl);
     const headers2 = res2.request.getHeaders();
     expect(headers2).not.to.include.keys("x-arango-allow-dirty-read");
