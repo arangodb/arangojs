@@ -134,6 +134,12 @@ This driver uses semantic versioning:
 
   The option is only respected by read-only requests.
 
+- Added `legacyPolygons` option to `EnsureGeoIndexOptions` and `GeoIndex` types
+
+  Geo indexes created in ArangoDB pre-3.10 will implicitly default this option
+  to `true`. ArangoDB 3.10 and later will default to `false` and use the new
+  parsing rules for geo indexes.
+
 - Added `overwrite` flag to `db.acquireHostList` ([#711](https://github.com/arangodb/arangojs/711))
 
   Setting this flag to `true` will replace the current host list, removing any

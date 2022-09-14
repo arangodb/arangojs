@@ -77,6 +77,12 @@ export type EnsureGeoIndexOptions =
        */
       geoJson?: false;
       /**
+       * If set to `true`, the index will use pre-3.10 rules for parsing
+       * GeoJSON polygons. This option is always implicitly `true` when using
+       * ArangoDB 3.9 or lower.
+       */
+      legacyPolygons?: false;
+      /**
        * Attribute paths for the document's latitude and longitude values.
        */
       fields: [string, string];
@@ -273,6 +279,7 @@ export type GeoIndex = GenericIndex & {
   type: "geo";
   fields: [string] | [string, string];
   geoJson: boolean;
+  legacyPolygons: boolean;
   bestIndexedLevel: number;
   worstIndexedLevel: number;
   maxNumCoverCells: number;
