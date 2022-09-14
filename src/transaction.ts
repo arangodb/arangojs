@@ -184,7 +184,7 @@ export class Transaction {
    * // result indicates the updated transaction status
    * ```
    */
-  abort(options: TransactionAbortOptions): Promise<TransactionStatus> {
+  abort(options?: TransactionAbortOptions): Promise<TransactionStatus> {
     const { allowDirtyRead = undefined } = options || {};
     return this._db.request(
       {
