@@ -25,6 +25,30 @@ export function isArangoTransaction(
 }
 
 /**
+ * Options for how the transaction should be committed.
+ */
+export type TransactionCommitOptions = {
+  /**
+   * If set to `true`, the request will explicitly permit ArangoDB to return a
+   * potentially dirty or stale result and arangojs will load balance the
+   * request without distinguishing between leaders and followers.
+   */
+  allowDirtyRead?: boolean;
+};
+
+/**
+ * Options for how the transaction should be aborted.
+ */
+export type TransactionAbortOptions = {
+  /**
+   * If set to `true`, the request will explicitly permit ArangoDB to return a
+   * potentially dirty or stale result and arangojs will load balance the
+   * request without distinguishing between leaders and followers.
+   */
+  allowDirtyRead?: boolean;
+};
+
+/**
  * Status of a given transaction.
  *
  * See also {@link database.TransactionDetails}.
@@ -121,6 +145,8 @@ export class Transaction {
   /**
    * Attempts to commit the transaction to the databases.
    *
+   * @param options - Options for comitting the transaction.
+   *
    * @example
    * ```js
    * const db = new Database();
@@ -131,11 +157,13 @@ export class Transaction {
    * // result indicates the updated transaction status
    * ```
    */
-  commit(): Promise<TransactionStatus> {
+  commit(options?: TransactionCommitOptions): Promise<TransactionStatus> {
+    const { allowDirtyRead = undefined } = options || {};
     return this._db.request(
       {
         method: "PUT",
         path: `/_api/transaction/${encodeURIComponent(this.id)}`,
+        allowDirtyRead,
       },
       (res) => res.body.result
     );
@@ -143,6 +171,8 @@ export class Transaction {
 
   /**
    * Attempts to abort the transaction to the databases.
+   *
+   * @param options - Options for aborting the transaction.
    *
    * @example
    * ```js
@@ -154,11 +184,13 @@ export class Transaction {
    * // result indicates the updated transaction status
    * ```
    */
-  abort(): Promise<TransactionStatus> {
+  abort(options: TransactionAbortOptions): Promise<TransactionStatus> {
+    const { allowDirtyRead = undefined } = options || {};
     return this._db.request(
       {
         method: "DELETE",
         path: `/_api/transaction/${encodeURIComponent(this.id)}`,
+        allowDirtyRead,
       },
       (res) => res.body.result
     );

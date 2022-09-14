@@ -155,6 +155,12 @@ export type TransactionOptions = {
    */
   allowImplicit?: boolean;
   /**
+   * If set to `true`, the request will explicitly permit ArangoDB to return a
+   * potentially dirty or stale result and arangojs will load balance the
+   * request without distinguishing between leaders and followers.
+   */
+  allowDirtyRead?: boolean;
+  /**
    * Determines whether to force the transaction to write all data to disk
    * before returning.
    */
@@ -3241,14 +3247,16 @@ export class Database {
     action: string,
     options?: TransactionOptions & { params?: any }
   ): Promise<any> {
+    const { allowDirtyRead = undefined, ...opts } = options || {};
     return this.request(
       {
         method: "POST",
         path: "/_api/transaction",
+        allowDirtyRead,
         body: {
           collections: coerceTransactionCollections(collections),
           action,
-          ...options,
+          ...opts,
         },
       },
       (res) => res.body.result
@@ -3376,13 +3384,15 @@ export class Database {
       | ArangoCollection,
     options?: TransactionOptions
   ): Promise<Transaction> {
+    const { allowDirtyRead = undefined, ...opts } = options || {};
     return this.request(
       {
         method: "POST",
         path: "/_api/transaction/begin",
+        allowDirtyRead,
         body: {
           collections: coerceTransactionCollections(collections),
-          ...options,
+          ...opts,
         },
       },
       (res) => new Transaction(this, res.body.result.id)

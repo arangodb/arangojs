@@ -707,6 +707,18 @@ export type CollectionImportOptions = {
 };
 
 /**
+ * Options for retrieving a document's edges from a collection.
+ */
+export type CollectionEdgesOptions = {
+  /**
+   * If set to `true`, the request will explicitly permit ArangoDB to return a
+   * potentially dirty or stale result and arangojs will load balance the
+   * request without distinguishing between leaders and followers.
+   */
+  allowDirtyRead?: boolean;
+};
+
+/**
  * Options for retrieving documents by example.
  *
  * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
@@ -3075,6 +3087,7 @@ export interface EdgeCollection<T extends Record<string, any> = any>
    *
    * @param selector - Document `_key`, `_id` or object with either of those
    * properties (e.g. a document from this collection).
+   * @param options - Options for retrieving the edges.
    *
    * @example
    * ```js
@@ -3091,7 +3104,8 @@ export interface EdgeCollection<T extends Record<string, any> = any>
    * ```
    */
   edges(
-    selector: DocumentSelector
+    selector: DocumentSelector,
+    options: CollectionEdgesOptions
   ): Promise<ArangoApiResponse<CollectionEdgesResult<T>>>;
   /**
    * Retrieves a list of all incoming edges of the document matching the given
@@ -3102,6 +3116,7 @@ export interface EdgeCollection<T extends Record<string, any> = any>
    *
    * @param selector - Document `_key`, `_id` or object with either of those
    * properties (e.g. a document from this collection).
+   * @param options - Options for retrieving the edges.
    *
    * @example
    * ```js
@@ -3118,7 +3133,8 @@ export interface EdgeCollection<T extends Record<string, any> = any>
    * ```
    */
   inEdges(
-    selector: DocumentSelector
+    selector: DocumentSelector,
+    options: CollectionEdgesOptions
   ): Promise<ArangoApiResponse<CollectionEdgesResult<T>>>;
   /**
    * Retrieves a list of all outgoing edges of the document matching the given
@@ -3129,6 +3145,7 @@ export interface EdgeCollection<T extends Record<string, any> = any>
    *
    * @param selector - Document `_key`, `_id` or object with either of those
    * properties (e.g. a document from this collection).
+   * @param options - Options for retrieving the edges.
    *
    * @example
    * ```js
@@ -3145,7 +3162,8 @@ export interface EdgeCollection<T extends Record<string, any> = any>
    * ```
    */
   outEdges(
-    selector: DocumentSelector
+    selector: DocumentSelector,
+    options: CollectionEdgesOptions
   ): Promise<ArangoApiResponse<CollectionEdgesResult<T>>>;
 
   /**
@@ -3589,9 +3607,15 @@ export class Collection<T extends Record<string, any> = any>
   //#endregion
 
   //#region edges
-  protected _edges(selector: DocumentSelector, direction?: "in" | "out") {
+  protected _edges(
+    selector: DocumentSelector,
+    options: CollectionEdgesOptions,
+    direction?: "in" | "out"
+  ) {
+    const { allowDirtyRead = undefined } = options;
     return this._db.request({
       path: `/_api/edges/${encodeURIComponent(this._name)}`,
+      allowDirtyRead,
       qs: {
         direction,
         vertex: _documentHandle(selector, this._name, false),
@@ -3599,16 +3623,16 @@ export class Collection<T extends Record<string, any> = any>
     });
   }
 
-  edges(vertex: DocumentSelector) {
-    return this._edges(vertex);
+  edges(vertex: DocumentSelector, options: CollectionEdgesOptions) {
+    return this._edges(vertex, options);
   }
 
-  inEdges(vertex: DocumentSelector) {
-    return this._edges(vertex, "in");
+  inEdges(vertex: DocumentSelector, options: CollectionEdgesOptions) {
+    return this._edges(vertex, options, "in");
   }
 
-  outEdges(vertex: DocumentSelector) {
-    return this._edges(vertex, "out");
+  outEdges(vertex: DocumentSelector, options: CollectionEdgesOptions) {
+    return this._edges(vertex, options, "out");
   }
 
   traversal(startVertex: DocumentSelector, options?: TraversalOptions) {
