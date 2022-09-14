@@ -129,6 +129,11 @@ This driver uses semantic versioning:
 
 ### Added
 
+- Added `allowDirtyRead` option to `db.beginTransaction`, `trx.commit`,
+  `trx.abort`, `collection.edges`, `collection.inEdges`, `collection.outEdges`
+
+  The option is only respected by read-only requests.
+
 - Added `overwrite` flag to `db.acquireHostList` ([#711](https://github.com/arangodb/arangojs/711))
 
   Setting this flag to `true` will replace the current host list, removing any
