@@ -2365,6 +2365,9 @@ export interface DocumentCollection<T extends Record<string, any> = any>
    *
    * @param details - Options for creating the fulltext index.
    *
+   * @deprecated Fulltext indexes have been deprecated in ArangoDB 3.10 and
+   * should be replaced with ArangoSearch.
+   *
    * @example
    * ```js
    * const db = new Database();

@@ -125,6 +125,9 @@ export type EnsureGeoIndexOptions =
 
 /**
  * Options for creating a fulltext index.
+ *
+ * @deprecated Fulltext indexes have been deprecated in ArangoDB 3.10 and
+ * should be replaced with ArangoSearch.
  */
 export type EnsureFulltextIndexOptions = {
   /**
@@ -253,6 +256,9 @@ export type PrimaryIndex = GenericIndex & {
 
 /**
  * An object representing a fulltext index.
+ *
+ * @deprecated Fulltext indexes have been deprecated in ArangoDB 3.10 and
+ * should be replaced with ArangoSearch.
  */
 export type FulltextIndex = GenericIndex & {
   type: "fulltext";
