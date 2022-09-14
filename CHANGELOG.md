@@ -120,6 +120,11 @@ This driver uses semantic versioning:
   503 `ArangoError`, which ArangoDB uses to indicate the server is running in
   maintenance mode. Previously this would always result in an error.
 
+- Extended `CursorExtras` type in TypeScript
+
+  The types of the attributes `plan`, `profile`, and `stats` are now defined
+  more explicitly.
+
 ### Deprecated
 
 - Deprecated `EnsureFulltextIndexOptions` and `FulltextIndex` types
@@ -133,6 +138,12 @@ This driver uses semantic versioning:
   `trx.abort`, `collection.edges`, `collection.inEdges`, `collection.outEdges`
 
   The option is only respected by read-only requests.
+
+- Added `legacyPolygons` option to `EnsureGeoIndexOptions` and `GeoIndex` types
+
+  Geo indexes created in ArangoDB pre-3.10 will implicitly default this option
+  to `true`. ArangoDB 3.10 and later will default to `false` and use the new
+  parsing rules for geo indexes.
 
 - Added `overwrite` flag to `db.acquireHostList` ([#711](https://github.com/arangodb/arangojs/711))
 
