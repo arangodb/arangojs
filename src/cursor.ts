@@ -24,15 +24,81 @@ export interface CursorExtras {
   /**
    * Query execution plan for the executed query.
    */
-  plan?: any;
+  plan?: Record<string, any>;
   /**
    * Additional profiling information for the executed query.
    */
-  profile?: any;
+  profile?: Record<string, number>;
   /**
    * Additional statistics about the query execution.
    */
-  stats?: Record<string, any>;
+  stats?: CursorStats;
+}
+
+/**
+ * Additional statics about the query execution of the cursor.
+ */
+export interface CursorStats {
+  /**
+   * Total number of index entries read from in-memory caches for indexes of
+   * type edge or persistent.
+   */
+  cacheHits: number;
+  /**
+   * Total number of cache read attempts for index entries that could not be
+   * served from in-memory caches for indexes of type edge or persistent.
+   */
+  cacheMisses: number;
+  /**
+   * Total number of cursor objects created during query execution.
+   */
+  cursorsCreated: number;
+  /**
+   * Total number of times an existing cursor object was repurposed.
+   */
+  cursorsRearmed: number;
+  /**
+   * Total number of data-modification operations successfully executed.
+   */
+  writesExecuted: number;
+  /**
+   * Total number of data-modification operations that were unsuccessful, but have been ignored because of query option ignoreErrors.
+   */
+  writesIgnored: number;
+  /**
+   * Total number of documents iterated over when scanning a collection without an index.
+   */
+  scannedFull: number;
+  /**
+   * Total number of documents iterated over when scanning a collection using an index.
+   */
+  scannedIndex: number;
+  /**
+   * Total number of documents that were removed after executing a filter condition in a FilterNode.
+   */
+  filtered: number;
+  /**
+   * Maximum memory usage of the query while it was running.
+   */
+  peakMemoryUsage: number;
+  /**
+   * Execution time of the query in seconds.
+   */
+  executionTime: number;
+  /**
+   * Total number of documents that matched the search condition if the query’s final top-level LIMIT statement were not present.
+   */
+  fullCount?: number;
+  /**
+   * Runtime statistics per query execution node.
+   */
+  nodes?: {
+    id: number;
+    calls: number;
+    items: number;
+    filter: number;
+    runtime: number;
+  }[];
 }
 
 interface BatchView<T = any> {

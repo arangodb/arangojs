@@ -115,6 +115,11 @@ This driver uses semantic versioning:
   503 `ArangoError`, which ArangoDB uses to indicate the server is running in
   maintenance mode. Previously this would always result in an error.
 
+- Extended `CursorExtras` type in TypeScript
+
+  The types of the attributes `plan`, `profile`, and `stats` are now defined
+  more explicitly.
+
 ### Deprecated
 
 - Deprecated `EnsureFulltextIndexOptions` and `FulltextIndex` types
