@@ -120,6 +120,13 @@ This driver uses semantic versioning:
   503 `ArangoError`, which ArangoDB uses to indicate the server is running in
   maintenance mode. Previously this would always result in an error.
 
+### Deprecated
+
+- Deprecated `EnsureFulltextIndexOptions` and `FulltextIndex` types
+
+  Fulltext indexes have been deprecated in ArangoDB 3.10 and should be replaced
+  with ArangoSearch.
+
 ### Added
 
 - Added `overwrite` flag to `db.acquireHostList` ([#711](https://github.com/arangodb/arangojs/711))
