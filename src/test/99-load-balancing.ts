@@ -60,7 +60,8 @@ describeIm("Single-server active failover", function () {
     const res = await db.route("_api/version").get();
     return res.headers;
   }
-  it("failover to follower if leader is down", async () => {
+  it("failover to follower if leader is down", async function () {
+    this.timeout(60000);
     expect((conn as any)._hostUrls).to.have.lengthOf(2);
     (conn as any)._activeHostUrl = (conn as any)._hostUrls[0];
     const leaderId = await getServerId();
@@ -69,8 +70,15 @@ describeIm("Single-server active failover", function () {
     expect(headers).not.to.include.keys("x-arango-endpoint");
 
     await im.kill(leader);
-    await im.asyncReplicationLeaderSelected(uuid as any);
-    await sleep(3000);
+    for (let i = 0; i < 5; i++) {
+      try {
+        await im.asyncReplicationLeaderSelected(uuid as any);
+        await sleep(3000);
+        break;
+      } catch {
+        continue;
+      }
+    }
     await db.version(); // cycle
 
     const newLeaderId = await getServerId();
