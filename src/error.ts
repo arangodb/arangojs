@@ -11,6 +11,7 @@
 
 const messages: { [key: number]: string } = {
   0: "Network Error",
+  304: "Not Modified",
   400: "Bad Request",
   401: "Unauthorized",
   402: "Payment Required",

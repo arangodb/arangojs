@@ -26,7 +26,7 @@ import {
   Patch,
   _documentHandle,
 } from "./documents";
-import { isArangoError } from "./error";
+import { HttpError, isArangoError } from "./error";
 import {
   EnsureFulltextIndexOptions,
   EnsureGeoIndexOptions,
@@ -576,6 +576,22 @@ export type CreateCollectionOptions = {
 };
 
 /**
+ * Options for checking whether a document exists in a collection.
+ */
+export type DocumentExistsOptions = {
+  /**
+   * If set to a document revision, the document will only match if its `_rev`
+   * matches the given revision.
+   */
+  ifMatch?: string;
+  /**
+   * If set to a document revision, the document will only match if its `_rev`
+   * does not match the given revision.
+   */
+  ifNoneMatch?: string;
+};
+
+/**
  * Options for retrieving a document from a collection.
  */
 export type CollectionReadOptions = {
@@ -590,6 +606,17 @@ export type CollectionReadOptions = {
    * request without distinguishing between leaders and followers.
    */
   allowDirtyRead?: boolean;
+  /**
+   * If set to a document revision, the request will fail with an error if the
+   * document exists but its `_rev` does not match the given revision.
+   */
+  ifMatch?: string;
+  /**
+   * If set to a document revision, the request will fail with an error if the
+   * document exists and its `_rev` matches the given revision. Note that an
+   * `HttpError` with code 304 will be thrown instead of an `ArangoError`.
+   */
+  ifNoneMatch?: string;
 };
 
 /**
@@ -683,6 +710,11 @@ export type CollectionReplaceOptions = {
    * Default: `false`
    */
   returnOld?: boolean;
+  /**
+   * If set to a document revision, the document will only be replaced if its
+   * `_rev` matches the given revision.
+   */
+  ifMatch?: string;
 };
 
 /**
@@ -738,6 +770,11 @@ export type CollectionUpdateOptions = {
    * Default: `true`
    */
   mergeObjects?: boolean;
+  /**
+   * If set to a document revision, the document will only be updated if its
+   * `_rev` matches the given revision.
+   */
+  ifMatch?: string;
 };
 
 /**
@@ -764,6 +801,11 @@ export type CollectionRemoveOptions = {
    * Default: `false`
    */
   silent?: boolean;
+  /**
+   * If set to a document revision, the document will only be removed if its
+   * `_rev` matches the given revision.
+   */
+  ifMatch?: string;
 };
 
 /**
@@ -1620,7 +1662,10 @@ export interface DocumentCollection<T extends Record<string, any> = any>
    * }
    * ```
    */
-  documentExists(selector: DocumentSelector): Promise<boolean>;
+  documentExists(
+    selector: DocumentSelector,
+    options?: DocumentExistsOptions
+  ): Promise<boolean>;
   /**
    * Retrieves the document matching the given key or id.
    *
@@ -1822,7 +1867,7 @@ export interface DocumentCollection<T extends Record<string, any> = any>
    */
   replaceAll(
     newData: Array<DocumentData<T> & ({ _key: string } | { _id: string })>,
-    options?: CollectionReplaceOptions
+    options?: Omit<CollectionReplaceOptions, "ifMatch">
   ): Promise<
     Array<DocumentMetadata & { new?: Document<T>; old?: Document<T> }>
   >;
@@ -1883,7 +1928,7 @@ export interface DocumentCollection<T extends Record<string, any> = any>
     newData: Array<
       Patch<DocumentData<T>> & ({ _key: string } | { _id: string })
     >,
-    options?: CollectionUpdateOptions
+    options?: Omit<CollectionUpdateOptions, "ifMatch">
   ): Promise<
     Array<DocumentMetadata & { new?: Document<T>; old?: Document<T> }>
   >;
@@ -1937,8 +1982,8 @@ export interface DocumentCollection<T extends Record<string, any> = any>
    * ```
    */
   removeAll(
-    selectors: DocumentSelector[],
-    options?: CollectionRemoveOptions
+    selectors: (string | ObjectWithKey)[],
+    options?: Omit<CollectionRemoveOptions, "ifMatch">
   ): Promise<Array<DocumentMetadata & { old?: Document<T> }>>;
   /**
    * Bulk imports the given `data` into the collection.
@@ -3512,7 +3557,14 @@ export class Collection<T extends Record<string, any> = any>
     return _documentHandle(selector, this._name);
   }
 
-  async documentExists(selector: DocumentSelector): Promise<boolean> {
+  async documentExists(
+    selector: DocumentSelector,
+    options: DocumentExistsOptions = {}
+  ): Promise<boolean> {
+    const { ifMatch = undefined, ifNoneMatch = undefined } = options;
+    const headers = {} as Record<string, string>;
+    if (ifMatch) headers["if-match"] = ifMatch;
+    if (ifNoneMatch) headers["if-none-match"] = ifNoneMatch;
     try {
       return await this._db.request(
         {
@@ -3520,8 +3572,14 @@ export class Collection<T extends Record<string, any> = any>
           path: `/_api/document/${encodeURI(
             _documentHandle(selector, this._name)
           )}`,
+          headers,
         },
-        () => true
+        (res) => {
+          if (ifNoneMatch && res.statusCode === 304) {
+            throw new HttpError(res);
+          }
+          return true;
+        }
       );
     } catch (err: any) {
       if (err.code === 404) {
@@ -3552,13 +3610,30 @@ export class Collection<T extends Record<string, any> = any>
     if (typeof options === "boolean") {
       options = { graceful: options };
     }
-    const { allowDirtyRead = undefined, graceful = false } = options;
-    const result = this._db.request({
-      path: `/_api/document/${encodeURI(
-        _documentHandle(selector, this._name)
-      )}`,
-      allowDirtyRead,
-    });
+    const {
+      allowDirtyRead = undefined,
+      graceful = false,
+      ifMatch = undefined,
+      ifNoneMatch = undefined,
+    } = options;
+    const headers = {} as Record<string, string>;
+    if (ifMatch) headers["if-match"] = ifMatch;
+    if (ifNoneMatch) headers["if-none-match"] = ifNoneMatch;
+    const result = this._db.request(
+      {
+        path: `/_api/document/${encodeURI(
+          _documentHandle(selector, this._name)
+        )}`,
+        headers,
+        allowDirtyRead,
+      },
+      (res) => {
+        if (ifNoneMatch && res.statusCode === 304) {
+          throw new HttpError(res);
+        }
+        return res.body;
+      }
+    );
     if (!graceful) return result;
     try {
       return await result;
@@ -3599,14 +3674,18 @@ export class Collection<T extends Record<string, any> = any>
     newData: DocumentData<T>,
     options: CollectionReplaceOptions = {}
   ) {
+    const { ifMatch = undefined, ...opts } = options;
+    const headers = {} as Record<string, string>;
+    if (ifMatch) headers["if-match"] = ifMatch;
     return this._db.request(
       {
         method: "PUT",
         path: `/_api/document/${encodeURI(
           _documentHandle(selector, this._name)
         )}`,
+        headers,
         body: newData,
-        qs: options,
+        qs: opts,
       },
       (res) => (options?.silent ? undefined : res.body)
     );
@@ -3632,14 +3711,18 @@ export class Collection<T extends Record<string, any> = any>
     newData: Patch<DocumentData<T>>,
     options: CollectionUpdateOptions = {}
   ) {
+    const { ifMatch = undefined, ...opts } = options;
+    const headers = {} as Record<string, string>;
+    if (ifMatch) headers["if-match"] = ifMatch;
     return this._db.request(
       {
         method: "PATCH",
         path: `/_api/document/${encodeURI(
           _documentHandle(selector, this._name)
         )}`,
+        headers,
         body: newData,
-        qs: options,
+        qs: opts,
       },
       (res) => (options?.silent ? undefined : res.body)
     );
@@ -3663,13 +3746,17 @@ export class Collection<T extends Record<string, any> = any>
   }
 
   remove(selector: DocumentSelector, options: CollectionRemoveOptions = {}) {
+    const { ifMatch = undefined, ...opts } = options;
+    const headers = {} as Record<string, string>;
+    if (ifMatch) headers["if-match"] = ifMatch;
     return this._db.request(
       {
         method: "DELETE",
         path: `/_api/document/${encodeURI(
           _documentHandle(selector, this._name)
         )}`,
-        qs: options,
+        headers,
+        qs: opts,
       },
       (res) => (options?.silent ? undefined : res.body)
     );

@@ -168,6 +168,8 @@ This driver uses semantic versioning:
   to serialize these error objects to JSON the same way `ArangoError` and
   `HttpError` objects can already be serialized.
 
+- Added support for `ifMatch` and `ifNoneMatch` options
+
 ## [7.8.0] - 2022-05-19
 
 ### Added
