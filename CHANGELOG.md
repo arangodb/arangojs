@@ -185,6 +185,8 @@ This driver uses semantic versioning:
 
 - Added support for `ifMatch` and `ifNoneMatch` options
 
+- Added new ArangoDB 3.10 `db.queryRules` method
+
 ## [7.8.0] - 2022-05-19
 
 ### Added
