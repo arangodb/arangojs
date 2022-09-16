@@ -11,7 +11,7 @@
  *
  * @packageDocumentation
  */
-import { AqlLiteral } from "./aql";
+import { AqlLiteral, AqlQuery, isAqlLiteral, isAqlQuery } from "./aql";
 import { ArangoApiResponse, Params } from "./connection";
 import { ArrayCursor, BatchedArrayCursor } from "./cursor";
 import { Database } from "./database";
@@ -161,7 +161,7 @@ export type ComputedValueProperties = {
   /**
    * AQL `RETURN` expression that computes the value.
    */
-  expression: string | AqlLiteral;
+  expression: string;
   /**
    * If set to `false`, the computed value will not be applied if the
    * expression evaluates to `null`.
@@ -331,15 +331,17 @@ export type ComputedValueOptions = {
   name: string;
   /**
    * AQL `RETURN` expression that computes the value.
+   *
+   * Note that when passing an AQL query object, the `bindVars` will be ignored.
    */
-  expression: string | AqlLiteral;
+  expression: string | AqlLiteral | AqlQuery;
   /**
    * If set to `false`, the computed value will not be applied if the
    * expression evaluates to `null`.
    *
    * Default: `true`
    */
-  overwrite: boolean;
+  overwrite?: boolean;
   /**
    * Which operations should result in the value being computed.
    *
@@ -3394,6 +3396,23 @@ export class Collection<T extends Record<string, any> = any>
       enforceReplicationFactor = undefined,
       ...opts
     } = options;
+    if (opts.computedValues) {
+      opts.computedValues = opts.computedValues.map((computedValue) => {
+        if (isAqlLiteral(computedValue.expression)) {
+          return {
+            ...computedValue,
+            expression: computedValue.expression.toAQL(),
+          };
+        }
+        if (isAqlQuery(computedValue.expression)) {
+          return {
+            ...computedValue,
+            expression: computedValue.expression.query,
+          };
+        }
+        return computedValue;
+      });
+    }
     const qs: Params = {};
     if (typeof waitForSyncReplication === "boolean") {
       qs.waitForSyncReplication = waitForSyncReplication ? 1 : 0;
