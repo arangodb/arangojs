@@ -145,14 +145,13 @@ This driver uses semantic versioning:
   Setting this option to `true` will replace the current host list, removing any
   hosts no longer present in the cluster.
 
-- Added `cacheEnabled` option to `EnsurePersistentIndex` and `EnsureIndex` types
+- Added support for new ArangoDB 3.10 `cacheEnabled` and `storedValues` options
+  in persistent indexes
 
-  Setting this option to `true` will put a hash cache in front of the index.
+- Added support for new ArangoDB 3.10 computed values in collections
 
-- Added `storedValues` option to `EnsurePersistentIndex` and `EnsureIndex` types
-
-  This option allows specifying additional fields that will be stored in the
-  index but can not be used for lookups but can avoid full document lookups.
+- Added missing `replicationFactor` and `writeConcern` options to
+  `CollectionPropertiesOptions` type
 
 - Added `toJSON` method to system errors
 

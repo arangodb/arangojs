@@ -11,6 +11,7 @@
  *
  * @packageDocumentation
  */
+import { AqlLiteral } from "./aql";
 import { ArangoApiResponse, Params } from "./connection";
 import { ArrayCursor, BatchedArrayCursor } from "./cursor";
 import { Database } from "./database";
@@ -143,6 +144,45 @@ export type SimpleQueryListType = "id" | "key" | "path";
  * * `"strict"`: New and modified documents are always validated.
  */
 export type ValidationLevel = "none" | "new" | "moderate" | "strict";
+
+/**
+ * Write operation that can result in a computed value being computed.
+ */
+export type WriteOperation = "insert" | "update" | "replace";
+
+/**
+ * Properties defining a computed value.
+ */
+export type ComputedValueProperties = {
+  /**
+   * Name of the target attribute of the computed value.
+   */
+  name: string;
+  /**
+   * AQL `RETURN` expression that computes the value.
+   */
+  expression: string | AqlLiteral;
+  /**
+   * If set to `false`, the computed value will not be applied if the
+   * expression evaluates to `null`.
+   */
+  overwrite: boolean;
+  /**
+   * Which operations should result in the value being computed.
+   */
+  computeOn: WriteOperation[];
+  /**
+   * If set to `false`, the field will be unset if the expression evaluates to
+   * `null`. Otherwise the field will be set to the value `null`. Has no effect
+   * if `overwrite` is set to `false`.
+   */
+  keepNull: boolean;
+  /**
+   * Whether the write operation should fail if the expression produces a
+   * warning.
+   */
+  failOnWarning: boolean;
+};
 
 /**
  * General information about a collection.
@@ -279,9 +319,55 @@ export type CollectionProperties = {
    * value of the referred-to smart join collection.
    */
   smartJoinAttribute?: string;
+  /**
+   * Computed values applied to documents in this collection.
+   */
+  computedValues: ComputedValueProperties[];
 };
 
 // Options
+
+/**
+ * Options for creating a computed value.
+ */
+export type ComputedValueOptions = {
+  /**
+   * Name of the target attribute of the computed value.
+   */
+  name: string;
+  /**
+   * AQL `RETURN` expression that computes the value.
+   */
+  expression: string | AqlLiteral;
+  /**
+   * If set to `false`, the computed value will not be applied if the
+   * expression evaluates to `null`.
+   *
+   * Default: `true`
+   */
+  overwrite: boolean;
+  /**
+   * Which operations should result in the value being computed.
+   *
+   * Default: `["insert", "update", "replace"]`
+   */
+  computeOn?: WriteOperation[];
+  /**
+   * If set to `false`, the field will be unset if the expression evaluates to
+   * `null`. Otherwise the field will be set to the value `null`. Has no effect
+   * if `overwrite` is set to `false`.
+   *
+   * Default: `true`
+   */
+  keepNull?: boolean;
+  /**
+   * Whether the write operation should fail if the expression produces a
+   * warning.
+   *
+   * Default: `false`
+   */
+  failOnWarning?: boolean;
+};
 
 /**
  * Options for validating collection documents.
@@ -315,9 +401,24 @@ export type CollectionPropertiesOptions = {
    */
   waitForSync?: boolean;
   /**
+   * (Cluster only.) How many copies of each document should be kept in the
+   * cluster.
+   *
+   * Default: `1`
+   */
+  replicationFactor?: number;
+  /**
+   * (Cluster only.) Write concern for this collection.
+   */
+  writeConcern?: number;
+  /**
    * Options for validating documents in this collection.
    */
   schema?: SchemaOptions;
+  /**
+   * Computed values to apply to documents in this collection.
+   */
+  computedValues?: ComputedValueOptions[];
 };
 
 /**
@@ -468,6 +569,10 @@ export type CreateCollectionOptions = {
    * value of the referred-to smart join collection.
    */
   smartJoinAttribute?: string;
+  /**
+   * Computed values to apply to documents in this collection.
+   */
+  computedValues?: ComputedValueOptions[];
 };
 
 /**
