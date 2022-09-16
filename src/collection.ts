@@ -656,14 +656,6 @@ export type CollectionInsertOptions = {
    */
   returnNew?: boolean;
   /**
-   * If set to `true`, a document with the same `_key` or `_id` already
-   * existing will be overwritten instead of resulting in an exception.
-   *
-   * @deprecated This option has been deprecated in ArangoDB 3.7 and replaced
-   * with the `overwriteMode` option.
-   */
-  overwrite?: boolean;
-  /**
    * Defines what should happen if a document with the same `_key` or `_id`
    * already exists, instead of throwing an exception.
    *

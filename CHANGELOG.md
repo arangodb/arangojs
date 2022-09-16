@@ -32,6 +32,11 @@ This driver uses semantic versioning:
 
   The MMFiles storage engine was removed in ArangoDB 3.7.
 
+- Removed deprecated `overwrite` option from `CollectionInsertOptions` type
+
+  This option was deprecated in ArangoDB 3.7 and should be replaced with the
+  `overwriteMode` option.
+
 - Removed internal `request.host` attribute
 
   This attribute has been replaced with `request.hostUrl`.
