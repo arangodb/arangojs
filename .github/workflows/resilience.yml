@@ -1,12 +1,13 @@
 name: Resilience Tests
 
 on:
-  push:
-    branches-ignore:
-      - "stable"
+  workflow_run:
+    workflows: [Tests]
+    types: [completed]
 
 jobs:
   resilience:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
 
     strategy:
