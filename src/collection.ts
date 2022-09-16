@@ -3322,12 +3322,13 @@ export interface EdgeCollection<T extends Record<string, any> = any>
    *   ["y", "vertices/b", "vertices/c"],
    *   ["z", "vertices/c", "vertices/d"],
    * ]);
-   * const result = await collection.traversal("vertices/a", {
-   *   direction: "outbound",
-   *   init: "result.vertices = [];",
-   *   visitor: "result.vertices.push(vertex._key);",
-   * });
-   * console.log(result.vertices); // ["a", "b", "c", "d"]
+   * const startVertex = "vertices/a";
+   * const cursor = await db.query(aql`
+   *   FOR vertex IN OUTBOUND ${startVertex}
+   *   RETURN vertex._key
+   * `);
+   * const result = await cursor.all();
+   * console.log(result); // ["a", "b", "c", "d"]
    * ```
    */
   traversal(

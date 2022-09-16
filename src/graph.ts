@@ -1790,12 +1790,13 @@ export class Graph {
    *   ["y", "vertices/b", "vertices/c"],
    *   ["z", "vertices/c", "vertices/d"],
    * ]);
-   * const result = await graph.traversal("vertices/a", {
-   *   direction: "outbound",
-   *   init: "result.vertices = [];",
-   *   visitor: "result.vertices.push(vertex._key);",
-   * });
-   * console.log(result.vertices); // ["a", "b", "c", "d"]
+   * const startVertex = "vertices/a";
+   * const cursor = await db.query(aql`
+   *   FOR vertex IN OUTBOUND ${startVertex} GRAPH ${graph}
+   *   RETURN vertex._key
+   * `);
+   * const result = await cursor.all();
+   * console.log(result); // ["a", "b", "c", "d"]
    * ```
    */
   traversal(startVertex: string, options?: TraversalOptions): Promise<any> {
