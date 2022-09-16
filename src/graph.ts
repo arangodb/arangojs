@@ -275,12 +275,6 @@ export type GraphInfo = {
    */
   writeConcern?: number;
   /**
-   * (Cluster only.) Write concern for new collections in the graph.
-   *
-   * @deprecated Renamed to `writeConcern` in ArangoDB 3.6.
-   */
-  minReplicationFactor?: number;
-  /**
    * (Enterprise Edition cluster only.) If set to `true`, the graph is a
    * SatelliteGraph.
    */
@@ -339,14 +333,6 @@ export type CreateGraphOptions = {
    * Has no effect when `replicationFactor` is set to `"satellite"`.
    */
   writeConcern?: number;
-  /**
-   * (Cluster only.) Write concern for new collections in the graph.
-   *
-   * Has no effect when `replicationFactor` is set to `"satellite"`.
-   *
-   * @deprecated Renamed to `writeConcern` in ArangoDB 3.6.
-   */
-  minReplicationFactor?: number;
 
   // Extra options
   /**

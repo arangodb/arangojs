@@ -687,13 +687,6 @@ export type CreateDatabaseOptions = {
    * database.
    */
   writeConcern?: number;
-  /**
-   * (Cluster only.) Default write concern for new collections created in this
-   * database.
-   *
-   * @deprecated Renamed to `writeConcern` in ArangoDB 3.6.
-   */
-  minReplicationFactor?: number;
 };
 
 /**
@@ -733,13 +726,6 @@ export type DatabaseInfo = {
    * database.
    */
   writeConcern?: number;
-  /**
-   * (Cluster only.) Default write concern for new collections created in this
-   * database.
-   *
-   * @deprecated Renamed to `writeConcern` in ArangoDB 3.6.
-   */
-  minReplicationFactor?: number;
 };
 
 /**

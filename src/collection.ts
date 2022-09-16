@@ -286,12 +286,6 @@ export type CollectionProperties = {
    */
   writeConcern: number;
   /**
-   * (Cluster only.) Write concern for this collection.
-   *
-   * @deprecated Renamed to `writeConcern` in ArangoDB 3.6.
-   */
-  minReplicationFactor?: number;
-  /**
    * (Cluster only.) Number of shards of this collection.
    */
   numberOfShards?: number;
@@ -548,12 +542,6 @@ export type CreateCollectionOptions = {
    * (Cluster only.) Write concern for this collection.
    */
   writeConcern?: number;
-  /**
-   * (Cluster only.) Write concern for this collection.
-   *
-   * @deprecated Renamed to `writeConcern` in ArangoDB 3.6.
-   */
-  minReplicationFactor?: number;
   /**
    * (Cluster only.) Sharding strategy to use.
    */
