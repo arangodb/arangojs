@@ -430,7 +430,7 @@ export class View<
       path: "/_api/view",
       body: {
         type: ViewType.ARANGOSEARCH_VIEW,
-        ...(options || {}),
+        ...(options ?? {}),
         name: this._name,
       },
     });
@@ -502,7 +502,7 @@ export class View<
     return this._db.request({
       method: "PATCH",
       path: `/_api/view/${encodeURIComponent(this._name)}/properties`,
-      body: properties || {},
+      body: properties ?? {},
     });
   }
 
@@ -527,7 +527,7 @@ export class View<
     return this._db.request({
       method: "PUT",
       path: `/_api/view/${encodeURIComponent(this._name)}/properties`,
-      body: properties || {},
+      body: properties ?? {},
     });
   }
 

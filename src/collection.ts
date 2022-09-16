@@ -3359,15 +3359,15 @@ export class Collection<T extends Record<string, any> = any>
   }
 
   create(
-    options?: CreateCollectionOptions & {
+    options: CreateCollectionOptions & {
       type?: CollectionType;
-    }
+    } = {}
   ) {
     const {
       waitForSyncReplication = undefined,
       enforceReplicationFactor = undefined,
       ...opts
-    } = options || {};
+    } = options;
     const qs: Params = {};
     if (typeof waitForSyncReplication === "boolean") {
       qs.waitForSyncReplication = waitForSyncReplication ? 1 : 0;
@@ -3578,7 +3578,7 @@ export class Collection<T extends Record<string, any> = any>
         body: data,
         qs: options,
       },
-      (res) => (options && options.silent ? undefined : res.body)
+      (res) => (options?.silent ? undefined : res.body)
     );
   }
 
@@ -3590,14 +3590,14 @@ export class Collection<T extends Record<string, any> = any>
         body: data,
         qs: options,
       },
-      (res) => (options && options.silent ? undefined : res.body)
+      (res) => (options?.silent ? undefined : res.body)
     );
   }
 
   replace(
     selector: DocumentSelector,
     newData: DocumentData<T>,
-    options?: CollectionReplaceOptions
+    options: CollectionReplaceOptions = {}
   ) {
     return this._db.request(
       {
@@ -3608,7 +3608,7 @@ export class Collection<T extends Record<string, any> = any>
         body: newData,
         qs: options,
       },
-      (res) => (options && options.silent ? undefined : res.body)
+      (res) => (options?.silent ? undefined : res.body)
     );
   }
 
@@ -3623,14 +3623,14 @@ export class Collection<T extends Record<string, any> = any>
         body: newData,
         qs: options,
       },
-      (res) => (options && options.silent ? undefined : res.body)
+      (res) => (options?.silent ? undefined : res.body)
     );
   }
 
   update(
     selector: DocumentSelector,
     newData: Patch<DocumentData<T>>,
-    options?: CollectionUpdateOptions
+    options: CollectionUpdateOptions = {}
   ) {
     return this._db.request(
       {
@@ -3641,7 +3641,7 @@ export class Collection<T extends Record<string, any> = any>
         body: newData,
         qs: options,
       },
-      (res) => (options && options.silent ? undefined : res.body)
+      (res) => (options?.silent ? undefined : res.body)
     );
   }
 
@@ -3658,11 +3658,11 @@ export class Collection<T extends Record<string, any> = any>
         body: newData,
         qs: options,
       },
-      (res) => (options && options.silent ? undefined : res.body)
+      (res) => (options?.silent ? undefined : res.body)
     );
   }
 
-  remove(selector: DocumentSelector, options?: CollectionRemoveOptions) {
+  remove(selector: DocumentSelector, options: CollectionRemoveOptions = {}) {
     return this._db.request(
       {
         method: "DELETE",
@@ -3671,21 +3671,22 @@ export class Collection<T extends Record<string, any> = any>
         )}`,
         qs: options,
       },
-      (res) => (options && options.silent ? undefined : res.body)
+      (res) => (options?.silent ? undefined : res.body)
     );
   }
 
-  removeAll(selectors: DocumentSelector[], options?: CollectionRemoveOptions) {
+  removeAll(
+    selectors: (string | ObjectWithKey)[],
+    options?: CollectionRemoveOptions
+  ) {
     return this._db.request(
       {
         method: "DELETE",
         path: `/_api/document/${encodeURIComponent(this._name)}`,
-        body: selectors.map((selector) =>
-          _documentHandle(selector, this._name)
-        ),
+        body: selectors,
         qs: options,
       },
-      (res) => (options && options.silent ? undefined : res.body)
+      (res) => (options?.silent ? undefined : res.body)
     );
   }
 

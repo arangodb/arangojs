@@ -1308,7 +1308,7 @@ export class Graph {
    */
   create(
     edgeDefinitions: EdgeDefinitionOptions[],
-    options?: CreateGraphOptions
+    options: CreateGraphOptions = {}
   ): Promise<GraphInfo> {
     const {
       orphanCollections,
@@ -1317,7 +1317,7 @@ export class Graph {
       isSmart,
       isDisjoint,
       ...opts
-    } = options ?? {};
+    } = options;
     return this._db.request(
       {
         method: "POST",
@@ -1458,9 +1458,9 @@ export class Graph {
    */
   addVertexCollection(
     collection: string | ArangoCollection,
-    options?: AddVertexCollectionOptions
+    options: AddVertexCollectionOptions = {}
   ): Promise<GraphInfo> {
-    const { satellites, ...opts } = options ?? {};
+    const { satellites, ...opts } = options;
     return this._db.request(
       {
         method: "POST",
@@ -1623,9 +1623,9 @@ export class Graph {
    */
   addEdgeDefinition(
     edgeDefinition: EdgeDefinitionOptions,
-    options?: AddEdgeDefinitionOptions
+    options: AddEdgeDefinitionOptions = {}
   ): Promise<GraphInfo> {
-    const { satellites, ...opts } = options ?? {};
+    const { satellites, ...opts } = options;
     return this._db.request(
       {
         method: "POST",
@@ -1707,7 +1707,7 @@ export class Graph {
     edgeDefinitionOrOptions?:
       | EdgeDefinitionOptions
       | ReplaceEdgeDefinitionOptions,
-    options?: ReplaceEdgeDefinitionOptions
+    options: ReplaceEdgeDefinitionOptions = {}
   ) {
     let collection = collectionOrEdgeDefinitionOptions as
       | string
@@ -1725,7 +1725,7 @@ export class Graph {
         collectionOrEdgeDefinitionOptions as EdgeDefinitionOptions;
       collection = edgeDefinition.collection;
     }
-    const { satellites, ...opts } = options ?? {};
+    const { satellites, ...opts } = options;
     return this._db.request(
       {
         method: "PUT",

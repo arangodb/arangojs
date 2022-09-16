@@ -157,8 +157,8 @@ export class Transaction {
    * // result indicates the updated transaction status
    * ```
    */
-  commit(options?: TransactionCommitOptions): Promise<TransactionStatus> {
-    const { allowDirtyRead = undefined } = options || {};
+  commit(options: TransactionCommitOptions = {}): Promise<TransactionStatus> {
+    const { allowDirtyRead = undefined } = options;
     return this._db.request(
       {
         method: "PUT",
@@ -184,8 +184,8 @@ export class Transaction {
    * // result indicates the updated transaction status
    * ```
    */
-  abort(options?: TransactionAbortOptions): Promise<TransactionStatus> {
-    const { allowDirtyRead = undefined } = options || {};
+  abort(options: TransactionAbortOptions = {}): Promise<TransactionStatus> {
+    const { allowDirtyRead = undefined } = options;
     return this._db.request(
       {
         method: "DELETE",

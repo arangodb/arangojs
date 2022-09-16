@@ -1883,11 +1883,11 @@ export class Database {
   ): Promise<Database>;
   createDatabase(
     databaseName: string,
-    usersOrOptions?: CreateDatabaseUser[] | CreateDatabaseOptions
+    usersOrOptions: CreateDatabaseUser[] | CreateDatabaseOptions = {}
   ): Promise<Database> {
     const { users, ...options } = Array.isArray(usersOrOptions)
       ? { users: usersOrOptions }
-      : usersOrOptions || {};
+      : usersOrOptions;
     return this.request(
       {
         method: "POST",
@@ -2235,8 +2235,8 @@ export class Database {
    * `Collection` instances.
    *
    * In TypeScript these instances implement both the
-   * {@link collection.DocumentCollection} and {@link collection.EdgeCollection} interfaces and can
-   * be cast to either type to enforce a stricter API.
+   * {@link collection.DocumentCollection} and {@link collection.EdgeCollection}
+   * interfaces and can be cast to either type to enforce a stricter API.
    *
    * See also {@link Database#listCollections}.
    *
@@ -2246,18 +2246,16 @@ export class Database {
    * ```js
    * const db = new Database();
    * const collections = await db.collections();
-   * // collections is an array of DocumentCollection
-   * // and EdgeCollection instances
-   * // not including system collections
+   * // collections is an array of DocumentCollection and EdgeCollection
+   * // instances not including system collections
    * ```
    *
    * @example
    * ```js
    * const db = new Database();
    * const collections = await db.collections(false);
-   * // collections is an array of DocumentCollection
-   * // and EdgeCollection instances
-   * // including system collections
+   * // collections is an array of DocumentCollection and EdgeCollection
+   * // instances including system collections
    * ```
    */
   async collections(
@@ -3245,9 +3243,9 @@ export class Database {
       | string
       | ArangoCollection,
     action: string,
-    options?: TransactionOptions & { params?: any }
+    options: TransactionOptions & { params?: any } = {}
   ): Promise<any> {
-    const { allowDirtyRead = undefined, ...opts } = options || {};
+    const { allowDirtyRead = undefined, ...opts } = options;
     return this.request(
       {
         method: "POST",
@@ -3382,9 +3380,9 @@ export class Database {
       | (string | ArangoCollection)[]
       | string
       | ArangoCollection,
-    options?: TransactionOptions
+    options: TransactionOptions = {}
   ): Promise<Transaction> {
-    const { allowDirtyRead = undefined, ...opts } = options || {};
+    const { allowDirtyRead = undefined, ...opts } = options;
     return this.request(
       {
         method: "POST",
@@ -3542,10 +3540,10 @@ export class Database {
   query<T = any>(
     query: string | AqlQuery | AqlLiteral,
     bindVars?: Record<string, any>,
-    options?: QueryOptions
+    options: QueryOptions = {}
   ): Promise<ArrayCursor<T>> {
     if (isAqlQuery(query)) {
-      options = bindVars;
+      options = bindVars ?? {};
       bindVars = query.bindVars;
       query = query.query;
     } else if (isAqlLiteral(query)) {
@@ -3561,7 +3559,7 @@ export class Database {
       ttl,
       timeout,
       ...opts
-    } = options || {};
+    } = options;
     return this.request(
       {
         method: "POST",
