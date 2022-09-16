@@ -345,8 +345,6 @@ export type CreateGraphOptions = {
   /**
    * (Enterprise Edition cluster only.) Attribute containing the shard key
    * value to use for smart sharding.
-   *
-   * **Note**: `isSmart` must be set to `true`.
    */
   smartGraphAttribute?: string;
   /**
