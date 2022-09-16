@@ -14,7 +14,7 @@
 <li><a href="../modules/graph.html">graph</a></li>
 <li><a href="graph.GraphInfo.html">GraphInfo</a></li></ul>
 <h1>Type alias GraphInfo</h1></div>
-<div class="tsd-signature">Graph<wbr/>Info<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>edgeDefinitions<span class="tsd-signature-symbol">: </span><a href="graph.EdgeDefinition.html" class="tsd-signature-type" data-tsd-kind="Type alias">EdgeDefinition</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span>isDisjoint<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>isSatellite<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>isSmart<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>minReplicationFactor<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>numberOfShards<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>orphanCollections<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span>replicationFactor<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>smartGraphAttribute<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>writeConcern<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span></div>
+<div class="tsd-signature">Graph<wbr/>Info<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>edgeDefinitions<span class="tsd-signature-symbol">: </span><a href="graph.EdgeDefinition.html" class="tsd-signature-type" data-tsd-kind="Type alias">EdgeDefinition</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span>isDisjoint<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>isSatellite<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>isSmart<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>numberOfShards<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>orphanCollections<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span>replicationFactor<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span>smartGraphAttribute<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>writeConcern<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> }</span></div>
 <div class="tsd-comment tsd-typography"><p>General information about a graph.</p>
 </div>
 <div class="tsd-type-declaration">
@@ -38,12 +38,6 @@ SatelliteGraph.</p>
 <h5><code class="tsd-tag ts-flagOptional">Optional</code> is<wbr/>Smart<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span></h5>
 <div class="tsd-comment tsd-typography"><p>(Enterprise Edition cluster only.) If set to <code>true</code>, the graph has been
 created as a SmartGraph.</p>
-</div></li>
-<li class="tsd-parameter">
-<h5><code class="tsd-tag ts-flagOptional">Optional</code> min<wbr/>Replication<wbr/>Factor<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span></h5>
-<div class="tsd-comment tsd-typography"><p>(Cluster only.) Write concern for new collections in the graph.</p>
-
-<h3>Deprecated</h3><p>Renamed to <code>writeConcern</code> in ArangoDB 3.6.</p>
 </div></li>
 <li class="tsd-parameter">
 <h5>name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
@@ -74,7 +68,7 @@ value to use for smart sharding.</p>
 <div class="tsd-comment tsd-typography"><p>(Cluster only.) Write concern for new collections in the graph.</p>
 </div></li></ul></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/arangodb/arangojs/blob/0a98bec/src/graph.ts#L224">graph.ts:224</a></li></ul></aside></div>
+<li>Defined in <a href="https://github.com/arangodb/arangojs/blob/e2fde3d/src/graph.ts#L224">graph.ts:224</a></li></ul></aside></div>
 <div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 <div class="tsd-navigation settings">
 <details class="tsd-index-accordion"><summary class="tsd-accordion-summary">
