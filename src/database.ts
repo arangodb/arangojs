@@ -535,6 +535,21 @@ export type ParseResult = {
 };
 
 /**
+ * Optimizer rule for AQL queries.
+ */
+export type QueryOptimizerRule = {
+  name: string;
+  flags: {
+    hidden: boolean;
+    clusterOnly: boolean;
+    canBeDisabled: boolean;
+    canCreateAdditionalPlans: boolean;
+    disabledByDefault: boolean;
+    enterpriseOnly: boolean;
+  };
+};
+
+/**
  * Information about query tracking.
  */
 export type QueryTracking = {
@@ -3739,6 +3754,24 @@ export class Database {
       method: "POST",
       path: "/_api/query",
       body: { query },
+    });
+  }
+
+  /**
+   * Fetches the available optimizer rules.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const rules = await db.queryRules();
+   * for (const rule of rules) {
+   *   console.log(rule.name);
+   * }
+   * ```
+   */
+  queryRules(): Promise<QueryOptimizerRule[]> {
+    return this.request({
+      path: "/_api/query/rules",
     });
   }
 
