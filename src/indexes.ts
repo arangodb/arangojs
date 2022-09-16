@@ -59,6 +59,13 @@ export type EnsurePersistentIndexOptions = {
    * Default: `false`
    */
   inBackground?: boolean;
+  /**
+   * If set to `true`, an in-memory hash cache will be put in front of the
+   * persistent index.
+   *
+   * Default: `false`
+   */
+  cacheEnabled?: boolean;
 };
 
 /**
@@ -249,6 +256,7 @@ export type GenericIndex = {
 export type PersistentIndex = GenericIndex & {
   type: "persistent";
   fields: string[];
+  cacheEnabled: boolean;
 };
 
 /**

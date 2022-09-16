@@ -140,10 +140,14 @@ This driver uses semantic versioning:
   to `true`. ArangoDB 3.10 and later will default to `false` and use the new
   parsing rules for geo indexes.
 
-- Added `overwrite` flag to `db.acquireHostList` ([#711](https://github.com/arangodb/arangojs/711))
+- Added `overwrite` option to `db.acquireHostList` ([#711](https://github.com/arangodb/arangojs/711))
 
-  Setting this flag to `true` will replace the current host list, removing any
+  Setting this option to `true` will replace the current host list, removing any
   hosts no longer present in the cluster.
+
+- Added `cacheEnabled` option to `EnsurePersistentIndex` and `EnsureIndex` types
+
+  Setting this option to `true` will put a hash cache in front of the index.
 
 - Added `toJSON` method to system errors
 
@@ -238,11 +242,11 @@ This driver uses semantic versioning:
 
 ### Fixed
 
-- Added missing `hex` flag to `StopwordsAnalyzer` type ([#732](https://github.com/arangodb/arangojs/issues/732))
+- Added missing `hex` option to `StopwordsAnalyzer` type ([#732](https://github.com/arangodb/arangojs/issues/732))
 
-- Added missing `details` flag to `collection.figures` ([#728](https://github.com/arangodb/arangojs/issues/728))
+- Added missing `details` option to `collection.figures` ([#728](https://github.com/arangodb/arangojs/issues/728))
 
-- Added missing `inBackground` flag to index options ([#734](https://github.com/arangodb/arangojs/issues/734))
+- Added missing `inBackground` option to index options ([#734](https://github.com/arangodb/arangojs/issues/734))
 
 ## [7.5.0] - 2021-04-22
 
