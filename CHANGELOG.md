@@ -149,6 +149,11 @@ This driver uses semantic versioning:
 
   Setting this option to `true` will put a hash cache in front of the index.
 
+- Added `storedValues` option to `EnsurePersistentIndex` and `EnsureIndex` types
+
+  This option allows specifying additional fields that will be stored in the
+  index but can not be used for lookups but can avoid full document lookups.
+
 - Added `toJSON` method to system errors
 
   ArangoJS already adds the `request` object to system errors encountered

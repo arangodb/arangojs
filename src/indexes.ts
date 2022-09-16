@@ -66,6 +66,11 @@ export type EnsurePersistentIndexOptions = {
    * Default: `false`
    */
   cacheEnabled?: boolean;
+  /**
+   * An array of attribute paths that will be stored in the index but can not
+   * be used for index lookups or sorting but can avoid full document lookups.
+   */
+  storedValues?: string[];
 };
 
 /**
@@ -257,6 +262,7 @@ export type PersistentIndex = GenericIndex & {
   type: "persistent";
   fields: string[];
   cacheEnabled: boolean;
+  storedValues: string[];
 };
 
 /**
