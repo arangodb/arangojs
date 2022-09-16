@@ -125,6 +125,14 @@ This driver uses semantic versioning:
   The types of the attributes `plan`, `profile`, and `stats` are now defined
   more explicitly.
 
+- Changed behavior of `collection.removeAll` for non-string arrays
+
+  Previously `collection.removeAll` would always convert its argument into an
+  array of document IDs and fail with an error if passed any documents had an
+  ID not matching the collection name. Now the selector argument is passed
+  as-is, bypassing this validation but allowing `ignoreRevs` to be respected
+  by the server.
+
 ### Deprecated
 
 - Deprecated `EnsureFulltextIndexOptions` and `FulltextIndex` types
@@ -164,6 +172,8 @@ This driver uses semantic versioning:
   while attempting to make network requests. This change makes it easier
   to serialize these error objects to JSON the same way `ArangoError` and
   `HttpError` objects can already be serialized.
+
+- Added support for `ifMatch` and `ifNoneMatch` options
 
 ## [7.8.0] - 2022-05-19
 
