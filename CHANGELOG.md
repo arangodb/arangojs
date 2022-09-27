@@ -138,6 +138,8 @@ This driver uses semantic versioning:
   as-is, bypassing this validation but allowing `ignoreRevs` to be respected
   by the server.
 
+- Renamed `PrimarySortCompression` type to `Compression`
+
 ### Deprecated
 
 - Deprecated `EnsureFulltextIndexOptions` and `FulltextIndex` types
@@ -167,6 +169,10 @@ This driver uses semantic versioning:
   in persistent indexes
 
 - Added support for new ArangoDB 3.10 computed values in collections
+
+- Added support for new ArangoDB 3.10 `InvertedIndex` type
+
+- Added support for new ArangoDB 3.10 `offset` Analyzer feature
 
 - Added missing `replicationFactor` and `writeConcern` options to
   `CollectionPropertiesOptions` type

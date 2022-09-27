@@ -15,6 +15,9 @@
  * @packageDocumentation
  */
 
+import { AnalyzerFeature } from "./analyzer";
+import { Compression, Direction, TierConsolidationPolicy } from "./view";
+
 /**
  * Options for creating a persistent index.
  */
@@ -233,13 +236,260 @@ export type EnsureZkdIndexOptions = {
 };
 
 /**
+ * (Enterprise Edition only.) Options for a nested field in an inverted index.
+ */
+export type InvertedIndexNestedFieldOptions = {
+  /**
+   * An attribute path.
+   */
+  name: string;
+  /**
+   * Name of the Analyzer to apply to the values of this field.
+   *
+   * Defaults to the `analyzer` specified on the parent options or on the index
+   * itself.
+   */
+  analyzer?: string;
+  /**
+   * List of Analyzer features to enable for this field's Analyzer.
+   *
+   * Defaults to the features of the Analyzer.
+   */
+  features?: AnalyzerFeature[];
+  /**
+   * If set to `true` array values will be indexed using the same behavior as
+   * ArangoSearch Views. This option only applies when using the index in a
+   * SearchAlias View.
+   *
+   * Defaults to the value of `searchField` specified on the index itself.
+   */
+  searchField?: boolean;
+  /**
+   * Sub-objects to index to allow querying for co-occurring values.
+   */
+  nested?: (string | InvertedIndexNestedFieldOptions)[];
+};
+
+/**
+ * Options for an attribute path in an inverted index.
+ */
+export type InvertedIndexFieldOptions = {
+  /**
+   * An attribute path.
+   */
+  name: string;
+  /**
+   * Name of the Analyzer to apply to the values of this field.
+   *
+   * Defaults to the `analyzer` specified on the index itself.
+   */
+  analyzer?: string;
+  /**
+   * List of Analyzer features to enable for this field's Analyzer.
+   *
+   * Defaults to the features of the Analyzer.
+   */
+  features?: AnalyzerFeature[];
+  /**
+   * If set to `true`, all document attributes are indexed, excluding any
+   * sub-attributes configured in the `fields` array. The `analyzer` and
+   * `features` properties apply to the sub-attributes. This option only
+   * applies when using the index in a SearchAlias View.
+   *
+   * Defaults to the value of `includeAllFields` specified on the index itself.
+   */
+  includeAllFields?: boolean;
+  /**
+   * If set to `true` array values will be indexed using the same behavior as
+   * ArangoSearch Views. This option only applies when using the index in a
+   * SearchAlias View.
+   *
+   * Defaults to the value of `searchField` specified on the index itself.
+   */
+  searchField?: boolean;
+  /**
+   * If set to `true`, the position of values in array values are tracked and
+   * need to be specified in queries. Otherwise all values in an array are
+   * treated as equivalent. This option only applies when using the index in a
+   * SearchAlias View.
+   *
+   * Defaults to the value of `trackListPositions` specified on the index
+   * itself.
+   */
+  trackListPositions?: boolean;
+  /**
+   * (Enterprise Edition only.) Sub-objects to index to allow querying for
+   * co-occurring values.
+   */
+  nested?: (string | InvertedIndexNestedFieldOptions)[];
+};
+
+/**
+ * Options for creating an inverted index.
+ */
+export type EnsureInvertedIndexOptions = {
+  /**
+   * Type of this index.
+   */
+  type: "inverted";
+  /**
+   * An array of attribute paths or objects specifying options for the fields.
+   */
+  fields: (string | InvertedIndexFieldOptions)[];
+  /**
+   * A unique name for this index.
+   */
+  name?: string;
+  /**
+   * If set to `true` array values will by default be indexed using the same
+   * behavior as ArangoSearch Views. This option only applies when using the
+   * index in a SearchAlias View.
+   *
+   * Default: `false`
+   */
+  searchField?: boolean;
+  /**
+   * An array of attribute paths that will be stored in the index but can not
+   * be used for index lookups or sorting but can avoid full document lookups.
+   */
+  storedValues?: {
+    /**
+     * The attribute paths to store.
+     */
+    fields: string[];
+    /**
+     * How the attribute values should be compressed.
+     *
+     * Default: `"lz4"`
+     */
+    compression?: Compression;
+  }[];
+  /**
+   * Primary sort order to optimize AQL queries using a matching sort order.
+   */
+  primarySort?: {
+    /**
+     * An array of fields to sort the index by.
+     */
+    fields: {
+      /**
+       * The attribute path to sort by.
+       */
+      field: string;
+      /**
+       * The sorting direction.
+       */
+      direction: Direction;
+    }[];
+    /**
+     * How the primary sort data should be compressed.
+     *
+     * Default: `"lz4"`
+     */
+    compression?: Compression;
+  };
+  /**
+   * Name of the default Analyzer to apply to the values of indexed fields.
+   *
+   * Default: `"identity"`
+   */
+  analyzer?: string;
+  /**
+   * List of Analyzer features to enable for the default Analyzer.
+   *
+   * Defaults to the Analyzer's features.
+   */
+  features?: AnalyzerFeature[];
+  /**
+   * If set to `true`, all document attributes are indexed, excluding any
+   * sub-attributes configured in the `fields` array. The `analyzer` and
+   * `features` properties apply to the sub-attributes. This option only
+   * applies when using the index in a SearchAlias View.
+   *
+   * Default: `false`
+   */
+  includeAllFields?: boolean;
+  /**
+   * If set to `true`, the position of values in array values are tracked and
+   * need to be specified in queries. Otherwise all values in an array are
+   * treated as equivalent. This option only applies when using the index in a
+   * SearchAlias View.
+   *
+   * Default: `false`
+   */
+  trackListPositions?: boolean;
+  /**
+   * The number of threads to use for indexing the fields.
+   *
+   * Default: `2`
+   */
+  parallelism?: number;
+  /**
+   * Wait at least this many commits between removing unused files in the
+   * ArangoSearch data directory.
+   *
+   * Default: `2`
+   */
+  cleanupIntervalStep?: number;
+  /**
+   * Wait at least this many milliseconds between committing View data store
+   * changes and making documents visible to queries.
+   *
+   * Default: `1000`
+   */
+  commitIntervalMsec?: number;
+  /**
+   * Wait at least this many milliseconds between applying
+   * `consolidationPolicy` to consolidate View data store and possibly release
+   * space on the filesystem.
+   *
+   * Default: `1000`
+   */
+  consolidationIntervalMsec?: number;
+  /**
+   * The consolidation policy to apply for selecting which segments should be
+   * merged.
+   *
+   * Default: `{ type: "tier" }`
+   */
+  consolidationPolicy?: TierConsolidationPolicy;
+  /**
+   * Maximum number of writers (segments) cached in the pool.
+   *
+   * Default: `64`
+   */
+  writeBufferIdle?: number;
+  /**
+   * Maximum number of concurrent active writers (segments) that perform a
+   * transaction.
+   *
+   * Default: `0` (disabled)
+   */
+  writeBufferActive?: number;
+  /**
+   * Maximum memory byte size per writer (segment) before a writer (segment)
+   * flush is triggered.
+   *
+   * Default: `33554432` (32 MiB)
+   */
+  writeBufferSizeMax?: number;
+  /**
+   * If set to `true`, the index will be created in the background to reduce
+   * the write-lock duration for the collection during index creation.
+   *
+   * Default: `false`
+   */
+  inBackground?: boolean;
+};
+
+/**
  * Shared attributes of all index types.
  */
 export type GenericIndex = {
   /**
    * A unique name for this index.
    */
-  name?: string;
+  name: string;
   /**
    * A unique identifier for this index.
    */
@@ -310,12 +560,64 @@ export type TtlIndex = GenericIndex & {
 };
 
 /**
- * An object representing a TTL index.
+ * An object representing a ZKD index.
  */
 export type ZkdIndex = GenericIndex & {
   type: "zkd";
   fields: string[];
   fieldValueTypes: "double";
+};
+
+/**
+ * (Enterprise Edition only.) An object representing a nested field in an
+ * inverted index.
+ */
+export type InvertedIndexNestedField = {
+  name: string;
+  analyzer?: string;
+  features?: AnalyzerFeature[];
+  searchField?: boolean;
+  nested?: InvertedIndexNestedField[];
+};
+
+/**
+ * An object representing an inverted index.
+ */
+export type InvertedIndex = GenericIndex & {
+  type: "inverted";
+  fields: {
+    name: string;
+    analyzer?: string;
+    features?: AnalyzerFeature[];
+    includeAllFields?: boolean;
+    searchField?: boolean;
+    trackListPositions?: boolean;
+    nested?: InvertedIndexNestedField[];
+  }[];
+  searchField: boolean;
+  storedValues: {
+    fields: string[];
+    compression: Compression;
+  }[];
+  primarySort: {
+    fields: {
+      field: string;
+      direction: Direction;
+    }[];
+    compression: Compression;
+  };
+  analyzer: string;
+  features: AnalyzerFeature[];
+  includeAllFields: boolean;
+  trackListPositions: boolean;
+  parallelism: number;
+  cleanupIntervalStep: number;
+  commitIntervalMsec: number;
+  consolidationIntervalMsec: number;
+  consolidationPolicy: Required<TierConsolidationPolicy>;
+  writeBufferIdle: number;
+  writeBufferActive: number;
+  writeBufferSizeMax: number;
 };
 
 /**
@@ -327,7 +629,8 @@ export type Index =
   | PersistentIndex
   | PrimaryIndex
   | TtlIndex
-  | ZkdIndex;
+  | ZkdIndex
+  | InvertedIndex;
 
 export type ObjectWithId = {
   [key: string]: any;

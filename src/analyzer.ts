@@ -25,7 +25,7 @@ export function isArangoAnalyzer(analyzer: any): analyzer is Analyzer {
 /**
  * Name of a feature enabled for an Analyzer.
  */
-export type AnalyzerFeature = "frequency" | "norm" | "position";
+export type AnalyzerFeature = "frequency" | "norm" | "position" | "offset";
 
 /**
  * An object describing an Analyzer.

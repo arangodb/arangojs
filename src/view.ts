@@ -13,6 +13,11 @@ import { isArangoError } from "./error";
 import { VIEW_NOT_FOUND } from "./lib/codes";
 
 /**
+ * Sorting direction. Descending or ascending.
+ */
+export type Direction = "desc" | "asc";
+
+/**
  * String values indicating the View type.
  */
 export enum ViewType {
@@ -136,14 +141,14 @@ export type ArangoSearchViewProperties = {
      * If set to `"asc"`, the primary sorting order is ascending.
      * If set to `"desc"`, the primary sorting order is descending.
      */
-    direction: "desc" | "asc";
+    direction: Direction;
   }[];
   /**
    * Compression to use for the primary sort data.
    *
    * Default: `"lz4"`
    */
-  primarySortCompression: PrimarySortCompression;
+  primarySortCompression: Compression;
   /**
    * Attribute paths for which values should be stored in the view index
    * in addition to those used for sorting via `primarySort`.
@@ -187,44 +192,44 @@ export type TierConsolidationPolicy = {
    */
   type: "tier";
   /**
-   * Minimum number of segments that will be evaluated as candidates
-   * for consolidation.
+   * Size below which all segments are treated as equivalent.
    *
-   * Default: `1`
+   * Default: `2097152` (2 MiB)
    */
-  segmentsMin?: number;
+  segmentsBytesFloor?: number;
   /**
-   * Maximum number of segments that will be evaluated as candidates
-   * for consolidation.
+   * Maximum allowed size of all consolidation segments.
+   *
+   * Default: `5368709120` (5 GiB)
+   */
+  segmentsBytesMax?: number;
+  /**
+   * Maximum number of segments that are evaluated as candidates for
+   * consolidation.
    *
    * Default: `10`
    */
   segmentsMax?: number;
   /**
-   * Maximum allowed size of all consolidated segments.
+   * Minimum number of segments that are evaluated as candidates for
+   * consolidation.
    *
-   * Default: `5368709120`, i.e. 5 GiB
+   * Default: `1`
    */
-  segmentsBytesMax?: number;
+  segmentsMin?: number;
   /**
-   * Defines the value to treat all smaller segments as equal for
-   * consolidation selection.
+   * Consolidation candidates with a score less than this value will be
+   * filtered out.
    *
-   * Default: `2097152`, i.e. 2 MiB
-   */
-  segmentsBytesFloor?: number;
-  /**
-   * Minimum score.
+   * Default: `0`
    */
   minScore?: number;
 };
 
 /**
- * Compression to use for primary sort data of a View.
- *
- * Default: `"lz4"`
+ * Compression for storing data.
  */
-export type PrimarySortCompression = "lz4" | "none";
+export type Compression = "lz4" | "none";
 
 /**
  * Properties of an ArangoSearch View.
@@ -264,12 +269,14 @@ export type ArangoSearchViewPropertiesOptions = {
   /**
    * Maximum memory byte size per writer before a writer flush is triggered.
    *
-   * Default: `33554432`, i.e. 32 MiB
+   * Default: `33554432` (32 MiB)
    */
   writebufferSizeMax?: number;
   /**
    * Consolidation policy to apply for selecting which segments should be
    * merged.
+   *
+   * Default: `{ type: "bytes_accum" }`
    */
   consolidationPolicy?: BytesAccumConsolidationPolicy | TierConsolidationPolicy;
   /**
@@ -293,7 +300,7 @@ export type ArangoSearchViewPropertiesOptions = {
          * If set to `"asc"`, the primary sorting order will be ascending.
          * If set to `"desc"`, the primary sorting order will be descending.
          */
-        direction: "desc" | "asc";
+        direction: Direction;
       }
     | {
         /**
@@ -313,7 +320,7 @@ export type ArangoSearchViewPropertiesOptions = {
    *
    * Default: `"lz4"`
    */
-  primarySortCompression?: PrimarySortCompression;
+  primarySortCompression?: Compression;
   /**
    * Attribute paths for which values should be stored in the view index
    * in addition to those used for sorting via `primarySort`.

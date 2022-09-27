@@ -30,6 +30,7 @@ import { HttpError, isArangoError } from "./error";
 import {
   EnsureFulltextIndexOptions,
   EnsureGeoIndexOptions,
+  EnsureInvertedIndexOptions,
   EnsurePersistentIndexOptions,
   EnsureTtlIndexOptions,
   EnsureZkdIndexOptions,
@@ -37,6 +38,7 @@ import {
   GeoIndex,
   Index,
   IndexSelector,
+  InvertedIndex,
   PersistentIndex,
   TtlIndex,
   ZkdIndex,
@@ -2548,6 +2550,25 @@ export interface DocumentCollection<T extends Record<string, any> = any>
     details: EnsureGeoIndexOptions
   ): Promise<ArangoApiResponse<GeoIndex & { isNewlyCreated: boolean }>>;
   /**
+   * Creates a inverted index on the collection if it does not already exist.
+   *
+   * @param details - Options for creating the inverted index.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
+   * // Create an inverted index
+   * await collection.ensureIndex({
+   *   type: "inverted",
+   *   fields: ["a", { name: "b", analyzer: "text_en" }]
+   * });
+   * ```
+   */
+  ensureIndex(
+    details: EnsureInvertedIndexOptions
+  ): Promise<ArangoApiResponse<InvertedIndex & { isNewlyCreated: boolean }>>;
+  /**
    * Deletes the index with the given name or `id` from the database.
    *
    * @param selector - Index name, id or object with either property.
@@ -4016,6 +4037,7 @@ export class Collection<T extends Record<string, any> = any>
       | EnsureFulltextIndexOptions
       | EnsureTtlIndexOptions
       | EnsureZkdIndexOptions
+      | EnsureInvertedIndexOptions
   ) {
     return this._db.request({
       method: "POST",
