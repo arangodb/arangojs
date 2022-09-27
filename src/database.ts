@@ -4247,7 +4247,7 @@ export class Database {
    * }
    * ```
    */
-  async getServiceConfiguration(
+  getServiceConfiguration(
     mount: string,
     minimal?: false
   ): Promise<Record<string, ServiceConfiguration>>;
@@ -4272,26 +4272,15 @@ export class Database {
    * }
    * ```
    */
-  async getServiceConfiguration(
+  getServiceConfiguration(
     mount: string,
     minimal: true
   ): Promise<Record<string, any>>;
-  async getServiceConfiguration(mount: string, minimal: boolean = false) {
-    const result = await this.request({
+  getServiceConfiguration(mount: string, minimal: boolean = false) {
+    return this.request({
       path: "/_api/foxx/configuration",
       qs: { mount, minimal },
     });
-    if (
-      !minimal ||
-      !Object.keys(result).every((key: string) => result[key].title)
-    ) {
-      return result;
-    }
-    const values: any = {};
-    for (const key of Object.keys(result)) {
-      values[key] = result[key].current;
-    }
-    return values;
   }
 
   /**
@@ -4307,10 +4296,6 @@ export class Database {
    * configuration option's current value and warning (if any).
    * Otherwise it will include the full definition for each option.
    *
-   * **Note**: When using ArangoDB 3.2.8 or older, setting the `minimal` option
-   * to `true` avoids triggering a second request to fetch the full
-   * configuration definitions.
-   *
    * @example
    * ```js
    * const db = new Database();
@@ -4322,7 +4307,7 @@ export class Database {
    * }
    * ```
    */
-  async replaceServiceConfiguration(
+  replaceServiceConfiguration(
     mount: string,
     cfg: Record<string, any>,
     minimal?: false
@@ -4340,10 +4325,6 @@ export class Database {
    * configuration option's current value and warning (if any).
    * Otherwise it will include the full definition for each option.
    *
-   * **Note**: When using ArangoDB 3.2.8 or older, setting the `minimal` option
-   * to `true` avoids triggering a second request to fetch the full
-   * configuration definitions.
-   *
    * @example
    * ```js
    * const db = new Database();
@@ -4355,44 +4336,25 @@ export class Database {
    * }
    * ```
    */
-  async replaceServiceConfiguration(
+  replaceServiceConfiguration(
     mount: string,
     cfg: Record<string, any>,
     minimal: true
   ): Promise<{
     values: Record<string, any>;
-    warnings: Record<string, string | undefined>;
+    warnings: Record<string, string>;
   }>;
-  async replaceServiceConfiguration(
+  replaceServiceConfiguration(
     mount: string,
     cfg: Record<string, any>,
     minimal: boolean = false
   ) {
-    const result = await this.request({
+    return this.request({
       method: "PUT",
       path: "/_api/foxx/configuration",
       body: cfg,
       qs: { mount, minimal },
     });
-    if (
-      minimal ||
-      !result.values ||
-      !Object.keys(result.values).every(
-        (key: string) => result.values[key].title
-      )
-    ) {
-      return result;
-    }
-    const result2 = (await this.getServiceConfiguration(
-      mount,
-      false
-    )) as Record<string, ServiceConfiguration & { warning?: string }>;
-    if (result.warnings) {
-      for (const key of Object.keys(result2)) {
-        result2[key].warning = result.warnings[key];
-      }
-    }
-    return result2;
   }
 
   /**
@@ -4408,10 +4370,6 @@ export class Database {
    * configuration option's current value and warning (if any).
    * Otherwise it will include the full definition for each option.
    *
-   * **Note**: When using ArangoDB 3.2.8 or older, setting the `minimal` option
-   * to `true` avoids triggering a second request to fetch the full
-   * configuration definitions.
-   *
    * @example
    * ```js
    * const db = new Database();
@@ -4423,7 +4381,7 @@ export class Database {
    * }
    * ```
    */
-  async updateServiceConfiguration(
+  updateServiceConfiguration(
     mount: string,
     cfg: Record<string, any>,
     minimal?: false
@@ -4441,10 +4399,6 @@ export class Database {
    * configuration option's current value and warning (if any).
    * Otherwise it will include the full definition for each option.
    *
-   * **Note**: When using ArangoDB 3.2.8 or older, setting the `minimal` option
-   * to `true` avoids triggering a second request to fetch the full
-   * configuration definitions.
-   *
    * @example
    * ```js
    * const db = new Database();
@@ -4456,44 +4410,25 @@ export class Database {
    * }
    * ```
    */
-  async updateServiceConfiguration(
+  updateServiceConfiguration(
     mount: string,
     cfg: Record<string, any>,
     minimal: true
   ): Promise<{
     values: Record<string, any>;
-    warnings: Record<string, string | undefined>;
+    warnings: Record<string, string>;
   }>;
-  async updateServiceConfiguration(
+  updateServiceConfiguration(
     mount: string,
     cfg: Record<string, any>,
     minimal: boolean = false
   ) {
-    const result = await this.request({
+    return this.request({
       method: "PATCH",
       path: "/_api/foxx/configuration",
       body: cfg,
       qs: { mount, minimal },
     });
-    if (
-      minimal ||
-      !result.values ||
-      !Object.keys(result.values).every(
-        (key: string) => result.values[key].title
-      )
-    ) {
-      return result;
-    }
-    const result2 = (await this.getServiceConfiguration(
-      mount,
-      false
-    )) as Record<string, ServiceConfiguration & { warning?: string }>;
-    if (result.warnings) {
-      for (const key of Object.keys(result2)) {
-        result2[key].warning = result.warnings[key];
-      }
-    }
-    return result2;
   }
 
   /**
@@ -4517,7 +4452,7 @@ export class Database {
    * }
    * ```
    */
-  async getServiceDependencies(
+  getServiceDependencies(
     mount: string,
     minimal?: false
   ): Promise<Record<string, SingleServiceDependency | MultiServiceDependency>>;
@@ -4542,25 +4477,15 @@ export class Database {
    * }
    * ```
    */
-  async getServiceDependencies(
+  getServiceDependencies(
     mount: string,
     minimal: true
-  ): Promise<Record<string, string | string[] | undefined>>;
-  async getServiceDependencies(mount: string, minimal: boolean = false) {
-    const result = await this.request({
+  ): Promise<Record<string, string | string[]>>;
+  getServiceDependencies(mount: string, minimal: boolean = false) {
+    return this.request({
       path: "/_api/foxx/dependencies",
       qs: { mount, minimal },
     });
-    if (
-      !minimal ||
-      !Object.keys(result).every((key: string) => result[key].title)
-    )
-      return result;
-    const values: any = {};
-    for (const key of Object.keys(result)) {
-      values[key] = result[key].current;
-    }
-    return values;
   }
 
   /**
@@ -4576,10 +4501,6 @@ export class Database {
    * dependency's current mount point. Otherwise it will include the full
    * definition for each dependency.
    *
-   * **Note**: When using ArangoDB 3.2.8 or older, setting the `minimal` option
-   * to `true` avoids triggering a second request to fetch the full
-   * dependency definitions.
-   *
    * @example
    * ```js
    * const db = new Database();
@@ -4591,7 +4512,7 @@ export class Database {
    * }
    * ```
    */
-  async replaceServiceDependencies(
+  replaceServiceDependencies(
     mount: string,
     deps: Record<string, string>,
     minimal?: false
@@ -4613,10 +4534,6 @@ export class Database {
    * @param minimal - If set to `true`, the result will only include each
    * dependency's current mount point. Otherwise it will include the full
    * definition for each dependency.
-   *
-   * **Note**: When using ArangoDB 3.2.8 or older, setting the `minimal` option
-   * to `true` avoids triggering a second request to fetch the full
-   * dependency definitions.
    *
    * @example
    * ```js
@@ -4633,45 +4550,25 @@ export class Database {
    * }
    * ```
    */
-  async replaceServiceDependencies(
+  replaceServiceDependencies(
     mount: string,
     deps: Record<string, string>,
     minimal: true
   ): Promise<{
     values: Record<string, string>;
-    warnings: Record<string, string | undefined>;
+    warnings: Record<string, string>;
   }>;
-  async replaceServiceDependencies(
+  replaceServiceDependencies(
     mount: string,
     deps: Record<string, string>,
     minimal: boolean = false
   ) {
-    const result = await this.request({
+    return this.request({
       method: "PUT",
       path: "/_api/foxx/dependencies",
       body: deps,
       qs: { mount, minimal },
     });
-    if (
-      minimal ||
-      !result.values ||
-      !Object.keys(result.values).every(
-        (key: string) => result.values[key].title
-      )
-    ) {
-      return result;
-    }
-    // Work around "minimal" flag not existing in 3.3
-    const result2 = (await this.getServiceDependencies(mount, false)) as Record<
-      string,
-      (SingleServiceDependency | MultiServiceDependency) & { warning?: string }
-    >;
-    if (result.warnings) {
-      for (const key of Object.keys(result2)) {
-        (result2[key] as any).warning = result.warnings[key];
-      }
-    }
-    return result2;
   }
 
   /**
@@ -4687,10 +4584,6 @@ export class Database {
    * dependency's current mount point. Otherwise it will include the full
    * definition for each dependency.
    *
-   * **Note**: When using ArangoDB 3.2.8 or older, setting the `minimal` option
-   * to `true` avoids triggering a second request to fetch the full
-   * dependency definitions.
-   *
    * @example
    * ```js
    * const db = new Database();
@@ -4702,7 +4595,7 @@ export class Database {
    * }
    * ```
    */
-  async updateServiceDependencies(
+  updateServiceDependencies(
     mount: string,
     deps: Record<string, string>,
     minimal?: false
@@ -4725,10 +4618,6 @@ export class Database {
    * dependency's current mount point. Otherwise it will include the full
    * definition for each dependency.
    *
-   * **Note**: When using ArangoDB 3.2.8 or older, setting the `minimal` option
-   * to `true` avoids triggering a second request to fetch the full
-   * dependency definitions.
-   *
    * @example
    * ```js
    * const db = new Database();
@@ -4744,45 +4633,25 @@ export class Database {
    * }
    * ```
    */
-  async updateServiceDependencies(
+  updateServiceDependencies(
     mount: string,
     deps: Record<string, string>,
     minimal: true
   ): Promise<{
     values: Record<string, string>;
-    warnings: Record<string, string | undefined>;
+    warnings: Record<string, string>;
   }>;
-  async updateServiceDependencies(
+  updateServiceDependencies(
     mount: string,
     deps: Record<string, string>,
     minimal: boolean = false
   ) {
-    const result = await this.request({
+    return this.request({
       method: "PATCH",
       path: "/_api/foxx/dependencies",
       body: deps,
       qs: { mount, minimal },
     });
-    if (
-      minimal ||
-      !result.values ||
-      !Object.keys(result.values).every(
-        (key: string) => result.values[key].title
-      )
-    ) {
-      return result;
-    }
-    // Work around "minimal" flag not existing in 3.3
-    const result2 = (await this.getServiceDependencies(mount, false)) as Record<
-      string,
-      (SingleServiceDependency | MultiServiceDependency) & { warning?: string }
-    >;
-    if (result.warnings) {
-      for (const key of Object.keys(result2)) {
-        result2[key].warning = result.warnings[key];
-      }
-    }
-    return result2;
   }
 
   /**

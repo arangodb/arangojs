@@ -18,10 +18,28 @@ This driver uses semantic versioning:
 
 ### Removed
 
+- Removed Node.js 10 and Node.js 12 support
+
+  With Node.js 10 and 12 having reached their end of life, arangojs will no
+  longer support these versions of Node.js going forward.
+
+- Removed Internet Explorer support
+
+  As of version 8 arangojs no longer maintains compatibility for IE11 in the
+  pre-built browser bundle. You may still be able to use arangojs in IE11 when
+  bundling arangojs yourself but this may require polyfills and transformation.
+
 - Removed `Dict` type from `connection` module
 
   The `Dict<T>` type was identical to `Record<string, T>` and has been replaced
   with this built-in type across arangojs.
+
+- Removed workaround for ArangoDB pre-3.2.8 Foxx HTTP API responses
+
+  When fetching or modifying the configuration or dependencies of a Foxx
+  service using ArangoDB 3.2.7 and earlier, arangojs would perform additional
+  operations to convert the server response to a compatible format. All
+  affected versions of ArangoDB have reached End of Life since December 2018.
 
 - Removed deprecated `db.useDatabase` method
 
@@ -56,17 +74,6 @@ This driver uses semantic versioning:
 
   Previously arangojs would use `localhost` which on some systems resolves to
   the IPv6 address `::1` instead, resulting in confusing connection errors.
-
-- Removed Node.js 10 and Node.js 12 support
-
-  With Node.js 10 and 12 having reached their end of life, arangojs will no
-  longer support these versions of Node.js going forward.
-
-- Removed Internet Explorer support
-
-  As of version 8 arangojs no longer maintains compatibility for IE11 in the
-  pre-built browser bundle. You may still be able to use arangojs in IE11 when
-  bundling arangojs yourself but this may require polyfills and transformation.
 
 - Changed TypeScript compilation target to ES2020
 
