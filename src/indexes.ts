@@ -96,7 +96,7 @@ export type EnsureGeoIndexOptions =
        * GeoJSON polygons. This option is always implicitly `true` when using
        * ArangoDB 3.9 or lower.
        */
-      legacyPolygons?: false;
+      legacyPolygons?: boolean;
       /**
        * Attribute paths for the document's latitude and longitude values.
        */
@@ -124,6 +124,12 @@ export type EnsureGeoIndexOptions =
        * Default: `false`
        */
       geoJson?: boolean;
+      /**
+       * If set to `true`, the index will use pre-3.10 rules for parsing
+       * GeoJSON polygons. This option is always implicitly `true` when using
+       * ArangoDB 3.9 or lower.
+       */
+      legacyPolygons?: boolean;
       /**
        * An array containing the attribute path for an array containing two values,
        * the first of which will be interpreted as the latitude, the second as the
