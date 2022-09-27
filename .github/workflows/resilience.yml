@@ -15,9 +15,9 @@ jobs:
       matrix:
         node-version: [14, 16, 18]
         arangodb-version:
-          - docker.io/arangodb/arangodb:3.8
-          - docker.io/arangodb/arangodb:3.9
-          - docker.io/arangodb/arangodb-preview:3.10-nightly
+          - arangodb/arangodb:3.8
+          - arangodb/arangodb:3.9
+          - arangodb/arangodb-preview:3.10-nightly
 
     steps:
       - uses: actions/checkout@v2
