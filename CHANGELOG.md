@@ -23,10 +23,28 @@ This driver uses semantic versioning:
 
 ### Removed
 
+- Removed Node.js 10 and Node.js 12 support
+
+  With Node.js 10 and 12 having reached their end of life, arangojs will no
+  longer support these versions of Node.js going forward.
+
+- Removed Internet Explorer support
+
+  As of version 8 arangojs no longer maintains compatibility for IE11 in the
+  pre-built browser bundle. You may still be able to use arangojs in IE11 when
+  bundling arangojs yourself but this may require polyfills and transformation.
+
 - Removed `Dict` type from `connection` module
 
   The `Dict<T>` type was identical to `Record<string, T>` and has been replaced
   with this built-in type across arangojs.
+
+- Removed workaround for ArangoDB pre-3.2.8 Foxx HTTP API responses
+
+  When fetching or modifying the configuration or dependencies of a Foxx
+  service using ArangoDB 3.2.7 and earlier, arangojs would perform additional
+  operations to convert the server response to a compatible format. All
+  affected versions of ArangoDB have reached End of Life since December 2018.
 
 - Removed deprecated `db.useDatabase` method
 
@@ -36,6 +54,11 @@ This driver uses semantic versioning:
 - Removed deprecated MMFiles methods and types
 
   The MMFiles storage engine was removed in ArangoDB 3.7.
+
+- Removed `BytesAccumConsolidationPolicy` type
+
+  The `bytes_accum` consolidation policy for views was deprecated in
+  ArangoDB 3.7 and should be replaced with the `tier` consolidation policy.
 
 - Removed deprecated `minReplicationFactor` option from collection and
   database related types
@@ -62,17 +85,6 @@ This driver uses semantic versioning:
   Previously arangojs would use `localhost` which on some systems resolves to
   the IPv6 address `::1` instead, resulting in confusing connection errors.
 
-- Removed Node.js 10 and Node.js 12 support
-
-  With Node.js 10 and 12 having reached their end of life, arangojs will no
-  longer support these versions of Node.js going forward.
-
-- Removed Internet Explorer support
-
-  As of version 8 arangojs no longer maintains compatibility for IE11 in the
-  pre-built browser bundle. You may still be able to use arangojs in IE11 when
-  bundling arangojs yourself but this may require polyfills and transformation.
-
 - Changed TypeScript compilation target to ES2020
 
   Since all evergreen browsers including Firefox ESR and all active Node.js LTS
@@ -83,8 +95,6 @@ This driver uses semantic versioning:
 
   This may result in type signatures that are incompatible with TypeScript 3
   being added in future releases (including patch releases).
-
-- Renamed type `GraphCreateOptions` to `CreateGraphOptions`
 
 - Changed default behavior of _internal_ `db.request` method
 
@@ -143,6 +153,24 @@ This driver uses semantic versioning:
   as-is, bypassing this validation but allowing `ignoreRevs` to be respected
   by the server.
 
+- Extracted type `ArangoSearchViewLinkOptions` from `ArangoSearchViewLink`
+
+  Note that `ArangoSearchViewLink` now represents the type of the value
+  returned by the server, marking several properties as required.
+
+- Extracted type `CreateArangoSearchView` from
+  `ArangoSearchViewPropertiesOptions`
+
+  Note that `ArangoSearchViewPropertiesOptions` now includes only those options
+  that can be updated/replaced whereas `CreateArangoSearchView` also includes
+  options that can only be set during creation of a view.
+
+- Renamed type `GraphCreateOptions` to `CreateGraphOptions`
+
+- Renamed type `PrimarySortCompression` to `Compression`
+
+- Modified generic type `View` to take additional `CreateOptions` type argument
+
 ### Deprecated
 
 - Deprecated `EnsureFulltextIndexOptions` and `FulltextIndex` types
@@ -152,30 +180,6 @@ This driver uses semantic versioning:
 
 ### Added
 
-- Added `allowDirtyRead` option to `db.beginTransaction`, `trx.commit`,
-  `trx.abort`, `collection.edges`, `collection.inEdges`, `collection.outEdges`
-
-  The option is only respected by read-only requests.
-
-- Added `legacyPolygons` option to `EnsureGeoIndexOptions` and `GeoIndex` types
-
-  Geo indexes created in ArangoDB pre-3.10 will implicitly default this option
-  to `true`. ArangoDB 3.10 and later will default to `false` and use the new
-  parsing rules for geo indexes.
-
-- Added `overwrite` option to `db.acquireHostList` ([#711](https://github.com/arangodb/arangojs/711))
-
-  Setting this option to `true` will replace the current host list, removing any
-  hosts no longer present in the cluster.
-
-- Added support for new ArangoDB 3.10 `cacheEnabled` and `storedValues` options
-  in persistent indexes
-
-- Added support for new ArangoDB 3.10 computed values in collections
-
-- Added missing `replicationFactor` and `writeConcern` options to
-  `CollectionPropertiesOptions` type
-
 - Added `toJSON` method to system errors
 
   ArangoJS already adds the `request` object to system errors encountered
@@ -183,7 +187,39 @@ This driver uses semantic versioning:
   to serialize these error objects to JSON the same way `ArangoError` and
   `HttpError` objects can already be serialized.
 
-- Added support for `ifMatch` and `ifNoneMatch` options
+- Added `allowDirtyRead` option to `db.beginTransaction`, `trx.commit`,
+  `trx.abort`, `collection.edges`, `collection.inEdges`, `collection.outEdges`
+
+  The option is only respected by read-only requests.
+
+- Added support for `ifMatch` and `ifNoneMatch` options ([#707](https://github.com/arangodb/arangojs/707))
+
+- Added `overwrite` option to `db.acquireHostList` ([#711](https://github.com/arangodb/arangojs/711))
+
+  Setting this option to `true` will replace the current host list, removing any
+  hosts no longer present in the cluster.
+
+- Added new ArangoDB 3.10 `legacyPolygons` option to `EnsureGeoIndexOptions`
+  and `GeoIndex` types
+
+  Geo indexes created in ArangoDB pre-3.10 will implicitly default this option
+  to `true`. ArangoDB 3.10 and later will default to `false` and use the new
+  parsing rules for geo indexes.
+
+- Added support for new ArangoDB 3.10 `cacheEnabled` and `storedValues` options
+  in persistent indexes
+
+- Added support for new ArangoDB 3.10 computed values in collections
+
+- Added support for new ArangoDB 3.10 `InvertedIndex` type
+
+- Added support for new ArangoDB 3.10 `offset` Analyzer feature
+
+- Added missing `replicationFactor` and `writeConcern` options to
+  `CollectionPropertiesOptions` type
+
+- Added missing `commitIntervalMsec` option to `ArangoSearchViewProperties`
+  type
 
 - Added new ArangoDB 3.10 `db.queryRules` method
 
