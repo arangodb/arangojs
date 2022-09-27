@@ -13,14 +13,17 @@ jobs:
       fail-fast: false
       matrix:
         node-version: [14, 16, 18]
-        arangodb-version: [3.8, 3.9]
+        arangodb-version:
+          - docker.io/arangodb/arangodb:3.8
+          - docker.io/arangodb/arangodb:3.9
+          - docker.io/arangodb/arangodb-preview:3.10-nightly
 
     container:
       image: node:${{ matrix.node-version }}
 
     services:
       arangodb:
-        image: arangodb:${{ matrix.arangodb-version }}
+        image: ${{ matrix.arangodb-version }}
         env:
           ARANGO_NO_AUTH: 1
 
@@ -40,14 +43,17 @@ jobs:
 
     strategy:
       matrix:
-        arangodb-version: [3.8, 3.9]
+        arangodb-version:
+          - docker.io/arangodb/arangodb:3.8
+          - docker.io/arangodb/arangodb:3.9
+          - docker.io/arangodb/arangodb-preview:3.10-nightly
 
     container:
       image: node:16
 
     services:
       arangodb:
-        image: arangodb:${{ matrix.arangodb-version }}
+        image: ${{ matrix.arangodb-version }}
         env:
           ARANGO_NO_AUTH: 1
 

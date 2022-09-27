@@ -8,7 +8,10 @@ const ARANGO_RELEASE = process.env.ARANGO_RELEASE || "";
 let arangoVersion: number = 39999;
 if (ARANGO_VERSION) arangoVersion = ARANGO_VERSION;
 else if (ARANGO_RELEASE.includes(".")) {
-  const [major, minor] = ARANGO_RELEASE.split(".").map((v) => Number(v));
+  let release = ARANGO_RELEASE;
+  if (release.includes(":")) release = release.split(":").at(-1)!;
+  if (release.includes("-")) release = release.split(":")[0];
+  const [major, minor] = release.split(".").map((v) => Number(v));
   arangoVersion = (major * 100 + minor) * 100;
 }
 const ARANGO_LOAD_BALANCING_STRATEGY = process.env
