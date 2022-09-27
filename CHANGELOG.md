@@ -192,9 +192,9 @@ This driver uses semantic versioning:
 
   The option is only respected by read-only requests.
 
-- Added support for `ifMatch` and `ifNoneMatch` options ([#707](https://github.com/arangodb/arangojs/707))
+- Added support for `ifMatch` and `ifNoneMatch` options ([#707](https://github.com/arangodb/arangojs/issues/707))
 
-- Added `overwrite` option to `db.acquireHostList` ([#711](https://github.com/arangodb/arangojs/711))
+- Added `overwrite` option to `db.acquireHostList` ([#711](https://github.com/arangodb/arangojs/issues/711))
 
   Setting this option to `true` will replace the current host list, removing any
   hosts no longer present in the cluster.
@@ -220,6 +220,13 @@ This driver uses semantic versioning:
 
 - Added missing `commitIntervalMsec` option to `ArangoSearchViewProperties`
   type
+
+- Added missing `deduplicate` option to `EnsurePersistentIndexOptions` type
+  ([#771](https://github.com/arangodb/arangojs/issues/771))
+
+- Added missing `unique` option to `EnsureZkdIndexOptions` type
+
+- Added missing `deduplicate` and `estimates` fields to `PersistentIndex` type
 
 - Added new ArangoDB 3.10 `db.queryRules` method
 

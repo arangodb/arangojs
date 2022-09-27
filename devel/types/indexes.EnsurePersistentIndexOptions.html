@@ -14,7 +14,7 @@
 <li><a href="../modules/indexes.html">indexes</a></li>
 <li><a href="indexes.EnsurePersistentIndexOptions.html">EnsurePersistentIndexOptions</a></li></ul>
 <h1>Type alias EnsurePersistentIndexOptions</h1></div>
-<div class="tsd-signature">Ensure<wbr/>Persistent<wbr/>Index<wbr/>Options<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>cacheEnabled<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>estimates<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>fields<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span>inBackground<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>name<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>sparse<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>storedValues<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span>type<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;persistent&quot;</span><span class="tsd-signature-symbol">; </span>unique<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> }</span></div>
+<div class="tsd-signature">Ensure<wbr/>Persistent<wbr/>Index<wbr/>Options<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>cacheEnabled<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>deduplicate<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>estimates<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>fields<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span>inBackground<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>name<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>sparse<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>storedValues<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span>type<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;persistent&quot;</span><span class="tsd-signature-symbol">; </span>unique<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> }</span></div>
 <div class="tsd-comment tsd-typography"><p>Options for creating a persistent index.</p>
 </div>
 <div class="tsd-type-declaration">
@@ -25,6 +25,12 @@
 <div class="tsd-comment tsd-typography"><p>If set to <code>true</code>, an in-memory hash cache will be put in front of the
 persistent index.</p>
 <p>Default: <code>false</code></p>
+</div></li>
+<li class="tsd-parameter">
+<h5><code class="tsd-tag ts-flagOptional">Optional</code> deduplicate<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span></h5>
+<div class="tsd-comment tsd-typography"><p>If set to <code>false</code>, inserting duplicate index values from the same
+document will lead to a unique constraint error if this is a unique index.</p>
+<p>Default: <code>true</code></p>
 </div></li>
 <li class="tsd-parameter">
 <h5><code class="tsd-tag ts-flagOptional">Optional</code> estimates<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span></h5>
@@ -68,7 +74,7 @@ be used for index lookups or sorting but can avoid full document lookups.</p>
 <p>Default: <code>false</code></p>
 </div></li></ul></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/arangodb/arangojs/blob/93e06e2/src/indexes.ts#L24">indexes.ts:24</a></li></ul></aside></div>
+<li>Defined in <a href="https://github.com/arangodb/arangojs/blob/4c1f887/src/indexes.ts#L24">indexes.ts:24</a></li></ul></aside></div>
 <div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 <div class="tsd-navigation settings">
 <details class="tsd-index-accordion"><summary class="tsd-accordion-summary">

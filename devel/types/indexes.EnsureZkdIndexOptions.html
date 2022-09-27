@@ -14,7 +14,7 @@
 <li><a href="../modules/indexes.html">indexes</a></li>
 <li><a href="indexes.EnsureZkdIndexOptions.html">EnsureZkdIndexOptions</a></li></ul>
 <h1>Type alias EnsureZkdIndexOptions</h1></div>
-<div class="tsd-signature">Ensure<wbr/>Zkd<wbr/>Index<wbr/>Options<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>fieldValueTypes<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;double&quot;</span><span class="tsd-signature-symbol">; </span>fields<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span>inBackground<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>name<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>type<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;zkd&quot;</span><span class="tsd-signature-symbol"> }</span></div>
+<div class="tsd-signature">Ensure<wbr/>Zkd<wbr/>Index<wbr/>Options<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>fieldValueTypes<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;double&quot;</span><span class="tsd-signature-symbol">; </span>fields<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span>inBackground<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>name<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>type<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;zkd&quot;</span><span class="tsd-signature-symbol">; </span>unique<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> }</span></div>
 <div class="tsd-comment tsd-typography"><p>Options for creating a ZKD index.</p>
 </div>
 <div class="tsd-type-declaration">
@@ -41,9 +41,14 @@ the write-lock duration for the collection during index creation.</p>
 <li class="tsd-parameter">
 <h5>type<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;zkd&quot;</span></h5>
 <div class="tsd-comment tsd-typography"><p>Type of this index.</p>
+</div></li>
+<li class="tsd-parameter">
+<h5><code class="tsd-tag ts-flagOptional">Optional</code> unique<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span></h5>
+<div class="tsd-comment tsd-typography"><p>If set to <code>true</code>, a unique index will be created.</p>
+<p>Default: <code>false</code></p>
 </div></li></ul></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/arangodb/arangojs/blob/93e06e2/src/indexes.ts#L212">indexes.ts:212</a></li></ul></aside></div>
+<li>Defined in <a href="https://github.com/arangodb/arangojs/blob/4c1f887/src/indexes.ts#L225">indexes.ts:225</a></li></ul></aside></div>
 <div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 <div class="tsd-navigation settings">
 <details class="tsd-index-accordion"><summary class="tsd-accordion-summary">
