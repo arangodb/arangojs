@@ -49,6 +49,13 @@ export type EnsurePersistentIndexOptions = {
    */
   sparse?: boolean;
   /**
+   * If set to `false`, inserting duplicate index values from the same
+   * document will lead to a unique constraint error if this is a unique index.
+   *
+   * Default: `true`
+   */
+  deduplicate?: boolean;
+  /**
    * If set to `false`, index selectivity estimates will be disabled for this
    * index.
    *
@@ -232,6 +239,12 @@ export type EnsureZkdIndexOptions = {
    * A unique name for this index.
    */
   name?: string;
+  /**
+   * If set to `true`, a unique index will be created.
+   *
+   * Default: `false`
+   */
+  unique?: boolean;
   /**
    * If set to `true`, the index will be created in the background to reduce
    * the write-lock duration for the collection during index creation.
@@ -518,7 +531,9 @@ export type PersistentIndex = GenericIndex & {
   type: "persistent";
   fields: string[];
   cacheEnabled: boolean;
-  storedValues: string[];
+  deduplicate: boolean;
+  estimates: boolean;
+  storedValues?: string[];
 };
 
 /**
