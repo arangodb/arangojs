@@ -19,7 +19,7 @@ jobs:
           - arangodb/arangodb-preview:3.10-nightly
 
     container:
-      image: node:${{ matrix.node-version }}
+      image: node:${{ matrix.node-version }}-alpine
 
     services:
       arangodb:
@@ -29,7 +29,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - run: apt-get update && apt-get install jq -y
+      - run: apk add jq
       - run: npm install -g npm@8
       - run: npm install
       - run: npm test
