@@ -14,8 +14,8 @@ jobs:
       matrix:
         node-version: [14, 16, 18]
         arangodb-version:
-          - arangodb/arangodb:3.8
-          - arangodb/arangodb:3.9
+          - arangodb:3.8
+          - arangodb:3.9
           - arangodb/arangodb-preview:3.10-nightly
 
     container:
@@ -44,8 +44,8 @@ jobs:
     strategy:
       matrix:
         arangodb-version:
-          - arangodb/arangodb:3.8
-          - arangodb/arangodb:3.9
+          - arangodb:3.8
+          - arangodb:3.9
           - arangodb/arangodb-preview:3.10-nightly
 
     container:
