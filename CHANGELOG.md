@@ -50,6 +50,11 @@ This driver uses semantic versioning:
 
   The MMFiles storage engine was removed in ArangoDB 3.7.
 
+- Removed `BytesAccumConsolidationPolicy` type
+
+  The `bytes_accum` consolidation policy for views was deprecated in
+  ArangoDB 3.7 and should be replaced with the `tier` consolidation policy.
+
 - Removed deprecated `minReplicationFactor` option from collection and
   database related types
 
@@ -85,8 +90,6 @@ This driver uses semantic versioning:
 
   This may result in type signatures that are incompatible with TypeScript 3
   being added in future releases (including patch releases).
-
-- Renamed type `GraphCreateOptions` to `CreateGraphOptions`
 
 - Changed default behavior of _internal_ `db.request` method
 
@@ -145,7 +148,23 @@ This driver uses semantic versioning:
   as-is, bypassing this validation but allowing `ignoreRevs` to be respected
   by the server.
 
-- Renamed `PrimarySortCompression` type to `Compression`
+- Extracted type `ArangoSearchViewLinkOptions` from `ArangoSearchViewLink`
+
+  Note that `ArangoSearchViewLink` now represents the type of the value
+  returned by the server, marking several properties as required.
+
+- Extracted type `CreateArangoSearchView` from
+  `ArangoSearchViewPropertiesOptions`
+
+  Note that `ArangoSearchViewPropertiesOptions` now includes only those options
+  that can be updated/replaced whereas `CreateArangoSearchView` also includes
+  options that can only be set during creation of a view.
+
+- Renamed type `GraphCreateOptions` to `CreateGraphOptions`
+
+- Renamed type `PrimarySortCompression` to `Compression`
+
+- Modified generic type `View` to take additional `CreateOptions` type argument
 
 ### Deprecated
 
@@ -156,21 +175,31 @@ This driver uses semantic versioning:
 
 ### Added
 
+- Added `toJSON` method to system errors
+
+  ArangoJS already adds the `request` object to system errors encountered
+  while attempting to make network requests. This change makes it easier
+  to serialize these error objects to JSON the same way `ArangoError` and
+  `HttpError` objects can already be serialized.
+
 - Added `allowDirtyRead` option to `db.beginTransaction`, `trx.commit`,
   `trx.abort`, `collection.edges`, `collection.inEdges`, `collection.outEdges`
 
   The option is only respected by read-only requests.
 
-- Added `legacyPolygons` option to `EnsureGeoIndexOptions` and `GeoIndex` types
-
-  Geo indexes created in ArangoDB pre-3.10 will implicitly default this option
-  to `true`. ArangoDB 3.10 and later will default to `false` and use the new
-  parsing rules for geo indexes.
+- Added support for `ifMatch` and `ifNoneMatch` options ([#707](https://github.com/arangodb/arangojs/707))
 
 - Added `overwrite` option to `db.acquireHostList` ([#711](https://github.com/arangodb/arangojs/711))
 
   Setting this option to `true` will replace the current host list, removing any
   hosts no longer present in the cluster.
+
+- Added new ArangoDB 3.10 `legacyPolygons` option to `EnsureGeoIndexOptions`
+  and `GeoIndex` types
+
+  Geo indexes created in ArangoDB pre-3.10 will implicitly default this option
+  to `true`. ArangoDB 3.10 and later will default to `false` and use the new
+  parsing rules for geo indexes.
 
 - Added support for new ArangoDB 3.10 `cacheEnabled` and `storedValues` options
   in persistent indexes
@@ -184,14 +213,8 @@ This driver uses semantic versioning:
 - Added missing `replicationFactor` and `writeConcern` options to
   `CollectionPropertiesOptions` type
 
-- Added `toJSON` method to system errors
-
-  ArangoJS already adds the `request` object to system errors encountered
-  while attempting to make network requests. This change makes it easier
-  to serialize these error objects to JSON the same way `ArangoError` and
-  `HttpError` objects can already be serialized.
-
-- Added support for `ifMatch` and `ifNoneMatch` options
+- Added missing `commitIntervalMsec` option to `ArangoSearchViewProperties`
+  type
 
 - Added new ArangoDB 3.10 `db.queryRules` method
 

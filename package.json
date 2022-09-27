@@ -34,7 +34,7 @@
     "rest"
   ],
   "main": "build/index.js",
-  "typings": "build/arangojs.d.ts",
+  "typings": "build/index.d.ts",
   "browser": {
     "./src/lib/btoa.ts": "./src/lib/btoa.web.ts",
     "./src/lib/bytelength.ts": "./src/lib/bytelength.web.ts",

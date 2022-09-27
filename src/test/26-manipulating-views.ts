@@ -48,43 +48,37 @@ describe("Manipulating views", function () {
     });
   });
   describe("view.updateProperties", () => {
-    it("should change properties", async () => {
+    it("should not overwrite properties", async () => {
+      const initial = await view.properties();
+      expect(initial.consolidationIntervalMsec).not.to.equal(45000);
       const oldProps = await view.updateProperties({
         consolidationIntervalMsec: 45000,
-        consolidationPolicy: { type: "tier" },
+        commitIntervalMsec: 45000,
       });
       expect(oldProps.consolidationIntervalMsec).to.equal(45000);
-      expect(oldProps.consolidationPolicy).to.have.property("type", "tier");
       const properties = await view.updateProperties({
-        consolidationPolicy: { type: "bytes_accum" },
+        commitIntervalMsec: 30000,
       });
       expect(properties.consolidationIntervalMsec).to.equal(45000);
-      expect(properties.consolidationPolicy).to.have.property(
-        "type",
-        "bytes_accum"
-      );
+      expect(properties.commitIntervalMsec).to.equal(30000);
     });
   });
   describe("view.replaceProperties", () => {
-    it("should change properties", async () => {
+    it("should overwrite properties", async () => {
       const initial = await view.properties();
       expect(initial.consolidationIntervalMsec).not.to.equal(45000);
       const oldProps = await view.replaceProperties({
         consolidationIntervalMsec: 45000,
-        consolidationPolicy: { type: "tier" },
+        commitIntervalMsec: 45000,
       });
       expect(oldProps.consolidationIntervalMsec).to.equal(45000);
-      expect(oldProps.consolidationPolicy).to.have.property("type", "tier");
       const properties = await view.replaceProperties({
-        consolidationPolicy: { type: "bytes_accum" },
+        commitIntervalMsec: 30000,
       });
       expect(properties.consolidationIntervalMsec).to.equal(
         initial.consolidationIntervalMsec
       );
-      expect(properties.consolidationPolicy).to.have.property(
-        "type",
-        "bytes_accum"
-      );
+      expect(properties.commitIntervalMsec).to.equal(30000);
     });
   });
   describeNLB("view.rename", () => {

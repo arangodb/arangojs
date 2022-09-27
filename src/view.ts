@@ -25,7 +25,7 @@ export enum ViewType {
 }
 
 /**
- * Indicates whether the given value represents a {@link view.View}.
+ * Indicates whether the given value represents a {@link View}.
  *
  * @param view - A value that might be a View.
  */
@@ -62,40 +62,33 @@ export type ArangoSearchViewLink = {
   /**
    * A list of names of Analyzers to apply to values of processed document
    * attributes.
-   *
-   * Default: `["identity"]`
    */
-  analyzers?: string[];
+  analyzers: string[];
   /**
    * An object mapping names of attributes to process for each document to
-   * {@link view.ArangoSearchViewLink} definitions.
+   * {@link ArangoSearchViewLink} definitions.
    */
-  fields?: Record<string, ArangoSearchViewLink | undefined>;
+  fields: Record<string, ArangoSearchViewLink>;
   /**
    * If set to `true`, all document attributes will be processed, otherwise
    * only the attributes in `fields` will be processed.
-   *
-   * Default: `false`
    */
-  includeAllFields?: boolean;
+  includeAllFields: boolean;
+  /**
+   * (Enterprise Edition only.) An object mapping attribute names to
+   * {@link ArangoSearchViewLink} definitions to index sub-objects stored in an
+   * array.
+   */
+  nested?: Record<string, ArangoSearchViewLink>;
   /**
    * If set to `true`, the position of values in array values will be tracked,
    * otherwise all values in an array will be treated as equal alternatives.
    */
-  trackListPositions?: boolean;
+  trackListPositions: boolean;
   /**
    * Controls how the view should keep track of the attribute values.
-   *
-   * Default: `"none"`
    */
-  storeValues?: "none" | "id";
-  /**
-   * If set to `true`, then no exclusive lock is used on the source collection
-   * during View index creation, so that it remains basically available.
-   *
-   * Default: `false`
-   */
-  inBackground?: boolean;
+  storeValues: "none" | "id";
 };
 
 /**
@@ -110,6 +103,11 @@ export type ArangoSearchViewProperties = {
    * How long to wait between applying the `consolidationPolicy`.
    */
   consolidationIntervalMsec: number;
+  /**
+   * How long to wait between commiting View data store changes and making
+   * documents visible to queries.
+   */
+  commitIntervalMsec: number;
   /**
    * Maximum number of writers cached in the pool.
    */
@@ -126,7 +124,7 @@ export type ArangoSearchViewProperties = {
    * Consolidation policy to apply for selecting which segments should be
    * merged.
    */
-  consolidationPolicy: BytesAccumConsolidationPolicy | TierConsolidationPolicy;
+  consolidationPolicy: TierConsolidationPolicy;
   /**
    * Attribute path (`field`) for the value of each document that is
    * used for sorting.
@@ -138,8 +136,7 @@ export type ArangoSearchViewProperties = {
      */
     field: string;
     /**
-     * If set to `"asc"`, the primary sorting order is ascending.
-     * If set to `"desc"`, the primary sorting order is descending.
+     * The sorting direction.
      */
     direction: Direction;
   }[];
@@ -159,27 +156,16 @@ export type ArangoSearchViewProperties = {
      * in addition to those used for sorting via `primarySort`.
      */
     fields: string[];
+    /**
+     * How the attribute values should be compressed.
+     */
+    compression: Compression;
   }[];
   /**
    * An object mapping names of linked collections to
-   * {@link view.ArangoSearchViewLink} definitions.
+   * {@link ArangoSearchViewLink} definitions.
    */
-  links: Record<string, ArangoSearchViewLink | undefined>;
-};
-
-/**
- * Policy to consolidate based on segment byte size and live document count as
- * dictated by the customization attributes.
- */
-export type BytesAccumConsolidationPolicy = {
-  /**
-   * Type of consolidation policy.
-   */
-  type: "bytes_accum";
-  /**
-   * Must be in the range of `0.0` to `1.0`.
-   */
-  threshold?: number;
+  links: Record<string, Omit<ArangoSearchViewLink, "nested">>;
 };
 
 /**
@@ -232,7 +218,56 @@ export type TierConsolidationPolicy = {
 export type Compression = "lz4" | "none";
 
 /**
- * Properties of an ArangoSearch View.
+ * A link definition for an ArangoSearch View.
+ */
+export type ArangoSearchViewLinkOptions = {
+  /**
+   * A list of names of Analyzers to apply to values of processed document
+   * attributes.
+   *
+   * Default: `["identity"]`
+   */
+  analyzers?: string[];
+  /**
+   * An object mapping names of attributes to process for each document to
+   * {@link ArangoSearchViewLinkOptions} definitions.
+   */
+  fields?: Record<string, ArangoSearchViewLinkOptions>;
+  /**
+   * If set to `true`, all document attributes will be processed, otherwise
+   * only the attributes in `fields` will be processed.
+   *
+   * Default: `false`
+   */
+  includeAllFields?: boolean;
+  /**
+   * (Enterprise Edition only.) An object mapping attribute names to
+   * {@link ArangoSearchViewLinkOptions} definitions to index sub-objects
+   * stored in an array.
+   */
+  nested?: Record<string, ArangoSearchViewLinkOptions>;
+  /**
+   * If set to `true`, the position of values in array values will be tracked,
+   * otherwise all values in an array will be treated as equal alternatives.
+   */
+  trackListPositions?: boolean;
+  /**
+   * Controls how the view should keep track of the attribute values.
+   *
+   * Default: `"none"`
+   */
+  storeValues?: "none" | "id";
+  /**
+   * If set to `true`, then no exclusive lock is used on the source collection
+   * during View index creation, so that it remains basically available.
+   *
+   * Default: `false`
+   */
+  inBackground?: boolean;
+};
+
+/**
+ * Options for modifying the properties of an ArangoSearch View.
  */
 export type ArangoSearchViewPropertiesOptions = {
   /**
@@ -255,99 +290,113 @@ export type ArangoSearchViewPropertiesOptions = {
    */
   commitIntervalMsec?: number;
   /**
-   * Maximum number of writers cached in the pool.
-   *
-   * Default: `64`
-   */
-  writebufferIdle?: number;
-  /**
-   * Maximum number of concurrent active writers that perform a transaction.
-   *
-   * Default: `0`
-   */
-  writebufferActive?: number;
-  /**
-   * Maximum memory byte size per writer before a writer flush is triggered.
-   *
-   * Default: `33554432` (32 MiB)
-   */
-  writebufferSizeMax?: number;
-  /**
    * Consolidation policy to apply for selecting which segments should be
    * merged.
    *
-   * Default: `{ type: "bytes_accum" }`
+   * Default: `{ type: "tier" }`
    */
-  consolidationPolicy?: BytesAccumConsolidationPolicy | TierConsolidationPolicy;
+  consolidationPolicy?: TierConsolidationPolicy;
   /**
-   * Attribute path (`field`) for the value of each document that will be
-   * used for sorting.
-   *
-   * If `direction` is set to `"asc"` or `asc` is set to `true`,
-   * the primary sorting order will be ascending.
-   *
-   * If `direction` is set to `"desc"` or `asc` is set to `false`,
-   * the primary sorting order will be descending.
+   * An object mapping names of linked collections to
+   * {@link ArangoSearchViewLinkOptions} definitions.
    */
-  primarySort?: (
-    | {
-        /**
-         * Attribute path for the value of each document to use for
-         * sorting.
-         */
-        field: string;
-        /**
-         * If set to `"asc"`, the primary sorting order will be ascending.
-         * If set to `"desc"`, the primary sorting order will be descending.
-         */
-        direction: Direction;
-      }
-    | {
-        /**
-         * Attribute path for the value of each document to use for
-         * sorting.
-         */
-        field: string;
-        /**
-         * If set to `true`, the primary sorting order will be ascending.
-         * If set to `false`, the primary sorting order will be descending.
-         */
-        asc: boolean;
-      }
-  )[];
-  /**
-   * Compression to use for the primary sort data.
-   *
-   * Default: `"lz4"`
-   */
-  primarySortCompression?: Compression;
-  /**
-   * Attribute paths for which values should be stored in the view index
-   * in addition to those used for sorting via `primarySort`.
-   */
-  storedValues?: {
+  links?: Record<string, Omit<ArangoSearchViewLinkOptions, "nested">>;
+};
+
+/**
+ * Options for creating an ArangoSearch View.
+ */
+export type CreateArangoSearchViewOptions =
+  ArangoSearchViewPropertiesOptions & {
+    /**
+     * Maximum number of writers cached in the pool.
+     *
+     * Default: `64`
+     */
+    writebufferIdle?: number;
+    /**
+     * Maximum number of concurrent active writers that perform a transaction.
+     *
+     * Default: `0`
+     */
+    writebufferActive?: number;
+    /**
+     * Maximum memory byte size per writer before a writer flush is triggered.
+     *
+     * Default: `33554432` (32 MiB)
+     */
+    writebufferSizeMax?: number;
+    /**
+     * Attribute path (`field`) for the value of each document that will be
+     * used for sorting.
+     *
+     * If `direction` is set to `"asc"` or `asc` is set to `true`,
+     * the primary sorting order will be ascending.
+     *
+     * If `direction` is set to `"desc"` or `asc` is set to `false`,
+     * the primary sorting order will be descending.
+     */
+    primarySort?: (
+      | {
+          /**
+           * Attribute path for the value of each document to use for
+           * sorting.
+           */
+          field: string;
+          /**
+           * If set to `"asc"`, the primary sorting order will be ascending.
+           * If set to `"desc"`, the primary sorting order will be descending.
+           */
+          direction: Direction;
+        }
+      | {
+          /**
+           * Attribute path for the value of each document to use for
+           * sorting.
+           */
+          field: string;
+          /**
+           * If set to `true`, the primary sorting order will be ascending.
+           * If set to `false`, the primary sorting order will be descending.
+           */
+          asc: boolean;
+        }
+    )[];
+    /**
+     * Compression to use for the primary sort data.
+     *
+     * Default: `"lz4"`
+     */
+    primarySortCompression?: Compression;
     /**
      * Attribute paths for which values should be stored in the view index
      * in addition to those used for sorting via `primarySort`.
      */
-    fields: string[];
-  }[];
-  /**
-   * An object mapping names of linked collections to
-   * {@link view.ArangoSearchViewLink} definitions.
-   */
-  links?: Record<string, ArangoSearchViewLink | undefined>;
-};
+    storedValues?: {
+      /**
+       * Attribute paths for which values should be stored in the view index
+       * in addition to those used for sorting via `primarySort`.
+       */
+      fields: string[];
+      /**
+       * How the attribute values should be compressed.
+       *
+       * Default: `"lz4"`
+       */
+      compression?: Compression;
+    }[];
+  };
 
 /**
  * Represents a View in a {@link database.Database}.
  *
- * See {@link view.ArangoSearchView} for the concrete type representing an
+ * See {@link ArangoSearchView} for the concrete type representing an
  * ArangoSearch View.
  */
 export class View<
   PropertiesOptions extends Record<string, any> = any,
-  Properties extends Record<string, any> = any
+  Properties extends Record<string, any> = Required<PropertiesOptions>,
+  CreateOptions extends Record<string, any> = PropertiesOptions
 > {
   protected _name: string;
   protected _db: Database;
@@ -430,7 +479,7 @@ export class View<
    * ```
    */
   create(
-    options?: PropertiesOptions & { type: ViewType }
+    options?: CreateOptions & { type: ViewType }
   ): Promise<ViewDescription & Properties> {
     return this._db.request({
       method: "POST",
@@ -568,5 +617,6 @@ export class View<
 export interface ArangoSearchView
   extends View<
     ArangoSearchViewPropertiesOptions,
-    ArangoSearchViewProperties & { type: ViewType.ARANGOSEARCH_VIEW }
+    ArangoSearchViewProperties & { type: ViewType.ARANGOSEARCH_VIEW },
+    CreateArangoSearchViewOptions
   > {}
