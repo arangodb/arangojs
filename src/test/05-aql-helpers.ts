@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { aql } from "../aql";
+import { aql, join, literal } from "../aql";
 import { Database } from "../database";
 
 describe("AQL helpers", function () {
@@ -40,9 +40,9 @@ describe("AQL helpers", function () {
       expect(bindVarNames.map((k) => query.bindVars[k])).to.eql(values);
     });
     it("omits undefined bindvars and empty queries", () => {
-      const query = aql`A ${undefined} B ${aql``} C ${aql.join(
-        []
-      )} D ${aql.literal("")} E`;
+      const query = aql`A ${undefined} B ${aql``} C ${join([])} D ${literal(
+        ""
+      )} E`;
       expect(query.query).to.equal("A  B  C  D  E");
       expect(query.bindVars).to.eql({});
     });
@@ -104,9 +104,7 @@ describe("AQL helpers", function () {
       expect(query.bindVars.value0).to.equal(whatever);
     });
     it("supports AQL literals", () => {
-      const query = aql`FOR x IN whatever ${aql.literal(
-        "FILTER x.blah"
-      )} RETURN x`;
+      const query = aql`FOR x IN whatever ${literal("FILTER x.blah")} RETURN x`;
       expect(query.query).to.equal("FOR x IN whatever FILTER x.blah RETURN x");
       expect(query.bindVars).to.eql({});
     });
@@ -173,7 +171,7 @@ describe("AQL helpers", function () {
       expect(query.bindVars).to.eql({});
     });
   });
-  describe("aql.literal", () => {
+  describe("literal", () => {
     const pairs = [
       [0, "0"],
       [42, "42"],
@@ -189,32 +187,32 @@ describe("AQL helpers", function () {
       it(`returns an AQL literal of "${result}" for ${String(
         JSON.stringify(value)
       )}`, () => {
-        expect(aql.literal(value).toAQL()).to.equal(result);
+        expect(literal(value).toAQL()).to.equal(result);
       });
     }
     it('returns an AQL literal of "aql" for { toAQL: () => "aql" }', () => {
-      expect(aql.literal({ toAQL: () => "aql" }).toAQL()).to.equal("aql");
+      expect(literal({ toAQL: () => "aql" }).toAQL()).to.equal("aql");
     });
   });
-  describe("aql.join", () => {
+  describe("join", () => {
     const fragments = [aql`x ${1}`, aql`y ${2}`, aql`z ${3}`];
     it("merges fragments with a space by default", () => {
-      const query = aql.join(fragments);
+      const query = join(fragments);
       expect(query.query).to.equal("x @value0 y @value1 z @value2");
       expect(query.bindVars).to.eql({ value0: 1, value1: 2, value2: 3 });
     });
     it("merges fragments with an empty string", () => {
-      const query = aql.join(fragments, "");
+      const query = join(fragments, "");
       expect(query.query).to.equal("x @value0y @value1z @value2");
       expect(query.bindVars).to.eql({ value0: 1, value1: 2, value2: 3 });
     });
     it("merges fragments with an arbitrary string", () => {
-      const query = aql.join(fragments, "abc");
+      const query = join(fragments, "abc");
       expect(query.query).to.equal("x @value0abcy @value1abcz @value2");
       expect(query.bindVars).to.eql({ value0: 1, value1: 2, value2: 3 });
     });
     it("merges anything", () => {
-      const query = aql.join([1, true, "yes", aql.literal("test")]);
+      const query = join([1, true, "yes", literal("test")]);
       expect(query.query).to.equal("@value0 @value1 @value2 test");
       expect(query.bindVars).to.eql({ value0: 1, value1: true, value2: "yes" });
     });
