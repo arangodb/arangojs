@@ -344,6 +344,36 @@ export type InvertedIndexFieldOptions = {
 };
 
 /**
+ * Options for defining a stored value on an inverted index.
+ */
+export type InvertedIndexStoredValueOptions = {
+  /**
+   * The attribute paths to store.
+   */
+  fields: string[];
+  /**
+   * How the attribute values should be compressed.
+   *
+   * Default: `"lz4"`
+   */
+  compression?: Compression;
+};
+
+/**
+ * Options for defining a primary sort field on an inverted index.
+ */
+export type InvertedIndexPrimarySortFieldOptions = {
+  /**
+   * The attribute path to sort by.
+   */
+  field: string;
+  /**
+   * The sorting direction.
+   */
+  direction: Direction;
+};
+
+/**
  * Options for creating an inverted index.
  */
 export type EnsureInvertedIndexOptions = {
@@ -371,18 +401,7 @@ export type EnsureInvertedIndexOptions = {
    * An array of attribute paths that will be stored in the index but can not
    * be used for index lookups or sorting but can avoid full document lookups.
    */
-  storedValues?: {
-    /**
-     * The attribute paths to store.
-     */
-    fields: string[];
-    /**
-     * How the attribute values should be compressed.
-     *
-     * Default: `"lz4"`
-     */
-    compression?: Compression;
-  }[];
+  storedValues?: InvertedIndexStoredValueOptions[];
   /**
    * Primary sort order to optimize AQL queries using a matching sort order.
    */
@@ -390,16 +409,7 @@ export type EnsureInvertedIndexOptions = {
     /**
      * An array of fields to sort the index by.
      */
-    fields: {
-      /**
-       * The attribute path to sort by.
-       */
-      field: string;
-      /**
-       * The sorting direction.
-       */
-      direction: Direction;
-    }[];
+    fields: InvertedIndexPrimarySortFieldOptions[];
     /**
      * How the primary sort data should be compressed.
      *
