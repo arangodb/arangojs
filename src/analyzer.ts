@@ -28,65 +28,55 @@ export function isArangoAnalyzer(analyzer: any): analyzer is Analyzer {
 export type AnalyzerFeature = "frequency" | "norm" | "position" | "offset";
 
 /**
- * An object describing an Analyzer.
- */
-export type AnalyzerDescription = AnalyzerInfo & {
-  name: string;
-  features: AnalyzerFeature[];
-};
-
-/**
- * Options for creating an Analyzer.
- */
-export type CreateAnalyzerOptions = AnalyzerInfo & {
-  /**
-   * Features to enable for this Analyzer.
-   */
-  features?: AnalyzerFeature[];
-};
-
-/**
  * Analyzer type and its type-specific properties.
  */
-export type AnalyzerInfo =
-  | IdentityAnalyzerInfo
-  | DelimiterAnalyzerInfo
-  | StemAnalyzerInfo
-  | NormAnalyzerInfo
-  | NgramAnalyzerInfo
-  | TextAnalyzerInfo
-  | PipelineAnalyzer
-  | AqlAnalyzer
-  | GeoJsonAnalyzer
-  | GeoPointAnalyzer
-  | StopwordsAnalyzer
-  | SegmentationAnalyzer
-  | CollationAnalyzer;
+export type CreateAnalyzerOptions =
+  | CreateIdentityAnalyzerOptions
+  | CreateDelimiterAnalyzerOptions
+  | CreateStemAnalyzerOptions
+  | CreateNormAnalyzerOptions
+  | CreateNgramAnalyzerOptions
+  | CreateTextAnalyzerOptions
+  | CreateSegmentationAnalyzerOptions
+  | CreateAqlAnalyzerOptions
+  | CreatePipelineAnalyzerOptions
+  | CreateStopwordsAnalyzerOptions
+  | CreateCollationAnalyzerOptions
+  | CreateGeoJsonAnalyzerOptions
+  | CreateGeoPointAnalyzerOptions;
 
 /**
- * Analyzer type and type-specific properties for an Identity Analyzer.
+ * Options for creating an Identity Analyzer.
  */
-export type IdentityAnalyzerInfo = {
+export type CreateIdentityAnalyzerOptions = {
   /**
    * Type of the Analyzer.
    */
   type: "identity";
   /**
+   * Features to enable for this Analyzer.
+   */
+  features?: AnalyzerFeature[];
+  /**
    * Additional properties for the Analyzer.
    *
    * The `identity` Analyzer does not take additional properties.
    */
-  properties?: null;
+  properties?: Record<string, never>;
 };
 
 /**
- * Analyzer type and type-specific properties for a Delimiter Analyzer.
+ * Options for creating a Delimiter Analyzer.
  */
-export type DelimiterAnalyzerInfo = {
+export type CreateDelimiterAnalyzerOptions = {
   /**
    * Type of the Analyzer.
    */
   type: "delimiter";
+  /**
+   * Features to enable for this Analyzer.
+   */
+  features?: AnalyzerFeature[];
   /**
    * Additional properties for the Analyzer.
    *
@@ -97,13 +87,17 @@ export type DelimiterAnalyzerInfo = {
 };
 
 /**
- * Analyzer type and type-specific properties for a Stem Analyzer.
+ * Options for creating a Stem Analyzer.
  */
-export type StemAnalyzerInfo = {
+export type CreateStemAnalyzerOptions = {
   /**
    * Type of the Analyzer.
    */
   type: "stem";
+  /**
+   * Features to enable for this Analyzer.
+   */
+  features?: AnalyzerFeature[];
   /**
    * Additional properties for the Analyzer.
    *
@@ -115,374 +109,540 @@ export type StemAnalyzerInfo = {
 };
 
 /**
- * Properties of a Norm Analyzer.
+ * Options for creating a Norm Analyzer.
  */
-export type NormAnalyzerProperties = {
-  /**
-   * Text locale.
-   *
-   * Format: `language[_COUNTRY][.encoding][@variant]`
-   */
-  locale: string;
-  /**
-   * Case conversion.
-   *
-   * Default: `"lower"`
-   */
-  case?: "lower" | "none" | "upper";
-  /**
-   * Preserve accents in returned words.
-   *
-   * Default: `false`
-   */
-  accent?: boolean;
-};
-
-/**
- * Analyzer type and type-specific properties for a Norm Analyzer.
- */
-export type NormAnalyzerInfo = {
+export type CreateNormAnalyzerOptions = {
   /**
    * Type of the Analyzer.
    */
   type: "norm";
   /**
+   * Features to enable for this Analyzer.
+   */
+  features?: AnalyzerFeature[];
+  /**
    * Additional properties for the Analyzer.
    */
-  properties: NormAnalyzerProperties;
+  properties: {
+    /**
+     * Text locale.
+     *
+     * Format: `language[_COUNTRY][.encoding][@variant]`
+     */
+    locale: string;
+    /**
+     * Case conversion.
+     *
+     * Default: `"lower"`
+     */
+    case?: "lower" | "none" | "upper";
+    /**
+     * Preserve accents in returned words.
+     *
+     * Default: `false`
+     */
+    accent?: boolean;
+  };
 };
 
 /**
- * Properties of an Ngram Analyzer.
+ * Options for creating an Ngram Analyzer.
  */
-export type NgramAnalyzerProperties = {
-  /**
-   * Maximum n-gram length.
-   */
-  max: number;
-  /**
-   * Minimum n-gram length.
-   */
-  min: number;
-  /**
-   * Output the original value as well.
-   */
-  preserveOriginal: boolean;
-};
-
-/**
- * Analyzer type and type-specific properties for an Ngram Analyzer.
- */
-export type NgramAnalyzerInfo = {
+export type CreateNgramAnalyzerOptions = {
   /**
    * Type of the Analyzer.
    */
   type: "ngram";
   /**
+   * Features to enable for this Analyzer.
+   */
+  features?: AnalyzerFeature[];
+  /**
    * Additional properties for the Analyzer.
    */
-  properties: NgramAnalyzerProperties;
+  properties: {
+    /**
+     * Maximum n-gram length.
+     */
+    max: number;
+    /**
+     * Minimum n-gram length.
+     */
+    min: number;
+    /**
+     * Output the original value as well.
+     */
+    preserveOriginal: boolean;
+  };
 };
 
 /**
- * Properties of a Text Analyzer.
+ * Options for creating a Text Analyzer.
  */
-export type TextAnalyzerProperties = {
-  /**
-   * Text locale.
-   *
-   * Format: `language[_COUNTRY][.encoding][@variant]`
-   */
-  locale: string;
-  /**
-   * Case conversion.
-   *
-   * Default: `"lower"`
-   */
-  case?: "lower" | "none" | "upper";
-  /**
-   * Words to omit from result.
-   *
-   * Defaults to the words loaded from the file at `stopwordsPath`.
-   */
-  stopwords?: string[];
-  /**
-   * Path with a `language` sub-directory containing files with words to omit.
-   *
-   * Defaults to the path specified in the server-side environment variable
-   * `IRESEARCH_TEXT_STOPWORD_PATH` or the current working directory of the
-   * ArangoDB process.
-   */
-  stopwordsPath?: string;
-  /**
-   * Preserve accents in returned words.
-   *
-   * Default: `false`
-   */
-  accent?: boolean;
-  /**
-   * Apply stemming on returned words.
-   *
-   * Default: `true`
-   */
-  stemming?: boolean;
-  /**
-   * If present, then edge n-grams are generated for each token (word).
-   */
-  edgeNgram?: { min?: number; max?: number; preserveOriginal?: boolean };
-};
-
-/**
- * Analyzer type and type-specific properties for a Text Analyzer.
- */
-export type TextAnalyzerInfo = {
+export type CreateTextAnalyzerOptions = {
   /**
    * Type of the Analyzer.
    */
   type: "text";
   /**
-   * Additional properties for the Analyzer.
+   * Features to enable for this Analyzer.
    */
-  properties: TextAnalyzerProperties;
-};
-
-/**
- * Properties of a Pipeline Analyzer.
- */
-export type PipelineAnalyzerProperties = {
-  /**
-   * Definitions for Analyzers to chain in this Pipeline Analyzer.
-   */
-  pipeline: AnalyzerInfo[];
-};
-
-/**
- * Analyzer type and type-specific properties for a Pipeline Analyzer
- */
-export type PipelineAnalyzer = {
-  /**
-   * Type of the Analyzer.
-   */
-  type: "pipeline";
+  features?: AnalyzerFeature[];
   /**
    * Additional properties for the Analyzer.
    */
-  properties: PipelineAnalyzerProperties;
+  properties: {
+    /**
+     * Text locale.
+     *
+     * Format: `language[_COUNTRY][.encoding][@variant]`
+     */
+    locale: string;
+    /**
+     * Case conversion.
+     *
+     * Default: `"lower"`
+     */
+    case?: "lower" | "none" | "upper";
+    /**
+     * Words to omit from result.
+     *
+     * Defaults to the words loaded from the file at `stopwordsPath`.
+     */
+    stopwords?: string[];
+    /**
+     * Path with a `language` sub-directory containing files with words to omit.
+     *
+     * Defaults to the path specified in the server-side environment variable
+     * `IRESEARCH_TEXT_STOPWORD_PATH` or the current working directory of the
+     * ArangoDB process.
+     */
+    stopwordsPath?: string;
+    /**
+     * Preserve accents in returned words.
+     *
+     * Default: `false`
+     */
+    accent?: boolean;
+    /**
+     * Apply stemming on returned words.
+     *
+     * Default: `true`
+     */
+    stemming?: boolean;
+    /**
+     * If present, then edge n-grams are generated for each token (word).
+     */
+    edgeNgram?: { min?: number; max?: number; preserveOriginal?: boolean };
+  };
 };
 
 /**
- * Properties of an AQL Analyzer.
+ * Options for creating a Segmentation Analyzer
  */
-export type AqlAnalyzerProperties = {
-  /**
-   * AQL query to be executed.
-   */
-  queryString: string;
-  /**
-   * If set to `true`, the position is set to `0` for all members of the query result array.
-   *
-   * Default: `false`
-   */
-  collapsePositions?: boolean;
-  /**
-   * If set to `false`, `null` values will be discarded from the View index.
-   *
-   * Default: `true`
-   */
-  keepNull?: boolean;
-  /**
-   * Number between `1` and `1000` that determines the batch size for reading
-   * data from the query.
-   *
-   * Default: `1`
-   */
-  batchSize?: number;
-  /**
-   * Memory limit for query execution in bytes.
-   *
-   * Default: `1048576` (1 MiB)
-   */
-  memoryLimit?: number;
-  /**
-   * Data type of the returned tokens.
-   *
-   * Default: `"string"`
-   */
-  returnType?: "string" | "number" | "bool";
-};
-
-/**
- * Analyzer type and type-specific properties for an AQL Analyzer
- */
-export type AqlAnalyzer = {
-  /**
-   * Type of the Analyzer.
-   */
-  type: "aql";
-  /**
-   * Additional properties for the Analyzer.
-   */
-  properties: AqlAnalyzerProperties;
-};
-
-/**
- * Properties of a GeoJSON Analyzer.
- */
-export type GeoJsonAnalyzerProperties = {
-  /**
-   * If set to `"centroid"`, only the centroid of the input geometry will be
-   * computed and indexed.
-   *
-   * If set to `"point"` only GeoJSON objects of type Point will be indexed and
-   * all other geometry types will be ignored.
-   *
-   * Default: `"shape"`
-   */
-  type?: "shape" | "centroid" | "point";
-  /**
-   * Options for fine-tuning geo queries.
-   *
-   * Default: `{ maxCells: 20, minLevel: 4, maxLevel: 23 }`
-   */
-  options?: { maxCells?: number; minLevel?: number; maxLevel?: number };
-};
-
-/**
- * Analyzer type and type-specific properties for a GeoJSON Analyzer
- */
-export type GeoJsonAnalyzer = {
-  /**
-   * Type of the Analyzer.
-   */
-  type: "geojson";
-  /**
-   * Additional properties for the Analyzer.
-   */
-  properties: GeoJsonAnalyzerProperties;
-};
-
-/**
- * Properties of a GeoPoint Analyzer.
- */
-export type GeoPointAnalyzerProperties = {
-  /**
-   * Attribute paths of the latitude value relative to the field for which the
-   * Analyzer is defined in the View.
-   */
-  latitude?: string[];
-  /**
-   * Attribute paths of the longitude value relative to the field for which the
-   * Analyzer is defined in the View.
-   */
-  longitude?: string[];
-  /**
-   * Options for fine-tuning geo queries.
-   *
-   * Default: `{ maxCells: 20, minLevel: 4, maxLevel: 23 }`
-   */
-  options?: { minCells?: number; minLevel?: number; maxLevel?: number };
-};
-
-/**
- * Analyzer type and type-specific properties for a GeoPoint Analyzer
- */
-export type GeoPointAnalyzer = {
-  /**
-   * Type of the Analyzer.
-   */
-  type: "geopoint";
-  /**
-   * Additional properties for the Analyzer.
-   */
-  properties: GeoPointAnalyzerProperties;
-};
-
-/**
- * Properties of a Stopwords Analyzer.
- */
-export type StopwordsAnalyzerProperties = {
-  /**
-   * Array of strings that describe the tokens to be discarded.
-   */
-  stopwords: string[];
-  /**
-   * Whether stopword values should be interpreted as hex-encoded strings.
-   *
-   * Default: `false`
-   */
-  hex?: boolean;
-};
-
-/**
- * Analyzer type and type-specific properties for a Stopwords Analyzer
- */
-export type StopwordsAnalyzer = {
-  /**
-   * Type of the Analyzer.
-   */
-  type: "stopwords";
-  /**
-   * Additional properties for the Analyzer.
-   */
-  properties: StopwordsAnalyzerProperties;
-};
-
-/**
- * Properties of a Segmentation Analyzer.
- */
-export type SegmentationAnalyzerProperties = {
-  /**
-   * Which tokens should be returned.
-   *
-   * Default: `"alpha"`
-   */
-  break?: "all" | "alpha" | "graphic";
-  /**
-   * What case all returned tokens should be converted to if applicable.
-   *
-   * Default: `"none"`
-   */
-  case?: "lower" | "upper" | "none";
-};
-
-/**
- * Analyzer type and type-specific properties for a Segmentation Analyzer
- */
-export type SegmentationAnalyzer = {
+export type CreateSegmentationAnalyzerOptions = {
   /**
    * Type of the Analyzer.
    */
   type: "segmentation";
   /**
+   * Features to enable for this Analyzer.
+   */
+  features?: AnalyzerFeature[];
+  /**
    * Additional properties for the Analyzer.
    */
-  properties: SegmentationAnalyzerProperties;
+  properties: {
+    /**
+     * Which tokens should be returned.
+     *
+     * Default: `"alpha"`
+     */
+    break?: "all" | "alpha" | "graphic";
+    /**
+     * What case all returned tokens should be converted to if applicable.
+     *
+     * Default: `"none"`
+     */
+    case?: "lower" | "upper" | "none";
+  };
 };
 
 /**
- * Properties of a Collation Analyzer.
+ * Options for creating an AQL Analyzer
  */
-export type CollationAnalyzerProperties = {
+export type CreateAqlAnalyzerOptions = {
   /**
-   * Text locale.
-   *
-   * Format: `language[_COUNTRY][.encoding][@variant]`
+   * Type of the Analyzer.
    */
-  locale: string;
+  type: "aql";
+  /**
+   * Features to enable for this Analyzer.
+   */
+  features?: AnalyzerFeature[];
+  /**
+   * Additional properties for the Analyzer.
+   */
+  properties: {
+    /**
+     * AQL query to be executed.
+     */
+    queryString: string;
+    /**
+     * If set to `true`, the position is set to `0` for all members of the query result array.
+     *
+     * Default: `false`
+     */
+    collapsePositions?: boolean;
+    /**
+     * If set to `false`, `null` values will be discarded from the View index.
+     *
+     * Default: `true`
+     */
+    keepNull?: boolean;
+    /**
+     * Number between `1` and `1000` that determines the batch size for reading
+     * data from the query.
+     *
+     * Default: `1`
+     */
+    batchSize?: number;
+    /**
+     * Memory limit for query execution in bytes.
+     *
+     * Default: `1048576` (1 MiB)
+     */
+    memoryLimit?: number;
+    /**
+     * Data type of the returned tokens.
+     *
+     * Default: `"string"`
+     */
+    returnType?: "string" | "number" | "bool";
+  };
 };
 
 /**
- * Analyzer type and type-specific properties for a Collation Analyzer
+ * Options for creating a Pipeline Analyzer
  */
-export type CollationAnalyzer = {
+export type CreatePipelineAnalyzerOptions = {
+  /**
+   * Type of the Analyzer.
+   */
+  type: "pipeline";
+  /**
+   * Features to enable for this Analyzer.
+   */
+  features?: AnalyzerFeature[];
+  /**
+   * Additional properties for the Analyzer.
+   */
+  properties: {
+    /**
+     * Definitions for Analyzers to chain in this Pipeline Analyzer.
+     */
+    pipeline: Omit<CreateAnalyzerOptions, "features">[];
+  };
+};
+
+/**
+ * Options for creating a Stopwords Analyzer
+ */
+export type CreateStopwordsAnalyzerOptions = {
+  /**
+   * Type of the Analyzer.
+   */
+  type: "stopwords";
+  /**
+   * Features to enable for this Analyzer.
+   */
+  features?: AnalyzerFeature[];
+  /**
+   * Additional properties for the Analyzer.
+   */
+  properties: {
+    /**
+     * Array of strings that describe the tokens to be discarded.
+     */
+    stopwords: string[];
+    /**
+     * Whether stopword values should be interpreted as hex-encoded strings.
+     *
+     * Default: `false`
+     */
+    hex?: boolean;
+  };
+};
+
+/**
+ * Options for creating a Collation Analyzer
+ */
+export type CreateCollationAnalyzerOptions = {
   /**
    * Type of the Analyzer.
    */
   type: "collation";
   /**
+   * Features to enable for this Analyzer.
+   */
+  features?: AnalyzerFeature[];
+  /**
    * Additional properties for the Analyzer.
    */
-  properties: CollationAnalyzerProperties;
+  properties: {
+    /**
+     * Text locale.
+     *
+     * Format: `language[_COUNTRY][.encoding][@variant]`
+     */
+    locale: string;
+  };
+};
+
+/**
+ * Options for creating a GeoJSON Analyzer
+ */
+export type CreateGeoJsonAnalyzerOptions = {
+  /**
+   * Type of the Analyzer.
+   */
+  type: "geojson";
+  /**
+   * Features to enable for this Analyzer.
+   */
+  features?: AnalyzerFeature[];
+  /**
+   * Additional properties for the Analyzer.
+   */
+  properties: {
+    /**
+     * If set to `"centroid"`, only the centroid of the input geometry will be
+     * computed and indexed.
+     *
+     * If set to `"point"` only GeoJSON objects of type Point will be indexed and
+     * all other geometry types will be ignored.
+     *
+     * Default: `"shape"`
+     */
+    type?: "shape" | "centroid" | "point";
+    /**
+     * Options for fine-tuning geo queries.
+     *
+     * Default: `{ maxCells: 20, minLevel: 4, maxLevel: 23 }`
+     */
+    options?: { maxCells?: number; minLevel?: number; maxLevel?: number };
+  };
+};
+
+/**
+ * Options for creating a GeoPoint Analyzer
+ */
+export type CreateGeoPointAnalyzerOptions = {
+  /**
+   * Type of the Analyzer.
+   */
+  type: "geopoint";
+  /**
+   * Features to enable for this Analyzer.
+   */
+  features?: AnalyzerFeature[];
+  /**
+   * Additional properties for the Analyzer.
+   */
+  properties: {
+    /**
+     * Attribute paths of the latitude value relative to the field for which the
+     * Analyzer is defined in the View.
+     */
+    latitude?: string[];
+    /**
+     * Attribute paths of the longitude value relative to the field for which the
+     * Analyzer is defined in the View.
+     */
+    longitude?: string[];
+    /**
+     * Options for fine-tuning geo queries.
+     *
+     * Default: `{ maxCells: 20, minLevel: 4, maxLevel: 23 }`
+     */
+    options?: { minCells?: number; minLevel?: number; maxLevel?: number };
+  };
+};
+
+/**
+ * Shared attributes of all Analyzer descriptions.
+ */
+export type GenericAnalyzerDescription = {
+  /**
+   * A unique name for this Analyzer.
+   */
+  name: string;
+  /**
+   * Features enabled for this Analyzer.
+   */
+  features: AnalyzerFeature[];
+};
+
+/**
+ * An object describing an Analyzer.
+ */
+export type AnalyzerDescription =
+  | IdentityAnalyzerDescription
+  | DelimiterAnalyzerDescription
+  | StemAnalyzerDescription
+  | NormAnalyzerDescription
+  | NgramAnalyzerDescription
+  | TextAnalyzerDescription
+  | SegmentationAnalyzerDescription
+  | AqlAnalyzerDescription
+  | PipelineAnalyzerDescription
+  | StopwordsAnalyzerDescription
+  | CollationAnalyzerDescription
+  | GeoJsonAnalyzerDescription
+  | GeoPointAnalyzerDescription;
+
+/**
+ * An object describing an Identity Analyzer.
+ */
+export type IdentityAnalyzerDescription = GenericAnalyzerDescription & {
+  type: "identity";
+  properties: Record<string, never>;
+};
+
+/**
+ * An object describing a Delimiter Analyzer.
+ */
+export type DelimiterAnalyzerDescription = GenericAnalyzerDescription & {
+  type: "delimiter";
+  properties: { delimiter: string };
+};
+
+/**
+ * An object describing a Stem Analyzer.
+ */
+export type StemAnalyzerDescription = GenericAnalyzerDescription & {
+  type: "stem";
+  properties: { locale: string };
+};
+
+/**
+ * An object describing a Norm Analyzer.
+ */
+export type NormAnalyzerDescription = GenericAnalyzerDescription & {
+  type: "norm";
+  properties: {
+    locale: string;
+    case: "lower" | "none" | "upper";
+    accent: boolean;
+  };
+};
+
+/**
+ * An object describing an Ngram Analyzer.
+ */
+export type NgramAnalyzerDescription = GenericAnalyzerDescription & {
+  type: "ngram";
+  properties: {
+    max: number;
+    min: number;
+    preserveOriginal: boolean;
+  };
+};
+
+/**
+ * An object describing a Text Analyzer.
+ */
+export type TextAnalyzerDescription = GenericAnalyzerDescription & {
+  type: "text";
+  properties: {
+    locale: string;
+    case: "lower" | "none" | "upper";
+    stopwords: string[];
+    stopwordsPath: string;
+    accent: boolean;
+    stemming: boolean;
+    edgeNgram: { min: number; max: number; preserveOriginal: boolean };
+  };
+};
+
+/**
+ * An object describing a Segmentation Analyzer
+ */
+export type SegmentationAnalyzerDescription = GenericAnalyzerDescription & {
+  type: "segmentation";
+  properties: {
+    break: "all" | "alpha" | "graphic";
+    case: "lower" | "upper" | "none";
+  };
+};
+
+/**
+ * An object describing an AQL Analyzer
+ */
+export type AqlAnalyzerDescription = GenericAnalyzerDescription & {
+  type: "aql";
+  properties: {
+    queryString: string;
+    collapsePositions: boolean;
+    keepNull: boolean;
+    batchSize: number;
+    memoryLimit: number;
+    returnType: "string" | "number" | "bool";
+  };
+};
+
+/**
+ * An object describing a Pipeline Analyzer
+ */
+export type PipelineAnalyzerDescription = GenericAnalyzerDescription & {
+  type: "pipeline";
+  properties: {
+    pipeline: Omit<AnalyzerDescription, "name" | "features">[];
+  };
+};
+
+/**
+ * An object describing a Stopwords Analyzer
+ */
+export type StopwordsAnalyzerDescription = GenericAnalyzerDescription & {
+  type: "stopwords";
+  properties: {
+    stopwords: string[];
+    hex: boolean;
+  };
+};
+
+/**
+ * An object describing a Collation Analyzer
+ */
+export type CollationAnalyzerDescription = GenericAnalyzerDescription & {
+  type: "collation";
+  properties: {
+    locale: string;
+  };
+};
+
+/**
+ * An object describing a GeoJSON Analyzer
+ */
+export type GeoJsonAnalyzerDescription = GenericAnalyzerDescription & {
+  type: "geojson";
+  properties: {
+    type: "shape" | "centroid" | "point";
+    description: { maxCells: number; minLevel: number; maxLevel: number };
+  };
+};
+
+/**
+ * An object describing a GeoPoint Analyzer
+ */
+export type GeoPointAnalyzerDescription = GenericAnalyzerDescription & {
+  type: "geopoint";
+  properties: {
+    latitude: string[];
+    longitude: string[];
+    description: { minCells: number; minLevel: number; maxLevel: number };
+  };
 };
 
 /**
