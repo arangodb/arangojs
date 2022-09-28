@@ -54,6 +54,22 @@ method:
 +const db2 = db.database("database2");
 ```
 
+### Queries
+
+The functions `aql.literal` and `aql.join` are no longer available as methods
+on the `aql` template handler and need to be imported separately:
+
+```diff
+ import { aql } from "arangojs";
++import { join } from "arangojs/aql";
+
+-const filters = aql.join([
++const filters = join([
+   aql`FILTER size == 'big'`,
+   aql`FILTER color == 'yellow'`
+ ]);
+```
+
 ### Users
 
 The return values of `db.getUserDatabases` and `db.getUserAccessLevel` have

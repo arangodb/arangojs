@@ -132,6 +132,11 @@ This driver uses semantic versioning:
   console.log(first.index, first.squared); // 1 1
   ```
 
+- Moved `aql.literal` and `aql.join` into `aql` module
+
+  Previously these were available as methods on the `aql` function. Now they
+  need to be imported from the `aql` module.
+
 - Changed return values of `db.getUserAccessLevel` and `db.getUserDatabases`
   to match documented return types
 
@@ -247,6 +252,11 @@ This driver uses semantic versioning:
 - Added missing `deduplicate` and `estimates` fields to `PersistentIndex` type
 
 - Added new ArangoDB 3.10 `db.queryRules` method
+
+- Added support for `Analyzer` in `aql` templates
+
+  `Analyzer` objects can now be passed into `aql` templates like `View` and
+  `ArangoCollection` objects.
 
 ## [7.8.0] - 2022-05-19
 

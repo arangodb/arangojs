@@ -10,6 +10,7 @@
  *
  * @packageDocumentation
  */
+import { isArangoAnalyzer } from "./analyzer";
 import { ArangoCollection, isArangoCollection } from "./collection";
 import { Graph, isArangoGraph } from "./graph";
 import { isArangoView, View } from "./view";
@@ -51,7 +52,7 @@ export interface GeneratedAqlQuery extends AqlQuery {
  * when used in an AQL template or passed to AQL helper functions.
  *
  * Arbitrary values can be converted to trusted AQL literals by passing them
- * to the {@link aql.literal} helper function.
+ * to the {@link literal} helper function.
  */
 export interface AqlLiteral {
   /**
@@ -244,7 +245,8 @@ export function aql(
     if (
       isArangoCollection(rawValue) ||
       isArangoGraph(rawValue) ||
-      isArangoView(rawValue)
+      isArangoView(rawValue) ||
+      isArangoAnalyzer(rawValue)
     ) {
       name = `@${name}`;
       value = rawValue.name;
@@ -262,153 +264,144 @@ export function aql(
   };
 }
 
-// eslint-disable-next-line @typescript-eslint/no-namespace
-export namespace aql {
-  /**
-   * Marks an arbitrary scalar value (i.e. a string, number or boolean) as
-   * safe for being inlined directly into AQL queries when used in an `aql`
-   * template string, rather than being converted into a bind parameter.
-   *
-   * **Note**: Nesting `aql` template strings is a much safer alternative for
-   * most use cases. This low-level helper function only exists to help with
-   * rare edge cases where a trusted AQL query fragment must be read from a
-   * string (e.g. when reading query fragments from JSON) and should only be
-   * used as a last resort.
-   *
-   * @example
-   * ```js
-   * // BAD! DO NOT DO THIS!
-   * const sortDirection = aql.literal('ASC');
-   *
-   * // GOOD! DO THIS INSTEAD!
-   * const sortDirection = aql`ASC`;
-   * ```
-   *
-   * @example
-   * ```js
-   * // BAD! DO NOT DO THIS!
-   * const filterColor = aql.literal('FILTER d.color == "green"');
-   * const result = await db.query(aql`
-   *   FOR d IN some-collection
-   *   ${filterColor}
-   *   RETURN d
-   * `);
-   *
-   * // GOOD! DO THIS INSTEAD!
-   * const color = "green";
-   * const filterColor = aql`FILTER d.color === ${color}`;
-   * const result = await db.query(aql`
-   *   FOR d IN some-collection
-   *   ${filterColor}
-   *   RETURN d
-   * `);
-   * ```
-   *
-   * @example
-   * ```js
-   * // WARNING: We explicitly trust the environment variable to be safe!
-   * const filter = aql.literal(process.env.FILTER_STATEMENT);
-   * const users = await db.query(aql`
-   *   FOR user IN users
-   *   ${filter}
-   *   RETURN user
-   * `);
-   * ```
-   */
-  export function literal(
-    value: string | number | boolean | AqlLiteral | null | undefined
-  ): AqlLiteral {
-    if (isAqlLiteral(value)) {
-      return value;
-    }
-    return {
-      toAQL() {
-        if (value === undefined) {
-          return "";
-        }
-        return String(value);
-      },
-    };
+/**
+ * Marks an arbitrary scalar value (i.e. a string, number or boolean) as
+ * safe for being inlined directly into AQL queries when used in an `aql`
+ * template string, rather than being converted into a bind parameter.
+ *
+ * **Note**: Nesting `aql` template strings is a much safer alternative for
+ * most use cases. This low-level helper function only exists to help with
+ * rare edge cases where a trusted AQL query fragment must be read from a
+ * string (e.g. when reading query fragments from JSON) and should only be
+ * used as a last resort.
+ *
+ * @example
+ * ```js
+ * // BAD! DO NOT DO THIS!
+ * const sortDirection = literal('ASC');
+ *
+ * // GOOD! DO THIS INSTEAD!
+ * const sortDirection = aql`ASC`;
+ * ```
+ *
+ * @example
+ * ```js
+ * // BAD! DO NOT DO THIS!
+ * const filterColor = literal('FILTER d.color == "green"');
+ * const result = await db.query(aql`
+ *   FOR d IN some-collection
+ *   ${filterColor}
+ *   RETURN d
+ * `);
+ *
+ * // GOOD! DO THIS INSTEAD!
+ * const color = "green";
+ * const filterColor = aql`FILTER d.color === ${color}`;
+ * const result = await db.query(aql`
+ *   FOR d IN some-collection
+ *   ${filterColor}
+ *   RETURN d
+ * `);
+ * ```
+ *
+ * @example
+ * ```js
+ * // WARNING: We explicitly trust the environment variable to be safe!
+ * const filter = literal(process.env.FILTER_STATEMENT);
+ * const users = await db.query(aql`
+ *   FOR user IN users
+ *   ${filter}
+ *   RETURN user
+ * `);
+ * ```
+ */
+export function literal(
+  value: string | number | boolean | AqlLiteral | null | undefined
+): AqlLiteral {
+  if (isAqlLiteral(value)) {
+    return value;
   }
+  return {
+    toAQL() {
+      if (value === undefined) {
+        return "";
+      }
+      return String(value);
+    },
+  };
+}
 
-  /**
-   * Constructs {@link AqlQuery} objects from an array of arbitrary values.
-   *
-   * **Note**: Nesting `aql` template strings is a much safer alternative
-   * for most use cases. This low-level helper function only exists to
-   * complement the `aql` tag when constructing complex queries from dynamic
-   * arrays of query fragments.
-   *
-   * @param values - Array of values to join. These values will behave exactly
-   * like values interpolated in an `aql` template string.
-   * @param sep - Seperator to insert between values. This value will behave
-   * exactly like a value passed to {@link literal}, i.e. it will be
-   * inlined as-is, rather than being converted into a bind parameter.
-   *
-   * @example
-   * ```js
-   * const users = db.collection("users");
-   * const filters = [];
-   * if (adminsOnly) filters.push(aql`FILTER user.admin`);
-   * if (activeOnly) filters.push(aql`FILTER user.active`);
-   * const result = await db.query(aql`
-   *   FOR user IN ${users}
-   *   ${aql.join(filters)}
-   *   RETURN user
-   * `);
-   * ```
-   *
-   * @example
-   * ```js
-   * const users = db.collection("users");
-   * const keys = ["jreyes", "ghermann"];
-   *
-   * // BAD! NEEDLESSLY COMPLEX!
-   * const docs = keys.map(key => aql`DOCUMENT(${users}, ${key}`));
-   * const result = await db.query(aql`
-   *   FOR user IN [
-   *     ${aql.join(docs, ", ")}
-   *   ]
-   *   RETURN user
-   * `);
-   * // Query:
-   * //   FOR user IN [
-   * //     DOCUMENT(@@value0, @value1), DOCUMENT(@@value0, @value2)
-   * //   ]
-   * //   RETURN user
-   * // Bind parameters:
-   * //   @value0 -> "users"
-   * //   value1 -> "jreyes"
-   * //   value2 -> "ghermann"
-   *
-   * // GOOD! MUCH SIMPLER!
-   * const result = await db.query(aql`
-   *   FOR key IN ${keys}
-   *   LET user = DOCUMENT(${users}, key)
-   *   RETURN user
-   * `);
-   * // Query:
-   * //   FOR user IN @value0
-   * //   LET user = DOCUMENT(@@value1, key)
-   * //   RETURN user
-   * // Bind parameters:
-   * //   value0 -> ["jreyes", "ghermann"]
-   * //   @value1 -> "users"
-   * ```
-   */
-  export function join(
-    values: AqlValue[],
-    sep: string = " "
-  ): GeneratedAqlQuery {
-    if (!values.length) {
-      return aql``;
-    }
-    if (values.length === 1) {
-      return aql`${values[0]}`;
-    }
-    return aql(
-      ["", ...Array(values.length - 1).fill(sep), ""] as any,
-      ...values
-    );
+/**
+ * Constructs {@link AqlQuery} objects from an array of arbitrary values.
+ *
+ * **Note**: Nesting `aql` template strings is a much safer alternative
+ * for most use cases. This low-level helper function only exists to
+ * complement the `aql` tag when constructing complex queries from dynamic
+ * arrays of query fragments.
+ *
+ * @param values - Array of values to join. These values will behave exactly
+ * like values interpolated in an `aql` template string.
+ * @param sep - Seperator to insert between values. This value will behave
+ * exactly like a value passed to {@link literal}, i.e. it will be
+ * inlined as-is, rather than being converted into a bind parameter.
+ *
+ * @example
+ * ```js
+ * const users = db.collection("users");
+ * const filters = [];
+ * if (adminsOnly) filters.push(aql`FILTER user.admin`);
+ * if (activeOnly) filters.push(aql`FILTER user.active`);
+ * const result = await db.query(aql`
+ *   FOR user IN ${users}
+ *   ${join(filters)}
+ *   RETURN user
+ * `);
+ * ```
+ *
+ * @example
+ * ```js
+ * const users = db.collection("users");
+ * const keys = ["jreyes", "ghermann"];
+ *
+ * // BAD! NEEDLESSLY COMPLEX!
+ * const docs = keys.map(key => aql`DOCUMENT(${users}, ${key}`));
+ * const result = await db.query(aql`
+ *   FOR user IN [
+ *     ${join(docs, ", ")}
+ *   ]
+ *   RETURN user
+ * `);
+ * // Query:
+ * //   FOR user IN [
+ * //     DOCUMENT(@@value0, @value1), DOCUMENT(@@value0, @value2)
+ * //   ]
+ * //   RETURN user
+ * // Bind parameters:
+ * //   @value0 -> "users"
+ * //   value1 -> "jreyes"
+ * //   value2 -> "ghermann"
+ *
+ * // GOOD! MUCH SIMPLER!
+ * const result = await db.query(aql`
+ *   FOR key IN ${keys}
+ *   LET user = DOCUMENT(${users}, key)
+ *   RETURN user
+ * `);
+ * // Query:
+ * //   FOR user IN @value0
+ * //   LET user = DOCUMENT(@@value1, key)
+ * //   RETURN user
+ * // Bind parameters:
+ * //   value0 -> ["jreyes", "ghermann"]
+ * //   @value1 -> "users"
+ * ```
+ */
+export function join(values: AqlValue[], sep: string = " "): GeneratedAqlQuery {
+  if (!values.length) {
+    return aql``;
   }
+  if (values.length === 1) {
+    return aql`${values[0]}`;
+  }
+  return aql(["", ...Array(values.length - 1).fill(sep), ""] as any, ...values);
 }
