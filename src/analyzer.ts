@@ -42,6 +42,9 @@ export type CreateAnalyzerOptions =
   | CreatePipelineAnalyzerOptions
   | CreateStopwordsAnalyzerOptions
   | CreateCollationAnalyzerOptions
+  | CreateMinHashAnalyzerOptions
+  | CreateClassificationAnalyzerOptions
+  | CreateNearestNeighborsAnalyzerOptions
   | CreateGeoJsonAnalyzerOptions
   | CreateGeoPointAnalyzerOptions;
 
@@ -400,6 +403,97 @@ export type CreateCollationAnalyzerOptions = {
 };
 
 /**
+ * Options for creating a MinHash Analyzer
+ */
+export type CreateMinHashAnalyzerOptions = {
+  /**
+   * Type of the Analyzer.
+   */
+  type: "minhash";
+  /**
+   * Features to enable for this Analyzer.
+   */
+  features?: AnalyzerFeature[];
+  /**
+   * Additional properties for the Analyzer.
+   */
+  properties: {
+    /**
+     * An Analyzer definition-like object with `type` and `properties` attributes.
+     */
+    analyzer: Omit<CreateAnalyzerOptions, "features">;
+    /**
+     * Size of the MinHash signature.
+     */
+    numHashes: number;
+  };
+};
+
+/**
+ * Options for creating a Classification Analyzer
+ */
+export type CreateClassificationAnalyzerOptions = {
+  /**
+   * Type of the Analyzer.
+   */
+  type: "classification";
+  /**
+   * Features to enable for this Analyzer.
+   */
+  features?: AnalyzerFeature[];
+  /**
+   * Additional properties for the Analyzer.
+   */
+  properties: {
+    /**
+     * On-disk path to the trained fastText supervised model.
+     */
+    model_location: string;
+    /**
+     * Number of class labels that will be produced per input.
+     *
+     * Default: `1`
+     */
+    top_k?: number;
+    /**
+     * Probability threshold for which a label will be assigned to an input.
+     *
+     * Default: `0.99`
+     */
+    threshold?: number;
+  };
+};
+
+/**
+ * Options for creating a NearestNeighbors Analyzer
+ */
+export type CreateNearestNeighborsAnalyzerOptions = {
+  /**
+   * Type of the Analyzer.
+   */
+  type: "nearest_neighbors";
+  /**
+   * Features to enable for this Analyzer.
+   */
+  features?: AnalyzerFeature[];
+  /**
+   * Additional properties for the Analyzer.
+   */
+  properties: {
+    /**
+     * On-disk path to the trained fastText supervised model.
+     */
+    model_location: string;
+    /**
+     * Number of class labels that will be produced per input.
+     *
+     * Default: `1`
+     */
+    top_k?: number;
+  };
+};
+
+/**
  * Options for creating a GeoJSON Analyzer
  */
 export type CreateGeoJsonAnalyzerOptions = {
@@ -498,6 +592,9 @@ export type AnalyzerDescription =
   | PipelineAnalyzerDescription
   | StopwordsAnalyzerDescription
   | CollationAnalyzerDescription
+  | MinHashAnalyzerDescription
+  | ClassificationAnalyzerDescription
+  | NearestNeighborsAnalyzerDescription
   | GeoJsonAnalyzerDescription
   | GeoPointAnalyzerDescription;
 
@@ -619,6 +716,40 @@ export type CollationAnalyzerDescription = GenericAnalyzerDescription & {
   type: "collation";
   properties: {
     locale: string;
+  };
+};
+
+/**
+ * (Enterprise Edition only.) An object describing a MinHash Analyzer
+ */
+export type MinHashAnalyzerDescription = GenericAnalyzerDescription & {
+  type: "minhash";
+  properties: {
+    analyzer: Omit<AnalyzerDescription, "name" | "features">;
+    numHashes: number;
+  };
+};
+
+/**
+ * (Enterprise Edition only.) An object describing a Classification Analyzer
+ */
+export type ClassificationAnalyzerDescription = GenericAnalyzerDescription & {
+  type: "classification";
+  properties: {
+    model_location: string;
+    top_k: number;
+    threshold: number;
+  };
+};
+
+/**
+ * (Enterprise Edition only.) An object describing a NearestNeighbors Analyzer
+ */
+export type NearestNeighborsAnalyzerDescription = GenericAnalyzerDescription & {
+  type: "nearest_neighbors";
+  properties: {
+    model_location: string;
+    top_k: number;
   };
 };
 

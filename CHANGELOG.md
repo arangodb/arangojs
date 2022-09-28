@@ -218,6 +218,9 @@ This driver uses semantic versioning:
 
 - Added support for new ArangoDB 3.10 `offset` Analyzer feature
 
+- Added support for new ArangoDB 3.10 `minhash`, `classification` and
+  `nearest_neighbors` Analyzer types
+
 - Added missing `replicationFactor` and `writeConcern` options to
   `CollectionPropertiesOptions` type
 
