@@ -78,6 +78,13 @@ This driver uses semantic versioning:
 
   This attribute has been replaced with `response.arangojsHostUrl`.
 
+- Removed `CollectionStatus` and `CollectionType` enum re-exports
+
+  Previously these would be re-exported by the arangojs module for backwards
+  compatibility. If you still need to access these enums, you can import them
+  from the `collection` sub-module instead. Note that the `ViewType` enum
+  has been removed completely.
+
 ### Changed
 
 - Changed default URL to `http://127.0.0.1:8529` to match ArangoDB default
@@ -130,6 +137,11 @@ This driver uses semantic versioning:
   console.log(first.index, first.squared); // 1 1
   ```
 
+- Moved `aql.literal` and `aql.join` into `aql` module
+
+  Previously these were available as methods on the `aql` function. Now they
+  need to be imported from the `aql` module.
+
 - Changed return values of `db.getUserAccessLevel` and `db.getUserDatabases`
   to match documented return types
 
@@ -169,15 +181,20 @@ This driver uses semantic versioning:
 
 - Renamed type `PrimarySortCompression` to `Compression`
 
-- Changed generic type `View` to take additional `CreateOptions` type argument
-
-- Replaced `AnalyzerInfo` type and all its constituent types
+- Replaced type `AnalyzerInfo` and all its constituent types
 
   Previously each type of Analyzer was represented by an `AnalyzerInfo` type
   and (where relevant) an `AnalyzerProperties` type, which were used for both
   creating and fetching Analyzers. The new types more closely follow the
   pattern already used for index types, providing pairs of
   `CreateAnalyzerOptions` and `AnalyzerDescription` types.
+
+- Removed enum `ViewType`, type `ArangoSearchView` and changed `View` class to
+  be non-generic
+
+  The `View` class now behaves analogous to the `Analyzer` class. The various
+  types related to different view types have been restructured to more closely
+  follow the pattern used for indexes and analyzers.
 
 ### Deprecated
 
@@ -240,6 +257,11 @@ This driver uses semantic versioning:
 - Added missing `deduplicate` and `estimates` fields to `PersistentIndex` type
 
 - Added new ArangoDB 3.10 `db.queryRules` method
+
+- Added support for `Analyzer` in `aql` templates
+
+  `Analyzer` objects can now be passed into `aql` templates like `View` and
+  `ArangoCollection` objects.
 
 ## [7.8.0] - 2022-05-19
 
