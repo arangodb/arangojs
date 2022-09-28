@@ -169,7 +169,15 @@ This driver uses semantic versioning:
 
 - Renamed type `PrimarySortCompression` to `Compression`
 
-- Modified generic type `View` to take additional `CreateOptions` type argument
+- Changed generic type `View` to take additional `CreateOptions` type argument
+
+- Replaced `AnalyzerInfo` type and all its constituent types
+
+  Previously each type of Analyzer was represented by an `AnalyzerInfo` type
+  and (where relevant) an `AnalyzerProperties` type, which were used for both
+  creating and fetching Analyzers. The new types more closely follow the
+  pattern already used for index types, providing pairs of
+  `CreateAnalyzerOptions` and `AnalyzerDescription` types.
 
 ### Deprecated
 
@@ -214,6 +222,9 @@ This driver uses semantic versioning:
 - Added support for new ArangoDB 3.10 `InvertedIndex` type
 
 - Added support for new ArangoDB 3.10 `offset` Analyzer feature
+
+- Added support for new ArangoDB 3.10 `minhash`, `classification` and
+  `nearest_neighbors` Analyzer types
 
 - Added missing `replicationFactor` and `writeConcern` options to
   `CollectionPropertiesOptions` type
