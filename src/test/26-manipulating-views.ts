@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import { Database } from "../database";
-import { ArangoSearchView } from "../view";
+import { ArangoSearchViewProperties, View } from "../view";
 import { config } from "./_config";
 
 // NOTE These tests will not reliably work in a cluster.
@@ -10,7 +10,7 @@ const describeNLB =
 describe("Manipulating views", function () {
   const name = `testdb_${Date.now()}`;
   let system: Database, db: Database;
-  let view: ArangoSearchView;
+  let view: View;
   before(async () => {
     system = new Database(config);
     if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE")
@@ -26,7 +26,7 @@ describe("Manipulating views", function () {
   });
   beforeEach(async () => {
     view = db.view(`v-${Date.now()}`);
-    await view.create();
+    await view.create({ type: "arangosearch" });
     await db.waitForPropagation({ path: `/_api/view/${view.name}` }, 10000);
   });
   afterEach(async () => {
@@ -40,7 +40,7 @@ describe("Manipulating views", function () {
   describe("view.create", () => {
     it("creates a new arangosearch view", async () => {
       const view = db.view(`asv-${Date.now()}`);
-      await view.create();
+      await view.create({ type: "arangosearch" });
       await db.waitForPropagation({ path: `/_api/view/${view.name}` }, 10000);
       const info = await view.get();
       expect(info).to.have.property("name", view.name);
@@ -49,7 +49,7 @@ describe("Manipulating views", function () {
   });
   describe("view.updateProperties", () => {
     it("should not overwrite properties", async () => {
-      const initial = await view.properties();
+      const initial = (await view.properties()) as ArangoSearchViewProperties;
       expect(initial.consolidationIntervalMsec).not.to.equal(45000);
       const oldProps = await view.updateProperties({
         consolidationIntervalMsec: 45000,
@@ -65,7 +65,7 @@ describe("Manipulating views", function () {
   });
   describe("view.replaceProperties", () => {
     it("should overwrite properties", async () => {
-      const initial = await view.properties();
+      const initial = (await view.properties()) as ArangoSearchViewProperties;
       expect(initial.consolidationIntervalMsec).not.to.equal(45000);
       const oldProps = await view.replaceProperties({
         consolidationIntervalMsec: 45000,

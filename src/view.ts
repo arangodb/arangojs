@@ -13,18 +13,6 @@ import { isArangoError } from "./error";
 import { VIEW_NOT_FOUND } from "./lib/codes";
 
 /**
- * Sorting direction. Descending or ascending.
- */
-export type Direction = "desc" | "asc";
-
-/**
- * String values indicating the View type.
- */
-export enum ViewType {
-  ARANGOSEARCH_VIEW = "arangosearch",
-}
-
-/**
  * Indicates whether the given value represents a {@link View}.
  *
  * @param view - A value that might be a View.
@@ -34,139 +22,9 @@ export function isArangoView(view: any): view is View {
 }
 
 /**
- * Generic description of a View.
+ * Sorting direction. Descending or ascending.
  */
-export type ViewDescription = {
-  /**
-   * A globally unique identifier for this View.
-   */
-  globallyUniqueId: string;
-  /**
-   * An identifier for this View.
-   */
-  id: string;
-  /**
-   * Name of the View.
-   */
-  name: string;
-  /**
-   * Type of the View.
-   */
-  type: ViewType;
-};
-
-/**
- * A link definition for an ArangoSearch View.
- */
-export type ArangoSearchViewLink = {
-  /**
-   * A list of names of Analyzers to apply to values of processed document
-   * attributes.
-   */
-  analyzers: string[];
-  /**
-   * An object mapping names of attributes to process for each document to
-   * {@link ArangoSearchViewLink} definitions.
-   */
-  fields: Record<string, ArangoSearchViewLink>;
-  /**
-   * If set to `true`, all document attributes will be processed, otherwise
-   * only the attributes in `fields` will be processed.
-   */
-  includeAllFields: boolean;
-  /**
-   * (Enterprise Edition only.) An object mapping attribute names to
-   * {@link ArangoSearchViewLink} definitions to index sub-objects stored in an
-   * array.
-   */
-  nested?: Record<string, ArangoSearchViewLink>;
-  /**
-   * If set to `true`, the position of values in array values will be tracked,
-   * otherwise all values in an array will be treated as equal alternatives.
-   */
-  trackListPositions: boolean;
-  /**
-   * Controls how the view should keep track of the attribute values.
-   */
-  storeValues: "none" | "id";
-};
-
-/**
- * Properties of an ArangoSearch View.
- */
-export type ArangoSearchViewProperties = {
-  /**
-   * How many commits to wait between removing unused files.
-   */
-  cleanupIntervalStep: number;
-  /**
-   * How long to wait between applying the `consolidationPolicy`.
-   */
-  consolidationIntervalMsec: number;
-  /**
-   * How long to wait between commiting View data store changes and making
-   * documents visible to queries.
-   */
-  commitIntervalMsec: number;
-  /**
-   * Maximum number of writers cached in the pool.
-   */
-  writebufferIdle: number;
-  /**
-   * Maximum number of concurrent active writers that perform a transaction.
-   */
-  writebufferActive: number;
-  /**
-   * Maximum memory byte size per writer before a writer flush is triggered.
-   */
-  writebufferSizeMax: number;
-  /**
-   * Consolidation policy to apply for selecting which segments should be
-   * merged.
-   */
-  consolidationPolicy: TierConsolidationPolicy;
-  /**
-   * Attribute path (`field`) for the value of each document that is
-   * used for sorting.
-   */
-  primarySort: {
-    /**
-     * Attribute path for the value of each document used for
-     * sorting.
-     */
-    field: string;
-    /**
-     * The sorting direction.
-     */
-    direction: Direction;
-  }[];
-  /**
-   * Compression to use for the primary sort data.
-   *
-   * Default: `"lz4"`
-   */
-  primarySortCompression: Compression;
-  /**
-   * Attribute paths for which values should be stored in the view index
-   * in addition to those used for sorting via `primarySort`.
-   */
-  storedValues: {
-    /**
-     * Attribute paths for which values should be stored in the view index
-     * in addition to those used for sorting via `primarySort`.
-     */
-    fields: string[];
-    /**
-     * How the attribute values should be compressed.
-     */
-    compression: Compression;
-  }[];
-  /**
-   * An object mapping names of linked collections to
-   * {@link ArangoSearchViewLink} definitions.
-   */
-  links: Record<string, Omit<ArangoSearchViewLink, "nested">>;
-};
+export type Direction = "desc" | "asc";
 
 /**
  * Policy to consolidate if the sum of all candidate segment byte size is less
@@ -216,6 +74,27 @@ export type TierConsolidationPolicy = {
  * Compression for storing data.
  */
 export type Compression = "lz4" | "none";
+
+/**
+ * Options for creating a View.
+ */
+export type CreateViewOptions =
+  | CreateArangoSearchViewOptions
+  | CreateSearchAliasViewOptions;
+
+/**
+ * Options for replacing a View's properties.
+ */
+export type ViewPropertiesOptions =
+  | ArangoSearchViewPropertiesOptions
+  | SearchAliasViewPropertiesOptions;
+
+/**
+ * Options for partially modifying a View's properties.
+ */
+export type ViewPatchPropertiesOptions =
+  | ArangoSearchViewPropertiesOptions
+  | SearchAliasViewPatchPropertiesOptions;
 
 /**
  * A link definition for an ArangoSearch View.
@@ -304,10 +183,20 @@ export type ArangoSearchViewPropertiesOptions = {
 };
 
 /**
+ * Options for partially modifying the properties of an ArangoSearch View.
+ */
+export type ArangoSearchViewPatchPropertiesOptions =
+  ArangoSearchViewPropertiesOptions;
+
+/**
  * Options for creating an ArangoSearch View.
  */
 export type CreateArangoSearchViewOptions =
   ArangoSearchViewPropertiesOptions & {
+    /**
+     * Type of the View.
+     */
+    type: "arangosearch";
     /**
      * Maximum number of writers cached in the pool.
      *
@@ -388,16 +277,141 @@ export type CreateArangoSearchViewOptions =
   };
 
 /**
- * Represents a View in a {@link database.Database}.
- *
- * See {@link ArangoSearchView} for the concrete type representing an
- * ArangoSearch View.
+ * Options defining an index used in a SearchAlias View.
  */
-export class View<
-  PropertiesOptions extends Record<string, any> = any,
-  Properties extends Record<string, any> = Required<PropertiesOptions>,
-  CreateOptions extends Record<string, any> = PropertiesOptions
-> {
+export type SearchAliasViewIndexOptions = {
+  /**
+   *  Name of a collection.
+   */
+  collection: string;
+  /**
+   * Name of an inverted index in the collection.
+   */
+  index: string;
+};
+
+/**
+ * Options for modifying the properties of a SearchAlias View.
+ */
+export type SearchAliasViewPropertiesOptions = {
+  /**
+   * An array of inverted indexes to add to the View.
+   */
+  indexes: SearchAliasViewIndexOptions[];
+};
+
+/**
+ * Options defining an index to be modified in a SearchAlias View.
+ */
+export type SearchAliasViewPatchIndexOptions = SearchAliasViewIndexOptions & {
+  /**
+   * Whether to add or remove the index.
+   *
+   * Default: `"add"`
+   */
+  operation?: "add" | "del";
+};
+
+/**
+ * Options for partially modifying the properties of a SearchAlias View.
+ */
+export type SearchAliasViewPatchPropertiesOptions = {
+  /**
+   * An array of inverted indexes to add to the View.
+   */
+  indexes: SearchAliasViewPatchIndexOptions[];
+};
+
+/**
+ * Options for creating a SearchAlias View.
+ */
+export type CreateSearchAliasViewOptions = SearchAliasViewPropertiesOptions & {
+  /**
+   * Type of the View.
+   */
+  type: "search-alias";
+};
+
+/**
+ * Generic description of a View.
+ */
+export type GenericViewDescription = {
+  /**
+   * A globally unique identifier for this View.
+   */
+  globallyUniqueId: string;
+  /**
+   * An identifier for this View.
+   */
+  id: string;
+  /**
+   * Name of the View.
+   */
+  name: string;
+};
+
+export type ViewDescription =
+  | ArangoSearchViewDescription
+  | SearchAliasViewDescription;
+
+export type ArangoSearchViewDescription = GenericViewDescription & {
+  type: "arangosearch";
+};
+
+export type SearchAliasViewDescription = GenericViewDescription & {
+  type: "search-alias";
+};
+
+export type ViewProperties =
+  | ArangoSearchViewProperties
+  | SearchAliasViewProperties;
+
+/**
+ * A link definition for an ArangoSearch View.
+ */
+export type ArangoSearchViewLink = {
+  analyzers: string[];
+  fields: Record<string, ArangoSearchViewLink>;
+  includeAllFields: boolean;
+  nested?: Record<string, ArangoSearchViewLink>;
+  trackListPositions: boolean;
+  storeValues: "none" | "id";
+};
+
+/**
+ * Properties of an ArangoSearch View.
+ */
+export type ArangoSearchViewProperties = ArangoSearchViewDescription & {
+  cleanupIntervalStep: number;
+  consolidationIntervalMsec: number;
+  commitIntervalMsec: number;
+  writebufferIdle: number;
+  writebufferActive: number;
+  writebufferSizeMax: number;
+  consolidationPolicy: TierConsolidationPolicy;
+  primarySort: {
+    field: string;
+    direction: Direction;
+  }[];
+  primarySortCompression: Compression;
+  storedValues: {
+    fields: string[];
+    compression: Compression;
+  }[];
+  links: Record<string, Omit<ArangoSearchViewLink, "nested">>;
+};
+
+/**
+ * Properties of a SearchAlias View.
+ */
+export type SearchAliasViewProperties = SearchAliasViewDescription & {
+  indexes: { collection: string; index: string }[];
+};
+
+/**
+ * Represents a View in a {@link database.Database}.
+ */
+export class View {
   protected _name: string;
   protected _db: Database;
 
@@ -478,15 +492,20 @@ export class View<
    * // the ArangoSearch View "potatoes" now exists
    * ```
    */
-  create(
-    options?: CreateOptions & { type: ViewType }
-  ): Promise<ViewDescription & Properties> {
+  create<Options extends CreateViewOptions>(
+    options: CreateViewOptions
+  ): Promise<
+    typeof options extends CreateArangoSearchViewOptions
+      ? ArangoSearchViewDescription
+      : Options extends CreateSearchAliasViewOptions
+      ? SearchAliasViewDescription
+      : ViewDescription
+  > {
     return this._db.request({
       method: "POST",
       path: "/_api/view",
       body: {
-        type: ViewType.ARANGOSEARCH_VIEW,
-        ...(options ?? {}),
+        ...options,
         name: this._name,
       },
     });
@@ -531,7 +550,7 @@ export class View<
    * // data contains the View's properties
    * ```
    */
-  properties(): Promise<ArangoApiResponse<ViewDescription & Properties>> {
+  properties(): Promise<ArangoApiResponse<ViewProperties>> {
     return this._db.request({
       path: `/_api/view/${encodeURIComponent(this._name)}/properties`,
     });
@@ -552,9 +571,15 @@ export class View<
    * console.log(result.consolidationIntervalMsec); // 234
    * ```
    */
-  updateProperties(
-    properties?: PropertiesOptions
-  ): Promise<ViewDescription & Properties> {
+  updateProperties<Properties extends ViewPatchPropertiesOptions | undefined>(
+    properties?: Properties
+  ): Promise<
+    Properties extends ArangoSearchViewPatchPropertiesOptions
+      ? ArangoSearchViewProperties
+      : Properties extends SearchAliasViewPatchPropertiesOptions
+      ? SearchAliasViewProperties
+      : ViewProperties
+  > {
     return this._db.request({
       method: "PATCH",
       path: `/_api/view/${encodeURIComponent(this._name)}/properties`,
@@ -577,9 +602,15 @@ export class View<
    * console.log(result.consolidationIntervalMsec); // 234
    * ```
    */
-  replaceProperties(
-    properties?: PropertiesOptions
-  ): Promise<ViewDescription & Properties> {
+  replaceProperties<Properties extends ViewPropertiesOptions | undefined>(
+    properties?: Properties
+  ): Promise<
+    Properties extends ArangoSearchViewPropertiesOptions
+      ? ArangoSearchViewProperties
+      : Properties extends SearchAliasViewPropertiesOptions
+      ? SearchAliasViewProperties
+      : ViewProperties
+  > {
     return this._db.request({
       method: "PUT",
       path: `/_api/view/${encodeURIComponent(this._name)}/properties`,
@@ -609,14 +640,3 @@ export class View<
     );
   }
 }
-
-/**
- * Represents an ArangoSearch View in a {@link database.Database}.
- */
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface ArangoSearchView
-  extends View<
-    ArangoSearchViewPropertiesOptions,
-    ArangoSearchViewProperties & { type: ViewType.ARANGOSEARCH_VIEW },
-    CreateArangoSearchViewOptions
-  > {}

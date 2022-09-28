@@ -50,13 +50,7 @@ import { toForm } from "./lib/multipart";
 import { ArangojsResponse } from "./lib/request";
 import { Route } from "./route";
 import { Transaction } from "./transaction";
-import {
-  ArangoSearchView,
-  ArangoSearchViewPropertiesOptions,
-  View,
-  ViewDescription,
-  ViewType,
-} from "./view";
+import { CreateViewOptions, View, ViewDescription } from "./view";
 
 /**
  * Indicates whether the given value represents a {@link Database}.
@@ -1428,7 +1422,7 @@ export class Database {
   protected _analyzers = new Map<string, Analyzer>();
   protected _collections = new Map<string, Collection>();
   protected _graphs = new Map<string, Graph>();
-  protected _views = new Map<string, ArangoSearchView>();
+  protected _views = new Map<string, View>();
 
   /**
    * Creates a new `Database` instance with its own connection pool.
@@ -2344,9 +2338,9 @@ export class Database {
 
   //#region views
   /**
-   * Returns an {@link view.ArangoSearchView} instance for the given `viewName`.
+   * Returns a {@link view.View} instance for the given `viewName`.
    *
-   * @param viewName - Name of the ArangoSearch View.
+   * @param viewName - Name of the ArangoSearch or SearchAlias View.
    *
    * @example
    * ```js
@@ -2354,7 +2348,7 @@ export class Database {
    * const view = db.view("potatoes");
    * ```
    */
-  view(viewName: string): ArangoSearchView {
+  view(viewName: string): View {
     viewName = viewName.normalize("NFC");
     if (!this._views.has(viewName)) {
       this._views.set(viewName, new View(this, viewName));
@@ -2363,25 +2357,25 @@ export class Database {
   }
 
   /**
-   * Creates a new ArangoSearch View with the given `viewName` and `options`
-   * and returns an {@link view.ArangoSearchView} instance for the created View.
+   * Creates a new View with the given `viewName` and `options`, then returns a
+   * {@link view.View} instance for the new View.
    *
-   * @param viewName - Name of the ArangoSearch View.
+   * @param viewName - Name of the View.
    * @param options - An object defining the properties of the View.
    *
    * @example
    * ```js
    * const db = new Database();
-   * const view = await db.createView("potatoes");
+   * const view = await db.createView("potatoes", { type: "arangosearch" });
    * // the ArangoSearch View "potatoes" now exists
    * ```
    */
   async createView(
     viewName: string,
-    options?: ArangoSearchViewPropertiesOptions
-  ): Promise<ArangoSearchView> {
+    options: CreateViewOptions
+  ): Promise<View> {
     const view = this.view(viewName.normalize("NFC"));
-    await view.create({ ...options, type: ViewType.ARANGOSEARCH_VIEW });
+    await view.create(options);
     return view;
   }
 
@@ -2431,7 +2425,8 @@ export class Database {
 
   /**
    * Fetches all Views from the database and returns an array of
-   * {@link view.ArangoSearchView} instances for the Views.
+   * {@link view.View} instances
+   * for the Views.
    *
    * See also {@link Database#listViews}.
    *
@@ -2442,7 +2437,7 @@ export class Database {
    * // views is an array of ArangoSearch View instances
    * ```
    */
-  async views(): Promise<ArangoSearchView[]> {
+  async views(): Promise<View[]> {
     const views = await this.listViews();
     return views.map((data) => this.view(data.name));
   }

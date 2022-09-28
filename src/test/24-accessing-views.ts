@@ -35,7 +35,7 @@ describe("Accessing views", function () {
       await Promise.all(
         viewNames.map(async (name) => {
           const view = db.view(name);
-          await view.create();
+          await view.create({ type: "arangosearch" });
           await db.waitForPropagation(
             { path: `/_api/view/${view.name}` },
             10000
@@ -58,7 +58,7 @@ describe("Accessing views", function () {
       await Promise.all(
         arangoSearchViewNames.map(async (name) => {
           const view = db.view(name);
-          await view.create();
+          await view.create({ type: "arangosearch" });
           await db.waitForPropagation(
             { path: `/_api/view/${view.name}` },
             10000

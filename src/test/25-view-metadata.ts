@@ -1,13 +1,13 @@
 import { expect } from "chai";
 import { Database } from "../database";
-import { ArangoSearchView } from "../view";
+import { ArangoSearchViewProperties, View } from "../view";
 import { config } from "./_config";
 
 describe("View metadata", function () {
   const dbName = `testdb_${Date.now()}`;
   const viewName = `view-${Date.now()}`;
   let system: Database, db: Database;
-  let view: ArangoSearchView;
+  let view: View;
   before(async () => {
     system = new Database(config);
     if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE")
@@ -15,7 +15,7 @@ describe("View metadata", function () {
     await system.createDatabase(dbName);
     db = system.database(dbName);
     view = db.view(viewName);
-    await view.create();
+    await view.create({ type: "arangosearch" });
     await db.waitForPropagation({ path: `/_api/view/${view.name}` }, 10000);
   });
   after(async () => {
@@ -40,7 +40,8 @@ describe("View metadata", function () {
   });
   describe("view.properties", () => {
     it("should return properties of a view", async () => {
-      const properties = await view.properties();
+      const properties =
+        (await view.properties()) as ArangoSearchViewProperties;
       expect(properties).to.have.property("name", viewName);
       expect(properties).to.have.property("id");
       expect(properties).to.have.property("type", "arangosearch");

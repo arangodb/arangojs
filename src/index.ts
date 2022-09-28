@@ -57,6 +57,4 @@ export function arangojs(config?: string | string[] | Config, name?: string) {
 }
 export default arangojs;
 export { aql } from "./aql";
-export { CollectionStatus, CollectionType } from "./collection";
 export { Database } from "./database";
-export { ViewType } from "./view";

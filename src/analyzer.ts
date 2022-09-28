@@ -864,7 +864,43 @@ export class Analyzer {
    * // the identity Analyzer "potatoes" now exists
    * ```
    */
-  create(options: CreateAnalyzerOptions): Promise<AnalyzerDescription> {
+  create<Options extends CreateAnalyzerOptions>(
+    options: Options
+  ): Promise<
+    Options extends CreateIdentityAnalyzerOptions
+      ? IdentityAnalyzerDescription
+      : Options extends CreateDelimiterAnalyzerOptions
+      ? DelimiterAnalyzerDescription
+      : Options extends CreateStemAnalyzerOptions
+      ? StemAnalyzerDescription
+      : Options extends CreateNormAnalyzerOptions
+      ? NormAnalyzerDescription
+      : Options extends CreateNgramAnalyzerOptions
+      ? NgramAnalyzerDescription
+      : Options extends CreateTextAnalyzerOptions
+      ? TextAnalyzerDescription
+      : Options extends CreateSegmentationAnalyzerOptions
+      ? SegmentationAnalyzerDescription
+      : Options extends CreateAqlAnalyzerOptions
+      ? AqlAnalyzerDescription
+      : Options extends CreatePipelineAnalyzerOptions
+      ? PipelineAnalyzerDescription
+      : Options extends CreateStopwordsAnalyzerOptions
+      ? StopwordsAnalyzerDescription
+      : Options extends CreateCollationAnalyzerOptions
+      ? CollationAnalyzerDescription
+      : Options extends CreateMinHashAnalyzerOptions
+      ? MinHashAnalyzerDescription
+      : Options extends CreateClassificationAnalyzerOptions
+      ? ClassificationAnalyzerDescription
+      : Options extends CreateNearestNeighborsAnalyzerOptions
+      ? NearestNeighborsAnalyzerDescription
+      : Options extends CreateGeoJsonAnalyzerOptions
+      ? GeoJsonAnalyzerDescription
+      : Options extends CreateGeoPointAnalyzerOptions
+      ? GeoPointAnalyzerDescription
+      : AnalyzerDescription
+  > {
     return this._db.request({
       method: "POST",
       path: "/_api/analyzer",
