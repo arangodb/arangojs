@@ -34,7 +34,6 @@
     "rest"
   ],
   "main": "build/index.js",
-  "typings": "build/index.d.ts",
   "browser": {
     "./src/lib/btoa.ts": "./src/lib/btoa.web.ts",
     "./src/lib/bytelength.ts": "./src/lib/bytelength.web.ts",
@@ -60,7 +59,7 @@
   },
   "dependencies": {
     "@types/node": ">=13.13.4",
-    "multi-part": "^3.0.0",
+    "multi-part": "^4.0.0",
     "x3-linkedlist": "1.2.0",
     "xhr": "^2.4.1"
   },
