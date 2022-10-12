@@ -14,6 +14,17 @@ This driver uses semantic versioning:
 - A change in the major version (e.g. 1.Y.Z -> 2.0.0) indicates _breaking_
   changes that require changes in your code to upgrade.
 
+## [Unreleased]
+
+### Added
+
+- Restored `BytesAccumConsolidationPolicy` type
+
+  The type is now still available as a possible type of the value
+  of the `ArangoSearchViewProperties` property `consolidationPolicy` for
+  backwards compatibility but no longer accepted as an argument when creating
+  new Views.
+
 ## [8.0.0-rc.1] - 2022-09-30
 
 ### Removed
@@ -1536,6 +1547,7 @@ For a detailed list of changes between pre-release versions of v7 see the
 
   Graph methods now only return the relevant part of the response body.
 
+[unreleased]: https://github.com/arangodb/arangojs/compare/v8.0.0-rc.1...HEAD
 [8.0.0-rc.1]: https://github.com/arangodb/arangojs/compare/v7.8.0...v8.0.0-rc.1
 [7.8.0]: https://github.com/arangodb/arangojs/compare/v7.7.0...v7.8.0
 [7.7.0]: https://github.com/arangodb/arangojs/compare/v7.6.1...v7.7.0

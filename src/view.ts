@@ -27,6 +27,24 @@ export function isArangoView(view: any): view is View {
 export type Direction = "desc" | "asc";
 
 /**
+ * Policy to consolidate based on segment byte size and live document count as
+ * dictated by the customization attributes.
+ *
+ * @deprecated The `bytes_accum` consolidation policy was deprecated in
+ * ArangoDB 3.7 and should be replaced with the `tier` consolidation policy.
+ */
+export type BytesAccumConsolidationPolicy = {
+  /**
+   * Type of consolidation policy.
+   */
+  type: "bytes_accum";
+  /**
+   * Must be in the range of `0.0` to `1.0`.
+   */
+  threshold?: number;
+};
+
+/**
  * Policy to consolidate if the sum of all candidate segment byte size is less
  * than the total segment byte size multiplied by a given threshold.
  */
@@ -388,7 +406,7 @@ export type ArangoSearchViewProperties = ArangoSearchViewDescription & {
   writebufferIdle: number;
   writebufferActive: number;
   writebufferSizeMax: number;
-  consolidationPolicy: TierConsolidationPolicy;
+  consolidationPolicy: TierConsolidationPolicy | BytesAccumConsolidationPolicy;
   primarySort: {
     field: string;
     direction: Direction;
