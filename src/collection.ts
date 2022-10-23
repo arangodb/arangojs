@@ -122,6 +122,7 @@ export type KeyGenerator = "traditional" | "autoincrement" | "uuid" | "padded";
 export type ShardingStrategy =
   | "hash"
   | "enterprise-hash-smart-edge"
+  | "enterprise-hash-smart-vertex"
   | "community-compat"
   | "enterprise-compat"
   | "enterprise-smart-edge-compat";
@@ -299,7 +300,7 @@ export type CollectionProperties = {
   /**
    * (Cluster only.) Replication factor of the collection.
    */
-  replicationFactor?: number;
+  replicationFactor?: number | "satellite";
   /**
    * (Cluster only.) Sharding strategy of the collection.
    */
@@ -316,9 +317,30 @@ export type CollectionProperties = {
    */
   smartJoinAttribute?: string;
   /**
+   * (Enterprise Edition cluster only.) Attribute used for sharding.
+   */
+  smartGraphAttribute?: string;
+  /**
    * Computed values applied to documents in this collection.
    */
   computedValues: ComputedValueProperties[];
+  /**
+   * Whether the in-memory hash cache is enabled for this collection.
+   */
+  cacheEnabled: boolean;
+  /**
+   * Whether the newer revision-based replication protocol is enabled for
+   * this collection.
+   */
+  syncByRevision: boolean;
+  /**
+   * (Enterprise Edition only.) Whether the collection is used in a SmartGraph or EnterpriseGraph.
+   */
+  isSmart?: boolean;
+  /**
+   * (Enterprise Edition only.) Whether the SmartGraph this collection belongs to is disjoint.
+   */
+  isDisjoint?: string;
 };
 
 // Options
@@ -404,7 +426,7 @@ export type CollectionPropertiesOptions = {
    *
    * Default: `1`
    */
-  replicationFactor?: number;
+  replicationFactor?: number | "satellite";
   /**
    * (Cluster only.) Write concern for this collection.
    */
@@ -417,6 +439,12 @@ export type CollectionPropertiesOptions = {
    * Computed values to apply to documents in this collection.
    */
   computedValues?: ComputedValueOptions[];
+  /**
+   * Whether the in-memory hash cache is enabled for this collection.
+   *
+   * Default: `false`
+   */
+  cacheEnabled?: boolean;
 };
 
 /**
@@ -562,9 +590,17 @@ export type CreateCollectionOptions = {
    */
   smartJoinAttribute?: string;
   /**
+   * (Enterprise Edition cluster only.) Attribute used for sharding.
+   */
+  smartGraphAttribute?: string;
+  /**
    * Computed values to apply to documents in this collection.
    */
   computedValues?: ComputedValueOptions[];
+  /**
+   * Whether the in-memory hash cache is enabled for this collection.
+   */
+  cacheEnabled?: boolean;
 };
 
 /**

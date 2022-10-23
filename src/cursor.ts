@@ -90,13 +90,29 @@ export interface CursorStats {
    */
   fullCount?: number;
   /**
-   * Runtime statistics per query execution node.
+   * Total number of cluster-internal HTTP requests performed.
+   */
+  httpRequests: number;
+  /**
+   * Runtime statistics per query execution node if `profile` was set to `2` or greater.
    */
   nodes?: {
+    /**
+     * Execution node ID to correlate this node with nodes in the `extra.plan`.
+     */
     id: number;
+    /**
+     * Number of calls in this node.
+     */
     calls: number;
+    /**
+     * Number of temporary result items returned by this node.
+     */
     items: number;
     filter: number;
+    /**
+     * Execution time of this node in seconds.
+     */
     runtime: number;
   }[];
 }
