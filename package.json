@@ -60,6 +60,7 @@
   "dependencies": {
     "@types/node": ">=13.13.4",
     "multi-part": "^4.0.0",
+    "path-browserify": "^1.0.1",
     "x3-linkedlist": "1.2.0",
     "xhr": "^2.4.1"
   },
@@ -96,16 +97,10 @@
     "webpack-cli": "^4.6.0"
   },
   "babel": {
-    "plugins": [
-      "@babel/proposal-class-properties"
-    ],
     "presets": [
       "@babel/env",
       [
-        "@babel/typescript",
-        {
-          "allowNamespaces": true
-        }
+        "@babel/typescript"
       ]
     ]
   },
