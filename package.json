@@ -110,7 +110,6 @@
     ]
   },
   "browserslist": [
-    "last 2 versions",
-    "> 2%"
+    "defaults"
   ]
 }

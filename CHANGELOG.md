@@ -16,17 +16,6 @@ This driver uses semantic versioning:
 
 ## [Unreleased]
 
-### Added
-
-- Restored `BytesAccumConsolidationPolicy` type
-
-  The type is now still available as a possible type of the value
-  of the `ArangoSearchViewProperties` property `consolidationPolicy` for
-  backwards compatibility but no longer accepted as an argument when creating
-  new Views.
-
-## [8.0.0-rc.1] - 2022-09-30
-
 ### Removed
 
 - Removed Node.js 10 and Node.js 12 support
@@ -34,11 +23,15 @@ This driver uses semantic versioning:
   With Node.js 10 and 12 having reached their end of life, arangojs will no
   longer support these versions of Node.js going forward.
 
-- Removed Internet Explorer support
+- Removed Internet Explorer and older browser support
 
-  As of version 8 arangojs no longer maintains compatibility for IE11 in the
-  pre-built browser bundle. You may still be able to use arangojs in IE11 when
-  bundling arangojs yourself but this may require polyfills and transformation.
+  As of version 8 arangojs uses the [Browserlist `defaults`](https://browsersl.ist/#q=defaults)
+  list to generate the pre-built browser bundle, which excludes older browsers
+  and specifically all versions of Internet Explorer.
+
+  You may still be able to use arangojs in some of the excluded browsers when
+  bundling arangojs yourself but this may require polyfills and additional
+  transformations.
 
 - Removed `Dict` type from `connection` module
 
@@ -60,11 +53,6 @@ This driver uses semantic versioning:
 - Removed deprecated MMFiles methods and types
 
   The MMFiles storage engine was removed in ArangoDB 3.7.
-
-- Removed `BytesAccumConsolidationPolicy` type
-
-  The `bytes_accum` consolidation policy for views was deprecated in
-  ArangoDB 3.7 and should be replaced with the `tier` consolidation policy.
 
 - Removed deprecated `minReplicationFactor` option from collection and
   database related types
@@ -208,6 +196,12 @@ This driver uses semantic versioning:
 
   Fulltext indexes have been deprecated in ArangoDB 3.10 and should be replaced
   with ArangoSearch.
+
+- Deprecated `BytesAccumConsolidationPolicy` type
+
+  The `bytes_accum` consolidation policy for views was deprecated in
+  ArangoDB 3.7 and should be replaced with the `tier` consolidation policy.
+  The type is also no longer supported in `ArangoSearchViewPropertiesOptions`.
 
 ### Added
 
@@ -1547,8 +1541,7 @@ For a detailed list of changes between pre-release versions of v7 see the
 
   Graph methods now only return the relevant part of the response body.
 
-[unreleased]: https://github.com/arangodb/arangojs/compare/v8.0.0-rc.1...HEAD
-[8.0.0-rc.1]: https://github.com/arangodb/arangojs/compare/v7.8.0...v8.0.0-rc.1
+[unreleased]: https://github.com/arangodb/arangojs/compare/v7.8.0...HEAD
 [7.8.0]: https://github.com/arangodb/arangojs/compare/v7.7.0...v7.8.0
 [7.7.0]: https://github.com/arangodb/arangojs/compare/v7.6.1...v7.7.0
 [7.6.1]: https://github.com/arangodb/arangojs/compare/v7.6.0...v7.6.1
