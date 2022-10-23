@@ -16,7 +16,7 @@ The built-in type `Record<string, T>` can be used as a replacement:
 -import type { Dict } from "arangojs/connection";
 
  const db = new Database();
--let deps: Dict<string, string[], undefined>;
+-let deps: Dict<string | string[] | undefined>;
 +let deps: Record<string, string | string[] | undefined>;
  deps = await db.getServiceDependencies("/my-foxx-service", true);
 ```
@@ -105,6 +105,25 @@ In TypeScript the type `GraphCreateOptions` has been renamed to
 +import type { CreateGraphOptions } from "arangojs/graph";
 ```
 
+### Enum re-exports
+
+Previously the `CollectionStatus`, `CollectionType` and `ViewType` enums
+were re-exported by the arangojs main module and could be imported from the
+`arangojs` package:
+
+```diff
+-import { CollectionStatus, CollectionType } from "arangojs";
++import { CollectionStatus, CollectionType } from "arangojs/collection";
+```
+
+Note that the `ViewType` enum has been removed completely:
+
+````diff
+-import { ViewType } from "arangojs";
+-
+-const ArangoSearchViewType = ViewType.ARANGOSEARCH_VIEW;
++const ArangoSearchViewType = "arangosearch";
+
 ## v6 to v7
 
 ### Configuration changes
@@ -121,7 +140,7 @@ arangojs instance. The database name can now be specified using the
 +  databaseName: "my_database",
  });
 -db.useDatabase("my_database");
-```
+````
 
 ### Shared connection pool
 
