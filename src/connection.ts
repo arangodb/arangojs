@@ -249,7 +249,7 @@ export type RequestOptions = {
    * If set to a positive number, the request will automatically be retried at
    * most this many times if it results in a write-write conflict.
    *
-   * Default: `0`
+   * Default: `config.retryOnConflict`
    */
   retryOnConflict?: number;
   /**
@@ -401,7 +401,7 @@ export type Config = {
    *   the initial failed request).
    *
    * - any other number: the request is retried until a server can be reached
-   *   the request has been retried a total of `maxRetries` number of times
+   *   or the request has been retried a total of `maxRetries` number of times
    *   (not including the initial failed request).
    *
    * When working with a single server without leader/follower failover, the
@@ -412,9 +412,19 @@ export type Config = {
    * **Note**: Requests bound to a specific server (e.g. fetching query results)
    * will never be retried automatically and ignore this setting.
    *
+   * **Note**: To set the number of retries when a write-write conflict is
+   * encountered, see `retryOnConflict` instead.
+   *
    * Default: `0`
    */
   maxRetries?: false | number;
+  /**
+   * If set to a positive number, requests will automatically be retried at
+   * most this many times if they result in a write-write conflict.
+   *
+   * Default: `0`
+   */
+  retryOnConflict?: number;
   /**
    * An http `Agent` instance to use for connections.
    *
@@ -500,6 +510,7 @@ export class Connection {
   protected _headers: Headers;
   protected _loadBalancingStrategy: LoadBalancingStrategy;
   protected _maxRetries: number | false;
+  protected _retryOnConflict: number;
   protected _maxTasks: number;
   protected _queue = new LinkedList<Task>();
   protected _databases = new Map<string, Database>();
@@ -547,6 +558,7 @@ export class Connection {
     this._loadBalancingStrategy = config.loadBalancingStrategy ?? "NONE";
     this._precaptureStackTraces = Boolean(config.precaptureStackTraces);
     this._responseQueueTimeSamples = config.responseQueueTimeSamples ?? 10;
+    this._retryOnConflict = config.retryOnConflict ?? 0;
     if (this._responseQueueTimeSamples < 0) {
       this._responseQueueTimeSamples = Infinity;
     }
@@ -956,7 +968,7 @@ export class Connection {
       expectBinary = false,
       isBinary = false,
       allowDirtyRead = false,
-      retryOnConflict = 0,
+      retryOnConflict = this._retryOnConflict,
       timeout = 0,
       headers,
       ...urlInfo

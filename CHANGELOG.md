@@ -263,6 +263,12 @@ This driver uses semantic versioning:
   `Analyzer` objects can now be passed into `aql` templates like `View` and
   `ArangoCollection` objects.
 
+- Added `retryOnConflict` option to `Config`
+
+  If set to any number, this value will be used as the default value for all
+  requests unless explicitly overridden when using `db.query` or
+  `route.request`.
+
 ## [7.8.0] - 2022-05-19
 
 ### Added
