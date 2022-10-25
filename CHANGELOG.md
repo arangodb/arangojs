@@ -21,6 +21,11 @@ This driver uses semantic versioning:
 
 ## [8.0.0] - 2022-10-25
 
+This is a major release and breaks backwards compatibility.
+
+See [the migration guide](./MIGRATING.md#v7-to-v8) for detailed instructions
+for upgrading your code to arangojs v8.
+
 ### Removed
 
 - Removed Node.js 10 and Node.js 12 support
