@@ -18,8 +18,8 @@ This driver uses semantic versioning:
 
 This is a major release and breaks backwards compatibility.
 
-See [the migration guide](./MIGRATING.md#v6-to-v7) for detailed instructions
-for upgrading your code to arangojs v7.
+See [the migration guide](./MIGRATING.md#v7-to-v8) for detailed instructions
+for upgrading your code to arangojs v8.
 
 ### Removed
 
