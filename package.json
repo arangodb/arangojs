@@ -58,7 +58,7 @@
     "prepare": "npm run build && node -e 'require(\".\");'"
   },
   "dependencies": {
-    "@types/node": ">=13.13.4",
+    "@types/node": ">=14",
     "multi-part": "^4.0.0",
     "path-browserify": "^1.0.1",
     "x3-linkedlist": "1.2.0",
