@@ -55,5 +55,6 @@ export async function toForm(fields: Fields): Promise<MultipartRequest> {
   }
   const body = await form.buffer();
   const headers = form.getHeaders();
+  delete headers["transfer-encoding"];
   return { body, headers };
 }
