@@ -5,7 +5,7 @@ import { Database } from "../database";
 import { config } from "./_config";
 const range = (n: number): number[] => Array.from(Array(n).keys());
 
-describe.only("config.maxRetries", () => {
+describe("config.maxRetries", () => {
   let system: Database;
   const docKey = "test";
   const dbName = `testdb_${Date.now()}`;
