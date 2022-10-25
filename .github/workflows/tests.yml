@@ -17,7 +17,7 @@ jobs:
           - arangodb:3.8
           - arangodb:3.9
           - arangodb:3.10
-          - arangodb/arangodb-preview:3.11-nightly
+          - arangodb/arangodb-preview:devel-nightly
 
     container:
       image: node:${{ matrix.node-version }}-alpine
@@ -48,7 +48,7 @@ jobs:
           - arangodb:3.8
           - arangodb:3.9
           - arangodb:3.10
-          - arangodb/arangodb-preview:3.11-nightly
+          - arangodb/arangodb-preview:devel-nightly
 
     container:
       image: node:16
