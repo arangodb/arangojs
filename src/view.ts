@@ -161,6 +161,13 @@ export type ArangoSearchViewLinkOptions = {
    * Default: `false`
    */
   inBackground?: boolean;
+  /**
+   * (Enterprise Edition only.) If set to `true`, then field normalization
+   * values are always cached in memory.
+   *
+   * Default: `false`
+   */
+  cache?: boolean;
 };
 
 /**
@@ -291,6 +298,13 @@ export type CreateArangoSearchViewOptions =
        * Default: `"lz4"`
        */
       compression?: Compression;
+      /**
+       * (Enterprise Edition only.) If set to `true`, then stored values are
+       * always cached in memory.
+       *
+       * Default: `false`
+       */
+      cache?: boolean;
     }[];
   };
 
@@ -394,6 +408,7 @@ export type ArangoSearchViewLink = {
   nested?: Record<string, ArangoSearchViewLink>;
   trackListPositions: boolean;
   storeValues: "none" | "id";
+  cache: boolean;
 };
 
 /**
@@ -415,6 +430,7 @@ export type ArangoSearchViewProperties = ArangoSearchViewDescription & {
   storedValues: {
     fields: string[];
     compression: Compression;
+    cache: boolean;
   }[];
   links: Record<string, Omit<ArangoSearchViewLink, "nested">>;
 };
