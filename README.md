@@ -40,7 +40,7 @@ var arangojs = require("arangojs/web");
 You can also use [unpkg](https://unpkg.com) during development:
 
 ```html
-< !-- note the path includes the version number (e.g. 8.0.0) -- >
+<!-- note the path includes the version number (e.g. 8.0.0) -->
 <script src="https://unpkg.com/arangojs@8.0.0/web.js"></script>
 <script>
   var db = new arangojs.Database();
