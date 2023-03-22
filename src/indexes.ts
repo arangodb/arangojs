@@ -701,7 +701,8 @@ export function _indexHandle(
         `Index ID "${selector}" does not match collection name "${collectionName}"`
       );
     }
-    return [normalizedHead, ...tail].join("/");
+    selector = tail.join("/").normalize("NFC");
+    return [normalizedHead, selector].join("/");
   }
-  return `${collectionName}/${selector}`;
+  return `${collectionName}/${String(selector).normalize("NFC")}`;
 }

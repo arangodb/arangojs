@@ -4075,6 +4075,10 @@ export class Collection<T extends Record<string, any> = any>
       | EnsureZkdIndexOptions
       | EnsureInvertedIndexOptions
   ) {
+    const opts = { ...options };
+    if (opts.name) {
+      opts.name = opts.name.normalize("NFC");
+    }
     return this._db.request({
       method: "POST",
       path: "/_api/index",

@@ -14,6 +14,18 @@ This driver uses semantic versioning:
 - A change in the major version (e.g. 1.Y.Z -> 2.0.0) indicates _breaking_
   changes that require changes in your code to upgrade.
 
+## [Unreleased]
+
+### Changed
+
+- Index names are now automatically NFC-normalized (DE-506)
+
+  This change affects all index names using unicode characters. **The change
+  has no effect when using non-unicode (ASCII) names.** 
+
+  Any names used when creating/ensuring indexes or passed to any methods that
+  expect an `IndexSelector` will automatically be NFC normalized.
+
 ## [8.1.0] - 2022-12-19
 
 ### Added
@@ -1558,6 +1570,7 @@ For a detailed list of changes between pre-release versions of v7 see the
 
   Graph methods now only return the relevant part of the response body.
 
+[unreleased]: https://github.com/arangodb/arangojs/compare/v8.1.0...HEAD
 [8.1.0]: https://github.com/arangodb/arangojs/compare/v8.0.0...v8.1.0
 [8.0.0]: https://github.com/arangodb/arangojs/compare/v7.8.0...v8.0.0
 [7.8.0]: https://github.com/arangodb/arangojs/compare/v7.7.0...v7.8.0
