@@ -17,7 +17,8 @@ jobs:
         arangodb-version:
           - arangodb:3.8
           - arangodb:3.9
-          - arangodb/arangodb-preview:3.10-nightly
+          - arangodb:3.10
+          - arangodb/arangodb-preview:devel-nightly
 
     steps:
       - uses: actions/checkout@v2
