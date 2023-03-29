@@ -1,16 +1,14 @@
-import { ParsedUrlQueryInput, stringify } from "querystring";
-
-// eslint-disable-next-line @typescript-eslint/ban-types
-function clean<T extends {}>(obj: T) {
-  const result = {} as typeof obj;
-  for (const key of Object.keys(obj)) {
-    const value = (obj as any)[key];
+export function querystringify(obj: Record<string, any>) {
+  const params = new URLSearchParams();
+  for (const [key, value] of Object.entries(obj)) {
     if (value === undefined) continue;
-    (result as any)[key] = value;
+    if (!Array.isArray(value)) {
+      params.append(key, value);
+    } else {
+      for (const item of value) {
+        params.append(key, item);
+      }
+    }
   }
-  return result;
-}
-
-export function querystringify(obj: ParsedUrlQueryInput) {
-  return stringify(clean(obj));
+  return String(params);
 }

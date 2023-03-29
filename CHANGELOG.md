@@ -26,6 +26,12 @@ This driver uses semantic versioning:
   Any names used when creating/ensuring indexes or passed to any methods that
   expect an `IndexSelector` will automatically be NFC normalized.
 
+- Internal querystring handling logic now uses `URLSearchParams` instead of
+  node `querystring` module
+
+  This change should be backwards compatible but may produce different results
+  when relying on undefined behavior in custom (e.g. Foxx) routes.
+
 ## [8.1.0] - 2022-12-19
 
 ### Added
