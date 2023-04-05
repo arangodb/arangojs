@@ -14,7 +14,7 @@ import { omit } from "./omit";
 import {
   ArangojsError,
   ArangojsResponse,
-  RequestOptions,
+  RequestOptions
 } from "./request.node";
 import xhr from "./xhr";
 
@@ -62,11 +62,10 @@ export function createRequest(
     cb: Errback<ArangojsResponse>
   ) {
     const url = new URL(reqUrl.pathname, base);
-    if (base.search || reqUrl.search) {
-      url.search = reqUrl.search
-        ? `${base.search}&${reqUrl.search.slice(1)}`
-        : base.search;
-    }
+    if (reqUrl.search) {
+      if (!base.search) url.search = reqUrl.search.slice(1);
+      else url.search = `${base.search}&${reqUrl.search.slice(1)}`
+    } else url.search = base.search;
     if (!headers["authorization"]) {
       headers["authorization"] = `Basic ${auth}`;
     }

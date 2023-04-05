@@ -16,6 +16,13 @@ This driver uses semantic versioning:
 
 ## [Unreleased]
 
+### Fixed
+
+- Fixed a bug in search parameter handling in the browser version
+
+  Previously the browser version would incorrectly handle search parameters,
+  which could result in invalid request URLs in many cases.
+
 ## [8.2.0] - 2023-03-29
 
 ### Changed
