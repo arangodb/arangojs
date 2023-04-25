@@ -14,6 +14,14 @@ This driver uses semantic versioning:
 - A change in the major version (e.g. 1.Y.Z -> 2.0.0) indicates _breaking_
   changes that require changes in your code to upgrade.
 
+## [Unreleased]
+
+- Added `x-arango-driver` header
+
+  The arangojs driver now correctly identifies itself to ArangoDB, allowing the
+  ArangoGraph Insights Platform to take advantage of the driver's support for
+  cloud-optimized behaviors.
+
 ## [8.2.1] - 2023-04-05
 
 ### Fixed
@@ -1585,6 +1593,7 @@ For a detailed list of changes between pre-release versions of v7 see the
 
   Graph methods now only return the relevant part of the response body.
 
+[unreleased]: https://github.com/arangodb/arangojs/compare/v8.2.1...HEAD
 [8.2.1]: https://github.com/arangodb/arangojs/compare/v8.2.0...v8.2.1
 [8.2.0]: https://github.com/arangodb/arangojs/compare/v8.1.0...v8.2.0
 [8.1.0]: https://github.com/arangodb/arangojs/compare/v8.0.0...v8.1.0

@@ -11,6 +11,7 @@
 import { ClientRequest } from "http";
 import { AgentOptions as NodeAgentOptions } from "https";
 import { LinkedList } from "x3-linkedlist";
+import packageJson from "../package.json";
 import { Database } from "./database";
 import {
   ArangoError,
@@ -992,6 +993,7 @@ export class Connection {
         ...this._headers,
         "content-type": contentType,
         "x-arango-version": String(this._arangoVersion),
+        "x-arango-driver": `arangojs/${packageJson.version} (cloud)`,
       };
 
       if (this._transactionId) {
