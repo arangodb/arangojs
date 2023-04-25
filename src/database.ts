@@ -459,6 +459,14 @@ export type SingleExplainResult = {
      * Total number of plans created.
      */
     plansCreated: number;
+    /**
+     * Maximum memory usage in bytes of the query during explain.
+     */
+    peakMemoryUsage: number;
+    /**
+     * Time in seconds needed to explain the query.
+     */
+    executionTime: number;
   };
 };
 

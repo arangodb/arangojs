@@ -16,6 +16,12 @@ This driver uses semantic versioning:
 
 ## [Unreleased]
 
+## Added
+
+- Added `peakMemoryUsage` and `executionTime` to `SingleExplainResult.stats` type
+
+  These attributes were added in ArangoDB 3.10.4.
+
 - Added `x-arango-driver` header
 
   The arangojs driver now correctly identifies itself to ArangoDB, allowing the
