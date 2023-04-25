@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 "use strict";
-var resolve = require("path").resolve;
-var webpack = require("webpack");
+const resolve = require("path").resolve;
+const webpack = require("webpack");
+const packageJson = require("./package.json");
 
 module.exports = {
   mode: "production",
@@ -26,7 +27,10 @@ module.exports = {
   },
   plugins: [
     new webpack.DefinePlugin({
-      "process.env": { NODE_ENV: '"production"' },
+      "process.env": {
+        NODE_ENV: '"production"',
+        ARANGOJS_VERSION: `"${packageJson.version}"`,
+      },
     }),
   ],
 };

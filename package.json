@@ -55,6 +55,7 @@
     "build:text": "cp *.md build/",
     "build:web": "webpack",
     "build": "rm -rf build && mkdir build && npm-run-all --parallel build:*",
+    "postbuild": "cat build/connection.js | sed 's/${process.env.ARANGOJS_VERSION}/'$(cat build/package.json | jq -r .version)'/g' > build/connection.js",
     "prepare": "npm run build && node -e 'require(\".\");'"
   },
   "dependencies": {
