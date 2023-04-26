@@ -22,6 +22,10 @@ This driver uses semantic versioning:
 
 ## Added
 
+- Added caching options to `InvertedIndex` and `ArangoSearchView` types
+
+  These options were added in ArangoDB 3.10.2.
+
 - Added `peakMemoryUsage` and `executionTime` to `SingleExplainResult.stats` type
 
   These attributes were added in ArangoDB 3.10.4.

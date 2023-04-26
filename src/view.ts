@@ -283,6 +283,18 @@ export type CreateArangoSearchViewOptions =
      */
     primarySortCompression?: Compression;
     /**
+     * (Enterprise Edition only.) Always cache primary sort columns in memory.
+     *
+     * Default: `false`
+     */
+    primarySortCache?: boolean;
+    /**
+     * (Enterprise Edition only.) Always cache primary key columns in memory.
+     *
+     * Default: `false`
+     */
+    primaryKeyCache?: boolean;
+    /**
      * Attribute paths for which values should be stored in the view index
      * in addition to those used for sorting via `primarySort`.
      */
@@ -427,6 +439,8 @@ export type ArangoSearchViewProperties = ArangoSearchViewDescription & {
     direction: Direction;
   }[];
   primarySortCompression: Compression;
+  primarySortCache: boolean;
+  primaryKeyCache: boolean;
   storedValues: {
     fields: string[];
     compression: Compression;

@@ -341,6 +341,13 @@ export type InvertedIndexFieldOptions = {
    * co-occurring values.
    */
   nested?: (string | InvertedIndexNestedFieldOptions)[];
+  /**
+   * (Enterprise Edition only.) Always cache field normalization values in
+   * memory.
+   *
+   * Defaults to the value of `cache` specified on the index itself.
+   */
+  cache?: boolean;
 };
 
 /**
@@ -357,6 +364,12 @@ export type InvertedIndexStoredValueOptions = {
    * Default: `"lz4"`
    */
   compression?: Compression;
+  /**
+   * (Enterprise Edition only.) Always cache stored values in memory.
+   *
+   * Default: `false`
+   */
+  cache?: boolean;
 };
 
 /**
@@ -416,7 +429,19 @@ export type EnsureInvertedIndexOptions = {
      * Default: `"lz4"`
      */
     compression?: Compression;
+    /**
+     * (Enterprise Edition only.) Always cache primary sort columns in memory.
+     *
+     * Default: `false`
+     */
+    cache?: boolean;
   };
+  /**
+   * (Enterprise Edition only.) Always cache the primary key column in memory.
+   *
+   * Default: `false`
+   */
+  primaryKeyCache?: boolean;
   /**
    * Name of the default Analyzer to apply to the values of indexed fields.
    *
@@ -509,6 +534,13 @@ export type EnsureInvertedIndexOptions = {
    * Default: `false`
    */
   inBackground?: boolean;
+  /**
+   * (Enterprise Edition only.) Always cache field normalization values in
+   * memory.
+   *
+   * Default: `false`
+   */
+  cache?: boolean;
 };
 
 /**
@@ -624,11 +656,14 @@ export type InvertedIndex = GenericIndex & {
     searchField?: boolean;
     trackListPositions?: boolean;
     nested?: InvertedIndexNestedField[];
+    cache?: boolean;
   }[];
   searchField: boolean;
+  cache?: boolean;
   storedValues: {
     fields: string[];
     compression: Compression;
+    cache?: boolean;
   }[];
   primarySort: {
     fields: {
@@ -636,7 +671,9 @@ export type InvertedIndex = GenericIndex & {
       direction: Direction;
     }[];
     compression: Compression;
+    cache?: boolean;
   };
+  primaryKeyCache?: boolean;
   analyzer: string;
   features: AnalyzerFeature[];
   includeAllFields: boolean;
