@@ -16,6 +16,10 @@ This driver uses semantic versioning:
 
 ## [Unreleased]
 
+## Fixed
+
+- Fixed `updateUser` and `replaceUser` behavior ([#783](https://github.com/arangodb/arangojs/issues/783))
+
 ## Added
 
 - Added `peakMemoryUsage` and `executionTime` to `SingleExplainResult.stats` type

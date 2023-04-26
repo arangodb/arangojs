@@ -2665,7 +2665,7 @@ export class Database {
       {
         absolutePath: true,
         method: "PATCH",
-        path: `/api/user/${encodeURIComponent(username)}`,
+        path: `/_api/user/${encodeURIComponent(username)}`,
         body: options,
       },
       (res) => res.body
@@ -2696,7 +2696,7 @@ export class Database {
       {
         absolutePath: true,
         method: "PUT",
-        path: `/api/user/${encodeURIComponent(username)}`,
+        path: `/_api/user/${encodeURIComponent(username)}`,
         body: options,
       },
       (res) => res.body
