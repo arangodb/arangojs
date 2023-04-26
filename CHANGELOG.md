@@ -22,6 +22,10 @@ This driver uses semantic versioning:
 
 ## Added
 
+- Added `returnOld` and `mergeObjects` to `CollectionInsertOptions` type
+
+  These options are only available when using `overwriteMode`.
+
 - Added caching options to `InvertedIndex` and `ArangoSearchView` types
 
   These options were added in ArangoDB 3.10.2.

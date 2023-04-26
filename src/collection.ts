@@ -684,12 +684,29 @@ export type CollectionInsertOptions = {
    */
   returnNew?: boolean;
   /**
+   * If set to `true`, the complete old document will be returned as the `old`
+   * property on the result object. Has no effect if `silent` is set to `true`.
+   * This option is only available when `overwriteMode` is set to `"update"` or
+   * `"replace"`.
+   *
+   * Default: `false`
+   */
+  returnOld?: boolean;
+  /**
    * Defines what should happen if a document with the same `_key` or `_id`
    * already exists, instead of throwing an exception.
    *
    * Default: `"conflict"
    */
   overwriteMode?: "ignore" | "update" | "replace" | "conflict";
+  /**
+   * If set to `false`, object properties that already exist in the old
+   * document will be overwritten rather than merged when an existing document
+   * with the same `_key` or `_id` is updated. This does not affect arrays.
+   *
+   * Default: `true`
+   */
+  mergeObjects?: boolean;
 };
 
 /**
