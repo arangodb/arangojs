@@ -18,6 +18,7 @@ jobs:
           - arangodb:3.9
           - arangodb:3.10
           - arangodb/arangodb-test:devel-nightly
+          - arangodb/enterprise-test:devel-nightly
 
     container:
       image: node:${{ matrix.node-version }}-alpine
@@ -27,6 +28,7 @@ jobs:
         image: ${{ matrix.arangodb-version }}
         env:
           ARANGO_NO_AUTH: 1
+          ARANGO_LICENSE_KEY: $ARANGO_LICENSE_KEY
 
     steps:
       - uses: actions/checkout@v2
