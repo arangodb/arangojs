@@ -342,8 +342,8 @@ export type InvertedIndexFieldOptions = {
    */
   nested?: (string | InvertedIndexNestedFieldOptions)[];
   /**
-   * (Enterprise Edition only.) Always cache field normalization values in
-   * memory.
+   * (Enterprise Edition only.) If set to `true`, then field normalization
+   * values will always be cached in memory.
    *
    * Defaults to the value of `cache` specified on the index itself.
    */
@@ -365,7 +365,8 @@ export type InvertedIndexStoredValueOptions = {
    */
   compression?: Compression;
   /**
-   * (Enterprise Edition only.) Always cache stored values in memory.
+   * (Enterprise Edition only.) If set to `true`, then stored values will
+   * always be cached in memory.
    *
    * Default: `false`
    */
@@ -430,14 +431,16 @@ export type EnsureInvertedIndexOptions = {
      */
     compression?: Compression;
     /**
-     * (Enterprise Edition only.) Always cache primary sort columns in memory.
+     * (Enterprise Edition only.) If set to `true`, then primary sort columns
+     * will always be cached in memory.
      *
      * Default: `false`
      */
     cache?: boolean;
   };
   /**
-   * (Enterprise Edition only.) Always cache the primary key column in memory.
+   * (Enterprise Edition only.) If set to `true`, then the primary key column
+   * will always be cached in memory.
    *
    * Default: `false`
    */
@@ -535,8 +538,8 @@ export type EnsureInvertedIndexOptions = {
    */
   inBackground?: boolean;
   /**
-   * (Enterprise Edition only.) Always cache field normalization values in
-   * memory.
+   * (Enterprise Edition only.) If set to `true`, then field normalization
+   * values will always be cached in memory.
    *
    * Default: `false`
    */

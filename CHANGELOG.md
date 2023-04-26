@@ -26,6 +26,11 @@ This driver uses semantic versioning:
 
   These options were added in ArangoDB 3.10.2.
 
+- Added support for `ArangoSearchView` type `storedValues` shorthand notation
+
+  Instead of using an object, attributes can also be defined as arrays of
+  strings and arrays of arrays of strings. This was added in ArangoDB 3.10.3.
+
 - Added `peakMemoryUsage` and `executionTime` to `SingleExplainResult.stats` type
 
   These attributes were added in ArangoDB 3.10.4.

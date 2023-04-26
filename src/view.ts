@@ -163,7 +163,7 @@ export type ArangoSearchViewLinkOptions = {
   inBackground?: boolean;
   /**
    * (Enterprise Edition only.) If set to `true`, then field normalization
-   * values are always cached in memory.
+   * values will always be cached in memory.
    *
    * Default: `false`
    */
@@ -212,6 +212,30 @@ export type ArangoSearchViewPropertiesOptions = {
  */
 export type ArangoSearchViewPatchPropertiesOptions =
   ArangoSearchViewPropertiesOptions;
+
+/**
+ * Options for creating a stored value in an ArangoSearch View.
+ */
+export interface ArangoSearchViewStoredValueOptions {
+  /**
+   * Attribute paths for which values should be stored in the view index
+   * in addition to those used for sorting via `primarySort`.
+   */
+  fields: string[];
+  /**
+   * How the attribute values should be compressed.
+   *
+   * Default: `"lz4"`
+   */
+  compression?: Compression;
+  /**
+   * (Enterprise Edition only.) If set to `true`, then stored values will
+   * always be cached in memory.
+   *
+   * Default: `false`
+   */
+  cache?: boolean;
+}
 
 /**
  * Options for creating an ArangoSearch View.
@@ -283,13 +307,15 @@ export type CreateArangoSearchViewOptions =
      */
     primarySortCompression?: Compression;
     /**
-     * (Enterprise Edition only.) Always cache primary sort columns in memory.
+     * (Enterprise Edition only.) If set to `true`, then primary sort columns
+     * will always be cached in memory.
      *
      * Default: `false`
      */
     primarySortCache?: boolean;
     /**
-     * (Enterprise Edition only.) Always cache primary key columns in memory.
+     * (Enterprise Edition only.) If set to `true`, then primary key columns
+     * will always be cached in memory.
      *
      * Default: `false`
      */
@@ -298,26 +324,7 @@ export type CreateArangoSearchViewOptions =
      * Attribute paths for which values should be stored in the view index
      * in addition to those used for sorting via `primarySort`.
      */
-    storedValues?: {
-      /**
-       * Attribute paths for which values should be stored in the view index
-       * in addition to those used for sorting via `primarySort`.
-       */
-      fields: string[];
-      /**
-       * How the attribute values should be compressed.
-       *
-       * Default: `"lz4"`
-       */
-      compression?: Compression;
-      /**
-       * (Enterprise Edition only.) If set to `true`, then stored values are
-       * always cached in memory.
-       *
-       * Default: `false`
-       */
-      cache?: boolean;
-    }[];
+    storedValues?: ArangoSearchViewStoredValueOptions[] | string[] | string[][];
   };
 
 /**
