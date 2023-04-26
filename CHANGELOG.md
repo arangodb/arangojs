@@ -39,6 +39,10 @@ This driver uses semantic versioning:
 
   These attributes were added in ArangoDB 3.10.4.
 
+- Added `geo_s2` Analyzer types
+
+  This Analyzer was added in ArangoDB 3.10.5.
+
 - Added `refillIndexCaches` option to document operation options types
 
   This option was added in ArangoDB 3.11.

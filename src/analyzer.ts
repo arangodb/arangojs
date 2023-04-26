@@ -46,7 +46,8 @@ export type CreateAnalyzerOptions =
   | CreateClassificationAnalyzerOptions
   | CreateNearestNeighborsAnalyzerOptions
   | CreateGeoJsonAnalyzerOptions
-  | CreateGeoPointAnalyzerOptions;
+  | CreateGeoPointAnalyzerOptions
+  | CreateGeoS2AnalyzerOptions;
 
 /**
  * Options for creating an Identity Analyzer.
@@ -564,6 +565,54 @@ export type CreateGeoPointAnalyzerOptions = {
 };
 
 /**
+ * (Enterprise Edition only.) Options for creating a Geo S2 Analyzer
+ */
+export type CreateGeoS2AnalyzerOptions = {
+  /**
+   * Type of the Analyzer.
+   */
+  type: "geo_s2";
+  /**
+   * Features to enable for this Analyzer.
+   */
+  features?: AnalyzerFeature[];
+  /**
+   * Additional properties for the Analyzer.
+   */
+  properties: {
+    /**
+     * If set to `"centroid"`, only the centroid of the input geometry will be
+     * computed and indexed.
+     *
+     * If set to `"point"` only GeoJSON objects of type Point will be indexed and
+     * all other geometry types will be ignored.
+     *
+     * Default: `"shape"`
+     */
+    type?: "shape" | "centroid" | "point";
+    /**
+     * Options for fine-tuning geo queries.
+     *
+     * Default: `{ maxCells: 20, minLevel: 4, maxLevel: 23 }`
+     */
+    options?: { maxCells?: number; minLevel?: number; maxLevel?: number };
+    /**
+     * If set to `"latLngDouble"`, each latitude and longitude value is stored
+     * as an 8-byte floating-point value (16 bytes per coordinate pair).
+     *
+     * If set to `"latLngInt"`, each latitude and longitude value is stored as
+     * a 4-byte integer value (8 bytes per coordinate pair).
+     *
+     * If set to `"s2Point"`, each longitude-latitude pair is stored in the
+     * native format of Google S2 (24 bytes per coordinate pair).
+     *
+     * Default: `"latLngDouble"`
+     */
+    format?: "latLngDouble" | "latLngInt" | "s2Point";
+  };
+};
+
+/**
  * Shared attributes of all Analyzer descriptions.
  */
 export type GenericAnalyzerDescription = {
@@ -596,7 +645,8 @@ export type AnalyzerDescription =
   | ClassificationAnalyzerDescription
   | NearestNeighborsAnalyzerDescription
   | GeoJsonAnalyzerDescription
-  | GeoPointAnalyzerDescription;
+  | GeoPointAnalyzerDescription
+  | GeoS2AnalyzerDescription;
 
 /**
  * An object describing an Identity Analyzer.
@@ -777,6 +827,18 @@ export type GeoPointAnalyzerDescription = GenericAnalyzerDescription & {
 };
 
 /**
+ * (Enterprise Edition only.) An object describing a GeoS2 Analyzer
+ */
+export type GeoS2AnalyzerDescription = GenericAnalyzerDescription & {
+  type: "geo_s2";
+  properties: {
+    type: "shape" | "centroid" | "point";
+    description: { maxCells: number; minLevel: number; maxLevel: number };
+    format: "latLngDouble" | "latLngInt" | "s2Point";
+  };
+};
+
+/**
  * Represents an Analyzer in a {@link database.Database}.
  */
 export class Analyzer {
@@ -899,6 +961,8 @@ export class Analyzer {
       ? GeoJsonAnalyzerDescription
       : Options extends CreateGeoPointAnalyzerOptions
       ? GeoPointAnalyzerDescription
+      : Options extends CreateGeoS2AnalyzerOptions
+      ? GeoS2AnalyzerDescription
       : AnalyzerDescription
   > {
     return this._db.request({
