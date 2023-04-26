@@ -403,7 +403,7 @@ export type CreateCollationAnalyzerOptions = {
 };
 
 /**
- * Options for creating a MinHash Analyzer
+ * (Enterprise Edition only.) Options for creating a MinHash Analyzer
  */
 export type CreateMinHashAnalyzerOptions = {
   /**
@@ -430,7 +430,7 @@ export type CreateMinHashAnalyzerOptions = {
 };
 
 /**
- * Options for creating a Classification Analyzer
+ * (Enterprise Edition only.) Options for creating a Classification Analyzer
  */
 export type CreateClassificationAnalyzerOptions = {
   /**
@@ -465,7 +465,7 @@ export type CreateClassificationAnalyzerOptions = {
 };
 
 /**
- * Options for creating a NearestNeighbors Analyzer
+ * (Enterprise Edition only.) Options for creating a NearestNeighbors Analyzer.
  */
 export type CreateNearestNeighborsAnalyzerOptions = {
   /**
