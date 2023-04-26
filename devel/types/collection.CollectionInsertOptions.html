@@ -16,12 +16,19 @@
 <li><a href="../modules/collection.html">collection</a></li>
 <li><a href="collection.CollectionInsertOptions.html">CollectionInsertOptions</a></li></ul>
 <h1>Type alias CollectionInsertOptions</h1></div>
-<div class="tsd-signature">Collection<wbr/>Insert<wbr/>Options<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span><br/><span>    </span>overwriteMode<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">&quot;ignore&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;update&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;replace&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;conflict&quot;</span><span class="tsd-signature-symbol">; </span><br/><span>    </span>returnNew<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span><br/><span>    </span>silent<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span><br/><span>    </span>waitForSync<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span><br/><span class="tsd-signature-symbol">}</span></div>
+<div class="tsd-signature">Collection<wbr/>Insert<wbr/>Options<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span><br/><span>    </span>mergeObjects<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span><br/><span>    </span>overwriteMode<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">&quot;ignore&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;update&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;replace&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;conflict&quot;</span><span class="tsd-signature-symbol">; </span><br/><span>    </span>refillIndexCaches<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span><br/><span>    </span>returnNew<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span><br/><span>    </span>returnOld<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span><br/><span>    </span>silent<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span><br/><span>    </span>waitForSync<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span><br/><span class="tsd-signature-symbol">}</span></div>
 <div class="tsd-comment tsd-typography"><p>Options for inserting a new document into a collection.</p>
 </div>
 <div class="tsd-type-declaration">
 <h4>Type declaration</h4>
 <ul class="tsd-parameters">
+<li class="tsd-parameter">
+<h5><code class="tsd-tag ts-flagOptional">Optional</code> merge<wbr/>Objects<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span></h5>
+<div class="tsd-comment tsd-typography"><p>If set to <code>false</code>, object properties that already exist in the old
+document will be overwritten rather than merged when an existing document
+with the same <code>_key</code> or <code>_id</code> is updated. This does not affect arrays.</p>
+<p>Default: <code>true</code></p>
+</div></li>
 <li class="tsd-parameter">
 <h5><code class="tsd-tag ts-flagOptional">Optional</code> overwrite<wbr/>Mode<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">&quot;ignore&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;update&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;replace&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;conflict&quot;</span></h5>
 <div class="tsd-comment tsd-typography"><p>Defines what should happen if a document with the same <code>_key</code> or <code>_id</code>
@@ -29,9 +36,24 @@ already exists, instead of throwing an exception.</p>
 <p>Default: `&quot;conflict&quot;</p>
 </div></li>
 <li class="tsd-parameter">
+<h5><code class="tsd-tag ts-flagOptional">Optional</code> refill<wbr/>Index<wbr/>Caches<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span></h5>
+<div class="tsd-comment tsd-typography"><p>If set to <code>true</code>, new entries will be added to in-memory index caches if
+document insertions affect the edge index or cache-enabled persistent
+indexes.</p>
+<p>Default: <code>false</code></p>
+</div></li>
+<li class="tsd-parameter">
 <h5><code class="tsd-tag ts-flagOptional">Optional</code> return<wbr/>New<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span></h5>
 <div class="tsd-comment tsd-typography"><p>If set to <code>true</code>, the complete new document will be returned as the <code>new</code>
 property on the result object. Has no effect if <code>silent</code> is set to <code>true</code>.</p>
+<p>Default: <code>false</code></p>
+</div></li>
+<li class="tsd-parameter">
+<h5><code class="tsd-tag ts-flagOptional">Optional</code> return<wbr/>Old<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span></h5>
+<div class="tsd-comment tsd-typography"><p>If set to <code>true</code>, the complete old document will be returned as the <code>old</code>
+property on the result object. Has no effect if <code>silent</code> is set to <code>true</code>.
+This option is only available when <code>overwriteMode</code> is set to <code>&quot;update&quot;</code> or
+<code>&quot;replace&quot;</code>.</p>
 <p>Default: <code>false</code></p>
 </div></li>
 <li class="tsd-parameter">

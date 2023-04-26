@@ -16,7 +16,7 @@
 <li><a href="../modules/collection.html">collection</a></li>
 <li><a href="collection.CollectionRemoveOptions.html">CollectionRemoveOptions</a></li></ul>
 <h1>Type alias CollectionRemoveOptions</h1></div>
-<div class="tsd-signature">Collection<wbr/>Remove<wbr/>Options<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span><br/><span>    </span>ifMatch<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span><br/><span>    </span>returnOld<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span><br/><span>    </span>silent<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span><br/><span>    </span>waitForSync<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span><br/><span class="tsd-signature-symbol">}</span></div>
+<div class="tsd-signature">Collection<wbr/>Remove<wbr/>Options<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span><br/><span>    </span>ifMatch<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span><br/><span>    </span>refillIndexCaches<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span><br/><span>    </span>returnOld<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span><br/><span>    </span>silent<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span><br/><span>    </span>waitForSync<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span><br/><span class="tsd-signature-symbol">}</span></div>
 <div class="tsd-comment tsd-typography"><p>Options for removing a document from a collection.</p>
 </div>
 <div class="tsd-type-declaration">
@@ -26,6 +26,13 @@
 <h5><code class="tsd-tag ts-flagOptional">Optional</code> if<wbr/>Match<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span></h5>
 <div class="tsd-comment tsd-typography"><p>If set to a document revision, the document will only be removed if its
 <code>_rev</code> matches the given revision.</p>
+</div></li>
+<li class="tsd-parameter">
+<h5><code class="tsd-tag ts-flagOptional">Optional</code> refill<wbr/>Index<wbr/>Caches<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span></h5>
+<div class="tsd-comment tsd-typography"><p>If set to <code>true</code>, existing entries in in-memory index caches will be
+deleted if document removals affect the edge index or cache-enabled
+persistent indexes.</p>
+<p>Default: <code>false</code></p>
 </div></li>
 <li class="tsd-parameter">
 <h5><code class="tsd-tag ts-flagOptional">Optional</code> return<wbr/>Old<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span></h5>
@@ -45,7 +52,7 @@ be used to reduce network traffic.</p>
 <p>Default: <code>false</code></p>
 </div></li></ul></div><aside class="tsd-sources">
 <ul>
-<li>Defined in collection.ts:803</li></ul></aside></div>
+<li>Defined in collection.ts:844</li></ul></aside></div>
 <div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 <div class="tsd-navigation settings">
 <details class="tsd-index-accordion"><summary class="tsd-accordion-summary">

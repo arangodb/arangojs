@@ -27,9 +27,34 @@ This driver uses semantic versioning:
 
 ## Added
 
+- Added `returnOld` and `mergeObjects` to `CollectionInsertOptions` type
+
+  These options are only available when using `overwriteMode`.
+
+- Added caching options to `InvertedIndex` and `ArangoSearchView` types
+
+  These options were added in ArangoDB 3.10.2.
+
+- Added support for `ArangoSearchView` type `storedValues` shorthand notation
+
+  Instead of using an object, attributes can also be defined as arrays of
+  strings and arrays of arrays of strings. This was added in ArangoDB 3.10.3.
+
 - Added `peakMemoryUsage` and `executionTime` to `SingleExplainResult.stats` type
 
   These attributes were added in ArangoDB 3.10.4.
+
+- Added `geo_s2` Analyzer types
+
+  This Analyzer was added in ArangoDB 3.10.5.
+
+- Added `refillIndexCaches` option to document operation options types
+
+  This option was added in ArangoDB 3.11.
+
+- Added `optimizeTopK` to `ArangoSearchView` and `InvertedIndex` types
+
+  This option was added in ArangoDB 3.11.
 
 - Added `x-arango-driver` header
 
