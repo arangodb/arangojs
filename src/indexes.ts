@@ -544,6 +544,10 @@ export type EnsureInvertedIndexOptions = {
    * Default: `false`
    */
   cache?: boolean;
+  /**
+   * An array of strings defining sort expressions to optimize.
+   */
+  optimizeTopK?: string[];
 };
 
 /**
@@ -689,6 +693,7 @@ export type InvertedIndex = GenericIndex & {
   writeBufferIdle: number;
   writeBufferActive: number;
   writeBufferSizeMax: number;
+  optimizeTopK: string[];
 };
 
 /**

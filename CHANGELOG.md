@@ -47,6 +47,10 @@ This driver uses semantic versioning:
 
   This option was added in ArangoDB 3.11.
 
+- Added `optimizeTopK` to `ArangoSearchView` and `InvertedIndex` types
+
+  This option was added in ArangoDB 3.11.
+
 - Added `x-arango-driver` header
 
   The arangojs driver now correctly identifies itself to ArangoDB, allowing the

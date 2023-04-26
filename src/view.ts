@@ -325,6 +325,10 @@ export type CreateArangoSearchViewOptions =
      * in addition to those used for sorting via `primarySort`.
      */
     storedValues?: ArangoSearchViewStoredValueOptions[] | string[] | string[][];
+    /**
+     * An array of strings defining sort expressions to optimize.
+     */
+    optimizeTopK?: string[];
   };
 
 /**
@@ -454,6 +458,7 @@ export type ArangoSearchViewProperties = ArangoSearchViewDescription & {
     cache: boolean;
   }[];
   links: Record<string, Omit<ArangoSearchViewLink, "nested">>;
+  optimizeTopK: string[];
 };
 
 /**
