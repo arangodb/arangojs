@@ -39,6 +39,10 @@ This driver uses semantic versioning:
 
   These attributes were added in ArangoDB 3.10.4.
 
+- Added `refillIndexCaches` option to document operation options types
+
+  This option was added in ArangoDB 3.11.
+
 - Added `x-arango-driver` header
 
   The arangojs driver now correctly identifies itself to ArangoDB, allowing the

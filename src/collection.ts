@@ -707,6 +707,14 @@ export type CollectionInsertOptions = {
    * Default: `true`
    */
   mergeObjects?: boolean;
+  /**
+   * If set to `true`, new entries will be added to in-memory index caches if
+   * document insertions affect the edge index or cache-enabled persistent
+   * indexes.
+   *
+   * Default: `false`
+   */
+  refillIndexCaches?: boolean;
 };
 
 /**
@@ -752,6 +760,14 @@ export type CollectionReplaceOptions = {
    * `_rev` matches the given revision.
    */
   ifMatch?: string;
+  /**
+   * If set to `true`, existing entries in in-memory index caches will be
+   * updated if document replacements affect the edge index or cache-enabled
+   * persistent indexes.
+   *
+   * Default: `false`
+   */
+  refillIndexCaches?: boolean;
 };
 
 /**
@@ -812,6 +828,14 @@ export type CollectionUpdateOptions = {
    * `_rev` matches the given revision.
    */
   ifMatch?: string;
+  /**
+   * If set to `true`, existing entries in in-memory index caches will be
+   * updated if document updates affect the edge index or cache-enabled
+   * persistent indexes.
+   *
+   * Default: `false`
+   */
+  refillIndexCaches?: boolean;
 };
 
 /**
@@ -843,6 +867,14 @@ export type CollectionRemoveOptions = {
    * `_rev` matches the given revision.
    */
   ifMatch?: string;
+  /**
+   * If set to `true`, existing entries in in-memory index caches will be
+   * deleted if document removals affect the edge index or cache-enabled
+   * persistent indexes.
+   *
+   * Default: `false`
+   */
+  refillIndexCaches?: boolean;
 };
 
 /**
