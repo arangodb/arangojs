@@ -1793,6 +1793,34 @@ export class Database {
       }
     );
   }
+
+  /**
+   * Attempts to renew the authentication token passed to {@link Database#useBearerAuth}
+   * or returned and used by {@link Database#login}. If a new authentication
+   * token is issued, it will be used for future requests and returned.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * await db.login("admin", "hunter2");
+   * // ... later ...
+   * const newToken = await db.renewAuthToken();
+   * if (!newToken) // no new token issued
+   * ```
+   */
+  renewAuthToken(): Promise<string | null> {
+    return this.request(
+      {
+        method: "POST",
+        path: "/_open/auth/renew",
+      },
+      (res) => {
+        if (!res.body.jwt) return null;
+        this.useBearerAuth(res.body.jwt);
+        return res.body.jwt;
+      }
+    );
+  }
   //#endregion
 
   //#region databases
