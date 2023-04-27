@@ -158,6 +158,7 @@ export class BatchedArrayCursor<T = any> {
   protected _count?: number;
   protected _extra: CursorExtras;
   protected _hasMore: boolean;
+  protected _nextBatchId?: string;
   protected _id: string | undefined;
   protected _hostUrl?: string;
   protected _allowDirtyRead?: boolean;
@@ -172,6 +173,7 @@ export class BatchedArrayCursor<T = any> {
       extra: any;
       result: T[];
       hasMore: boolean;
+      nextBatchId?: string;
       id: string;
       count: number;
     },
@@ -185,6 +187,7 @@ export class BatchedArrayCursor<T = any> {
     this._batches = batches;
     this._id = body.id;
     this._hasMore = Boolean(body.id && body.hasMore);
+    this._nextBatchId = body.nextBatchId;
     this._hostUrl = hostUrl;
     this._count = body.count;
     this._extra = body.extra;
@@ -209,15 +212,25 @@ export class BatchedArrayCursor<T = any> {
   }
 
   protected async _more(): Promise<void> {
-    if (!this.hasMore) return;
+    if (!this._id || !this.hasMore) return;
     const body = await this._db.request({
-      method: "PUT",
-      path: `/_api/cursor/${encodeURIComponent(this._id!)}`,
+      ...(this._nextBatchId
+        ? {
+            method: "POST",
+            path: `/_api/cursor/${encodeURIComponent(this._id)}/${
+              this._nextBatchId
+            }`,
+          }
+        : {
+            method: "PUT",
+            path: `/_api/cursor/${encodeURIComponent(this._id)}`,
+          }),
       hostUrl: this._hostUrl,
       allowDirtyRead: this._allowDirtyRead,
     });
     this._batches.push(new LinkedList(body.result));
     this._hasMore = body.hasMore;
+    this._nextBatchId = body.nextBatchId;
   }
 
   /**

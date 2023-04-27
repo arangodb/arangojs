@@ -190,6 +190,13 @@ export type QueryOptions = {
    */
   allowDirtyRead?: boolean;
   /**
+   * If set to `true`, cursor results will be stored by ArangoDB in such a way
+   * that batch reads can be retried in the case of a communication error.
+   *
+   * Default: `false`
+   */
+  allowRetry?: boolean;
+  /**
    * Maximum time in milliseconds arangojs will wait for a server response.
    * Exceeding this value will result in the request being cancelled.
    *
