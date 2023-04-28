@@ -27,6 +27,13 @@ This driver uses semantic versioning:
 
 ## Added
 
+- Added `renewAuthToken` method to `Database` ([#784](https://github.com/arangodb/arangojs/issues/784))
+
+  This method allows refreshing the authentication token passed to the
+  `useBearerAuth` method or used by the `login` method. Note that ArangoDB
+  will currently only return a new token if the token is going to expire
+  in the next 150 seconds.
+
 - Added `returnOld` and `mergeObjects` to `CollectionInsertOptions` type
 
   These options are only available when using `overwriteMode`.
