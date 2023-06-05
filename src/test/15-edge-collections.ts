@@ -4,6 +4,8 @@ import { Database } from "../database";
 import { DocumentMetadata } from "../documents";
 import { config } from "./_config";
 
+const describePre312 = config.arangoVersion < 31200 ? describe : describe.skip;
+
 describe("EdgeCollection API", function () {
   const name = `testdb_${Date.now()}`;
   let system: Database, db: Database;
@@ -173,7 +175,7 @@ describe("EdgeCollection API", function () {
       expect(doc._to).to.equal(data._to);
     });
   });
-  describe("edgeCollection.traversal", () => {
+  describePre312("edgeCollection.traversal", () => {
     let knows: EdgeCollection;
     beforeEach(async () => {
       let person: DocumentCollection;

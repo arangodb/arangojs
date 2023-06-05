@@ -3,6 +3,8 @@ import { Database } from "../database";
 import { Graph } from "../graph";
 import { config } from "./_config";
 
+const describePre312 = config.arangoVersion < 31200 ? describe : describe.skip;
+
 describe("Manipulating graph edges", function () {
   const dbName = `testdb_${Date.now()}`;
   const graphName = `testgraph_${Date.now()}`;
@@ -136,7 +138,7 @@ describe("Manipulating graph edges", function () {
       expect(info.edgeDefinitions.length).to.equal(0);
     });
   });
-  describe("graph.traversal", () => {
+  describePre312("graph.traversal", () => {
     beforeEach(async () => {
       const knows = graph.edgeCollection("knows");
       const person = graph.vertexCollection("person");

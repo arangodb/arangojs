@@ -14,6 +14,12 @@ This driver uses semantic versioning:
 - A change in the major version (e.g. 1.Y.Z -> 2.0.0) indicates _breaking_
   changes that require changes in your code to upgrade.
 
+## [Unreleased]
+
+## Changed
+
+- Added note that Simple Queries traversals are removed in ArangoDB 3.12.
+
 ## [8.3.0] - 2023-05-11
 
 ## Fixed

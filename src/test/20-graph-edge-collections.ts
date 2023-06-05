@@ -4,6 +4,8 @@ import { DocumentMetadata } from "../documents";
 import { GraphEdgeCollection } from "../graph";
 import { config } from "./_config";
 
+const describePre312 = config.arangoVersion < 31200 ? describe : describe.skip;
+
 describe("GraphEdgeCollection API", function () {
   const dbName = `testdb_${Date.now()}`;
   let system: Database, db: Database;
@@ -116,7 +118,7 @@ describe("GraphEdgeCollection API", function () {
       expect(doc._to).to.equal(data._to);
     });
   });
-  describe("edgeCollection.traversal", () => {
+  describePre312("edgeCollection.traversal", () => {
     beforeEach(async () => {
       await collection.collection.import([
         { _from: "person/Alice", _to: "person/Bob" },

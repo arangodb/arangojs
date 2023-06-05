@@ -1124,8 +1124,8 @@ export type SimpleQueryFulltextOptions = {
 /**
  * Options for performing a graph traversal.
  *
- * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
- * replaced with AQL queries.
+ * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and are
+ * no longer supported in ArangoDB 3.12. They can be replaced with AQL queries.
  */
 export type TraversalOptions = {
   /**
@@ -3417,8 +3417,8 @@ export interface EdgeCollection<T extends Record<string, any> = any>
    * properties (e.g. a document from this collection).
    * @param options - Options for performing the traversal.
    *
-   * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
-   * replaced with AQL queries.
+   * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and are
+   * no longer supported in ArangoDB 3.12. They can be replaced with AQL queries.
    *
    * @example
    * ```js

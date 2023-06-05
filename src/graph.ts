@@ -1774,8 +1774,8 @@ export class Graph {
    * @param startVertex - Document `_id` of a vertex in this graph.
    * @param options - Options for performing the traversal.
    *
-   * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and can be
-   * replaced with AQL queries.
+   * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and are
+   * no longer supported in ArangoDB 3.12. They can be replaced with AQL queries.
    *
    * @example
    * ```js
