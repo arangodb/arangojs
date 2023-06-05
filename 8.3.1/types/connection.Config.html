@@ -1,0 +1,217 @@
+<!DOCTYPE html><html class="default" lang="en"><head><meta charSet="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>Config | arangojs - v8.3.1</title><meta name="description" content="Documentation for arangojs - v8.3.1"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="../assets/style.css"/><link rel="stylesheet" href="../assets/highlight.css"/><script async src="../assets/search.js" id="search-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os"</script><header class="tsd-page-toolbar">
+<div class="tsd-toolbar-contents container">
+<div class="table-cell" id="tsd-search" data-base="..">
+<div class="field"><label for="tsd-search-field" class="tsd-widget tsd-toolbar-icon search no-caption"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M15.7824 13.833L12.6666 10.7177C12.5259 10.5771 12.3353 10.499 12.1353 10.499H11.6259C12.4884 9.39596 13.001 8.00859 13.001 6.49937C13.001 2.90909 10.0914 0 6.50048 0C2.90959 0 0 2.90909 0 6.49937C0 10.0896 2.90959 12.9987 6.50048 12.9987C8.00996 12.9987 9.39756 12.4863 10.5008 11.6239V12.1332C10.5008 12.3332 10.5789 12.5238 10.7195 12.6644L13.8354 15.7797C14.1292 16.0734 14.6042 16.0734 14.8948 15.7797L15.7793 14.8954C16.0731 14.6017 16.0731 14.1267 15.7824 13.833ZM6.50048 10.499C4.29094 10.499 2.50018 8.71165 2.50018 6.49937C2.50018 4.29021 4.28781 2.49976 6.50048 2.49976C8.71001 2.49976 10.5008 4.28708 10.5008 6.49937C10.5008 8.70852 8.71314 10.499 6.50048 10.499Z" fill="var(--color-text)"></path></svg></label><input type="text" id="tsd-search-field" aria-label="Search"/></div>
+<div class="field">
+<div id="tsd-toolbar-links"></div></div>
+<ul class="results">
+<li class="state loading">Preparing search index...</li>
+<li class="state failure">The search index is not available</li></ul><a href="../index.html" class="title">arangojs - v8.3.1</a></div>
+<div class="table-cell" id="tsd-widgets"><a href="#" class="tsd-widget tsd-toolbar-icon menu no-caption" data-toggle="menu" aria-label="Menu"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="1" y="3" width="14" height="2" fill="var(--color-text)"></rect><rect x="1" y="7" width="14" height="2" fill="var(--color-text)"></rect><rect x="1" y="11" width="14" height="2" fill="var(--color-text)"></rect></svg></a></div></div></header>
+<div class="container container-main">
+<div class="col-8 col-content">
+<div class="tsd-page-title">
+<ul class="tsd-breadcrumb">
+<li><a href="../modules.html">arangojs - v8.3.1</a></li>
+<li><a href="../modules/connection.html">connection</a></li>
+<li><a href="connection.Config.html">Config</a></li></ul>
+<h1>Type alias Config</h1></div>
+<div class="tsd-signature">Config<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span><br/><span>    </span>agent<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">; </span><br/><span>    </span>agentOptions<span class="tsd-signature-symbol">?: </span><a href="connection.AgentOptions.html" class="tsd-signature-type" data-tsd-kind="Type alias">AgentOptions</a><span class="tsd-signature-symbol"> &amp; </span><a href="connection.RequestInterceptors.html" class="tsd-signature-type" data-tsd-kind="Type alias">RequestInterceptors</a><span class="tsd-signature-symbol">; </span><br/><span>    </span>arangoVersion<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span><br/><span>    </span>auth<span class="tsd-signature-symbol">?: </span><a href="connection.BasicAuthCredentials.html" class="tsd-signature-type" data-tsd-kind="Type alias">BasicAuthCredentials</a><span class="tsd-signature-symbol"> | </span><a href="connection.BearerAuthCredentials.html" class="tsd-signature-type" data-tsd-kind="Type alias">BearerAuthCredentials</a><span class="tsd-signature-symbol">; </span><br/><span>    </span>databaseName<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span><br/><span>    </span>headers<span class="tsd-signature-symbol">?: </span><a href="connection.Headers.html" class="tsd-signature-type" data-tsd-kind="Type alias">Headers</a><span class="tsd-signature-symbol">; </span><br/><span>    </span>loadBalancingStrategy<span class="tsd-signature-symbol">?: </span><a href="connection.LoadBalancingStrategy.html" class="tsd-signature-type" data-tsd-kind="Type alias">LoadBalancingStrategy</a><span class="tsd-signature-symbol">; </span><br/><span>    </span>maxRetries<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span><br/><span>    </span>precaptureStackTraces<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span><br/><span>    </span>responseQueueTimeSamples<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span><br/><span>    </span>retryOnConflict<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span><br/><span>    </span>url<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span><br/><span class="tsd-signature-symbol">}</span></div>
+<div class="tsd-comment tsd-typography"><p>Options for configuring arangojs.</p>
+</div>
+<div class="tsd-type-declaration">
+<h4>Type declaration</h4>
+<ul class="tsd-parameters">
+<li class="tsd-parameter">
+<h5><code class="tsd-tag ts-flagOptional">Optional</code> agent<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span></h5>
+<div class="tsd-comment tsd-typography"><p>An http <code>Agent</code> instance to use for connections.</p>
+<p>By default a new <code>Agent</code> instance will be created using the <code>agentOptions</code>.</p>
+<p>This option has no effect when using the browser version of arangojs.</p>
+<p>See also <a href="https://nodejs.org/api/http.html#http_new_agent_options"><code>http.Agent</code></a>
+and <a href="https://nodejs.org/api/https.html#https_new_agent_options"><code>https.Agent</code></a>
+(when using TLS).</p>
+</div></li>
+<li class="tsd-parameter">
+<h5><code class="tsd-tag ts-flagOptional">Optional</code> agent<wbr/>Options<span class="tsd-signature-symbol">?: </span><a href="connection.AgentOptions.html" class="tsd-signature-type" data-tsd-kind="Type alias">AgentOptions</a><span class="tsd-signature-symbol"> &amp; </span><a href="connection.RequestInterceptors.html" class="tsd-signature-type" data-tsd-kind="Type alias">RequestInterceptors</a></h5>
+<div class="tsd-comment tsd-typography"><p>Options used to create that underlying HTTP/HTTPS <code>Agent</code> (or the <code>xhr</code>
+module when using arangojs in the browser). This will be ignored if
+<code>agent</code> is also provided.</p>
+<p>The option <code>maxSockets</code> is also used to limit how many requests
+arangojs will perform concurrently. The maximum number of requests is
+equal to <code>maxSockets</code>.</p>
+<p><strong>Note:</strong> arangojs will limit the number of concurrent requests based on
+this value even if an <code>agent</code> is provided.</p>
+<p><strong>Note:</strong> when using <code>ROUND_ROBIN</code> load balancing and passing an array of
+URLs in the <code>url</code> option, the default value of <code>maxSockets</code> will be set
+to <code>3 * url.length</code> instead of <code>3</code>.</p>
+<p>Default (Node.js): <code>{ maxSockets: 3, keepAlive: true, keepAliveMsecs: 1000 }</code></p>
+<p>Default (browser): <code>{ maxSockets: 3, useXDR: true, withCredentials: true }</code></p>
+</div></li>
+<li class="tsd-parameter">
+<h5><code class="tsd-tag ts-flagOptional">Optional</code> arango<wbr/>Version<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span></h5>
+<div class="tsd-comment tsd-typography"><p>Numeric representation of the ArangoDB version the driver should expect.
+The format is defined as <code>XYYZZ</code> where <code>X</code> is the major version, <code>Y</code> is
+the zero-filled two-digit minor version and <code>Z</code> is the zero-filled two-digit
+bugfix version, e.g. <code>30102</code> for 3.1.2, <code>20811</code> for 2.8.11.</p>
+<p>Depending on this value certain methods may become unavailable or change
+their behavior to remain compatible with different versions of ArangoDB.</p>
+<p>Default: <code>30900</code></p>
+</div></li>
+<li class="tsd-parameter">
+<h5><code class="tsd-tag ts-flagOptional">Optional</code> auth<span class="tsd-signature-symbol">?: </span><a href="connection.BasicAuthCredentials.html" class="tsd-signature-type" data-tsd-kind="Type alias">BasicAuthCredentials</a><span class="tsd-signature-symbol"> | </span><a href="connection.BearerAuthCredentials.html" class="tsd-signature-type" data-tsd-kind="Type alias">BearerAuthCredentials</a></h5>
+<div class="tsd-comment tsd-typography"><p>Credentials to use for authentication.</p>
+<p>See also <a href="../classes/database.Database.html#useBasicAuth">useBasicAuth</a> and
+<a href="../classes/database.Database.html#useBearerAuth">useBearerAuth</a>.</p>
+<p>Default: <code>{ username: &quot;root&quot;, password: &quot;&quot; }</code></p>
+</div></li>
+<li class="tsd-parameter">
+<h5><code class="tsd-tag ts-flagOptional">Optional</code> database<wbr/>Name<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span></h5>
+<div class="tsd-comment tsd-typography"><p>Name of the database to use.</p>
+<p>Default: <code>&quot;_system&quot;</code></p>
+</div></li>
+<li class="tsd-parameter">
+<h5><code class="tsd-tag ts-flagOptional">Optional</code> headers<span class="tsd-signature-symbol">?: </span><a href="connection.Headers.html" class="tsd-signature-type" data-tsd-kind="Type alias">Headers</a></h5>
+<div class="tsd-comment tsd-typography"><p>An object with additional headers to send with every request.</p>
+<p>If an <code>&quot;authorization&quot;</code> header is provided, it will be overridden when
+using <a href="../classes/database.Database.html#useBasicAuth">useBasicAuth</a>, <a href="../classes/database.Database.html#useBearerAuth">useBearerAuth</a> or
+the <code>auth</code> configuration option.</p>
+</div></li>
+<li class="tsd-parameter">
+<h5><code class="tsd-tag ts-flagOptional">Optional</code> load<wbr/>Balancing<wbr/>Strategy<span class="tsd-signature-symbol">?: </span><a href="connection.LoadBalancingStrategy.html" class="tsd-signature-type" data-tsd-kind="Type alias">LoadBalancingStrategy</a></h5>
+<div class="tsd-comment tsd-typography"><p>Determines the behavior when multiple URLs are provided:</p>
+<ul>
+<li><p><code>&quot;NONE&quot;</code>: No load balancing. All requests will be handled by the first
+URL in the list until a network error is encountered. On network error,
+arangojs will advance to using the next URL in the list.</p>
+</li>
+<li><p><code>&quot;ONE_RANDOM&quot;</code>: Randomly picks one URL from the list initially, then
+behaves like <code>&quot;NONE&quot;</code>.</p>
+</li>
+<li><p><code>&quot;ROUND_ROBIN&quot;</code>: Every sequential request uses the next URL in the list.</p>
+</li>
+</ul>
+<p>Default: <code>&quot;NONE&quot;</code></p>
+</div></li>
+<li class="tsd-parameter">
+<h5><code class="tsd-tag ts-flagOptional">Optional</code> max<wbr/>Retries<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></h5>
+<div class="tsd-comment tsd-typography"><p>Determines the behavior when a request fails because the underlying
+connection to the server could not be opened
+(i.e. <a href="https://nodejs.org/api/errors.html#errors_common_system_errors"><code>ECONNREFUSED</code> in Node.js</a>):</p>
+<ul>
+<li><p><code>false</code>: the request fails immediately.</p>
+</li>
+<li><p><code>0</code>: the request is retried until a server can be reached but only a
+total number of times matching the number of known servers (including
+the initial failed request).</p>
+</li>
+<li><p>any other number: the request is retried until a server can be reached
+or the request has been retried a total of <code>maxRetries</code> number of times
+(not including the initial failed request).</p>
+</li>
+</ul>
+<p>When working with a single server without leader/follower failover, the
+retries (if any) will be made to the same server.</p>
+<p>This setting currently has no effect when using arangojs in a browser.</p>
+<p><strong>Note</strong>: Requests bound to a specific server (e.g. fetching query results)
+will never be retried automatically and ignore this setting.</p>
+<p><strong>Note</strong>: To set the number of retries when a write-write conflict is
+encountered, see <code>retryOnConflict</code> instead.</p>
+<p>Default: <code>0</code></p>
+</div></li>
+<li class="tsd-parameter">
+<h5><code class="tsd-tag ts-flagOptional">Optional</code> precapture<wbr/>Stack<wbr/>Traces<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span></h5>
+<div class="tsd-comment tsd-typography"><p>If set to <code>true</code>, arangojs will generate stack traces every time a request
+is initiated and augment the stack traces of any errors it generates.</p>
+<p><strong>Warning</strong>: This will cause arangojs to generate stack traces in advance
+even if the request does not result in an error. Generating stack traces
+may negatively impact performance.</p>
+</div></li>
+<li class="tsd-parameter">
+<h5><code class="tsd-tag ts-flagOptional">Optional</code> response<wbr/>Queue<wbr/>Time<wbr/>Samples<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span></h5>
+<div class="tsd-comment tsd-typography"><p>Limits the number of values of server-reported response queue times that
+will be stored and accessible using <a href="../classes/database.Database.html#queueTime">queueTime</a>. If set to
+a finite value, older values will be discarded to make room for new values
+when that limit is reached.</p>
+<p>Default: <code>10</code></p>
+</div></li>
+<li class="tsd-parameter">
+<h5><code class="tsd-tag ts-flagOptional">Optional</code> retry<wbr/>On<wbr/>Conflict<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span></h5>
+<div class="tsd-comment tsd-typography"><p>If set to a positive number, requests will automatically be retried at
+most this many times if they result in a write-write conflict.</p>
+<p>Default: <code>0</code></p>
+</div></li>
+<li class="tsd-parameter">
+<h5><code class="tsd-tag ts-flagOptional">Optional</code> url<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5>
+<div class="tsd-comment tsd-typography"><p>Base URL of the ArangoDB server or list of server URLs.</p>
+<p>When working with a cluster or a single server with leader/follower
+failover, the method <a href="../classes/database.Database.html#acquireHostList">acquireHostList</a> can be used to
+automatically pick up additional coordinators/followers at any point.</p>
+<p>When running ArangoDB on a unix socket, e.g. <code>/tmp/arangodb.sock</code>, the
+following URL formats are supported for unix sockets:</p>
+<ul>
+<li><code>unix:///tmp/arangodb.sock</code> (no SSL)</li>
+<li><code>http+unix:///tmp/arangodb.sock</code> (or <code>https+unix://</code> for SSL)</li>
+<li><code>http://unix:/tmp/arangodb.sock</code> (or <code>https://unix:</code> for SSL)</li>
+</ul>
+<p>Additionally <code>ssl</code> and <code>tls</code> are treated as synonymous with <code>https</code> and
+<code>tcp</code> is treated as synonymous with <code>http</code>, so the following URLs are
+considered identical:</p>
+<ul>
+<li><code>tcp://127.0.0.1:8529</code> and <code>http://127.0.0.1:8529</code></li>
+<li><code>ssl://127.0.0.1:8529</code> and <code>https://127.0.0.1:8529</code></li>
+<li><code>tcp+unix:///tmp/arangodb.sock</code> and <code>http+unix:///tmp/arangodb.sock</code></li>
+<li><code>ssl+unix:///tmp/arangodb.sock</code> and <code>https+unix:///tmp/arangodb.sock</code></li>
+<li><code>tcp://unix:/tmp/arangodb.sock</code> and <code>http://unix:/tmp/arangodb.sock</code></li>
+<li><code>ssl://unix:/tmp/arangodb.sock</code> and <code>https://unix:/tmp/arangodb.sock</code></li>
+</ul>
+<p>See also <code>auth</code> for passing authentication credentials.</p>
+<p>Default: <code>&quot;http://127.0.0.1:8529&quot;</code></p>
+</div></li></ul></div><aside class="tsd-sources">
+<ul>
+<li>Defined in connection.ts:319</li></ul></aside></div>
+<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+<div class="tsd-navigation settings">
+<details class="tsd-index-accordion"><summary class="tsd-accordion-summary">
+<h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4.93896 8.531L12 15.591L19.061 8.531L16.939 6.409L12 11.349L7.06098 6.409L4.93896 8.531Z" fill="var(--color-text)"></path></svg> Settings</h3></summary>
+<div class="tsd-accordion-details">
+<div class="tsd-theme-toggle">
+<h4 class="uppercase">Theme</h4><select id="theme"><option value="os">OS</option><option value="light">Light</option><option value="dark">Dark</option></select></div></div></details></div>
+<nav class="tsd-navigation primary">
+<details class="tsd-index-accordion" open><summary class="tsd-accordion-summary">
+<h3><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4.93896 8.531L12 15.591L19.061 8.531L16.939 6.409L12 11.349L7.06098 6.409L4.93896 8.531Z" fill="var(--color-text)"></path></svg> Modules</h3></summary>
+<div class="tsd-accordion-details">
+<ul>
+<li class="current"><a href="../modules.html">arangojs -<wbr/> v8.3.1</a>
+<ul>
+<li class="tsd-kind-module"><a href="../modules/analyzer.html">analyzer</a></li>
+<li class="tsd-kind-module"><a href="../modules/aql.html">aql</a></li>
+<li class="tsd-kind-module"><a href="../modules/collection.html">collection</a></li>
+<li class="current tsd-kind-module"><a href="../modules/connection.html">connection</a></li>
+<li class="tsd-kind-module"><a href="../modules/cursor.html">cursor</a></li>
+<li class="tsd-kind-module"><a href="../modules/database.html">database</a></li>
+<li class="tsd-kind-module"><a href="../modules/documents.html">documents</a></li>
+<li class="tsd-kind-module"><a href="../modules/error.html">error</a></li>
+<li class="tsd-kind-module"><a href="../modules/foxx_manifest.html">foxx-<wbr/>manifest</a></li>
+<li class="tsd-kind-module"><a href="../modules/graph.html">graph</a></li>
+<li class="tsd-kind-module"><a href="../modules/index.html">index</a></li>
+<li class="tsd-kind-module"><a href="../modules/indexes.html">indexes</a></li>
+<li class="tsd-kind-module"><a href="../modules/route.html">route</a></li>
+<li class="tsd-kind-module"><a href="../modules/transaction.html">transaction</a></li>
+<li class="tsd-kind-module"><a href="../modules/view.html">view</a></li></ul></li></ul></div></details></nav>
+<nav class="tsd-navigation secondary menu-sticky">
+<ul>
+<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="connection.AgentOptions.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><rect fill="var(--color-icon-background)" stroke="var(--color-ts)" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="6" id="icon-4194304-path"></rect><path d="M11.31 16V8.224H8.91V7.24H14.79V8.224H12.39V16H11.31Z" fill="var(--color-text)" id="icon-4194304-text"></path></svg>Agent<wbr/>Options</a></li>
+<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="connection.ArangoApiResponse.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-4194304-path"></use><use href="#icon-4194304-text"></use></svg>Arango<wbr/>Api<wbr/>Response</a></li>
+<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="connection.ArangoResponseMetadata.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-4194304-path"></use><use href="#icon-4194304-text"></use></svg>Arango<wbr/>Response<wbr/>Metadata</a></li>
+<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="connection.BasicAuthCredentials.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-4194304-path"></use><use href="#icon-4194304-text"></use></svg>Basic<wbr/>Auth<wbr/>Credentials</a></li>
+<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="connection.BearerAuthCredentials.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-4194304-path"></use><use href="#icon-4194304-text"></use></svg>Bearer<wbr/>Auth<wbr/>Credentials</a></li>
+<li class="current tsd-kind-type-alias tsd-parent-kind-module"><a href="connection.Config.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-4194304-path"></use><use href="#icon-4194304-text"></use></svg>Config</a></li>
+<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="connection.Headers.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-4194304-path"></use><use href="#icon-4194304-text"></use></svg>Headers</a></li>
+<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="connection.LoadBalancingStrategy.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-4194304-path"></use><use href="#icon-4194304-text"></use></svg>Load<wbr/>Balancing<wbr/>Strategy</a></li>
+<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="connection.Params.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-4194304-path"></use><use href="#icon-4194304-text"></use></svg>Params</a></li>
+<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="connection.RequestInterceptors.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-4194304-path"></use><use href="#icon-4194304-text"></use></svg>Request<wbr/>Interceptors</a></li>
+<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="connection.RequestOptions.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-4194304-path"></use><use href="#icon-4194304-text"></use></svg>Request<wbr/>Options</a></li>
+<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="connection.XhrOptions.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-4194304-path"></use><use href="#icon-4194304-text"></use></svg>Xhr<wbr/>Options</a></li></ul></nav></div></div>
+<div class="container tsd-generator">
+<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p></div>
+<div class="overlay"></div><script src="../assets/main.js"></script></body></html>
