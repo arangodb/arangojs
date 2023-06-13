@@ -1579,8 +1579,24 @@ export class Database {
    */
   request<T = any>(
     options: RequestOptions & { absolutePath?: boolean },
-    transform?: false | ((res: ArangojsResponse) => T)
+    transform?: (res: ArangojsResponse) => T
   ): Promise<T>;
+  /**
+   * @internal
+   *
+   * Performs an arbitrary HTTP request against the database.
+   *
+   * If `absolutePath` is set to `true`, the database path will not be
+   * automatically prepended to the `basePath`.
+   *
+   * @param options - Options for this request.
+   * @param transform - If set to `false`, the raw response object will be
+   * returned.
+   */
+  request(
+    options: RequestOptions & { absolutePath?: boolean },
+    transform: false
+  ): Promise<ArangojsResponse>;
   request<T = any>(
     {
       absolutePath = false,
@@ -2578,10 +2594,13 @@ export class Database {
    * ```
    */
   listUsers(): Promise<ArangoUser[]> {
-    return this.request({
-      absolutePath: true,
-      path: "/_api/user",
-    });
+    return this.request(
+      {
+        absolutePath: true,
+        path: "/_api/user",
+      },
+      (res) => res.body.result
+    );
   }
 
   /**
