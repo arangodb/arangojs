@@ -19,19 +19,25 @@ This driver uses semantic versioning:
 - A change in the major version (e.g. 1.Y.Z -> 2.0.0) indicates _breaking_
   changes that require changes in your code to upgrade.
 
+## [Unreleased]
+
+### Fixed
+
+- Fixed `listUsers` behavior ([#782](https://github.com/arangodb/arangojs/issues/782))
+
 ## [8.3.1] - 2023-06-05
 
-## Changed
+### Changed
 
 - Added note that Simple Queries traversals are removed in ArangoDB 3.12.
 
 ## [8.3.0] - 2023-05-11
 
-## Fixed
+### Fixed
 
 - Fixed `updateUser` and `replaceUser` behavior ([#783](https://github.com/arangodb/arangojs/issues/783))
 
-## Added
+### Added
 
 - Added `renewAuthToken` method to `Database` ([#784](https://github.com/arangodb/arangojs/issues/784))
 
@@ -1650,6 +1656,7 @@ For a detailed list of changes between pre-release versions of v7 see the
 
   Graph methods now only return the relevant part of the response body.
 
+[unreleased]: https://github.com/arangodb/arangojs/compare/v8.3.1...HEAD
 [8.3.1]: https://github.com/arangodb/arangojs/compare/v8.3.0...v8.3.1
 [8.3.0]: https://github.com/arangodb/arangojs/compare/v8.2.1...v8.3.0
 [8.2.1]: https://github.com/arangodb/arangojs/compare/v8.2.0...v8.2.1
