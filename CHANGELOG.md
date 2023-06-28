@@ -31,6 +31,8 @@ This driver uses semantic versioning:
 
 - Added missing attributes to `QueryInfo` and `MultiExplainResult.stats` types (DE-607)
 
+- Added cluster rebalancing methods to `Database` (DE-583)
+
 ## [8.3.1] - 2023-06-05
 
 ### Changed
