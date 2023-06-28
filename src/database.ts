@@ -3677,7 +3677,7 @@ export class Database {
    * {@link graph.GraphVertexCollection}, {@link graph.GraphEdgeCollection} as well as
    * (in TypeScript) {@link collection.DocumentCollection} and {@link collection.EdgeCollection}.
    *
-   * @param collections - A collection that can be read from and written to
+   * @param collection - A collection that can be read from and written to
    * during the transaction.
    * @param options - Options for the transaction.
    *
@@ -3719,6 +3719,142 @@ export class Database {
       },
       (res) => new Transaction(this, res.body.result.id)
     );
+  }
+
+  /**
+   * Begins and commits a transaction using the given callback. Individual
+   * requests that are part of the transaction need to be wrapped in the step
+   * function passed into the callback. If the promise returned by the callback
+   * is rejected, the transaction will be aborted.
+   *
+   * Collections can be specified as collection names (strings) or objects
+   * implementing the {@link collection.ArangoCollection} interface: `Collection`,
+   * {@link graph.GraphVertexCollection}, {@link graph.GraphEdgeCollection} as
+   * well as (in TypeScript) {@link collection.DocumentCollection} and
+   * {@link collection.EdgeCollection}.
+   *
+   * @param collections - Collections involved in the transaction.
+   * @param callback - Callback function executing the transaction steps.
+   * @param options - Options for the transaction.
+   *
+   * @example
+   * ```js
+   * const vertices = db.collection("vertices");
+   * const edges = db.collection("edges");
+   * await db.withTransaction(
+   *   {
+   *     read: ["vertices"],
+   *     write: [edges] // collection instances can be passed directly
+   *   },
+   *   async (step) => {
+   *     const start = await step(() => vertices.document("a"));
+   *     const end = await step(() => vertices.document("b"));
+   *     await step(() => edges.save({ _from: start._id, _to: end._id }));
+   *   }
+   * );
+   * ```
+   */
+  withTransaction<T>(
+    collections: TransactionCollections,
+    callback: (step: Transaction["step"]) => Promise<T>,
+    options?: TransactionOptions
+  ): Promise<T>;
+  /**
+   * Begins and commits a transaction using the given callback. Individual
+   * requests that are part of the transaction need to be wrapped in the step
+   * function passed into the callback. If the promise returned by the callback
+   * is rejected, the transaction will be aborted.
+   *
+   * Collections can be specified as collection names (strings) or objects
+   * implementing the {@link collection.ArangoCollection} interface: `Collection`,
+   * {@link graph.GraphVertexCollection}, {@link graph.GraphEdgeCollection} as well as
+   * (in TypeScript) {@link collection.DocumentCollection} and {@link collection.EdgeCollection}.
+   *
+   * @param collections - Collections that can be read from and written to
+   * during the transaction.
+   * @param callback - Callback function executing the transaction steps.
+   * @param options - Options for the transaction.
+   *
+   * @example
+   * ```js
+   * const vertices = db.collection("vertices");
+   * const edges = db.collection("edges");
+   * await db.withTransaction(
+   *   [
+   *     "vertices",
+   *     edges, // collection instances can be passed directly
+   *   ],
+   *   async (step) => {
+   *     const start = await step(() => vertices.document("a"));
+   *     const end = await step(() => vertices.document("b"));
+   *     await step(() => edges.save({ _from: start._id, _to: end._id }));
+   *   }
+   * );
+   * ```
+   */
+  withTransaction<T>(
+    collections: (string | ArangoCollection)[],
+    callback: (step: Transaction["step"]) => Promise<T>,
+    options?: TransactionOptions
+  ): Promise<T>;
+  /**
+   * Begins and commits a transaction using the given callback. Individual
+   * requests that are part of the transaction need to be wrapped in the step
+   * function passed into the callback. If the promise returned by the callback
+   * is rejected, the transaction will be aborted.
+   *
+   * The Collection can be specified as a collection name (string) or an object
+   * implementing the {@link collection.ArangoCollection} interface: `Collection`,
+   * {@link graph.GraphVertexCollection}, {@link graph.GraphEdgeCollection} as well as
+   * (in TypeScript) {@link collection.DocumentCollection} and {@link collection.EdgeCollection}.
+   *
+   * @param collection - A collection that can be read from and written to
+   * during the transaction.
+   * @param callback - Callback function executing the transaction steps.
+   * @param options - Options for the transaction.
+   *
+   * @example
+   * ```js
+   * const vertices = db.collection("vertices");
+   * const start = vertices.document("a");
+   * const end = vertices.document("b");
+   * const edges = db.collection("edges");
+   * await db.withTransaction(
+   *   edges, // collection instances can be passed directly
+   *   async (step) => {
+   *     await step(() => edges.save({ _from: start._id, _to: end._id }));
+   *   }
+   * );
+   * ```
+   */
+  withTransaction<T>(
+    collection: string | ArangoCollection,
+    callback: (step: Transaction["step"]) => Promise<T>,
+    options?: TransactionOptions
+  ): Promise<T>;
+  async withTransaction<T>(
+    collections:
+      | TransactionCollections
+      | (string | ArangoCollection)[]
+      | string
+      | ArangoCollection,
+    callback: (step: Transaction["step"]) => Promise<T>,
+    options: TransactionOptions = {}
+  ): Promise<T> {
+    const trx = await this.beginTransaction(
+      collections as TransactionCollections,
+      options
+    );
+    try {
+      const result = await callback((fn) => trx.step(fn));
+      await trx.commit();
+      return result;
+    } catch (e) {
+      try {
+        await trx.abort();
+      } catch {}
+      throw e;
+    }
   }
 
   /**

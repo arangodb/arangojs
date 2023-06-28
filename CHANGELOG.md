@@ -52,6 +52,21 @@ This driver uses semantic versioning:
 
 - Added cluster rebalancing methods to `Database` (DE-583)
 
+- Added `db.withTransaction` helper method for streaming transactions ([#786](https://github.com/arangodb/arangojs/discussions/786))
+
+  This method allows using streaming transactions without having to manually
+  begin and commit or abort the transaction.
+
+  ```ts
+  const vertices = db.collection("vertices");
+  const edges = db.collection("edges");
+  const info = await db.withTransaction([vertices, edges], async (step) => {
+    const start = await step(() => vertices.document("a"));
+    const end = await step(() => vertices.document("b"));
+    return await step(() => edges.save({ _from: start._id, _to: end._id }));
+  });
+  ```
+
 ## [8.3.1] - 2023-06-05
 
 ### Changed
