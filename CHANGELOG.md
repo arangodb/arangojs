@@ -20,6 +20,10 @@ This driver uses semantic versioning:
 
 - Fixed `listUsers` behavior ([#782](https://github.com/arangodb/arangojs/issues/782))
 
+### Added
+
+- Added missing attributes to `QueryInfo` and `MultiExplainResult.stats` types (DE-607)
+
 ## [8.3.1] - 2023-06-05
 
 ### Changed

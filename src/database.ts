@@ -435,6 +435,32 @@ export type ExplainPlan = {
 };
 
 /**
+ * Optimizer statistics for an explained query.
+ */
+export type ExplainStats = {
+  /**
+   * Total number of rules executed for this query.
+   */
+  rulesExecuted: number;
+  /**
+   * Number of rules skipped for this query.
+   */
+  rulesSkipped: number;
+  /**
+   * Total number of plans created.
+   */
+  plansCreated: number;
+  /**
+   * Maximum memory usage in bytes of the query during explain.
+   */
+  peakMemoryUsage: number;
+  /**
+   * Time in seconds needed to explain the query.
+   */
+  executionTime: number;
+};
+
+/**
  * Result of explaining a query with a single plan.
  */
 export type SingleExplainResult = {
@@ -451,30 +477,9 @@ export type SingleExplainResult = {
    */
   warnings: { code: number; message: string }[];
   /**
-   * Statistical information about the query plan generation.
+   * Optimizer statistics for the explained query.
    */
-  stats: {
-    /**
-     * Total number of rules executed for this query.
-     */
-    rulesExecuted: number;
-    /**
-     * Number of rules skipped for this query.
-     */
-    rulesSkipped: number;
-    /**
-     * Total number of plans created.
-     */
-    plansCreated: number;
-    /**
-     * Maximum memory usage in bytes of the query during explain.
-     */
-    peakMemoryUsage: number;
-    /**
-     * Time in seconds needed to explain the query.
-     */
-    executionTime: number;
-  };
+  stats: ExplainStats;
 };
 
 /**
@@ -494,22 +499,9 @@ export type MultiExplainResult = {
    */
   warnings: { code: number; message: string }[];
   /**
-   * Statistical information about the query plan generation.
+   * Optimizer statistics for the explained query.
    */
-  stats: {
-    /**
-     * Total number of rules executed for this query.
-     */
-    rulesExecuted: number;
-    /**
-     * Number of rules skipped for this query.
-     */
-    rulesSkipped: number;
-    /**
-     * Total number of plans created.
-     */
-    plansCreated: number;
-  };
+  stats: ExplainStats;
 };
 
 /**
@@ -632,6 +624,14 @@ export type QueryInfo = {
    */
   id: string;
   /**
+   * Name of the database the query runs in.
+   */
+  database: string;
+  /**
+   * Name of the user that started the query.
+   */
+  user: string;
+  /**
    * Query string (potentially truncated).
    */
   query: string;
@@ -640,13 +640,17 @@ export type QueryInfo = {
    */
   bindVars: Record<string, any>;
   /**
+   * Date and time the query was started.
+   */
+  started: string;
+  /**
    * Query's running time in seconds.
    */
   runTime: number;
   /**
-   * Date and time the query was started.
+   * Maximum memory usage in bytes of the query.
    */
-  started: string;
+  peakMemoryUsage: number;
   /**
    * Query's current execution state.
    */
