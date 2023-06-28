@@ -16,6 +16,13 @@ This driver uses semantic versioning:
 
 ## [Unreleased]
 
+### Changed
+
+- User management methods now use database-relative URLs (DE-606)
+
+  Previously these methods would make requests without a database prefix,
+  implicitly using the `_system` database.
+
 ### Fixed
 
 - Fixed `listUsers` behavior ([#782](https://github.com/arangodb/arangojs/issues/782))

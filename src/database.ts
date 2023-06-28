@@ -2600,7 +2600,6 @@ export class Database {
   listUsers(): Promise<ArangoUser[]> {
     return this.request(
       {
-        absolutePath: true,
         path: "/_api/user",
       },
       (res) => res.body.result
@@ -2621,7 +2620,6 @@ export class Database {
    */
   getUser(username: string): Promise<ArangoApiResponse<ArangoUser>> {
     return this.request({
-      absolutePath: true,
       path: `/_api/user/${encodeURIComponent(username)}`,
     });
   }
@@ -2669,7 +2667,6 @@ export class Database {
     }
     return this.request(
       {
-        absolutePath: true,
         method: "POST",
         path: "/_api/user",
         body: { user: username, ...options },
@@ -2721,7 +2718,6 @@ export class Database {
     }
     return this.request(
       {
-        absolutePath: true,
         method: "PATCH",
         path: `/_api/user/${encodeURIComponent(username)}`,
         body: options,
@@ -2752,7 +2748,6 @@ export class Database {
     }
     return this.request(
       {
-        absolutePath: true,
         method: "PUT",
         path: `/_api/user/${encodeURIComponent(username)}`,
         body: options,
@@ -2778,7 +2773,6 @@ export class Database {
   ): Promise<ArangoApiResponse<Record<string, never>>> {
     return this.request(
       {
-        absolutePath: true,
         method: "DELETE",
         path: `/_api/user/${encodeURIComponent(username)}`,
       },
@@ -2874,7 +2868,6 @@ export class Database {
       : "";
     return this.request(
       {
-        absolutePath: true,
         path: `/_api/user/${encodeURIComponent(
           username
         )}/database/${encodeURIComponent(databaseName)}${suffix}`,
@@ -2978,7 +2971,6 @@ export class Database {
       : "";
     return this.request(
       {
-        absolutePath: true,
         method: "PUT",
         path: `/_api/user/${encodeURIComponent(
           username
@@ -3071,7 +3063,6 @@ export class Database {
       : "";
     return this.request(
       {
-        absolutePath: true,
         method: "DELETE",
         path: `/_api/user/${encodeURIComponent(
           username
@@ -3136,7 +3127,6 @@ export class Database {
   getUserDatabases(username: string, full?: boolean) {
     return this.request(
       {
-        absolutePath: true,
         path: `/_api/user/${encodeURIComponent(username)}/database`,
         qs: { full },
       },
