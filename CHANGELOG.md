@@ -21,9 +21,22 @@ This driver uses semantic versioning:
 
 ## [Unreleased]
 
+### Changed
+
+- User management methods now use database-relative URLs (DE-606)
+
+  Previously these methods would make requests without a database prefix,
+  implicitly using the `_system` database.
+
 ### Fixed
 
 - Fixed `listUsers` behavior ([#782](https://github.com/arangodb/arangojs/issues/782))
+
+### Added
+
+- Added missing attributes to `QueryInfo` and `MultiExplainResult.stats` types (DE-607)
+
+- Added cluster rebalancing methods to `Database` (DE-583)
 
 ## [8.3.1] - 2023-06-05
 

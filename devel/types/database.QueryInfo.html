@@ -16,7 +16,7 @@
 <li><a href="../modules/database.html">database</a></li>
 <li><a href="database.QueryInfo.html">QueryInfo</a></li></ul>
 <h1>Type alias QueryInfo</h1></div>
-<div class="tsd-signature">Query<wbr/>Info<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span><br/><span>    </span>bindVars<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">; </span><br/><span>    </span>id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span><br/><span>    </span>query<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span><br/><span>    </span>runTime<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span><br/><span>    </span>started<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span><br/><span>    </span>state<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;executing&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;finished&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;killed&quot;</span><span class="tsd-signature-symbol">; </span><br/><span>    </span>stream<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span><br/><span class="tsd-signature-symbol">}</span></div>
+<div class="tsd-signature">Query<wbr/>Info<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span><br/><span>    </span>bindVars<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">; </span><br/><span>    </span>database<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span><br/><span>    </span>id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span><br/><span>    </span>peakMemoryUsage<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span><br/><span>    </span>query<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span><br/><span>    </span>runTime<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">; </span><br/><span>    </span>started<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span><br/><span>    </span>state<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">&quot;executing&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;finished&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;killed&quot;</span><span class="tsd-signature-symbol">; </span><br/><span>    </span>stream<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span><br/><span>    </span>user<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span><br/><span class="tsd-signature-symbol">}</span></div>
 <div class="tsd-comment tsd-typography"><p>Object describing a query.</p>
 </div>
 <div class="tsd-type-declaration">
@@ -27,8 +27,16 @@
 <div class="tsd-comment tsd-typography"><p>Bind parameters used in the query.</p>
 </div></li>
 <li class="tsd-parameter">
+<h5>database<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
+<div class="tsd-comment tsd-typography"><p>Name of the database the query runs in.</p>
+</div></li>
+<li class="tsd-parameter">
 <h5>id<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
 <div class="tsd-comment tsd-typography"><p>Unique identifier for this query.</p>
+</div></li>
+<li class="tsd-parameter">
+<h5>peak<wbr/>Memory<wbr/>Usage<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span></h5>
+<div class="tsd-comment tsd-typography"><p>Maximum memory usage in bytes of the query.</p>
 </div></li>
 <li class="tsd-parameter">
 <h5>query<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
@@ -49,9 +57,13 @@
 <li class="tsd-parameter">
 <h5>stream<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></h5>
 <div class="tsd-comment tsd-typography"><p>Whether the query uses a streaming cursor.</p>
+</div></li>
+<li class="tsd-parameter">
+<h5>user<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></h5>
+<div class="tsd-comment tsd-typography"><p>Name of the user that started the query.</p>
 </div></li></ul></div><aside class="tsd-sources">
 <ul>
-<li>Defined in database.ts:629</li></ul></aside></div>
+<li>Defined in database.ts:621</li></ul></aside></div>
 <div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 <div class="tsd-navigation settings">
 <details class="tsd-index-accordion"><summary class="tsd-accordion-summary">
@@ -88,12 +100,18 @@
 <li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="database.AqlUserFunction.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-4194304-path"></use><use href="#icon-4194304-text"></use></svg>Aql<wbr/>User<wbr/>Function</a></li>
 <li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="database.ArangoUser.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-4194304-path"></use><use href="#icon-4194304-text"></use></svg>Arango<wbr/>User</a></li>
 <li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="database.AstNode.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-4194304-path"></use><use href="#icon-4194304-text"></use></svg>Ast<wbr/>Node</a></li>
+<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="database.ClusterImbalanceInfo.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-4194304-path"></use><use href="#icon-4194304-text"></use></svg>Cluster<wbr/>Imbalance<wbr/>Info</a></li>
+<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="database.ClusterRebalanceMove.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-4194304-path"></use><use href="#icon-4194304-text"></use></svg>Cluster<wbr/>Rebalance<wbr/>Move</a></li>
+<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="database.ClusterRebalanceOptions.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-4194304-path"></use><use href="#icon-4194304-text"></use></svg>Cluster<wbr/>Rebalance<wbr/>Options</a></li>
+<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="database.ClusterRebalanceResult.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-4194304-path"></use><use href="#icon-4194304-text"></use></svg>Cluster<wbr/>Rebalance<wbr/>Result</a></li>
+<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="database.ClusterRebalanceState.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-4194304-path"></use><use href="#icon-4194304-text"></use></svg>Cluster<wbr/>Rebalance<wbr/>State</a></li>
 <li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="database.CreateDatabaseOptions.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-4194304-path"></use><use href="#icon-4194304-text"></use></svg>Create<wbr/>Database<wbr/>Options</a></li>
 <li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="database.CreateDatabaseUser.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-4194304-path"></use><use href="#icon-4194304-text"></use></svg>Create<wbr/>Database<wbr/>User</a></li>
 <li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="database.CreateUserOptions.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-4194304-path"></use><use href="#icon-4194304-text"></use></svg>Create<wbr/>User<wbr/>Options</a></li>
 <li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="database.DatabaseInfo.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-4194304-path"></use><use href="#icon-4194304-text"></use></svg>Database<wbr/>Info</a></li>
 <li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="database.ExplainOptions.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-4194304-path"></use><use href="#icon-4194304-text"></use></svg>Explain<wbr/>Options</a></li>
 <li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="database.ExplainPlan.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-4194304-path"></use><use href="#icon-4194304-text"></use></svg>Explain<wbr/>Plan</a></li>
+<li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="database.ExplainStats.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-4194304-path"></use><use href="#icon-4194304-text"></use></svg>Explain<wbr/>Stats</a></li>
 <li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="database.InstallServiceOptions.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-4194304-path"></use><use href="#icon-4194304-text"></use></svg>Install<wbr/>Service<wbr/>Options</a></li>
 <li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="database.MultiExplainResult.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-4194304-path"></use><use href="#icon-4194304-text"></use></svg>Multi<wbr/>Explain<wbr/>Result</a></li>
 <li class="tsd-kind-type-alias tsd-parent-kind-module"><a href="database.MultiServiceDependency.html" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-4194304-path"></use><use href="#icon-4194304-text"></use></svg>Multi<wbr/>Service<wbr/>Dependency</a></li>
