@@ -23,6 +23,25 @@ This driver uses semantic versioning:
   Previously these methods would make requests without a database prefix,
   implicitly using the `_system` database.
 
+- `aql` template strings now take a generic type argument
+
+  This allows explictly setting the item type of the `ArrayCursor` returned by
+  `db.query` when using `aql` template strings. Note that like when setting
+  the type on `db.query` directly, arangojs can make no guarantees that the
+  type matches the actual data returned by the query.
+
+  ```ts
+  const numbers = await db.query(aql<{ index: number; squared: number }>`
+    FOR i IN 1..1000
+    RETURN {
+      index: i,
+      squared: i * i
+    }
+  `);
+  const first = await numbers.next(); // { index: number; squared: number; }
+  console.log(first.index, first.squared); // 1 1
+  ```
+
 ### Fixed
 
 - Fixed `listUsers` behavior ([#782](https://github.com/arangodb/arangojs/issues/782))
@@ -244,7 +263,7 @@ for upgrading your code to arangojs v8.
       squared: i * i
     }
   `);
-  const first = await numbers.next();
+  const first = await numbers.next(); // { index: number; squared: number; }
   console.log(first.index, first.squared); // 1 1
   ```
 

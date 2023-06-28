@@ -15,11 +15,14 @@ import { ArangoCollection, isArangoCollection } from "./collection";
 import { Graph, isArangoGraph } from "./graph";
 import { isArangoView, View } from "./view";
 
+declare const type: unique symbol;
+
 /**
  * Generic AQL query object consisting of an AQL query string and its bind
  * parameters.
  */
-export interface AqlQuery {
+export interface AqlQuery<T = any> {
+  [type]?: T;
   /**
    * An AQL query string.
    */
@@ -40,7 +43,7 @@ export interface AqlQuery {
  *
  * @internal
  */
-export interface GeneratedAqlQuery extends AqlQuery {
+export interface GeneratedAqlQuery<T = any> extends AqlQuery<T> {
   /**
    * @internal
    */
@@ -200,10 +203,10 @@ export function isAqlLiteral(literal: any): literal is AqlLiteral {
  * `);
  * ```
  */
-export function aql(
+export function aql<T = any>(
   templateStrings: TemplateStringsArray,
   ...args: AqlValue[]
-): GeneratedAqlQuery {
+): GeneratedAqlQuery<T> {
   const strings = [...templateStrings];
   const bindVars: Record<string, any> = {};
   const bindValues = [];

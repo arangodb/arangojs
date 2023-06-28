@@ -3808,7 +3808,7 @@ export class Database {
    * ```
    */
   query<T = any>(
-    query: AqlQuery,
+    query: AqlQuery<T>,
     options?: QueryOptions
   ): Promise<ArrayCursor<T>>;
   /**
