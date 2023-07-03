@@ -214,17 +214,10 @@ export class BatchedArrayCursor<T = any> {
   protected async _more(): Promise<void> {
     if (!this._id || !this.hasMore) return;
     const body = await this._db.request({
-      ...(this._nextBatchId
-        ? {
-            method: "POST",
-            path: `/_api/cursor/${encodeURIComponent(this._id)}/${
-              this._nextBatchId
-            }`,
-          }
-        : {
-            method: "PUT",
-            path: `/_api/cursor/${encodeURIComponent(this._id)}`,
-          }),
+      method: "POST",
+      path: this._nextBatchId
+        ? `/_api/cursor/${encodeURIComponent(this._id)}/${this._nextBatchId}`
+        : `/_api/cursor/${encodeURIComponent(this._id)}`,
       hostUrl: this._hostUrl,
       allowDirtyRead: this._allowDirtyRead,
     });
