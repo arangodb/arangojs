@@ -51,6 +51,8 @@ This driver uses semantic versioning:
 
 - Fixed `listUsers` behavior ([#782](https://github.com/arangodb/arangojs/issues/782))
 
+- Fixed `graph.create` not correctly handling `isDisjoint` option
+
 ### Added
 
 - Added missing attributes to `QueryInfo` and `MultiExplainResult.stats` types (DE-607)

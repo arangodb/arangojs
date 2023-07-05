@@ -1294,14 +1294,8 @@ export class Graph {
     edgeDefinitions: EdgeDefinitionOptions[],
     options: CreateGraphOptions = {}
   ): Promise<GraphInfo> {
-    const {
-      orphanCollections,
-      satellites,
-      waitForSync,
-      isSmart,
-      isDisjoint,
-      ...opts
-    } = options;
+    const { orphanCollections, satellites, waitForSync, isSmart, ...opts } =
+      options;
     return this._db.request(
       {
         method: "POST",
@@ -1314,7 +1308,6 @@ export class Graph {
               : [collectionToString(orphanCollections)]),
           edgeDefinitions: edgeDefinitions.map(coerceEdgeDefinition),
           isSmart,
-          isDisjoint,
           name: this._name,
           options: { ...opts, satellites: satellites?.map(collectionToString) },
         },
