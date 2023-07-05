@@ -23,20 +23,61 @@ This driver uses semantic versioning:
 
 ### Changed
 
+- Fetching additional cursor results now uses `POST` instead of `PUT` (DE-605)
+
+  The `POST` route was deprecated and the `PUT` route is supported in all
+  actively maintained versions of ArangoDB.
+
 - User management methods now use database-relative URLs (DE-606)
 
   Previously these methods would make requests without a database prefix,
   implicitly using the `_system` database.
 
+- `aql` template strings now take a generic type argument
+
+  This allows explictly setting the item type of the `ArrayCursor` returned by
+  `db.query` when using `aql` template strings. Note that like when setting
+  the type on `db.query` directly, arangojs can make no guarantees that the
+  type matches the actual data returned by the query.
+
+  ```ts
+  const numbers = await db.query(aql<{ index: number; squared: number }>`
+    FOR i IN 1..1000
+    RETURN {
+      index: i,
+      squared: i * i
+    }
+  `);
+  const first = await numbers.next(); // { index: number; squared: number; }
+  console.log(first.index, first.squared); // 1 1
+  ```
+
 ### Fixed
 
 - Fixed `listUsers` behavior ([#782](https://github.com/arangodb/arangojs/issues/782))
+
+- Fixed `graph.create` not correctly handling `isDisjoint` option
 
 ### Added
 
 - Added missing attributes to `QueryInfo` and `MultiExplainResult.stats` types (DE-607)
 
 - Added cluster rebalancing methods to `Database` (DE-583)
+
+- Added `db.withTransaction` helper method for streaming transactions ([#786](https://github.com/arangodb/arangojs/discussions/786))
+
+  This method allows using streaming transactions without having to manually
+  begin and commit or abort the transaction.
+
+  ```ts
+  const vertices = db.collection("vertices");
+  const edges = db.collection("edges");
+  const info = await db.withTransaction([vertices, edges], async (step) => {
+    const start = await step(() => vertices.document("a"));
+    const end = await step(() => vertices.document("b"));
+    return await step(() => edges.save({ _from: start._id, _to: end._id }));
+  });
+  ```
 
 ## [8.3.1] - 2023-06-05
 
@@ -249,7 +290,7 @@ for upgrading your code to arangojs v8.
       squared: i * i
     }
   `);
-  const first = await numbers.next();
+  const first = await numbers.next(); // { index: number; squared: number; }
   console.log(first.index, first.squared); // 1 1
   ```
 
