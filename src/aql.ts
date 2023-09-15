@@ -22,7 +22,7 @@ declare const type: unique symbol;
  * parameters.
  */
 export interface AqlQuery<T = any> {
-  [type]?: T;
+  [type]?: T | any;
   /**
    * An AQL query string.
    */
