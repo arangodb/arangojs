@@ -1602,6 +1602,70 @@ export type QueueTimeMetrics = {
 };
 
 /**
+ * (Enterprise Edition only.) Options for creating a hot backup.
+ */
+export type HotBackupOptions = {
+  /**
+   * If set to `true` and no global transaction lock can be acquired within the
+   * given timeout, a possibly inconsistent backup is taken.
+   *
+   * Default: `false`
+   */
+  allowInconsistent?: boolean;
+  /**
+   * (Enterprise Edition cluster only.) If set to `true` and no global
+   * transaction lock can be acquired within the given timeout, all running
+   * transactions are forcefully aborted to ensure that a consistent backup
+   * can be created.
+   *
+   * Default: `false`.
+   */
+  force?: boolean;
+  /**
+   * Label to appended to the backup's identifier.
+   *
+   * Default: If omitted or empty, a UUID will be generated.
+   */
+  label?: string;
+  /**
+   * Time in seconds that the operation will attempt to get a consistent
+   * snapshot.
+   *
+   * Default: `120`.
+   */
+  timeout?: number;
+};
+
+/**
+ * (Enterprise Edition only.) Result of a hot backup.
+ */
+export type HotBackupResult = {
+  id: string;
+  potentiallyInconsistent: boolean;
+  sizeInBytes: number;
+  datetime: string;
+  nrDBServers: number;
+  nrFiles: number;
+};
+
+/**
+ * (Enterprise Edition only.) List of known hot backups.
+ */
+export type HotBackupList = {
+  server: string;
+  list: Record<
+    string,
+    HotBackupResult & {
+      version: string;
+      keys: any[];
+      available: boolean;
+      nrPiecesPresent: number;
+      countIncludesFilesOnly: boolean;
+    }
+  >;
+};
+
+/**
  * An object representing a single ArangoDB database. All arangojs collections,
  * cursors, analyzers and so on are linked to a `Database` object.
  */
@@ -2857,7 +2921,6 @@ export class Database {
   }
   //#endregion
 
-  //#region users
   /**
    * Fetches all ArangoDB users visible to the authenticated user and returns
    * an array of user objects.
@@ -5564,6 +5627,104 @@ export class Database {
         method: "POST",
         path: "/_api/foxx/commit",
         qs: { replace },
+      },
+      () => undefined
+    );
+  }
+  //#endregion
+  //#region hot backups
+  /**
+   * (Enterprise Edition only.) Creates a hot backup of the entire ArangoDB
+   * deployment including all databases, collections, etc.
+   *
+   * Returns an object describing the backup result.
+   *
+   * @param options - Options for creating the backup.
+   *
+   * @example
+   * ```js
+   * const info = await db.createHotBackup();
+   * // a hot backup has been created
+   * ```
+   */
+  createHotBackup(options: HotBackupOptions = {}): Promise<HotBackupResult> {
+    return this.request(
+      {
+        method: "POST",
+        path: "/_admin/backup/create",
+        body: options,
+      },
+      (res) => res.body.result
+    );
+  }
+
+  /**
+   * (Enterprise Edition only.) Retrieves a list of all locally found hot
+   * backups.
+   *
+   * @param id - If specified, only the backup with the given ID will be
+   * returned.
+   *
+   * @example
+   * ```js
+   * const backups = await db.listHotBackups();
+   * for (const backup of backups) {
+   *   console.log(backup.id);
+   * }
+   * ```
+   */
+  listHotBackups(id?: string | string[]): Promise<HotBackupList> {
+    return this.request(
+      {
+        method: "POST",
+        path: "/_admin/backup/list",
+        body: id ? { id } : undefined,
+      },
+      (res) => res.body.result
+    );
+  }
+
+  /**
+   * (Enteprise Edition only.) Restores a consistent local hot backup.
+   *
+   * Returns the directory path of the restored backup.
+   *
+   * @param id - The ID of the backup to restore.
+   *
+   * @example
+   * ```js
+   * await db.restoreHotBackup("2023-09-19T15.38.21Z_example");
+   * // the backup has been restored
+   * ```
+   */
+  restoreHotBackup(id: string): Promise<string> {
+    return this.request(
+      {
+        method: "POST",
+        path: "/_admin/backup/restore",
+        body: { id },
+      },
+      (res) => res.body.result.previous
+    );
+  }
+
+  /**
+   * (Enterprise Edition only.) Deletes a local hot backup.
+   *
+   * @param id - The ID of the backup to delete.
+   *
+   * @example
+   * ```js
+   * await db.deleteHotBackup("2023-09-19T15.38.21Z_example");
+   * // the backup has been deleted
+   * ```
+   */
+  deleteHotBackup(id: string): Promise<void> {
+    return this.request(
+      {
+        method: "POST",
+        path: "/_admin/backup/delete",
+        body: { id },
       },
       () => undefined
     );
