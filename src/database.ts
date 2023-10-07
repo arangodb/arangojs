@@ -1666,6 +1666,95 @@ export type HotBackupList = {
 };
 
 /**
+ * Numeric representation of the logging level of a log entry.
+ */
+export enum LogLevel {
+  FATAL,
+  ERROR,
+  WARNING,
+  INFO,
+  DEBUG,
+}
+
+/**
+ * String representation of the logging level of a log entry.
+ */
+export type LogLevelLabel = "FATAL" | "ERROR" | "WARNING" | "INFO" | "DEBUG";
+
+/**
+ * Logging level setting.
+ */
+export type LogLevelSetting = LogLevelLabel | "DEFAULT";
+
+/**
+ * Log sorting direction, ascending or descending.
+ */
+export type LogSortDirection = "asc" | "desc";
+
+/**
+ * Options for retrieving log entries.
+ */
+export type LogEntriesOptions = {
+  /**
+   * Maximum log level of the entries to retrieve.
+   *
+   * Default: `INFO`.
+   */
+  upto?: LogLevel | LogLevelLabel | Lowercase<LogLevelLabel>;
+  /**
+   * If set, only log entries with this log level will be returned.
+   */
+  level?: LogLevel | LogLevelLabel | Lowercase<LogLevelLabel>;
+  /**
+   * If set, only log entries with an `lid` greater than or equal to this value
+   * will be returned.
+   */
+  start?: number;
+  /**
+   * If set, only this many entries will be returned.
+   */
+  size?: number;
+  /**
+   * If set, this many log entries will be skipped.
+   */
+  offset?: number;
+  /**
+   * If set, only log entries containing the specified text will be returned.
+   */
+  search?: string;
+  /**
+   * If set to `"desc"`, log entries will be returned in reverse chronological
+   * order.
+   *
+   * Default: `"asc"`.
+   */
+  sort?: LogSortDirection;
+};
+
+/**
+ * An object representing a single log entry.
+ */
+export type LogMessage = {
+  id: number;
+  topic: string;
+  level: LogLevelLabel;
+  date: string;
+  message: string;
+};
+
+/**
+ * An object representing a list of log entries.
+ */
+export type LogEntries = {
+  totalAmount: number;
+  lid: number[];
+  topic: string[];
+  level: LogLevel[];
+  timestamp: number[];
+  text: string[];
+};
+
+/**
  * An object representing a single ArangoDB database. All arangojs collections,
  * cursors, analyzers and so on are linked to a `Database` object.
  */
@@ -5728,6 +5817,93 @@ export class Database {
       },
       () => undefined
     );
+  }
+  //#endregion
+  //#region logs
+  /**
+   * Retrieves the log messages from the server's global log.
+   *
+   * @param options - Options for retrieving the log entries.
+   *
+   * @example
+   * ```js
+   * const log = await db.getLogEntries();
+   * for (let i = 0; i < log.totalAmount; i++) {
+   *   console.log(`${
+   *     new Date(log.timestamp[i] * 1000).toISOString()
+   *   } - [${LogLevel[log.level[i]]}] ${log.text[i]} (#${log.lid[i]})`);
+   * }
+   * ```
+   */
+  getLogEntries(options?: LogEntriesOptions): Promise<LogEntries> {
+    return this.request(
+      {
+        path: "/_admin/log",
+        qs: options,
+      },
+      (res) => res.body
+    );
+  }
+
+  /**
+   * Retrieves the log messages from the server's global log.
+   *
+   * @param options - Options for retrieving the log entries.
+   *
+   * @example
+   * ```js
+   * const messages = await db.getLogMessages();
+   * for (const m of messages) {
+   *   console.log(`${m.date} - [${m.level}] ${m.message} (#${m.id})`);
+   * }
+   * ```
+   */
+  getLogMessages(options?: LogEntriesOptions): Promise<LogMessage[]> {
+    return this.request(
+      {
+        path: "/_admin/log",
+        qs: options,
+      },
+      (res) => res.body.messages
+    );
+  }
+
+  /**
+   * Retrieves the server's current log level for each topic.
+   *
+   * @example
+   * ```js
+   * const levels = await db.getLogLevel();
+   * console.log(levels.request); // log level for incoming requests
+   * ```
+   */
+  getLogLevel(): Promise<Record<string, LogLevelSetting>> {
+    return this.request({
+      path: "/_admin/log/level",
+    });
+  }
+
+  /**
+   * Sets the server's log level for each of the given topics to the given level.
+   *
+   * Any omitted topics will be left unchanged.
+   *
+   * @param levels - An object mapping topic names to log levels.
+   *
+   * @example
+   * ```js
+   * await db.setLogLevel({ request: "debug" });
+   * // Debug information will now be logged for each request
+   * ```
+   */
+  setLogLevel(
+    levels: Record<string, LogLevelSetting>
+  ): Promise<Record<string, LogLevelSetting>> {
+    return this.request({
+      method: "PUT",
+      path: "/_admin/log/level",
+      body: levels,
+    });
   }
   //#endregion
 }

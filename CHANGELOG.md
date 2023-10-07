@@ -20,6 +20,8 @@ This driver uses semantic versioning:
 
 - Implemented hot backup API (DE-576)
 
+- Implemented logging API (DE-144, DE-145, DE-146, DE-147)
+
 ## [8.4.1] - 2023-09-15
 
 ### Fixed
