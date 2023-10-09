@@ -5,9 +5,7 @@ import { config } from "./_config";
 
 const range = (n: number): number[] => Array.from(Array(n).keys());
 
-const describe39 = config.arangoVersion! >= 30900 ? describe : describe.skip;
-
-describe39("Queue time metrics", function () {
+describe("Queue time metrics", function () {
   const dbName = `testdb_${Date.now()}`;
   let system: Database, db: Database;
   let collection: DocumentCollection;

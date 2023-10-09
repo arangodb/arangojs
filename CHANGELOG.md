@@ -21,6 +21,15 @@ This is a major release and breaks backwards compatibility.
 See [the migration guide](./MIGRATING.md#v8-to-v9) for detailed instructions
 for upgrading your code to arangojs v9.
 
+### Removed
+
+- Removed Node.js 14 and Node.js 16 support
+
+  With Node.js 14 and 16 having reached their end of life, arangojs will no
+  longer support these versions of Node.js going forward.
+
+  For more information, see [the Node.js release schedule](https://nodejs.dev/en/about/releases/).
+
 ### Changed
 
 - Unicode names are now **no longer** automatically NFC normalized

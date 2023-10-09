@@ -3,7 +3,7 @@
   "name": "arangojs",
   "version": "8.8.1",
   "engines": {
-    "node": ">=14"
+    "node": ">=18"
   },
   "license": "Apache-2.0",
   "description": "The official ArangoDB JavaScript driver.",
@@ -58,7 +58,7 @@
     "prepare": "npm run build && node -e 'require(\".\");'"
   },
   "dependencies": {
-    "@types/node": ">=14",
+    "@types/node": ">=18",
     "multi-part": "^4.0.0",
     "path-browserify": "^1.0.1",
     "x3-linkedlist": "1.2.0",

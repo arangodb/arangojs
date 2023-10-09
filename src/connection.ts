@@ -371,7 +371,7 @@ export type Config = {
    * Depending on this value certain methods may become unavailable or change
    * their behavior to remain compatible with different versions of ArangoDB.
    *
-   * Default: `30900`
+   * Default: `31100`
    */
   arangoVersion?: number;
   /**
@@ -506,7 +506,7 @@ export class Connection {
   protected _activeTasks: number = 0;
   protected _agent?: any;
   protected _agentOptions: { [key: string]: any };
-  protected _arangoVersion: number = 30900;
+  protected _arangoVersion: number = 31100;
   protected _headers: Headers;
   protected _loadBalancingStrategy: LoadBalancingStrategy;
   protected _maxRetries: number | false;
