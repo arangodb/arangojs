@@ -27,6 +27,12 @@ This driver uses semantic versioning:
 
 - Implemented logging API (DE-144, DE-145, DE-146, DE-147)
 
+- Implemented async jobs management (DE-339)
+
+- Added `db.shutdown` to initiate a clean shutdown of the server
+
+- Added `db.time` method to retrieve the server's system time
+
 ## [8.4.1] - 2023-09-15
 
 ### Fixed
