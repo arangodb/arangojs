@@ -44,6 +44,7 @@ import {
   Graph,
   GraphInfo,
 } from "./graph";
+import { Job } from "./job";
 import { Blob } from "./lib/blob";
 import { DATABASE_NOT_FOUND } from "./lib/codes";
 import { toForm } from "./lib/multipart";
@@ -5904,6 +5905,98 @@ export class Database {
       path: "/_admin/log/level",
       body: levels,
     });
+  }
+  //#endregion
+  //#region async jobs
+  /**
+   * Returns a {@link job.Job} instance for the given `jobId`.
+   *
+   * @param jobId - ID of the async job.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const job = db.job("12345");
+   * ```
+   */
+  job(jobId: string): Job {
+    return new Job(this, jobId);
+  }
+
+  /**
+   * Returns a list of the IDs of all currently pending async jobs.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const pendingJobs = await db.listPendingJobs();
+   * console.log(pendingJobs); // e.g. ["12345", "67890"]
+   * ```
+   */
+  listPendingJobs(): Promise<string[]> {
+    return this.request(
+      {
+        path: "/_api/job/pending",
+      },
+      (res) => res.body
+    );
+  }
+
+  /**
+   * Returns a list of the IDs of all currently available completed async jobs.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const completedJobs = await db.listCompletedJobs();
+   * console.log(completedJobs); // e.g. ["12345", "67890"]
+   * ```
+   */
+  listCompletedJobs(): Promise<string[]> {
+    return this.request(
+      {
+        path: "/_api/job/done",
+      },
+      (res) => res.body
+    );
+  }
+
+  /**
+   * Deletes the results of all completed async jobs created before the given
+   * threshold.
+   *
+   * @param threshold - The expiration timestamp in milliseconds.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const ONE_WEEK = 7 * 24 * 60 * 60 * 1000;
+   * await db.deleteExpiredJobResults(Date.now() - ONE_WEEK);
+   * // all job results older than a week have been deleted
+   * ```
+   */
+  deleteExpiredJobResults(threshold: number): Promise<void> {
+    return this.request(
+      {
+        method: "DELETE",
+        path: `/_api/job/expired`,
+        qs: { stamp: threshold / 1000 },
+      },
+      () => undefined
+    );
+  }
+
+  /**
+   * Deletes the results of all completed async jobs.
+   */
+  deleteAllJobResults(): Promise<void> {
+    return this.request(
+      {
+        method: "DELETE",
+        path: `/_api/job/all`,
+      },
+      () => undefined
+    );
   }
   //#endregion
 }
