@@ -26,6 +26,8 @@ This driver uses semantic versioning:
 
 - Added `db.shutdown` to initiate a clean shutdown of the server
 
+- Added `db.time` method to retrieve the server's system time
+
 ## [8.4.1] - 2023-09-15
 
 ### Fixed

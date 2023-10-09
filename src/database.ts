@@ -1867,6 +1867,19 @@ export class Database {
   }
 
   /**
+   * Retrives the server's current system time in milliseconds with microsecond
+   * precision.
+   */
+  time(): Promise<number> {
+    return this.request(
+      {
+        path: "/_admin/time",
+      },
+      (res) => res.body.time * 1000
+    );
+  }
+
+  /**
    * Returns a new {@link route.Route} instance for the given path (relative to the
    * database) that can be used to perform arbitrary HTTP requests.
    *
@@ -2081,6 +2094,7 @@ export class Database {
   setResponseQueueTimeSamples(responseQueueTimeSamples: number) {
     this._connection.setResponseQueueTimeSamples(responseQueueTimeSamples);
   }
+
   //#endregion
 
   //#region auth
