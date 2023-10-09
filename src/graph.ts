@@ -1208,7 +1208,7 @@ export class Graph {
    * @internal
    */
   constructor(db: Database, name: string) {
-    this._name = name.normalize("NFC");
+    this._name = name;
     this._db = db;
   }
 

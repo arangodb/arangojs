@@ -921,7 +921,7 @@ export class Analyzer {
    */
   constructor(db: Database, name: string) {
     this._db = db;
-    this._name = name.normalize("NFC");
+    this._name = name;
   }
 
   /**

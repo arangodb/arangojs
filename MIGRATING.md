@@ -1,5 +1,26 @@
 # Migrating
 
+## v8 to v9
+
+Version 9 reverts the automatic NFC normalization introduced in v7.7.0. This
+means that arangojs will no longer automatically normalize unicode names and
+identifiers of collections, graphs, indexes, views, users, databases and so on.
+
+If you want to continue using NFC normalization, you can use the `normalize`
+method available on all JavaScript strings:
+
+```diff
+ import { Database } from "arangojs";
+
+ const db = new Database();
+-const collection = db.collection(myUnicodeName);
++const collection = db.collection(myUnicodeName.normalize("NFC"));
+```
+
+Note that ArangoDB may reject non-normalized unicode names and identifiers.
+This change is intended to make it easier to recognize normalization issues in
+code interacting with ArangoDB that were previously masked by arangojs.
+
 ## v7 to v8
 
 Version 8 drops support for Internet Explorer 11 and Node.js 10 and 12. If you

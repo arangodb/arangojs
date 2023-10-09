@@ -480,7 +480,7 @@ export class View {
    */
   constructor(db: Database, name: string) {
     this._db = db;
-    this._name = name.normalize("NFC");
+    this._name = name;
   }
 
   /**
@@ -595,7 +595,7 @@ export class View {
    */
   async rename(newName: string): Promise<ArangoApiResponse<ViewDescription>> {
     const result = this._db.renameView(this._name, newName);
-    this._name = newName.normalize("NFC");
+    this._name = newName;
     return result;
   }
 

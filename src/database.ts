@@ -1821,7 +1821,7 @@ export class Database {
   ) {
     if (isArangoDatabase(configOrDatabase)) {
       const connection = configOrDatabase._connection;
-      const databaseName = (name || configOrDatabase.name).normalize("NFC");
+      const databaseName = name || configOrDatabase.name;
       this._connection = connection;
       this._name = databaseName;
       const database = connection.database(databaseName);
@@ -1833,7 +1833,7 @@ export class Database {
           ? { databaseName: name, url: config }
           : config;
       this._connection = new Connection(options);
-      this._name = databaseName?.normalize("NFC") || "_system";
+      this._name = databaseName || "_system";
     }
   }
 
@@ -2487,7 +2487,7 @@ export class Database {
       {
         method: "POST",
         path: "/_api/database",
-        body: { name: databaseName.normalize("NFC"), users, options },
+        body: { name: databaseName, users, options },
       },
       () => this.database(databaseName)
     );
@@ -2588,7 +2588,6 @@ export class Database {
    * ```
    */
   dropDatabase(databaseName: string): Promise<boolean> {
-    databaseName = databaseName.normalize("NFC");
     return this.request(
       {
         method: "DELETE",
@@ -2642,7 +2641,7 @@ export class Database {
   collection<T extends Record<string, any> = any>(
     collectionName: string
   ): DocumentCollection<T> & EdgeCollection<T> {
-    collectionName = collectionName.normalize("NFC");
+    collectionName = collectionName;
     if (!this._collections.has(collectionName)) {
       this._collections.set(
         collectionName,
@@ -2779,11 +2778,10 @@ export class Database {
     collectionName: string,
     newName: string
   ): Promise<ArangoApiResponse<CollectionMetadata>> {
-    collectionName = collectionName.normalize("NFC");
     const result = await this.request({
       method: "PUT",
       path: `/_api/collection/${encodeURIComponent(collectionName)}/rename`,
-      body: { name: newName.normalize("NFC") },
+      body: { name: newName },
     });
     this._collections.delete(collectionName);
     return result;
@@ -2875,7 +2873,6 @@ export class Database {
    * ```
    */
   graph(graphName: string): Graph {
-    graphName = graphName.normalize("NFC");
     if (!this._graphs.has(graphName)) {
       this._graphs.set(graphName, new Graph(this, graphName));
     }
@@ -2895,7 +2892,7 @@ export class Database {
     edgeDefinitions: EdgeDefinitionOptions[],
     options?: CreateGraphOptions
   ): Promise<Graph> {
-    const graph = this.graph(graphName.normalize("NFC"));
+    const graph = this.graph(graphName);
     await graph.create(edgeDefinitions, options);
     return graph;
   }
@@ -2949,7 +2946,6 @@ export class Database {
    * ```
    */
   view(viewName: string): View {
-    viewName = viewName.normalize("NFC");
     if (!this._views.has(viewName)) {
       this._views.set(viewName, new View(this, viewName));
     }
@@ -2974,7 +2970,7 @@ export class Database {
     viewName: string,
     options: CreateViewOptions
   ): Promise<View> {
-    const view = this.view(viewName.normalize("NFC"));
+    const view = this.view(viewName);
     await view.create(options);
     return view;
   }
@@ -2995,11 +2991,10 @@ export class Database {
     viewName: string,
     newName: string
   ): Promise<ArangoApiResponse<ViewDescription>> {
-    viewName = viewName.normalize("NFC");
     const result = await this.request({
       method: "PUT",
       path: `/_api/view/${encodeURIComponent(viewName)}/rename`,
-      body: { name: newName.normalize("NFC") },
+      body: { name: newName },
     });
     this._views.delete(viewName);
     return result;
@@ -3056,7 +3051,6 @@ export class Database {
    * ```
    */
   analyzer(analyzerName: string): Analyzer {
-    analyzerName = analyzerName.normalize("NFC");
     if (!this._analyzers.has(analyzerName)) {
       this._analyzers.set(analyzerName, new Analyzer(this, analyzerName));
     }
@@ -3391,15 +3385,13 @@ export class Database {
   ): Promise<AccessLevel> {
     const databaseName = isArangoDatabase(database)
       ? database.name
-      : database?.normalize("NFC") ??
+      : database ??
         (isArangoCollection(collection)
           ? ((collection as any)._db as Database).name
           : this._name);
     const suffix = collection
       ? `/${encodeURIComponent(
-          isArangoCollection(collection)
-            ? collection.name
-            : collection.normalize("NFC")
+          isArangoCollection(collection) ? collection.name : collection
         )}`
       : "";
     return this.request(
@@ -3494,15 +3486,13 @@ export class Database {
   ): Promise<ArangoApiResponse<Record<string, AccessLevel>>> {
     const databaseName = isArangoDatabase(database)
       ? database.name
-      : database?.normalize("NFC") ??
+      : database ??
         (isArangoCollection(collection)
           ? ((collection as any)._db as Database).name
           : this._name);
     const suffix = collection
       ? `/${encodeURIComponent(
-          isArangoCollection(collection)
-            ? collection.name
-            : collection.normalize("NFC")
+          isArangoCollection(collection) ? collection.name : collection
         )}`
       : "";
     return this.request(
@@ -3586,15 +3576,13 @@ export class Database {
   ): Promise<ArangoApiResponse<Record<string, AccessLevel>>> {
     const databaseName = isArangoDatabase(database)
       ? database.name
-      : database?.normalize("NFC") ??
+      : database ??
         (isArangoCollection(collection)
           ? ((collection as any)._db as Database).name
           : this._name);
     const suffix = collection
       ? `/${encodeURIComponent(
-          isArangoCollection(collection)
-            ? collection.name
-            : collection.normalize("NFC")
+          isArangoCollection(collection) ? collection.name : collection
         )}`
       : "";
     return this.request(

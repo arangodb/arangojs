@@ -739,15 +739,13 @@ export function _indexHandle(
     );
   }
   if (selector.includes("/")) {
-    const [head, ...tail] = selector.split("/");
-    const normalizedHead = head.normalize("NFC");
-    if (normalizedHead !== collectionName) {
+    const [head] = selector.split("/");
+    if (head !== collectionName) {
       throw new Error(
         `Index ID "${selector}" does not match collection name "${collectionName}"`
       );
     }
-    selector = tail.join("/").normalize("NFC");
-    return [normalizedHead, selector].join("/");
+    return selector;
   }
-  return `${collectionName}/${String(selector).normalize("NFC")}`;
+  return `${collectionName}/${String(selector)}`;
 }

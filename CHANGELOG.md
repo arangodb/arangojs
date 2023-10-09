@@ -14,6 +14,23 @@ This driver uses semantic versioning:
 - A change in the major version (e.g. 1.Y.Z -> 2.0.0) indicates _breaking_
   changes that require changes in your code to upgrade.
 
+## [Unreleased]
+
+This is a major release and breaks backwards compatibility.
+
+See [the migration guide](./MIGRATING.md#v8-to-v9) for detailed instructions
+for upgrading your code to arangojs v9.
+
+### Changed
+
+- Unicode names are now **no longer** automatically NFC normalized
+
+  This change affects all database, collection, graph, view and analyzer names
+  using unicode characters. Starting with arangojs v7.7.0 these names were
+  automatically NFC normalized. This behavior has now been reverted to match
+  the behavior of other ArangoDB drivers and help detect normalization issues
+  in user code.
+
 ## [8.8.1]
 
 ### Added
@@ -1794,6 +1811,7 @@ For a detailed list of changes between pre-release versions of v7 see the
 
   Graph methods now only return the relevant part of the response body.
 
+[unreleased]: https://github.com/arangodb/arangojs/compare/v8.8.1...v9
 [8.8.1]: https://github.com/arangodb/arangojs/compare/v8.8.0...v8.8.1
 [8.8.0]: https://github.com/arangodb/arangojs/compare/v8.7.0...v8.8.0
 [8.7.0]: https://github.com/arangodb/arangojs/compare/v8.6.0...v8.7.0

@@ -69,7 +69,7 @@ export function collectionToString(
 ): string {
   if (isArangoCollection(collection)) {
     return String(collection.name);
-  } else return String(collection).normalize("NFC");
+  } else return String(collection);
 }
 
 /**
@@ -3546,7 +3546,7 @@ export class Collection<T extends Record<string, any> = any>
    * @internal
    */
   constructor(db: Database, name: string) {
-    this._name = name.normalize("NFC");
+    this._name = name;
     this._db = db;
   }
 
@@ -3710,7 +3710,7 @@ export class Collection<T extends Record<string, any> = any>
 
   async rename(newName: string) {
     const result = await this._db.renameCollection(this._name, newName);
-    this._name = newName.normalize("NFC");
+    this._name = newName;
     return result;
   }
 
@@ -4209,10 +4209,6 @@ export class Collection<T extends Record<string, any> = any>
       | EnsureMdiIndexOptions
       | EnsureInvertedIndexOptions
   ) {
-    const opts = { ...options };
-    if (opts.name) {
-      opts.name = opts.name.normalize("NFC");
-    }
     return this._db.request({
       method: "POST",
       path: "/_api/index",

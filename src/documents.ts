@@ -130,14 +130,13 @@ export function _documentHandle(
     );
   }
   if (selector.includes("/")) {
-    const [head, ...tail] = selector.split("/");
-    const normalizedHead = head.normalize("NFC");
-    if (strict && normalizedHead !== collectionName) {
+    const [head] = selector.split("/");
+    if (strict && head !== collectionName) {
       throw new Error(
         `Document ID "${selector}" does not match collection name "${collectionName}"`
       );
     }
-    return [normalizedHead, ...tail].join("/");
+    return selector;
   }
   return `${collectionName}/${selector}`;
 }
