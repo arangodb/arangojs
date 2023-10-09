@@ -2009,6 +2009,19 @@ export class Database {
   }
 
   /**
+   * Attempts to initiate a clean shutdown of the server.
+   */
+  shutdown(): Promise<void> {
+    return this.request(
+      {
+        method: "DELETE",
+        path: "/_admin/shutdown",
+      },
+      () => undefined
+    );
+  }
+
+  /**
    * Performs a request against every known coordinator and returns when the
    * request has succeeded against every coordinator or the timeout is reached.
    *

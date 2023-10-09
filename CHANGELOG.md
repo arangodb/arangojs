@@ -24,6 +24,8 @@ This driver uses semantic versioning:
 
 - Implemented async jobs management (DE-339)
 
+- Added `db.shutdown` to initiate a clean shutdown of the server
+
 ## [8.4.1] - 2023-09-15
 
 ### Fixed
