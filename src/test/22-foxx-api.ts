@@ -4,26 +4,11 @@ import * as fs from "fs";
 import * as path from "path";
 import { Database } from "../database";
 import { ArangoError } from "../error";
-import { normalizeUrl } from "../lib/normalizeUrl";
 import { config } from "./_config";
-
-const ARANGO_URL_SELF_REACHABLE = process.env.TEST_ARANGODB_URL_SELF_REACHABLE;
 
 const localAppsPath = path.resolve(".", "fixtures");
 const mount = "/foxx-crud-test";
 const serviceServiceMount = "/foxx-crud-test-download";
-
-function makeSelfReachable(db: Database, returnedUrl: string) {
-  const conn = (db as any)._connection;
-  const normalizedArangoUrl = normalizeUrl(conn._activeHostUrl);
-  if (ARANGO_URL_SELF_REACHABLE) {
-    return returnedUrl.replace(normalizedArangoUrl, ARANGO_URL_SELF_REACHABLE);
-  }
-  if (normalizedArangoUrl.match(/^[a-z]+:\/\/unix:/)) {
-    return returnedUrl.replace(normalizedArangoUrl + ":", "http://");
-  }
-  return returnedUrl;
-}
 
 describe("Foxx service", () => {
   const name = `testdb_${Date.now()}`;
