@@ -40,6 +40,12 @@ for upgrading your code to arangojs v9.
   the behavior of other ArangoDB drivers and help detect normalization issues
   in user code.
 
+- Changed return type of `aql` and the AQL `join` helper function to `AqlQuery`
+
+  Previously the internal `GeneratedAqlQuery` type was exposed as the return
+  type of these functions, leading to complexity when handling generic type
+  arguments.
+
 ## [8.8.1]
 
 ### Added

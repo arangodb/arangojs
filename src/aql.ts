@@ -206,7 +206,7 @@ export function isAqlLiteral(literal: any): literal is AqlLiteral {
 export function aql<T = any>(
   templateStrings: TemplateStringsArray,
   ...args: AqlValue[]
-): GeneratedAqlQuery<T> {
+): AqlQuery<T> {
   const strings = [...templateStrings];
   const bindVars: Record<string, any> = {};
   const bindValues = [];
@@ -264,7 +264,7 @@ export function aql<T = any>(
     query,
     bindVars,
     _source: () => ({ strings, args }),
-  };
+  } as AqlQuery<T>;
 }
 
 /**
@@ -399,7 +399,7 @@ export function literal(
  * //   @value1 -> "users"
  * ```
  */
-export function join(values: AqlValue[], sep: string = " "): GeneratedAqlQuery {
+export function join(values: AqlValue[], sep: string = " "): AqlQuery {
   if (!values.length) {
     return aql``;
   }
