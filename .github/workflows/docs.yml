@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
 
     container:
-      image: node:16
+      image: node:20
 
     steps:
       - name: Checkout current commit
@@ -26,7 +26,7 @@ jobs:
           path: gh-pages
 
       - run: apt-get update && apt-get install jq -y
-      - run: npm install -g npm@7
+      - run: npm install -g npm@9
       - run: npm install
 
       - name: Set TAG env to devel
