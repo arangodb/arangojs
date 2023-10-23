@@ -1755,6 +1755,17 @@ export type LogEntries = {
   text: string[];
 };
 
+type TrappedError = {
+  error: true;
+};
+
+type TrappedRequest = {
+  error?: false;
+  jobId: string;
+  onResolve: (res: ArangojsResponse) => void;
+  onReject: (error: any) => void;
+};
+
 /**
  * An object representing a single ArangoDB database. All arangojs collections,
  * cursors, analyzers and so on are linked to a `Database` object.
@@ -1766,6 +1777,7 @@ export class Database {
   protected _collections = new Map<string, Collection>();
   protected _graphs = new Map<string, Graph>();
   protected _views = new Map<string, View>();
+  protected _trapRequest?: (trapped: TrappedError | TrappedRequest) => void;
 
   /**
    * Creates a new `Database` instance with its own connection pool.
@@ -1906,6 +1918,49 @@ export class Database {
   }
 
   /**
+   * Creates an async job by executing the given callback function. The first
+   * database request performed by the callback will be marked for asynchronous
+   * execution and its result will be made available as an async job.
+   *
+   * Returns a {@link Job} instance that can be used to retrieve the result
+   * of the callback function once the request has been executed.
+   *
+   * @param callback - Callback function to execute as an async job.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const job = await db.createJob(() => db.collections());
+   * while (!job.isLoaded) {
+   *  await timeout(1000);
+   *  await job.load();
+   * }
+   * // job.result is a list of Collection instances
+   * ```
+   */
+  async createJob<T>(callback: () => Promise<T>): Promise<Job<T>> {
+    const trap = new Promise<TrappedError | TrappedRequest>((resolveTrap) => {
+      this._trapRequest = (trapped) => resolveTrap(trapped);
+    });
+    const eventualResult = callback();
+    const trapped = await trap;
+    if (trapped.error) return eventualResult as Promise<any>;
+    const { jobId, onResolve, onReject } = trapped as TrappedRequest;
+    return new Job(
+      this,
+      jobId,
+      (res) => {
+        onResolve(res);
+        return eventualResult;
+      },
+      (e) => {
+        onReject(e);
+        return eventualResult;
+      }
+    );
+  }
+
+  /**
    * @internal
    *
    * Performs an arbitrary HTTP request against the database.
@@ -1918,7 +1973,7 @@ export class Database {
    * @param transform - An optional function to transform the low-level
    * response object to a more useful return value.
    */
-  request<T = any>(
+  async request<T = any>(
     options: RequestOptions & { absolutePath?: boolean },
     transform?: (res: ArangojsResponse) => T
   ): Promise<T>;
@@ -1934,11 +1989,11 @@ export class Database {
    * @param transform - If set to `false`, the raw response object will be
    * returned.
    */
-  request(
+  async request(
     options: RequestOptions & { absolutePath?: boolean },
     transform: false
   ): Promise<ArangojsResponse>;
-  request<T = any>(
+  async request<T = any>(
     {
       absolutePath = false,
       basePath,
@@ -1948,6 +2003,35 @@ export class Database {
   ): Promise<T> {
     if (!absolutePath) {
       basePath = `/_db/${encodeURIComponent(this._name)}${basePath || ""}`;
+    }
+    if (this._trapRequest) {
+      const trap = this._trapRequest;
+      this._trapRequest = undefined;
+      return new Promise<T>(async (resolveRequest, rejectRequest) => {
+        const options = { ...opts };
+        options.headers = { ...options.headers, "x-arango-async": "store" };
+        let jobRes: ArangojsResponse;
+        try {
+          jobRes = await this._connection.request({ basePath, ...options });
+        } catch (e) {
+          trap({ error: true });
+          rejectRequest(e);
+          return;
+        }
+        const jobId = jobRes.headers["x-arango-async-id"] as string;
+        trap({
+          jobId,
+          onResolve: (res) => {
+            const result = transform ? transform(res) : (res as T);
+            resolveRequest(result);
+            return result;
+          },
+          onReject: (err) => {
+            rejectRequest(err);
+            throw err;
+          },
+        });
+      });
     }
     return this._connection.request(
       { basePath, ...opts },

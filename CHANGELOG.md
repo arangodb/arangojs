@@ -14,6 +14,24 @@ This driver uses semantic versioning:
 - A change in the major version (e.g. 1.Y.Z -> 2.0.0) indicates _breaking_
   changes that require changes in your code to upgrade.
 
+## [Unreleased]
+
+### Added
+
+- Added `db.createJob` method to convert arbitrary requests into async jobs (DE-610)
+
+  This method can be used to set the `x-arango-async: store` header on any
+  request, which will cause the server to store the request in an async job:
+
+  ```js
+  const collectionsJob = await db.createJob(() => db.collections());
+  // once loaded, collectionsJob.result will be an array of Collection instances
+  const numbersJob = await db.createJob(() =>
+    db.query(aql`FOR i IN 1..1000 RETURN i`)
+  );
+  // once loaded, numbersJob.result will be an ArrayCursor of numbers
+  ```
+
 ## [8.5.0] - 2023-10-09
 
 ### Added
@@ -1725,6 +1743,7 @@ For a detailed list of changes between pre-release versions of v7 see the
 
   Graph methods now only return the relevant part of the response body.
 
+[unreleased]: https://github.com/arangodb/arangojs/compare/v8.5.0...HEAD
 [8.5.0]: https://github.com/arangodb/arangojs/compare/v8.4.1...v8.5.0
 [8.4.1]: https://github.com/arangodb/arangojs/compare/v8.4.0...v8.4.1
 [8.4.0]: https://github.com/arangodb/arangojs/compare/v8.3.1...v8.4.0

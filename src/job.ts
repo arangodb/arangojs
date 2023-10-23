@@ -1,4 +1,5 @@
 import { Database } from "./database";
+import { ArangojsResponse } from "./lib/request.node";
 
 /**
  * Represents an async job in a {@link database.Database}.
@@ -6,15 +7,24 @@ import { Database } from "./database";
 export class Job<T = any> {
   protected _id: string;
   protected _db: Database;
+  protected _transformResponse?: (res: ArangojsResponse) => Promise<T>;
+  protected _transformError?: (error: any) => Promise<T>;
   protected _loaded: boolean = false;
   protected _result: T | undefined;
 
   /**
    * @internal
    */
-  constructor(db: Database, id: string) {
+  constructor(
+    db: Database,
+    id: string,
+    transformResponse?: (res: ArangojsResponse) => Promise<T>,
+    transformError?: (error: any) => Promise<T>
+  ) {
     this._db = db;
     this._id = id;
+    this._transformResponse = transformResponse;
+    this._transformError = transformError;
   }
 
   /**
@@ -49,16 +59,28 @@ export class Job<T = any> {
    */
   async load(): Promise<T | undefined> {
     if (!this.isLoaded) {
-      const res = await this._db.request(
-        {
-          method: "PUT",
-          path: `/_api/job/${this._id}`,
-        },
-        false
-      );
+      let res: ArangojsResponse;
+      try {
+        res = await this._db.request(
+          {
+            method: "PUT",
+            path: `/_api/job/${this._id}`,
+          },
+          false
+        );
+      } catch (e) {
+        if (this._transformError) {
+          return this._transformError(e);
+        }
+        throw e;
+      }
       if (res.statusCode !== 204) {
         this._loaded = true;
-        this._result = res.body;
+        if (this._transformResponse) {
+          this._result = await this._transformResponse(res);
+        } else {
+          this._result = res.body;
+        }
       }
     }
     return this._result;
