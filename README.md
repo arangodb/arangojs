@@ -132,7 +132,9 @@ substitute promises for `await` syntax as in the above example.
 The arangojs driver is compatible with the latest stable version of ArangoDB
 available at the time of the driver release and remains compatible with the
 two most recent Node.js LTS versions in accordance with the official
-[Node.js long-term support schedule](https://github.com/nodejs/LTS).
+[Node.js long-term support schedule](https://github.com/nodejs/LTS). Versions
+of ArangoDB that have reached their [end of life](https://arangodb.com/subscriptions/end-of-life-notice/)
+by the time of a driver release are explicitly not supported.
 
 For a list of changes between recent versions of the driver, see the
 [CHANGELOG](https://arangodb.github.io/arangojs/CHANGELOG).
