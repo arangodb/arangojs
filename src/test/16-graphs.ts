@@ -80,20 +80,28 @@ describe("Graph API", function () {
   describe("graph.create", () => {
     let edgeCollectionNames: string[];
     let vertexCollectionNames: string[];
+    let graph: Graph;
     before(async () => {
       [vertexCollectionNames, edgeCollectionNames] = await createCollections(
         db
       );
     });
     after(async () => {
-      await Promise.all(
-        [...edgeCollectionNames, ...vertexCollectionNames].map((name) =>
-          db.collection(name).drop()
-        )
-      );
+      await Promise.all([
+        ...edgeCollectionNames.map(async (name) => {
+          try {
+            await graph.removeEdgeDefinition(name, true);
+          } catch {}
+        }),
+        ...vertexCollectionNames.map(async (name) => {
+          try {
+            await graph.removeVertexCollection(name, true);
+          } catch {}
+        }),
+      ]);
     });
     it("creates the graph", async () => {
-      const graph = db.graph(`g_${Date.now()}`);
+      graph = db.graph(`g_${Date.now()}`);
       await graph.create(
         edgeCollectionNames.map((name) => ({
           collection: name,

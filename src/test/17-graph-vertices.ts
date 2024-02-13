@@ -96,7 +96,7 @@ describe("Manipulating graph vertices", function () {
       );
     });
     afterEach(async () => {
-      await vertexCollection.drop();
+      await graph.removeVertexCollection(vertexCollection.name, true);
     });
     it("adds the given vertex collection to the graph", async () => {
       const data = await graph.addVertexCollection(vertexCollection.name);
