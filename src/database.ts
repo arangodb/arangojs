@@ -5958,7 +5958,7 @@ export class Database {
   getLogEntries(options?: LogEntriesOptions): Promise<LogEntries> {
     return this.request(
       {
-        path: "/_admin/log",
+        path: "/_admin/log/entries",
         qs: options,
       },
       (res) => res.body
@@ -5969,6 +5969,9 @@ export class Database {
    * Retrieves the log messages from the server's global log.
    *
    * @param options - Options for retrieving the log entries.
+   *
+   * @deprecated This endpoint has been deprecated in ArangoDB 3.8.
+   * Use {@link Database#getLogEntries} instead.
    *
    * @example
    * ```js

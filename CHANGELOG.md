@@ -20,6 +20,17 @@ This driver uses semantic versioning:
 
 - Made `options` argument in `collection.edges`, `inEdges` and `outEdges` optional ([#802](https://github.com/arangodb/arangojs/issues/802))
 
+### Deprecated
+
+- Deprecated `db.getLogMessages`
+
+  This API was deprecated in ArangoDB 3.8 and should no longer be used.
+  Use `db.getLogEntries` instead.
+
+### Fixed
+
+- Fixed `db.getLogEntries` using the wrong API endpoint
+
 ## [8.6.0] - 2023-10-24
 
 ### Added
