@@ -19,6 +19,12 @@ This driver uses semantic versioning:
 - A change in the major version (e.g. 1.Y.Z -> 2.0.0) indicates _breaking_
   changes that require changes in your code to upgrade.
 
+## [Unreleased]
+
+### Changed
+
+- Made `options` argument in `collection.edges`, `inEdges` and `outEdges` optional ([#802](https://github.com/arangodb/arangojs/issues/802))
+
 ## [8.6.0] - 2023-10-24
 
 ### Added
