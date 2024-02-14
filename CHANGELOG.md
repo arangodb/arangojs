@@ -80,7 +80,7 @@ This driver uses semantic versioning:
 
 - Fetching additional cursor results now uses `POST` instead of `PUT` (DE-605)
 
-  The `POST` route was deprecated and the `PUT` route is supported in all
+  The `PUT` route was deprecated and the `POST` route is supported in all
   actively maintained versions of ArangoDB.
 
 - User management methods now use database-relative URLs (DE-606)
