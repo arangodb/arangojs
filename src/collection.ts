@@ -3343,7 +3343,7 @@ export interface EdgeCollection<T extends Record<string, any> = any>
    */
   edges(
     selector: DocumentSelector,
-    options: CollectionEdgesOptions
+    options?: CollectionEdgesOptions
   ): Promise<ArangoApiResponse<CollectionEdgesResult<T>>>;
   /**
    * Retrieves a list of all incoming edges of the document matching the given
@@ -3372,7 +3372,7 @@ export interface EdgeCollection<T extends Record<string, any> = any>
    */
   inEdges(
     selector: DocumentSelector,
-    options: CollectionEdgesOptions
+    options?: CollectionEdgesOptions
   ): Promise<ArangoApiResponse<CollectionEdgesResult<T>>>;
   /**
    * Retrieves a list of all outgoing edges of the document matching the given
@@ -3401,7 +3401,7 @@ export interface EdgeCollection<T extends Record<string, any> = any>
    */
   outEdges(
     selector: DocumentSelector,
-    options: CollectionEdgesOptions
+    options?: CollectionEdgesOptions
   ): Promise<ArangoApiResponse<CollectionEdgesResult<T>>>;
 
   /**
@@ -3908,7 +3908,7 @@ export class Collection<T extends Record<string, any> = any>
   //#region edges
   protected _edges(
     selector: DocumentSelector,
-    options: CollectionEdgesOptions,
+    options: CollectionEdgesOptions = {},
     direction?: "in" | "out"
   ) {
     const { allowDirtyRead = undefined } = options;
@@ -3922,15 +3922,15 @@ export class Collection<T extends Record<string, any> = any>
     });
   }
 
-  edges(vertex: DocumentSelector, options: CollectionEdgesOptions) {
+  edges(vertex: DocumentSelector, options?: CollectionEdgesOptions) {
     return this._edges(vertex, options);
   }
 
-  inEdges(vertex: DocumentSelector, options: CollectionEdgesOptions) {
+  inEdges(vertex: DocumentSelector, options?: CollectionEdgesOptions) {
     return this._edges(vertex, options, "in");
   }
 
-  outEdges(vertex: DocumentSelector, options: CollectionEdgesOptions) {
+  outEdges(vertex: DocumentSelector, options?: CollectionEdgesOptions) {
     return this._edges(vertex, options, "out");
   }
 
