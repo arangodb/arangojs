@@ -4169,6 +4169,10 @@ export class Database {
    * to create a query string without manually defining bind parameters nor
    * having to worry about escaping variables.
    *
+   * **Note**: When executing a query in a streaming transaction using the
+   * `step` method, the resulting cursor will be bound to that transaction and
+   * you do not need to use the `step` method to consume it.
+   *
    * @param query - An object containing an AQL query string and bind
    * parameters, e.g. the object returned from an {@link aql!aql} template string.
    * @param options - Options for the query execution.
@@ -4217,6 +4221,10 @@ export class Database {
    *
    * See the {@link aql!aql} template string handler for a safer and easier
    * alternative to passing strings directly.
+   *
+   * **Note**: When executing a query in a streaming transaction using the
+   * `step` method, the resulting cursor will be bound to that transaction and
+   * you do not need to use the `step` method to consume it.
    *
    * @param query - An AQL query string.
    * @param bindVars - An object defining bind parameters for the query.
