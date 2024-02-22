@@ -3,7 +3,7 @@ import { DocumentCollection } from "../collection";
 import { Database } from "../database";
 import { config } from "./_config";
 
-const it39 = config.arangoVersion! >= 30900 ? it : it.skip;
+const it312 = config.arangoVersion! >= 31200 ? it : it.skip;
 
 describe("Managing indexes", function () {
   let system: Database, db: Database;
@@ -79,15 +79,15 @@ describe("Managing indexes", function () {
       expect(info).to.have.property("isNewlyCreated", true);
     });
   });
-  describe("collection.ensureIndex#zkd", () => {
-    it39("should create a zkd index", async () => {
+  describe("collection.ensureIndex#mdi", () => {
+    it312("should create an MDI index", async () => {
       const info = await collection.ensureIndex({
-        type: "zkd",
+        type: "mdi",
         fields: ["x", "y", "z"],
         fieldValueTypes: "double",
       });
       expect(info).to.have.property("id");
-      expect(info).to.have.property("type", "zkd");
+      expect(info).to.have.property("type", "mdi");
       expect(info).to.have.property("fields");
       expect(info.fields).to.eql(["x", "y", "z"]);
       expect(info).to.have.property("isNewlyCreated", true);

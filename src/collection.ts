@@ -33,7 +33,7 @@ import {
   EnsureInvertedIndexOptions,
   EnsurePersistentIndexOptions,
   EnsureTtlIndexOptions,
-  EnsureZkdIndexOptions,
+  EnsureMdiIndexOptions,
   FulltextIndex,
   GeoIndex,
   Index,
@@ -41,7 +41,7 @@ import {
   InvertedIndex,
   PersistentIndex,
   TtlIndex,
-  ZkdIndex,
+  MdiIndex,
   _indexHandle,
 } from "./indexes";
 import { Blob } from "./lib/blob";
@@ -2581,7 +2581,7 @@ export interface DocumentCollection<T extends Record<string, any> = any>
    * const collection = db.collection("some-points");
    * // Create a multi-dimensional index for the attributes x, y and z
    * await collection.ensureIndex({
-   *   type: "zkd",
+   *   type: "mdi",
    *   fields: ["x", "y", "z"],
    *   fieldValueTypes: "double"
    * });
@@ -2589,8 +2589,8 @@ export interface DocumentCollection<T extends Record<string, any> = any>
    * ```
    */
   ensureIndex(
-    details: EnsureZkdIndexOptions
-  ): Promise<ArangoApiResponse<ZkdIndex & { isNewlyCreated: boolean }>>;
+    details: EnsureMdiIndexOptions
+  ): Promise<ArangoApiResponse<MdiIndex & { isNewlyCreated: boolean }>>;
   /**
    * Creates a fulltext index on the collection if it does not already exist.
    *
@@ -4121,7 +4121,7 @@ export class Collection<T extends Record<string, any> = any>
       | EnsureGeoIndexOptions
       | EnsureFulltextIndexOptions
       | EnsureTtlIndexOptions
-      | EnsureZkdIndexOptions
+      | EnsureMdiIndexOptions
       | EnsureInvertedIndexOptions
   ) {
     const opts = { ...options };

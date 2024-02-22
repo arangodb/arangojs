@@ -3,10 +3,10 @@
  * import type {
  *   FulltextIndex,
  *   GeoIndex,
+ *   MdiIndex,
  *   PersistentIndex,
  *   PrimaryIndex,
  *   TtlIndex,
- *   ZkdIndex,
  * } from "arangojs/indexes";
  * ```
  *
@@ -220,13 +220,13 @@ export type EnsureTtlIndexOptions = {
 };
 
 /**
- * Options for creating a ZKD index.
+ * Options for creating a MDI index.
  */
-export type EnsureZkdIndexOptions = {
+export type EnsureMdiIndexOptions = {
   /**
    * Type of this index.
    */
-  type: "zkd";
+  type: "mdi";
   /**
    * An array containing attribute paths for the dimensions.
    */
@@ -630,10 +630,10 @@ export type TtlIndex = GenericIndex & {
 };
 
 /**
- * An object representing a ZKD index.
+ * An object representing a MDI index.
  */
-export type ZkdIndex = GenericIndex & {
-  type: "zkd";
+export type MdiIndex = GenericIndex & {
+  type: "mdi";
   fields: string[];
   fieldValueTypes: "double";
 };
@@ -705,7 +705,7 @@ export type Index =
   | PersistentIndex
   | PrimaryIndex
   | TtlIndex
-  | ZkdIndex
+  | MdiIndex
   | InvertedIndex;
 
 export type ObjectWithId = {
