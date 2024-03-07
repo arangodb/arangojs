@@ -326,9 +326,9 @@ export type Config = {
   /**
    * Base URL of the ArangoDB server or list of server URLs.
    *
-   * When working with a cluster or a single server with leader/follower
-   * failover, the method {@link database.Database#acquireHostList} can be used to
-   * automatically pick up additional coordinators/followers at any point.
+   * When working with a cluster, the method {@link database.Database#acquireHostList}
+   * can be used to automatically pick up additional coordinators/followers at
+   * any point.
    *
    * When running ArangoDB on a unix socket, e.g. `/tmp/arangodb.sock`, the
    * following URL formats are supported for unix sockets:
@@ -404,8 +404,8 @@ export type Config = {
    *   or the request has been retried a total of `maxRetries` number of times
    *   (not including the initial failed request).
    *
-   * When working with a single server without leader/follower failover, the
-   * retries (if any) will be made to the same server.
+   * When working with a single server, the retries (if any) will be made to
+   * the same server.
    *
    * This setting currently has no effect when using arangojs in a browser.
    *

@@ -23,6 +23,13 @@ This driver uses semantic versioning:
   The ZKD index type was previously marked as experimental and has now been
   finalized and renamed to MDI in ArangoDB 3.12.
 
+### Deprecated
+
+- Deprecated active failover support (DE-746)
+
+  Active failover is no longer be supported in ArangoDB 3.12 and later. This
+  functionality will be removed from the driver in a future release.
+
 ## [8.7.0] - 2024-02-14
 
 ### Changed
