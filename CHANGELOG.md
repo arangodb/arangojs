@@ -34,6 +34,8 @@ This driver uses semantic versioning:
 
 - Added support for `multi_delimiter` analyzer type (DE-753)
 
+- Added support for `wildcard` analyzer type (DE-750)
+
 ## [8.7.0] - 2024-02-14
 
 ### Changed

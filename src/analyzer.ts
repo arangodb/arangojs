@@ -46,6 +46,7 @@ export type CreateAnalyzerOptions =
   | CreateMinHashAnalyzerOptions
   | CreateClassificationAnalyzerOptions
   | CreateNearestNeighborsAnalyzerOptions
+  | CreateWildcardAnalyzerOptions
   | CreateGeoJsonAnalyzerOptions
   | CreateGeoPointAnalyzerOptions
   | CreateGeoS2AnalyzerOptions;
@@ -517,6 +518,33 @@ export type CreateNearestNeighborsAnalyzerOptions = {
 };
 
 /**
+ * Options for creating a Wildcard Analyzer.
+ */
+export type CreateWildcardAnalyzerOptions = {
+  /**
+   * Type of the Analyzer.
+   */
+  type: "wildcard";
+  /**
+   * Features to enable for this Analyzer.
+   */
+  features?: AnalyzerFeature[];
+  /**
+   * Additional properties for the Analyzer.
+   */
+  properties: {
+    /**
+     * N-gram length. Must be a positive integer greater than or equal to 2.
+     */
+    ngramSize: string;
+    /**
+     * An Analyzer definition-like object with `type` and `properties` attributes.
+     */
+    analyzer?: Omit<CreateAnalyzerOptions, "features">;
+  };
+};
+
+/**
  * Options for creating a GeoJSON Analyzer
  */
 export type CreateGeoJsonAnalyzerOptions = {
@@ -667,6 +695,7 @@ export type AnalyzerDescription =
   | MinHashAnalyzerDescription
   | ClassificationAnalyzerDescription
   | NearestNeighborsAnalyzerDescription
+  | WildcardAnalyzerDescription
   | GeoJsonAnalyzerDescription
   | GeoPointAnalyzerDescription
   | GeoS2AnalyzerDescription;
@@ -831,6 +860,17 @@ export type NearestNeighborsAnalyzerDescription = GenericAnalyzerDescription & {
   properties: {
     model_location: string;
     top_k: number;
+  };
+};
+
+/**
+ * An object describing a Wildcard Analyzer
+ */
+export type WildcardAnalyzerDescription = GenericAnalyzerDescription & {
+  type: "wildcard";
+  properties: {
+    ngramSize: number;
+    analyzer?: Omit<AnalyzerDescription, "name" | "features">;
   };
 };
 
