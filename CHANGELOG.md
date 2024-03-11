@@ -30,6 +30,10 @@ This driver uses semantic versioning:
   Active failover is no longer be supported in ArangoDB 3.12 and later. This
   functionality will be removed from the driver in a future release.
 
+### Added
+
+- Added support for `multi_delimiter` analyzer type (DE-753)
+
 ## [8.7.0] - 2024-02-14
 
 ### Changed

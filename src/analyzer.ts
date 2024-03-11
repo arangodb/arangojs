@@ -33,6 +33,7 @@ export type AnalyzerFeature = "frequency" | "norm" | "position" | "offset";
 export type CreateAnalyzerOptions =
   | CreateIdentityAnalyzerOptions
   | CreateDelimiterAnalyzerOptions
+  | CreateMultiDelimiterAnalyzerOptions
   | CreateStemAnalyzerOptions
   | CreateNormAnalyzerOptions
   | CreateNgramAnalyzerOptions
@@ -88,6 +89,27 @@ export type CreateDelimiterAnalyzerOptions = {
    * in RFC 4180, without starting new records on newlines.
    */
   properties: string | { delimiter: string };
+};
+
+/**
+ * Options for creating a Multi-Delimiter Analyzer.
+ */
+export type CreateMultiDelimiterAnalyzerOptions = {
+  /**
+   * Type of the Analyzer.
+   */
+  type: "multi_delimiter";
+  /**
+   * Features to enable for this Analyzer.
+   */
+  features?: AnalyzerFeature[];
+  /**
+   * Additional properties for the Analyzer.
+   *
+   * The value will be used as delimiter to split text into tokens as specified
+   * in RFC 4180, without starting new records on newlines.
+   */
+  properties: { delimiters: string[] };
 };
 
 /**
@@ -632,6 +654,7 @@ export type GenericAnalyzerDescription = {
 export type AnalyzerDescription =
   | IdentityAnalyzerDescription
   | DelimiterAnalyzerDescription
+  | MultiDelimiterAnalyzerDescription
   | StemAnalyzerDescription
   | NormAnalyzerDescription
   | NgramAnalyzerDescription
@@ -662,6 +685,14 @@ export type IdentityAnalyzerDescription = GenericAnalyzerDescription & {
 export type DelimiterAnalyzerDescription = GenericAnalyzerDescription & {
   type: "delimiter";
   properties: { delimiter: string };
+};
+
+/**
+ * An object describing a Multi Delimiter Analyzer.
+ */
+export type MultiDelimiterAnalyzerDescription = GenericAnalyzerDescription & {
+  type: "multi_delimiter";
+  properties: { delimiters: string[] };
 };
 
 /**
