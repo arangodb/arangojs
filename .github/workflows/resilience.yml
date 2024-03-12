@@ -15,9 +15,8 @@ jobs:
       matrix:
         node-version: [14, 16, 18]
         arangodb-version:
-          - arangodb:3.8
-          - arangodb:3.9
-          - arangodb:3.10
+          - arangodb:3.10.13
+          - arangodb:3.11.8
           - arangodb/arangodb-test:devel-nightly
 
     steps:
