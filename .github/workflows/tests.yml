@@ -34,7 +34,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: apk add jq
-      - run: npm install -g npm@9
+      - run: npm install -g npm@10
       - run: npm install
       - run: npm test
         env:
@@ -67,7 +67,7 @@ jobs:
       - run: wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
       - run: sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
       - run: apt-get update && apt-get install -y google-chrome-stable fonts-ipafont-gothic fonts-wqy-zenhei fonts-thai-tlwg fonts-kacst fonts-freefont-ttf libxss1 --no-install-recommends -y
-      - run: npm install -g npm@9
+      - run: npm install -g npm@10
       - run: npm install && npm install puppeteer
       - run: node smoke-test.js
 
