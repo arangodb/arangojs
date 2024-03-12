@@ -28,6 +28,12 @@ This driver uses semantic versioning:
   The ZKD index type was previously marked as experimental and has now been
   finalized and renamed to MDI in ArangoDB 3.12.
 
+- Added `DocumentOperationMetadata` and `DocumentOperationFailure` types (DE-693)
+
+  The return types of document and edge operations on collections have been
+  modified to correctly represent the return values of bulk operations and
+  single document/edge operations using the `overwriteMode` option.
+
 ### Deprecated
 
 - Deprecated active failover support (DE-746)
