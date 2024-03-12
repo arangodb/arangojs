@@ -154,6 +154,34 @@ export type ValidationLevel = "none" | "new" | "moderate" | "strict";
 export type WriteOperation = "insert" | "update" | "replace";
 
 /**
+ * Represents a bulk operation failure for an individual document.
+ */
+export type DocumentOperationFailure = {
+  /**
+   * Indicates that the operation failed.
+   */
+  error: true;
+  /**
+   * Human-readable description of the failure.
+   */
+  errorMessage: string;
+  /**
+   * Numeric representation of the failure.
+   */
+  errorNum: number;
+};
+
+/**
+ * Metadata returned by a document operation.
+ */
+export type DocumentOperationMetadata = DocumentMetadata & {
+  /**
+   * Revision of the document that was updated or replaced by this operation.
+   */
+  _oldRev?: string;
+};
+
+/**
  * Properties defining a computed value.
  */
 export type ComputedValueProperties = {
@@ -1855,7 +1883,9 @@ export interface DocumentCollection<T extends Record<string, any> = any>
   save(
     data: DocumentData<T>,
     options?: CollectionInsertOptions
-  ): Promise<DocumentMetadata & { new?: Document<T> }>;
+  ): Promise<
+    DocumentOperationMetadata & { new?: Document<T>; old?: Document<T> }
+  >;
   /**
    * Inserts new documents with the given `data` into the collection.
    *
@@ -1880,7 +1910,12 @@ export interface DocumentCollection<T extends Record<string, any> = any>
   saveAll(
     data: Array<DocumentData<T>>,
     options?: CollectionInsertOptions
-  ): Promise<Array<DocumentMetadata & { new?: Document<T> }>>;
+  ): Promise<
+    Array<
+      | (DocumentOperationMetadata & { new?: Document<T>; old?: Document<T> })
+      | DocumentOperationFailure
+    >
+  >;
   /**
    * Replaces an existing document in the collection.
    *
@@ -1909,7 +1944,9 @@ export interface DocumentCollection<T extends Record<string, any> = any>
     selector: DocumentSelector,
     newData: DocumentData<T>,
     options?: CollectionReplaceOptions
-  ): Promise<DocumentMetadata & { new?: Document<T>; old?: Document<T> }>;
+  ): Promise<
+    DocumentOperationMetadata & { new?: Document<T>; old?: Document<T> }
+  >;
   /**
    * Replaces existing documents in the collection, identified by the `_key` or
    * `_id` of each document.
@@ -1938,7 +1975,10 @@ export interface DocumentCollection<T extends Record<string, any> = any>
     newData: Array<DocumentData<T> & ({ _key: string } | { _id: string })>,
     options?: Omit<CollectionReplaceOptions, "ifMatch">
   ): Promise<
-    Array<DocumentMetadata & { new?: Document<T>; old?: Document<T> }>
+    Array<
+      | (DocumentOperationMetadata & { new?: Document<T>; old?: Document<T> })
+      | DocumentOperationFailure
+    >
   >;
   /**
    * Updates an existing document in the collection.
@@ -1968,7 +2008,9 @@ export interface DocumentCollection<T extends Record<string, any> = any>
     selector: DocumentSelector,
     newData: Patch<DocumentData<T>>,
     options?: CollectionUpdateOptions
-  ): Promise<DocumentMetadata & { new?: Document<T>; old?: Document<T> }>;
+  ): Promise<
+    DocumentOperationMetadata & { new?: Document<T>; old?: Document<T> }
+  >;
   /**
    * Updates existing documents in the collection, identified by the `_key` or
    * `_id` of each document.
@@ -1999,7 +2041,10 @@ export interface DocumentCollection<T extends Record<string, any> = any>
     >,
     options?: Omit<CollectionUpdateOptions, "ifMatch">
   ): Promise<
-    Array<DocumentMetadata & { new?: Document<T>; old?: Document<T> }>
+    Array<
+      | (DocumentOperationMetadata & { new?: Document<T>; old?: Document<T> })
+      | DocumentOperationFailure
+    >
   >;
   /**
    * Removes an existing document from the collection.
@@ -2053,7 +2098,9 @@ export interface DocumentCollection<T extends Record<string, any> = any>
   removeAll(
     selectors: (string | ObjectWithKey)[],
     options?: Omit<CollectionRemoveOptions, "ifMatch">
-  ): Promise<Array<DocumentMetadata & { old?: Document<T> }>>;
+  ): Promise<
+    Array<(DocumentMetadata & { old?: Document<T> }) | DocumentOperationFailure>
+  >;
   /**
    * Bulk imports the given `data` into the collection.
    *
@@ -2829,7 +2876,7 @@ export interface EdgeCollection<T extends Record<string, any> = any>
   save(
     data: EdgeData<T>,
     options?: CollectionInsertOptions
-  ): Promise<DocumentMetadata & { new?: Edge<T> }>;
+  ): Promise<DocumentOperationMetadata & { new?: Edge<T>; old?: Edge<T> }>;
   /**
    * Inserts new documents with the given `data` into the collection.
    *
@@ -2852,7 +2899,12 @@ export interface EdgeCollection<T extends Record<string, any> = any>
   saveAll(
     data: Array<EdgeData<T>>,
     options?: CollectionInsertOptions
-  ): Promise<Array<DocumentMetadata & { new?: Edge<T> }>>;
+  ): Promise<
+    Array<
+      | (DocumentOperationMetadata & { new?: Edge<T>; old?: Edge<T> })
+      | DocumentOperationFailure
+    >
+  >;
   /**
    * Replaces an existing document in the collection.
    *
@@ -2889,7 +2941,7 @@ export interface EdgeCollection<T extends Record<string, any> = any>
     selector: DocumentSelector,
     newData: DocumentData<T>,
     options?: CollectionReplaceOptions
-  ): Promise<DocumentMetadata & { new?: Edge<T>; old?: Edge<T> }>;
+  ): Promise<DocumentOperationMetadata & { new?: Edge<T>; old?: Edge<T> }>;
   /**
    * Replaces existing documents in the collection, identified by the `_key` or
    * `_id` of each document.
@@ -2933,7 +2985,12 @@ export interface EdgeCollection<T extends Record<string, any> = any>
   replaceAll(
     newData: Array<DocumentData<T> & ({ _key: string } | { _id: string })>,
     options?: CollectionReplaceOptions
-  ): Promise<Array<DocumentMetadata & { new?: Edge<T>; old?: Edge<T> }>>;
+  ): Promise<
+    Array<
+      | (DocumentOperationMetadata & { new?: Edge<T>; old?: Edge<T> })
+      | DocumentOperationFailure
+    >
+  >;
   /**
    * Updates an existing document in the collection.
    *
@@ -2970,7 +3027,7 @@ export interface EdgeCollection<T extends Record<string, any> = any>
     selector: DocumentSelector,
     newData: Patch<DocumentData<T>>,
     options?: CollectionUpdateOptions
-  ): Promise<DocumentMetadata & { new?: Edge<T>; old?: Edge<T> }>;
+  ): Promise<DocumentOperationMetadata & { new?: Edge<T>; old?: Edge<T> }>;
   /**
    * Updates existing documents in the collection, identified by the `_key` or
    * `_id` of each document.
@@ -3014,7 +3071,12 @@ export interface EdgeCollection<T extends Record<string, any> = any>
       Patch<DocumentData<T>> & ({ _key: string } | { _id: string })
     >,
     options?: CollectionUpdateOptions
-  ): Promise<Array<DocumentMetadata & { new?: Edge<T>; old?: Edge<T> }>>;
+  ): Promise<
+    Array<
+      | (DocumentOperationMetadata & { new?: Edge<T>; old?: Edge<T> })
+      | DocumentOperationFailure
+    >
+  >;
   /**
    * Removes an existing document from the collection.
    *
@@ -3059,7 +3121,9 @@ export interface EdgeCollection<T extends Record<string, any> = any>
   removeAll(
     selectors: DocumentSelector[],
     options?: CollectionRemoveOptions
-  ): Promise<Array<DocumentMetadata & { old?: Edge<T> }>>;
+  ): Promise<
+    Array<(DocumentMetadata & { old?: Edge<T> }) | DocumentOperationFailure>
+  >;
   /**
    * Bulk imports the given `data` into the collection.
    *
