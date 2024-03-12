@@ -48,9 +48,8 @@ jobs:
     strategy:
       matrix:
         arangodb-version:
-          - arangodb/arangodb:3.9.10
-          - arangodb/arangodb:3.10.6
-          - arangodb/arangodb:3.11.0
+          - arangodb/arangodb:3.10.13
+          - arangodb/arangodb:3.11.8
           - arangodb/arangodb-test:devel-nightly
 
     container:
