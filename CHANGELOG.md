@@ -19,6 +19,28 @@ This driver uses semantic versioning:
 - A change in the major version (e.g. 1.Y.Z -> 2.0.0) indicates _breaking_
   changes that require changes in your code to upgrade.
 
+## [Unreleased]
+
+### Changed
+
+- Renamed ZKD index type to MDI (DE-744)
+
+  The ZKD index type was previously marked as experimental and has now been
+  finalized and renamed to MDI in ArangoDB 3.12.
+
+### Deprecated
+
+- Deprecated active failover support (DE-746)
+
+  Active failover is no longer be supported in ArangoDB 3.12 and later. This
+  functionality will be removed from the driver in a future release.
+
+### Added
+
+- Added support for `multi_delimiter` analyzer type (DE-753)
+
+- Added support for `wildcard` analyzer type (DE-750)
+
 ## [8.7.0] - 2024-02-14
 
 ### Changed
