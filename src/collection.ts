@@ -743,6 +743,13 @@ export type CollectionInsertOptions = {
    * Default: `false`
    */
   refillIndexCaches?: boolean;
+  /**
+   * If set, the attribute with the name specified by the option is looked up
+   * in the stored document and the attribute value is compared numerically to
+   * the value of the versioning attribute in the supplied document that is
+   * supposed to update/replace it.
+   */
+  versionAttribute?: string;
 };
 
 /**
@@ -796,6 +803,13 @@ export type CollectionReplaceOptions = {
    * Default: `false`
    */
   refillIndexCaches?: boolean;
+  /**
+   * If set, the attribute with the name specified by the option is looked up
+   * in the stored document and the attribute value is compared numerically to
+   * the value of the versioning attribute in the supplied document that is
+   * supposed to update/replace it.
+   */
+  versionAttribute?: string;
 };
 
 /**
@@ -864,6 +878,13 @@ export type CollectionUpdateOptions = {
    * Default: `false`
    */
   refillIndexCaches?: boolean;
+  /**
+   * If set, the attribute with the name specified by the option is looked up
+   * in the stored document and the attribute value is compared numerically to
+   * the value of the versioning attribute in the supplied document that is
+   * supposed to update/replace it.
+   */
+  versionAttribute?: string;
 };
 
 /**
