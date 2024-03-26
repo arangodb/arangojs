@@ -5,7 +5,7 @@
  * @internal
  */
 
-import { posix } from "path";
+import { posix } from "node:path";
 
 /**
  * @internal

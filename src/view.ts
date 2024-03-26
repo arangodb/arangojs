@@ -558,8 +558,8 @@ export class View {
     typeof options extends CreateArangoSearchViewOptions
       ? ArangoSearchViewDescription
       : Options extends CreateSearchAliasViewOptions
-      ? SearchAliasViewDescription
-      : ViewDescription
+        ? SearchAliasViewDescription
+        : ViewDescription
   > {
     return this._db.request({
       method: "POST",
@@ -637,8 +637,8 @@ export class View {
     Properties extends ArangoSearchViewPatchPropertiesOptions
       ? ArangoSearchViewProperties
       : Properties extends SearchAliasViewPatchPropertiesOptions
-      ? SearchAliasViewProperties
-      : ViewProperties
+        ? SearchAliasViewProperties
+        : ViewProperties
   > {
     return this._db.request({
       method: "PATCH",
@@ -668,8 +668,8 @@ export class View {
     Properties extends ArangoSearchViewPropertiesOptions
       ? ArangoSearchViewProperties
       : Properties extends SearchAliasViewPropertiesOptions
-      ? SearchAliasViewProperties
-      : ViewProperties
+        ? SearchAliasViewProperties
+        : ViewProperties
   > {
     return this._db.request({
       method: "PUT",
@@ -696,7 +696,7 @@ export class View {
         method: "DELETE",
         path: `/_api/view/${encodeURIComponent(this._name)}`,
       },
-      (res) => res.body.result
+      (res) => res.parsedBody.result
     );
   }
 }

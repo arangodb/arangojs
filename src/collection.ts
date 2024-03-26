@@ -12,7 +12,7 @@
  * @packageDocumentation
  */
 import { AqlLiteral, AqlQuery, isAqlLiteral, isAqlQuery } from "./aql";
-import { ArangoApiResponse, Params } from "./connection";
+import { ArangoApiResponse } from "./connection";
 import { ArrayCursor, BatchedArrayCursor } from "./cursor";
 import { Database } from "./database";
 import {
@@ -3604,7 +3604,7 @@ export class Collection<T extends Record<string, any> = any>
         return computedValue;
       });
     }
-    const qs: Params = {};
+    const qs: Record<string, any> = {};
     if (typeof waitForSyncReplication === "boolean") {
       qs.waitForSyncReplication = waitForSyncReplication ? 1 : 0;
     }
@@ -3655,7 +3655,7 @@ export class Collection<T extends Record<string, any> = any>
           this._name
         )}/recalculateCount`,
       },
-      (res) => res.body.result
+      (res) => res.parsedBody.result
     );
   }
 
@@ -3704,7 +3704,7 @@ export class Collection<T extends Record<string, any> = any>
           this._name
         )}/loadIndexesIntoMemory`,
       },
-      (res) => res.body.result
+      (res) => res.parsedBody.result
     );
   }
 
@@ -3740,7 +3740,7 @@ export class Collection<T extends Record<string, any> = any>
         )}/responsibleShard`,
         body: document,
       },
-      (res) => res.body.shardId
+      (res) => res.parsedBody.shardId
     );
   }
 
@@ -3766,7 +3766,7 @@ export class Collection<T extends Record<string, any> = any>
           headers,
         },
         (res) => {
-          if (ifNoneMatch && res.statusCode === 304) {
+          if (ifNoneMatch && res.status === 304) {
             throw new HttpError(res);
           }
           return true;
@@ -3819,10 +3819,10 @@ export class Collection<T extends Record<string, any> = any>
         allowDirtyRead,
       },
       (res) => {
-        if (ifNoneMatch && res.statusCode === 304) {
+        if (ifNoneMatch && res.status === 304) {
           throw new HttpError(res);
         }
-        return res.body;
+        return res.parsedBody;
       }
     );
     if (!graceful) return result;
@@ -3844,7 +3844,7 @@ export class Collection<T extends Record<string, any> = any>
         body: data,
         qs: options,
       },
-      (res) => (options?.silent ? undefined : res.body)
+      (res) => (options?.silent ? undefined : res.parsedBody)
     );
   }
 
@@ -3856,7 +3856,7 @@ export class Collection<T extends Record<string, any> = any>
         body: data,
         qs: options,
       },
-      (res) => (options?.silent ? undefined : res.body)
+      (res) => (options?.silent ? undefined : res.parsedBody)
     );
   }
 
@@ -3878,7 +3878,7 @@ export class Collection<T extends Record<string, any> = any>
         body: newData,
         qs: opts,
       },
-      (res) => (options?.silent ? undefined : res.body)
+      (res) => (options?.silent ? undefined : res.parsedBody)
     );
   }
 
@@ -3893,7 +3893,7 @@ export class Collection<T extends Record<string, any> = any>
         body: newData,
         qs: options,
       },
-      (res) => (options?.silent ? undefined : res.body)
+      (res) => (options?.silent ? undefined : res.parsedBody)
     );
   }
 
@@ -3915,7 +3915,7 @@ export class Collection<T extends Record<string, any> = any>
         body: newData,
         qs: opts,
       },
-      (res) => (options?.silent ? undefined : res.body)
+      (res) => (options?.silent ? undefined : res.parsedBody)
     );
   }
 
@@ -3932,7 +3932,7 @@ export class Collection<T extends Record<string, any> = any>
         body: newData,
         qs: options,
       },
-      (res) => (options?.silent ? undefined : res.body)
+      (res) => (options?.silent ? undefined : res.parsedBody)
     );
   }
 
@@ -3949,7 +3949,7 @@ export class Collection<T extends Record<string, any> = any>
         headers,
         qs: opts,
       },
-      (res) => (options?.silent ? undefined : res.body)
+      (res) => (options?.silent ? undefined : res.parsedBody)
     );
   }
 
@@ -3964,7 +3964,7 @@ export class Collection<T extends Record<string, any> = any>
         body: selectors,
         qs: options,
       },
-      (res) => (options?.silent ? undefined : res.body)
+      (res) => (options?.silent ? undefined : res.parsedBody)
     );
   }
 
@@ -4030,7 +4030,7 @@ export class Collection<T extends Record<string, any> = any>
           edgeCollection: this._name,
         },
       },
-      (res) => res.body.result
+      (res) => res.parsedBody.result
     );
   }
   //#endregion
@@ -4044,7 +4044,8 @@ export class Collection<T extends Record<string, any> = any>
         body: { type, collection: this._name },
       },
       (res) =>
-        new BatchedArrayCursor(this._db, res.body, res.arangojsHostUrl).items
+        new BatchedArrayCursor(this._db, res.parsedBody, res.arangojsHostUrl)
+          .items
     );
   }
 
@@ -4059,7 +4060,8 @@ export class Collection<T extends Record<string, any> = any>
         },
       },
       (res) =>
-        new BatchedArrayCursor(this._db, res.body, res.arangojsHostUrl).items
+        new BatchedArrayCursor(this._db, res.parsedBody, res.arangojsHostUrl)
+          .items
     );
   }
 
@@ -4070,7 +4072,7 @@ export class Collection<T extends Record<string, any> = any>
         path: "/_api/simple/any",
         body: { collection: this._name },
       },
-      (res) => res.body.document
+      (res) => res.parsedBody.document
     );
   }
 
@@ -4089,7 +4091,8 @@ export class Collection<T extends Record<string, any> = any>
         },
       },
       (res) =>
-        new BatchedArrayCursor(this._db, res.body, res.arangojsHostUrl).items
+        new BatchedArrayCursor(this._db, res.parsedBody, res.arangojsHostUrl)
+          .items
     );
   }
 
@@ -4103,7 +4106,7 @@ export class Collection<T extends Record<string, any> = any>
           collection: this._name,
         },
       },
-      (res) => res.body.document
+      (res) => res.parsedBody.document
     );
   }
 
@@ -4166,7 +4169,7 @@ export class Collection<T extends Record<string, any> = any>
           collection: this._name,
         },
       },
-      (res) => res.body.documents
+      (res) => res.parsedBody.documents
     );
   }
 
@@ -4190,7 +4193,7 @@ export class Collection<T extends Record<string, any> = any>
         path: "/_api/index",
         qs: { collection: this._name },
       },
-      (res) => res.body.indexes
+      (res) => res.parsedBody.indexes
     );
   }
 
@@ -4242,7 +4245,8 @@ export class Collection<T extends Record<string, any> = any>
         },
       },
       (res) =>
-        new BatchedArrayCursor(this._db, res.body, res.arangojsHostUrl).items
+        new BatchedArrayCursor(this._db, res.parsedBody, res.arangojsHostUrl)
+          .items
     );
   }
 
@@ -4252,7 +4256,7 @@ export class Collection<T extends Record<string, any> = any>
         method: "PUT",
         path: `/_api/collection/${this._name}/compact`,
       },
-      (res) => res.body
+      (res) => res.parsedBody
     );
   }
   //#endregion

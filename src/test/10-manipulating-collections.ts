@@ -75,7 +75,7 @@ describe("Manipulating collections", function () {
   describe("collection.rename", () => {
     it("should rename a collection", async () => {
       const res = await db.route("/_admin/server/role").get();
-      if (res.body.role !== "SINGLE") return;
+      if (res.parsedBody.role !== "SINGLE") return;
       const name = `rename-collection-${Date.now()}`;
       // eslint-disable-next-line security/detect-non-literal-fs-filename
       const info = await collection.rename(name);

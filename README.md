@@ -282,36 +282,39 @@ environment and may need to be explicitly told you are targetting Node instead.
 
 ### Node.js with self-signed HTTPS certificates
 
-If you need to support self-signed HTTPS certificates, you may have to add
-your certificates to the `agentOptions`, e.g.:
+If you need to support self-signed HTTPS certificates in Node.js, you may have
+to override the global fetch agent. At the time of this writing, there is no
+official way to do this for the native `fetch` implementation in Node.js.
 
-```diff
-  const { Database } = require("arangojs");
+However as Node.js uses the `undici` module for its `fetch` implementation
+internally, you can override the global agent by adding `undici` as a
+dependency to your project and using its `setGlobalDispatcher` as follows:
 
-  const db = new Database({
-    url: ARANGODB_SERVER,
-+   agentOptions: {
-+     ca: [
-+       fs.readFileSync(".ssl/sub.class1.server.ca.pem"),
-+       fs.readFileSync(".ssl/ca.pem")
-+     ]
-+   },
-  });
+```js
+const { Agent, setGlobalDispatcher } = require("undici");
+
+setGlobalDispatcher(
+  new Agent({
+    ca: [
+      fs.readFileSync(".ssl/sub.class1.server.ca.pem"),
+      fs.readFileSync(".ssl/ca.pem"),
+    ],
+  })
+);
 ```
 
 Although this is **strongly discouraged**, it's also possible to disable
 HTTPS certificate validation entirely, but note this has
 **extremely dangerous** security implications:
 
-```diff
-  const { Database } = require("arangojs");
+```js
+const { Agent, setGlobalDispatcher } = require("undici");
 
-  const db = new Database({
-    url: ARANGODB_SERVER,
-+   agentOptions: {
-+     rejectUnauthorized: false
-+   },
-  });
+setGlobalDispatcher(
+  new Agent({
+    rejectUnauthorized: false,
+  })
+);
 ```
 
 When using arangojs in the browser, self-signed HTTPS certificates need to
@@ -348,11 +351,11 @@ Transactions have
 in a cluster.
 
 When using arangojs in a cluster with load balancing, you may need to adjust
-the value of `agentOptions.maxSockets` to accommodate the number of transactions
+the value of `config.poolSize` to accommodate the number of transactions
 you need to be able to run in parallel. The default value is likely to be too
 low for most cluster scenarios involving frequent streaming transactions.
 
-**Note**: When using a high value for `agentOptions.maxSockets` you may have
+**Note**: When using a high value for `config.poolSize` you may have
 to adjust the maximum number of threads in the ArangoDB configuration using
 [the `server.maximal-threads` option](https://www.arangodb.com/docs/3.7/programs-arangod-server.html#server-threads)
 to support larger numbers of concurrent transactions on the server side.

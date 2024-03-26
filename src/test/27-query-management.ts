@@ -67,7 +67,7 @@ describe("Query Management API", function () {
       } catch (err: any) {
         expect(err).is.instanceof(Error);
         expect(err).is.not.instanceof(ArangoError);
-        expect(err).to.have.property("code", "ECONNRESET");
+        expect(err.name).to.equal("AbortError");
         return;
       }
       expect.fail();

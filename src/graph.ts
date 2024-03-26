@@ -578,7 +578,7 @@ export class GraphVertexCollection<T extends Record<string, any> = any>
         qs,
         allowDirtyRead,
       },
-      (res) => res.body.vertex
+      (res) => res.parsedBody.vertex
     );
     if (!graceful) return result;
     try {
@@ -622,7 +622,7 @@ export class GraphVertexCollection<T extends Record<string, any> = any>
         body: data,
         qs: options,
       },
-      (res) => mungeGharialResponse(res.body, "vertex")
+      (res) => mungeGharialResponse(res.parsedBody, "vertex")
     );
   }
 
@@ -676,7 +676,7 @@ export class GraphVertexCollection<T extends Record<string, any> = any>
         qs,
         headers,
       },
-      (res) => mungeGharialResponse(res.body, "vertex")
+      (res) => mungeGharialResponse(res.parsedBody, "vertex")
     );
   }
 
@@ -730,7 +730,7 @@ export class GraphVertexCollection<T extends Record<string, any> = any>
         qs,
         headers,
       },
-      (res) => mungeGharialResponse(res.body, "vertex")
+      (res) => mungeGharialResponse(res.parsedBody, "vertex")
     );
   }
 
@@ -784,7 +784,7 @@ export class GraphVertexCollection<T extends Record<string, any> = any>
         qs,
         headers,
       },
-      (res) => mungeGharialResponse(res.body, "removed")
+      (res) => mungeGharialResponse(res.parsedBody, "removed")
     );
   }
 }
@@ -978,7 +978,7 @@ export class GraphEdgeCollection<T extends Record<string, any> = any>
         qs,
         allowDirtyRead,
       },
-      (res) => res.body.edge
+      (res) => res.parsedBody.edge
     );
     if (!graceful) return result;
     try {
@@ -1021,7 +1021,7 @@ export class GraphEdgeCollection<T extends Record<string, any> = any>
         body: data,
         qs: options,
       },
-      (res) => mungeGharialResponse(res.body, "edge")
+      (res) => mungeGharialResponse(res.parsedBody, "edge")
     );
   }
 
@@ -1083,7 +1083,7 @@ export class GraphEdgeCollection<T extends Record<string, any> = any>
         qs,
         headers,
       },
-      (res) => mungeGharialResponse(res.body, "edge")
+      (res) => mungeGharialResponse(res.parsedBody, "edge")
     );
   }
 
@@ -1145,7 +1145,7 @@ export class GraphEdgeCollection<T extends Record<string, any> = any>
         qs,
         headers,
       },
-      (res) => mungeGharialResponse(res.body, "edge")
+      (res) => mungeGharialResponse(res.parsedBody, "edge")
     );
   }
 
@@ -1191,7 +1191,7 @@ export class GraphEdgeCollection<T extends Record<string, any> = any>
         qs,
         headers,
       },
-      (res) => mungeGharialResponse(res.body, "removed")
+      (res) => mungeGharialResponse(res.parsedBody, "removed")
     );
   }
 }
@@ -1265,7 +1265,7 @@ export class Graph {
   get(): Promise<GraphInfo> {
     return this._db.request(
       { path: `/_api/gharial/${encodeURIComponent(this._name)}` },
-      (res) => res.body.graph
+      (res) => res.parsedBody.graph
     );
   }
 
@@ -1313,7 +1313,7 @@ export class Graph {
         },
         qs: { waitForSync },
       },
-      (res) => res.body.graph
+      (res) => res.parsedBody.graph
     );
   }
 
@@ -1338,7 +1338,7 @@ export class Graph {
         path: `/_api/gharial/${encodeURIComponent(this._name)}`,
         qs: { dropCollections },
       },
-      (res) => res.body.removed
+      (res) => res.parsedBody.removed
     );
   }
 
@@ -1383,7 +1383,7 @@ export class Graph {
   listVertexCollections(): Promise<string[]> {
     return this._db.request(
       { path: `/_api/gharial/${encodeURIComponent(this._name)}/vertex` },
-      (res) => res.body.collections
+      (res) => res.parsedBody.collections
     );
   }
 
@@ -1447,7 +1447,7 @@ export class Graph {
           options: { ...opts, satellites: satellites?.map(collectionToString) },
         },
       },
-      (res) => res.body.graph
+      (res) => res.parsedBody.graph
     );
   }
 
@@ -1487,7 +1487,7 @@ export class Graph {
           dropCollection,
         },
       },
-      (res) => res.body.graph
+      (res) => res.parsedBody.graph
     );
   }
 
@@ -1548,7 +1548,7 @@ export class Graph {
   listEdgeCollections(): Promise<string[]> {
     return this._db.request(
       { path: `/_api/gharial/${encodeURIComponent(this._name)}/edge` },
-      (res) => res.body.collections
+      (res) => res.parsedBody.collections
     );
   }
 
@@ -1612,7 +1612,7 @@ export class Graph {
           options: { ...opts, satellites: satellites?.map(collectionToString) },
         },
       },
-      (res) => res.body.graph
+      (res) => res.parsedBody.graph
     );
   }
 
@@ -1714,7 +1714,7 @@ export class Graph {
           options: { ...opts, satellites: satellites?.map(collectionToString) },
         },
       },
-      (res) => res.body.graph
+      (res) => res.parsedBody.graph
     );
   }
 
@@ -1754,7 +1754,7 @@ export class Graph {
           dropCollection,
         },
       },
-      (res) => res.body.graph
+      (res) => res.parsedBody.graph
     );
   }
 
@@ -1801,7 +1801,7 @@ export class Graph {
           graphName: this._name,
         },
       },
-      (res) => res.body.result
+      (res) => res.parsedBody.result
     );
   }
 }

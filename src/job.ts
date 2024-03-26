@@ -1,5 +1,5 @@
 import { Database } from "./database";
-import { ArangojsResponse } from "./lib/request.node";
+import { ArangojsResponse } from "./lib/request";
 
 /**
  * Represents an async job in a {@link database.Database}.
@@ -74,12 +74,12 @@ export class Job<T = any> {
         }
         throw e;
       }
-      if (res.statusCode !== 204) {
+      if (res.status !== 204) {
         this._loaded = true;
         if (this._transformResponse) {
           this._result = await this._transformResponse(res);
         } else {
-          this._result = res.body;
+          this._result = res.parsedBody;
         }
       }
     }
@@ -134,7 +134,7 @@ export class Job<T = any> {
       {
         path: `/_api/job/${this._id}`,
       },
-      (res) => res.statusCode !== 204
+      (res) => res.status !== 204
     );
   }
 }

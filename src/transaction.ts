@@ -138,7 +138,7 @@ export class Transaction {
       {
         path: `/_api/transaction/${encodeURIComponent(this.id)}`,
       },
-      (res) => res.body.result
+      (res) => res.parsedBody.result
     );
   }
 
@@ -165,7 +165,7 @@ export class Transaction {
         path: `/_api/transaction/${encodeURIComponent(this.id)}`,
         allowDirtyRead,
       },
-      (res) => res.body.result
+      (res) => res.parsedBody.result
     );
   }
 
@@ -192,7 +192,7 @@ export class Transaction {
         path: `/_api/transaction/${encodeURIComponent(this.id)}`,
         allowDirtyRead,
       },
-      (res) => res.body.result
+      (res) => res.parsedBody.result
     );
   }
 

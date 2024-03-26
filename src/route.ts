@@ -101,7 +101,7 @@ export class Route {
    */
   delete(
     path: string,
-    qs?: string | Params,
+    qs?: Params | URLSearchParams,
     headers?: Headers
   ): Promise<ArangojsResponse>;
   /**
@@ -143,7 +143,7 @@ export class Route {
    */
   get(
     path: string,
-    qs?: string | Params,
+    qs?: Params | URLSearchParams,
     headers?: Headers
   ): Promise<ArangojsResponse>;
   /**
@@ -185,7 +185,7 @@ export class Route {
    */
   head(
     path: string,
-    qs?: string | Params,
+    qs?: Params | URLSearchParams,
     headers?: Headers
   ): Promise<ArangojsResponse>;
   /**
@@ -229,7 +229,7 @@ export class Route {
   patch(
     path: string,
     body?: any,
-    qs?: string | Params,
+    qs?: Params | URLSearchParams,
     headers?: Headers
   ): Promise<ArangojsResponse>;
   /**
@@ -252,7 +252,7 @@ export class Route {
    */
   patch(
     body?: any,
-    qs?: string | Params,
+    qs?: Params | URLSearchParams,
     headers?: Headers
   ): Promise<ArangojsResponse>;
   patch(...args: any[]): Promise<ArangojsResponse> {
@@ -283,7 +283,7 @@ export class Route {
   post(
     path: string,
     body?: any,
-    qs?: string | Params,
+    qs?: Params | URLSearchParams,
     headers?: Headers
   ): Promise<ArangojsResponse>;
   /**
@@ -309,7 +309,7 @@ export class Route {
    */
   post(
     body?: any,
-    qs?: string | Params,
+    qs?: Params | URLSearchParams,
     headers?: Headers
   ): Promise<ArangojsResponse>;
   post(...args: any[]): Promise<ArangojsResponse> {
@@ -337,7 +337,7 @@ export class Route {
   put(
     path: string,
     body?: any,
-    qs?: string | Params,
+    qs?: Params | URLSearchParams,
     headers?: Headers
   ): Promise<ArangojsResponse>;
   /**
@@ -360,7 +360,7 @@ export class Route {
    */
   put(
     body?: any,
-    qs?: string | Params,
+    qs?: Params | URLSearchParams,
     headers?: Headers
   ): Promise<ArangojsResponse>;
   put(...args: any[]): Promise<ArangojsResponse> {

@@ -12,7 +12,7 @@ describe("config.maxRetries", () => {
   const collectionName = `collection-${Date.now()}`;
   let db: Database, collection: DocumentCollection<{ data: number }>;
   before(async () => {
-    system = new Database({ ...config, agentOptions: { maxSockets: 1_000 } });
+    system = new Database({ ...config, poolSize: 1_000 });
     if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE") {
       await system.acquireHostList();
     }

@@ -21,6 +21,65 @@ Note that ArangoDB may reject non-normalized unicode names and identifiers.
 This change is intended to make it easier to recognize normalization issues in
 code interacting with ArangoDB that were previously masked by arangojs.
 
+### Request and Response changes
+
+Version 9 now uses native `fetch` in all environments. This means that the
+request and response objects exposed by ArangoJS now extend the fetch API's
+`Request` and `Response` objects rather than those from Node's `http` module
+and ArangoJS no longer provides the `agentOptions` or `agent` config options.
+
+#### Config changes
+
+The relevant `agentOptions` have been moved up into the `config` type and
+in most cases renamed:
+
+```diff
+  const db = new Database({
+    url: "http://localhost:8529",
+-   agentOptions: {
+-     maxSockets: 10,
+-     keepAlive: true,
+-     before: (req) => console.log(String(new Date()), 'requesting', req.url),
+-     after: (res) => console.log(String(new Date()), 'received', res.request.url)
+-   }
++   poolSize: 10,
++   keepalive: true,
++   beforeRequest: (req) => console.log(String(new Date()), 'requesting', req.url),
++   afterResponse: (res) => console.log(String(new Date()), 'received', res.request.url)
+  });
+```
+
+If you need to modify the request agent beyond what is possible using the fetch
+API, you can override Node's default `fetch` Agent using the `undici` module:
+
+```js
+const { Agent, setGlobalDispatcher } = require("undici");
+
+setGlobalDispatcher(
+  new Agent({
+    // your agent options here
+  })
+);
+```
+
+Note that you will have to add `undici` as a dependency to your project. There
+is currently no built-in way to override these options in Node.js without this
+module.
+
+#### Request and Response objects
+
+This change mostly affects code that uses the `db.route` API to perform
+arbitrary requests to the ArangoDB HTTP API.
+
+```diff
+  const myFoxxApi = db.route('my/foxx');
+  const res = await myFoxxApi.get();
+- const token = res.headers['x-auth-token'];
+- if (res.statusCode === 200) console.log(res.body);
++ const token = res.headers.get('x-auth-token');
++ if (res.status === 200) console.log(res.parsedBody);
+```
+
 ## v7 to v8
 
 Version 8 drops support for Internet Explorer 11 and Node.js 10 and 12. If you

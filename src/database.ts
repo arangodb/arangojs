@@ -10,7 +10,6 @@
  *
  * @packageDocumentation
  */
-import { Readable } from "stream";
 import {
   Analyzer,
   AnalyzerDescription,
@@ -47,7 +46,6 @@ import {
 import { Job } from "./job";
 import { Blob } from "./lib/blob";
 import { DATABASE_NOT_FOUND } from "./lib/codes";
-import { toForm } from "./lib/multipart";
 import { ArangojsResponse } from "./lib/request";
 import { Route } from "./route";
 import { Transaction } from "./transaction";
@@ -1429,7 +1427,7 @@ export type ServiceTestXunitTest =
   | [
       "testcase",
       { classname: string; name: string; time: number },
-      ["failure", { message: string; type: string }, string]
+      ["failure", { message: string; type: string }, string],
     ];
 
 /**
@@ -1446,7 +1444,7 @@ export type ServiceTestXunitReport = [
     skip: number;
     time: number;
   },
-  ...ServiceTestXunitTest[]
+  ...ServiceTestXunitTest[],
 ];
 
 /**
@@ -1887,7 +1885,7 @@ export class Database {
       {
         path: "/_admin/time",
       },
-      (res) => res.body.time * 1000
+      (res) => res.parsedBody.time * 1000
     );
   }
 
@@ -1999,7 +1997,7 @@ export class Database {
       basePath,
       ...opts
     }: RequestOptions & { absolutePath?: boolean },
-    transform: false | ((res: ArangojsResponse) => T) = (res) => res.body
+    transform: false | ((res: ArangojsResponse) => T) = (res) => res.parsedBody
   ): Promise<T> {
     if (!absolutePath) {
       basePath = `/_db/${encodeURIComponent(this._name)}${basePath || ""}`;
@@ -2018,7 +2016,7 @@ export class Database {
           rejectRequest(e);
           return;
         }
-        const jobId = jobRes.headers["x-arango-async-id"] as string;
+        const jobId = jobRes.headers.get("x-arango-async-id")!;
         trap({
           jobId,
           onResolve: (res) => {
@@ -2068,7 +2066,8 @@ export class Database {
   async acquireHostList(overwrite = false): Promise<void> {
     const urls: string[] = await this.request(
       { path: "/_api/cluster/endpoints" },
-      (res) => res.body.endpoints.map((endpoint: any) => endpoint.endpoint)
+      (res) =>
+        res.parsedBody.endpoints.map((endpoint: any) => endpoint.endpoint)
     );
     if (urls.length > 0) {
       if (overwrite) this._connection.setHostList(urls);
@@ -2243,8 +2242,8 @@ export class Database {
         body: { username, password },
       },
       (res) => {
-        this.useBearerAuth(res.body.jwt);
-        return res.body.jwt;
+        this.useBearerAuth(res.parsedBody.jwt);
+        return res.parsedBody.jwt;
       }
     );
   }
@@ -2270,9 +2269,9 @@ export class Database {
         path: "/_open/auth/renew",
       },
       (res) => {
-        if (!res.body.jwt) return null;
-        this.useBearerAuth(res.body.jwt);
-        return res.body.jwt;
+        if (!res.parsedBody.jwt) return null;
+        this.useBearerAuth(res.parsedBody.jwt);
+        return res.parsedBody.jwt;
       }
     );
   }
@@ -2291,7 +2290,7 @@ export class Database {
   getClusterImbalance(): Promise<ClusterRebalanceState> {
     return this.request(
       { path: "/_admin/cluster/rebalance" },
-      (res) => res.body.result
+      (res) => res.parsedBody.result
     );
   }
 
@@ -2322,7 +2321,7 @@ export class Database {
           ...opts,
         },
       },
-      (res) => res.body.result
+      (res) => res.parsedBody.result
     );
   }
 
@@ -2412,7 +2411,7 @@ export class Database {
   get(): Promise<DatabaseInfo> {
     return this.request(
       { path: "/_api/database/current" },
-      (res) => res.body.result
+      (res) => res.parsedBody.result
     );
   }
 
@@ -2507,7 +2506,10 @@ export class Database {
    * ```
    */
   listDatabases(): Promise<string[]> {
-    return this.request({ path: "/_api/database" }, (res) => res.body.result);
+    return this.request(
+      { path: "/_api/database" },
+      (res) => res.parsedBody.result
+    );
   }
 
   /**
@@ -2527,7 +2529,7 @@ export class Database {
   listUserDatabases(): Promise<string[]> {
     return this.request(
       { path: "/_api/database/user" },
-      (res) => res.body.result
+      (res) => res.parsedBody.result
     );
   }
 
@@ -2547,7 +2549,7 @@ export class Database {
    */
   databases(): Promise<Database[]> {
     return this.request({ path: "/_api/database" }, (res) =>
-      (res.body.result as string[]).map((databaseName) =>
+      (res.parsedBody.result as string[]).map((databaseName) =>
         this.database(databaseName)
       )
     );
@@ -2569,7 +2571,7 @@ export class Database {
    */
   userDatabases(): Promise<Database[]> {
     return this.request({ path: "/_api/database/user" }, (res) =>
-      (res.body.result as string[]).map((databaseName) =>
+      (res.parsedBody.result as string[]).map((databaseName) =>
         this.database(databaseName)
       )
     );
@@ -2593,7 +2595,7 @@ export class Database {
         method: "DELETE",
         path: `/_api/database/${encodeURIComponent(databaseName)}`,
       },
-      (res) => res.body.result
+      (res) => res.parsedBody.result
     );
   }
   //#endregion
@@ -2819,7 +2821,7 @@ export class Database {
         path: "/_api/collection",
         qs: { excludeSystem },
       },
-      (res) => res.body.result
+      (res) => res.parsedBody.result
     );
   }
 
@@ -2911,7 +2913,10 @@ export class Database {
    * ```
    */
   listGraphs(): Promise<GraphInfo[]> {
-    return this.request({ path: "/_api/gharial" }, (res) => res.body.graphs);
+    return this.request(
+      { path: "/_api/gharial" },
+      (res) => res.parsedBody.graphs
+    );
   }
 
   /**
@@ -3015,7 +3020,7 @@ export class Database {
    * ```
    */
   listViews(): Promise<ViewDescription[]> {
-    return this.request({ path: "/_api/view" }, (res) => res.body.result);
+    return this.request({ path: "/_api/view" }, (res) => res.parsedBody.result);
   }
 
   /**
@@ -3094,7 +3099,10 @@ export class Database {
    * ```
    */
   listAnalyzers(): Promise<AnalyzerDescription[]> {
-    return this.request({ path: "/_api/analyzer" }, (res) => res.body.result);
+    return this.request(
+      { path: "/_api/analyzer" },
+      (res) => res.parsedBody.result
+    );
   }
 
   /**
@@ -3132,7 +3140,7 @@ export class Database {
       {
         path: "/_api/user",
       },
-      (res) => res.body.result
+      (res) => res.parsedBody.result
     );
   }
 
@@ -3201,7 +3209,7 @@ export class Database {
         path: "/_api/user",
         body: { user: username, ...options },
       },
-      (res) => res.body
+      (res) => res.parsedBody
     );
   }
 
@@ -3252,7 +3260,7 @@ export class Database {
         path: `/_api/user/${encodeURIComponent(username)}`,
         body: options,
       },
-      (res) => res.body
+      (res) => res.parsedBody
     );
   }
 
@@ -3282,7 +3290,7 @@ export class Database {
         path: `/_api/user/${encodeURIComponent(username)}`,
         body: options,
       },
-      (res) => res.body
+      (res) => res.parsedBody
     );
   }
 
@@ -3306,7 +3314,7 @@ export class Database {
         method: "DELETE",
         path: `/_api/user/${encodeURIComponent(username)}`,
       },
-      (res) => res.body
+      (res) => res.parsedBody
     );
   }
 
@@ -3400,7 +3408,7 @@ export class Database {
           username
         )}/database/${encodeURIComponent(databaseName)}${suffix}`,
       },
-      (res) => res.body.result
+      (res) => res.parsedBody.result
     );
   }
 
@@ -3503,7 +3511,7 @@ export class Database {
         )}/database/${encodeURIComponent(databaseName)}${suffix}`,
         body: { grant },
       },
-      (res) => res.body
+      (res) => res.parsedBody
     );
   }
 
@@ -3592,7 +3600,7 @@ export class Database {
           username
         )}/database/${encodeURIComponent(databaseName)}${suffix}`,
       },
-      (res) => res.body
+      (res) => res.parsedBody
     );
   }
 
@@ -3654,7 +3662,7 @@ export class Database {
         path: `/_api/user/${encodeURIComponent(username)}/database`,
         qs: { full },
       },
-      (res) => res.body.result
+      (res) => res.parsedBody.result
     );
   }
   //#endregion
@@ -3833,7 +3841,7 @@ export class Database {
           ...opts,
         },
       },
-      (res) => res.body.result
+      (res) => res.parsedBody.result
     );
   }
 
@@ -3969,7 +3977,7 @@ export class Database {
           ...opts,
         },
       },
-      (res) => new Transaction(this, res.body.result.id)
+      (res) => new Transaction(this, res.parsedBody.result.id)
     );
   }
 
@@ -4125,7 +4133,7 @@ export class Database {
   listTransactions(): Promise<TransactionDetails[]> {
     return this._connection.request(
       { path: "/_api/transaction" },
-      (res) => res.body.transactions
+      (res) => res.parsedBody.transactions
     );
   }
 
@@ -4301,7 +4309,7 @@ export class Database {
       (res) =>
         new BatchedArrayCursor<T>(
           this,
-          res.body,
+          res.parsedBody,
           res.arangojsHostUrl,
           allowDirtyRead
         ).items
@@ -4643,7 +4651,7 @@ export class Database {
   listFunctions(): Promise<AqlUserFunction[]> {
     return this.request(
       { path: "/_api/aqlfunction" },
-      (res) => res.body.result
+      (res) => res.parsedBody.result
     );
   }
 
@@ -4752,23 +4760,23 @@ export class Database {
    * @example
    * ```js
    * const db = new Database();
-   * // Using a node.js file stream as source
-   * const source = fs.createReadStream("./my-foxx-service.zip");
+   * // Using a Buffer in Node.js as source
+   * const source = new Blob([await fs.readFileSync("./my-foxx-service.zip")]);
    * const info = await db.installService("/hello", source);
    * ```
    *
    * @example
    * ```js
    * const db = new Database();
-   * // Using a node.js Buffer as source
-   * const source = fs.readFileSync("./my-foxx-service.zip");
+   * // Using a Blob in Node.js as source
+   * const source = await fs.openAsBlob("./my-foxx-service.zip");
    * const info = await db.installService("/hello", source);
    * ```
    *
    * @example
    * ```js
    * const db = new Database();
-   * // Using a File (Blob) from a browser file input
+   * // Using a File from a browser file input as source
    * const element = document.getElementById("my-file-input");
    * const source = element.files[0];
    * const info = await db.installService("/hello", source);
@@ -4776,20 +4784,25 @@ export class Database {
    */
   async installService(
     mount: string,
-    source: Readable | Buffer | Blob | string,
+    source: File | Blob | string,
     options: InstallServiceOptions = {}
   ): Promise<ServiceInfo> {
     const { configuration, dependencies, ...qs } = options;
-    const req = await toForm({
-      configuration,
-      dependencies,
-      source,
-    });
+    const form = new FormData();
+    if (configuration) {
+      form.append("configuration", JSON.stringify(configuration));
+    }
+    if (dependencies) {
+      form.append("dependencies", JSON.stringify(dependencies));
+    }
+    form.append(
+      "source",
+      typeof source === "string" ? JSON.stringify(source) : source
+    );
     return await this.request({
-      ...req,
+      body: form,
       method: "POST",
       path: "/_api/foxx",
-      isBinary: true,
       qs: { ...qs, mount },
     });
   }
@@ -4805,23 +4818,23 @@ export class Database {
    * @example
    * ```js
    * const db = new Database();
-   * // Using a node.js file stream as source
-   * const source = fs.createReadStream("./my-foxx-service.zip");
+   * // Using a Buffer in Node.js as source
+   * const source = new Blob([await fs.readFileSync("./my-foxx-service.zip")]);
    * const info = await db.replaceService("/hello", source);
    * ```
    *
    * @example
    * ```js
    * const db = new Database();
-   * // Using a node.js Buffer as source
-   * const source = fs.readFileSync("./my-foxx-service.zip");
+   * // Using a Blob in Node.js as source
+   * const source = await fs.openAsBlob("./my-foxx-service.zip");
    * const info = await db.replaceService("/hello", source);
    * ```
    *
    * @example
    * ```js
    * const db = new Database();
-   * // Using a File (Blob) from a browser file input
+   * // Using a File from a browser file input as source
    * const element = document.getElementById("my-file-input");
    * const source = element.files[0];
    * const info = await db.replaceService("/hello", source);
@@ -4829,20 +4842,25 @@ export class Database {
    */
   async replaceService(
     mount: string,
-    source: Readable | Buffer | Blob | string,
+    source: File | Blob | string,
     options: ReplaceServiceOptions = {}
   ): Promise<ServiceInfo> {
     const { configuration, dependencies, ...qs } = options;
-    const req = await toForm({
-      configuration,
-      dependencies,
-      source,
-    });
+    const form = new FormData();
+    if (configuration) {
+      form.append("configuration", JSON.stringify(configuration));
+    }
+    if (dependencies) {
+      form.append("dependencies", JSON.stringify(dependencies));
+    }
+    form.append(
+      "source",
+      typeof source === "string" ? JSON.stringify(source) : source
+    );
     return await this.request({
-      ...req,
+      body: form,
       method: "PUT",
       path: "/_api/foxx/service",
-      isBinary: true,
       qs: { ...qs, mount },
     });
   }
@@ -4858,23 +4876,23 @@ export class Database {
    * @example
    * ```js
    * const db = new Database();
-   * // Using a node.js file stream as source
-   * const source = fs.createReadStream("./my-foxx-service.zip");
+   * // Using a Buffer in Node.js as source
+   * const source = new Blob([await fs.readFileSync("./my-foxx-service.zip")]);
    * const info = await db.upgradeService("/hello", source);
    * ```
    *
    * @example
    * ```js
    * const db = new Database();
-   * // Using a node.js Buffer as source
-   * const source = fs.readFileSync("./my-foxx-service.zip");
+   * // Using a Blob in Node.js as source
+   * const source = await fs.openAsBlob("./my-foxx-service.zip");
    * const info = await db.upgradeService("/hello", source);
    * ```
    *
    * @example
    * ```js
    * const db = new Database();
-   * // Using a File (Blob) from a browser file input
+   * // Using a File from a browser file input as source
    * const element = document.getElementById("my-file-input");
    * const source = element.files[0];
    * const info = await db.upgradeService("/hello", source);
@@ -4882,20 +4900,25 @@ export class Database {
    */
   async upgradeService(
     mount: string,
-    source: Readable | Buffer | Blob | string,
+    source: File | Blob | string,
     options: UpgradeServiceOptions = {}
   ): Promise<ServiceInfo> {
     const { configuration, dependencies, ...qs } = options;
-    const req = await toForm({
-      configuration,
-      dependencies,
-      source,
-    });
+    const form = new FormData();
+    if (configuration) {
+      form.append("configuration", JSON.stringify(configuration));
+    }
+    if (dependencies) {
+      form.append("dependencies", JSON.stringify(dependencies));
+    }
+    form.append(
+      "source",
+      typeof source === "string" ? JSON.stringify(source) : source
+    );
     return await this.request({
-      ...req,
+      body: form,
       method: "PATCH",
       path: "/_api/foxx/service",
-      isBinary: true,
       qs: { ...qs, mount },
     });
   }
@@ -5851,7 +5874,7 @@ export class Database {
         path: "/_admin/backup/create",
         body: options,
       },
-      (res) => res.body.result
+      (res) => res.parsedBody.result
     );
   }
 
@@ -5877,7 +5900,7 @@ export class Database {
         path: "/_admin/backup/list",
         body: id ? { id } : undefined,
       },
-      (res) => res.body.result
+      (res) => res.parsedBody.result
     );
   }
 
@@ -5901,7 +5924,7 @@ export class Database {
         path: "/_admin/backup/restore",
         body: { id },
       },
-      (res) => res.body.result.previous
+      (res) => res.parsedBody.result.previous
     );
   }
 
@@ -5949,7 +5972,7 @@ export class Database {
         path: "/_admin/log/entries",
         qs: options,
       },
-      (res) => res.body
+      (res) => res.parsedBody
     );
   }
 
@@ -5975,7 +5998,7 @@ export class Database {
         path: "/_admin/log",
         qs: options,
       },
-      (res) => res.body.messages
+      (res) => res.parsedBody.messages
     );
   }
 
@@ -6048,7 +6071,7 @@ export class Database {
       {
         path: "/_api/job/pending",
       },
-      (res) => res.body
+      (res) => res.parsedBody
     );
   }
 
@@ -6067,7 +6090,7 @@ export class Database {
       {
         path: "/_api/job/done",
       },
-      (res) => res.body
+      (res) => res.parsedBody
     );
   }
 

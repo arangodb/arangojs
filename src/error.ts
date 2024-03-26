@@ -9,6 +9,8 @@
  * @packageDocumentation
  */
 
+import { ArangojsResponse } from "./lib/request";
+
 const messages: { [key: number]: string } = {
   0: "Network Error",
   304: "Not Modified",
@@ -133,12 +135,12 @@ export class ArangoError extends Error {
   /**
    * @internal
    */
-  constructor(response: any) {
+  constructor(response: ArangojsResponse) {
     super();
     this.response = response;
-    this.message = response.body.errorMessage;
-    this.errorNum = response.body.errorNum;
-    this.code = response.body.code;
+    this.message = response.parsedBody.errorMessage;
+    this.errorNum = response.parsedBody.errorNum;
+    this.code = response.parsedBody.code;
     const err = new Error(this.message);
     err.name = this.name;
     for (const key of nativeErrorKeys) {
@@ -182,10 +184,10 @@ export class HttpError extends Error {
   /**
    * @internal
    */
-  constructor(response: any) {
+  constructor(response: ArangojsResponse) {
     super();
     this.response = response;
-    this.code = response.statusCode || 500;
+    this.code = response.status || 500;
     this.message = messages[this.code] || messages[500];
     const err = new Error(this.message);
     err.name = this.name;

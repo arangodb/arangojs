@@ -41,7 +41,7 @@ describeIm("Cluster round robin", function () {
   });
   async function getServerId(): Promise<string | undefined> {
     const res = await db.route("_admin/status").get();
-    return res.body.serverInfo && res.body.serverInfo.serverId;
+    return res.parsedBody.serverInfo && res.parsedBody.serverInfo.serverId;
   }
   it("cycles servers", async () => {
     expect((conn as any)._hostUrls).to.have.lengthOf(NUM_COORDINATORS);

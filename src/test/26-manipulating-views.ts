@@ -85,7 +85,7 @@ describe("Manipulating views", function () {
     it("should rename a view", async () => {
       const name = `v2-${Date.now()}`;
       const res = await db.route("/_admin/server/role").get();
-      if (res.body.role === "SINGLE") {
+      if (res.parsedBody.role === "SINGLE") {
         // view renaming is only implemented for single servers
         // eslint-disable-next-line security/detect-non-literal-fs-filename
         const info = await view.rename(name);
