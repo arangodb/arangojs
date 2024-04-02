@@ -42,7 +42,7 @@ export interface ArangojsError extends Error {
 export type RequestOptions = {
   method: string;
   pathname: string;
-  qs?: URLSearchParams;
+  search?: URLSearchParams;
   headers: Headers;
   body: any;
   expectBinary: boolean;
@@ -89,7 +89,7 @@ export function createRequest(
   return Object.assign(
     async function request({
       method,
-      qs: searchParams,
+      search: searchParams,
       pathname: requestPath,
       headers: requestHeaders,
       body,

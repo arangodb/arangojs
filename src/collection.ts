@@ -3603,17 +3603,17 @@ export class Collection<T extends Record<string, any> = any>
         return computedValue;
       });
     }
-    const qs: Record<string, any> = {};
+    const search: Record<string, any> = {};
     if (typeof waitForSyncReplication === "boolean") {
-      qs.waitForSyncReplication = waitForSyncReplication ? 1 : 0;
+      search.waitForSyncReplication = waitForSyncReplication ? 1 : 0;
     }
     if (typeof enforceReplicationFactor === "boolean") {
-      qs.enforceReplicationFactor = enforceReplicationFactor ? 1 : 0;
+      search.enforceReplicationFactor = enforceReplicationFactor ? 1 : 0;
     }
     return this._db.request({
       method: "POST",
       path: "/_api/collection",
-      qs,
+      search,
       body: {
         ...opts,
         name: this._name,
@@ -3668,7 +3668,7 @@ export class Collection<T extends Record<string, any> = any>
   > {
     return this._db.request({
       path: `/_api/collection/${encodeURIComponent(this._name)}/figures`,
-      qs: { details },
+      search: { details },
     });
   }
 
@@ -3691,7 +3691,7 @@ export class Collection<T extends Record<string, any> = any>
   > {
     return this._db.request({
       path: `/_api/collection/${encodeURIComponent(this._name)}/checksum`,
-      qs: options,
+      search: options,
     });
   }
 
@@ -3724,7 +3724,7 @@ export class Collection<T extends Record<string, any> = any>
     return this._db.request({
       method: "DELETE",
       path: `/_api/collection/${encodeURIComponent(this._name)}`,
-      qs: options,
+      search: options,
     });
   }
   //#endregion
@@ -3787,7 +3787,7 @@ export class Collection<T extends Record<string, any> = any>
     return this._db.request({
       method: "PUT",
       path: `/_api/document/${encodeURIComponent(this._name)}`,
-      qs: { onlyget: true },
+      search: { onlyget: true },
       allowDirtyRead,
       body: selectors,
     });
@@ -3841,7 +3841,7 @@ export class Collection<T extends Record<string, any> = any>
         method: "POST",
         path: `/_api/document/${encodeURIComponent(this._name)}`,
         body: data,
-        qs: options,
+        search: options,
       },
       (res) => (options?.silent ? undefined : res.parsedBody)
     );
@@ -3853,7 +3853,7 @@ export class Collection<T extends Record<string, any> = any>
         method: "POST",
         path: `/_api/document/${encodeURIComponent(this._name)}`,
         body: data,
-        qs: options,
+        search: options,
       },
       (res) => (options?.silent ? undefined : res.parsedBody)
     );
@@ -3875,7 +3875,7 @@ export class Collection<T extends Record<string, any> = any>
         )}`,
         headers,
         body: newData,
-        qs: opts,
+        search: opts,
       },
       (res) => (options?.silent ? undefined : res.parsedBody)
     );
@@ -3890,7 +3890,7 @@ export class Collection<T extends Record<string, any> = any>
         method: "PUT",
         path: `/_api/document/${encodeURIComponent(this._name)}`,
         body: newData,
-        qs: options,
+        search: options,
       },
       (res) => (options?.silent ? undefined : res.parsedBody)
     );
@@ -3912,7 +3912,7 @@ export class Collection<T extends Record<string, any> = any>
         )}`,
         headers,
         body: newData,
-        qs: opts,
+        search: opts,
       },
       (res) => (options?.silent ? undefined : res.parsedBody)
     );
@@ -3929,7 +3929,7 @@ export class Collection<T extends Record<string, any> = any>
         method: "PATCH",
         path: `/_api/document/${encodeURIComponent(this._name)}`,
         body: newData,
-        qs: options,
+        search: options,
       },
       (res) => (options?.silent ? undefined : res.parsedBody)
     );
@@ -3946,7 +3946,7 @@ export class Collection<T extends Record<string, any> = any>
           _documentHandle(selector, this._name)
         )}`,
         headers,
-        qs: opts,
+        search: opts,
       },
       (res) => (options?.silent ? undefined : res.parsedBody)
     );
@@ -3961,7 +3961,7 @@ export class Collection<T extends Record<string, any> = any>
         method: "DELETE",
         path: `/_api/document/${encodeURIComponent(this._name)}`,
         body: selectors,
-        qs: options,
+        search: options,
       },
       (res) => (options?.silent ? undefined : res.parsedBody)
     );
@@ -3973,9 +3973,9 @@ export class Collection<T extends Record<string, any> = any>
       type?: "documents" | "list" | "auto";
     } = {}
   ): Promise<CollectionImportResult> {
-    const qs = { ...options, collection: this._name };
+    const search = { ...options, collection: this._name };
     if (Array.isArray(data)) {
-      qs.type = Array.isArray(data[0]) ? undefined : "documents";
+      search.type = Array.isArray(data[0]) ? undefined : "documents";
       const lines = data as any[];
       data = lines.map((line) => JSON.stringify(line)).join("\r\n") + "\r\n";
     }
@@ -3984,7 +3984,7 @@ export class Collection<T extends Record<string, any> = any>
       path: "/_api/import",
       body: data,
       isBinary: true,
-      qs,
+      search,
     });
   }
   //#endregion
@@ -3999,7 +3999,7 @@ export class Collection<T extends Record<string, any> = any>
     return this._db.request({
       path: `/_api/edges/${encodeURIComponent(this._name)}`,
       allowDirtyRead,
-      qs: {
+      search: {
         direction,
         vertex: _documentHandle(selector, this._name, false),
       },
@@ -4190,7 +4190,7 @@ export class Collection<T extends Record<string, any> = any>
     return this._db.request(
       {
         path: "/_api/index",
-        qs: { collection: this._name },
+        search: { collection: this._name },
       },
       (res) => res.parsedBody.indexes
     );
@@ -4215,7 +4215,7 @@ export class Collection<T extends Record<string, any> = any>
       method: "POST",
       path: "/_api/index",
       body: options,
-      qs: { collection: this._name },
+      search: { collection: this._name },
     });
   }
 

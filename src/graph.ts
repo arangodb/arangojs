@@ -564,7 +564,7 @@ export class GraphVertexCollection<T extends Record<string, any> = any>
       allowDirtyRead = undefined,
       graceful = false,
       rev,
-      ...qs
+      ...search
     } = options;
     const headers: Record<string, string> = {};
     if (rev) headers["if-match"] = rev;
@@ -574,7 +574,7 @@ export class GraphVertexCollection<T extends Record<string, any> = any>
           this.graph.name
         )}/vertex/${encodeURI(_documentHandle(selector, this._name))}`,
         headers,
-        qs,
+        search,
         allowDirtyRead,
       },
       (res) => res.parsedBody.vertex
@@ -619,7 +619,7 @@ export class GraphVertexCollection<T extends Record<string, any> = any>
           this.graph.name
         )}/vertex/${encodeURIComponent(this._name)}`,
         body: data,
-        qs: options,
+        search: options,
       },
       (res) => mungeGharialResponse(res.parsedBody, "vertex")
     );
@@ -662,7 +662,7 @@ export class GraphVertexCollection<T extends Record<string, any> = any>
     if (typeof options === "string") {
       options = { rev: options };
     }
-    const { rev, ...qs } = options;
+    const { rev, ...search } = options;
     const headers: Record<string, string> = {};
     if (rev) headers["if-match"] = rev;
     return this._db.request(
@@ -672,7 +672,7 @@ export class GraphVertexCollection<T extends Record<string, any> = any>
           this.graph.name
         )}/vertex/${encodeURI(_documentHandle(selector, this._name))}`,
         body: newValue,
-        qs,
+        search,
         headers,
       },
       (res) => mungeGharialResponse(res.parsedBody, "vertex")
@@ -717,7 +717,7 @@ export class GraphVertexCollection<T extends Record<string, any> = any>
       options = { rev: options };
     }
     const headers: Record<string, string> = {};
-    const { rev, ...qs } = options;
+    const { rev, ...search } = options;
     if (rev) headers["if-match"] = rev;
     return this._db.request(
       {
@@ -726,7 +726,7 @@ export class GraphVertexCollection<T extends Record<string, any> = any>
           this.graph.name
         )}/vertex/${encodeURI(_documentHandle(selector, this._name))}`,
         body: newValue,
-        qs,
+        search,
         headers,
       },
       (res) => mungeGharialResponse(res.parsedBody, "vertex")
@@ -772,7 +772,7 @@ export class GraphVertexCollection<T extends Record<string, any> = any>
       options = { rev: options };
     }
     const headers: Record<string, string> = {};
-    const { rev, ...qs } = options;
+    const { rev, ...search } = options;
     if (rev) headers["if-match"] = rev;
     return this._db.request(
       {
@@ -780,7 +780,7 @@ export class GraphVertexCollection<T extends Record<string, any> = any>
         path: `/_api/gharial/${encodeURIComponent(
           this.graph.name
         )}/vertex/${encodeURI(_documentHandle(selector, this._name))}`,
-        qs,
+        search,
         headers,
       },
       (res) => mungeGharialResponse(res.parsedBody, "removed")
@@ -965,7 +965,7 @@ export class GraphEdgeCollection<T extends Record<string, any> = any>
       allowDirtyRead = undefined,
       graceful = false,
       rev,
-      ...qs
+      ...search
     } = options;
     const headers: Record<string, string> = {};
     if (rev) headers["if-match"] = rev;
@@ -974,7 +974,7 @@ export class GraphEdgeCollection<T extends Record<string, any> = any>
         path: `/_api/gharial/${encodeURIComponent(
           this.graph.name
         )}/edge/${encodeURI(_documentHandle(selector, this._name))}`,
-        qs,
+        search,
         allowDirtyRead,
       },
       (res) => res.parsedBody.edge
@@ -1018,7 +1018,7 @@ export class GraphEdgeCollection<T extends Record<string, any> = any>
           this.graph.name
         )}/edge/${encodeURIComponent(this._name)}`,
         body: data,
-        qs: options,
+        search: options,
       },
       (res) => mungeGharialResponse(res.parsedBody, "edge")
     );
@@ -1069,7 +1069,7 @@ export class GraphEdgeCollection<T extends Record<string, any> = any>
     if (typeof options === "string") {
       options = { rev: options };
     }
-    const { rev, ...qs } = options;
+    const { rev, ...search } = options;
     const headers: Record<string, string> = {};
     if (rev) headers["if-match"] = rev;
     return this._db.request(
@@ -1079,7 +1079,7 @@ export class GraphEdgeCollection<T extends Record<string, any> = any>
           this.graph.name
         )}/edge/${encodeURI(_documentHandle(selector, this._name))}`,
         body: newValue,
-        qs,
+        search,
         headers,
       },
       (res) => mungeGharialResponse(res.parsedBody, "edge")
@@ -1131,7 +1131,7 @@ export class GraphEdgeCollection<T extends Record<string, any> = any>
     if (typeof options === "string") {
       options = { rev: options };
     }
-    const { rev, ...qs } = options;
+    const { rev, ...search } = options;
     const headers: Record<string, string> = {};
     if (rev) headers["if-match"] = rev;
     return this._db.request(
@@ -1141,7 +1141,7 @@ export class GraphEdgeCollection<T extends Record<string, any> = any>
           this.graph.name
         )}/edge/${encodeURI(_documentHandle(selector, this._name))}`,
         body: newValue,
-        qs,
+        search,
         headers,
       },
       (res) => mungeGharialResponse(res.parsedBody, "edge")
@@ -1178,7 +1178,7 @@ export class GraphEdgeCollection<T extends Record<string, any> = any>
     if (typeof options === "string") {
       options = { rev: options };
     }
-    const { rev, ...qs } = options;
+    const { rev, ...search } = options;
     const headers: Record<string, string> = {};
     if (rev) headers["if-match"] = rev;
     return this._db.request(
@@ -1187,7 +1187,7 @@ export class GraphEdgeCollection<T extends Record<string, any> = any>
         path: `/_api/gharial/${encodeURIComponent(
           this.graph.name
         )}/edge/${encodeURI(_documentHandle(selector, this._name))}`,
-        qs,
+        search,
         headers,
       },
       (res) => mungeGharialResponse(res.parsedBody, "removed")
@@ -1310,7 +1310,7 @@ export class Graph {
           name: this._name,
           options: { ...opts, satellites: satellites?.map(collectionToString) },
         },
-        qs: { waitForSync },
+        search: { waitForSync },
       },
       (res) => res.parsedBody.graph
     );
@@ -1335,7 +1335,7 @@ export class Graph {
       {
         method: "DELETE",
         path: `/_api/gharial/${encodeURIComponent(this._name)}`,
-        qs: { dropCollections },
+        search: { dropCollections },
       },
       (res) => res.parsedBody.removed
     );
@@ -1482,7 +1482,7 @@ export class Graph {
         path: `/_api/gharial/${encodeURIComponent(
           this._name
         )}/vertex/${encodeURIComponent(collectionToString(collection))}`,
-        qs: {
+        search: {
           dropCollection,
         },
       },
@@ -1749,7 +1749,7 @@ export class Graph {
         path: `/_api/gharial/${encodeURIComponent(
           this._name
         )}/edge/${encodeURIComponent(collectionToString(collection))}`,
-        qs: {
+        search: {
           dropCollection,
         },
       },

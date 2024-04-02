@@ -112,12 +112,6 @@ function generateStackTrace() {
 }
 
 /**
- * Additional options for intercepting the request/response. These methods
- * are primarily intended for tracking network related metrics.
- */
-export type RequestInterceptors = {};
-
-/**
  * Options for performing a request with arangojs.
  */
 export type RequestOptions = {
@@ -183,7 +177,7 @@ export type RequestOptions = {
   /**
    * URL parameters to pass as part of the query string.
    */
-  qs?: URLSearchParams | Record<string, any>;
+  search?: URLSearchParams | Record<string, any>;
 };
 
 /**
@@ -203,7 +197,7 @@ type Task = {
     expectBinary: boolean;
     timeout?: number;
     pathname: string;
-    qs?: URLSearchParams;
+    search?: URLSearchParams;
     headers: Headers;
     body: any;
   };
@@ -880,7 +874,7 @@ export class Connection {
       headers: requestHeaders,
       basePath,
       path,
-      qs: params,
+      search: params,
     }: RequestOptions,
     transform?: (res: ArangojsResponse) => T
   ): Promise<T> {
@@ -914,7 +908,7 @@ export class Connection {
         retryOnConflict,
         options: {
           pathname: joinPath(basePath || "", path || ""),
-          qs:
+          search:
             params &&
             (params instanceof URLSearchParams
               ? params

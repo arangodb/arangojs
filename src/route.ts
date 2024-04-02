@@ -95,7 +95,7 @@ export class Route {
    * and returns the server response.
    *
    * @param path - Path relative to this route.
-   * @param qs - Query string parameters for this request.
+   * @param search - Query string parameters for this request.
    * @param headers - Additional headers to send with this request.
    *
    * @example
@@ -107,14 +107,14 @@ export class Route {
    */
   delete(
     path: string,
-    qs?: URLSearchParams | Record<string, any>,
+    search?: URLSearchParams | Record<string, any>,
     headers?: Headers | Record<string, string>
   ): Promise<ArangojsResponse>;
   /**
    * Performs a DELETE request against the given path relative to this route
    * and returns the server response.
    *
-   * @param qs - Query string parameters for this request.
+   * @param search - Query string parameters for this request.
    * @param headers - Additional headers to send with this request.
    *
    * @example
@@ -126,13 +126,13 @@ export class Route {
    * ```
    */
   delete(
-    qs?: URLSearchParams | Record<string, any>,
+    search?: URLSearchParams | Record<string, any>,
     headers?: Headers | Record<string, string>
   ): Promise<ArangojsResponse>;
   delete(...args: any[]): Promise<ArangojsResponse> {
     const path = typeof args[0] === "string" ? args.shift() : undefined;
-    const [qs, headers] = args;
-    return this.request({ method: "DELETE", path, qs, headers });
+    const [search, headers] = args;
+    return this.request({ method: "DELETE", path, search, headers });
   }
 
   /**
@@ -140,7 +140,7 @@ export class Route {
    * and returns the server response.
    *
    * @param path - Path relative to this route.
-   * @param qs - Query string parameters for this request.
+   * @param search - Query string parameters for this request.
    * @param headers - Additional headers to send with this request.
    *
    * @example
@@ -152,14 +152,14 @@ export class Route {
    */
   get(
     path: string,
-    qs?: URLSearchParams | Record<string, any>,
+    search?: URLSearchParams | Record<string, any>,
     headers?: Headers | Record<string, string>
   ): Promise<ArangojsResponse>;
   /**
    * Performs a GET request against the given path relative to this route
    * and returns the server response.
    *
-   * @param qs - Query string parameters for this request.
+   * @param search - Query string parameters for this request.
    * @param headers - Additional headers to send with this request.
    *
    * @example
@@ -171,13 +171,13 @@ export class Route {
    * ```
    */
   get(
-    qs?: URLSearchParams | Record<string, any>,
+    search?: URLSearchParams | Record<string, any>,
     headers?: Headers | Record<string, string>
   ): Promise<ArangojsResponse>;
   get(...args: any[]): Promise<ArangojsResponse> {
     const path = typeof args[0] === "string" ? args.shift() : undefined;
-    const [qs, headers] = args;
-    return this.request({ method: "GET", path, qs, headers });
+    const [search, headers] = args;
+    return this.request({ method: "GET", path, search, headers });
   }
 
   /**
@@ -185,7 +185,7 @@ export class Route {
    * and returns the server response.
    *
    * @param path - Path relative to this route.
-   * @param qs - Query string parameters for this request.
+   * @param search - Query string parameters for this request.
    * @param headers - Additional headers to send with this request.
    *
    * @example
@@ -197,14 +197,14 @@ export class Route {
    */
   head(
     path: string,
-    qs?: URLSearchParams | Record<string, any>,
+    search?: URLSearchParams | Record<string, any>,
     headers?: Headers | Record<string, string>
   ): Promise<ArangojsResponse>;
   /**
    * Performs a HEAD request against the given path relative to this route
    * and returns the server response.
    *
-   * @param qs - Query string parameters for this request.
+   * @param search - Query string parameters for this request.
    * @param headers - Additional headers to send with this request.
    *
    * @example
@@ -216,13 +216,13 @@ export class Route {
    * ```
    */
   head(
-    qs?: URLSearchParams | Record<string, any>,
+    search?: URLSearchParams | Record<string, any>,
     headers?: Headers | Record<string, string>
   ): Promise<ArangojsResponse>;
   head(...args: any[]): Promise<ArangojsResponse> {
     const path = typeof args[0] === "string" ? args.shift() : undefined;
-    const [qs, headers] = args;
-    return this.request({ method: "HEAD", path, qs, headers });
+    const [search, headers] = args;
+    return this.request({ method: "HEAD", path, search, headers });
   }
 
   /**
@@ -231,7 +231,7 @@ export class Route {
    *
    * @param path - Path relative to this route.
    * @param body - Body of the request object.
-   * @param qs - Query string parameters for this request.
+   * @param search - Query string parameters for this request.
    * @param headers - Additional headers to send with this request.
    *
    * @example
@@ -244,7 +244,7 @@ export class Route {
   patch(
     path: string,
     body?: any,
-    qs?: URLSearchParams | Record<string, any>,
+    search?: URLSearchParams | Record<string, any>,
     headers?: Headers | Record<string, string>
   ): Promise<ArangojsResponse>;
   /**
@@ -254,7 +254,7 @@ export class Route {
    * **Note**: `body` must not be a `string`.
    *
    * @param body - Body of the request object. Must not be a string.
-   * @param qs - Query string parameters for this request.
+   * @param search - Query string parameters for this request.
    * @param headers - Additional headers to send with this request.
    *
    * @example
@@ -267,13 +267,13 @@ export class Route {
    */
   patch(
     body?: any,
-    qs?: URLSearchParams | Record<string, any>,
+    search?: URLSearchParams | Record<string, any>,
     headers?: Headers | Record<string, string>
   ): Promise<ArangojsResponse>;
   patch(...args: any[]): Promise<ArangojsResponse> {
     const path = typeof args[0] === "string" ? args.shift() : undefined;
-    const [body, qs, headers] = args;
-    return this.request({ method: "PATCH", path, body, qs, headers });
+    const [body, search, headers] = args;
+    return this.request({ method: "PATCH", path, body, search, headers });
   }
 
   /**
@@ -282,7 +282,7 @@ export class Route {
    *
    * @param path - Path relative to this route.
    * @param body - Body of the request object.
-   * @param qs - Query string parameters for this request.
+   * @param search - Query string parameters for this request.
    * @param headers - Additional headers to send with this request.
    *
    * @example
@@ -298,7 +298,7 @@ export class Route {
   post(
     path: string,
     body?: any,
-    qs?: URLSearchParams | Record<string, any>,
+    search?: URLSearchParams | Record<string, any>,
     headers?: Headers | Record<string, string>
   ): Promise<ArangojsResponse>;
   /**
@@ -308,7 +308,7 @@ export class Route {
    * **Note**: `body` must not be a `string`.
    *
    * @param body - Body of the request object. Must not be a string.
-   * @param qs - Query string parameters for this request.
+   * @param search - Query string parameters for this request.
    * @param headers - Additional headers to send with this request.
    *
    * @example
@@ -324,13 +324,13 @@ export class Route {
    */
   post(
     body?: any,
-    qs?: URLSearchParams | Record<string, any>,
+    search?: URLSearchParams | Record<string, any>,
     headers?: Headers | Record<string, string>
   ): Promise<ArangojsResponse>;
   post(...args: any[]): Promise<ArangojsResponse> {
     const path = typeof args[0] === "string" ? args.shift() : undefined;
-    const [body, qs, headers] = args;
-    return this.request({ method: "POST", path, body, qs, headers });
+    const [body, search, headers] = args;
+    return this.request({ method: "POST", path, body, search, headers });
   }
 
   /**
@@ -339,7 +339,7 @@ export class Route {
    *
    * @param path - Path relative to this route.
    * @param body - Body of the request object.
-   * @param qs - Query string parameters for this request.
+   * @param search - Query string parameters for this request.
    * @param headers - Additional headers to send with this request.
    *
    * @example
@@ -352,7 +352,7 @@ export class Route {
   put(
     path: string,
     body?: any,
-    qs?: URLSearchParams | Record<string, any>,
+    search?: URLSearchParams | Record<string, any>,
     headers?: Headers | Record<string, string>
   ): Promise<ArangojsResponse>;
   /**
@@ -362,7 +362,7 @@ export class Route {
    * **Note**: `body` must not be a `string`.
    *
    * @param body - Body of the request object. Must not be a string.
-   * @param qs - Query string parameters for this request.
+   * @param search - Query string parameters for this request.
    * @param headers - Additional headers to send with this request.
    *
    * @example
@@ -375,12 +375,12 @@ export class Route {
    */
   put(
     body?: any,
-    qs?: URLSearchParams | Record<string, any>,
+    search?: URLSearchParams | Record<string, any>,
     headers?: Headers | Record<string, string>
   ): Promise<ArangojsResponse>;
   put(...args: any[]): Promise<ArangojsResponse> {
     const path = typeof args[0] === "string" ? args.shift() : undefined;
-    const [body, qs, headers] = args;
-    return this.request({ method: "PUT", path, body, qs, headers });
+    const [body, search, headers] = args;
+    return this.request({ method: "PUT", path, body, search, headers });
   }
 }

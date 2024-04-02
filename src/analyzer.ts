@@ -1003,38 +1003,38 @@ export class Analyzer {
     Options extends CreateIdentityAnalyzerOptions
       ? IdentityAnalyzerDescription
       : Options extends CreateDelimiterAnalyzerOptions
-      ? DelimiterAnalyzerDescription
-      : Options extends CreateStemAnalyzerOptions
-      ? StemAnalyzerDescription
-      : Options extends CreateNormAnalyzerOptions
-      ? NormAnalyzerDescription
-      : Options extends CreateNgramAnalyzerOptions
-      ? NgramAnalyzerDescription
-      : Options extends CreateTextAnalyzerOptions
-      ? TextAnalyzerDescription
-      : Options extends CreateSegmentationAnalyzerOptions
-      ? SegmentationAnalyzerDescription
-      : Options extends CreateAqlAnalyzerOptions
-      ? AqlAnalyzerDescription
-      : Options extends CreatePipelineAnalyzerOptions
-      ? PipelineAnalyzerDescription
-      : Options extends CreateStopwordsAnalyzerOptions
-      ? StopwordsAnalyzerDescription
-      : Options extends CreateCollationAnalyzerOptions
-      ? CollationAnalyzerDescription
-      : Options extends CreateMinHashAnalyzerOptions
-      ? MinHashAnalyzerDescription
-      : Options extends CreateClassificationAnalyzerOptions
-      ? ClassificationAnalyzerDescription
-      : Options extends CreateNearestNeighborsAnalyzerOptions
-      ? NearestNeighborsAnalyzerDescription
-      : Options extends CreateGeoJsonAnalyzerOptions
-      ? GeoJsonAnalyzerDescription
-      : Options extends CreateGeoPointAnalyzerOptions
-      ? GeoPointAnalyzerDescription
-      : Options extends CreateGeoS2AnalyzerOptions
-      ? GeoS2AnalyzerDescription
-      : AnalyzerDescription
+        ? DelimiterAnalyzerDescription
+        : Options extends CreateStemAnalyzerOptions
+          ? StemAnalyzerDescription
+          : Options extends CreateNormAnalyzerOptions
+            ? NormAnalyzerDescription
+            : Options extends CreateNgramAnalyzerOptions
+              ? NgramAnalyzerDescription
+              : Options extends CreateTextAnalyzerOptions
+                ? TextAnalyzerDescription
+                : Options extends CreateSegmentationAnalyzerOptions
+                  ? SegmentationAnalyzerDescription
+                  : Options extends CreateAqlAnalyzerOptions
+                    ? AqlAnalyzerDescription
+                    : Options extends CreatePipelineAnalyzerOptions
+                      ? PipelineAnalyzerDescription
+                      : Options extends CreateStopwordsAnalyzerOptions
+                        ? StopwordsAnalyzerDescription
+                        : Options extends CreateCollationAnalyzerOptions
+                          ? CollationAnalyzerDescription
+                          : Options extends CreateMinHashAnalyzerOptions
+                            ? MinHashAnalyzerDescription
+                            : Options extends CreateClassificationAnalyzerOptions
+                              ? ClassificationAnalyzerDescription
+                              : Options extends CreateNearestNeighborsAnalyzerOptions
+                                ? NearestNeighborsAnalyzerDescription
+                                : Options extends CreateGeoJsonAnalyzerOptions
+                                  ? GeoJsonAnalyzerDescription
+                                  : Options extends CreateGeoPointAnalyzerOptions
+                                    ? GeoPointAnalyzerDescription
+                                    : Options extends CreateGeoS2AnalyzerOptions
+                                      ? GeoS2AnalyzerDescription
+                                      : AnalyzerDescription
   > {
     return this._db.request({
       method: "POST",
@@ -1061,7 +1061,7 @@ export class Analyzer {
     return this._db.request({
       method: "DELETE",
       path: `/_api/analyzer/${encodeURIComponent(this._name)}`,
-      qs: { force },
+      search: { force },
     });
   }
 }

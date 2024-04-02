@@ -1870,7 +1870,7 @@ export class Database {
     return this.request({
       method: "GET",
       path: "/_api/version",
-      qs: { details },
+      search: { details },
     });
   }
 
@@ -2818,7 +2818,7 @@ export class Database {
     return this.request(
       {
         path: "/_api/collection",
-        qs: { excludeSystem },
+        search: { excludeSystem },
       },
       (res) => res.parsedBody.result
     );
@@ -3659,7 +3659,7 @@ export class Database {
     return this.request(
       {
         path: `/_api/user/${encodeURIComponent(username)}/database`,
-        qs: { full },
+        search: { full },
       },
       (res) => res.parsedBody.result
     );
@@ -4719,7 +4719,7 @@ export class Database {
     return this.request({
       method: "DELETE",
       path: `/_api/aqlfunction/${encodeURIComponent(name)}`,
-      qs: { group },
+      search: { group },
     });
   }
   //#endregion
@@ -4745,7 +4745,7 @@ export class Database {
   listServices(excludeSystem: boolean = true): Promise<ServiceSummary[]> {
     return this.request({
       path: "/_api/foxx",
-      qs: { excludeSystem },
+      search: { excludeSystem },
     });
   }
 
@@ -4786,7 +4786,7 @@ export class Database {
     source: File | Blob | string,
     options: InstallServiceOptions = {}
   ): Promise<ServiceInfo> {
-    const { configuration, dependencies, ...qs } = options;
+    const { configuration, dependencies, ...search } = options;
     const form = new FormData();
     if (configuration) {
       form.append("configuration", JSON.stringify(configuration));
@@ -4802,7 +4802,7 @@ export class Database {
       body: form,
       method: "POST",
       path: "/_api/foxx",
-      qs: { ...qs, mount },
+      search: { ...search, mount },
     });
   }
 
@@ -4844,7 +4844,7 @@ export class Database {
     source: File | Blob | string,
     options: ReplaceServiceOptions = {}
   ): Promise<ServiceInfo> {
-    const { configuration, dependencies, ...qs } = options;
+    const { configuration, dependencies, ...search } = options;
     const form = new FormData();
     if (configuration) {
       form.append("configuration", JSON.stringify(configuration));
@@ -4860,7 +4860,7 @@ export class Database {
       body: form,
       method: "PUT",
       path: "/_api/foxx/service",
-      qs: { ...qs, mount },
+      search: { ...search, mount },
     });
   }
 
@@ -4902,7 +4902,7 @@ export class Database {
     source: File | Blob | string,
     options: UpgradeServiceOptions = {}
   ): Promise<ServiceInfo> {
-    const { configuration, dependencies, ...qs } = options;
+    const { configuration, dependencies, ...search } = options;
     const form = new FormData();
     if (configuration) {
       form.append("configuration", JSON.stringify(configuration));
@@ -4918,7 +4918,7 @@ export class Database {
       body: form,
       method: "PATCH",
       path: "/_api/foxx/service",
-      qs: { ...qs, mount },
+      search: { ...search, mount },
     });
   }
 
@@ -4942,7 +4942,7 @@ export class Database {
       {
         method: "DELETE",
         path: "/_api/foxx/service",
-        qs: { ...options, mount },
+        search: { ...options, mount },
       },
       () => undefined
     );
@@ -4963,7 +4963,7 @@ export class Database {
   getService(mount: string): Promise<ServiceInfo> {
     return this.request({
       path: "/_api/foxx/service",
-      qs: { mount },
+      search: { mount },
     });
   }
 
@@ -5020,7 +5020,7 @@ export class Database {
   getServiceConfiguration(mount: string, minimal: boolean = false) {
     return this.request({
       path: "/_api/foxx/configuration",
-      qs: { mount, minimal },
+      search: { mount, minimal },
     });
   }
 
@@ -5094,7 +5094,7 @@ export class Database {
       method: "PUT",
       path: "/_api/foxx/configuration",
       body: cfg,
-      qs: { mount, minimal },
+      search: { mount, minimal },
     });
   }
 
@@ -5168,7 +5168,7 @@ export class Database {
       method: "PATCH",
       path: "/_api/foxx/configuration",
       body: cfg,
-      qs: { mount, minimal },
+      search: { mount, minimal },
     });
   }
 
@@ -5225,7 +5225,7 @@ export class Database {
   getServiceDependencies(mount: string, minimal: boolean = false) {
     return this.request({
       path: "/_api/foxx/dependencies",
-      qs: { mount, minimal },
+      search: { mount, minimal },
     });
   }
 
@@ -5308,7 +5308,7 @@ export class Database {
       method: "PUT",
       path: "/_api/foxx/dependencies",
       body: deps,
-      qs: { mount, minimal },
+      search: { mount, minimal },
     });
   }
 
@@ -5391,7 +5391,7 @@ export class Database {
       method: "PATCH",
       path: "/_api/foxx/dependencies",
       body: deps,
-      qs: { mount, minimal },
+      search: { mount, minimal },
     });
   }
 
@@ -5417,7 +5417,7 @@ export class Database {
     return this.request({
       method: enabled ? "POST" : "DELETE",
       path: "/_api/foxx/development",
-      qs: { mount },
+      search: { mount },
     });
   }
 
@@ -5439,7 +5439,7 @@ export class Database {
   listServiceScripts(mount: string): Promise<Record<string, string>> {
     return this.request({
       path: "/_api/foxx/scripts",
-      qs: { mount },
+      search: { mount },
     });
   }
 
@@ -5472,7 +5472,7 @@ export class Database {
       method: "POST",
       path: `/_api/foxx/scripts/${encodeURIComponent(name)}`,
       body: params,
-      qs: { mount },
+      search: { mount },
     });
   }
 
@@ -5749,7 +5749,7 @@ export class Database {
     return this.request({
       method: "POST",
       path: "/_api/foxx/tests",
-      qs: {
+      search: {
         ...options,
         mount,
       },
@@ -5774,7 +5774,7 @@ export class Database {
   getServiceReadme(mount: string): Promise<string | undefined> {
     return this.request({
       path: "/_api/foxx/readme",
-      qs: { mount },
+      search: { mount },
     });
   }
 
@@ -5794,7 +5794,7 @@ export class Database {
   getServiceDocumentation(mount: string): Promise<SwaggerJson> {
     return this.request({
       path: "/_api/foxx/swagger",
-      qs: { mount },
+      search: { mount },
     });
   }
 
@@ -5815,7 +5815,7 @@ export class Database {
     return this.request({
       method: "POST",
       path: "/_api/foxx/download",
-      qs: { mount },
+      search: { mount },
       expectBinary: true,
     });
   }
@@ -5845,7 +5845,7 @@ export class Database {
       {
         method: "POST",
         path: "/_api/foxx/commit",
-        qs: { replace },
+        search: { replace },
       },
       () => undefined
     );
@@ -5969,7 +5969,7 @@ export class Database {
     return this.request(
       {
         path: "/_admin/log/entries",
-        qs: options,
+        search: options,
       },
       (res) => res.parsedBody
     );
@@ -5995,7 +5995,7 @@ export class Database {
     return this.request(
       {
         path: "/_admin/log",
-        qs: options,
+        search: options,
       },
       (res) => res.parsedBody.messages
     );
@@ -6112,7 +6112,7 @@ export class Database {
       {
         method: "DELETE",
         path: `/_api/job/expired`,
-        qs: { stamp: threshold / 1000 },
+        search: { stamp: threshold / 1000 },
       },
       () => undefined
     );
