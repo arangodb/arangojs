@@ -44,7 +44,6 @@ import {
   GraphInfo,
 } from "./graph";
 import { Job } from "./job";
-import { Blob } from "./lib/blob";
 import { DATABASE_NOT_FOUND } from "./lib/codes";
 import { ArangojsResponse } from "./lib/request";
 import { Route } from "./route";

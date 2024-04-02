@@ -27,7 +27,7 @@ describe("Foxx service", () => {
         ),
       ])
     );
-    arangoPaths = (await db.route(serviceServiceMount).get()).body;
+    arangoPaths = (await db.route(serviceServiceMount).get()).parsedBody;
   });
 
   after(async () => {
@@ -61,7 +61,7 @@ describe("Foxx service", () => {
       source: (arangoPaths: any) => arangoPaths.local.dir,
     },
     {
-      name: "jsBuffer",
+      name: "jsBlob",
       source: () =>
         new Blob([
           fs.readFileSync(
@@ -70,7 +70,7 @@ describe("Foxx service", () => {
         ]),
     },
     {
-      name: "zipBuffer",
+      name: "zipBlob",
       source: () =>
         new Blob([
           fs.readFileSync(
@@ -84,7 +84,7 @@ describe("Foxx service", () => {
     it(`installed via ${c.name} should be available`, async () => {
       await db.installService(mount, c.source(arangoPaths));
       const resp = await db.route(mount).get();
-      expect(resp.body).to.eql({ hello: "world" });
+      expect(resp.parsedBody).to.eql({ hello: "world" });
     });
 
     it(`replace via ${c.name} should be available`, async () => {
@@ -96,7 +96,7 @@ describe("Foxx service", () => {
       );
       await db.replaceService(mount, c.source(arangoPaths));
       const resp = await db.route(mount).get();
-      expect(resp.body).to.eql({ hello: "world" });
+      expect(resp.parsedBody).to.eql({ hello: "world" });
     });
 
     it(`upgrade via ${c.name} should be available`, async () => {
@@ -108,7 +108,7 @@ describe("Foxx service", () => {
       );
       await db.upgradeService(mount, c.source(arangoPaths));
       const resp = await db.route(mount).get();
-      expect(resp.body).to.eql({ hello: "world" });
+      expect(resp.parsedBody).to.eql({ hello: "world" });
     });
   }
 
@@ -615,7 +615,7 @@ describe("Foxx service", () => {
       ])
     );
     const resp = await db.downloadService(mount);
-    expect(resp).to.be.instanceof(Buffer);
+    expect(resp).to.be.instanceof(Blob);
   });
 
   it("list should allow excluding system services", async () => {
@@ -818,7 +818,7 @@ describe("Foxx service", () => {
       ])
     );
     const resp = await db.getServiceReadme(mount);
-    expect(resp).to.equal("");
+    expect(resp).to.equal(undefined);
   });
 
   it("should provide a swagger description", async () => {

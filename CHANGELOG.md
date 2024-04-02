@@ -32,6 +32,12 @@ for upgrading your code to arangojs v9.
 
 ### Changed
 
+- Replaced request logic with native `fetch` API
+
+  The node-specific request logic using the `http` and `https` modules has been
+  replaced with all-new logic using the web standard `fetch` API, which should
+  work in Node.js, browsers and other conformant environments.
+
 - Unicode names are now **no longer** automatically NFC normalized
 
   This change affects all database, collection, graph, view and analyzer names

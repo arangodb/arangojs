@@ -44,7 +44,6 @@ import {
   MdiIndex,
   _indexHandle,
 } from "./indexes";
-import { Blob } from "./lib/blob";
 import { COLLECTION_NOT_FOUND, DOCUMENT_NOT_FOUND } from "./lib/codes";
 
 /**

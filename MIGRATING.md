@@ -71,6 +71,13 @@ module.
 This change mostly affects code that uses the `db.route` API to perform
 arbitrary requests to the ArangoDB HTTP API.
 
+The fetch API `Request` and `Response` objects are a bit different from the
+equivalent objects previously exposed by these methods. Note that while this
+means response objects still provide a `body` property, its semantics are very
+different as the fetch API expects the `blob`, `json` and `text` methods to be
+used instead. ArangoJS will use the relevant method during response handling
+and store the result in the `parsedBody` method:
+
 ```diff
   const myFoxxApi = db.route('my/foxx');
   const res = await myFoxxApi.get();

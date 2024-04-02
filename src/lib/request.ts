@@ -105,9 +105,12 @@ export function createRequest(
           url.searchParams.append(key, value);
         }
       }
-      if (typeof body === "string" && !headers.has("content-length")) {
-        body = new Blob([body]);
-        headers.set("content-length", body.size.toString());
+      if (body instanceof FormData) {
+        const res = new Response(body);
+        const blob = await res.blob();
+        // Workaround for ArangoDB 3.12.0-rc1 and earlier:
+        // Omitting the final CRLF results in "bad request body" fatal error
+        body = new Blob([blob, "\r\n"], { type: blob.type });
       }
       if (!headers.has("authorization")) {
         headers.set(
