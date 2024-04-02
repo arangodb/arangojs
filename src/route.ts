@@ -7,9 +7,10 @@
  *
  * @packageDocumentation
  */
-import { Headers, Params, RequestOptions } from "./connection";
+import { RequestOptions } from "./connection";
 import { Database } from "./database";
 import { ArangojsResponse } from "./lib/request";
+import { mergeHeaders } from "./lib/mergeHeaders";
 
 /**
  * Represents an arbitrary route relative to an ArangoDB database.
@@ -22,12 +23,16 @@ export class Route {
   /**
    * @internal
    */
-  constructor(db: Database, path: string = "", headers: Headers = {}) {
+  constructor(
+    db: Database,
+    path: string = "",
+    headers: Headers | Record<string, string> = {}
+  ) {
     if (!path) path = "";
     else if (path.charAt(0) !== "/") path = `/${path}`;
     this._db = db;
     this._path = path;
-    this._headers = headers;
+    this._headers = headers instanceof Headers ? headers : new Headers(headers);
   }
 
   /**
@@ -44,13 +49,14 @@ export class Route {
    * const users = foxx.route("/users");
    * ```
    */
-  route(path: string, headers?: Headers) {
+  route(path: string, headers?: Headers | Record<string, string>) {
     if (!path) path = "";
     else if (path.charAt(0) !== "/") path = `/${path}`;
-    return new Route(this._db, this._path + path, {
-      ...this._headers,
-      ...headers,
-    });
+    return new Route(
+      this._db,
+      this._path + path,
+      mergeHeaders(this._headers, headers)
+    );
   }
 
   /**
@@ -79,7 +85,7 @@ export class Route {
     else if (!this._path || opts.path.charAt(0) === "/") opts.path = opts.path;
     else opts.path = `/${opts.path}`;
     opts.basePath = this._path;
-    opts.headers = { ...this._headers, ...opts.headers };
+    opts.headers = mergeHeaders(this._headers, opts.headers);
     opts.method = opts.method ? opts.method.toUpperCase() : "GET";
     return this._db.request(opts, false);
   }
@@ -101,8 +107,8 @@ export class Route {
    */
   delete(
     path: string,
-    qs?: Params | URLSearchParams,
-    headers?: Headers
+    qs?: URLSearchParams | Record<string, any>,
+    headers?: Headers | Record<string, string>
   ): Promise<ArangojsResponse>;
   /**
    * Performs a DELETE request against the given path relative to this route
@@ -119,7 +125,10 @@ export class Route {
    * const res = await user.delete();
    * ```
    */
-  delete(qs?: Params, headers?: Headers): Promise<ArangojsResponse>;
+  delete(
+    qs?: URLSearchParams | Record<string, any>,
+    headers?: Headers | Record<string, string>
+  ): Promise<ArangojsResponse>;
   delete(...args: any[]): Promise<ArangojsResponse> {
     const path = typeof args[0] === "string" ? args.shift() : undefined;
     const [qs, headers] = args;
@@ -143,8 +152,8 @@ export class Route {
    */
   get(
     path: string,
-    qs?: Params | URLSearchParams,
-    headers?: Headers
+    qs?: URLSearchParams | Record<string, any>,
+    headers?: Headers | Record<string, string>
   ): Promise<ArangojsResponse>;
   /**
    * Performs a GET request against the given path relative to this route
@@ -161,7 +170,10 @@ export class Route {
    * const res = await users.get({ offset: 10, limit: 5 });
    * ```
    */
-  get(qs?: Params, headers?: Headers): Promise<ArangojsResponse>;
+  get(
+    qs?: URLSearchParams | Record<string, any>,
+    headers?: Headers | Record<string, string>
+  ): Promise<ArangojsResponse>;
   get(...args: any[]): Promise<ArangojsResponse> {
     const path = typeof args[0] === "string" ? args.shift() : undefined;
     const [qs, headers] = args;
@@ -185,8 +197,8 @@ export class Route {
    */
   head(
     path: string,
-    qs?: Params | URLSearchParams,
-    headers?: Headers
+    qs?: URLSearchParams | Record<string, any>,
+    headers?: Headers | Record<string, string>
   ): Promise<ArangojsResponse>;
   /**
    * Performs a HEAD request against the given path relative to this route
@@ -203,7 +215,10 @@ export class Route {
    * const res = await users.head({ offset: 10, limit: 5 });
    * ```
    */
-  head(qs?: Params, headers?: Headers): Promise<ArangojsResponse>;
+  head(
+    qs?: URLSearchParams | Record<string, any>,
+    headers?: Headers | Record<string, string>
+  ): Promise<ArangojsResponse>;
   head(...args: any[]): Promise<ArangojsResponse> {
     const path = typeof args[0] === "string" ? args.shift() : undefined;
     const [qs, headers] = args;
@@ -229,8 +244,8 @@ export class Route {
   patch(
     path: string,
     body?: any,
-    qs?: Params | URLSearchParams,
-    headers?: Headers
+    qs?: URLSearchParams | Record<string, any>,
+    headers?: Headers | Record<string, string>
   ): Promise<ArangojsResponse>;
   /**
    * Performs a PATCH request against the given path relative to this route
@@ -252,8 +267,8 @@ export class Route {
    */
   patch(
     body?: any,
-    qs?: Params | URLSearchParams,
-    headers?: Headers
+    qs?: URLSearchParams | Record<string, any>,
+    headers?: Headers | Record<string, string>
   ): Promise<ArangojsResponse>;
   patch(...args: any[]): Promise<ArangojsResponse> {
     const path = typeof args[0] === "string" ? args.shift() : undefined;
@@ -283,8 +298,8 @@ export class Route {
   post(
     path: string,
     body?: any,
-    qs?: Params | URLSearchParams,
-    headers?: Headers
+    qs?: URLSearchParams | Record<string, any>,
+    headers?: Headers | Record<string, string>
   ): Promise<ArangojsResponse>;
   /**
    * Performs a POST request against the given path relative to this route
@@ -309,8 +324,8 @@ export class Route {
    */
   post(
     body?: any,
-    qs?: Params | URLSearchParams,
-    headers?: Headers
+    qs?: URLSearchParams | Record<string, any>,
+    headers?: Headers | Record<string, string>
   ): Promise<ArangojsResponse>;
   post(...args: any[]): Promise<ArangojsResponse> {
     const path = typeof args[0] === "string" ? args.shift() : undefined;
@@ -337,8 +352,8 @@ export class Route {
   put(
     path: string,
     body?: any,
-    qs?: Params | URLSearchParams,
-    headers?: Headers
+    qs?: URLSearchParams | Record<string, any>,
+    headers?: Headers | Record<string, string>
   ): Promise<ArangojsResponse>;
   /**
    * Performs a PUT request against the given path relative to this route
@@ -360,8 +375,8 @@ export class Route {
    */
   put(
     body?: any,
-    qs?: Params | URLSearchParams,
-    headers?: Headers
+    qs?: URLSearchParams | Record<string, any>,
+    headers?: Headers | Record<string, string>
   ): Promise<ArangojsResponse>;
   put(...args: any[]): Promise<ArangojsResponse> {
     const path = typeof args[0] === "string" ? args.shift() : undefined;

@@ -19,7 +19,6 @@ import {
   EdgeCollection,
   TraversalOptions,
 } from "./collection";
-import { Headers } from "./connection";
 import { Database } from "./database";
 import {
   Document,
@@ -567,7 +566,7 @@ export class GraphVertexCollection<T extends Record<string, any> = any>
       rev,
       ...qs
     } = options;
-    const headers: Headers = {};
+    const headers: Record<string, string> = {};
     if (rev) headers["if-match"] = rev;
     const result = this._db.request(
       {
@@ -664,7 +663,7 @@ export class GraphVertexCollection<T extends Record<string, any> = any>
       options = { rev: options };
     }
     const { rev, ...qs } = options;
-    const headers: Headers = {};
+    const headers: Record<string, string> = {};
     if (rev) headers["if-match"] = rev;
     return this._db.request(
       {
@@ -717,7 +716,7 @@ export class GraphVertexCollection<T extends Record<string, any> = any>
     if (typeof options === "string") {
       options = { rev: options };
     }
-    const headers: Headers = {};
+    const headers: Record<string, string> = {};
     const { rev, ...qs } = options;
     if (rev) headers["if-match"] = rev;
     return this._db.request(
@@ -772,7 +771,7 @@ export class GraphVertexCollection<T extends Record<string, any> = any>
     if (typeof options === "string") {
       options = { rev: options };
     }
-    const headers: Headers = {};
+    const headers: Record<string, string> = {};
     const { rev, ...qs } = options;
     if (rev) headers["if-match"] = rev;
     return this._db.request(
@@ -968,7 +967,7 @@ export class GraphEdgeCollection<T extends Record<string, any> = any>
       rev,
       ...qs
     } = options;
-    const headers: Headers = {};
+    const headers: Record<string, string> = {};
     if (rev) headers["if-match"] = rev;
     const result = this._db.request(
       {
@@ -1071,7 +1070,7 @@ export class GraphEdgeCollection<T extends Record<string, any> = any>
       options = { rev: options };
     }
     const { rev, ...qs } = options;
-    const headers: Headers = {};
+    const headers: Record<string, string> = {};
     if (rev) headers["if-match"] = rev;
     return this._db.request(
       {
@@ -1133,7 +1132,7 @@ export class GraphEdgeCollection<T extends Record<string, any> = any>
       options = { rev: options };
     }
     const { rev, ...qs } = options;
-    const headers: Headers = {};
+    const headers: Record<string, string> = {};
     if (rev) headers["if-match"] = rev;
     return this._db.request(
       {
@@ -1180,7 +1179,7 @@ export class GraphEdgeCollection<T extends Record<string, any> = any>
       options = { rev: options };
     }
     const { rev, ...qs } = options;
-    const headers: Headers = {};
+    const headers: Record<string, string> = {};
     if (rev) headers["if-match"] = rev;
     return this._db.request(
       {

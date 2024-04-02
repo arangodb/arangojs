@@ -30,6 +30,12 @@ for upgrading your code to arangojs v9.
 
   For more information, see [the Node.js release schedule](https://nodejs.dev/en/about/releases/).
 
+- Removed `Params` and `Headers` types
+
+  These can mostly be replaced with the native `URLSearchParams` and `Headers`
+  types but most public methods still accept the equivalent `Record` types for
+  convenience.
+
 ### Changed
 
 - Replaced request logic with native `fetch` API

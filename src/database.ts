@@ -31,7 +31,6 @@ import {
   ArangoApiResponse,
   Config,
   Connection,
-  Headers,
   RequestOptions,
 } from "./connection";
 import { ArrayCursor, BatchedArrayCursor } from "./cursor";
@@ -1910,7 +1909,7 @@ export class Database {
    * // with JSON request body '{"username": "admin", "password": "hunter2"}'
    * ```
    */
-  route(path?: string, headers?: Headers): Route {
+  route(path?: string, headers?: Headers | Record<string, string>): Route {
     return new Route(this, path, headers);
   }
 
@@ -2006,7 +2005,8 @@ export class Database {
       this._trapRequest = undefined;
       return new Promise<T>(async (resolveRequest, rejectRequest) => {
         const options = { ...opts };
-        options.headers = { ...options.headers, "x-arango-async": "store" };
+        options.headers = new Headers(options.headers);
+        options.headers.set("x-arango-async", "store");
         let jobRes: ArangojsResponse;
         try {
           jobRes = await this._connection.request({ basePath, ...options });
