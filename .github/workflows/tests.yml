@@ -14,10 +14,10 @@ jobs:
       matrix:
         node-version: [18, 20]
         arangodb-version:
-          - arangodb/arangodb:3.10.13
-          - arangodb/enterprise:3.10.13
           - arangodb/arangodb:3.11.8
           - arangodb/enterprise:3.11.8
+          - arangodb/arangodb:3.12.0
+          - arangodb/enterprise:3.12.0
           - arangodb/arangodb-test:devel-nightly
           - arangodb/enterprise-test:devel-nightly
 
@@ -48,8 +48,8 @@ jobs:
     strategy:
       matrix:
         arangodb-version:
-          - arangodb/arangodb:3.10.13
           - arangodb/arangodb:3.11.8
+          - arangodb/arangodb:3.12.0
           - arangodb/arangodb-test:devel-nightly
 
     container:
