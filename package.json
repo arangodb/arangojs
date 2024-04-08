@@ -34,8 +34,6 @@
     "rest"
   ],
   "main": "build/index.js",
-  "browser": {
-    "./src/lib/joinPath.ts": "./src/lib/joinPath.web.ts"
   },
   "files": [
     "**/*",
