@@ -21,7 +21,8 @@ describe("Arbitrary HTTP routes", () => {
     });
     it("passes the given headers to the new route", () => {
       const route = db.route("/hello", { "x-magic": "awesome" });
-      expect((route as any)._headers).to.have.property("x-magic", "awesome");
+      const headers = (route as any)._headers as Headers;
+      expect(headers.get("x-magic")).to.equal("awesome");
     });
   });
 });
