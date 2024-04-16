@@ -15,7 +15,9 @@
 import { Config } from "./connection.js";
 import { Database } from "./database.js";
 
-module.exports = exports = arangojs;
+if (typeof module !== "undefined" && typeof exports !== "undefined") {
+  module.exports = exports = arangojs;
+}
 /**
  * Creates a new `Database` instance with its own connection pool.
  *
