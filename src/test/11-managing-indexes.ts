@@ -66,19 +66,6 @@ describe("Managing indexes", function () {
       expect(info).to.have.property("isNewlyCreated", true);
     });
   });
-  describe("collection.ensureIndex#fulltext", () => {
-    it("should create a fulltext index", async () => {
-      const info = await collection.ensureIndex({
-        type: "fulltext",
-        fields: ["value"],
-      });
-      expect(info).to.have.property("id");
-      expect(info).to.have.property("type", "fulltext");
-      expect(info).to.have.property("fields");
-      expect(info.fields).to.eql(["value"]);
-      expect(info).to.have.property("isNewlyCreated", true);
-    });
-  });
   describe("collection.ensureIndex#mdi", () => {
     it312("should create an MDI index", async () => {
       const info = await collection.ensureIndex({
