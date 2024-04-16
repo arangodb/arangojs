@@ -41,11 +41,11 @@
       "import": "./build/esm/index.js",
       "require": "./build/cjs/index.js"
     },
-    "./*.js": {
+    "./*": {
       "import": "./build/esm/*.js",
       "require": "./build/cjs/*.js"
     },
-    "./lib/*.js": {
+    "./lib/*": {
       "import": "./build/esm/lib/*.js",
       "require": "./build/cjs/lib/*.js"
     }
