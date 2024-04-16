@@ -19,6 +19,76 @@ This driver uses semantic versioning:
 - A change in the major version (e.g. 1.Y.Z -> 2.0.0) indicates _breaking_
   changes that require changes in your code to upgrade.
 
+## [9.0.0-preview.1]
+
+This is a major release and breaks backwards compatibility.
+
+See [the migration guide](./MIGRATING.md#v8-to-v9) for detailed instructions
+for upgrading your code to arangojs v9.
+
+### Removed
+
+- Removed Node.js 14 and Node.js 16 support
+
+  With Node.js 14 and 16 having reached their end of life, arangojs will no
+  longer support these versions of Node.js going forward.
+
+  For more information, see [the Node.js release schedule](https://nodejs.dev/en/about/releases/).
+
+- Removed `Params` and `Headers` types
+
+  These can mostly be replaced with the native `URLSearchParams` and `Headers`
+  types but most public methods still accept the equivalent `Record` types for
+  convenience.
+
+- Removed deprecated `FulltextIndex` and related types
+
+  Fulltext indexes have been deprecated in ArangoDB 3.10 and should be replaced
+  with ArangoSearch.
+
+- Removed browser build
+
+  The browser build has been removed from the repository and will no longer be
+  published to npm. The npm package can still be used in the browser by using
+  common frontend tooling like webpack or rollup.
+
+### Changed
+
+- Replaced request logic with native `fetch` API ([#788](https://github.com/arangodb/arangojs/issues/788), DE-578, DE-758)
+
+  The node-specific request logic using the `http` and `https` modules has been
+  replaced with all-new logic using the web standard `fetch` API, which should
+  work in Node.js, browsers and other conformant environments.
+
+- Unicode names are now **no longer** automatically NFC normalized (DE-65)
+
+  This change affects all database, collection, graph, view and analyzer names
+  using unicode characters. Starting with arangojs v7.7.0 these names were
+  automatically NFC normalized. This behavior has now been reverted to match
+  the behavior of other ArangoDB drivers and help detect normalization issues
+  in user code.
+
+- Changed return type of `aql` and the AQL `join` helper function to `AqlQuery`
+
+  Previously the internal `GeneratedAqlQuery` type was exposed as the return
+  type of these functions, leading to complexity when handling generic type
+  arguments.
+
+- Removed dependency on Node `path` module or its browserify equivalent
+
+  This change should be backwards-compatible but may produce different results
+  when using non-normalized paths and base-paths in custom `routes`. This
+  should help support more environments and reduce the size of the browser
+  bundle.
+
+### Added
+
+- Added ESM support (DE-236)
+
+  The driver now supports being imported as an ES module or CommonJS module
+  and provides exports for both types of environments. This change should be
+  backwards-compatible.
+
 ## [8.8.1]
 
 ### Added
@@ -1799,6 +1869,7 @@ For a detailed list of changes between pre-release versions of v7 see the
 
   Graph methods now only return the relevant part of the response body.
 
+[9.0.0-preview.1]: https://github.com/arangodb/arangojs/compare/v8.8.1...v9.0.0-preview.1
 [8.8.1]: https://github.com/arangodb/arangojs/compare/v8.8.0...v8.8.1
 [8.8.0]: https://github.com/arangodb/arangojs/compare/v8.7.0...v8.8.0
 [8.7.0]: https://github.com/arangodb/arangojs/compare/v8.6.0...v8.7.0
