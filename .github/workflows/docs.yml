@@ -5,6 +5,8 @@ on:
     tags:
       - "v7.*.*" # all v7 semver release tags
       - "v8.*.*" # all v8 semver release tags
+      - "v9.*.*" # all v9 semver release tags
+      - "v10.*.*" # all v10 semver release tags
     branches:
       - stable
 
