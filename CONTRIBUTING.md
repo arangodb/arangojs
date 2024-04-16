@@ -53,22 +53,6 @@ and ZZ is the two digit patch version (both zero filled to two digits).
 
 Any incompatible tests will appear as skipped (not failed) in the test result.
 
-To run the resilience/failover tests you need to set the environment variables
-`RESILIENCE_ARANGO_BASEPATH` (to use a local build of ArangoDB) or
-`RESILIENCE_DOCKER_IMAGE` (to use a docker image by name):
-
-```sh
-RESILIENCE_ARANGO_BASEPATH=../arangodb npm test
-# - or -
-RESILIENCE_ARANGO_BASEPATH=../arangodb yarn test
-```
-
-This runs only the resilience/failover tests, without running any other tests.
-
-Note that these tests are generally a lot slower than the regular test suite
-because they involve shutting down and restarting individual ArangoDB server
-instances.
-
 ## Releases
 
 Releases of arangojs are manually
