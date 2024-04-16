@@ -1,9 +1,9 @@
 import { expect } from "chai";
 import { LinkedList } from "x3-linkedlist";
-import { aql } from "../aql";
-import { ArrayCursor, BatchedArrayCursor } from "../cursor";
-import { Database } from "../database";
-import { config } from "./_config";
+import { aql } from "../aql.js";
+import { ArrayCursor, BatchedArrayCursor } from "../cursor.js";
+import { Database } from "../database.js";
+import { config } from "./_config.js";
 
 const aqlQuery = aql`FOR i IN 0..10 RETURN i`;
 const aqlResult = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];

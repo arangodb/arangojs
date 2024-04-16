@@ -1,8 +1,8 @@
 import { expect } from "chai";
-import { DocumentCollection, EdgeCollection } from "../collection";
-import { Database } from "../database";
-import { DocumentMetadata } from "../documents";
-import { config } from "./_config";
+import { DocumentCollection, EdgeCollection } from "../collection.js";
+import { Database } from "../database.js";
+import { DocumentMetadata } from "../documents.js";
+import { config } from "./_config.js";
 
 const describePre312 = config.arangoVersion < 31200 ? describe : describe.skip;
 

@@ -1,8 +1,8 @@
 import { expect } from "chai";
-import { DocumentCollection } from "../collection";
-import { ArrayCursor } from "../cursor";
-import { Database } from "../database";
-import { config } from "./_config";
+import { DocumentCollection } from "../collection.js";
+import { ArrayCursor } from "../cursor.js";
+import { Database } from "../database.js";
+import { config } from "./_config.js";
 
 const range = (n: number): number[] => Array.from(Array(n).keys());
 const alpha = (i: number): string => String.fromCharCode("a".charCodeAt(0) + i);

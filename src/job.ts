@@ -1,5 +1,5 @@
-import { Database } from "./database";
-import { ArangojsResponse } from "./lib/request";
+import { Database } from "./database.js";
+import { ArangojsResponse } from "./lib/request.js";
 
 /**
  * Represents an async job in a {@link database.Database}.

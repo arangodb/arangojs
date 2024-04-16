@@ -1,7 +1,7 @@
 import { expect } from "chai";
-import { Database } from "../database";
-import { Graph } from "../graph";
-import { config } from "./_config";
+import { Database } from "../database.js";
+import { Graph } from "../graph.js";
+import { config } from "./_config.js";
 
 const range = (n: number): number[] => Array.from(Array(n).keys());
 
@@ -82,9 +82,8 @@ describe("Graph API", function () {
     let vertexCollectionNames: string[];
     let graph: Graph;
     before(async () => {
-      [vertexCollectionNames, edgeCollectionNames] = await createCollections(
-        db
-      );
+      [vertexCollectionNames, edgeCollectionNames] =
+        await createCollections(db);
     });
     after(async () => {
       await Promise.all([
@@ -123,9 +122,8 @@ describe("Graph API", function () {
     let vertexCollectionNames: string[];
     beforeEach(async () => {
       graph = db.graph(`g_${Date.now()}`);
-      [vertexCollectionNames, edgeCollectionNames] = await createCollections(
-        db
-      );
+      [vertexCollectionNames, edgeCollectionNames] =
+        await createCollections(db);
       await createGraph(graph, vertexCollectionNames, edgeCollectionNames);
     });
     afterEach(async () => {

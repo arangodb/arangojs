@@ -1,6 +1,6 @@
 import { expect } from "chai";
-import { Database } from "../database";
-import { config } from "./_config";
+import { Database } from "../database.js";
+import { config } from "./_config.js";
 
 describe("Managing functions", function () {
   const name = `testdb_${Date.now()}`;

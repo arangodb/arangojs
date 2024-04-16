@@ -4,7 +4,7 @@
  *   Graph,
  *   GraphVertexCollection,
  *   GraphEdgeCollection,
- * } from "arangojs/graph";
+ * } from "arangojs/graph.js";
  * ```
  *
  * The "graph" module provides graph related types and interfaces
@@ -18,8 +18,8 @@ import {
   DocumentCollection,
   EdgeCollection,
   TraversalOptions,
-} from "./collection";
-import { Database } from "./database";
+} from "./collection.js";
+import { Database } from "./database.js";
 import {
   Document,
   DocumentData,
@@ -29,9 +29,9 @@ import {
   EdgeData,
   Patch,
   _documentHandle,
-} from "./documents";
-import { isArangoError } from "./error";
-import { DOCUMENT_NOT_FOUND, GRAPH_NOT_FOUND } from "./lib/codes";
+} from "./documents.js";
+import { isArangoError } from "./error.js";
+import { DOCUMENT_NOT_FOUND, GRAPH_NOT_FOUND } from "./lib/codes.js";
 
 /**
  * Indicates whether the given value represents a {@link graph.Graph}.

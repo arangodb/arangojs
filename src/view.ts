@@ -1,16 +1,16 @@
 /**
  * ```ts
- * import type { ArangoSearchView } from "arangojs/view";
+ * import type { ArangoSearchView } from "arangojs/view.js";
  * ```
  *
  * The "view" module provides View related types and interfaces for TypeScript.
  *
  * @packageDocumentation
  */
-import { ArangoApiResponse } from "./connection";
-import { Database } from "./database";
-import { isArangoError } from "./error";
-import { VIEW_NOT_FOUND } from "./lib/codes";
+import { ArangoApiResponse } from "./connection.js";
+import { Database } from "./database.js";
+import { isArangoError } from "./error.js";
+import { VIEW_NOT_FOUND } from "./lib/codes.js";
 
 /**
  * Indicates whether the given value represents a {@link View}.

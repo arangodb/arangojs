@@ -1,8 +1,8 @@
 import { expect } from "chai";
-import { DocumentCollection } from "../collection";
-import { Database } from "../database";
-import { Route } from "../route";
-import { config } from "./_config";
+import { DocumentCollection } from "../collection.js";
+import { Database } from "../database.js";
+import { Route } from "../route.js";
+import { config } from "./_config.js";
 
 describe("Arbitrary HTTP routes", () => {
   let db: Database;

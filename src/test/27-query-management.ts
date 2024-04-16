@@ -1,9 +1,9 @@
 import { expect } from "chai";
-import { aql } from "../aql";
-import { ArrayCursor } from "../cursor";
-import { Database } from "../database";
-import { ArangoError } from "../error";
-import { config } from "./_config";
+import { aql } from "../aql.js";
+import { ArrayCursor } from "../cursor.js";
+import { Database } from "../database.js";
+import { ArangoError } from "../error.js";
+import { config } from "./_config.js";
 
 // NOTE These tests will not reliably work with load balancing.
 const describeNLB =

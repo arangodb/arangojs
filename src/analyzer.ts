@@ -1,6 +1,6 @@
 /**
  * ```ts
- * import type { Analyzer } from "arangojs/analyzer";
+ * import type { Analyzer } from "arangojs/analyzer.js";
  * ```
  *
  * The "analyzer" module provides analyzer related types and interfaces
@@ -8,10 +8,10 @@
  *
  * @packageDocumentation
  */
-import { ArangoApiResponse } from "./connection";
-import { Database } from "./database";
-import { isArangoError } from "./error";
-import { ANALYZER_NOT_FOUND } from "./lib/codes";
+import { ArangoApiResponse } from "./connection.js";
+import { Database } from "./database.js";
+import { isArangoError } from "./error.js";
+import { ANALYZER_NOT_FOUND } from "./lib/codes.js";
 
 /**
  * Indicates whether the given value represents an {@link Analyzer}.

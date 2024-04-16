@@ -1,8 +1,8 @@
 import { expect } from "chai";
-import { DocumentCollection } from "../collection";
-import { Database } from "../database";
-import { DocumentMetadata } from "../documents";
-import { config } from "./_config";
+import { DocumentCollection } from "../collection.js";
+import { Database } from "../database.js";
+import { DocumentMetadata } from "../documents.js";
+import { config } from "./_config.js";
 
 describe("DocumentCollection API", function () {
   const name = `testdb_${Date.now()}`;

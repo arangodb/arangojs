@@ -1,6 +1,6 @@
 /**
  * ```ts
- * import type { FoxxManifest } from "arangojs/foxx-manifest";
+ * import type { FoxxManifest } from "arangojs/foxx-manifest.js";
  * ```
  *
  * The "foxx-manifest" module provides the Foxx manifest type for TypeScript.

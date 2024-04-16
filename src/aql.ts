@@ -1,6 +1,6 @@
 /**
  * ```js
- * import { aql } from "arangojs/aql";
+ * import { aql } from "arangojs/aql.js";
  * ```
  *
  * The "aql" module provides the {@link aql} template string handler and
@@ -10,10 +10,10 @@
  *
  * @packageDocumentation
  */
-import { isArangoAnalyzer } from "./analyzer";
-import { ArangoCollection, isArangoCollection } from "./collection";
-import { Graph, isArangoGraph } from "./graph";
-import { isArangoView, View } from "./view";
+import { isArangoAnalyzer } from "./analyzer.js";
+import { ArangoCollection, isArangoCollection } from "./collection.js";
+import { Graph, isArangoGraph } from "./graph.js";
+import { isArangoView, View } from "./view.js";
 
 declare const type: unique symbol;
 

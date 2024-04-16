@@ -1,6 +1,6 @@
 /**
  * ```ts
- * import type { Document, Edge } from "arangojs/documents";
+ * import type { Document, Edge } from "arangojs/documents.js";
  * ```
  *
  * The "documents" module provides document/edge related types for TypeScript.

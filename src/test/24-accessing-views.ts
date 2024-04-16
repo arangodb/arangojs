@@ -1,7 +1,7 @@
 import { expect } from "chai";
-import { Database } from "../database";
-import { View } from "../view";
-import { config } from "./_config";
+import { Database } from "../database.js";
+import { View } from "../view.js";
+import { config } from "./_config.js";
 
 const range = (n: number): number[] => Array.from(Array(n).keys());
 

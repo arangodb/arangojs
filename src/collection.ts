@@ -3,7 +3,7 @@
  * import type {
  *   DocumentCollection,
  *   EdgeCollection,
- * } from "arangojs/collection";
+ * } from "arangojs/collection.js";
  * ```
  *
  * The "collection" module provides collection related types and interfaces
@@ -11,10 +11,10 @@
  *
  * @packageDocumentation
  */
-import { AqlLiteral, AqlQuery, isAqlLiteral, isAqlQuery } from "./aql";
-import { ArangoApiResponse } from "./connection";
-import { ArrayCursor, BatchedArrayCursor } from "./cursor";
-import { Database } from "./database";
+import { AqlLiteral, AqlQuery, isAqlLiteral, isAqlQuery } from "./aql.js";
+import { ArangoApiResponse } from "./connection.js";
+import { ArrayCursor, BatchedArrayCursor } from "./cursor.js";
+import { Database } from "./database.js";
 import {
   Document,
   DocumentData,
@@ -25,8 +25,8 @@ import {
   ObjectWithKey,
   Patch,
   _documentHandle,
-} from "./documents";
-import { HttpError, isArangoError } from "./error";
+} from "./documents.js";
+import { HttpError, isArangoError } from "./error.js";
 import {
   EnsureFulltextIndexOptions,
   EnsureGeoIndexOptions,
@@ -43,8 +43,8 @@ import {
   TtlIndex,
   MdiIndex,
   _indexHandle,
-} from "./indexes";
-import { COLLECTION_NOT_FOUND, DOCUMENT_NOT_FOUND } from "./lib/codes";
+} from "./indexes.js";
+import { COLLECTION_NOT_FOUND, DOCUMENT_NOT_FOUND } from "./lib/codes.js";
 
 /**
  * Indicates whether the given value represents an {@link ArangoCollection}.

@@ -1,6 +1,6 @@
 /**
  * ```ts
- * import type { ArrayCursor, BatchedArrayCursor } from "arangojs/cursor";
+ * import type { ArrayCursor, BatchedArrayCursor } from "arangojs/cursor.js";
  * ```
  *
  * The "cursor" module provides cursor-related interfaces for TypeScript.
@@ -8,7 +8,7 @@
  * @packageDocumentation
  */
 import { LinkedList } from "x3-linkedlist";
-import { Database } from "./database";
+import { Database } from "./database.js";
 
 /**
  * Additional information about the cursor.

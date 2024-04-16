@@ -1,7 +1,7 @@
 import { expect } from "chai";
-import { Database } from "../database";
-import { ArangoSearchViewProperties, View } from "../view";
-import { config } from "./_config";
+import { Database } from "../database.js";
+import { ArangoSearchViewProperties, View } from "../view.js";
+import { config } from "./_config.js";
 
 describe("View metadata", function () {
   const dbName = `testdb_${Date.now()}`;

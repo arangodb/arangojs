@@ -12,8 +12,8 @@
  *
  * @packageDocumentation
  */
-import { Config } from "./connection";
-import { Database } from "./database";
+import { Config } from "./connection.js";
+import { Database } from "./database.js";
 
 module.exports = exports = arangojs;
 /**
@@ -56,5 +56,5 @@ export function arangojs(config?: string | string[] | Config, name?: string) {
   return new Database(config);
 }
 export default arangojs;
-export { aql } from "./aql";
-export { Database } from "./database";
+export { aql } from "./aql.js";
+export { Database } from "./database.js";

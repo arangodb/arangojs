@@ -1,6 +1,6 @@
 import { expect } from "chai";
-import arangojs, { Database } from "..";
-import { config } from "./_config";
+import arangojs, { Database } from "../index.js";
+import { config } from "./_config.js";
 
 describe("Creating a Database", () => {
   describe("using the factory", () => {

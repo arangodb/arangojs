@@ -1,8 +1,8 @@
 import { expect } from "chai";
-import { DocumentCollection } from "../collection";
-import { Database } from "../database";
-import { COLLECTION_NOT_FOUND } from "../lib/codes";
-import { config } from "./_config";
+import { DocumentCollection } from "../collection.js";
+import { Database } from "../database.js";
+import { COLLECTION_NOT_FOUND } from "../lib/codes.js";
+import { config } from "./_config.js";
 
 describe("Collection metadata", function () {
   let system: Database, db: Database;

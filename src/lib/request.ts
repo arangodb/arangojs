@@ -5,7 +5,7 @@
  * @internal
  */
 
-import { SystemError } from "../error";
+import { SystemError } from "../error.js";
 
 /**
  * @internal

@@ -1,7 +1,7 @@
 import { expect } from "chai";
-import { DocumentCollection } from "../collection";
-import { Database } from "../database";
-import { config } from "./_config";
+import { DocumentCollection } from "../collection.js";
+import { Database } from "../database.js";
+import { config } from "./_config.js";
 
 const range = (n: number): number[] => Array.from(Array(n).keys());
 

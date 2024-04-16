@@ -1,6 +1,6 @@
 /**
  * ```js
- * import { Database } from "arangojs/database";
+ * import { Database } from "arangojs/database.js";
  * ```
  *
  * The "database" module provides the {@link Database} class and associated
@@ -14,8 +14,8 @@ import {
   Analyzer,
   AnalyzerDescription,
   CreateAnalyzerOptions,
-} from "./analyzer";
-import { AqlLiteral, AqlQuery, isAqlLiteral, isAqlQuery } from "./aql";
+} from "./analyzer.js";
+import { AqlLiteral, AqlQuery, isAqlLiteral, isAqlQuery } from "./aql.js";
 import {
   ArangoCollection,
   Collection,
@@ -26,28 +26,28 @@ import {
   DocumentCollection,
   EdgeCollection,
   isArangoCollection,
-} from "./collection";
+} from "./collection.js";
 import {
   ArangoApiResponse,
   Config,
   Connection,
   RequestOptions,
-} from "./connection";
-import { ArrayCursor, BatchedArrayCursor } from "./cursor";
-import { isArangoError } from "./error";
-import { FoxxManifest } from "./foxx-manifest";
+} from "./connection.js";
+import { ArrayCursor, BatchedArrayCursor } from "./cursor.js";
+import { isArangoError } from "./error.js";
+import { FoxxManifest } from "./foxx-manifest.js";
 import {
   CreateGraphOptions,
   EdgeDefinitionOptions,
   Graph,
   GraphInfo,
-} from "./graph";
-import { Job } from "./job";
-import { DATABASE_NOT_FOUND } from "./lib/codes";
-import { ArangojsResponse } from "./lib/request";
-import { Route } from "./route";
-import { Transaction } from "./transaction";
-import { CreateViewOptions, View, ViewDescription } from "./view";
+} from "./graph.js";
+import { Job } from "./job.js";
+import { DATABASE_NOT_FOUND } from "./lib/codes.js";
+import { ArangojsResponse } from "./lib/request.js";
+import { Route } from "./route.js";
+import { Transaction } from "./transaction.js";
+import { CreateViewOptions, View, ViewDescription } from "./view.js";
 
 /**
  * Indicates whether the given value represents a {@link Database}.

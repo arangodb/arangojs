@@ -1,7 +1,7 @@
 import { expect } from "chai";
-import { Database } from "../database";
-import { Graph } from "../graph";
-import { config } from "./_config";
+import { Database } from "../database.js";
+import { Graph } from "../graph.js";
+import { config } from "./_config.js";
 
 const describePre312 = config.arangoVersion < 31200 ? describe : describe.skip;
 

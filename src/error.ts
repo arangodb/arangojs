@@ -1,6 +1,6 @@
 /**
  * ```ts
- * import type { ArangoError, HttpError } from "arangojs/error";
+ * import type { ArangoError, HttpError } from "arangojs/error.js";
  * ```
  *
  * The "error" module provides types and interfaces for TypeScript related
@@ -9,7 +9,7 @@
  * @packageDocumentation
  */
 
-import { ArangojsResponse } from "./lib/request";
+import { ArangojsResponse } from "./lib/request.js";
 
 const messages: { [key: number]: string } = {
   0: "Network Error",
@@ -144,7 +144,7 @@ export class ArangoError extends Error {
     const err = new Error(this.message);
     err.name = this.name;
     for (const key of nativeErrorKeys) {
-      if (err[key]) this[key] = err[key]!;
+      if (err[key]) this[key] = err[key] as string;
     }
   }
 
@@ -192,7 +192,7 @@ export class HttpError extends Error {
     const err = new Error(this.message);
     err.name = this.name;
     for (const key of nativeErrorKeys) {
-      if (err[key]) this[key] = err[key]!;
+      if (err[key]) this[key] = err[key] as string;
     }
   }
 

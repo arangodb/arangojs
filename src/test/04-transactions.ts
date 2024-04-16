@@ -1,8 +1,8 @@
 import { expect } from "chai";
-import { DocumentCollection } from "../collection";
-import { Database } from "../database";
-import { Transaction } from "../transaction";
-import { config } from "./_config";
+import { DocumentCollection } from "../collection.js";
+import { Database } from "../database.js";
+import { Transaction } from "../transaction.js";
+import { config } from "./_config.js";
 
 describe("Transactions", () => {
   let system: Database;

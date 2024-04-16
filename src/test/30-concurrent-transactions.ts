@@ -1,10 +1,10 @@
 /* eslint-disable no-console */
 import { expect } from "chai";
-import { DocumentCollection } from "../collection";
-import { Connection } from "../connection";
-import { Database } from "../database";
-import { Transaction } from "../transaction";
-import { config } from "./_config";
+import { DocumentCollection } from "../collection.js";
+import { Connection } from "../connection.js";
+import { Database } from "../database.js";
+import { Transaction } from "../transaction.js";
+import { config } from "./_config.js";
 
 const delay = (ms: number) =>
   new Promise<void>((resolve) => setTimeout(() => resolve(), ms));

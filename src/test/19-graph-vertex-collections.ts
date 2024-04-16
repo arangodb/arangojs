@@ -1,8 +1,8 @@
 import { expect } from "chai";
-import { Database } from "../database";
-import { DocumentMetadata } from "../documents";
-import { GraphVertexCollection } from "../graph";
-import { config } from "./_config";
+import { Database } from "../database.js";
+import { DocumentMetadata } from "../documents.js";
+import { GraphVertexCollection } from "../graph.js";
+import { config } from "./_config.js";
 
 describe("GraphVertexCollection API", function () {
   const dbName = `testdb_${Date.now()}`;

@@ -1,6 +1,6 @@
 /**
  * ```ts
- * import type { Transaction } from "arangojs/transaction";
+ * import type { Transaction } from "arangojs/transaction.js";
  * ```
  *
  * The "transaction" module provides transaction related types and interfaces
@@ -8,10 +8,10 @@
  *
  * @packageDocumentation
  */
-import { Connection } from "./connection";
-import { Database } from "./database";
-import { isArangoError } from "./error";
-import { TRANSACTION_NOT_FOUND } from "./lib/codes";
+import { Connection } from "./connection.js";
+import { Database } from "./database.js";
+import { isArangoError } from "./error.js";
+import { TRANSACTION_NOT_FOUND } from "./lib/codes.js";
 
 /**
  * Indicates whether the given value represents a {@link Transaction}.

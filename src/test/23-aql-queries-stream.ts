@@ -1,8 +1,8 @@
 import { expect } from "chai";
-import { aql } from "../aql";
-import { ArrayCursor } from "../cursor";
-import { Database, QueryOptions } from "../database";
-import { config } from "./_config";
+import { aql } from "../aql.js";
+import { ArrayCursor } from "../cursor.js";
+import { Database, QueryOptions } from "../database.js";
+import { config } from "./_config.js";
 
 describe("AQL Stream queries", function () {
   const name = `testdb_${Date.now()}`;

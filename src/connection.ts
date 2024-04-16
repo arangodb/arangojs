@@ -1,6 +1,6 @@
 /**
  * ```ts
- * import type { Config } from "arangojs/connection";
+ * import type { Config } from "arangojs/connection.js";
  * ```
  *
  * The "connection" module provides connection and configuration related types
@@ -9,28 +9,28 @@
  * @packageDocumentation
  */
 import { LinkedList } from "x3-linkedlist";
-import { Database } from "./database";
+import { Database } from "./database.js";
 import {
   ArangoError,
   HttpError,
   isArangoError,
   isArangoErrorResponse,
   isSystemError,
-} from "./error";
+} from "./error.js";
 import {
   ERROR_ARANGO_CONFLICT,
   ERROR_ARANGO_MAINTENANCE_MODE,
-} from "./lib/codes";
-import { normalizeUrl } from "./lib/normalizeUrl";
+} from "./lib/codes.js";
+import { normalizeUrl } from "./lib/normalizeUrl.js";
 import {
   ArangojsError,
   ArangojsResponse,
   createRequest,
   RequestConfig,
   RequestFunction,
-} from "./lib/request";
-import { joinPath } from "./lib/joinPath";
-import { mergeHeaders } from "./lib/mergeHeaders";
+} from "./lib/request.js";
+import { joinPath } from "./lib/joinPath.js";
+import { mergeHeaders } from "./lib/mergeHeaders.js";
 
 const MIME_JSON = /\/(json|javascript)(\W|$)/;
 const LEADER_ENDPOINT_HEADER = "x-arango-endpoint";
@@ -907,7 +907,7 @@ export class Connection {
         allowDirtyRead,
         retryOnConflict,
         options: {
-          pathname: joinPath(basePath || "", path || ""),
+          pathname: joinPath(basePath, path) ?? "",
           search:
             params &&
             (params instanceof URLSearchParams

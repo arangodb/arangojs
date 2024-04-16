@@ -1,9 +1,9 @@
 import { expect } from "chai";
-import { DocumentCollection } from "../collection";
-import { Database } from "../database";
-import { ArangoError } from "../error";
-import { Graph, GraphVertexCollection } from "../graph";
-import { config } from "./_config";
+import { DocumentCollection } from "../collection.js";
+import { Database } from "../database.js";
+import { ArangoError } from "../error.js";
+import { Graph, GraphVertexCollection } from "../graph.js";
+import { config } from "./_config.js";
 
 const range = (n: number): number[] => Array.from(Array(n).keys());
 

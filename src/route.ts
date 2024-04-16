@@ -1,16 +1,16 @@
 /**
  * ```ts
- * import type { Route } from "arangojs/route";
+ * import type { Route } from "arangojs/route.js";
  * ```
  *
  * The "route" module provides route related types and interfaces for TypeScript.
  *
  * @packageDocumentation
  */
-import { RequestOptions } from "./connection";
-import { Database } from "./database";
-import { ArangojsResponse } from "./lib/request";
-import { mergeHeaders } from "./lib/mergeHeaders";
+import { RequestOptions } from "./connection.js";
+import { Database } from "./database.js";
+import { ArangojsResponse } from "./lib/request.js";
+import { mergeHeaders } from "./lib/mergeHeaders.js";
 
 /**
  * Represents an arbitrary route relative to an ArangoDB database.

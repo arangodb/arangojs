@@ -1,7 +1,7 @@
 import { expect } from "chai";
-import { Analyzer } from "../analyzer";
-import { Database } from "../database";
-import { config } from "./_config";
+import { Analyzer } from "../analyzer.js";
+import { Database } from "../database.js";
+import { config } from "./_config.js";
 
 function waitForAnalyzer(db: Database, name: string) {
   return db.waitForPropagation({ path: `/_api/analyzer/${name}` }, 30000);

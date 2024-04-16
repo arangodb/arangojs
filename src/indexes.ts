@@ -7,7 +7,7 @@
  *   PersistentIndex,
  *   PrimaryIndex,
  *   TtlIndex,
- * } from "arangojs/indexes";
+ * } from "arangojs/indexes.js";
  * ```
  *
  * The "indexes" module provides index-related types for TypeScript.
@@ -15,8 +15,8 @@
  * @packageDocumentation
  */
 
-import { AnalyzerFeature } from "./analyzer";
-import { Compression, Direction, TierConsolidationPolicy } from "./view";
+import { AnalyzerFeature } from "./analyzer.js";
+import { Compression, Direction, TierConsolidationPolicy } from "./view.js";
 
 /**
  * Options for creating a persistent index.
