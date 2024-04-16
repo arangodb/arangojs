@@ -42,7 +42,7 @@ jobs:
         run: |
           export TAG=$(echo ${{ github.event.ref }} | sed -e 's/^refs\/tags\/v//')
           echo "TAG=${TAG}" >> $GITHUB_ENV
-          echo "LATEST=$(node -p "Number(require('semver').gt('${TAG}','$(cat gh-pages/VERSION)'))")" >> $GITHUB_ENV
+          echo "LATEST=$(node -p "Number(require('semver').gt('${TAG}','$(tail -n 1 gh-pages/VERSION.md)'))")" >> $GITHUB_ENV
 
       - name: Update VERSION / latest
         if: env.TAG != 'devel' && env.LATEST == 1
@@ -52,13 +52,13 @@ jobs:
           ln -s $TAG gh-pages/latest
 
       - name: Update CHANGELOG
-        if: env.LATEST == 1 # don't overwrite for backport versions
+        if: env.LATEST == 1
         run: |
           echo $'---\npermalink: /CHANGELOG\ntitle: "CHANGELOG"\n---\n' > gh-pages/CHANGELOG.md
           cat CHANGELOG.md >> gh-pages/CHANGELOG.md
 
       - name: Update MIGRATING
-        if: env.LATEST == 1 # don't overwrite for backport versions
+        if: env.LATEST == 1
         run: |
           echo $'---\npermalink: /MIGRATING\ntitle: "Migrating"\n---\n' > gh-pages/MIGRATING.md
           cat MIGRATING.md >> gh-pages/MIGRATING.md
