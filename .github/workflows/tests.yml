@@ -12,6 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        module-system: [cjs, esm]
         node-version: [18, 20]
         arangodb-version:
           - arangodb/arangodb:3.11.8
@@ -36,7 +37,7 @@ jobs:
       - run: apk add jq
       - run: npm install -g npm@10
       - run: npm install
-      - run: npm test
+      - run: npm run test:${{ matrix.module-system }}
         env:
           ARANGO_RELEASE: ${{ matrix.arangodb-version }}
           TEST_ARANGODB_URL: http://arangodb:8529
