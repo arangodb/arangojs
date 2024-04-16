@@ -28,13 +28,11 @@ import {
 } from "./documents.js";
 import { HttpError, isArangoError } from "./error.js";
 import {
-  EnsureFulltextIndexOptions,
   EnsureGeoIndexOptions,
   EnsureInvertedIndexOptions,
   EnsurePersistentIndexOptions,
   EnsureTtlIndexOptions,
   EnsureMdiIndexOptions,
-  FulltextIndex,
   GeoIndex,
   Index,
   IndexSelector,
@@ -2659,29 +2657,6 @@ export interface DocumentCollection<T extends Record<string, any> = any>
     details: EnsureMdiIndexOptions
   ): Promise<ArangoApiResponse<MdiIndex & { isNewlyCreated: boolean }>>;
   /**
-   * Creates a fulltext index on the collection if it does not already exist.
-   *
-   * @param details - Options for creating the fulltext index.
-   *
-   * @deprecated Fulltext indexes have been deprecated in ArangoDB 3.10 and
-   * should be replaced with ArangoSearch.
-   *
-   * @example
-   * ```js
-   * const db = new Database();
-   * const collection = db.collection("some-collection");
-   * // Create a fulltext index for tokens longer than or equal to 3 characters
-   * await collection.ensureIndex({
-   *   type: "fulltext",
-   *   fields: ["description"],
-   *   minLength: 3
-   * });
-   * ```
-   */
-  ensureIndex(
-    details: EnsureFulltextIndexOptions
-  ): Promise<ArangoApiResponse<FulltextIndex & { isNewlyCreated: boolean }>>;
-  /**
    * Creates a geo index on the collection if it does not already exist.
    *
    * @param details - Options for creating the geo index.
@@ -4206,7 +4181,6 @@ export class Collection<T extends Record<string, any> = any>
     options:
       | EnsurePersistentIndexOptions
       | EnsureGeoIndexOptions
-      | EnsureFulltextIndexOptions
       | EnsureTtlIndexOptions
       | EnsureMdiIndexOptions
       | EnsureInvertedIndexOptions

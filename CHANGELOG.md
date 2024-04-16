@@ -36,6 +36,11 @@ for upgrading your code to arangojs v9.
   types but most public methods still accept the equivalent `Record` types for
   convenience.
 
+- Removed `FulltextIndex` and related types
+
+  Fulltext indexes have been deprecated in ArangoDB 3.10 and should be replaced
+  with ArangoSearch.
+
 ### Changed
 
 - Replaced request logic with native `fetch` API

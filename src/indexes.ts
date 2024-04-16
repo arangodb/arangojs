@@ -158,38 +158,6 @@ export type EnsureGeoIndexOptions =
     };
 
 /**
- * Options for creating a fulltext index.
- *
- * @deprecated Fulltext indexes have been deprecated in ArangoDB 3.10 and
- * should be replaced with ArangoSearch.
- */
-export type EnsureFulltextIndexOptions = {
-  /**
-   * Type of this index.
-   */
-  type: "fulltext";
-  /**
-   * An array containing exactly one attribute path.
-   */
-  fields: [string];
-  /**
-   * A unique name for this index.
-   */
-  name?: string;
-  /**
-   * Minimum character length of words to index.
-   */
-  minLength?: number;
-  /**
-   * If set to `true`, the index will be created in the background to reduce
-   * the write-lock duration for the collection during index creation.
-   *
-   * Default: `false`
-   */
-  inBackground?: boolean;
-};
-
-/**
  * Options for creating a TTL index.
  */
 export type EnsureTtlIndexOptions = {
@@ -595,18 +563,6 @@ export type PrimaryIndex = GenericIndex & {
 };
 
 /**
- * An object representing a fulltext index.
- *
- * @deprecated Fulltext indexes have been deprecated in ArangoDB 3.10 and
- * should be replaced with ArangoSearch.
- */
-export type FulltextIndex = GenericIndex & {
-  type: "fulltext";
-  fields: [string];
-  minLength: number;
-};
-
-/**
  * An object representing a geo index.
  */
 export type GeoIndex = GenericIndex & {
@@ -701,7 +657,6 @@ export type InvertedIndex = GenericIndex & {
  */
 export type Index =
   | GeoIndex
-  | FulltextIndex
   | PersistentIndex
   | PrimaryIndex
   | TtlIndex
