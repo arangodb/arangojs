@@ -36,20 +36,26 @@ for upgrading your code to arangojs v9.
   types but most public methods still accept the equivalent `Record` types for
   convenience.
 
-- Removed `FulltextIndex` and related types
+- Removed deprecated `FulltextIndex` and related types
 
   Fulltext indexes have been deprecated in ArangoDB 3.10 and should be replaced
   with ArangoSearch.
 
+- Removed browser build
+
+  The browser build has been removed from the repository and will no longer be
+  published to npm. The npm package can still be used in the browser by using
+  common frontend tooling like webpack or rollup.
+
 ### Changed
 
-- Replaced request logic with native `fetch` API
+- Replaced request logic with native `fetch` API ([#788](https://github.com/arangodb/arangojs/issues/788), DE-578, DE-758)
 
   The node-specific request logic using the `http` and `https` modules has been
   replaced with all-new logic using the web standard `fetch` API, which should
   work in Node.js, browsers and other conformant environments.
 
-- Unicode names are now **no longer** automatically NFC normalized
+- Unicode names are now **no longer** automatically NFC normalized (DE-65)
 
   This change affects all database, collection, graph, view and analyzer names
   using unicode characters. Starting with arangojs v7.7.0 these names were
@@ -62,6 +68,21 @@ for upgrading your code to arangojs v9.
   Previously the internal `GeneratedAqlQuery` type was exposed as the return
   type of these functions, leading to complexity when handling generic type
   arguments.
+
+- Removed dependency on Node `path` module or its browserify equivalent
+
+  This change should be backwards-compatible but may produce different results
+  when using non-normalized paths and base-paths in custom `routes`. This
+  should help support more environments and reduce the size of the browser
+  bundle.
+
+### Added
+
+- Added ESM support (DE-236)
+
+  The driver now supports being imported as an ES module or CommonJS module
+  and provides exports for both types of environments. This change should be
+  backwards-compatible.
 
 ## [8.8.1]
 
