@@ -1,21 +1,35 @@
-"use strict";
-const puppeteer = require("puppeteer");
+import esbuild from "esbuild";
+import { createRequire } from "module";
+
+const require = createRequire(import.meta.url);
+
 const express = require("express");
 const proxy = require("express-http-proxy");
-const { createReadStream } = require("fs");
+const puppeteer = require("puppeteer");
+
+const result = await esbuild.build({
+  entryPoints: ["build/esm/index.js"],
+  bundle: true,
+  format: "esm",
+  write: false,
+});
 
 const app = express();
 app.get("/smoke", (_req, res) => {
   res.type("html");
-  res.end('<!DOCTYPE html><script src="/smoke/web.js"></script>');
+  res.end(`<!DOCTYPE html>
+<script type="importmap">
+{
+  "imports": {
+    "arangojs": "/smoke/index.js"
+  }
+}
+</script>
+`);
 });
-app.get("/smoke/web.js", (_req, res) => {
+app.get("/smoke/index.js", (_req, res) => {
   res.type("js");
-  createReadStream("build/web.js").pipe(res);
-});
-app.get("/smoke/web.js.map", (_req, res) => {
-  res.type("js");
-  createReadStream("build/web.js.map").pipe(res);
+  res.end(result.outputFiles[0].text);
 });
 app.use("/", proxy("arangodb:8529"));
 
@@ -29,7 +43,7 @@ app.listen(8529, () => {
         waitUntil: "networkidle2",
       });
       const response = await page.evaluate(async () => {
-        // eslint-disable-next-line no-undef
+        const arangojs = await import("arangojs");
         const Database = arangojs.Database;
         const db = new Database();
         try {
