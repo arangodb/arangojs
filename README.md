@@ -364,3 +364,6 @@ to support larger numbers of concurrent transactions on the server side.
 
 The Apache License, Version 2.0. For more information, see the accompanying
 LICENSE file.
+
+Includes code from [x3-linkedlist](https://github.com/x3cion/x3-linkedlist)
+used under the MIT license.

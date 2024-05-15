@@ -76,8 +76,7 @@
     "prepare": "npm run build && node -e 'require(\".\");' && node -e 'import(\"./build/esm/index.js\")'"
   },
   "dependencies": {
-    "@types/node": "^20.11.26",
-    "x3-linkedlist": "1.2.0"
+    "@types/node": "^20.11.26"
   },
   "devDependencies": {
     "@tsconfig/node20": "^20.1.4",

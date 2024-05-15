@@ -7,7 +7,7 @@
  *
  * @packageDocumentation
  */
-import { LinkedList } from "x3-linkedlist";
+import { LinkedList } from "./lib/linkedList.js";
 import { Database } from "./database.js";
 
 /**
