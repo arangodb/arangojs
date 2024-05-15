@@ -54,7 +54,7 @@ jobs:
           - arangodb/arangodb-test:devel-nightly
 
     container:
-      image: node:16
+      image: node:20
 
     services:
       arangodb:
