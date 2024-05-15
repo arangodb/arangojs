@@ -9,7 +9,7 @@ The official ArangoDB JavaScript client for Node.js and the browser.
 
 ## Links
 
-- [API Documentation](https://arangodb.github.io/arangojs/latest/modules/_index_.html)
+- [API Documentation](https://arangodb.github.io/arangojs/latest/modules/index.html)
 
 - [Changelog](https://arangodb.github.io/arangojs/CHANGELOG)
 

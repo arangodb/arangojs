@@ -47,20 +47,20 @@ jobs:
       - name: Update VERSION / latest
         if: env.TAG != 'devel' && env.LATEST == 1
         run: |
-          echo $'---\npermalink: /VERSION\ntitle: "VERSION"\n---\n' > gh-pages/VERSION.md
+          echo '---\npermalink: /VERSION\ntitle: "VERSION"\n---\n' > gh-pages/VERSION.md
           echo $TAG >> gh-pages/VERSION
           ln -s $TAG gh-pages/latest
 
       - name: Update CHANGELOG
         if: env.LATEST == 1
         run: |
-          echo $'---\npermalink: /CHANGELOG\ntitle: "CHANGELOG"\n---\n' > gh-pages/CHANGELOG.md
+          echo '---\npermalink: /CHANGELOG\ntitle: "CHANGELOG"\n---\n' > gh-pages/CHANGELOG.md
           cat CHANGELOG.md >> gh-pages/CHANGELOG.md
 
       - name: Update MIGRATING
         if: env.LATEST == 1
         run: |
-          echo $'---\npermalink: /MIGRATING\ntitle: "Migrating"\n---\n' > gh-pages/MIGRATING.md
+          echo '---\npermalink: /MIGRATING\ntitle: "Migrating"\n---\n' > gh-pages/MIGRATING.md
           cat MIGRATING.md >> gh-pages/MIGRATING.md
 
       - name: Remove old docs
