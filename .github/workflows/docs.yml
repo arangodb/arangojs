@@ -3,10 +3,7 @@ name: Update docs
 on:
   push:
     tags:
-      - "v7.*.*" # all v7 semver release tags
-      - "v8.*.*" # all v8 semver release tags
-      - "v9.*.*" # all v9 semver release tags
-      - "v10.*.*" # all v10 semver release tags
+      - "v*.*.*" # all semver release tags
     branches:
       - stable
 
@@ -35,35 +32,33 @@ jobs:
         if: startsWith( github.event.ref, 'refs/heads/' )
         run: |
           echo "TAG=devel" >> $GITHUB_ENV
-          echo "LATEST=1" >> $GITHUB_ENV
+          echo "IS_PREVIEW=1" >> $GITHUB_ENV
+          echo "IS_BACKPORT=0" >> $GITHUB_ENV
 
       - name: Set TAG env to ref tag
         if: startsWith( github.event.ref, 'refs/tags/v' )
         run: |
           export TAG=$(echo ${{ github.event.ref }} | sed -e 's/^refs\/tags\/v//')
           echo "TAG=${TAG}" >> $GITHUB_ENV
-          echo "LATEST=$(node -p "Number(require('semver').gt('${TAG}','$(tail -n 1 gh-pages/VERSION.md)'))")" >> $GITHUB_ENV
+          echo "IS_PREVIEW=$(node -p "Number('${TAG}'.includes('-'))")" >> $GITHUB_ENV
+          echo "IS_BACKPORT=$(node -p "Number(require('semver').lt('${TAG}','$(tail -n 1 gh-pages/VERSION.md)'))")" >> $GITHUB_ENV
 
       - name: Update VERSION / latest
-        if: env.TAG != 'devel' && env.LATEST == 1
+        if: env.IS_PREVIEW != 1
         run: |
           echo '---\npermalink: /VERSION\ntitle: "VERSION"\n---\n' > gh-pages/VERSION.md
           echo $TAG >> gh-pages/VERSION
           ln -s $TAG gh-pages/latest
 
-      - name: Update CHANGELOG
-        if: env.LATEST == 1
+      - name: Update CHANGELOG / MIGRATING
+        if: env.IS_BACKPORT != 1
         run: |
           echo '---\npermalink: /CHANGELOG\ntitle: "CHANGELOG"\n---\n' > gh-pages/CHANGELOG.md
           cat CHANGELOG.md >> gh-pages/CHANGELOG.md
-
-      - name: Update MIGRATING
-        if: env.LATEST == 1
-        run: |
-          echo '---\npermalink: /MIGRATING\ntitle: "Migrating"\n---\n' > gh-pages/MIGRATING.md
+          echo '---\npermalink: /MIGRATING\ntitle: "Migration Guide"\n---\n' > gh-pages/MIGRATING.md
           cat MIGRATING.md >> gh-pages/MIGRATING.md
 
-      - name: Remove old docs
+      - name: Remove old docs if present
         run: |
           rm -rf gh-pages/${TAG}
 
