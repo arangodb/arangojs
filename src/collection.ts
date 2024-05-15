@@ -2561,6 +2561,9 @@ export interface DocumentCollection<T extends Record<string, any> = any>
   /**
    * Returns a list of all index descriptions for the collection.
    *
+   * @param withHidden - If set to `true`, includes indexes that are not yet
+   * fully built but are in the building phase. Default: `false`.
+   *
    * @example
    * ```js
    * const db = new Database();
@@ -2568,7 +2571,21 @@ export interface DocumentCollection<T extends Record<string, any> = any>
    * const indexes = await collection.indexes();
    * ```
    */
-  indexes(): Promise<Index[]>;
+  indexes(withHidden?: boolean): Promise<Index[]>;
+  /**
+   * Returns a list of all index descriptions for the collection.
+   *
+   * @param withHidden - If set to `true`, includes indexes that are not yet
+   * fully built but are in the building phase. Default: `false`.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
+   * const indexes = await collection.indexes(true);
+   * ```
+   */
+  indexes(withHidden?: boolean): Promise<(Index & { progress: number })[]>;
   /**
    * Returns an index description by name or `id` if it exists.
    *
@@ -4161,11 +4178,11 @@ export class Collection<T extends Record<string, any> = any>
   //#endregion
 
   //#region indexes
-  indexes() {
+  indexes(withHidden = false) {
     return this._db.request(
       {
         path: "/_api/index",
-        search: { collection: this._name },
+        search: { collection: this._name, withHidden: String(withHidden) },
       },
       (res) => res.parsedBody.indexes
     );

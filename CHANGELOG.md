@@ -22,6 +22,13 @@ This driver uses semantic versioning:
 
   Inlining this dependency should help make arangojs more portable.
 
+### Added
+
+- Added support for `withHidden` option in `collection.indexes`
+
+  This option was introduced in ArangoDB 3.10.13 and 3.11.7 and allows
+  fetching the progress information of indexes that are in the building phase.
+
 ## [9.0.0-preview.1]
 
 This is a major release and breaks backwards compatibility.
