@@ -30,38 +30,29 @@ yarn add arangojs
 When using modern JavaScript tooling with a bundler and compiler (e.g. Babel),
 arangojs can be installed using `npm` or `yarn` like any other dependency.
 
-For use without a compiler, the npm release comes with a precompiled browser
-build for evergreen browsers:
-
-```js
-var arangojs = require("arangojs/web");
-```
-
-You can also use [unpkg](https://unpkg.com) during development:
+You can also use [jsDelivr CDN](https://www.jsdelivr.com) during development:
 
 ```html
-< !-- note the path includes the version number (e.g. 8.0.0) -- >
-<script src="https://unpkg.com/arangojs@8.0.0/web.js"></script>
-<script>
-  var db = new arangojs.Database();
+<script type="importmap">
+  {
+    "imports": {
+      "arangojs": "https://cdn.jsdelivr.net/npm/arangojs@9.0.0-preview.1/esm/index.js?+esm"
+    }
+  }
+</script>
+<script type="module">
+  import { Database } from "arangojs";
+  const db = new Database();
   // ...
 </script>
 ```
 
-When loading the browser build with a script tag make sure to load the polyfill first:
-
-```html
-<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/6.26.0/polyfill.js"></script>
-<script src="https://unpkg.com/arangojs@8.0.0/web.js"></script>
-```
-
 ## Basic usage example
 
-Modern JavaScript/TypeScript with async/await:
+Modern JavaScript/TypeScript with async/await and ES Modules:
 
 ```js
-// TS: import { Database, aql } from "arangojs";
-const { Database, aql } = require("arangojs");
+import { Database, aql } from "arangojs";
 
 const db = new Database();
 const Pokemons = db.collection("my-pokemons");
@@ -98,7 +89,7 @@ const db = new Database({
 db.useBasicAuth("admin", "maplesyrup");
 ```
 
-Old-school JavaScript with promises:
+Old-school JavaScript with promises and CommonJS:
 
 ```js
 var arangojs = require("arangojs");
@@ -291,7 +282,7 @@ internally, you can override the global agent by adding `undici` as a
 dependency to your project and using its `setGlobalDispatcher` as follows:
 
 ```js
-const { Agent, setGlobalDispatcher } = require("undici");
+import { Agent, setGlobalDispatcher } from "undici";
 
 setGlobalDispatcher(
   new Agent({
@@ -308,7 +299,7 @@ HTTPS certificate validation entirely, but note this has
 **extremely dangerous** security implications:
 
 ```js
-const { Agent, setGlobalDispatcher } = require("undici");
+import { Agent, setGlobalDispatcher } from "undici";
 
 setGlobalDispatcher(
   new Agent({
