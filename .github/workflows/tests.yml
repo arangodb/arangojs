@@ -33,7 +33,7 @@ jobs:
           ARANGO_LICENSE_KEY: ${{ secrets.ARANGO_LICENSE_KEY }}
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - run: apk add jq
       - run: npm install -g npm@10
       - run: npm install
@@ -63,7 +63,7 @@ jobs:
           ARANGO_NO_AUTH: 1
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - run: apt-get update && apt-get install jq wget gnupg -y
       - run: wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
       - run: sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
@@ -78,9 +78,11 @@ jobs:
     if: ${{ github.ref == 'refs/heads/main' }}
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
           token: ${{ secrets.GH_TOKEN }}
-      - run: git fetch . HEAD:stable
-      - run: git push origin stable
+      - uses: Embraser01/update-git-branch-action@v1.0.0
+        with:
+          branch: stable
+          githubToken: ${{ secrets.GH_TOKEN }}
