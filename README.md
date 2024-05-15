@@ -64,7 +64,7 @@ async function main() {
       FILTER pokemon.type == "fire"
       RETURN pokemon
     `);
-    console.log("My pokemons, let me show you them:");
+    console.log("My pokemans, let me show you them:");
     for await (const pokemon of pokemons) {
       console.log(pokemon.name);
     }
