@@ -81,9 +81,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          token: ${{ secrets.GH_TOKEN }}
+          token: ${{ github.token }}
       - run: |
-          git config --global user.name "GitHub Actions"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git fetch . HEAD:stable
           git push -f origin stable

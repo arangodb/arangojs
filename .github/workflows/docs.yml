@@ -85,4 +85,4 @@ jobs:
           ref: gh-pages
           message: Update ${{ env.TAG }} docs via ${{ github.sha }}
         env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
