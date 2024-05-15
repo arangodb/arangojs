@@ -82,7 +82,8 @@ jobs:
         with:
           fetch-depth: 0
           token: ${{ secrets.GH_TOKEN }}
-      - uses: Embraser01/update-git-branch-action@v1.0.0
-        with:
-          branch: stable
-          githubToken: ${{ secrets.GH_TOKEN }}
+      - run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git fetch . HEAD:stable
+          git push -f origin stable
