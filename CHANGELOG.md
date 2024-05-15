@@ -19,6 +19,21 @@ This driver uses semantic versioning:
 - A change in the major version (e.g. 1.Y.Z -> 2.0.0) indicates _breaking_
   changes that require changes in your code to upgrade.
 
+## [9.0.0-preview.2]
+
+### Changed
+
+- Inlined `x3-linkedlist` dependency
+
+  Inlining this dependency should help make arangojs more portable.
+
+### Added
+
+- Added support for `withHidden` option in `collection.indexes`
+
+  This option was introduced in ArangoDB 3.10.13 and 3.11.7 and allows
+  fetching the progress information of indexes that are in the building phase.
+
 ## [9.0.0-preview.1]
 
 This is a major release and breaks backwards compatibility.
@@ -1869,6 +1884,7 @@ For a detailed list of changes between pre-release versions of v7 see the
 
   Graph methods now only return the relevant part of the response body.
 
+[9.0.0-preview.2]: https://github.com/arangodb/arangojs/compare/v9.0.0-preview.1...v9.0.0-preview.2
 [9.0.0-preview.1]: https://github.com/arangodb/arangojs/compare/v8.8.1...v9.0.0-preview.1
 [8.8.1]: https://github.com/arangodb/arangojs/compare/v8.8.0...v8.8.1
 [8.8.0]: https://github.com/arangodb/arangojs/compare/v8.7.0...v8.8.0

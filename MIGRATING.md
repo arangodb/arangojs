@@ -1,6 +1,6 @@
 ---
 permalink: /MIGRATING
-title: "Migrating"
+title: "Migration Guide"
 ---
 
 # Migrating
