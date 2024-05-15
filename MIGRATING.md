@@ -1,4 +1,4 @@
-$---
+---
 permalink: /MIGRATING
 title: "Migrating"
 ---
