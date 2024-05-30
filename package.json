@@ -36,26 +36,27 @@
   ],
   "main": "build/cjs/index.js",
   "module": "build/esm/index.js",
-  "types": "build/esm/index.d.ts",
+  "types": "build/index.d.ts",
   "exports": {
     ".": {
       "import": "./build/esm/index.js",
       "require": "./build/cjs/index.js",
-      "types": "./build/esm/index.d.ts"
+      "types": "./build/index.d.ts"
     },
     "./*": {
       "import": "./build/esm/*.js",
       "require": "./build/cjs/*.js",
-      "types": "./build/esm/*.d.ts"
+      "types": "./build/*.d.ts"
     },
     "./lib/*": {
       "import": "./build/esm/lib/*.js",
       "require": "./build/cjs/lib/*.js",
-      "types": "./build/esm/lib/*.d.ts"
+      "types": "./build/lib/*.d.ts"
     }
   },
   "files": [
     "**/*",
+    "!test/**",
     "!cjs/test/**",
     "!esm/test/**"
   ],
@@ -69,6 +70,7 @@
     "build:package": "cat package.json | jq 'delpaths([[\"private\"],[\"type\"],[\"scripts\"],[\"devDependencies\"],[\"babel\"],[\"browserslist\"]])' | sed 's/build\\///g' | sed -r 's/src\\/([^\"]+)\\.ts/\\1.js/g' > build/package.json",
     "build:cjs": "tsc -p ./tsconfig.cjs.json && echo '{\"type\": \"commonjs\"}' > build/cjs/package.json",
     "build:esm": "tsc -p ./tsconfig.esm.json && echo '{\"type\": \"module\"}' > build/esm/package.json",
+    "build:dts": "tsc -p ./tsconfig.dts.json",
     "build:text": "cp LICENSE *.md build/",
     "postbuild": "npm-run-all --parallel postbuild:*",
     "postbuild:cjs": "cat build/cjs/connection.js | sed 's/${process.env.ARANGOJS_VERSION}/'$(cat build/package.json | jq -r .version)'/g' > build/cjs/connection.js",
