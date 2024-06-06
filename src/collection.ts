@@ -1167,6 +1167,22 @@ export type SimpleQueryFulltextOptions = {
   skip?: number;
 };
 
+export type IndexListOptions = {
+  /**
+   * If set to `true`, includes additional information about each index.
+   *
+   * Default: `false`
+   */
+  withStats?: boolean;
+  /**
+   * If set to `true`, includes indexes that are not yet fully built but are
+   * in the building phase.
+   *
+   * Default: `false`.
+   */
+  withHidden?: boolean;
+};
+
 /**
  * Options for performing a graph traversal.
  *
@@ -2561,8 +2577,7 @@ export interface DocumentCollection<T extends Record<string, any> = any>
   /**
    * Returns a list of all index descriptions for the collection.
    *
-   * @param withHidden - If set to `true`, includes indexes that are not yet
-   * fully built but are in the building phase. Default: `false`.
+   * @param options - Options for fetching the index list.
    *
    * @example
    * ```js
@@ -2571,21 +2586,7 @@ export interface DocumentCollection<T extends Record<string, any> = any>
    * const indexes = await collection.indexes();
    * ```
    */
-  indexes(withHidden?: boolean): Promise<Index[]>;
-  /**
-   * Returns a list of all index descriptions for the collection.
-   *
-   * @param withHidden - If set to `true`, includes indexes that are not yet
-   * fully built but are in the building phase. Default: `false`.
-   *
-   * @example
-   * ```js
-   * const db = new Database();
-   * const collection = db.collection("some-collection");
-   * const indexes = await collection.indexes(true);
-   * ```
-   */
-  indexes(withHidden?: boolean): Promise<(Index & { progress: number })[]>;
+  indexes(options?: IndexListOptions): Promise<Index[]>;
   /**
    * Returns an index description by name or `id` if it exists.
    *
@@ -4169,7 +4170,7 @@ export class Collection<T extends Record<string, any> = any>
       method: "PUT",
       path: "/_api/simple/remove-by-keys",
       body: {
-        options: options,
+        options,
         keys,
         collection: this._name,
       },
@@ -4178,11 +4179,11 @@ export class Collection<T extends Record<string, any> = any>
   //#endregion
 
   //#region indexes
-  indexes(withHidden = false) {
+  indexes(options?: IndexListOptions) {
     return this._db.request(
       {
         path: "/_api/index",
-        search: { collection: this._name, withHidden: String(withHidden) },
+        search: { collection: this._name, ...options },
       },
       (res) => res.parsedBody.indexes
     );

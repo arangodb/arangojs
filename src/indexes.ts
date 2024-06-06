@@ -539,6 +539,14 @@ export type GenericIndex = {
    * Whether this index enforces uniqueness for values of its attribute paths.
    */
   unique: boolean;
+  /**
+   * Additional stats about this index.
+   */
+  figures?: Record<string, any>;
+  /**
+   * Progress of this index if it is still being created.
+   */
+  progress?: number;
 };
 
 /**
@@ -662,6 +670,11 @@ export type Index =
   | TtlIndex
   | MdiIndex
   | InvertedIndex;
+
+export type IndexDetails = Index & {
+  figures?: Record<string, any>;
+  progress?: number;
+};
 
 export type ObjectWithId = {
   [key: string]: any;
