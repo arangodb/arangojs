@@ -16,6 +16,14 @@ This driver uses semantic versioning:
 
 ## [Unreleased]
 
+### Removed
+
+- Removed `Collection` methods for simple queries: `list`, `all`, `any`,
+  `byExample`, `firstExample`, `removeByExample`, `replaceByExample`,
+  `updateByExample`, `lookupByKeys`, `removeByKeys`, `fulltext`
+
+  Simple queries were deprecated in ArangoDB 3.4 and can be replicated with AQL.
+
 ### Added
 
 - Added support for `withStats` option in `collection.indexes`

@@ -21,6 +21,13 @@ Note that ArangoDB may reject non-normalized unicode names and identifiers.
 This change is intended to make it easier to recognize normalization issues in
 code interacting with ArangoDB that were previously masked by arangojs.
 
+### Simple queries
+
+Simple queries like the `removeByExample` and `firstExample` methods have been
+removed from the collections API. These methods were deprecated in ArangoDB 3.4
+and can be replaced with AQL queries. For examples for replicating each
+method's behavior in AQL, see the documentation for these methods in ArangoJS 8.
+
 ### Request and Response changes
 
 Version 9 now uses native `fetch` in all environments. This means that the
