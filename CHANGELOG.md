@@ -19,6 +19,23 @@ This driver uses semantic versioning:
 - A change in the major version (e.g. 1.Y.Z -> 2.0.0) indicates _breaking_
   changes that require changes in your code to upgrade.
 
+## [9.0.0-preview.3]
+
+### Removed
+
+- Removed `Collection` methods for simple queries: `list`, `all`, `any`,
+  `byExample`, `firstExample`, `removeByExample`, `replaceByExample`,
+  `updateByExample`, `lookupByKeys`, `removeByKeys`, `fulltext`
+
+  Simple queries were deprecated in ArangoDB 3.4 and can be replicated with AQL.
+
+### Added
+
+- Added support for `withStats` option in `collection.indexes`
+
+  This method now takes an object with `withStats` and `withHidden` options
+  instead of a boolean flag.
+
 ## [9.0.0-preview.2]
 
 ### Changed
@@ -1884,6 +1901,7 @@ For a detailed list of changes between pre-release versions of v7 see the
 
   Graph methods now only return the relevant part of the response body.
 
+[9.0.0-preview.3]: https://github.com/arangodb/arangojs/compare/v9.0.0-preview.2...v9.0.0-preview.3
 [9.0.0-preview.2]: https://github.com/arangodb/arangojs/compare/v9.0.0-preview.1...v9.0.0-preview.2
 [9.0.0-preview.1]: https://github.com/arangodb/arangojs/compare/v8.8.1...v9.0.0-preview.1
 [8.8.1]: https://github.com/arangodb/arangojs/compare/v8.8.0...v8.8.1
