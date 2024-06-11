@@ -3,8 +3,6 @@ import { Database } from "../database.js";
 import { Graph } from "../graph.js";
 import { config } from "./_config.js";
 
-const describePre312 = config.arangoVersion < 31200 ? describe : describe.skip;
-
 describe("Manipulating graph edges", function () {
   const dbName = `testdb_${Date.now()}`;
   const graphName = `testgraph_${Date.now()}`;
@@ -136,47 +134,6 @@ describe("Manipulating graph edges", function () {
       expect(info).to.have.property("edgeDefinitions");
       expect(info.edgeDefinitions).to.be.instanceOf(Array);
       expect(info.edgeDefinitions.length).to.equal(0);
-    });
-  });
-  describePre312("graph.traversal", () => {
-    beforeEach(async () => {
-      const knows = graph.edgeCollection("knows");
-      const person = graph.vertexCollection("person");
-      await Promise.all([
-        person.collection.import([
-          { _key: "Alice" },
-          { _key: "Bob" },
-          { _key: "Charlie" },
-          { _key: "Dave" },
-          { _key: "Eve" },
-        ]),
-        knows.collection.import([
-          { _from: "person/Alice", _to: "person/Bob" },
-          { _from: "person/Bob", _to: "person/Charlie" },
-          { _from: "person/Bob", _to: "person/Dave" },
-          { _from: "person/Eve", _to: "person/Alice" },
-          { _from: "person/Eve", _to: "person/Bob" },
-        ]),
-      ]);
-    });
-    it("executes traversal", async () => {
-      const result = await graph.traversal("person/Alice", {
-        direction: "outbound",
-      });
-      expect(result).to.have.property("visited");
-      const visited = result.visited;
-      expect(visited).to.have.property("vertices");
-      const vertices = visited.vertices;
-      expect(vertices).to.be.instanceOf(Array);
-      const names = vertices.map((d: any) => d._key);
-      for (const name of ["Alice", "Bob", "Charlie", "Dave"]) {
-        expect(names).to.contain(name);
-      }
-      expect(vertices.length).to.equal(4);
-      expect(visited).to.have.property("paths");
-      const paths = visited.paths;
-      expect(paths).to.be.instanceOf(Array);
-      expect(paths.length).to.equal(4);
     });
   });
 });

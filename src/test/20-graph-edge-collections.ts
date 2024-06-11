@@ -4,8 +4,6 @@ import { DocumentMetadata } from "../documents.js";
 import { GraphEdgeCollection } from "../graph.js";
 import { config } from "./_config.js";
 
-const describePre312 = config.arangoVersion < 31200 ? describe : describe.skip;
-
 describe("GraphEdgeCollection API", function () {
   const dbName = `testdb_${Date.now()}`;
   let system: Database, db: Database;
@@ -116,36 +114,6 @@ describe("GraphEdgeCollection API", function () {
       expect(doc._key).to.equal(data._key);
       expect(doc._from).to.equal(data._from);
       expect(doc._to).to.equal(data._to);
-    });
-  });
-  describePre312("edgeCollection.traversal", () => {
-    beforeEach(async () => {
-      await collection.collection.import([
-        { _from: "person/Alice", _to: "person/Bob" },
-        { _from: "person/Bob", _to: "person/Charlie" },
-        { _from: "person/Bob", _to: "person/Dave" },
-        { _from: "person/Eve", _to: "person/Alice" },
-        { _from: "person/Eve", _to: "person/Bob" },
-      ]);
-    });
-    it("executes traversal", async () => {
-      const result = await collection.collection.traversal("person/Alice", {
-        direction: "outbound",
-      });
-      expect(result).to.have.property("visited");
-      const visited = result.visited;
-      expect(visited).to.have.property("vertices");
-      const vertices = visited.vertices;
-      expect(vertices).to.be.instanceOf(Array);
-      expect(vertices.length).to.equal(4);
-      const names = vertices.map((d: any) => d._key);
-      for (const name of ["Alice", "Bob", "Charlie", "Dave"]) {
-        expect(names).to.contain(name);
-      }
-      expect(visited).to.have.property("paths");
-      const paths = visited.paths;
-      expect(paths).to.be.instanceOf(Array);
-      expect(paths.length).to.equal(4);
     });
   });
   describe("edgeCollection.replace", () => {

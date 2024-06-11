@@ -17,7 +17,6 @@ import {
   collectionToString,
   DocumentCollection,
   EdgeCollection,
-  TraversalOptions,
 } from "./collection.js";
 import { Database } from "./database.js";
 import {
@@ -1754,53 +1753,6 @@ export class Graph {
         },
       },
       (res) => res.parsedBody.graph
-    );
-  }
-
-  /**
-   * Performs a traversal starting from the given `startVertex` and following
-   * edges contained in this graph.
-   *
-   * See also {@link collection.EdgeCollection#traversal}.
-   *
-   * @param startVertex - Document `_id` of a vertex in this graph.
-   * @param options - Options for performing the traversal.
-   *
-   * @deprecated Simple Queries have been deprecated in ArangoDB 3.4 and are
-   * no longer supported in ArangoDB 3.12. They can be replaced with AQL queries.
-   *
-   * @example
-   * ```js
-   * const db = new Database();
-   * const graph = db.graph("my-graph");
-   * const collection = graph.edgeCollection("edges").collection;
-   * await collection.import([
-   *   ["_key", "_from", "_to"],
-   *   ["x", "vertices/a", "vertices/b"],
-   *   ["y", "vertices/b", "vertices/c"],
-   *   ["z", "vertices/c", "vertices/d"],
-   * ]);
-   * const startVertex = "vertices/a";
-   * const cursor = await db.query(aql`
-   *   FOR vertex IN OUTBOUND ${startVertex} GRAPH ${graph}
-   *   RETURN vertex._key
-   * `);
-   * const result = await cursor.all();
-   * console.log(result); // ["a", "b", "c", "d"]
-   * ```
-   */
-  traversal(startVertex: string, options?: TraversalOptions): Promise<any> {
-    return this._db.request(
-      {
-        method: "POST",
-        path: `/_api/traversal`,
-        body: {
-          ...options,
-          startVertex,
-          graphName: this._name,
-        },
-      },
-      (res) => res.parsedBody.result
     );
   }
 }

@@ -1,10 +1,8 @@
 import { expect } from "chai";
-import { DocumentCollection, EdgeCollection } from "../collection.js";
+import { EdgeCollection } from "../collection.js";
 import { Database } from "../database.js";
 import { DocumentMetadata } from "../documents.js";
 import { config } from "./_config.js";
-
-const describePre312 = config.arangoVersion < 31200 ? describe : describe.skip;
 
 describe("EdgeCollection API", function () {
   const name = `testdb_${Date.now()}`;
@@ -173,59 +171,6 @@ describe("EdgeCollection API", function () {
       expect(doc._rev).to.equal(meta._rev);
       expect(doc._from).to.equal(data._from);
       expect(doc._to).to.equal(data._to);
-    });
-  });
-  describePre312("edgeCollection.traversal", () => {
-    let knows: EdgeCollection;
-    beforeEach(async () => {
-      let person: DocumentCollection;
-      [knows, person] = await Promise.all([
-        db.createEdgeCollection("knows"),
-        db.createCollection("person"),
-      ]);
-      await db.waitForPropagation(
-        { path: `/_api/collection/${person.name}` },
-        10000
-      );
-      await db.waitForPropagation(
-        { path: `/_api/collection/${knows.name}` },
-        10000
-      );
-      await Promise.all([
-        person.import([
-          { _key: "Alice" },
-          { _key: "Bob" },
-          { _key: "Charlie" },
-          { _key: "Dave" },
-          { _key: "Eve" },
-        ]),
-        knows.import([
-          { _from: "person/Alice", _to: "person/Bob" },
-          { _from: "person/Bob", _to: "person/Charlie" },
-          { _from: "person/Bob", _to: "person/Dave" },
-          { _from: "person/Eve", _to: "person/Alice" },
-          { _from: "person/Eve", _to: "person/Bob" },
-        ]),
-      ]);
-    });
-    it("executes traversal", async () => {
-      const result = await knows.traversal("person/Alice", {
-        direction: "outbound",
-      });
-      expect(result).to.have.property("visited");
-      const visited = result.visited;
-      expect(visited).to.have.property("vertices");
-      const vertices = visited.vertices;
-      expect(vertices).to.be.instanceOf(Array);
-      expect(vertices.length).to.equal(4);
-      const names = vertices.map((d: any) => d._key);
-      for (const name of ["Alice", "Bob", "Charlie", "Dave"]) {
-        expect(names).to.contain(name);
-      }
-      expect(visited).to.have.property("paths");
-      const paths = visited.paths;
-      expect(paths).to.be.instanceOf(Array);
-      expect(paths.length).to.equal(4);
     });
   });
   describe("edgeCollection.replace", () => {
