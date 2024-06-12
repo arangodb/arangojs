@@ -28,6 +28,13 @@ export class Job<T = any> {
   }
 
   /**
+   * The job's ID.
+   */
+  get id(): string {
+    return this._id;
+  }
+
+  /**
    * Whether the job's results have been loaded. If set to `true`, the job's
    * result can be accessed from {@link Job.result}.
    */
