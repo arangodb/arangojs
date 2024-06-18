@@ -19,7 +19,15 @@ This driver uses semantic versioning:
 - A change in the major version (e.g. 1.Y.Z -> 2.0.0) indicates _breaking_
   changes that require changes in your code to upgrade.
 
-## [9.0.0-preview.3]
+## [9.0.0-preview.4] - 2024-06-18
+
+### Added
+
+- Added readonly `Job#id` property
+
+  This property was not previously exposed.
+
+## [9.0.0-preview.3] - 2024-06-12
 
 ### Removed
 
@@ -36,7 +44,7 @@ This driver uses semantic versioning:
   This method now takes an object with `withStats` and `withHidden` options
   instead of a boolean flag.
 
-## [9.0.0-preview.2]
+## [9.0.0-preview.2] - 2024-05-15
 
 ### Changed
 
@@ -51,7 +59,7 @@ This driver uses semantic versioning:
   This option was introduced in ArangoDB 3.10.13 and 3.11.7 and allows
   fetching the progress information of indexes that are in the building phase.
 
-## [9.0.0-preview.1]
+## [9.0.0-preview.1] - 2024-04-16
 
 This is a major release and breaks backwards compatibility.
 
@@ -121,13 +129,13 @@ for upgrading your code to arangojs v9.
   and provides exports for both types of environments. This change should be
   backwards-compatible.
 
-## [8.8.1]
+## [8.8.1] - 2024-03-20
 
 ### Added
 
 - Added the `versionAttribute` option to the document operation options types (DE-783)
 
-## [8.8.0]
+## [8.8.0] - 2024-03-12
 
 ### Changed
 
@@ -1901,6 +1909,7 @@ For a detailed list of changes between pre-release versions of v7 see the
 
   Graph methods now only return the relevant part of the response body.
 
+[9.0.0-preview.4]: https://github.com/arangodb/arangojs/compare/v9.0.0-preview.3...v9.0.0-preview.4
 [9.0.0-preview.3]: https://github.com/arangodb/arangojs/compare/v9.0.0-preview.2...v9.0.0-preview.3
 [9.0.0-preview.2]: https://github.com/arangodb/arangojs/compare/v9.0.0-preview.1...v9.0.0-preview.2
 [9.0.0-preview.1]: https://github.com/arangodb/arangojs/compare/v8.8.1...v9.0.0-preview.1
