@@ -22,7 +22,7 @@ This driver uses semantic versioning:
 
   This property was not previously exposed.
 
-## [9.0.0-preview.3]
+## [9.0.0-preview.3] - 2024-06-12
 
 ### Removed
 
@@ -39,7 +39,7 @@ This driver uses semantic versioning:
   This method now takes an object with `withStats` and `withHidden` options
   instead of a boolean flag.
 
-## [9.0.0-preview.2]
+## [9.0.0-preview.2] - 2024-05-15
 
 ### Changed
 
@@ -54,7 +54,7 @@ This driver uses semantic versioning:
   This option was introduced in ArangoDB 3.10.13 and 3.11.7 and allows
   fetching the progress information of indexes that are in the building phase.
 
-## [9.0.0-preview.1]
+## [9.0.0-preview.1] - 2024-04-16
 
 This is a major release and breaks backwards compatibility.
 
@@ -124,13 +124,13 @@ for upgrading your code to arangojs v9.
   and provides exports for both types of environments. This change should be
   backwards-compatible.
 
-## [8.8.1]
+## [8.8.1] - 2024-03-20
 
 ### Added
 
 - Added the `versionAttribute` option to the document operation options types (DE-783)
 
-## [8.8.0]
+## [8.8.0] - 2024-03-12
 
 ### Changed
 
