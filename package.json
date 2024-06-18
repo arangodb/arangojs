@@ -72,7 +72,6 @@
     "build:esm": "tsc -p ./tsconfig.esm.json && echo '{\"type\": \"module\"}' > build/esm/package.json",
     "build:dts": "tsc -p ./tsconfig.dts.json",
     "build:text": "cp LICENSE *.md build/",
-    "postbuild": "npm-run-all --parallel postbuild:*",
     "postbuild:cjs": "cat build/cjs/connection.js | sed 's/${process.env.ARANGOJS_VERSION}/'$(cat build/package.json | jq -r .version)'/g' > build/cjs/connection.js",
     "postbuild:esm": "cat build/esm/connection.js | sed 's/${process.env.ARANGOJS_VERSION}/'$(cat build/package.json | jq -r .version)'/g' > build/esm/connection.js",
     "prepare": "npm run build && node -e 'require(\".\");' && node -e 'import(\"./build/esm/index.js\")'"
