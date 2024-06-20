@@ -162,7 +162,7 @@ export type TransactionOptions = {
    */
   lockTimeout?: number;
   /**
-   * (RocksDB only.) Determines the transaction size limit in bytes.
+   * Determines the transaction size limit in bytes.
    */
   maxTransactionSize?: number;
 };
@@ -311,17 +311,17 @@ export type QueryOptions = {
    */
   maxNodesPerCallstack?: number;
   /**
-   * (RocksDB only.) Maximum size of transactions in bytes.
+   * Maximum size of transactions in bytes.
    */
   maxTransactionSize?: number;
   /**
-   * (RocksDB only.) Maximum number of operations after which an intermediate
-   * commit is automatically performed.
+   * Maximum number of operations after which an intermediate commit is
+   * automatically performed.
    */
   intermediateCommitCount?: number;
   /**
-   * (RocksDB only.) Maximum total size of operations in bytes after which an
-   * intermediate commit is automatically performed.
+   * Maximum total size of operations in bytes after which an intermediate
+   * commit is automatically performed.
    */
   intermediateCommitSize?: number;
   /**

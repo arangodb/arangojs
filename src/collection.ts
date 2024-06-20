@@ -1174,8 +1174,8 @@ export interface DocumentCollection<T extends Record<string, any> = any>
     >
   >;
   /**
-   * (RocksDB only.) Instructs ArangoDB to recalculate the collection's
-   * document count to fix any inconsistencies.
+   * Instructs ArangoDB to recalculate the collection's document count to fix
+   * any inconsistencies.
    *
    * @example
    * ```js
@@ -1248,8 +1248,8 @@ export interface DocumentCollection<T extends Record<string, any> = any>
     >
   >;
   /**
-   * (RocksDB only.) Instructs ArangoDB to load as many indexes of the
-   * collection into memory as permitted by the memory limit.
+   * Instructs ArangoDB to load as many indexes of the collection into memory
+   * as permitted by the memory limit.
    *
    * @example
    * ```js
