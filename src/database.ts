@@ -165,6 +165,13 @@ export type TransactionOptions = {
    * Determines the transaction size limit in bytes.
    */
   maxTransactionSize?: number;
+  /**
+   * If set to `true`, the fast lock round will be skipped, which makes each
+   * locking operation take longer but guarantees deterministic locking order
+   * and may avoid deadlocks when many concurrent transactions are queued and
+   * try to access the same collection with an exclusive lock.
+   */
+  skipFastLockRound?: boolean;
 };
 
 /**

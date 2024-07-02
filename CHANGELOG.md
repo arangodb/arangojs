@@ -14,6 +14,14 @@ This driver uses semantic versioning:
 - A change in the major version (e.g. 1.Y.Z -> 2.0.0) indicates _breaking_
   changes that require changes in your code to upgrade.
 
+## [Unreleased]
+
+### Added
+
+- Added `skipFastLockRound` option for streaming transactions
+
+  This option was introduced in 3.12.1 and allows skipping the fast lock round.
+
 ## [9.0.0-preview.4] - 2024-06-18
 
 ### Added
