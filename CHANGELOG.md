@@ -16,6 +16,15 @@ This driver uses semantic versioning:
 
 ## [Unreleased]
 
+### Changed
+
+- Split the Collection type parameter into result and input types [#807](https://github.com/arangodb/arangojs/issues/807)
+
+  It is now possible to specify a separate type for the data passed when
+  creating or modifying documents in addition to the type of the data returned
+  when fetching documents. This allows excluding computed properties from
+  the input type while still including them in the result type.
+
 ### Added
 
 - Added `skipFastLockRound` option for streaming transactions

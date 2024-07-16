@@ -1054,8 +1054,10 @@ export type CollectionEdgesResult<T extends Record<string, any> = any> = {
  * const documents = db.collection("persons") as DocumentCollection<Person>;
  * ```
  */
-export interface DocumentCollection<T extends Record<string, any> = any>
-  extends ArangoCollection {
+export interface DocumentCollection<
+  EntryResultType extends Record<string, any> = any,
+  EntryInputType extends Record<string, any> = EntryResultType,
+> extends ArangoCollection {
   /**
    * Checks whether the collection exists.
    *
@@ -1326,7 +1328,9 @@ export interface DocumentCollection<T extends Record<string, any> = any>
    * const responsibleShard = await collection.getResponsibleShard();
    * ```
    */
-  getResponsibleShard(document: Partial<Document<T>>): Promise<string>;
+  getResponsibleShard(
+    document: Partial<Document<EntryResultType>>
+  ): Promise<string>;
   /**
    * Derives a document `_id` from the given selector for this collection.
    *
@@ -1422,7 +1426,7 @@ export interface DocumentCollection<T extends Record<string, any> = any>
   document(
     selector: DocumentSelector,
     options?: CollectionReadOptions
-  ): Promise<Document<T>>;
+  ): Promise<Document<EntryResultType>>;
   /**
    * Retrieves the document matching the given key or id.
    *
@@ -1458,7 +1462,10 @@ export interface DocumentCollection<T extends Record<string, any> = any>
    * }
    * ```
    */
-  document(selector: DocumentSelector, graceful: boolean): Promise<Document<T>>;
+  document(
+    selector: DocumentSelector,
+    graceful: boolean
+  ): Promise<Document<EntryResultType>>;
   /**
    * Retrieves the documents matching the given key or id values.
    *
@@ -1484,7 +1491,7 @@ export interface DocumentCollection<T extends Record<string, any> = any>
   documents(
     selectors: (string | ObjectWithKey)[],
     options?: CollectionBatchReadOptions
-  ): Promise<Document<T>[]>;
+  ): Promise<Document<EntryResultType>[]>;
   /**
    * Inserts a new document with the given `data` into the collection.
    *
@@ -1503,10 +1510,13 @@ export interface DocumentCollection<T extends Record<string, any> = any>
    * ```
    */
   save(
-    data: DocumentData<T>,
+    data: DocumentData<EntryInputType>,
     options?: CollectionInsertOptions
   ): Promise<
-    DocumentOperationMetadata & { new?: Document<T>; old?: Document<T> }
+    DocumentOperationMetadata & {
+      new?: Document<EntryResultType>;
+      old?: Document<EntryResultType>;
+    }
   >;
   /**
    * Inserts new documents with the given `data` into the collection.
@@ -1530,11 +1540,14 @@ export interface DocumentCollection<T extends Record<string, any> = any>
    * ```
    */
   saveAll(
-    data: Array<DocumentData<T>>,
+    data: Array<DocumentData<EntryInputType>>,
     options?: CollectionInsertOptions
   ): Promise<
     Array<
-      | (DocumentOperationMetadata & { new?: Document<T>; old?: Document<T> })
+      | (DocumentOperationMetadata & {
+          new?: Document<EntryResultType>;
+          old?: Document<EntryResultType>;
+        })
       | DocumentOperationFailure
     >
   >;
@@ -1564,10 +1577,13 @@ export interface DocumentCollection<T extends Record<string, any> = any>
    */
   replace(
     selector: DocumentSelector,
-    newData: DocumentData<T>,
+    newData: DocumentData<EntryInputType>,
     options?: CollectionReplaceOptions
   ): Promise<
-    DocumentOperationMetadata & { new?: Document<T>; old?: Document<T> }
+    DocumentOperationMetadata & {
+      new?: Document<EntryResultType>;
+      old?: Document<EntryResultType>;
+    }
   >;
   /**
    * Replaces existing documents in the collection, identified by the `_key` or
@@ -1594,11 +1610,16 @@ export interface DocumentCollection<T extends Record<string, any> = any>
    * ```
    */
   replaceAll(
-    newData: Array<DocumentData<T> & ({ _key: string } | { _id: string })>,
+    newData: Array<
+      DocumentData<EntryInputType> & ({ _key: string } | { _id: string })
+    >,
     options?: Omit<CollectionReplaceOptions, "ifMatch">
   ): Promise<
     Array<
-      | (DocumentOperationMetadata & { new?: Document<T>; old?: Document<T> })
+      | (DocumentOperationMetadata & {
+          new?: Document<EntryResultType>;
+          old?: Document<EntryResultType>;
+        })
       | DocumentOperationFailure
     >
   >;
@@ -1628,10 +1649,13 @@ export interface DocumentCollection<T extends Record<string, any> = any>
    */
   update(
     selector: DocumentSelector,
-    newData: Patch<DocumentData<T>>,
+    newData: Patch<DocumentData<EntryInputType>>,
     options?: CollectionUpdateOptions
   ): Promise<
-    DocumentOperationMetadata & { new?: Document<T>; old?: Document<T> }
+    DocumentOperationMetadata & {
+      new?: Document<EntryResultType>;
+      old?: Document<EntryResultType>;
+    }
   >;
   /**
    * Updates existing documents in the collection, identified by the `_key` or
@@ -1659,12 +1683,15 @@ export interface DocumentCollection<T extends Record<string, any> = any>
    */
   updateAll(
     newData: Array<
-      Patch<DocumentData<T>> & ({ _key: string } | { _id: string })
+      Patch<DocumentData<EntryInputType>> & ({ _key: string } | { _id: string })
     >,
     options?: Omit<CollectionUpdateOptions, "ifMatch">
   ): Promise<
     Array<
-      | (DocumentOperationMetadata & { new?: Document<T>; old?: Document<T> })
+      | (DocumentOperationMetadata & {
+          new?: Document<EntryResultType>;
+          old?: Document<EntryResultType>;
+        })
       | DocumentOperationFailure
     >
   >;
@@ -1698,7 +1725,7 @@ export interface DocumentCollection<T extends Record<string, any> = any>
   remove(
     selector: DocumentSelector,
     options?: CollectionRemoveOptions
-  ): Promise<DocumentMetadata & { old?: Document<T> }>;
+  ): Promise<DocumentMetadata & { old?: Document<EntryResultType> }>;
   /**
    * Removes existing documents from the collection.
    *
@@ -1721,7 +1748,10 @@ export interface DocumentCollection<T extends Record<string, any> = any>
     selectors: (string | ObjectWithKey)[],
     options?: Omit<CollectionRemoveOptions, "ifMatch">
   ): Promise<
-    Array<(DocumentMetadata & { old?: Document<T> }) | DocumentOperationFailure>
+    Array<
+      | (DocumentMetadata & { old?: Document<EntryResultType> })
+      | DocumentOperationFailure
+    >
   >;
   /**
    * Bulk imports the given `data` into the collection.
@@ -1743,7 +1773,7 @@ export interface DocumentCollection<T extends Record<string, any> = any>
    * ```
    */
   import(
-    data: DocumentData<T>[],
+    data: DocumentData<EntryInputType>[],
     options?: CollectionImportOptions
   ): Promise<CollectionImportResult>;
   /**
@@ -2031,8 +2061,10 @@ export interface DocumentCollection<T extends Record<string, any> = any>
  * const edges = db.collection("friends") as EdgeCollection<Friend>;
  * ```
  */
-export interface EdgeCollection<T extends Record<string, any> = any>
-  extends DocumentCollection<T> {
+export interface EdgeCollection<
+  EntryResultType extends Record<string, any> = any,
+  EntryInputType extends Record<string, any> = EntryResultType,
+> extends DocumentCollection<EntryResultType, EntryInputType> {
   /**
    * Retrieves the document matching the given key or id.
    *
@@ -2070,7 +2102,7 @@ export interface EdgeCollection<T extends Record<string, any> = any>
   document(
     selector: DocumentSelector,
     options?: CollectionReadOptions
-  ): Promise<Edge<T>>;
+  ): Promise<Edge<EntryResultType>>;
   /**
    * Retrieves the document matching the given key or id.
    *
@@ -2106,7 +2138,10 @@ export interface EdgeCollection<T extends Record<string, any> = any>
    * }
    * ```
    */
-  document(selector: DocumentSelector, graceful: boolean): Promise<Edge<T>>;
+  document(
+    selector: DocumentSelector,
+    graceful: boolean
+  ): Promise<Edge<EntryResultType>>;
   /**
    * Retrieves the documents matching the given key or id values.
    *
@@ -2132,7 +2167,7 @@ export interface EdgeCollection<T extends Record<string, any> = any>
   documents(
     selectors: (string | ObjectWithKey)[],
     options?: CollectionBatchReadOptions
-  ): Promise<Edge<T>[]>;
+  ): Promise<Edge<EntryResultType>[]>;
   /**
    * Inserts a new document with the given `data` into the collection.
    *
@@ -2150,9 +2185,14 @@ export interface EdgeCollection<T extends Record<string, any> = any>
    * ```
    */
   save(
-    data: EdgeData<T>,
+    data: EdgeData<EntryInputType>,
     options?: CollectionInsertOptions
-  ): Promise<DocumentOperationMetadata & { new?: Edge<T>; old?: Edge<T> }>;
+  ): Promise<
+    DocumentOperationMetadata & {
+      new?: Edge<EntryResultType>;
+      old?: Edge<EntryResultType>;
+    }
+  >;
   /**
    * Inserts new documents with the given `data` into the collection.
    *
@@ -2173,11 +2213,14 @@ export interface EdgeCollection<T extends Record<string, any> = any>
    * ```
    */
   saveAll(
-    data: Array<EdgeData<T>>,
+    data: Array<EdgeData<EntryInputType>>,
     options?: CollectionInsertOptions
   ): Promise<
     Array<
-      | (DocumentOperationMetadata & { new?: Edge<T>; old?: Edge<T> })
+      | (DocumentOperationMetadata & {
+          new?: Edge<EntryResultType>;
+          old?: Edge<EntryResultType>;
+        })
       | DocumentOperationFailure
     >
   >;
@@ -2215,9 +2258,14 @@ export interface EdgeCollection<T extends Record<string, any> = any>
    */
   replace(
     selector: DocumentSelector,
-    newData: DocumentData<T>,
+    newData: DocumentData<EntryInputType>,
     options?: CollectionReplaceOptions
-  ): Promise<DocumentOperationMetadata & { new?: Edge<T>; old?: Edge<T> }>;
+  ): Promise<
+    DocumentOperationMetadata & {
+      new?: Edge<EntryResultType>;
+      old?: Edge<EntryResultType>;
+    }
+  >;
   /**
    * Replaces existing documents in the collection, identified by the `_key` or
    * `_id` of each document.
@@ -2259,11 +2307,16 @@ export interface EdgeCollection<T extends Record<string, any> = any>
    * ```
    */
   replaceAll(
-    newData: Array<DocumentData<T> & ({ _key: string } | { _id: string })>,
+    newData: Array<
+      DocumentData<EntryInputType> & ({ _key: string } | { _id: string })
+    >,
     options?: CollectionReplaceOptions
   ): Promise<
     Array<
-      | (DocumentOperationMetadata & { new?: Edge<T>; old?: Edge<T> })
+      | (DocumentOperationMetadata & {
+          new?: Edge<EntryResultType>;
+          old?: Edge<EntryResultType>;
+        })
       | DocumentOperationFailure
     >
   >;
@@ -2301,9 +2354,14 @@ export interface EdgeCollection<T extends Record<string, any> = any>
    */
   update(
     selector: DocumentSelector,
-    newData: Patch<DocumentData<T>>,
+    newData: Patch<DocumentData<EntryInputType>>,
     options?: CollectionUpdateOptions
-  ): Promise<DocumentOperationMetadata & { new?: Edge<T>; old?: Edge<T> }>;
+  ): Promise<
+    DocumentOperationMetadata & {
+      new?: Edge<EntryResultType>;
+      old?: Edge<EntryResultType>;
+    }
+  >;
   /**
    * Updates existing documents in the collection, identified by the `_key` or
    * `_id` of each document.
@@ -2344,12 +2402,15 @@ export interface EdgeCollection<T extends Record<string, any> = any>
    */
   updateAll(
     newData: Array<
-      Patch<DocumentData<T>> & ({ _key: string } | { _id: string })
+      Patch<DocumentData<EntryInputType>> & ({ _key: string } | { _id: string })
     >,
     options?: CollectionUpdateOptions
   ): Promise<
     Array<
-      | (DocumentOperationMetadata & { new?: Edge<T>; old?: Edge<T> })
+      | (DocumentOperationMetadata & {
+          new?: Edge<EntryResultType>;
+          old?: Edge<EntryResultType>;
+        })
       | DocumentOperationFailure
     >
   >;
@@ -2375,7 +2436,7 @@ export interface EdgeCollection<T extends Record<string, any> = any>
   remove(
     selector: DocumentSelector,
     options?: CollectionRemoveOptions
-  ): Promise<DocumentMetadata & { old?: Edge<T> }>;
+  ): Promise<DocumentMetadata & { old?: Edge<EntryResultType> }>;
   /**
    * Removes existing documents from the collection.
    *
@@ -2398,7 +2459,10 @@ export interface EdgeCollection<T extends Record<string, any> = any>
     selectors: DocumentSelector[],
     options?: CollectionRemoveOptions
   ): Promise<
-    Array<(DocumentMetadata & { old?: Edge<T> }) | DocumentOperationFailure>
+    Array<
+      | (DocumentMetadata & { old?: Edge<EntryResultType> })
+      | DocumentOperationFailure
+    >
   >;
   /**
    * Bulk imports the given `data` into the collection.
@@ -2419,7 +2483,7 @@ export interface EdgeCollection<T extends Record<string, any> = any>
    * ```
    */
   import(
-    data: EdgeData<T>[],
+    data: EdgeData<EntryInputType>[],
     options?: CollectionImportOptions
   ): Promise<CollectionImportResult>;
   /**
@@ -2537,7 +2601,7 @@ export interface EdgeCollection<T extends Record<string, any> = any>
   edges(
     selector: DocumentSelector,
     options?: CollectionEdgesOptions
-  ): Promise<ArangoApiResponse<CollectionEdgesResult<T>>>;
+  ): Promise<ArangoApiResponse<CollectionEdgesResult<EntryResultType>>>;
   /**
    * Retrieves a list of all incoming edges of the document matching the given
    * `selector`.
@@ -2566,7 +2630,7 @@ export interface EdgeCollection<T extends Record<string, any> = any>
   inEdges(
     selector: DocumentSelector,
     options?: CollectionEdgesOptions
-  ): Promise<ArangoApiResponse<CollectionEdgesResult<T>>>;
+  ): Promise<ArangoApiResponse<CollectionEdgesResult<EntryResultType>>>;
   /**
    * Retrieves a list of all outgoing edges of the document matching the given
    * `selector`.
@@ -2595,7 +2659,7 @@ export interface EdgeCollection<T extends Record<string, any> = any>
   outEdges(
     selector: DocumentSelector,
     options?: CollectionEdgesOptions
-  ): Promise<ArangoApiResponse<CollectionEdgesResult<T>>>;
+  ): Promise<ArangoApiResponse<CollectionEdgesResult<EntryResultType>>>;
 
   //#endregion
 }
@@ -2603,8 +2667,13 @@ export interface EdgeCollection<T extends Record<string, any> = any>
 /**
  * @internal
  */
-export class Collection<T extends Record<string, any> = any>
-  implements EdgeCollection<T>, DocumentCollection<T>
+export class Collection<
+    EntryResultType extends Record<string, any> = any,
+    EntryInputType extends Record<string, any> = EntryResultType,
+  >
+  implements
+    EdgeCollection<EntryResultType, EntryInputType>,
+    DocumentCollection<EntryResultType, EntryInputType>
 {
   //#region attributes
   protected _name: string;
@@ -2800,7 +2869,9 @@ export class Collection<T extends Record<string, any> = any>
   //#endregion
 
   //#region crud
-  getResponsibleShard(document: Partial<Document<T>>): Promise<string> {
+  getResponsibleShard(
+    document: Partial<Document<EntryResultType>>
+  ): Promise<string> {
     return this._db.request(
       {
         method: "PUT",
@@ -2905,7 +2976,7 @@ export class Collection<T extends Record<string, any> = any>
     }
   }
 
-  save(data: DocumentData<T>, options?: CollectionInsertOptions) {
+  save(data: DocumentData<EntryInputType>, options?: CollectionInsertOptions) {
     return this._db.request(
       {
         method: "POST",
@@ -2917,7 +2988,10 @@ export class Collection<T extends Record<string, any> = any>
     );
   }
 
-  saveAll(data: Array<DocumentData<T>>, options?: CollectionInsertOptions) {
+  saveAll(
+    data: Array<DocumentData<EntryInputType>>,
+    options?: CollectionInsertOptions
+  ) {
     return this._db.request(
       {
         method: "POST",
@@ -2931,7 +3005,7 @@ export class Collection<T extends Record<string, any> = any>
 
   replace(
     selector: DocumentSelector,
-    newData: DocumentData<T>,
+    newData: DocumentData<EntryInputType>,
     options: CollectionReplaceOptions = {}
   ) {
     const { ifMatch = undefined, ...opts } = options;
@@ -2952,7 +3026,9 @@ export class Collection<T extends Record<string, any> = any>
   }
 
   replaceAll(
-    newData: Array<DocumentData<T> & ({ _key: string } | { _id: string })>,
+    newData: Array<
+      DocumentData<EntryInputType> & ({ _key: string } | { _id: string })
+    >,
     options?: CollectionReplaceOptions
   ) {
     return this._db.request(
@@ -2968,7 +3044,7 @@ export class Collection<T extends Record<string, any> = any>
 
   update(
     selector: DocumentSelector,
-    newData: Patch<DocumentData<T>>,
+    newData: Patch<DocumentData<EntryInputType>>,
     options: CollectionUpdateOptions = {}
   ) {
     const { ifMatch = undefined, ...opts } = options;
@@ -2990,7 +3066,7 @@ export class Collection<T extends Record<string, any> = any>
 
   updateAll(
     newData: Array<
-      Patch<DocumentData<T>> & ({ _key: string } | { _id: string })
+      Patch<DocumentData<EntryInputType>> & ({ _key: string } | { _id: string })
     >,
     options?: CollectionUpdateOptions
   ) {
