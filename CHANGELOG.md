@@ -18,7 +18,7 @@ This driver uses semantic versioning:
 
 ### Changed
 
-- Split the Collection type parameter into result and input types [#807](https://github.com/arangodb/arangojs/issues/807)
+- Split the Collection type parameter into result and input types ([#807](https://github.com/arangodb/arangojs/issues/807))
 
   It is now possible to specify a separate type for the data passed when
   creating or modifying documents in addition to the type of the data returned
@@ -30,6 +30,11 @@ This driver uses semantic versioning:
 - Added `skipFastLockRound` option for streaming transactions
 
   This option was introduced in 3.12.1 and allows skipping the fast lock round.
+
+- Added non-specific `EnsureIndexOptions` type and `ensureIndex` method
+  signature ([#778](https://github.com/arangodb/arangojs/issues/778))
+
+  This allows creating indexes without narrowing the index type.
 
 ## [9.0.0-preview.4] - 2024-06-18
 

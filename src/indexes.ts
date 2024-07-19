@@ -519,6 +519,16 @@ export type EnsureInvertedIndexOptions = {
 };
 
 /**
+ * Options for creating an index.
+ */
+export type EnsureIndexOptions =
+  | EnsurePersistentIndexOptions
+  | EnsureGeoIndexOptions
+  | EnsureTtlIndexOptions
+  | EnsureMdiIndexOptions
+  | EnsureInvertedIndexOptions;
+
+/**
  * Shared attributes of all index types.
  */
 export type GenericIndex = {

@@ -40,6 +40,7 @@ import {
   TtlIndex,
   MdiIndex,
   _indexHandle,
+  EnsureIndexOptions,
 } from "./indexes.js";
 import { COLLECTION_NOT_FOUND, DOCUMENT_NOT_FOUND } from "./lib/codes.js";
 
@@ -2006,6 +2007,27 @@ export interface DocumentCollection<
   ensureIndex(
     details: EnsureInvertedIndexOptions
   ): Promise<ArangoApiResponse<InvertedIndex & { isNewlyCreated: boolean }>>;
+  /**
+   * Creates an index on the collection if it does not already exist.
+   *
+   * @param details - Options for creating the index.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
+   * // Create a unique index for looking up documents by username
+   * await collection.ensureIndex({
+   *   type: "persistent",
+   *   fields: ["username"],
+   *   name: "unique-usernames",
+   *   unique: true
+   * });
+   * ```
+   */
+  ensureIndex(
+    details: EnsureIndexOptions
+  ): Promise<ArangoApiResponse<Index & { isNewlyCreated: boolean }>>;
   /**
    * Deletes the index with the given name or `id` from the database.
    *
