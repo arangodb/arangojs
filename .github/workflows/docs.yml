@@ -48,6 +48,7 @@ jobs:
         run: |
           echo '---\npermalink: /VERSION\ntitle: "VERSION"\n---\n' > gh-pages/VERSION.md
           echo $TAG >> gh-pages/VERSION
+          unlink gh-pages/latest
           ln -s $TAG gh-pages/latest
 
       - name: Update CHANGELOG / MIGRATING
