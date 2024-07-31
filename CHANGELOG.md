@@ -14,69 +14,7 @@ This driver uses semantic versioning:
 - A change in the major version (e.g. 1.Y.Z -> 2.0.0) indicates _breaking_
   changes that require changes in your code to upgrade.
 
-## [Unreleased]
-
-### Changed
-
-- Split the Collection type parameter into result and input types ([#807](https://github.com/arangodb/arangojs/issues/807))
-
-  It is now possible to specify a separate type for the data passed when
-  creating or modifying documents in addition to the type of the data returned
-  when fetching documents. This allows excluding computed properties from
-  the input type while still including them in the result type.
-
-### Added
-
-- Added `skipFastLockRound` option for streaming transactions
-
-  This option was introduced in 3.12.1 and allows skipping the fast lock round.
-
-- Added non-specific `EnsureIndexOptions` type and `ensureIndex` method
-  signature ([#778](https://github.com/arangodb/arangojs/issues/778))
-
-  This allows creating indexes without narrowing the index type.
-
-## [9.0.0-preview.4] - 2024-06-18
-
-### Added
-
-- Added readonly `Job#id` property
-
-  This property was not previously exposed.
-
-## [9.0.0-preview.3] - 2024-06-12
-
-### Removed
-
-- Removed `Collection` methods for simple queries: `list`, `all`, `any`,
-  `byExample`, `firstExample`, `removeByExample`, `replaceByExample`,
-  `updateByExample`, `lookupByKeys`, `removeByKeys`, `fulltext`
-
-  Simple queries were deprecated in ArangoDB 3.4 and can be replicated with AQL.
-
-### Added
-
-- Added support for `withStats` option in `collection.indexes`
-
-  This method now takes an object with `withStats` and `withHidden` options
-  instead of a boolean flag.
-
-## [9.0.0-preview.2] - 2024-05-15
-
-### Changed
-
-- Inlined `x3-linkedlist` dependency
-
-  Inlining this dependency should help make arangojs more portable.
-
-### Added
-
-- Added support for `withHidden` option in `collection.indexes`
-
-  This option was introduced in ArangoDB 3.10.13 and 3.11.7 and allows
-  fetching the progress information of indexes that are in the building phase.
-
-## [9.0.0-preview.1] - 2024-04-16
+## [9.0.0] - 2024-07-31
 
 This is a major release and breaks backwards compatibility.
 
@@ -109,6 +47,12 @@ for upgrading your code to arangojs v9.
   published to npm. The npm package can still be used in the browser by using
   common frontend tooling like webpack or rollup.
 
+- Removed `Collection` methods for simple queries: `list`, `all`, `any`,
+  `byExample`, `firstExample`, `removeByExample`, `replaceByExample`,
+  `updateByExample`, `lookupByKeys`, `removeByKeys`, `fulltext`
+
+  Simple queries were deprecated in ArangoDB 3.4 and can be replicated with AQL.
+
 ### Changed
 
 - Replaced request logic with native `fetch` API ([#788](https://github.com/arangodb/arangojs/issues/788), DE-578, DE-758)
@@ -138,6 +82,17 @@ for upgrading your code to arangojs v9.
   should help support more environments and reduce the size of the browser
   bundle.
 
+- Inlined `x3-linkedlist` dependency
+
+  Inlining this dependency should help make arangojs more portable.
+
+- Split the Collection type parameter into result and input types ([#807](https://github.com/arangodb/arangojs/issues/807))
+
+  It is now possible to specify a separate type for the data passed when
+  creating or modifying documents in addition to the type of the data returned
+  when fetching documents. This allows excluding computed properties from
+  the input type while still including them in the result type.
+
 ### Added
 
 - Added ESM support (DE-236)
@@ -145,6 +100,29 @@ for upgrading your code to arangojs v9.
   The driver now supports being imported as an ES module or CommonJS module
   and provides exports for both types of environments. This change should be
   backwards-compatible.
+
+- Added support for `withHidden` option in `collection.indexes`
+
+  This option was introduced in ArangoDB 3.10.13 and 3.11.7 and allows
+  fetching the progress information of indexes that are in the building phase.
+
+- Added support for `withStats` option in `collection.indexes`
+
+  This method now takes an object with `withStats` and `withHidden` options
+  instead of a boolean flag.
+
+- Added readonly `Job#id` property
+
+  This property was not previously exposed.
+
+- Added `skipFastLockRound` option for streaming transactions
+
+  This option was introduced in 3.12.1 and allows skipping the fast lock round.
+
+- Added non-specific `EnsureIndexOptions` type and `ensureIndex` method
+  signature ([#778](https://github.com/arangodb/arangojs/issues/778))
+
+  This allows creating indexes without narrowing the index type.
 
 ## [8.8.1] - 2024-03-20
 
@@ -1926,11 +1904,7 @@ For a detailed list of changes between pre-release versions of v7 see the
 
   Graph methods now only return the relevant part of the response body.
 
-[unreleased]: https://github.com/arangodb/arangojs/compare/v9.0.0-preview.4...HEAD
-[9.0.0-preview.4]: https://github.com/arangodb/arangojs/compare/v9.0.0-preview.3...v9.0.0-preview.4
-[9.0.0-preview.3]: https://github.com/arangodb/arangojs/compare/v9.0.0-preview.2...v9.0.0-preview.3
-[9.0.0-preview.2]: https://github.com/arangodb/arangojs/compare/v9.0.0-preview.1...v9.0.0-preview.2
-[9.0.0-preview.1]: https://github.com/arangodb/arangojs/compare/v8.8.1...v9.0.0-preview.1
+[9.0.0]: https://github.com/arangodb/arangojs/compare/v8.8.1...v9.0.0
 [8.8.1]: https://github.com/arangodb/arangojs/compare/v8.8.0...v8.8.1
 [8.8.0]: https://github.com/arangodb/arangojs/compare/v8.7.0...v8.8.0
 [8.7.0]: https://github.com/arangodb/arangojs/compare/v8.6.0...v8.7.0

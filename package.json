@@ -2,7 +2,7 @@
   "private": true,
   "type": "module",
   "name": "arangojs",
-  "version": "9.0.0-preview.4",
+  "version": "9.0.0",
   "engines": {
     "node": ">=18"
   },
