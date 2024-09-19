@@ -41,6 +41,7 @@ import {
   MdiIndex,
   _indexHandle,
   EnsureIndexOptions,
+  HiddenIndex,
 } from "./indexes.js";
 import { COLLECTION_NOT_FOUND, DOCUMENT_NOT_FOUND } from "./lib/codes.js";
 
@@ -978,8 +979,11 @@ export type IndexListOptions = {
    */
   withStats?: boolean;
   /**
-   * If set to `true`, includes indexes that are not yet fully built but are
-   * in the building phase.
+   * If set to `true`, includes internal indexes as well as indexes that are
+   * not yet fully built but are in the building phase.
+   *
+   * You should cast the resulting indexes to `HiddenIndex` to ensure internal
+   * and incomplete indexes are accurately represented.
    *
    * Default: `false`.
    */
@@ -1879,8 +1883,19 @@ export interface DocumentCollection<
    * const collection = db.collection("some-collection");
    * const indexes = await collection.indexes();
    * ```
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
+   * const allIndexes = await collection.indexes<HiddenIndex>({
+   *   withHidden: true
+   * });
+   * ```
    */
-  indexes(options?: IndexListOptions): Promise<Index[]>;
+  indexes<IndexType extends Index | HiddenIndex = Index>(
+    options?: IndexListOptions
+  ): Promise<IndexType[]>;
   /**
    * Returns an index description by name or `id` if it exists.
    *

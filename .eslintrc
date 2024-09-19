@@ -8,7 +8,11 @@
     "sourceType": "module",
     "project": "./tsconfig.json"
   },
-  "plugins": ["@typescript-eslint", "prettier", "security"],
+  "plugins": [
+    "@typescript-eslint",
+    "prettier",
+    "security"
+  ],
   "extends": [
     "plugin:@typescript-eslint/recommended",
     "plugin:security/recommended",
@@ -26,7 +30,9 @@
     "@typescript-eslint/no-non-null-assertion": "off",
     "@typescript-eslint/no-unused-vars": [
       "error",
-      { "argsIgnorePattern": "^_" }
+      {
+        "argsIgnorePattern": "^_"
+      }
     ],
     "security/detect-object-injection": "off"
   }

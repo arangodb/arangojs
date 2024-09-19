@@ -14,6 +14,21 @@ This driver uses semantic versioning:
 - A change in the major version (e.g. 1.Y.Z -> 2.0.0) indicates _breaking_
   changes that require changes in your code to upgrade.
 
+## [Unreleased]
+
+### Changed
+
+- Removed `progress` property from `Index` type
+
+  This property is only available when fetching indexes with the `withHidden`
+  option set to `true`.
+
+- Added `HiddenIndex` type (DE-849)
+
+  This type is used to represent an index returned by `collection.indexes` when
+  the `withHidden` option is set to `true` and includes the `progress` property
+  in addition to internal indexes.
+
 ## [9.0.0] - 2024-07-31
 
 This is a major release and breaks backwards compatibility.
@@ -1904,6 +1919,7 @@ For a detailed list of changes between pre-release versions of v7 see the
 
   Graph methods now only return the relevant part of the response body.
 
+[unreleased]: https://github.com/arangodb/arangojs/compare/v9.0.0...HEAD
 [9.0.0]: https://github.com/arangodb/arangojs/compare/v8.8.1...v9.0.0
 [8.8.1]: https://github.com/arangodb/arangojs/compare/v8.8.0...v8.8.1
 [8.8.0]: https://github.com/arangodb/arangojs/compare/v8.7.0...v8.8.0

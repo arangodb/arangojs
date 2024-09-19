@@ -553,10 +553,6 @@ export type GenericIndex = {
    * Additional stats about this index.
    */
   figures?: Record<string, any>;
-  /**
-   * Progress of this index if it is still being created.
-   */
-  progress?: number;
 };
 
 /**
@@ -671,6 +667,21 @@ export type InvertedIndex = GenericIndex & {
 };
 
 /**
+ * An object representing an arangosearch index.
+ */
+export type InternalArangosearchIndex = {
+  id: string;
+  type: "arangosearch";
+  view: string;
+  figures?: Record<string, any>;
+  analyzers: string[];
+  fields: Record<string, Record<string, any>>;
+  includeAllFields: boolean;
+  trackListPositions: boolean;
+  storeValues: "none" | "id";
+};
+
+/**
  * An object representing an index.
  */
 export type Index =
@@ -680,6 +691,33 @@ export type Index =
   | TtlIndex
   | MdiIndex
   | InvertedIndex;
+
+/**
+ * An object representing an internal index.
+ */
+export type InternalIndex = InternalArangosearchIndex;
+
+/**
+ * An object representing a potentially hidden index.
+ *
+ * This type can be used to cast the result of `collection.indexes` to better
+ * reflect the actual data returned by the server when using the `withHidden`
+ * option:
+ *
+ * ```ts
+ * const indexes = await collection.indexes<HiddenIndex>({
+ *   withHidden: true
+ * }));
+ * // indexes may include internal indexes and indexes with a "progress"
+ * // property
+ * ```
+ */
+export type HiddenIndex = (Index | InternalArangosearchIndex) & {
+  /**
+   * Progress of this index if it is still being created.
+   */
+  progress?: number;
+};
 
 export type IndexDetails = Index & {
   figures?: Record<string, any>;
