@@ -2397,7 +2397,7 @@ export class Database {
    * @example
    * ```js
    * const systemDb = new Database();
-   * const myDb = system.database("my_database");
+   * const myDb = systemDb.database("my_database");
    * ```
    */
   database(databaseName: string) {
