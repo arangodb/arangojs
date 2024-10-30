@@ -234,6 +234,13 @@ export class BatchedArrayCursor<T = any> {
   }
 
   /**
+   * ID of this cursor.
+   */
+  get id() {
+    return this._id;
+  }
+
+  /**
    * An {@link ArrayCursor} providing item-wise access to the cursor result set.
    *
    * See also {@link ArrayCursor#batches}.
@@ -781,6 +788,13 @@ export class ArrayCursor<T = any> {
    */
   get database() {
     return this._batches.database;
+  }
+
+  /**
+   * ID of this cursor.
+   */
+  get id() {
+    return this._batches.id;
   }
 
   /**

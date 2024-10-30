@@ -29,6 +29,10 @@ This driver uses semantic versioning:
   These properties can be used to access the headers and path used when creating
   the route.
 
+- Added `id` property to `ArrayCursor` and `BatchedArrayCursor` types (DE-936)
+
+  This property can be used to access the ID of the cursor.
+
 ## [9.1.0] - 2024-09-25
 
 ### Changed
