@@ -276,29 +276,29 @@ export type CreateArangoSearchViewOptions =
      */
     primarySort?: (
       | {
-          /**
-           * Attribute path for the value of each document to use for
-           * sorting.
-           */
-          field: string;
-          /**
-           * If set to `"asc"`, the primary sorting order will be ascending.
-           * If set to `"desc"`, the primary sorting order will be descending.
-           */
-          direction: Direction;
-        }
+        /**
+         * Attribute path for the value of each document to use for
+         * sorting.
+         */
+        field: string;
+        /**
+         * If set to `"asc"`, the primary sorting order will be ascending.
+         * If set to `"desc"`, the primary sorting order will be descending.
+         */
+        direction: Direction;
+      }
       | {
-          /**
-           * Attribute path for the value of each document to use for
-           * sorting.
-           */
-          field: string;
-          /**
-           * If set to `true`, the primary sorting order will be ascending.
-           * If set to `false`, the primary sorting order will be descending.
-           */
-          asc: boolean;
-        }
+        /**
+         * Attribute path for the value of each document to use for
+         * sorting.
+         */
+        field: string;
+        /**
+         * If set to `true`, the primary sorting order will be ascending.
+         * If set to `false`, the primary sorting order will be descending.
+         */
+        asc: boolean;
+      }
     )[];
     /**
      * Compression to use for the primary sort data.
@@ -493,6 +493,13 @@ export class View {
   }
 
   /**
+   * Database this view belongs to.
+   */
+  get database() {
+    return this._db;
+  }
+
+  /**
    * Name of the View.
    */
   get name() {
@@ -556,10 +563,10 @@ export class View {
     options: CreateViewOptions
   ): Promise<
     typeof options extends CreateArangoSearchViewOptions
-      ? ArangoSearchViewDescription
-      : Options extends CreateSearchAliasViewOptions
-        ? SearchAliasViewDescription
-        : ViewDescription
+    ? ArangoSearchViewDescription
+    : Options extends CreateSearchAliasViewOptions
+    ? SearchAliasViewDescription
+    : ViewDescription
   > {
     return this._db.request({
       method: "POST",
@@ -635,10 +642,10 @@ export class View {
     properties?: Properties
   ): Promise<
     Properties extends ArangoSearchViewPatchPropertiesOptions
-      ? ArangoSearchViewProperties
-      : Properties extends SearchAliasViewPatchPropertiesOptions
-        ? SearchAliasViewProperties
-        : ViewProperties
+    ? ArangoSearchViewProperties
+    : Properties extends SearchAliasViewPatchPropertiesOptions
+    ? SearchAliasViewProperties
+    : ViewProperties
   > {
     return this._db.request({
       method: "PATCH",
@@ -666,10 +673,10 @@ export class View {
     properties?: Properties
   ): Promise<
     Properties extends ArangoSearchViewPropertiesOptions
-      ? ArangoSearchViewProperties
-      : Properties extends SearchAliasViewPropertiesOptions
-        ? SearchAliasViewProperties
-        : ViewProperties
+    ? ArangoSearchViewProperties
+    : Properties extends SearchAliasViewPropertiesOptions
+    ? SearchAliasViewProperties
+    : ViewProperties
   > {
     return this._db.request({
       method: "PUT",

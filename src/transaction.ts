@@ -89,6 +89,13 @@ export class Transaction {
   }
 
   /**
+   * Database this transaction belongs to.
+   */
+  get database() {
+    return this._db;
+  }
+
+  /**
    * Unique identifier of this transaction.
    *
    * See {@link database.Database#transaction}.

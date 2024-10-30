@@ -14,6 +14,21 @@ This driver uses semantic versioning:
 - A change in the major version (e.g. 1.Y.Z -> 2.0.0) indicates _breaking_
   changes that require changes in your code to upgrade.
 
+## [Unreleased]
+
+### Added
+
+- Added `database` property to `Analyzer`, `ArrayCursor`, `BatchedArrayCursor`,
+  `Collection`, `Graph`, `Job`, `Route`, `Transaction` and `View` types (DE-935)
+
+  This property can be used to access the database instance a given object
+  belongs to.
+
+- Added `headers` and `path` properties to `Route` type
+
+  These properties can be used to access the headers and path used when creating
+  the route.
+
 ## [9.1.0] - 2024-09-25
 
 ### Changed

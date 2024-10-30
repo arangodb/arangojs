@@ -1064,6 +1064,10 @@ export interface DocumentCollection<
   EntryInputType extends Record<string, any> = EntryResultType,
 > extends ArangoCollection {
   /**
+   * Database this collection belongs to.
+   */
+  readonly database: Database;
+  /**
    * Checks whether the collection exists.
    *
    * @example
@@ -1215,7 +1219,7 @@ export interface DocumentCollection<
   ): Promise<
     ArangoApiResponse<
       CollectionMetadata &
-        CollectionProperties & { count: number; figures: Record<string, any> }
+      CollectionProperties & { count: number; figures: Record<string, any> }
     >
   >;
   /**
@@ -1550,9 +1554,9 @@ export interface DocumentCollection<
   ): Promise<
     Array<
       | (DocumentOperationMetadata & {
-          new?: Document<EntryResultType>;
-          old?: Document<EntryResultType>;
-        })
+        new?: Document<EntryResultType>;
+        old?: Document<EntryResultType>;
+      })
       | DocumentOperationFailure
     >
   >;
@@ -1622,9 +1626,9 @@ export interface DocumentCollection<
   ): Promise<
     Array<
       | (DocumentOperationMetadata & {
-          new?: Document<EntryResultType>;
-          old?: Document<EntryResultType>;
-        })
+        new?: Document<EntryResultType>;
+        old?: Document<EntryResultType>;
+      })
       | DocumentOperationFailure
     >
   >;
@@ -1694,9 +1698,9 @@ export interface DocumentCollection<
   ): Promise<
     Array<
       | (DocumentOperationMetadata & {
-          new?: Document<EntryResultType>;
-          old?: Document<EntryResultType>;
-        })
+        new?: Document<EntryResultType>;
+        old?: Document<EntryResultType>;
+      })
       | DocumentOperationFailure
     >
   >;
@@ -2255,9 +2259,9 @@ export interface EdgeCollection<
   ): Promise<
     Array<
       | (DocumentOperationMetadata & {
-          new?: Edge<EntryResultType>;
-          old?: Edge<EntryResultType>;
-        })
+        new?: Edge<EntryResultType>;
+        old?: Edge<EntryResultType>;
+      })
       | DocumentOperationFailure
     >
   >;
@@ -2351,9 +2355,9 @@ export interface EdgeCollection<
   ): Promise<
     Array<
       | (DocumentOperationMetadata & {
-          new?: Edge<EntryResultType>;
-          old?: Edge<EntryResultType>;
-        })
+        new?: Edge<EntryResultType>;
+        old?: Edge<EntryResultType>;
+      })
       | DocumentOperationFailure
     >
   >;
@@ -2445,9 +2449,9 @@ export interface EdgeCollection<
   ): Promise<
     Array<
       | (DocumentOperationMetadata & {
-          new?: Edge<EntryResultType>;
-          old?: Edge<EntryResultType>;
-        })
+        new?: Edge<EntryResultType>;
+        old?: Edge<EntryResultType>;
+      })
       | DocumentOperationFailure
     >
   >;
@@ -2705,13 +2709,12 @@ export interface EdgeCollection<
  * @internal
  */
 export class Collection<
-    EntryResultType extends Record<string, any> = any,
-    EntryInputType extends Record<string, any> = EntryResultType,
-  >
+  EntryResultType extends Record<string, any> = any,
+  EntryInputType extends Record<string, any> = EntryResultType,
+>
   implements
-    EdgeCollection<EntryResultType, EntryInputType>,
-    DocumentCollection<EntryResultType, EntryInputType>
-{
+  EdgeCollection<EntryResultType, EntryInputType>,
+  DocumentCollection<EntryResultType, EntryInputType> {
   //#region attributes
   protected _name: string;
   protected _db: Database;
@@ -2728,6 +2731,10 @@ export class Collection<
   //#region metadata
   get isArangoCollection(): true {
     return true;
+  }
+
+  get database() {
+    return this._db;
   }
 
   get name() {
@@ -2838,9 +2845,9 @@ export class Collection<
     details = false
   ): Promise<
     CollectionMetadata &
-      ArangoApiResponse<
-        CollectionProperties & { count: number; figures: Record<string, any> }
-      >
+    ArangoApiResponse<
+      CollectionProperties & { count: number; figures: Record<string, any> }
+    >
   > {
     return this._db.request({
       path: `/_api/collection/${encodeURIComponent(this._name)}/figures`,

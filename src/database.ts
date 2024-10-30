@@ -1243,14 +1243,14 @@ export type ServiceConfiguration = {
    * by software when managing the service.
    */
   type:
-    | "integer"
-    | "boolean"
-    | "string"
-    | "number"
-    | "json"
-    | "password"
-    | "int"
-    | "bool";
+  | "integer"
+  | "boolean"
+  | "string"
+  | "number"
+  | "json"
+  | "password"
+  | "int"
+  | "bool";
   /**
    * Current value of the configuration option as stored internally.
    */
@@ -1430,10 +1430,10 @@ export type ServiceTestSuiteReport = {
 export type ServiceTestXunitTest =
   | ["testcase", { classname: string; name: string; time: number }]
   | [
-      "testcase",
-      { classname: string; name: string; time: number },
-      ["failure", { message: string; type: string }, string],
-    ];
+    "testcase",
+    { classname: string; name: string; time: number },
+    ["failure", { message: string; type: string }, string],
+  ];
 
 /**
  * Test results for a Foxx service's tests in XUnit format using the JSONML
@@ -2401,7 +2401,7 @@ export class Database {
    * ```
    */
   database(databaseName: string) {
-    return new Database(this as any, databaseName);
+    return new Database(this, databaseName);
   }
 
   /**
@@ -3130,6 +3130,7 @@ export class Database {
   }
   //#endregion
 
+  //#region users
   /**
    * Fetches all ArangoDB users visible to the authenticated user and returns
    * an array of user objects.
@@ -3400,13 +3401,13 @@ export class Database {
     const databaseName = isArangoDatabase(database)
       ? database.name
       : database ??
-        (isArangoCollection(collection)
-          ? ((collection as any)._db as Database).name
-          : this._name);
+      (isArangoCollection(collection)
+        ? ((collection as any)._db as Database).name
+        : this._name);
     const suffix = collection
       ? `/${encodeURIComponent(
-          isArangoCollection(collection) ? collection.name : collection
-        )}`
+        isArangoCollection(collection) ? collection.name : collection
+      )}`
       : "";
     return this.request(
       {
@@ -3501,13 +3502,13 @@ export class Database {
     const databaseName = isArangoDatabase(database)
       ? database.name
       : database ??
-        (isArangoCollection(collection)
-          ? ((collection as any)._db as Database).name
-          : this._name);
+      (isArangoCollection(collection)
+        ? ((collection as any)._db as Database).name
+        : this._name);
     const suffix = collection
       ? `/${encodeURIComponent(
-          isArangoCollection(collection) ? collection.name : collection
-        )}`
+        isArangoCollection(collection) ? collection.name : collection
+      )}`
       : "";
     return this.request(
       {
@@ -3591,13 +3592,13 @@ export class Database {
     const databaseName = isArangoDatabase(database)
       ? database.name
       : database ??
-        (isArangoCollection(collection)
-          ? ((collection as any)._db as Database).name
-          : this._name);
+      (isArangoCollection(collection)
+        ? ((collection as any)._db as Database).name
+        : this._name);
     const suffix = collection
       ? `/${encodeURIComponent(
-          isArangoCollection(collection) ? collection.name : collection
-        )}`
+        isArangoCollection(collection) ? collection.name : collection
+      )}`
       : "";
     return this.request(
       {
@@ -4118,7 +4119,7 @@ export class Database {
     } catch (e) {
       try {
         await trx.abort();
-      } catch {}
+      } catch { }
       throw e;
     }
   }
@@ -4541,14 +4542,14 @@ export class Database {
     return this.request(
       options
         ? {
-            method: "PUT",
-            path: "/_api/query/properties",
-            body: options,
-          }
+          method: "PUT",
+          path: "/_api/query/properties",
+          body: options,
+        }
         : {
-            method: "GET",
-            path: "/_api/query/properties",
-          }
+          method: "GET",
+          path: "/_api/query/properties",
+        }
     );
   }
 

@@ -227,6 +227,13 @@ export class BatchedArrayCursor<T = any> {
   }
 
   /**
+   * Database this cursor belongs to.
+   */
+  get database() {
+    return this._db;
+  }
+
+  /**
    * An {@link ArrayCursor} providing item-wise access to the cursor result set.
    *
    * See also {@link ArrayCursor#batches}.
@@ -767,6 +774,13 @@ export class ArrayCursor<T = any> {
   constructor(batchedCursor: BatchedArrayCursor, view: BatchView<T>) {
     this._batches = batchedCursor;
     this._view = view;
+  }
+
+  /**
+   * Database this cursor belongs to.
+   */
+  get database() {
+    return this._batches.database;
   }
 
   /**

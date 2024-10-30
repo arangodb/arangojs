@@ -28,6 +28,13 @@ export class Job<T = any> {
   }
 
   /**
+   * Database this job belongs to.
+   */
+  get database() {
+    return this._db;
+  }
+
+  /**
    * The job's ID.
    */
   get id(): string {

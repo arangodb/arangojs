@@ -925,6 +925,13 @@ export class Analyzer {
   }
 
   /**
+   * Database this analyzer belongs to.
+   */
+  get database() {
+    return this._db;
+  }
+
+  /**
    * @internal
    *
    * Indicates that this object represents an ArangoDB Analyzer.
@@ -1001,40 +1008,40 @@ export class Analyzer {
     options: Options
   ): Promise<
     Options extends CreateIdentityAnalyzerOptions
-      ? IdentityAnalyzerDescription
-      : Options extends CreateDelimiterAnalyzerOptions
-        ? DelimiterAnalyzerDescription
-        : Options extends CreateStemAnalyzerOptions
-          ? StemAnalyzerDescription
-          : Options extends CreateNormAnalyzerOptions
-            ? NormAnalyzerDescription
-            : Options extends CreateNgramAnalyzerOptions
-              ? NgramAnalyzerDescription
-              : Options extends CreateTextAnalyzerOptions
-                ? TextAnalyzerDescription
-                : Options extends CreateSegmentationAnalyzerOptions
-                  ? SegmentationAnalyzerDescription
-                  : Options extends CreateAqlAnalyzerOptions
-                    ? AqlAnalyzerDescription
-                    : Options extends CreatePipelineAnalyzerOptions
-                      ? PipelineAnalyzerDescription
-                      : Options extends CreateStopwordsAnalyzerOptions
-                        ? StopwordsAnalyzerDescription
-                        : Options extends CreateCollationAnalyzerOptions
-                          ? CollationAnalyzerDescription
-                          : Options extends CreateMinHashAnalyzerOptions
-                            ? MinHashAnalyzerDescription
-                            : Options extends CreateClassificationAnalyzerOptions
-                              ? ClassificationAnalyzerDescription
-                              : Options extends CreateNearestNeighborsAnalyzerOptions
-                                ? NearestNeighborsAnalyzerDescription
-                                : Options extends CreateGeoJsonAnalyzerOptions
-                                  ? GeoJsonAnalyzerDescription
-                                  : Options extends CreateGeoPointAnalyzerOptions
-                                    ? GeoPointAnalyzerDescription
-                                    : Options extends CreateGeoS2AnalyzerOptions
-                                      ? GeoS2AnalyzerDescription
-                                      : AnalyzerDescription
+    ? IdentityAnalyzerDescription
+    : Options extends CreateDelimiterAnalyzerOptions
+    ? DelimiterAnalyzerDescription
+    : Options extends CreateStemAnalyzerOptions
+    ? StemAnalyzerDescription
+    : Options extends CreateNormAnalyzerOptions
+    ? NormAnalyzerDescription
+    : Options extends CreateNgramAnalyzerOptions
+    ? NgramAnalyzerDescription
+    : Options extends CreateTextAnalyzerOptions
+    ? TextAnalyzerDescription
+    : Options extends CreateSegmentationAnalyzerOptions
+    ? SegmentationAnalyzerDescription
+    : Options extends CreateAqlAnalyzerOptions
+    ? AqlAnalyzerDescription
+    : Options extends CreatePipelineAnalyzerOptions
+    ? PipelineAnalyzerDescription
+    : Options extends CreateStopwordsAnalyzerOptions
+    ? StopwordsAnalyzerDescription
+    : Options extends CreateCollationAnalyzerOptions
+    ? CollationAnalyzerDescription
+    : Options extends CreateMinHashAnalyzerOptions
+    ? MinHashAnalyzerDescription
+    : Options extends CreateClassificationAnalyzerOptions
+    ? ClassificationAnalyzerDescription
+    : Options extends CreateNearestNeighborsAnalyzerOptions
+    ? NearestNeighborsAnalyzerDescription
+    : Options extends CreateGeoJsonAnalyzerOptions
+    ? GeoJsonAnalyzerDescription
+    : Options extends CreateGeoPointAnalyzerOptions
+    ? GeoPointAnalyzerDescription
+    : Options extends CreateGeoS2AnalyzerOptions
+    ? GeoS2AnalyzerDescription
+    : AnalyzerDescription
   > {
     return this._db.request({
       method: "POST",

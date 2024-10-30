@@ -389,8 +389,7 @@ export type ReplaceEdgeDefinitionOptions = {
  * @param T - Type to use for document data. Defaults to `any`.
  */
 export class GraphVertexCollection<T extends Record<string, any> = any>
-  implements ArangoCollection
-{
+  implements ArangoCollection {
   protected _db: Database;
   protected _name: string;
   protected _graph: Graph;
@@ -413,6 +412,13 @@ export class GraphVertexCollection<T extends Record<string, any> = any>
    */
   get isArangoCollection(): true {
     return true;
+  }
+
+  /**
+   * Database this vertex collection belongs to.
+   */
+  get database() {
+    return this._db;
   }
 
   /**
@@ -793,8 +799,7 @@ export class GraphVertexCollection<T extends Record<string, any> = any>
  * @param T - Type to use for document data. Defaults to `any`.
  */
 export class GraphEdgeCollection<T extends Record<string, any> = any>
-  implements ArangoCollection
-{
+  implements ArangoCollection {
   protected _db: Database;
   protected _name: string;
   protected _graph: Graph;
@@ -817,6 +822,13 @@ export class GraphEdgeCollection<T extends Record<string, any> = any>
    */
   get isArangoCollection(): true {
     return true;
+  }
+
+  /**
+   * Database this edge collection belongs to.
+   */
+  get database() {
+    return this._db;
   }
 
   /**
@@ -1206,8 +1218,8 @@ export class Graph {
    * @internal
    */
   constructor(db: Database, name: string) {
-    this._name = name;
     this._db = db;
+    this._name = name;
   }
 
   /**
@@ -1217,6 +1229,13 @@ export class Graph {
    */
   get isArangoGraph(): true {
     return true;
+  }
+
+  /**
+   * Database this graph belongs to.
+   */
+  get database() {
+    return this._db;
   }
 
   /**

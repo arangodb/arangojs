@@ -36,6 +36,27 @@ export class Route {
   }
 
   /**
+   * Database this route belongs to.
+   */
+  get database() {
+    return this._db;
+  }
+
+  /**
+   * Path of this route.
+   */
+  get path() {
+    return this._path;
+  }
+
+  /**
+   * Headers of this route.
+   */
+  get headers() {
+    return this._headers;
+  }
+
+  /**
    * Creates a new route relative to this route that inherits any of its default
    * HTTP headers.
    *
