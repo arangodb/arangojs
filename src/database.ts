@@ -29,6 +29,7 @@ import {
 } from "./collection.js";
 import {
   ArangoApiResponse,
+  ProcessedResponse,
   Config,
   Connection,
   RequestOptions,
@@ -44,7 +45,6 @@ import {
 } from "./graph.js";
 import { Job } from "./job.js";
 import { DATABASE_NOT_FOUND } from "./lib/codes.js";
-import { ArangojsResponse } from "./lib/request.js";
 import { Route } from "./route.js";
 import { Transaction } from "./transaction.js";
 import { CreateViewOptions, View, ViewDescription } from "./view.js";
@@ -1758,14 +1758,20 @@ export type LogEntries = {
   text: string[];
 };
 
+/**
+ * @internal
+ */
 type TrappedError = {
   error: true;
 };
 
-type TrappedRequest = {
+/**
+ * @internal
+ */
+type TrappedRequest<T = any> = {
   error?: false;
   jobId: string;
-  onResolve: (res: ArangojsResponse) => void;
+  onResolve: (res: ProcessedResponse<T>) => void;
   onReject: (error: any) => void;
 };
 
@@ -1780,7 +1786,9 @@ export class Database {
   protected _collections = new Map<string, Collection>();
   protected _graphs = new Map<string, Graph>();
   protected _views = new Map<string, View>();
-  protected _trapRequest?: (trapped: TrappedError | TrappedRequest) => void;
+  protected _trapRequest?: (
+    trapped: TrappedError | TrappedRequest<any>
+  ) => void;
 
   /**
    * Creates a new `Database` instance with its own connection pool.
@@ -1942,13 +1950,13 @@ export class Database {
    * ```
    */
   async createJob<T>(callback: () => Promise<T>): Promise<Job<T>> {
-    const trap = new Promise<TrappedError | TrappedRequest>((resolveTrap) => {
+    const trap = new Promise<TrappedError | TrappedRequest<T>>((resolveTrap) => {
       this._trapRequest = (trapped) => resolveTrap(trapped);
     });
     const eventualResult = callback();
     const trapped = await trap;
     if (trapped.error) return eventualResult as Promise<any>;
-    const { jobId, onResolve, onReject } = trapped as TrappedRequest;
+    const { jobId, onResolve, onReject } = trapped;
     return new Job(
       this,
       jobId,
@@ -1976,10 +1984,10 @@ export class Database {
    * @param transform - An optional function to transform the low-level
    * response object to a more useful return value.
    */
-  async request<T = any>(
+  async request<BodyType = any, ReturnType = BodyType>(
     options: RequestOptions & { absolutePath?: boolean },
-    transform?: (res: ArangojsResponse) => T
-  ): Promise<T>;
+    transform?: (res: ProcessedResponse<BodyType>) => ReturnType
+  ): Promise<ReturnType>;
   /**
    * @internal
    *
@@ -1992,29 +2000,29 @@ export class Database {
    * @param transform - If set to `false`, the raw response object will be
    * returned.
    */
-  async request(
+  async request<BodyType = any>(
     options: RequestOptions & { absolutePath?: boolean },
     transform: false
-  ): Promise<ArangojsResponse>;
-  async request<T = any>(
+  ): Promise<ProcessedResponse<BodyType>>;
+  async request<BodyType = any, ReturnType = BodyType>(
     {
       absolutePath = false,
       basePath,
       ...opts
     }: RequestOptions & { absolutePath?: boolean },
-    transform: false | ((res: ArangojsResponse) => T) = (res) => res.parsedBody
-  ): Promise<T> {
+    transform: false | ((res: ProcessedResponse<BodyType>) => ReturnType) = (res) => res.parsedBody as ReturnType
+  ): Promise<ReturnType> {
     if (!absolutePath) {
       basePath = `/_db/${encodeURIComponent(this._name)}${basePath || ""}`;
     }
     if (this._trapRequest) {
       const trap = this._trapRequest;
       this._trapRequest = undefined;
-      return new Promise<T>(async (resolveRequest, rejectRequest) => {
+      return new Promise<ReturnType>(async (resolveRequest, rejectRequest) => {
         const options = { ...opts };
         options.headers = new Headers(options.headers);
         options.headers.set("x-arango-async", "store");
-        let jobRes: ArangojsResponse;
+        let jobRes: ProcessedResponse<any>;
         try {
           jobRes = await this._connection.request({ basePath, ...options });
         } catch (e) {
@@ -2026,7 +2034,7 @@ export class Database {
         trap({
           jobId,
           onResolve: (res) => {
-            const result = transform ? transform(res) : (res as T);
+            const result = transform ? transform(res) : (res as ReturnType);
             resolveRequest(result);
             return result;
           },

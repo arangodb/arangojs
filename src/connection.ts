@@ -13,18 +13,17 @@ import { Database } from "./database.js";
 import {
   ArangoError,
   HttpError,
+  NetworkError,
+  PropagationTimeoutError,
   isArangoError,
   isArangoErrorResponse,
-  isSystemError,
+  isNetworkError,
 } from "./error.js";
 import {
   ERROR_ARANGO_CONFLICT,
-  ERROR_ARANGO_MAINTENANCE_MODE,
 } from "./lib/codes.js";
 import { normalizeUrl } from "./lib/normalizeUrl.js";
 import {
-  ArangojsError,
-  ArangojsResponse,
   createRequest,
   RequestConfig,
   RequestFunction,
@@ -162,8 +161,6 @@ export type RequestOptions = {
   /**
    * Time in milliseconds after which arangojs will abort the request if the
    * socket has not already timed out.
-   *
-   * See also `agentOptions.timeout` in {@link Config}.
    */
   timeout?: number;
   /**
@@ -181,16 +178,36 @@ export type RequestOptions = {
 };
 
 /**
+ * Processed response object.
+ */
+export interface ProcessedResponse<T = any> extends globalThis.Response {
+  /**
+   * @internal
+   *
+   * Identifier of the ArangoDB host that served this request.
+   */
+  arangojsHostUrl?: string;
+  /**
+   * Fetch request object.
+   */
+  request: globalThis.Request;
+  /**
+   * Parsed response body.
+   */
+  parsedBody?: T;
+};
+
+/**
  * @internal
  */
-type Task = {
+type Task<T = any> = {
   hostUrl?: string;
   stack?: () => string;
   allowDirtyRead: boolean;
   retryOnConflict: number;
-  resolve: (result: any) => void;
-  reject: (error: Error) => void;
-  transform?: (res: ArangojsResponse) => any;
+  resolve: (result: T) => void;
+  reject: (error: unknown) => void;
+  transform?: (res: ProcessedResponse<any>) => T;
   retries: number;
   options: {
     method: string;
@@ -346,7 +363,7 @@ export type Config = {
    *
    * @param req - Request object or XHR instance used for this request.
    */
-  beforeRequest?: (req: globalThis.Request) => void;
+  beforeRequest?: (req: globalThis.Request) => void | Promise<void>;
   /**
    * Callback that will be invoked when the server response has been received
    * and processed or when the request has been failed without a response.
@@ -357,7 +374,13 @@ export type Config = {
    * @param err - Error encountered when handling this request or `null`.
    * @param res - Response object for this request, if no error occurred.
    */
-  afterResponse?: (err: ArangojsError | null, res?: ArangojsResponse) => void;
+  afterResponse?: (err: NetworkError | null, res?: globalThis.Response & { request: globalThis.Request }) => void | Promise<void>;
+  /**
+   * Callback that will be invoked when a request 
+   *
+   * @param err - Error encountered when handling this request.
+   */
+  onError?: (err: Error) => void | Promise<void>;
   /**
    * If set to a positive number, requests will automatically be retried at
    * most this many times if they result in a write-write conflict.
@@ -425,6 +448,7 @@ export class Connection {
   protected _activeHostUrl: string;
   protected _activeDirtyHostUrl: string;
   protected _transactionId: string | null = null;
+  protected _onError?: (err: Error) => void | Promise<void>;
   protected _precaptureStackTraces: boolean;
   protected _queueTimes = new LinkedList<[number, number]>();
   protected _responseQueueTimeSamples: number;
@@ -466,6 +490,7 @@ export class Connection {
     this._precaptureStackTraces = Boolean(config.precaptureStackTraces);
     this._responseQueueTimeSamples = config.responseQueueTimeSamples ?? 10;
     this._retryOnConflict = config.retryOnConflict ?? 0;
+    this._onError = config.onError;
     if (this._responseQueueTimeSamples < 0) {
       this._responseQueueTimeSamples = Infinity;
     }
@@ -520,31 +545,29 @@ export class Connection {
   }
 
   protected async _runQueue() {
-    if (!this._queue.length || this._activeTasks >= this._taskPoolSize) return;
-    const task = this._queue.shift()!;
+    if (this._activeTasks >= this._taskPoolSize) return;
+    const task = this._queue.shift();
+    if (!task) return;
     let hostUrl = this._activeHostUrl;
-    if (task.hostUrl !== undefined) {
-      hostUrl = task.hostUrl;
-    } else if (task.allowDirtyRead) {
-      hostUrl = this._activeDirtyHostUrl;
-      this._activeDirtyHostUrl =
-        this._hostUrls[
-          (this._hostUrls.indexOf(this._activeDirtyHostUrl) + 1) %
-            this._hostUrls.length
-        ];
-      task.options.headers.set("x-arango-allow-dirty-read", "true");
-    } else if (this._loadBalancingStrategy === "ROUND_ROBIN") {
-      this._activeHostUrl =
-        this._hostUrls[
-          (this._hostUrls.indexOf(this._activeHostUrl) + 1) %
-            this._hostUrls.length
-        ];
-    }
-    this._activeTasks += 1;
     try {
-      const res = await this._hosts[this._hostUrls.indexOf(hostUrl)](
+      this._activeTasks += 1;
+      if (task.hostUrl !== undefined) {
+        hostUrl = task.hostUrl;
+      } else if (task.allowDirtyRead) {
+        hostUrl = this._activeDirtyHostUrl;
+        const i = this._hostUrls.indexOf(this._activeDirtyHostUrl) + 1;
+        this._activeDirtyHostUrl = this._hostUrls[i % this._hostUrls.length];
+      } else if (this._loadBalancingStrategy === "ROUND_ROBIN") {
+        const i = this._hostUrls.indexOf(this._activeHostUrl) + 1;
+        this._activeHostUrl = this._hostUrls[i % this._hostUrls.length];
+      }
+      const res: globalThis.Response & {
+        request: globalThis.Request;
+        arangojsHostUrl: string;
+        parsedBody?: any;
+      } = Object.assign(await this._hosts[this._hostUrls.indexOf(hostUrl)](
         task.options
-      );
+      ), { arangojsHostUrl: hostUrl });
       const leaderEndpoint = res.headers.get(LEADER_ENDPOINT_HEADER);
       if (res.status === 503 && leaderEndpoint) {
         const [cleanUrl] = this.addToHostList(leaderEndpoint);
@@ -553,62 +576,54 @@ export class Connection {
           this._activeHostUrl = cleanUrl;
         }
         this._queue.push(task);
-      } else {
-        res.arangojsHostUrl = hostUrl;
-        const contentType = res.headers.get("content-type");
-        const queueTime = res.headers.get("x-arango-queue-time-seconds");
-        if (queueTime) {
-          this._queueTimes.push([Date.now(), Number(queueTime)]);
-          while (this._responseQueueTimeSamples < this._queueTimes.length) {
-            this._queueTimes.shift();
-          }
-        }
-        if (res.status >= 400) {
-          try {
-            if (contentType?.match(MIME_JSON)) {
-              const errorResponse = res.clone();
-              let errorBody: any;
-              try {
-                errorBody = await errorResponse.json();
-              } catch {
-                // noop
-              }
-              if (isArangoErrorResponse(errorBody)) {
-                res.parsedBody = errorBody;
-                throw new ArangoError(res);
-              }
-            }
-            throw new HttpError(res);
-          } catch (err: any) {
-            if (task.stack) {
-              err.stack += task.stack();
-            }
-            throw err;
-          }
-        }
-        if (res.body) {
-          if (task.options.expectBinary) {
-            res.parsedBody = await res.blob();
-          } else if (contentType?.match(MIME_JSON)) {
-            res.parsedBody = await res.json();
-          } else {
-            res.parsedBody = await res.text();
-          }
-        }
-        task.resolve(task.transform ? task.transform(res) : res);
+        return;
       }
-    } catch (err: any) {
+      const queueTime = res.headers.get("x-arango-queue-time-seconds");
+      if (queueTime) {
+        this._queueTimes.push([Date.now(), Number(queueTime)]);
+        while (this._responseQueueTimeSamples < this._queueTimes.length) {
+          this._queueTimes.shift();
+        }
+      }
+      const contentType = res.headers.get("content-type");
+      if (res.status >= 400) {
+        if (contentType?.match(MIME_JSON)) {
+          const errorResponse = res.clone();
+          let errorBody: any;
+          try {
+            errorBody = await errorResponse.json();
+          } catch {
+            // noop
+          }
+          if (isArangoErrorResponse(errorBody)) {
+            res.parsedBody = errorBody;
+            throw ArangoError.from(res);
+          }
+        }
+        throw new HttpError(res);
+      }
+      if (res.body) {
+        if (task.options.expectBinary) {
+          res.parsedBody = await res.blob();
+        } else if (contentType?.match(MIME_JSON)) {
+          res.parsedBody = await res.json();
+        } else {
+          res.parsedBody = await res.text();
+        }
+      }
+      let result: any = res;
+      if (task.transform) result = task.transform(res);
+      task.resolve(result);
+    } catch (e: unknown) {
+      const err = e as Error;
       if (
         !task.allowDirtyRead &&
         this._hosts.length > 1 &&
         this._activeHostUrl === hostUrl &&
         this._loadBalancingStrategy !== "ROUND_ROBIN"
       ) {
-        this._activeHostUrl =
-          this._hostUrls[
-            (this._hostUrls.indexOf(this._activeHostUrl) + 1) %
-              this._hostUrls.length
-          ];
+        const i = this._hostUrls.indexOf(this._activeHostUrl) + 1;
+        this._activeHostUrl = this._hostUrls[i % this._hostUrls.length];
       }
       if (
         isArangoError(err) &&
@@ -617,28 +632,37 @@ export class Connection {
       ) {
         task.retryOnConflict -= 1;
         this._queue.push(task);
-      } else if (
-        ((isSystemError(err) &&
-          err.syscall === "connect" &&
-          err.code === "ECONNREFUSED") ||
-          (isArangoError(err) &&
-            err.errorNum === ERROR_ARANGO_MAINTENANCE_MODE)) &&
+        return;
+      }
+      if (
+        (isNetworkError(err) || isArangoError(err)) &&
+        err.isSafeToRetry &&
         task.hostUrl === undefined &&
         this._maxRetries !== false &&
         task.retries < (this._maxRetries || this._hosts.length - 1)
       ) {
         task.retries += 1;
         this._queue.push(task);
-      } else {
-        if (task.stack) {
-          err.stack += task.stack();
-        }
-        task.reject(err);
+        return;
       }
+      if (task.stack) {
+        err.stack += task.stack();
+      }
+      if (this._onError) {
+        try {
+          const p = this._onError(err);
+          if (p instanceof Promise) await p;
+        } catch (e) {
+          (e as Error).cause = err;
+          task.reject(e);
+          return;
+        }
+      }
+      task.reject(err);
     } finally {
       this._activeTasks -= 1;
+      setTimeout(() => this._runQueue(), 0);
     }
-    this._runQueue();
   }
 
   setBearerAuth(auth: BearerAuthCredentials) {
@@ -832,6 +856,7 @@ export class Connection {
     const numHosts = this._hosts.length;
     const propagated = [] as string[];
     const started = Date.now();
+    const endOfTime = started + timeout;
     let index = 0;
     while (true) {
       if (propagated.length === numHosts) {
@@ -842,10 +867,17 @@ export class Connection {
       }
       const hostUrl = this._hostUrls[index];
       try {
-        await this.request({ ...request, hostUrl });
-      } catch (e: any) {
-        if (started + timeout < Date.now()) {
-          throw e;
+        await this.request({
+          ...request,
+          hostUrl,
+          timeout: endOfTime - Date.now(),
+        });
+      } catch (e) {
+        if (endOfTime < Date.now()) {
+          throw new PropagationTimeoutError(
+            undefined,
+            { cause: e as Error }
+          );
         }
         await new Promise((resolve) => setTimeout(resolve, 1000));
         continue;
@@ -861,7 +893,7 @@ export class Connection {
    *
    * Performs a request using the arangojs connection pool.
    */
-  request<T = ArangojsResponse>(
+  request<T = globalThis.Response & { request: globalThis.Request; parsedBody?: any }>(
     {
       hostUrl,
       method = "GET",
@@ -876,7 +908,7 @@ export class Connection {
       path,
       search: params,
     }: RequestOptions,
-    transform?: (res: ArangojsResponse) => T
+    transform?: (res: globalThis.Response & { request: globalThis.Request; parsedBody?: any }) => T
   ): Promise<T> {
     return new Promise((resolve, reject) => {
       const headers = mergeHeaders(this._headers, requestHeaders ?? {});
@@ -899,6 +931,10 @@ export class Connection {
 
       if (this._transactionId) {
         headers.set("x-arango-trx-id", this._transactionId);
+      }
+
+      if (allowDirtyRead) {
+        headers.set("x-arango-allow-dirty-read", "true");
       }
 
       const task: Task = {

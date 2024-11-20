@@ -1,5 +1,5 @@
+import { ProcessedResponse } from "./connection.js";
 import { Database } from "./database.js";
-import { ArangojsResponse } from "./lib/request.js";
 
 /**
  * Represents an async job in a {@link database.Database}.
@@ -7,7 +7,7 @@ import { ArangojsResponse } from "./lib/request.js";
 export class Job<T = any> {
   protected _id: string;
   protected _db: Database;
-  protected _transformResponse?: (res: ArangojsResponse) => Promise<T>;
+  protected _transformResponse?: (res: ProcessedResponse) => Promise<T>;
   protected _transformError?: (error: any) => Promise<T>;
   protected _loaded: boolean = false;
   protected _result: T | undefined;
@@ -18,7 +18,7 @@ export class Job<T = any> {
   constructor(
     db: Database,
     id: string,
-    transformResponse?: (res: ArangojsResponse) => Promise<T>,
+    transformResponse?: (res: ProcessedResponse) => Promise<T>,
     transformError?: (error: any) => Promise<T>
   ) {
     this._db = db;
@@ -73,7 +73,7 @@ export class Job<T = any> {
    */
   async load(): Promise<T | undefined> {
     if (!this.isLoaded) {
-      let res: ArangojsResponse;
+      let res: ProcessedResponse;
       try {
         res = await this._db.request(
           {

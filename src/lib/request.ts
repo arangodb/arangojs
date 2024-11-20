@@ -5,36 +5,14 @@
  * @internal
  */
 
-import { SystemError } from "../error.js";
+import { FetchFailedError, NetworkError, RequestAbortedError, ResponseTimeoutError } from "../error.js";
 
-/**
- * @internal
- */
-function systemErrorToJSON(this: SystemError) {
-  return {
-    error: true,
-    errno: this.errno,
-    code: this.code,
-    syscall: this.syscall,
-  };
+function timer(timeout: number, cb: () => void) {
+  const t = setTimeout(cb, timeout);
+  return () => clearTimeout(t);
 }
 
-/**
- * @internal
- */
-export interface ArangojsResponse extends globalThis.Response {
-  request: globalThis.Request;
-  parsedBody?: any;
-  arangojsHostUrl?: string;
-}
-
-/**
- * @internal
- */
-export interface ArangojsError extends Error {
-  request: globalThis.Request;
-  toJSON: () => Record<string, any>;
-}
+export const REASON_TIMEOUT = 'timeout';
 
 /**
  * @internal
@@ -55,15 +33,15 @@ export type RequestOptions = {
 export type RequestConfig = {
   credentials: "omit" | "include" | "same-origin";
   keepalive: boolean;
-  beforeRequest?: (req: globalThis.Request) => void;
-  afterResponse?: (err: ArangojsError | null, res?: ArangojsResponse) => void;
+  beforeRequest?: (req: globalThis.Request) => void | Promise<void>;
+  afterResponse?: (err: NetworkError | null, res?: globalThis.Response & { request: globalThis.Request }) => void | Promise<void>;
 };
 
 /**
  * @internal
  */
 export type RequestFunction = {
-  (options: RequestOptions): Promise<ArangojsResponse>;
+  (options: RequestOptions): Promise<globalThis.Response & { request: globalThis.Request }>;
   close?: () => void;
 };
 
@@ -85,7 +63,7 @@ export function createRequest(
   baseUrl: URL,
   config: RequestConfig
 ): RequestFunction {
-  let abort: AbortController | undefined;
+  let abort: () => void | undefined;
   return Object.assign(
     async function request({
       method,
@@ -128,38 +106,54 @@ export function createRequest(
         keepalive: config.keepalive,
       });
       if (config.beforeRequest) {
-        config.beforeRequest(request);
+        const p = config.beforeRequest(request);
+        if (p instanceof Promise) await p;
       }
-      abort = new AbortController();
-      let t: ReturnType<typeof setTimeout> | undefined;
+      const abortController = new AbortController();
+      const signal = abortController.signal;
+      abort = () => abortController.abort();
+      let clearTimer: (() => void) | undefined;
       if (timeout) {
-        t = setTimeout(() => {
-          abort?.abort();
-        }, timeout);
+        clearTimer = timer(timeout, () => {
+          clearTimer = undefined;
+          abortController.abort(REASON_TIMEOUT);
+        });
       }
+      let response: globalThis.Response & { request: globalThis.Request };
       try {
-        const res = await fetch(request, { signal: abort.signal });
-        if (t) clearTimeout(t);
-        const response = res as ArangojsResponse;
-        response.request = request;
-        if (config.afterResponse) {
-          config.afterResponse(null, response);
+        response = Object.assign(await fetch(request, { signal }), { request });
+      } catch (e: unknown) {
+        const cause = e instanceof Error ? e : new Error(String(e));
+        let error: NetworkError;
+        if (signal.aborted) {
+          const reason = typeof signal.reason == 'string' ? signal.reason : undefined;
+          if (reason === REASON_TIMEOUT) {
+            error = new ResponseTimeoutError(undefined, { request });
+          } else {
+            error = new RequestAbortedError(reason, { request, cause });
+          }
+        } else if (cause instanceof TypeError) {
+          error = new FetchFailedError(undefined, { request, cause });
+        } else {
+          error = new NetworkError(cause.message, { request, cause });
         }
-        return response;
-      } catch (err) {
-        if (t) clearTimeout(t);
-        const error = err as ArangojsError;
-        error.request = request;
-        error.toJSON = systemErrorToJSON;
         if (config.afterResponse) {
-          config.afterResponse(error);
+          const p = config.afterResponse(error);
+          if (p instanceof Promise) await p;
         }
         throw error;
+      } finally {
+        clearTimer?.();
       }
+      if (config.afterResponse) {
+        const p = config.afterResponse(null, response);
+        if (p instanceof Promise) await p;
+      }
+      return response;
     },
     {
       close() {
-        abort?.abort();
+        abort?.();
       },
     }
   );
