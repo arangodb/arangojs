@@ -131,6 +131,22 @@ This driver uses semantic versioning:
   This property is always present if the error has a `response` property. In
   normal use this should always be the case.
 
+- Added `keepNull` option to `CollectionInsertOptions` type (DE-946)
+
+  This option was previously missing from the type.
+
+- Added `allowDirtyRead` option to `DocumentExistsOptions` type (DE-945)
+
+  This option was previously missing from the type.
+
+- Added `ignoreRevs` option to `CollectionBatchReadOptions` type (DE-947)
+
+  This option was previously missing from the type.
+
+- Added `options` argument to `CollectionTruncateOptions` type (DE-940)
+
+  There was previously no way to pass options to the `truncate` method.
+
 - Added `database` property to `Analyzer`, `ArrayCursor`, `BatchedArrayCursor`,
   `Collection`, `Graph`, `Job`, `Route`, `Transaction` and `View` types (DE-935)
 

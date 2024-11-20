@@ -484,6 +484,21 @@ export type CollectionChecksumOptions = {
 };
 
 /**
+ * Options for truncating collections.
+ */
+export type CollectionTruncateOptions = {
+  /**
+   * Whether the collection should be compacted after truncation.
+   */
+  compact?: boolean;
+  /**
+   * Whether data should be synchronized to disk before returning from this
+   * operation.
+   */
+  waitForSync?: boolean;
+};
+
+/**
  * Options for dropping collections.
  */
 export type CollectionDropOptions = {
@@ -624,6 +639,12 @@ export type CreateCollectionOptions = {
  */
 export type DocumentExistsOptions = {
   /**
+   * If set to `true`, the request will explicitly permit ArangoDB to return a
+   * potentially dirty or stale result and arangojs will load balance the
+   * request without distinguishing between leaders and followers.
+   */
+  allowDirtyRead?: boolean;
+  /**
    * If set to a document revision, the document will only match if its `_rev`
    * matches the given revision.
    */
@@ -673,6 +694,13 @@ export type CollectionBatchReadOptions = {
    * request without distinguishing between leaders and followers.
    */
   allowDirtyRead?: boolean;
+  /**
+   * If set to `false`, the existing document will only be modified if its
+   * `_rev` property matches the same property on the new data.
+   *
+   * Default: `true`
+   */
+  ignoreRevs?: boolean;
 };
 
 /**
@@ -715,6 +743,13 @@ export type CollectionInsertOptions = {
    * Default: `"conflict"
    */
   overwriteMode?: "ignore" | "update" | "replace" | "conflict";
+  /**
+   * If set to `false`, properties with a value of `null` will be removed from
+   * the new document.
+   *
+   * Default: `true`
+   */
+  keepNull?: boolean;
   /**
    * If set to `false`, object properties that already exist in the old
    * document will be overwritten rather than merged when an existing document
@@ -1306,7 +1341,7 @@ export interface DocumentCollection<
    * // the collection "some-collection" is now empty
    * ```
    */
-  truncate(): Promise<ArangoApiResponse<CollectionMetadata>>;
+  truncate(options?: CollectionTruncateOptions): Promise<ArangoApiResponse<CollectionMetadata>>;
   /**
    * Deletes the collection from the database.
    *
@@ -2896,10 +2931,11 @@ export class Collection<
     return result;
   }
 
-  truncate(): Promise<ArangoApiResponse<CollectionMetadata>> {
+  truncate(options?: CollectionTruncateOptions): Promise<ArangoApiResponse<CollectionMetadata>> {
     return this._db.request({
       method: "PUT",
       path: `/_api/collection/${this._name}/truncate`,
+      search: options,
     });
   }
 
