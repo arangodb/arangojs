@@ -35,7 +35,7 @@ import {
   RequestOptions,
 } from "./connection.js";
 import { ArrayCursor, BatchedArrayCursor } from "./cursor.js";
-import { isArangoError } from "./error.js";
+import { HttpError, isArangoError } from "./error.js";
 import { FoxxManifest } from "./foxx-manifest.js";
 import {
   CreateGraphOptions,
@@ -931,6 +931,60 @@ export type DatabaseInfo = {
 };
 
 /**
+ * Result of retrieving database version information.
+ */
+export type VersionInfo = {
+  /**
+   * Value identifying the server type, i.e. `"arango"`.
+   */
+  server: string;
+  /**
+   * ArangoDB license type or "edition".
+   */
+  license: "community" | "enterprise";
+  /**
+   * ArangoDB server version.
+   */
+  version: string;
+  /**
+   * Additional information about the ArangoDB server.
+   */
+  details?: { [key: string]: string };
+};
+
+/**
+ * Information about the storage engine.
+ */
+export type EngineInfo = {
+  /**
+   * Endianness of the storage engine.
+   */
+  endianness?: "little" | "big";
+  /**
+   * Name of the storage engine.
+   */
+  name: string;
+  /**
+   * Features supported by the storage engine.
+   */
+  supports?: {
+    /**
+     * Index types supported by the storage engine.
+     */
+    indexes?: string[];
+    /**
+     * Aliases supported by the storage engine.
+     */
+    aliases?: {
+      /**
+       * Index type aliases supported by the storage engine.
+       */
+      indexes?: Record<string, string>;
+    }
+  };
+};
+
+/**
  * Information about the server status.
  */
 export type ServerStatusInformation = {
@@ -1089,27 +1143,111 @@ export type ServerStatusInformation = {
 };
 
 /**
- * Result of retrieving database version information.
+ * Server availability.
+ *
+ * - `"default"`: The server is operational.
+ * 
+ * - `"readonly"`: The server is in read-only mode.
+ * 
+ * - `false`: The server is not available.
  */
-export type VersionInfo = {
+export type ServerAvailability = "default" | "readonly" | false;
+
+/**
+ * Single server deployment information for support purposes.
+ */
+export type SingleServerSupportInfo = {
   /**
-   * Value identifying the server type, i.e. `"arango"`.
+   * ISO 8601 datetime string of when the information was requested.
    */
-  server: string;
+  date: string;
   /**
-   * ArangoDB license type or "edition".
+   * Information about the deployment.
    */
-  license: "community" | "enterprise";
-  /**
-   * ArangoDB server version.
-   */
-  version: string;
-  /**
-   * Additional information about the ArangoDB server.
-   */
-  details?: { [key: string]: string };
+  deployment: {
+    /**
+     * Deployment mode:
+     * 
+     * - `"single"`: A single server deployment.
+     * 
+     * - `"cluster"`: A cluster deployment.
+     */
+    type: "single";
+  };
 };
 
+/**
+ * Cluster deployment information for support purposes.
+ */
+export type ClusterSupportInfo = {
+  /**
+   * ISO 8601 datetime string of when the information was requested.
+   */
+  date: string;
+  /**
+   * Information about the deployment.
+   */
+  deployment: {
+    /**
+     * Deployment mode:
+     * 
+     * - `"single"`: A single server deployment.
+     * 
+     * - `"cluster"`: A cluster deployment.
+     */
+    type: "cluster";
+    /**
+     * Information about the servers in the cluster.
+     */
+    servers: Record<string, Record<string, any>>;
+    /**
+     * Number of agents in the cluster.
+     */
+    agents: number;
+    /**
+     * Number of coordinators in the cluster.
+     */
+    coordinators: number;
+    /**
+     * Number of DB-Servers in the cluster.
+     */
+    dbServers: number;
+    /**
+     * Information about the shards in the cluster.
+     */
+    shards: {
+      /**
+       * Number of collections in the cluster.
+       */
+      collections: number;
+      /**
+       * Number of shards in the cluster.
+       */
+      shards: number;
+      /**
+       * Number of leaders in the cluster.
+       */
+      leaders: number;
+      /**
+       * Number of real leaders in the cluster.
+       */
+      realLeaders: number;
+      /**
+       * Number of followers in the cluster.
+       */
+      followers: number;
+      /**
+       * Number of servers in the cluster.
+       */
+      servers: number;
+    }
+  };
+  /**
+   * (Cluster only.) Information about the ArangoDB instance as well as the
+   * host machine.
+   */
+  host: Record<string, any>;
+}
 /**
  * Definition of an AQL User Function.
  */
@@ -2024,62 +2162,6 @@ export class Database {
   }
 
   /**
-   * Fetches information about the server status.
-   *
-   * @example
-   * ```js
-   * const status = await db.status();
-   * // the status object contains the ArangoDB status information, e.g.
-   * // version: ArangoDB version number
-   * // host: host identifier of the server
-   * // serverInfo: detailed information about the server
-   * ```
-   */
-  serverStatus(): Promise<ServerStatusInformation> {
-    return this.request({
-      method: "GET",
-      path: "/_admin/status",
-    });
-  }
-
-  /**
-   * Fetches version information from the ArangoDB server.
-   *
-   * @param details - If set to `true`, additional information about the
-   * ArangoDB server will be available as the `details` property.
-   *
-   * @example
-   * ```js
-   * const db = new Database();
-   * const version = await db.version();
-   * // the version object contains the ArangoDB version information.
-   * // license: "community" or "enterprise"
-   * // version: ArangoDB version number
-   * // server: description of the server
-   * ```
-   */
-  version(details?: boolean): Promise<VersionInfo> {
-    return this.request({
-      method: "GET",
-      path: "/_api/version",
-      search: { details },
-    });
-  }
-
-  /**
-   * Retrives the server's current system time in milliseconds with microsecond
-   * precision.
-   */
-  time(): Promise<number> {
-    return this.request(
-      {
-        path: "/_admin/time",
-      },
-      (res) => res.parsedBody.time * 1000
-    );
-  }
-
-  /**
    * Returns a new {@link route.Route} instance for the given path (relative to the
    * database) that can be used to perform arbitrary HTTP requests.
    *
@@ -2103,49 +2185,6 @@ export class Database {
    */
   route(path?: string, headers?: Headers | Record<string, string>): Route {
     return new Route(this, path, headers);
-  }
-
-  /**
-   * Creates an async job by executing the given callback function. The first
-   * database request performed by the callback will be marked for asynchronous
-   * execution and its result will be made available as an async job.
-   *
-   * Returns a {@link Job} instance that can be used to retrieve the result
-   * of the callback function once the request has been executed.
-   *
-   * @param callback - Callback function to execute as an async job.
-   *
-   * @example
-   * ```js
-   * const db = new Database();
-   * const job = await db.createJob(() => db.collections());
-   * while (!job.isLoaded) {
-   *  await timeout(1000);
-   *  await job.load();
-   * }
-   * // job.result is a list of Collection instances
-   * ```
-   */
-  async createJob<T>(callback: () => Promise<T>): Promise<Job<T>> {
-    const trap = new Promise<TrappedError | TrappedRequest<T>>((resolveTrap) => {
-      this._trapRequest = (trapped) => resolveTrap(trapped);
-    });
-    const eventualResult = callback();
-    const trapped = await trap;
-    if (trapped.error) return eventualResult as Promise<any>;
-    const { jobId, onResolve, onReject } = trapped;
-    return new Job(
-      this,
-      jobId,
-      (res) => {
-        onResolve(res);
-        return eventualResult;
-      },
-      (e) => {
-        onReject(e);
-        return eventualResult;
-      }
-    );
   }
 
   /**
@@ -2296,19 +2335,6 @@ export class Database {
   }
 
   /**
-   * Attempts to initiate a clean shutdown of the server.
-   */
-  shutdown(): Promise<void> {
-    return this.request(
-      {
-        method: "DELETE",
-        path: "/_admin/shutdown",
-      },
-      () => undefined
-    );
-  }
-
-  /**
    * Performs a request against every known coordinator and returns when the
    * request has succeeded against every coordinator or the timeout is reached.
    *
@@ -2368,7 +2394,6 @@ export class Database {
   setResponseQueueTimeSamples(responseQueueTimeSamples: number) {
     this._connection.setResponseQueueTimeSamples(responseQueueTimeSamples);
   }
-
   //#endregion
 
   //#region auth
@@ -2464,6 +2489,137 @@ export class Database {
         this.useBearerAuth(res.parsedBody.jwt);
         return res.parsedBody.jwt;
       }
+    );
+  }
+  //#endregion
+
+  //#region administration
+  /**
+   * Fetches version information from the ArangoDB server.
+   *
+   * @param details - If set to `true`, additional information about the
+   * ArangoDB server will be available as the `details` property.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const version = await db.version();
+   * // the version object contains the ArangoDB version information.
+   * // license: "community" or "enterprise"
+   * // version: ArangoDB version number
+   * // server: description of the server
+   * ```
+   */
+  version(details?: boolean): Promise<VersionInfo> {
+    return this.request({
+      method: "GET",
+      path: "/_api/version",
+      search: { details },
+    });
+  }
+
+  /**
+   * Fetches storage engine information from the ArangoDB server.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const engine = await db.engine();
+   * // the engine object contains the storage engine information, e.g.
+   * // name: name of the storage engine
+   * ```
+   */
+  engine(): Promise<EngineInfo> {
+    return this.request({
+      method: "GET",
+      path: "/_api/engine",
+    });
+  }
+
+  /**
+   * Retrives the server's current system time in milliseconds with microsecond
+   * precision.
+   */
+  time(): Promise<number> {
+    return this.request(
+      {
+        method: "GET",
+        path: "/_admin/time",
+      },
+      (res) => res.parsedBody.time * 1000
+    );
+  }
+
+  /**
+   * Fetches information about the server status.
+   *
+   * @example
+   * ```js
+   * const status = await db.status();
+   * // the status object contains the ArangoDB status information, e.g.
+   * // version: ArangoDB version number
+   * // host: host identifier of the server
+   * // serverInfo: detailed information about the server
+   * ```
+   */
+  status(): Promise<ServerStatusInformation> {
+    return this.request({
+      method: "GET",
+      path: "/_admin/status",
+    });
+  }
+
+  /**
+   * Fetches availability information about the server.
+   * 
+   * @param graceful - If set to `true`, the method will always return `false`
+   * instead of throwing an error; otherwise `false` will only be returned
+   * when the server responds with a 503 status code or an ArangoDB error with
+   * a code of 503, such as during shutdown.
+   *
+   * @example
+   * ```js
+   * const availability = await db.availability();
+   * // availability is either "default", "readonly", or false
+   * ```
+   */
+  async availability(graceful = false): Promise<ServerAvailability> {
+    try {
+      return this.request({
+        method: "GET",
+        path: "/_admin/server/availability",
+      }, (res) => res.parsedBody.mode);
+    } catch (e) {
+      if (graceful) return false;
+      if ((isArangoError(e) || e instanceof HttpError) && e.code === 503) {
+        return false;
+      }
+      throw e;
+    }
+  }
+
+  /**
+   * Fetches deployment information about the server for support purposes.
+   * 
+   * Note that this API may reveal sensitive data about the deployment.
+   */
+  supportInfo(): Promise<SingleServerSupportInfo | ClusterSupportInfo> {
+    return this.request({
+      method: "GET",
+      path: "/_admin/support-info",
+    });
+  }
+
+  /**
+   * Attempts to initiate a clean shutdown of the server.
+   */
+  shutdown(): Promise<void> {
+    return this.request(
+      {
+        method: "DELETE",
+        path: "/_admin/shutdown",
+      },
+      () => undefined
     );
   }
   //#endregion
@@ -6233,6 +6389,50 @@ export class Database {
   }
   //#endregion
   //#region async jobs
+
+  /**
+   * Creates an async job by executing the given callback function. The first
+   * database request performed by the callback will be marked for asynchronous
+   * execution and its result will be made available as an async job.
+   *
+   * Returns a {@link Job} instance that can be used to retrieve the result
+   * of the callback function once the request has been executed.
+   *
+   * @param callback - Callback function to execute as an async job.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const job = await db.createJob(() => db.collections());
+   * while (!job.isLoaded) {
+   *  await timeout(1000);
+   *  await job.load();
+   * }
+   * // job.result is a list of Collection instances
+   * ```
+   */
+  async createJob<T>(callback: () => Promise<T>): Promise<Job<T>> {
+    const trap = new Promise<TrappedError | TrappedRequest<T>>((resolveTrap) => {
+      this._trapRequest = (trapped) => resolveTrap(trapped);
+    });
+    const eventualResult = callback();
+    const trapped = await trap;
+    if (trapped.error) return eventualResult as Promise<any>;
+    const { jobId, onResolve, onReject } = trapped;
+    return new Job(
+      this,
+      jobId,
+      (res) => {
+        onResolve(res);
+        return eventualResult;
+      },
+      (e) => {
+        onReject(e);
+        return eventualResult;
+      }
+    );
+  }
+
   /**
    * Returns a {@link job.Job} instance for the given `jobId`.
    *

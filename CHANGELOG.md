@@ -71,9 +71,13 @@ This driver uses semantic versioning:
 
 ### Added
 
-- Added `database.serverStatus` method ([#811](https://github.com/arangodb/arangojs/issues/811))
+- Added `database.availability` method
 
-  This method fetches information about the server status.
+- Added `database.engine` method (DE-931)
+
+- Added `database.status` method ([#811](https://github.com/arangodb/arangojs/issues/811))
+
+- Added `database.supportInfo` method
 
 - Added `onError` option to `Config` (DE-955)
 

@@ -88,74 +88,74 @@ export type EnsurePersistentIndexOptions = {
  */
 export type EnsureGeoIndexOptions =
   | {
-      type: "geo";
-      /**
-       * If set to `true`, `fields` must be an array containing a single attribute
-       * path and the attribute value must be an array with two values, the first
-       * of which will be interpreted as the longitude and the second of which will
-       * be interpreted as the latitude of the document.
-       *
-       * Default: `false`
-       */
-      geoJson?: false;
-      /**
-       * If set to `true`, the index will use pre-3.10 rules for parsing
-       * GeoJSON polygons. This option is always implicitly `true` when using
-       * ArangoDB 3.9 or lower.
-       */
-      legacyPolygons?: boolean;
-      /**
-       * Attribute paths for the document's latitude and longitude values.
-       */
-      fields: [string, string];
-      /**
-       * A unique name for this index.
-       */
-      name?: string;
-      /**
-       * If set to `true`, the index will be created in the background to reduce
-       * the write-lock duration for the collection during index creation.
-       *
-       * Default: `false`
-       */
-      inBackground?: boolean;
-    }
+    type: "geo";
+    /**
+     * If set to `true`, `fields` must be an array containing a single attribute
+     * path and the attribute value must be an array with two values, the first
+     * of which will be interpreted as the longitude and the second of which will
+     * be interpreted as the latitude of the document.
+     *
+     * Default: `false`
+     */
+    geoJson?: false;
+    /**
+     * If set to `true`, the index will use pre-3.10 rules for parsing
+     * GeoJSON polygons. This option is always implicitly `true` when using
+     * ArangoDB 3.9 or lower.
+     */
+    legacyPolygons?: boolean;
+    /**
+     * Attribute paths for the document's latitude and longitude values.
+     */
+    fields: [string, string];
+    /**
+     * A unique name for this index.
+     */
+    name?: string;
+    /**
+     * If set to `true`, the index will be created in the background to reduce
+     * the write-lock duration for the collection during index creation.
+     *
+     * Default: `false`
+     */
+    inBackground?: boolean;
+  }
   | {
-      type: "geo";
-      /**
-       * If set to `true`, `fields` must be an array containing a single attribute
-       * path and the attribute value must be an array with two values, the first
-       * of which will be interpreted as the longitude and the second of which will
-       * be interpreted as the latitude of the document.
-       *
-       * Default: `false`
-       */
-      geoJson?: boolean;
-      /**
-       * If set to `true`, the index will use pre-3.10 rules for parsing
-       * GeoJSON polygons. This option is always implicitly `true` when using
-       * ArangoDB 3.9 or lower.
-       */
-      legacyPolygons?: boolean;
-      /**
-       * An array containing the attribute path for an array containing two values,
-       * the first of which will be interpreted as the latitude, the second as the
-       * longitude. If `geoJson` is set to `true`, the order is reversed to match
-       * the GeoJSON format.
-       */
-      fields: [string];
-      /**
-       * A unique name for this index.
-       */
-      name?: string;
-      /**
-       * If set to `true`, the index will be created in the background to reduce
-       * the write-lock duration for the collection during index creation.
-       *
-       * Default: `false`
-       */
-      inBackground?: boolean;
-    };
+    type: "geo";
+    /**
+     * If set to `true`, `fields` must be an array containing a single attribute
+     * path and the attribute value must be an array with two values, the first
+     * of which will be interpreted as the longitude and the second of which will
+     * be interpreted as the latitude of the document.
+     *
+     * Default: `false`
+     */
+    geoJson?: boolean;
+    /**
+     * If set to `true`, the index will use pre-3.10 rules for parsing
+     * GeoJSON polygons. This option is always implicitly `true` when using
+     * ArangoDB 3.9 or lower.
+     */
+    legacyPolygons?: boolean;
+    /**
+     * An array containing the attribute path for an array containing two values,
+     * the first of which will be interpreted as the latitude, the second as the
+     * longitude. If `geoJson` is set to `true`, the order is reversed to match
+     * the GeoJSON format.
+     */
+    fields: [string];
+    /**
+     * A unique name for this index.
+     */
+    name?: string;
+    /**
+     * If set to `true`, the index will be created in the background to reduce
+     * the write-lock duration for the collection during index creation.
+     *
+     * Default: `false`
+     */
+    inBackground?: boolean;
+  };
 
 /**
  * Options for creating a TTL index.
