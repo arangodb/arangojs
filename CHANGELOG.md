@@ -18,7 +18,8 @@ This driver uses semantic versioning:
 
 ### Changed
 
-- Errors encountered before a request completes are now wrapped in a `NetworkError`
+- Errors encountered before a request completes are now wrapped in a
+  `NetworkError` or a subclass thereof
 
   This should help making it easier to diagnose network issues and distinguish
   the relevant error conditions.
@@ -26,7 +27,7 @@ This driver uses semantic versioning:
   The originating error can still be accessed using the `cause` property of the
   `NetworkError` error.
 
-- `HttpError` now extends the `NetworkError` type
+- `HttpError` now extends the `NetworkError` class
 
   This allows treating all non-`ArangoError` errors as one category of errors,
   even when there is no server response available.
@@ -85,7 +86,7 @@ This driver uses semantic versioning:
   If the `onError` callback throws an error or returns a promise that is
   rejected, that error will be thrown instead.
 
-- Added `NetworkError` error type
+- Added `NetworkError` class
 
   This is the common base class for all errors (including `HttpError`) that
   occur while making a request. The originating error can be accessed using the
@@ -96,17 +97,17 @@ This driver uses semantic versioning:
   do not extend `NetworkError` but may wrap an underlying error, which can
   be accessed using the `cause` property.
 
-- Added `ResponseTimeoutError` error type
+- Added `ResponseTimeoutError` class
 
   This error extends `NetworkError` and is thrown when a request deliberately
   times out using the `timeout` option.
 
-- Added `RequestAbortedError` error type
+- Added `RequestAbortedError` class
 
   This error extends `NetworkError` and is thrown when a request is aborted
   by using the `db.close` method.
 
-- Added `FetchFailedError` error type
+- Added `FetchFailedError` class
 
   This error extends `NetworkError` and is thrown when a request fails because
   the underlying `fetch` call fails (usually with a `TypeError`).
@@ -118,7 +119,7 @@ This driver uses semantic versioning:
   In browsers the root cause is usually not exposed directly but can often
   be diagnosed by examining the developer console or network tab.
 
-- Added `PropagationTimeoutError` error type
+- Added `PropagationTimeoutError` class
 
   This error does not extend `NetworkError` but wraps the most recent error
   encountered while waiting for replication, which can be accessed using the
@@ -130,7 +131,7 @@ This driver uses semantic versioning:
   This type replaces the previously internal `ArangojsResponse` type and
   extends the native `Response` type with additional properties.
 
-- Added optional `request` property to `ArangoError`
+- Added optional `ArangoError#request` property
 
   This property is always present if the error has a `response` property. In
   normal use this should always be the case.
@@ -152,17 +153,17 @@ This driver uses semantic versioning:
   There was previously no way to pass options to the `truncate` method.
 
 - Added `database` property to `Analyzer`, `ArrayCursor`, `BatchedArrayCursor`,
-  `Collection`, `Graph`, `Job`, `Route`, `Transaction` and `View` types (DE-935)
+  `Collection`, `Graph`, `Job`, `Route`, `Transaction` and `View` (DE-935)
 
   This property can be used to access the database instance a given object
   belongs to.
 
-- Added `headers` and `path` properties to `Route` type
+- Added `Route#headers` and `Route#path` properties
 
   These properties can be used to access the headers and path used when creating
   the route.
 
-- Added `id` property to `ArrayCursor` and `BatchedArrayCursor` types (DE-936)
+- Added `ArrayCursor#id` and `BatchedArrayCursor#id` properties (DE-936)
 
   This property can be used to access the ID of the cursor.
 
