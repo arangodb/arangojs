@@ -36,7 +36,7 @@ You can also use [jsDelivr CDN](https://www.jsdelivr.com) during development:
 <script type="importmap">
   {
     "imports": {
-      "arangojs": "https://cdn.jsdelivr.net/npm/arangojs@9.0.0-preview.1/esm/index.js?+esm"
+      "arangojs": "https://cdn.jsdelivr.net/npm/arangojs@9.0.0/esm/index.js?+esm"
     }
   }
 </script>
