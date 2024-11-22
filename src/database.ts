@@ -931,6 +931,164 @@ export type DatabaseInfo = {
 };
 
 /**
+ * Information about the server status.
+ */
+export type ServerStatusInformation = {
+  /**
+   * (Cluster Coordinators and DB-Servers only.) The address of the server.
+   */
+  address?: string;
+  /**
+   * (Cluster Coordinators and DB-Servers only.) Information about the Agency.
+   */
+  agency?: {
+    /**
+     * Information about the communication with the Agency.
+     */
+    agencyComm: {
+      /**
+       * A list of possible Agency endpoints.
+       */
+      endpoints: string[];
+    };
+  };
+  /**
+   * (Cluster Agents only.) Information about the Agents.
+   */
+  agent?: {
+    /**
+     * The endpoint of the queried Agent.
+     */
+    endpoint: string;
+    /**
+     * Server ID of the queried Agent.
+     */
+    id: string;
+    /**
+     * Server ID of the leading Agent.
+     */
+    leaderId: string;
+    /**
+     * Whether the queried Agent is the leader.
+     */
+    leading: boolean;
+    /**
+     * The current term number.
+     */
+    term: number;
+  };
+  /**
+   * (Cluster Coordinators only.) Information about the Coordinators.
+   */
+  coordinator?: {
+    /**
+     * The server ID of the Coordinator that is the Foxx master.
+     */
+    foxxmaster: string[];
+    /**
+     * Whether the queried Coordinator is the Foxx master.
+     */
+    isFoxxmaster: boolean[];
+  };
+  /**
+   * Whether the Foxx API is enabled.
+   */
+  foxxApi: boolean;
+  /**
+   * A host identifier defined by the HOST or NODE_NAME environment variable, 
+   * or a fallback value using a machine identifier or the cluster/Agency address.
+   */
+  host: string;
+  /**
+   * A hostname defined by the HOSTNAME environment variable.
+   */
+  hostname?: string;
+  /**
+   * ArangoDB Edition.
+   */
+  license: "community" | "enterprise";
+  /**
+   * Server operation mode.
+   * 
+   * @deprecated use `operationMode` instead
+   */
+  mode: "server" | "console";
+  /**
+   * Server operation mode.
+   */
+  operationMode: "server" | "console";
+  /**
+   * The process ID of arangod.
+   */
+  pid: number;
+  /**
+   * Server type.
+   */
+  server: "arango";
+  /**
+   * Information about the server status.
+   */
+  serverInfo: {
+    /**
+     * Whether the maintenance mode is enabled.
+     */
+    maintenance: boolean;
+    /**
+     * (Cluster only.) The persisted ID.
+     */
+    persistedId?: string;
+    /**
+     * Startup and recovery information.
+     */
+    progress: {
+      /**
+       * Internal name of the feature that is currently being prepared, started, stopped or unprepared.
+       */
+      feature: string;
+      /**
+       * Name of the lifecycle phase the instance is currently in.
+       */
+      phase: string;
+      /**
+       * Current recovery sequence number value.
+       */
+      recoveryTick: number;
+    };
+    /**
+     * Whether writes are disabled.
+     */
+    readOnly: boolean;
+    /**
+     * (Cluster only.) The reboot ID. Changes on every restart.
+     */
+    rebootId?: number;
+    /**
+     * Either "SINGLE", "COORDINATOR", "PRIMARY" (DB-Server), or "AGENT"
+     */
+    role: "SINGLE" | "COORDINATOR" | "PRIMARY" | "AGENT";
+    /**
+     * (Cluster Coordinators and DB-Servers only.) The server ID.
+     */
+    serverId?: string;
+    /**
+     * (Cluster Coordinators and DB-Servers only.) Either "STARTUP", "SERVING",
+     * or "SHUTDOWN".
+     */
+    state?: "STARTUP" | "SERVING" | "SHUTDOWN";
+    /**
+     * The server version string.
+     */
+    version: string;
+    /**
+     * Whether writes are enabled.
+     * 
+     * @deprecated Use `readOnly` instead.
+     */
+    writeOpsEnabled: boolean;
+  };
+};
+
+/**
  * Result of retrieving database version information.
  */
 export type VersionInfo = {
@@ -1863,6 +2021,25 @@ export class Database {
    */
   get name() {
     return this._name;
+  }
+
+  /**
+   * Fetches information about the server status.
+   *
+   * @example
+   * ```js
+   * const status = await db.status();
+   * // the status object contains the ArangoDB status information, e.g.
+   * // version: ArangoDB version number
+   * // host: host identifier of the server
+   * // serverInfo: detailed information about the server
+   * ```
+   */
+  serverStatus(): Promise<ServerStatusInformation> {
+    return this.request({
+      method: "GET",
+      path: "/_admin/status",
+    });
   }
 
   /**

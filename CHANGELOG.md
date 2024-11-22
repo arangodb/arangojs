@@ -70,6 +70,10 @@ This driver uses semantic versioning:
 
 ### Added
 
+- Added `database.serverStatus` method ([#811](https://github.com/arangodb/arangojs/issues/811))
+
+  This method fetches information about the server status.
+
 - Added `onError` option to `Config` (DE-955)
 
   This option can be used to specify a callback function that will be invoked
