@@ -1,5 +1,23 @@
 # Migrating
 
+## v9 to v10
+
+Version 10 changes the error handling to make it easier to diagnose network
+issues and distinguish between different error conditions.
+
+If you previously inspected errors other than `ArangoError` and `HttpError`
+directly, you should now expect to see `NetworkError` or a subclass thereof
+instead. The originating error can be found using the `cause` property of the
+`NetworkError` error:
+
+```js
+try {
+  await db.collection("my-collection").get();
+} catch (err) {
+  if (err instanceof NetworkError) console.log(err.cause);
+}
+```
+
 ## v8 to v9
 
 Version 9 reverts the automatic NFC normalization introduced in v7.7.0. This

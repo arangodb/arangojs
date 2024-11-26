@@ -16,6 +16,11 @@ This driver uses semantic versioning:
 
 ## [9.2.0] - 2024-11-27
 
+This is a major release and breaks backwards compatibility.
+
+See [the migration guide](./MIGRATING.md#v9-to-v10) for detailed instructions
+for upgrading your code to arangojs v10.
+
 ### Changed
 
 - Errors encountered before a request completes are now wrapped in a
