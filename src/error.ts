@@ -9,8 +9,7 @@
  * @packageDocumentation
  */
 
-import { ProcessedResponse } from "./connection.js";
-import { ERROR_ARANGO_MAINTENANCE_MODE } from "./lib/codes.js";
+import { ArangojsResponse } from "./lib/request.js";
 
 const messages: { [key: number]: string } = {
   0: "Network Error",
@@ -59,6 +58,15 @@ const messages: { [key: number]: string } = {
   599: "Network Connect Timeout Error",
 };
 
+const nativeErrorKeys = [
+  "fileName",
+  "lineNumber",
+  "columnNumber",
+  "stack",
+  "description",
+  "number",
+] as (keyof Error)[];
+
 /**
  * Indicates whether the given value represents an {@link ArangoError}.
  *
@@ -69,227 +77,39 @@ export function isArangoError(error: any): error is ArangoError {
 }
 
 /**
- * Indicates whether the given value represents a {@link NetworkError}.
- *
- * @param error - A value that might be a `NetworkError`.
- */
-export function isNetworkError(error: any): error is NetworkError {
-  return error instanceof NetworkError;
-}
-
-/**
- * @internal
-*
  * Indicates whether the given value represents an ArangoDB error response.
+ *
+ * @internal
  */
-export function isArangoErrorResponse(body: any): body is ArangoErrorResponse {
+export function isArangoErrorResponse(body: any): boolean {
   return (
     body &&
-    body.error === true &&
-    typeof body.code === 'number' &&
-    typeof body.errorMessage === 'string' &&
-    typeof body.errorNum === 'number'
+    body.hasOwnProperty("error") &&
+    body.hasOwnProperty("code") &&
+    body.hasOwnProperty("errorMessage") &&
+    body.hasOwnProperty("errorNum")
   );
 }
 
 /**
- * @internal
- * 
  * Indicates whether the given value represents a Node.js `SystemError`.
  */
-function isSystemError(err: any): err is SystemError {
+export function isSystemError(err: any): err is SystemError {
   return (
-    err &&
     Object.getPrototypeOf(err) === Error.prototype &&
-    typeof err.code === 'string' &&
-    typeof err.errno !== 'undefined' &&
-    typeof err.syscall === 'string'
+    err.hasOwnProperty("code") &&
+    err.hasOwnProperty("errno") &&
+    err.hasOwnProperty("syscall")
   );
-}
-
-/**
- * @internal
- * 
- * Indicates whether the given value represents a Node.js `UndiciError`.
- */
-function isUndiciError(err: any): err is UndiciError {
-  return (
-    err &&
-    err instanceof Error &&
-    typeof (err as UndiciError).code === 'string' &&
-    (err as UndiciError).code.startsWith('UND_')
-  );
-}
-
-/**
- * @internal
- *
- * Determines whether the given failed fetch error cause is safe to retry.
- */
-function isSafeToRetryFailedFetch(cause: Error): boolean | null {
-  if (isSystemError(cause) && cause.syscall === 'connect' && cause.code === 'ECONNREFUSED') {
-    return true;
-  }
-  if (isUndiciError(cause) && cause.code === 'UND_ERR_CONNECT_TIMEOUT') {
-    return true;
-  }
-  return null;
-}
-
-/**
- * @internal
-*
- * Interface representing an ArangoDB error response.
- */
-export interface ArangoErrorResponse {
-  error: true;
-  code: number;
-  errorMessage: string;
-  errorNum: number;
-}
-
-/**
- * Interface representing a Node.js `UndiciError`.
- * 
- * @internal
- */
-interface UndiciError extends Error {
-  code: `UND_${string}`;
 }
 
 /**
  * Interface representing a Node.js `SystemError`.
- * 
- * @internal
  */
-interface SystemError extends Error {
+export interface SystemError extends Error {
   code: string;
   errno: number | string;
   syscall: string;
-}
-
-/**
- * Represents an error from a deliberate timeout encountered while waiting
- * for propagation.
- */
-export class PropagationTimeoutError extends Error {
-  name = "PropagationTimeoutError";
-
-  constructor(message: string | undefined, options: { cause: Error }) {
-    super(message ?? 'Timed out while waiting for propagation', options);
-  }
-}
-
-/**
- * Represents a network error or an error encountered while performing a network request.
- */
-export class NetworkError extends Error {
-  name = "NetworkError";
-
-  /**
-   * Indicates whether the request that caused this error can be safely retried.
-   */
-  isSafeToRetry: boolean | null;
-
-  /**
-   * Fetch request object.
-   */
-  request: globalThis.Request;
-
-  constructor(message: string, options: { request: globalThis.Request, cause?: Error, isSafeToRetry?: boolean | null }) {
-    const { request, isSafeToRetry = null, ...opts } = options;
-    super(message, opts);
-    this.request = request;
-    this.isSafeToRetry = isSafeToRetry;
-  }
-
-  toJSON() {
-    return {
-      error: true,
-      errorMessage: this.message,
-      code: 0,
-    };
-  }
-}
-
-/**
- * Represents an error from a deliberate timeout encountered while waiting
- * for a server response.
- */
-export class ResponseTimeoutError extends NetworkError {
-  name = "ResponseTimeoutError";
-
-  constructor(message: string | undefined, options: { request: globalThis.Request, cause?: Error, isSafeToRetry?: boolean | null }) {
-    super(message ?? 'Timed out while waiting for server response', options);
-  }
-}
-
-/**
- * Represents an error from a request that was aborted.
- */
-export class RequestAbortedError extends NetworkError {
-  name = "RequestAbortedError";
-
-  constructor(message: string | undefined, options: { request: globalThis.Request, cause?: Error, isSafeToRetry?: boolean | null }) {
-    super(message ?? 'Request aborted', options);
-  }
-}
-
-/**
- * Represents an error from a failed fetch request.
- * 
- * The root cause is often extremely difficult to determine.
- */
-export class FetchFailedError extends NetworkError {
-  name = "FetchFailedError";
-
-  constructor(message: string | undefined, options: { request: globalThis.Request, cause: TypeError, isSafeToRetry?: boolean | null }) {
-    let isSafeToRetry = options.isSafeToRetry;
-    if (options.cause.cause instanceof Error) {
-      if (isSafeToRetry === undefined) {
-        isSafeToRetry = isSafeToRetryFailedFetch(options.cause.cause) || undefined;
-      }
-      if (message === undefined) {
-        message = `Fetch failed: ${options.cause.cause.message}`;
-      }
-    }
-    super(message ?? 'Fetch failed', { ...options, isSafeToRetry });
-  }
-}
-
-/**
- * Represents a plain HTTP error response.
- */
-export class HttpError extends NetworkError {
-  name = "HttpError";
-
-  /**
-   * HTTP status code of the server response.
-   */
-  code: number;
-
-  /**
-   * Server response object.
-   */
-  response: ProcessedResponse;
-
-  /**
-   * @internal
-   */
-  constructor(response: ProcessedResponse, options: { cause?: Error, isSafeToRetry?: boolean | null } = {}) {
-    const message = messages[response.status] ?? messages[500];
-    super(message, { ...options, request: response.request });
-    this.response = response;
-    this.code = response.status;
-  }
-
-  toJSON() {
-    return {
-      error: true,
-      errorMessage: this.message,
-      code: this.code,
-    };
-  }
 }
 
 /**
@@ -297,81 +117,35 @@ export class HttpError extends NetworkError {
  */
 export class ArangoError extends Error {
   name = "ArangoError";
-
-  /**
-   * Indicates whether the request that caused this error can be safely retried.
-   * 
-   * @internal
-   */
-  isSafeToRetry: boolean | null = null;
-
   /**
    * ArangoDB error code.
    *
    * See [ArangoDB error documentation](https://www.arangodb.com/docs/stable/appendix-error-codes.html).
    */
   errorNum: number;
-
-  /**
-   * Error message accompanying the error code.
-   */
-  get errorMessage(): string {
-    return this.message;
-  }
-
   /**
    * HTTP status code included in the server error response object.
    */
   code: number;
-
-  /**
-   * @internal
-   *
-   * Creates a new `ArangoError` from a response object.
-   */
-  static from(response: ProcessedResponse<ArangoErrorResponse>): ArangoError {
-    return new ArangoError(response.parsedBody!, {
-      cause: new HttpError(response)
-    });
-  }
-
-  /**
-   * Creates a new `ArangoError` from an ArangoDB error response.
-   */
-  constructor(data: ArangoErrorResponse, options: { cause?: Error, isSafeToRetry?: boolean | null }) {
-    const { isSafeToRetry, ...opts } = options;
-    super(data.errorMessage, opts);
-    this.errorNum = data.errorNum;
-    this.code = data.code;
-    if (isSafeToRetry !== undefined) {
-      this.isSafeToRetry = isSafeToRetry;
-    } else if (this.errorNum === ERROR_ARANGO_MAINTENANCE_MODE) {
-      this.isSafeToRetry = true;
-    } else if (this.cause instanceof NetworkError) {
-      this.isSafeToRetry = this.cause.isSafeToRetry;
-    }
-  }
-
   /**
    * Server response object.
    */
-  get response(): ProcessedResponse<ArangoErrorResponse> | undefined {
-    const cause = this.cause;
-    if (cause instanceof HttpError) {
-      return cause.response;
-    }
-    return undefined;
-  }
+  response: any;
 
   /**
-   * Fetch request object.
+   * @internal
    */
-  get request(): globalThis.Request | undefined {
-    const cause = this.cause;
-    if (cause instanceof NetworkError) {
-      return cause.request;
+  constructor(response: ArangojsResponse) {
+    super();
+    this.response = response;
+    this.message = response.parsedBody.errorMessage;
+    this.errorNum = response.parsedBody.errorNum;
+    this.code = response.parsedBody.code;
+    const err = new Error(this.message);
+    err.name = this.name;
+    for (const key of nativeErrorKeys) {
+      if (err[key]) this[key] = err[key] as string;
     }
-    return undefined;
   }
 
   /**
@@ -383,11 +157,48 @@ export class ArangoError extends Error {
     return true;
   }
 
-  toJSON(): ArangoErrorResponse {
+  toJSON() {
     return {
       error: true,
-      errorMessage: this.errorMessage,
+      errorMessage: this.message,
       errorNum: this.errorNum,
+      code: this.code,
+    };
+  }
+}
+
+/**
+ * Represents a plain HTTP error response.
+ */
+export class HttpError extends Error {
+  name = "HttpError";
+  /**
+   * Server response object.
+   */
+  response: any;
+  /**
+   * HTTP status code of the server response.
+   */
+  code: number;
+
+  /**
+   * @internal
+   */
+  constructor(response: ArangojsResponse) {
+    super();
+    this.response = response;
+    this.code = response.status || 500;
+    this.message = messages[this.code] || messages[500];
+    const err = new Error(this.message);
+    err.name = this.name;
+    for (const key of nativeErrorKeys) {
+      if (err[key]) this[key] = err[key] as string;
+    }
+  }
+
+  toJSON() {
+    return {
+      error: true,
       code: this.code,
     };
   }

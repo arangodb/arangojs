@@ -2,7 +2,7 @@ import { expect } from "chai";
 import { aql } from "../aql.js";
 import { ArrayCursor } from "../cursor.js";
 import { Database } from "../database.js";
-import { ArangoError, ResponseTimeoutError } from "../error.js";
+import { ArangoError } from "../error.js";
 import { config } from "./_config.js";
 
 // NOTE These tests will not reliably work with load balancing.
@@ -67,7 +67,7 @@ describe("Query Management API", function () {
       } catch (err: any) {
         expect(err).is.instanceof(Error);
         expect(err).is.not.instanceof(ArangoError);
-        expect(err).is.instanceof(ResponseTimeoutError);
+        expect(err.name).to.equal("AbortError");
         return;
       }
       expect.fail();

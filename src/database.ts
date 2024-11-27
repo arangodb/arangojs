@@ -29,7 +29,6 @@ import {
 } from "./collection.js";
 import {
   ArangoApiResponse,
-  ProcessedResponse,
   Config,
   Connection,
   RequestOptions,
@@ -45,6 +44,7 @@ import {
 } from "./graph.js";
 import { Job } from "./job.js";
 import { DATABASE_NOT_FOUND } from "./lib/codes.js";
+import { ArangojsResponse } from "./lib/request.js";
 import { Route } from "./route.js";
 import { Transaction } from "./transaction.js";
 import { CreateViewOptions, View, ViewDescription } from "./view.js";
@@ -2064,10 +2064,10 @@ type TrappedError = {
 /**
  * @internal
  */
-type TrappedRequest<T = any> = {
+type TrappedRequest = {
   error?: false;
   jobId: string;
-  onResolve: (res: ProcessedResponse<T>) => void;
+  onResolve: (res: ArangojsResponse) => void;
   onReject: (error: any) => void;
 };
 
@@ -2082,9 +2082,7 @@ export class Database {
   protected _collections = new Map<string, Collection>();
   protected _graphs = new Map<string, Graph>();
   protected _views = new Map<string, View>();
-  protected _trapRequest?: (
-    trapped: TrappedError | TrappedRequest<any>
-  ) => void;
+  protected _trapRequest?: (trapped: TrappedError | TrappedRequest) => void;
 
   /**
    * Creates a new `Database` instance with its own connection pool.
@@ -2195,14 +2193,14 @@ export class Database {
    * If `absolutePath` is set to `true`, the database path will not be
    * automatically prepended to the `basePath`.
    *
-   * @param T - Return type to use. Defaults to the response object type.
+   * @param ReturnType - Return type to use. Defaults to the response object type.
    * @param options - Options for this request.
    * @param transform - An optional function to transform the low-level
    * response object to a more useful return value.
    */
-  async request<BodyType = any, ReturnType = BodyType>(
+  async request<ReturnType = any>(
     options: RequestOptions & { absolutePath?: boolean },
-    transform?: (res: ProcessedResponse<BodyType>) => ReturnType
+    transform?: (res: ArangojsResponse) => ReturnType
   ): Promise<ReturnType>;
   /**
    * @internal
@@ -2216,17 +2214,17 @@ export class Database {
    * @param transform - If set to `false`, the raw response object will be
    * returned.
    */
-  async request<BodyType = any>(
+  async request(
     options: RequestOptions & { absolutePath?: boolean },
     transform: false
-  ): Promise<ProcessedResponse<BodyType>>;
-  async request<BodyType = any, ReturnType = BodyType>(
+  ): Promise<ArangojsResponse>;
+  async request<ReturnType = any>(
     {
       absolutePath = false,
       basePath,
       ...opts
     }: RequestOptions & { absolutePath?: boolean },
-    transform: false | ((res: ProcessedResponse<BodyType>) => ReturnType) = (res) => res.parsedBody as ReturnType
+    transform: false | ((res: ArangojsResponse) => ReturnType) = (res) => res.parsedBody
   ): Promise<ReturnType> {
     if (!absolutePath) {
       basePath = `/_db/${encodeURIComponent(this._name)}${basePath || ""}`;
@@ -2238,7 +2236,7 @@ export class Database {
         const options = { ...opts };
         options.headers = new Headers(options.headers);
         options.headers.set("x-arango-async", "store");
-        let jobRes: ProcessedResponse<any>;
+        let jobRes: ArangojsResponse;
         try {
           jobRes = await this._connection.request({ basePath, ...options });
         } catch (e) {
@@ -6412,7 +6410,7 @@ export class Database {
    * ```
    */
   async createJob<T>(callback: () => Promise<T>): Promise<Job<T>> {
-    const trap = new Promise<TrappedError | TrappedRequest<T>>((resolveTrap) => {
+    const trap = new Promise<TrappedError | TrappedRequest>((resolveTrap) => {
       this._trapRequest = (trapped) => resolveTrap(trapped);
     });
     const eventualResult = callback();
