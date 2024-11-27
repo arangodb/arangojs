@@ -1,866 +1,36 @@
 /**
  * ```js
- * import { Database } from "arangojs/database.js";
+ * import { Database } from "arangojs/databases";
  * ```
  *
- * The "database" module provides the {@link Database} class and associated
+ * The "databases" module provides the {@link Database} class and associated
  * types and interfaces for TypeScript.
  *
  * The Database class is also re-exported by the "index" module.
  *
  * @packageDocumentation
  */
-import {
-  Analyzer,
-  AnalyzerDescription,
-  CreateAnalyzerOptions,
-} from "./analyzer.js";
-import { AqlLiteral, AqlQuery, isAqlLiteral, isAqlQuery } from "./aql.js";
-import {
-  ArangoCollection,
-  Collection,
-  CollectionMetadata,
-  collectionToString,
-  CollectionType,
-  CreateCollectionOptions,
-  DocumentCollection,
-  EdgeCollection,
-  isArangoCollection,
-} from "./collection.js";
-import {
-  ArangoApiResponse,
-  ProcessedResponse,
-  Config,
-  Connection,
-  RequestOptions,
-} from "./connection.js";
-import { ArrayCursor, BatchedArrayCursor } from "./cursor.js";
-import { HttpError, isArangoError } from "./error.js";
-import { FoxxManifest } from "./foxx-manifest.js";
-import {
-  CreateGraphOptions,
-  EdgeDefinitionOptions,
-  Graph,
-  GraphInfo,
-} from "./graph.js";
-import { Job } from "./job.js";
+import * as administration from "./administration.js";
+import * as analyzers from "./analyzers.js";
+import * as aql from "./aql.js";
+import * as cluster from "./cluster.js";
+import * as collections from "./collections.js";
+import * as connection from "./connection.js";
+import * as cursors from "./cursors.js";
+import * as errors from "./errors.js";
+import * as graphs from "./graphs.js";
+import * as hotBackups from "./hot-backups.js";
+import * as jobs from "./jobs.js";
+import * as logs from "./logs.js";
+import * as queries from "./queries.js";
+import * as routes from "./routes.js";
+import * as services from "./services.js";
+import * as transactions from "./transactions.js";
+import * as users from "./users.js";
+import * as views from "./views.js";
 import { DATABASE_NOT_FOUND } from "./lib/codes.js";
-import { Route } from "./route.js";
-import { Transaction } from "./transaction.js";
-import { CreateViewOptions, View, ViewDescription } from "./view.js";
 
-/**
- * Indicates whether the given value represents a {@link Database}.
- *
- * @param database - A value that might be a database.
- */
-export function isArangoDatabase(database: any): database is Database {
-  return Boolean(database && database.isArangoDatabase);
-}
-
-/**
- * @internal
- */
-function coerceTransactionCollections(
-  collections:
-    | (TransactionCollections & { allowImplicit?: boolean })
-    | (string | ArangoCollection)[]
-    | string
-    | ArangoCollection
-): CoercedTransactionCollections {
-  if (typeof collections === "string") {
-    return { write: [collections] };
-  }
-  if (Array.isArray(collections)) {
-    return { write: collections.map(collectionToString) };
-  }
-  if (isArangoCollection(collections)) {
-    return { write: collectionToString(collections) };
-  }
-  const cols: CoercedTransactionCollections = {};
-  if (collections) {
-    if (collections.allowImplicit !== undefined) {
-      cols.allowImplicit = collections.allowImplicit;
-    }
-    if (collections.read) {
-      cols.read = Array.isArray(collections.read)
-        ? collections.read.map(collectionToString)
-        : collectionToString(collections.read);
-    }
-    if (collections.write) {
-      cols.write = Array.isArray(collections.write)
-        ? collections.write.map(collectionToString)
-        : collectionToString(collections.write);
-    }
-    if (collections.exclusive) {
-      cols.exclusive = Array.isArray(collections.exclusive)
-        ? collections.exclusive.map(collectionToString)
-        : collectionToString(collections.exclusive);
-    }
-  }
-  return cols;
-}
-
-/**
- * @internal
- */
-type CoercedTransactionCollections = {
-  allowImplicit?: boolean;
-  exclusive?: string | string[];
-  write?: string | string[];
-  read?: string | string[];
-};
-
-/**
- * Collections involved in a transaction.
- */
-export type TransactionCollections = {
-  /**
-   * An array of collections or a single collection that will be read from or
-   * written to during the transaction with no other writes being able to run
-   * in parallel.
-   */
-  exclusive?: (string | ArangoCollection)[] | string | ArangoCollection;
-  /**
-   * An array of collections or a single collection that will be read from or
-   * written to during the transaction.
-   */
-  write?: (string | ArangoCollection)[] | string | ArangoCollection;
-  /**
-   * An array of collections or a single collection that will be read from
-   * during the transaction.
-   */
-  read?: (string | ArangoCollection)[] | string | ArangoCollection;
-};
-
-/**
- * Options for how the transaction should be performed.
- */
-export type TransactionOptions = {
-  /**
-   * Whether the transaction may read from collections not specified for this
-   * transaction. If set to `false`, accessing any collections not specified
-   * will result in the transaction being aborted to avoid potential deadlocks.
-   *
-   * Default: `true`.
-   */
-  allowImplicit?: boolean;
-  /**
-   * If set to `true`, the request will explicitly permit ArangoDB to return a
-   * potentially dirty or stale result and arangojs will load balance the
-   * request without distinguishing between leaders and followers.
-   */
-  allowDirtyRead?: boolean;
-  /**
-   * Determines whether to force the transaction to write all data to disk
-   * before returning.
-   */
-  waitForSync?: boolean;
-  /**
-   * Determines how long the database will wait while attempting to gain locks
-   * on collections used by the transaction before timing out.
-   */
-  lockTimeout?: number;
-  /**
-   * Determines the transaction size limit in bytes.
-   */
-  maxTransactionSize?: number;
-  /**
-   * If set to `true`, the fast lock round will be skipped, which makes each
-   * locking operation take longer but guarantees deterministic locking order
-   * and may avoid deadlocks when many concurrent transactions are queued and
-   * try to access the same collection with an exclusive lock.
-   */
-  skipFastLockRound?: boolean;
-};
-
-/**
- * Options for executing a query.
- *
- * See {@link Database#query}.
- */
-export type QueryOptions = {
-  /**
-   * If set to `true`, the query will be executed with support for dirty reads
-   * enabled, permitting ArangoDB to return a potentially dirty or stale result
-   * and arangojs will load balance the request without distinguishing between
-   * leaders and followers.
-   *
-   * Note that dirty reads are only supported for read-only queries, not data
-   * modification queries (e.g. using `INSERT`, `UPDATE`, `REPLACE` or
-   * `REMOVE`) and only when using ArangoDB 3.4 or later.
-   *
-   * Default: `false`
-   */
-  allowDirtyRead?: boolean;
-  /**
-   * If set to `true`, cursor results will be stored by ArangoDB in such a way
-   * that batch reads can be retried in the case of a communication error.
-   *
-   * Default: `false`
-   */
-  allowRetry?: boolean;
-  /**
-   * Maximum time in milliseconds arangojs will wait for a server response.
-   * Exceeding this value will result in the request being cancelled.
-   *
-   * **Note**: Setting a timeout for the client does not guarantee the query
-   * will be killed by ArangoDB if it is already being executed. See the
-   * `maxRuntime` option for limiting the execution time within ArangoDB.
-   */
-  timeout?: number;
-  /**
-   * If set to a positive number, the query will automatically be retried at
-   * most this many times if it results in a write-write conflict.
-   *
-   * Default: `0`
-   */
-  retryOnConflict?: number;
-  /**
-   * Unless set to `false`, the number of result values in the result set will
-   * be returned in the `count` attribute. This may be disabled by default in
-   * a future version of ArangoDB if calculating this value has a performance
-   * impact for some queries.
-   *
-   * Default: `true`.
-   */
-  count?: boolean;
-  /**
-   * Number of result values to be transferred by the server in each
-   * network roundtrip (or "batch").
-   *
-   * Must be greater than zero.
-   */
-  batchSize?: number;
-  /**
-   * If set to `false`, the AQL query results cache lookup will be skipped for
-   * this query.
-   *
-   * Default: `true`
-   */
-  cache?: boolean;
-  /**
-   * Maximum memory size in bytes that the query is allowed to use.
-   * Exceeding this value will result in the query failing with an error.
-   *
-   * If set to `0`, the memory limit is disabled.
-   *
-   * Default: `0`
-   */
-  memoryLimit?: number;
-  /**
-   * Maximum allowed execution time before the query will be killed in seconds.
-   *
-   * If set to `0`, the query will be allowed to run indefinitely.
-   *
-   * Default: `0`
-   */
-  maxRuntime?: number;
-  /**
-   * Time-to-live for the cursor in seconds. The cursor results may be
-   * garbage collected by ArangoDB after this much time has passed.
-   *
-   * Default: `30`
-   */
-  ttl?: number;
-  /**
-   * If set to `true`, the query will throw an exception and abort if it would
-    otherwise produce a warning.
-   */
-  failOnWarning?: boolean;
-  /**
-   * If set to `1` or `true`, additional query profiling information will be
-   * returned in the `extra.profile` attribute if the query is not served from
-   * the result cache.
-   *
-   * If set to `2`, the query will return execution stats per query plan node
-   * in the `extra.stats.nodes` attribute. Additionally the query plan is
-   * returned in `extra.plan`.
-   */
-  profile?: boolean | number;
-  /**
-   * If set to `true`, the query will be executed as a streaming query.
-   */
-  stream?: boolean;
-  /**
-   * Limits the maximum number of warnings a query will return.
-   */
-  maxWarningsCount?: number;
-  /**
-   * If set to `true` and the query has a `LIMIT` clause, the total number of
-   * values matched before the last top-level `LIMIT` in the query was applied
-   * will be returned in the `extra.stats.fullCount` attribute.
-   */
-  fullCount?: boolean;
-  /**
-   * If set to `false`, the query data will not be stored in the RocksDB block
-   * cache. This can be used to avoid thrashing he block cache when reading a
-   * lot of data.
-   */
-  fillBlockCache?: boolean;
-  /**
-   * An object with a `rules` property specifying a list of optimizer rules to
-   * be included or excluded by the optimizer for this query. Prefix a rule
-   * name with `+` to include it, or `-` to exclude it. The name `all` acts as
-   * an alias matching all optimizer rules.
-   */
-  optimizer?: { rules: string[] };
-  /**
-   * Limits the maximum number of plans that will be created by the AQL query
-   * optimizer.
-   */
-  maxPlans?: number;
-  /**
-   * Controls after how many execution nodes in a query a stack split should be
-   * performed.
-   *
-   * Default: `250` (`200` on macOS)
-   */
-  maxNodesPerCallstack?: number;
-  /**
-   * Maximum size of transactions in bytes.
-   */
-  maxTransactionSize?: number;
-  /**
-   * Maximum number of operations after which an intermediate commit is
-   * automatically performed.
-   */
-  intermediateCommitCount?: number;
-  /**
-   * Maximum total size of operations in bytes after which an intermediate
-   * commit is automatically performed.
-   */
-  intermediateCommitSize?: number;
-  /**
-   * (Enterprise Edition cluster only.) If set to `true`, collections
-   * inaccessible to current user will result in an access error instead
-   * of being treated as empty.
-   */
-  skipInaccessibleCollections?: boolean;
-  /**
-   * (Enterprise Edition cluster only.) Limits the maximum time in seconds a
-   * DBServer will wait to bring satellite collections involved in the query
-   * into sync. Exceeding this value will result in the query being stopped.
-   *
-   * Default: `60`
-   */
-  satelliteSyncWait?: number;
-};
-
-/**
- * Options for explaining a query.
- *
- * See {@link Database#explain}.
- */
-export type ExplainOptions = {
-  /**
-   * An object with a `rules` property specifying a list of optimizer rules to
-   * be included or excluded by the optimizer for this query. Prefix a rule
-   * name with `+` to include it, or `-` to exclude it. The name `all` acts as
-   * an alias matching all optimizer rules.
-   */
-  optimizer?: { rules: string[] };
-  /**
-   * Maximum number of plans that the optimizer is allowed to generate.
-   * Setting this to a low value limits the amount of work the optimizer does.
-   */
-  maxNumberOfPlans?: number;
-  /**
-   * If set to true, all possible execution plans will be returned as the
-   * `plans` property. Otherwise only the optimal execution plan will be
-   * returned as the `plan` property.
-   *
-   * Default: `false`
-   */
-  allPlans?: boolean;
-};
-
-/**
- * Details for a transaction.
- *
- * See also {@link transaction.TransactionStatus}.
- */
-export type TransactionDetails = {
-  /**
-   * Unique identifier of the transaction.
-   */
-  id: string;
-  /**
-   * Status (or "state") of the transaction.
-   */
-  state: "running" | "committed" | "aborted";
-};
-
-/**
- * Plan explaining query execution.
- */
-export type ExplainPlan = {
-  /**
-   * Execution nodes in this plan.
-   */
-  nodes: {
-    [key: string]: any;
-    type: string;
-    id: number;
-    dependencies: number[];
-    estimatedCost: number;
-    estimatedNrItems: number;
-  }[];
-  /**
-   * Rules applied by the optimizer.
-   */
-  rules: string[];
-  /**
-   * Information about collections involved in the query.
-   */
-  collections: {
-    name: string;
-    type: "read" | "write";
-  }[];
-  /**
-   * Variables used in the query.
-   */
-  variables: {
-    id: number;
-    name: string;
-  }[];
-  /**
-   * Total estimated cost of the plan.
-   */
-  estimatedCost: number;
-  /**
-   * Estimated number of items returned by the query.
-   */
-  estimatedNrItems: number;
-  /**
-   * Whether the query is a data modification query.
-   */
-  isModificationQuery: boolean;
-};
-
-/**
- * Optimizer statistics for an explained query.
- */
-export type ExplainStats = {
-  /**
-   * Total number of rules executed for this query.
-   */
-  rulesExecuted: number;
-  /**
-   * Number of rules skipped for this query.
-   */
-  rulesSkipped: number;
-  /**
-   * Total number of plans created.
-   */
-  plansCreated: number;
-  /**
-   * Maximum memory usage in bytes of the query during explain.
-   */
-  peakMemoryUsage: number;
-  /**
-   * Time in seconds needed to explain the query.
-   */
-  executionTime: number;
-};
-
-/**
- * Result of explaining a query with a single plan.
- */
-export type SingleExplainResult = {
-  /**
-   * Query plan.
-   */
-  plan: ExplainPlan;
-  /**
-   * Whether it would be possible to cache the query.
-   */
-  cacheable: boolean;
-  /**
-   * Warnings encountered while planning the query execution.
-   */
-  warnings: { code: number; message: string }[];
-  /**
-   * Optimizer statistics for the explained query.
-   */
-  stats: ExplainStats;
-};
-
-/**
- * Result of explaining a query with multiple plans.
- */
-export type MultiExplainResult = {
-  /**
-   * Query plans.
-   */
-  plans: ExplainPlan[];
-  /**
-   * Whether it would be possible to cache the query.
-   */
-  cacheable: boolean;
-  /**
-   * Warnings encountered while planning the query execution.
-   */
-  warnings: { code: number; message: string }[];
-  /**
-   * Optimizer statistics for the explained query.
-   */
-  stats: ExplainStats;
-};
-
-/**
- * Node in an AQL abstract syntax tree (AST).
- */
-export type AstNode = {
-  [key: string]: any;
-  type: string;
-  subNodes: AstNode[];
-};
-
-/**
- * Result of parsing a query.
- */
-export type ParseResult = {
-  /**
-   * Whether the query was parsed.
-   */
-  parsed: boolean;
-  /**
-   * Names of all collections involved in the query.
-   */
-  collections: string[];
-  /**
-   * Names of all bind parameters used in the query.
-   */
-  bindVars: string[];
-  /**
-   * Abstract syntax tree (AST) of the query.
-   */
-  ast: AstNode[];
-};
-
-/**
- * Optimizer rule for AQL queries.
- */
-export type QueryOptimizerRule = {
-  name: string;
-  flags: {
-    hidden: boolean;
-    clusterOnly: boolean;
-    canBeDisabled: boolean;
-    canCreateAdditionalPlans: boolean;
-    disabledByDefault: boolean;
-    enterpriseOnly: boolean;
-  };
-};
-
-/**
- * Information about query tracking.
- */
-export type QueryTracking = {
-  /**
-   * Whether query tracking is enabled.
-   */
-  enabled: boolean;
-  /**
-   * Maximum query string length in bytes that is kept in the list.
-   */
-  maxQueryStringLength: number;
-  /**
-   * Maximum number of slow queries that is kept in the list.
-   */
-  maxSlowQueries: number;
-  /**
-   * Threshold execution time in seconds for when a query is
-   * considered slow.
-   */
-  slowQueryThreshold: number;
-  /**
-   * Whether bind parameters are being tracked along with queries.
-   */
-  trackBindVars: boolean;
-  /**
-   * Whether slow queries are being tracked.
-   */
-  trackSlowQueries: boolean;
-};
-
-/**
- * Options for query tracking.
- *
- * See {@link Database#queryTracking}.
- */
-export type QueryTrackingOptions = {
-  /**
-   * If set to `false`, neither queries nor slow queries will be tracked.
-   */
-  enabled?: boolean;
-  /**
-   * Maximum query string length in bytes that will be kept in the list.
-   */
-  maxQueryStringLength?: number;
-  /**
-   * Maximum number of slow queries to be kept in the list.
-   */
-  maxSlowQueries?: number;
-  /**
-   * Threshold execution time in seconds for when a query will be
-   * considered slow.
-   */
-  slowQueryThreshold?: number;
-  /**
-   * If set to `true`, bind parameters will be tracked along with queries.
-   */
-  trackBindVars?: boolean;
-  /**
-   * If set to `true` and `enabled` is also set to `true`, slow queries will be
-   * tracked if their execution time exceeds `slowQueryThreshold`.
-   */
-  trackSlowQueries?: boolean;
-};
-
-/**
- * Object describing a query.
- */
-export type QueryInfo = {
-  /**
-   * Unique identifier for this query.
-   */
-  id: string;
-  /**
-   * Name of the database the query runs in.
-   */
-  database: string;
-  /**
-   * Name of the user that started the query.
-   */
-  user: string;
-  /**
-   * Query string (potentially truncated).
-   */
-  query: string;
-  /**
-   * Bind parameters used in the query.
-   */
-  bindVars: Record<string, any>;
-  /**
-   * Date and time the query was started.
-   */
-  started: string;
-  /**
-   * Query's running time in seconds.
-   */
-  runTime: number;
-  /**
-   * Maximum memory usage in bytes of the query.
-   */
-  peakMemoryUsage: number;
-  /**
-   * Query's current execution state.
-   */
-  state: "executing" | "finished" | "killed";
-  /**
-   * Whether the query uses a streaming cursor.
-   */
-  stream: boolean;
-};
-
-/**
- * Information about a cluster imbalance.
- */
-export type ClusterImbalanceInfo = {
-  /**
-   * Information about the leader imbalance.
-   */
-  leader: {
-    /**
-     * The weight of leader shards per DB-Server. A leader has a weight of 1 by default but it is higher if collections can only be moved together because of `distributeShardsLike`.
-     */
-    weightUsed: number[];
-    /**
-     * The ideal weight of leader shards per DB-Server.
-     */
-    targetWeight: number[];
-    /**
-     * The number of leader shards per DB-Server.
-     */
-    numberShards: number[];
-    /**
-     * The measure of the leader shard distribution. The higher the number, the worse the distribution.
-     */
-    leaderDupl: number[];
-    /**
-     * The sum of all weights.
-     */
-    totalWeight: number;
-    /**
-     * The measure of the total imbalance. A high value indicates a high imbalance.
-     */
-    imbalance: number;
-    /**
-     * The sum of shards, counting leader shards only.
-     */
-    totalShards: number;
-  };
-  /**
-   * Information about the shard imbalance.
-   */
-  shards: {
-    /**
-     * The size of shards per DB-Server.
-     */
-    sizeUsed: number[];
-    /**
-     * The ideal size of shards per DB-Server.
-     */
-    targetSize: number[];
-    /**
-     * The number of leader and follower shards per DB-Server.
-     */
-    numberShards: number[];
-    /**
-     * The sum of the sizes.
-     */
-    totalUsed: number;
-    /**
-     * The sum of shards, counting leader and follower shards.
-     */
-    totalShards: number;
-    /**
-     * The sum of system collection shards, counting leader shards only.
-     */
-    totalShardsFromSystemCollections: number;
-    /**
-     * The measure of the total imbalance. A high value indicates a high imbalance.
-     */
-    imbalance: number;
-  };
-};
-
-/**
- * Information about the current state of the cluster imbalance.
- */
-export type ClusterRebalanceState = ClusterImbalanceInfo & {
-  /**
-   * The number of pending move shard operations.
-   */
-  pendingMoveShards: number;
-  /**
-   * The number of planned move shard operations.
-   */
-  todoMoveShards: number;
-};
-
-/**
- * Options for rebalancing the cluster.
- */
-export type ClusterRebalanceOptions = {
-  /**
-   * Maximum number of moves to be computed.
-   *
-   * Default: `1000`
-   */
-  maximumNumberOfMoves?: number;
-  /**
-   * Allow leader changes without moving data.
-   *
-   * Default: `true`
-   */
-  leaderChanges?: boolean;
-  /**
-   * Allow moving leaders.
-   *
-   * Default: `false`
-   */
-  moveLeaders?: boolean;
-  /**
-   * Allow moving followers.
-   *
-   * Default: `false`
-   */
-  moveFollowers?: boolean;
-  /**
-   * Ignore system collections in the rebalance plan.
-   *
-   * Default: `false`
-   */
-  excludeSystemCollections?: boolean;
-  /**
-   * Default: `256**6`
-   */
-  piFactor?: number;
-  /**
-   * A list of database names to exclude from the analysis.
-   *
-   * Default: `[]`
-   */
-  databasesExcluded?: string[];
-};
-
-export type ClusterRebalanceMove = {
-  /**
-   * The server name from which to move.
-   */
-  from: string;
-  /**
-   * The ID of the destination server.
-   */
-  to: string;
-  /**
-   * Shard ID of the shard to be moved.
-   */
-  shard: string;
-  /**
-   * Collection ID of the collection the shard belongs to.
-   */
-  collection: number;
-  /**
-   * True if this is a leader move shard operation.
-   */
-  isLeader: boolean;
-};
-
-export type ClusterRebalanceResult = {
-  /**
-   * Imbalance before the suggested move shard operations are applied.
-   */
-  imbalanceBefore: ClusterImbalanceInfo;
-  /**
-   * Expected imbalance after the suggested move shard operations are applied.
-   */
-  imbalanceAfter: ClusterImbalanceInfo;
-  /**
-   * Suggested move shard operations.
-   */
-  moves: ClusterRebalanceMove[];
-};
-
-/**
- * Database user to create with a database.
- */
-export type CreateDatabaseUser = {
-  /**
-   * Username of the user to create.
-   */
-  username: string;
-  /**
-   * Password of the user to create.
-   *
-   * Default: `""`
-   */
-  passwd?: string;
-  /**
-   * Whether the user is active.
-   *
-   * Default: `true`
-   */
-  active?: boolean;
-  /**
-   * Additional data to store with the user object.
-   */
-  extra?: Record<string, any>;
-};
-
+//#region Database operation options
 /**
  * Options for creating a database.
  *
@@ -870,7 +40,7 @@ export type CreateDatabaseOptions = {
   /**
    * Database users to create with the database.
    */
-  users?: CreateDatabaseUser[];
+  users?: users.CreateDatabaseUserOptions[];
   /**
    * (Cluster only.) The sharding method to use for new collections in the
    * database.
@@ -890,13 +60,15 @@ export type CreateDatabaseOptions = {
    */
   writeConcern?: number;
 };
+//#endregion
 
+//#region DatabaseDescription
 /**
  * Object describing a database.
  *
  * See {@link Database#get}.
  */
-export type DatabaseInfo = {
+export type DatabaseDescription = {
   /**
    * Name of the database.
    */
@@ -929,1130 +101,7 @@ export type DatabaseInfo = {
    */
   writeConcern?: number;
 };
-
-/**
- * Result of retrieving database version information.
- */
-export type VersionInfo = {
-  /**
-   * Value identifying the server type, i.e. `"arango"`.
-   */
-  server: string;
-  /**
-   * ArangoDB license type or "edition".
-   */
-  license: "community" | "enterprise";
-  /**
-   * ArangoDB server version.
-   */
-  version: string;
-  /**
-   * Additional information about the ArangoDB server.
-   */
-  details?: { [key: string]: string };
-};
-
-/**
- * Information about the storage engine.
- */
-export type EngineInfo = {
-  /**
-   * Endianness of the storage engine.
-   */
-  endianness?: "little" | "big";
-  /**
-   * Name of the storage engine.
-   */
-  name: string;
-  /**
-   * Features supported by the storage engine.
-   */
-  supports?: {
-    /**
-     * Index types supported by the storage engine.
-     */
-    indexes?: string[];
-    /**
-     * Aliases supported by the storage engine.
-     */
-    aliases?: {
-      /**
-       * Index type aliases supported by the storage engine.
-       */
-      indexes?: Record<string, string>;
-    }
-  };
-};
-
-/**
- * Information about the server status.
- */
-export type ServerStatusInformation = {
-  /**
-   * (Cluster Coordinators and DB-Servers only.) The address of the server.
-   */
-  address?: string;
-  /**
-   * (Cluster Coordinators and DB-Servers only.) Information about the Agency.
-   */
-  agency?: {
-    /**
-     * Information about the communication with the Agency.
-     */
-    agencyComm: {
-      /**
-       * A list of possible Agency endpoints.
-       */
-      endpoints: string[];
-    };
-  };
-  /**
-   * (Cluster Agents only.) Information about the Agents.
-   */
-  agent?: {
-    /**
-     * The endpoint of the queried Agent.
-     */
-    endpoint: string;
-    /**
-     * Server ID of the queried Agent.
-     */
-    id: string;
-    /**
-     * Server ID of the leading Agent.
-     */
-    leaderId: string;
-    /**
-     * Whether the queried Agent is the leader.
-     */
-    leading: boolean;
-    /**
-     * The current term number.
-     */
-    term: number;
-  };
-  /**
-   * (Cluster Coordinators only.) Information about the Coordinators.
-   */
-  coordinator?: {
-    /**
-     * The server ID of the Coordinator that is the Foxx master.
-     */
-    foxxmaster: string[];
-    /**
-     * Whether the queried Coordinator is the Foxx master.
-     */
-    isFoxxmaster: boolean[];
-  };
-  /**
-   * Whether the Foxx API is enabled.
-   */
-  foxxApi: boolean;
-  /**
-   * A host identifier defined by the HOST or NODE_NAME environment variable, 
-   * or a fallback value using a machine identifier or the cluster/Agency address.
-   */
-  host: string;
-  /**
-   * A hostname defined by the HOSTNAME environment variable.
-   */
-  hostname?: string;
-  /**
-   * ArangoDB Edition.
-   */
-  license: "community" | "enterprise";
-  /**
-   * Server operation mode.
-   * 
-   * @deprecated use `operationMode` instead
-   */
-  mode: "server" | "console";
-  /**
-   * Server operation mode.
-   */
-  operationMode: "server" | "console";
-  /**
-   * The process ID of arangod.
-   */
-  pid: number;
-  /**
-   * Server type.
-   */
-  server: "arango";
-  /**
-   * Information about the server status.
-   */
-  serverInfo: {
-    /**
-     * Whether the maintenance mode is enabled.
-     */
-    maintenance: boolean;
-    /**
-     * (Cluster only.) The persisted ID.
-     */
-    persistedId?: string;
-    /**
-     * Startup and recovery information.
-     */
-    progress: {
-      /**
-       * Internal name of the feature that is currently being prepared, started, stopped or unprepared.
-       */
-      feature: string;
-      /**
-       * Name of the lifecycle phase the instance is currently in.
-       */
-      phase: string;
-      /**
-       * Current recovery sequence number value.
-       */
-      recoveryTick: number;
-    };
-    /**
-     * Whether writes are disabled.
-     */
-    readOnly: boolean;
-    /**
-     * (Cluster only.) The reboot ID. Changes on every restart.
-     */
-    rebootId?: number;
-    /**
-     * Either "SINGLE", "COORDINATOR", "PRIMARY" (DB-Server), or "AGENT"
-     */
-    role: "SINGLE" | "COORDINATOR" | "PRIMARY" | "AGENT";
-    /**
-     * (Cluster Coordinators and DB-Servers only.) The server ID.
-     */
-    serverId?: string;
-    /**
-     * (Cluster Coordinators and DB-Servers only.) Either "STARTUP", "SERVING",
-     * or "SHUTDOWN".
-     */
-    state?: "STARTUP" | "SERVING" | "SHUTDOWN";
-    /**
-     * The server version string.
-     */
-    version: string;
-    /**
-     * Whether writes are enabled.
-     * 
-     * @deprecated Use `readOnly` instead.
-     */
-    writeOpsEnabled: boolean;
-  };
-};
-
-/**
- * Server availability.
- *
- * - `"default"`: The server is operational.
- * 
- * - `"readonly"`: The server is in read-only mode.
- * 
- * - `false`: The server is not available.
- */
-export type ServerAvailability = "default" | "readonly" | false;
-
-/**
- * Single server deployment information for support purposes.
- */
-export type SingleServerSupportInfo = {
-  /**
-   * ISO 8601 datetime string of when the information was requested.
-   */
-  date: string;
-  /**
-   * Information about the deployment.
-   */
-  deployment: {
-    /**
-     * Deployment mode:
-     * 
-     * - `"single"`: A single server deployment.
-     * 
-     * - `"cluster"`: A cluster deployment.
-     */
-    type: "single";
-  };
-};
-
-/**
- * Cluster deployment information for support purposes.
- */
-export type ClusterSupportInfo = {
-  /**
-   * ISO 8601 datetime string of when the information was requested.
-   */
-  date: string;
-  /**
-   * Information about the deployment.
-   */
-  deployment: {
-    /**
-     * Deployment mode:
-     * 
-     * - `"single"`: A single server deployment.
-     * 
-     * - `"cluster"`: A cluster deployment.
-     */
-    type: "cluster";
-    /**
-     * Information about the servers in the cluster.
-     */
-    servers: Record<string, Record<string, any>>;
-    /**
-     * Number of agents in the cluster.
-     */
-    agents: number;
-    /**
-     * Number of coordinators in the cluster.
-     */
-    coordinators: number;
-    /**
-     * Number of DB-Servers in the cluster.
-     */
-    dbServers: number;
-    /**
-     * Information about the shards in the cluster.
-     */
-    shards: {
-      /**
-       * Number of collections in the cluster.
-       */
-      collections: number;
-      /**
-       * Number of shards in the cluster.
-       */
-      shards: number;
-      /**
-       * Number of leaders in the cluster.
-       */
-      leaders: number;
-      /**
-       * Number of real leaders in the cluster.
-       */
-      realLeaders: number;
-      /**
-       * Number of followers in the cluster.
-       */
-      followers: number;
-      /**
-       * Number of servers in the cluster.
-       */
-      servers: number;
-    }
-  };
-  /**
-   * (Cluster only.) Information about the ArangoDB instance as well as the
-   * host machine.
-   */
-  host: Record<string, any>;
-}
-/**
- * Definition of an AQL User Function.
- */
-export type AqlUserFunction = {
-  /**
-   * Name of the AQL User Function.
-   */
-  name: string;
-  /**
-   * Implementation of the AQL User Function.
-   */
-  code: string;
-  /**
-   * Whether the function is deterministic.
-   *
-   * See {@link Database#createFunction}.
-   */
-  isDeterministic: boolean;
-};
-
-/**
- * Options for installing the service.
- *
- * See {@link Database#installService}.
- */
-export type InstallServiceOptions = {
-  /**
-   * An object mapping configuration option names to values.
-   *
-   * See also {@link Database#getServiceConfiguration}.
-   */
-  configuration?: Record<string, any>;
-  /**
-   * An object mapping dependency aliases to mount points.
-   *
-   * See also {@link Database#getServiceDependencies}.
-   */
-  dependencies?: Record<string, string>;
-  /**
-   * Whether the service should be installed in development mode.
-   *
-   * See also {@link Database#setServiceDevelopmentMode}.
-   *
-   * Default: `false`
-   */
-  development?: boolean;
-  /**
-   * Whether the service should be installed in legacy compatibility mode
-   *
-   * This overrides the `engines` option in the service manifest (if any).
-   *
-   * Default: `false`
-   */
-  legacy?: boolean;
-  /**
-   * Whether the "setup" script should be executed.
-   *
-   * Default: `true`
-   */
-  setup?: boolean;
-};
-
-/**
- * Options for replacing a service.
- *
- * See {@link Database#replaceService}.
- */
-export type ReplaceServiceOptions = {
-  /**
-   * An object mapping configuration option names to values.
-   *
-   * See also {@link Database#getServiceConfiguration}.
-   */
-  configuration?: Record<string, any>;
-  /**
-   * An object mapping dependency aliases to mount points.
-   *
-   * See also {@link Database#getServiceDependencies}.
-   */
-  dependencies?: Record<string, string>;
-  /**
-   * Whether the service should be installed in development mode.
-   *
-   * See also {@link Database#setServiceDevelopmentMode}.
-   *
-   * Default: `false`
-   */
-  development?: boolean;
-  /**
-   * Whether the service should be installed in legacy compatibility mode
-   *
-   * This overrides the `engines` option in the service manifest (if any).
-   *
-   * Default: `false`
-   */
-  legacy?: boolean;
-  /**
-   * Whether the "setup" script should be executed.
-   *
-   * Default: `true`
-   */
-  setup?: boolean;
-  /**
-   * Whether the existing service's "teardown" script should be executed
-   * prior to removing that service.
-   *
-   * Default: `true`
-   */
-  teardown?: boolean;
-  /**
-   * If set to `true`, replacing a service that does not already exist will
-   * fall back to installing the new service.
-   *
-   * Default: `false`
-   */
-  force?: boolean;
-};
-
-/**
- * Options for upgrading a service.
- *
- * See {@link Database#upgradeService}.
- */
-export type UpgradeServiceOptions = {
-  /**
-   * An object mapping configuration option names to values.
-   *
-   * See also {@link Database#getServiceConfiguration}.
-   */
-  configuration?: Record<string, any>;
-  /**
-   * An object mapping dependency aliases to mount points.
-   *
-   * See also {@link Database#getServiceDependencies}.
-   */
-  dependencies?: Record<string, string>;
-  /**
-   * Whether the service should be installed in development mode.
-   *
-   * See also {@link Database#setServiceDevelopmentMode}.
-   *
-   * Default: `false`
-   */
-  development?: boolean;
-  /**
-   * Whether the service should be installed in legacy compatibility mode
-   *
-   * This overrides the `engines` option in the service manifest (if any).
-   *
-   * Default: `false`
-   */
-  legacy?: boolean;
-  /**
-   * Whether the "setup" script should be executed.
-   *
-   * Default: `true`
-   */
-  setup?: boolean;
-  /**
-   * Whether the existing service's "teardown" script should be executed
-   * prior to upgrading that service.
-   *
-   * Default: `false`
-   */
-  teardown?: boolean;
-  /**
-   * Unless set to `true`, upgrading a service that does not already exist will
-   * fall back to installing the new service.
-   *
-   * Default: `false`
-   */
-  force?: boolean;
-};
-
-/**
- * Options for uninstalling a service.
- *
- * See {@link Database#uninstallService}.
- */
-export type UninstallServiceOptions = {
-  /**
-   * Whether the service's "teardown" script should be executed
-   * prior to removing that service.
-   *
-   * Default: `true`
-   */
-  teardown?: boolean;
-  /**
-   * If set to `true`, uninstalling a service that does not already exist
-   * will be considered successful.
-   *
-   * Default: `false`
-   */
-  force?: boolean;
-};
-
-/**
- * Object briefly describing a Foxx service.
- */
-export type ServiceSummary = {
-  /**
-   * Service mount point, relative to the database.
-   */
-  mount: string;
-  /**
-   * Name defined in the service manifest.
-   */
-  name?: string;
-  /**
-   * Version defined in the service manifest.
-   */
-  version?: string;
-  /**
-   * Service dependencies the service expects to be able to match as a mapping
-   * from dependency names to versions the service is compatible with.
-   */
-  provides: Record<string, string>;
-  /**
-   * Whether development mode is enabled for this service.
-   */
-  development: boolean;
-  /**
-   * Whether the service is running in legacy compatibility mode.
-   */
-  legacy: boolean;
-};
-
-/**
- * Object describing a Foxx service in detail.
- */
-export type ServiceInfo = {
-  /**
-   * Service mount point, relative to the database.
-   */
-  mount: string;
-  /**
-   * File system path of the service.
-   */
-  path: string;
-  /**
-   * Name defined in the service manifest.
-   */
-  name?: string;
-  /**
-   * Version defined in the service manifest.
-   */
-  version?: string;
-  /**
-   * Whether development mode is enabled for this service.
-   */
-  development: boolean;
-  /**
-   * Whether the service is running in legacy compatibility mode.
-   */
-  legacy: boolean;
-  /**
-   * Content of the service manifest of this service.
-   */
-  manifest: FoxxManifest;
-  /**
-   * Internal checksum of the service's initial source bundle.
-   */
-  checksum: string;
-  /**
-   * Options for this service.
-   */
-  options: {
-    /**
-     * Configuration values set for this service.
-     */
-    configuration: Record<string, any>;
-    /**
-     * Service dependency configuration of this service.
-     */
-    dependencies: Record<string, string>;
-  };
-};
-
-/**
- * Object describing a configuration option of a Foxx service.
- */
-export type ServiceConfiguration = {
-  /**
-   * Data type of the configuration value.
-   *
-   * **Note**: `"int"` and `"bool"` are historical synonyms for `"integer"` and
-   * `"boolean"`. The `"password"` type is synonymous with `"string"` but can
-   * be used to distinguish values which should not be displayed in plain text
-   * by software when managing the service.
-   */
-  type:
-  | "integer"
-  | "boolean"
-  | "string"
-  | "number"
-  | "json"
-  | "password"
-  | "int"
-  | "bool";
-  /**
-   * Current value of the configuration option as stored internally.
-   */
-  currentRaw: any;
-  /**
-   * Processed current value of the configuration option as exposed in the
-   * service code.
-   */
-  current: any;
-  /**
-   * Formatted name of the configuration option.
-   */
-  title: string;
-  /**
-   * Human-readable description of the configuration option.
-   */
-  description?: string;
-  /**
-   * Whether the configuration option must be set in order for the service
-   * to be operational.
-   */
-  required: boolean;
-  /**
-   * Default value of the configuration option.
-   */
-  default?: any;
-};
-
-/**
- * Object describing a single-service dependency defined by a Foxx service.
- */
-export type SingleServiceDependency = {
-  /**
-   * Whether this is a multi-service dependency.
-   */
-  multiple: false;
-  /**
-   * Current mount point the dependency is resolved to.
-   */
-  current?: string;
-  /**
-   * Formatted name of the dependency.
-   */
-  title: string;
-  /**
-   * Name of the service the dependency expects to match.
-   */
-  name: string;
-  /**
-   * Version of the service the dependency expects to match.
-   */
-  version: string;
-  /**
-   * Human-readable description of the dependency.
-   */
-  description?: string;
-  /**
-   * Whether the dependency must be matched in order for the service
-   * to be operational.
-   */
-  required: boolean;
-};
-
-/**
- * Object describing a multi-service dependency defined by a Foxx service.
- */
-export type MultiServiceDependency = {
-  /**
-   * Whether this is a multi-service dependency.
-   */
-  multiple: true;
-  /**
-   * Current mount points the dependency is resolved to.
-   */
-  current?: string[];
-  /**
-   * Formatted name of the dependency.
-   */
-  title: string;
-  /**
-   * Name of the service the dependency expects to match.
-   */
-  name: string;
-  /**
-   * Version of the service the dependency expects to match.
-   */
-  version: string;
-  /**
-   * Human-readable description of the dependency.
-   */
-  description?: string;
-  /**
-   * Whether the dependency must be matched in order for the service
-   * to be operational.
-   */
-  required: boolean;
-};
-
-/**
- * Test stats for a Foxx service's tests.
- */
-export type ServiceTestStats = {
-  /**
-   * Total number of tests found.
-   */
-  tests: number;
-  /**
-   * Number of tests that ran successfully.
-   */
-  passes: number;
-  /**
-   * Number of tests that failed.
-   */
-  failures: number;
-  /**
-   * Number of tests skipped or not executed.
-   */
-  pending: number;
-  /**
-   * Total test duration in milliseconds.
-   */
-  duration: number;
-};
-
-/**
- * Test results for a single test case using the stream reporter.
- */
-export type ServiceTestStreamTest = {
-  title: string;
-  fullTitle: string;
-  duration: number;
-  err?: string;
-};
-
-/**
- * Test results for a Foxx service's tests using the stream reporter.
- */
-export type ServiceTestStreamReport = (
-  | ["start", { total: number }]
-  | ["pass", ServiceTestStreamTest]
-  | ["fail", ServiceTestStreamTest]
-  | ["end", ServiceTestStats]
-)[];
-
-/**
- * Test results for a single test case using the suite reporter.
- */
-export type ServiceTestSuiteTest = {
-  result: "pending" | "pass" | "fail";
-  title: string;
-  duration: number;
-  err?: any;
-};
-
-/**
- * Test results for a single test suite using the suite reporter.
- */
-export type ServiceTestSuite = {
-  title: string;
-  suites: ServiceTestSuite[];
-  tests: ServiceTestSuiteTest[];
-};
-
-/**
- * Test results for a Foxx service's tests using the suite reporter.
- */
-export type ServiceTestSuiteReport = {
-  stats: ServiceTestStats;
-  suites: ServiceTestSuite[];
-  tests: ServiceTestSuiteTest[];
-};
-
-/**
- * Test results for a single test case in XUnit format using the JSONML
- * representation.
- */
-export type ServiceTestXunitTest =
-  | ["testcase", { classname: string; name: string; time: number }]
-  | [
-    "testcase",
-    { classname: string; name: string; time: number },
-    ["failure", { message: string; type: string }, string],
-  ];
-
-/**
- * Test results for a Foxx service's tests in XUnit format using the JSONML
- * representation.
- */
-export type ServiceTestXunitReport = [
-  "testsuite",
-  {
-    timestamp: number;
-    tests: number;
-    errors: number;
-    failures: number;
-    skip: number;
-    time: number;
-  },
-  ...ServiceTestXunitTest[],
-];
-
-/**
- * Test results for a Foxx service's tests in TAP format.
- */
-export type ServiceTestTapReport = string[];
-
-/**
- * Test results for a single test case using the default reporter.
- */
-export type ServiceTestDefaultTest = {
-  title: string;
-  fullTitle: string;
-  duration: number;
-  err?: string;
-};
-
-/**
- * Test results for a Foxx service's tests using the default reporter.
- */
-export type ServiceTestDefaultReport = {
-  stats: ServiceTestStats;
-  tests: ServiceTestDefaultTest[];
-  pending: ServiceTestDefaultTest[];
-  failures: ServiceTestDefaultTest[];
-  passes: ServiceTestDefaultTest[];
-};
-
-/**
- * OpenAPI 2.0 description of a Foxx service.
- */
-export type SwaggerJson = {
-  [key: string]: any;
-  info: {
-    title: string;
-    description: string;
-    version: string;
-    license: string;
-  };
-  path: {
-    [key: string]: any;
-  };
-};
-
-/**
- * Access level for an ArangoDB user's access to a collection or database.
- */
-export type AccessLevel = "rw" | "ro" | "none";
-
-/**
- * Properties of an ArangoDB user object.
- */
-export type ArangoUser = {
-  /**
-   * ArangoDB username of the user.
-   */
-  user: string;
-  /**
-   * Whether the ArangoDB user account is enabled and can authenticate.
-   */
-  active: boolean;
-  /**
-   * Additional information to store about this user.
-   */
-  extra: Record<string, any>;
-};
-
-/**
- * Options for creating an ArangoDB user.
- */
-export type CreateUserOptions = {
-  /**
-   * ArangoDB username of the user.
-   */
-  user: string;
-  /**
-   * Password the ArangoDB user will use for authentication.
-   */
-  passwd: string;
-  /**
-   * Whether the ArangoDB user account is enabled and can authenticate.
-   *
-   * Default: `true`
-   */
-  active?: boolean;
-  /**
-   * Additional information to store about this user.
-   *
-   * Default: `{}`
-   */
-  extra?: Record<string, any>;
-};
-
-/**
- * Options for modifying an ArangoDB user.
- */
-export type UserOptions = {
-  /**
-   * Password the ArangoDB user will use for authentication.
-   */
-  passwd: string;
-  /**
-   * Whether the ArangoDB user account is enabled and can authenticate.
-   *
-   * Default: `true`
-   */
-  active?: boolean;
-  /**
-   * Additional information to store about this user.
-   *
-   * Default: `{}`
-   */
-  extra?: Record<string, any>;
-};
-
-/**
- * Options for accessing or manipulating access levels.
- */
-export type UserAccessLevelOptions = {
-  /**
-   * The database to access or manipulate the access level of.
-   *
-   * If `collection` is an `ArangoCollection`, this option defaults to the
-   * database the collection is contained in. Otherwise this option defaults to
-   * the current database.
-   */
-  database?: Database | string;
-  /**
-   * The collection to access or manipulate the access level of.
-   */
-  collection?: ArangoCollection | string;
-};
-
-/**
- * An object providing methods for accessing queue time metrics of the most
- * recently received server responses if the server supports this feature.
- */
-export type QueueTimeMetrics = {
-  /**
-   * Returns the queue time of the most recently received response in seconds.
-   */
-  getLatest: () => number | undefined;
-  /**
-   * Returns a list of the most recently received queue time values as tuples
-   * of the timestamp of the response being processed in milliseconds and the
-   * queue time in seconds.
-   */
-  getValues: () => [number, number][];
-  /**
-   * Returns the average queue time of the most recently received responses
-   * in seconds.
-   */
-  getAvg: () => number;
-};
-
-/**
- * (Enterprise Edition only.) Options for creating a hot backup.
- */
-export type HotBackupOptions = {
-  /**
-   * If set to `true` and no global transaction lock can be acquired within the
-   * given timeout, a possibly inconsistent backup is taken.
-   *
-   * Default: `false`
-   */
-  allowInconsistent?: boolean;
-  /**
-   * (Enterprise Edition cluster only.) If set to `true` and no global
-   * transaction lock can be acquired within the given timeout, all running
-   * transactions are forcefully aborted to ensure that a consistent backup
-   * can be created.
-   *
-   * Default: `false`.
-   */
-  force?: boolean;
-  /**
-   * Label to appended to the backup's identifier.
-   *
-   * Default: If omitted or empty, a UUID will be generated.
-   */
-  label?: string;
-  /**
-   * Time in seconds that the operation will attempt to get a consistent
-   * snapshot.
-   *
-   * Default: `120`.
-   */
-  timeout?: number;
-};
-
-/**
- * (Enterprise Edition only.) Result of a hot backup.
- */
-export type HotBackupResult = {
-  id: string;
-  potentiallyInconsistent: boolean;
-  sizeInBytes: number;
-  datetime: string;
-  nrDBServers: number;
-  nrFiles: number;
-};
-
-/**
- * (Enterprise Edition only.) List of known hot backups.
- */
-export type HotBackupList = {
-  server: string;
-  list: Record<
-    string,
-    HotBackupResult & {
-      version: string;
-      keys: any[];
-      available: boolean;
-      nrPiecesPresent: number;
-      countIncludesFilesOnly: boolean;
-    }
-  >;
-};
-
-/**
- * Numeric representation of the logging level of a log entry.
- */
-export enum LogLevel {
-  FATAL,
-  ERROR,
-  WARNING,
-  INFO,
-  DEBUG,
-}
-
-/**
- * String representation of the logging level of a log entry.
- */
-export type LogLevelLabel = "FATAL" | "ERROR" | "WARNING" | "INFO" | "DEBUG";
-
-/**
- * Logging level setting.
- */
-export type LogLevelSetting = LogLevelLabel | "DEFAULT";
-
-/**
- * Log sorting direction, ascending or descending.
- */
-export type LogSortDirection = "asc" | "desc";
-
-/**
- * Options for retrieving log entries.
- */
-export type LogEntriesOptions = {
-  /**
-   * Maximum log level of the entries to retrieve.
-   *
-   * Default: `INFO`.
-   */
-  upto?: LogLevel | LogLevelLabel | Lowercase<LogLevelLabel>;
-  /**
-   * If set, only log entries with this log level will be returned.
-   */
-  level?: LogLevel | LogLevelLabel | Lowercase<LogLevelLabel>;
-  /**
-   * If set, only log entries with an `lid` greater than or equal to this value
-   * will be returned.
-   */
-  start?: number;
-  /**
-   * If set, only this many entries will be returned.
-   */
-  size?: number;
-  /**
-   * If set, this many log entries will be skipped.
-   */
-  offset?: number;
-  /**
-   * If set, only log entries containing the specified text will be returned.
-   */
-  search?: string;
-  /**
-   * If set to `"desc"`, log entries will be returned in reverse chronological
-   * order.
-   *
-   * Default: `"asc"`.
-   */
-  sort?: LogSortDirection;
-};
-
-/**
- * An object representing a single log entry.
- */
-export type LogMessage = {
-  id: number;
-  topic: string;
-  level: LogLevelLabel;
-  date: string;
-  message: string;
-};
-
-/**
- * An object representing a list of log entries.
- */
-export type LogEntries = {
-  totalAmount: number;
-  lid: number[];
-  topic: string[];
-  level: LogLevel[];
-  timestamp: number[];
-  text: string[];
-};
+//#endregion
 
 /**
  * @internal
@@ -2067,21 +116,31 @@ type TrappedError = {
 type TrappedRequest<T = any> = {
   error?: false;
   jobId: string;
-  onResolve: (res: ProcessedResponse<T>) => void;
+  onResolve: (res: connection.ProcessedResponse<T>) => void;
   onReject: (error: any) => void;
 };
+
+//#region Database class
+/**
+ * Indicates whether the given value represents a {@link Database}.
+ *
+ * @param database - A value that might be a database.
+ */
+export function isArangoDatabase(database: any): database is Database {
+  return Boolean(database && database.isArangoDatabase);
+}
 
 /**
  * An object representing a single ArangoDB database. All arangojs collections,
  * cursors, analyzers and so on are linked to a `Database` object.
  */
 export class Database {
-  protected _connection: Connection;
+  protected _connection: connection.Connection;
   protected _name: string;
-  protected _analyzers = new Map<string, Analyzer>();
-  protected _collections = new Map<string, Collection>();
-  protected _graphs = new Map<string, Graph>();
-  protected _views = new Map<string, View>();
+  protected _analyzers = new Map<string, analyzers.Analyzer>();
+  protected _collections = new Map<string, collections.Collection>();
+  protected _graphs = new Map<string, graphs.Graph>();
+  protected _views = new Map<string, views.View>();
   protected _trapRequest?: (
     trapped: TrappedError | TrappedRequest<any>
   ) => void;
@@ -2102,7 +161,7 @@ export class Database {
    * });
    * ```
    */
-  constructor(config?: Config);
+  constructor(config?: connection.Config);
   /**
    * Creates a new `Database` instance with its own connection pool.
    *
@@ -2123,7 +182,7 @@ export class Database {
    */
   constructor(database: Database, name?: string);
   constructor(
-    configOrDatabase: string | string[] | Config | Database = {},
+    configOrDatabase: string | string[] | connection.Config | Database = {},
     name?: string
   ) {
     if (isArangoDatabase(configOrDatabase)) {
@@ -2139,7 +198,7 @@ export class Database {
         typeof config === "string" || Array.isArray(config)
           ? { databaseName: name, url: config }
           : config;
-      this._connection = new Connection(options);
+      this._connection = new connection.Connection(options);
       this._name = databaseName || "_system";
     }
   }
@@ -2162,7 +221,7 @@ export class Database {
   }
 
   /**
-   * Returns a new {@link route.Route} instance for the given path (relative to the
+   * Returns a new {@link routes.Route} instance for the given path (relative to the
    * database) that can be used to perform arbitrary HTTP requests.
    *
    * @param path - The database-relative URL of the route. Defaults to the
@@ -2183,8 +242,8 @@ export class Database {
    * // with JSON request body '{"username": "admin", "password": "hunter2"}'
    * ```
    */
-  route(path?: string, headers?: Headers | Record<string, string>): Route {
-    return new Route(this, path, headers);
+  route(path?: string, headers?: Headers | Record<string, string>): routes.Route {
+    return new routes.Route(this, path, headers);
   }
 
   /**
@@ -2201,8 +260,8 @@ export class Database {
    * response object to a more useful return value.
    */
   async request<BodyType = any, ReturnType = BodyType>(
-    options: RequestOptions & { absolutePath?: boolean },
-    transform?: (res: ProcessedResponse<BodyType>) => ReturnType
+    options: connection.RequestOptions & { absolutePath?: boolean },
+    transform?: (res: connection.ProcessedResponse<BodyType>) => ReturnType
   ): Promise<ReturnType>;
   /**
    * @internal
@@ -2217,16 +276,16 @@ export class Database {
    * returned.
    */
   async request<BodyType = any>(
-    options: RequestOptions & { absolutePath?: boolean },
+    options: connection.RequestOptions & { absolutePath?: boolean },
     transform: false
-  ): Promise<ProcessedResponse<BodyType>>;
+  ): Promise<connection.ProcessedResponse<BodyType>>;
   async request<BodyType = any, ReturnType = BodyType>(
     {
       absolutePath = false,
       basePath,
       ...opts
-    }: RequestOptions & { absolutePath?: boolean },
-    transform: false | ((res: ProcessedResponse<BodyType>) => ReturnType) = (res) => res.parsedBody as ReturnType
+    }: connection.RequestOptions & { absolutePath?: boolean },
+    transform: false | ((res: connection.ProcessedResponse<BodyType>) => ReturnType) = (res) => res.parsedBody as ReturnType
   ): Promise<ReturnType> {
     if (!absolutePath) {
       basePath = `/_db/${encodeURIComponent(this._name)}${basePath || ""}`;
@@ -2238,7 +297,7 @@ export class Database {
         const options = { ...opts };
         options.headers = new Headers(options.headers);
         options.headers.set("x-arango-async", "store");
-        let jobRes: ProcessedResponse<any>;
+        let jobRes: connection.ProcessedResponse<any>;
         try {
           jobRes = await this._connection.request({ basePath, ...options });
         } catch (e) {
@@ -2360,11 +419,11 @@ export class Database {
    * @param timeout - Maximum number of milliseconds to wait for propagation.
    */
   async waitForPropagation(
-    request: RequestOptions,
+    request: connection.RequestOptions,
     timeout?: number
   ): Promise<void>;
   async waitForPropagation(
-    { basePath, ...request }: RequestOptions,
+    { basePath, ...request }: connection.RequestOptions,
     timeout?: number
   ): Promise<void> {
     await this._connection.waitForPropagation(
@@ -2380,7 +439,7 @@ export class Database {
    * Methods for accessing the server-reported queue times of the mostly
    * recently received responses.
    */
-  get queueTime(): QueueTimeMetrics {
+  get queueTime(): administration.QueueTimeMetrics {
     return this._connection.queueTime;
   }
 
@@ -2510,7 +569,7 @@ export class Database {
    * // server: description of the server
    * ```
    */
-  version(details?: boolean): Promise<VersionInfo> {
+  version(details?: boolean): Promise<administration.VersionInfo> {
     return this.request({
       method: "GET",
       path: "/_api/version",
@@ -2529,7 +588,7 @@ export class Database {
    * // name: name of the storage engine
    * ```
    */
-  engine(): Promise<EngineInfo> {
+  engine(): Promise<administration.EngineInfo> {
     return this.request({
       method: "GET",
       path: "/_api/engine",
@@ -2562,7 +621,7 @@ export class Database {
    * // serverInfo: detailed information about the server
    * ```
    */
-  status(): Promise<ServerStatusInformation> {
+  status(): Promise<administration.ServerStatusInformation> {
     return this.request({
       method: "GET",
       path: "/_admin/status",
@@ -2583,7 +642,7 @@ export class Database {
    * // availability is either "default", "readonly", or false
    * ```
    */
-  async availability(graceful = false): Promise<ServerAvailability> {
+  async availability(graceful = false): Promise<administration.ServerAvailability> {
     try {
       return this.request({
         method: "GET",
@@ -2591,7 +650,7 @@ export class Database {
       }, (res) => res.parsedBody.mode);
     } catch (e) {
       if (graceful) return false;
-      if ((isArangoError(e) || e instanceof HttpError) && e.code === 503) {
+      if ((errors.isArangoError(e) || e instanceof errors.HttpError) && e.code === 503) {
         return false;
       }
       throw e;
@@ -2603,7 +662,7 @@ export class Database {
    * 
    * Note that this API may reveal sensitive data about the deployment.
    */
-  supportInfo(): Promise<SingleServerSupportInfo | ClusterSupportInfo> {
+  supportInfo(): Promise<administration.SingleServerSupportInfo | administration.ClusterSupportInfo> {
     return this.request({
       method: "GET",
       path: "/_admin/support-info",
@@ -2634,7 +693,7 @@ export class Database {
    * const imbalance = await db.getClusterImbalance();
    * ```
    */
-  getClusterImbalance(): Promise<ClusterRebalanceState> {
+  getClusterImbalance(): Promise<cluster.ClusterRebalanceState> {
     return this.request(
       { path: "/_admin/cluster/rebalance" },
       (res) => res.parsedBody.result
@@ -2657,15 +716,15 @@ export class Database {
    * ```
    */
   computeClusterRebalance(
-    opts: ClusterRebalanceOptions
-  ): Promise<ClusterRebalanceResult> {
+    options: cluster.ClusterRebalanceOptions
+  ): Promise<cluster.ClusterRebalanceResult> {
     return this.request(
       {
         method: "POST",
         path: "/_admin/cluster/rebalance",
         body: {
           version: 1,
-          ...opts,
+          ...options,
         },
       },
       (res) => res.parsedBody.result
@@ -2687,7 +746,7 @@ export class Database {
    * }
    * ```
    */
-  executeClusterRebalance(moves: ClusterRebalanceMove[]): Promise<unknown> {
+  executeClusterRebalance(moves: cluster.ClusterRebalanceMove[]): Promise<unknown> {
     return this.request({
       method: "POST",
       path: "/_admin/cluster/rebalance/execute",
@@ -2713,8 +772,8 @@ export class Database {
    * ```
    */
   rebalanceCluster(
-    opts: ClusterRebalanceOptions
-  ): Promise<ClusterRebalanceResult> {
+    opts: cluster.ClusterRebalanceOptions
+  ): Promise<cluster.ClusterRebalanceResult> {
     return this.request({
       method: "PUT",
       path: "/_admin/cluster/rebalance",
@@ -2755,7 +814,7 @@ export class Database {
    * // the database exists
    * ```
    */
-  get(): Promise<DatabaseInfo> {
+  get(): Promise<DatabaseDescription> {
     return this.request(
       { path: "/_api/database/current" },
       (res) => res.parsedBody.result
@@ -2777,7 +836,7 @@ export class Database {
       await this.get();
       return true;
     } catch (err: any) {
-      if (isArangoError(err) && err.errorNum === DATABASE_NOT_FOUND) {
+      if (errors.isArangoError(err) && err.errorNum === DATABASE_NOT_FOUND) {
         return false;
       }
       throw err;
@@ -2820,11 +879,11 @@ export class Database {
    */
   createDatabase(
     databaseName: string,
-    users: CreateDatabaseUser[]
+    users: users.CreateDatabaseUserOptions[]
   ): Promise<Database>;
   createDatabase(
     databaseName: string,
-    usersOrOptions: CreateDatabaseUser[] | CreateDatabaseOptions = {}
+    usersOrOptions: users.CreateDatabaseUserOptions[] | CreateDatabaseOptions = {}
   ): Promise<Database> {
     const { users, ...options } = Array.isArray(usersOrOptions)
       ? { users: usersOrOptions }
@@ -2952,10 +1011,13 @@ export class Database {
    * Returns a `Collection` instance for the given collection name.
    *
    * In TypeScript the collection implements both the
-   * {@link collection.DocumentCollection} and {@link collection.EdgeCollection}
+   * {@link collections.DocumentCollection} and {@link collections.EdgeCollection}
    * interfaces and can be cast to either type to enforce a stricter API.
    *
-   * @param T - Type to use for document data. Defaults to `any`.
+   * @param EntryResultType - Type to represent document contents returned by
+   * the server (including computed properties).
+   * @param EntryInputType - Type to represent document contents passed when
+   * inserting or replacing documents (without computed properties).
    * @param collectionName - Name of the edge collection.
    *
    * @example
@@ -2987,14 +1049,18 @@ export class Database {
    * const edges = db.collection("friends") as EdgeCollection<Friend>;
    * ```
    */
-  collection<T extends Record<string, any> = any>(
+  collection<
+    EntryResultType extends Record<string, any> = any,
+    EntryInputType extends Record<string, any> = EntryResultType,
+  >(
     collectionName: string
-  ): DocumentCollection<T> & EdgeCollection<T> {
+  ): collections.DocumentCollection<EntryResultType, EntryInputType> &
+    collections.EdgeCollection<EntryResultType, EntryInputType> {
     collectionName = collectionName;
     if (!this._collections.has(collectionName)) {
       this._collections.set(
         collectionName,
-        new Collection(this, collectionName)
+        new collections.Collection(this, collectionName)
       );
     }
     return this._collections.get(collectionName)!;
@@ -3002,9 +1068,12 @@ export class Database {
 
   /**
    * Creates a new collection with the given `collectionName` and `options`,
-   * then returns a {@link collection.DocumentCollection} instance for the new collection.
+   * then returns a {@link collections.DocumentCollection} instance for the new collection.
    *
-   * @param T - Type to use for document data. Defaults to `any`.
+   * @param EntryResultType - Type to represent document contents returned by
+   * the server (including computed properties).
+   * @param EntryInputType - Type to represent document contents passed when
+   * inserting or replacing documents (without computed properties).
    * @param collectionName - Name of the new collection.
    * @param options - Options for creating the collection.
    *
@@ -3023,18 +1092,24 @@ export class Database {
    * const documents = db.createCollection<Person>("persons");
    * ```
    */
-  async createCollection<T extends Record<string, any> = any>(
+  async createCollection<
+    EntryResultType extends Record<string, any> = any,
+    EntryInputType extends Record<string, any> = EntryResultType,
+  >(
     collectionName: string,
-    options?: CreateCollectionOptions & {
-      type?: CollectionType.DOCUMENT_COLLECTION;
+    options?: collections.CreateCollectionOptions & {
+      type?: collections.CollectionType.DOCUMENT_COLLECTION;
     }
-  ): Promise<DocumentCollection<T>>;
+  ): Promise<collections.DocumentCollection<EntryResultType, EntryInputType>>;
   /**
    * Creates a new edge collection with the given `collectionName` and
-   * `options`, then returns an {@link collection.EdgeCollection} instance for the new
+   * `options`, then returns an {@link collections.EdgeCollection} instance for the new
    * edge collection.
    *
-   * @param T - Type to use for edge document data. Defaults to `any`.
+   * @param EntryResultType - Type to represent edge document contents returned
+   * by the server (including computed properties).
+   * @param EntryInputType - Type to represent edge document contents passed
+   * when inserting or replacing documents (without computed properties).
    * @param collectionName - Name of the new collection.
    * @param options - Options for creating the collection.
    *
@@ -3058,16 +1133,25 @@ export class Database {
    * });
    * ```
    */
-  async createCollection<T extends Record<string, any> = any>(
+  async createCollection<
+    EntryResultType extends Record<string, any> = any,
+    EntryInputType extends Record<string, any> = EntryResultType,
+  >(
     collectionName: string,
-    options: CreateCollectionOptions & {
-      type: CollectionType.EDGE_COLLECTION;
+    options: collections.CreateCollectionOptions & {
+      type: collections.CollectionType.EDGE_COLLECTION;
     }
-  ): Promise<EdgeCollection<T>>;
-  async createCollection<T extends Record<string, any> = any>(
+  ): Promise<collections.EdgeCollection<EntryResultType, EntryInputType>>;
+  async createCollection<
+    EntryResultType extends Record<string, any> = any,
+    EntryInputType extends Record<string, any> = EntryResultType,
+  >(
     collectionName: string,
-    options?: CreateCollectionOptions & { type?: CollectionType }
-  ): Promise<DocumentCollection<T> & EdgeCollection<T>> {
+    options?: collections.CreateCollectionOptions & {
+      type?: collections.CollectionType;
+    }
+  ): Promise<collections.DocumentCollection<EntryResultType, EntryInputType> &
+    collections.EdgeCollection<EntryResultType, EntryInputType>> {
     const collection = this.collection(collectionName);
     await collection.create(options);
     return collection;
@@ -3075,13 +1159,16 @@ export class Database {
 
   /**
    * Creates a new edge collection with the given `collectionName` and
-   * `options`, then returns an {@link collection.EdgeCollection} instance for the new
+   * `options`, then returns an {@link collections.EdgeCollection} instance for the new
    * edge collection.
    *
    * This is a convenience method for calling {@link Database#createCollection}
    * with `options.type` set to `EDGE_COLLECTION`.
    *
-   * @param T - Type to use for edge document data. Defaults to `any`.
+   * @param EntryResultType - Type to represent edge document contents returned
+   * by the server (including computed properties).
+   * @param EntryInputType - Type to represent edge document contents passed
+   * when inserting or replacing documents (without computed properties).
    * @param collectionName - Name of the new collection.
    * @param options - Options for creating the collection.
    *
@@ -3101,13 +1188,17 @@ export class Database {
    * const edges = db.createEdgeCollection<Friend>("friends");
    * ```
    */
-  async createEdgeCollection<T extends Record<string, any> = any>(
+  async createEdgeCollection<
+    EntryResultType extends Record<string, any> = any,
+    EntryInputType extends Record<string, any> = EntryResultType,
+  >(
     collectionName: string,
-    options?: CreateCollectionOptions
-  ): Promise<EdgeCollection<T>> {
+    options?: collections.CreateCollectionOptions
+  ): Promise<
+    collections.EdgeCollection<EntryResultType, EntryInputType>> {
     return this.createCollection(collectionName, {
       ...options,
-      type: CollectionType.EDGE_COLLECTION,
+      type: collections.CollectionType.EDGE_COLLECTION,
     });
   }
 
@@ -3126,7 +1217,7 @@ export class Database {
   async renameCollection(
     collectionName: string,
     newName: string
-  ): Promise<ArangoApiResponse<CollectionMetadata>> {
+  ): Promise<connection.ArangoApiResponse<collections.CollectionDescription>> {
     const result = await this.request({
       method: "PUT",
       path: `/_api/collection/${encodeURIComponent(collectionName)}/rename`,
@@ -3162,7 +1253,7 @@ export class Database {
    */
   listCollections(
     excludeSystem: boolean = true
-  ): Promise<CollectionMetadata[]> {
+  ): Promise<collections.CollectionDescription[]> {
     return this.request(
       {
         path: "/_api/collection",
@@ -3177,7 +1268,7 @@ export class Database {
    * `Collection` instances.
    *
    * In TypeScript these instances implement both the
-   * {@link collection.DocumentCollection} and {@link collection.EdgeCollection}
+   * {@link collections.DocumentCollection} and {@link collections.EdgeCollection}
    * interfaces and can be cast to either type to enforce a stricter API.
    *
    * See also {@link Database#listCollections}.
@@ -3202,7 +1293,7 @@ export class Database {
    */
   async collections(
     excludeSystem: boolean = true
-  ): Promise<Array<DocumentCollection & EdgeCollection>> {
+  ): Promise<Array<collections.DocumentCollection & collections.EdgeCollection>> {
     const collections = await this.listCollections(excludeSystem);
     return collections.map((data) => this.collection(data.name));
   }
@@ -3210,7 +1301,7 @@ export class Database {
 
   //#region graphs
   /**
-   * Returns a {@link graph.Graph} instance representing the graph with the given
+   * Returns a {@link graphs.Graph} instance representing the graph with the given
    * `graphName`.
    *
    * @param graphName - Name of the graph.
@@ -3221,16 +1312,16 @@ export class Database {
    * const graph = db.graph("some-graph");
    * ```
    */
-  graph(graphName: string): Graph {
+  graph(graphName: string): graphs.Graph {
     if (!this._graphs.has(graphName)) {
-      this._graphs.set(graphName, new Graph(this, graphName));
+      this._graphs.set(graphName, new graphs.Graph(this, graphName));
     }
     return this._graphs.get(graphName)!;
   }
 
   /**
    * Creates a graph with the given `graphName` and `edgeDefinitions`, then
-   * returns a {@link graph.Graph} instance for the new graph.
+   * returns a {@link graphs.Graph} instance for the new graph.
    *
    * @param graphName - Name of the graph to be created.
    * @param edgeDefinitions - An array of edge definitions.
@@ -3238,9 +1329,9 @@ export class Database {
    */
   async createGraph(
     graphName: string,
-    edgeDefinitions: EdgeDefinitionOptions[],
-    options?: CreateGraphOptions
-  ): Promise<Graph> {
+    edgeDefinitions: graphs.EdgeDefinitionOptions[],
+    options?: graphs.CreateGraphOptions
+  ): Promise<graphs.Graph> {
     const graph = this.graph(graphName);
     await graph.create(edgeDefinitions, options);
     return graph;
@@ -3259,7 +1350,7 @@ export class Database {
    * // graphs is an array of graph descriptions
    * ```
    */
-  listGraphs(): Promise<GraphInfo[]> {
+  listGraphs(): Promise<graphs.GraphDescription[]> {
     return this.request(
       { path: "/_api/gharial" },
       (res) => res.parsedBody.graphs
@@ -3267,7 +1358,7 @@ export class Database {
   }
 
   /**
-   * Fetches all graphs from the database and returns an array of {@link graph.Graph}
+   * Fetches all graphs from the database and returns an array of {@link graphs.Graph}
    * instances for those graphs.
    *
    * See also {@link Database#listGraphs}.
@@ -3279,7 +1370,7 @@ export class Database {
    * // graphs is an array of Graph instances
    * ```
    */
-  async graphs(): Promise<Graph[]> {
+  async graphs(): Promise<graphs.Graph[]> {
     const graphs = await this.listGraphs();
     return graphs.map((data: any) => this.graph(data._key));
   }
@@ -3287,7 +1378,7 @@ export class Database {
 
   //#region views
   /**
-   * Returns a {@link view.View} instance for the given `viewName`.
+   * Returns a {@link views.View} instance for the given `viewName`.
    *
    * @param viewName - Name of the ArangoSearch or SearchAlias View.
    *
@@ -3297,16 +1388,16 @@ export class Database {
    * const view = db.view("potatoes");
    * ```
    */
-  view(viewName: string): View {
+  view(viewName: string): views.View {
     if (!this._views.has(viewName)) {
-      this._views.set(viewName, new View(this, viewName));
+      this._views.set(viewName, new views.View(this, viewName));
     }
     return this._views.get(viewName)!;
   }
 
   /**
    * Creates a new View with the given `viewName` and `options`, then returns a
-   * {@link view.View} instance for the new View.
+   * {@link views.View} instance for the new View.
    *
    * @param viewName - Name of the View.
    * @param options - An object defining the properties of the View.
@@ -3320,8 +1411,8 @@ export class Database {
    */
   async createView(
     viewName: string,
-    options: CreateViewOptions
-  ): Promise<View> {
+    options: views.CreateViewOptions
+  ): Promise<views.View> {
     const view = this.view(viewName);
     await view.create(options);
     return view;
@@ -3330,7 +1421,7 @@ export class Database {
   /**
    * Renames the view `viewName` to `newName`.
    *
-   * Additionally removes any stored {@link view.View} instance for `viewName` from
+   * Additionally removes any stored {@link views.View} instance for `viewName` from
    * the `Database` instance's internal cache.
    *
    * **Note**: Renaming views may not be supported when ArangoDB is running in
@@ -3342,7 +1433,7 @@ export class Database {
   async renameView(
     viewName: string,
     newName: string
-  ): Promise<ArangoApiResponse<ViewDescription>> {
+  ): Promise<connection.ArangoApiResponse<views.ViewDescription>> {
     const result = await this.request({
       method: "PUT",
       path: `/_api/view/${encodeURIComponent(viewName)}/rename`,
@@ -3366,13 +1457,13 @@ export class Database {
    * // views is an array of View descriptions
    * ```
    */
-  listViews(): Promise<ViewDescription[]> {
+  listViews(): Promise<views.ViewDescription[]> {
     return this.request({ path: "/_api/view" }, (res) => res.parsedBody.result);
   }
 
   /**
    * Fetches all Views from the database and returns an array of
-   * {@link view.View} instances
+   * {@link views.View} instances
    * for the Views.
    *
    * See also {@link Database#listViews}.
@@ -3384,7 +1475,7 @@ export class Database {
    * // views is an array of ArangoSearch View instances
    * ```
    */
-  async views(): Promise<View[]> {
+  async views(): Promise<views.View[]> {
     const views = await this.listViews();
     return views.map((data) => this.view(data.name));
   }
@@ -3392,7 +1483,7 @@ export class Database {
 
   //#region analyzers
   /**
-   * Returns an {@link analyzer.Analyzer} instance representing the Analyzer with the
+   * Returns an {@link analyzers.Analyzer} instance representing the Analyzer with the
    * given `analyzerName`.
    *
    * @example
@@ -3402,16 +1493,19 @@ export class Database {
    * const info = await analyzer.get();
    * ```
    */
-  analyzer(analyzerName: string): Analyzer {
+  analyzer(analyzerName: string): analyzers.Analyzer {
     if (!this._analyzers.has(analyzerName)) {
-      this._analyzers.set(analyzerName, new Analyzer(this, analyzerName));
+      this._analyzers.set(
+        analyzerName,
+        new analyzers.Analyzer(this, analyzerName)
+      );
     }
     return this._analyzers.get(analyzerName)!;
   }
 
   /**
    * Creates a new Analyzer with the given `analyzerName` and `options`, then
-   * returns an {@link analyzer.Analyzer} instance for the new Analyzer.
+   * returns an {@link analyzers.Analyzer} instance for the new Analyzer.
    *
    * @param analyzerName - Name of the Analyzer.
    * @param options - An object defining the properties of the Analyzer.
@@ -3425,8 +1519,8 @@ export class Database {
    */
   async createAnalyzer(
     analyzerName: string,
-    options: CreateAnalyzerOptions
-  ): Promise<Analyzer> {
+    options: analyzers.CreateAnalyzerOptions
+  ): Promise<analyzers.Analyzer> {
     const analyzer = this.analyzer(analyzerName);
     await analyzer.create(options);
     return analyzer;
@@ -3445,7 +1539,7 @@ export class Database {
    * // analyzers is an array of Analyzer descriptions
    * ```
    */
-  listAnalyzers(): Promise<AnalyzerDescription[]> {
+  listAnalyzers(): Promise<analyzers.AnalyzerDescription[]> {
     return this.request(
       { path: "/_api/analyzer" },
       (res) => res.parsedBody.result
@@ -3454,7 +1548,7 @@ export class Database {
 
   /**
    * Fetches all Analyzers visible in the database and returns an array of
-   * {@link analyzer.Analyzer} instances for those Analyzers.
+   * {@link analyzers.Analyzer} instances for those Analyzers.
    *
    * See also {@link Database#listAnalyzers}.
    *
@@ -3465,7 +1559,7 @@ export class Database {
    * // analyzers is an array of Analyzer instances
    * ```
    */
-  async analyzers(): Promise<Analyzer[]> {
+  async analyzers(): Promise<analyzers.Analyzer[]> {
     const analyzers = await this.listAnalyzers();
     return analyzers.map((data) => this.analyzer(data.name));
   }
@@ -3483,7 +1577,7 @@ export class Database {
    * // users is an array of user objects
    * ```
    */
-  listUsers(): Promise<ArangoUser[]> {
+  listUsers(): Promise<users.ArangoUser[]> {
     return this.request(
       {
         path: "/_api/user",
@@ -3504,7 +1598,7 @@ export class Database {
    * // user is the user object for the user named "steve"
    * ```
    */
-  getUser(username: string): Promise<ArangoApiResponse<ArangoUser>> {
+  getUser(username: string): Promise<connection.ArangoApiResponse<users.ArangoUser>> {
     return this.request({
       path: `/_api/user/${encodeURIComponent(username)}`,
     });
@@ -3526,7 +1620,7 @@ export class Database {
   createUser(
     username: string,
     passwd: string
-  ): Promise<ArangoApiResponse<ArangoUser>>;
+  ): Promise<connection.ArangoApiResponse<users.ArangoUser>>;
   /**
    * Creates a new ArangoDB user with the given options.
    *
@@ -3542,12 +1636,12 @@ export class Database {
    */
   createUser(
     username: string,
-    options: UserOptions
-  ): Promise<ArangoApiResponse<ArangoUser>>;
+    options: users.UserOptions
+  ): Promise<connection.ArangoApiResponse<users.ArangoUser>>;
   createUser(
     username: string,
-    options: string | UserOptions
-  ): Promise<ArangoApiResponse<ArangoUser>> {
+    options: string | users.UserOptions
+  ): Promise<connection.ArangoApiResponse<users.ArangoUser>> {
     if (typeof options === "string") {
       options = { passwd: options };
     }
@@ -3577,7 +1671,7 @@ export class Database {
   updateUser(
     username: string,
     passwd: string
-  ): Promise<ArangoApiResponse<ArangoUser>>;
+  ): Promise<connection.ArangoApiResponse<users.ArangoUser>>;
   /**
    * Updates the ArangoDB user with the new options.
    *
@@ -3593,12 +1687,12 @@ export class Database {
    */
   updateUser(
     username: string,
-    options: Partial<UserOptions>
-  ): Promise<ArangoApiResponse<ArangoUser>>;
+    options: Partial<users.UserOptions>
+  ): Promise<connection.ArangoApiResponse<users.ArangoUser>>;
   updateUser(
     username: string,
-    options: string | Partial<UserOptions>
-  ): Promise<ArangoApiResponse<ArangoUser>> {
+    options: string | Partial<users.UserOptions>
+  ): Promise<connection.ArangoApiResponse<users.ArangoUser>> {
     if (typeof options === "string") {
       options = { passwd: options };
     }
@@ -3627,8 +1721,8 @@ export class Database {
    */
   replaceUser(
     username: string,
-    options: UserOptions
-  ): Promise<ArangoApiResponse<ArangoUser>> {
+    options: users.UserOptions
+  ): Promise<connection.ArangoApiResponse<users.ArangoUser>> {
     if (typeof options === "string") {
       options = { passwd: options };
     }
@@ -3656,13 +1750,13 @@ export class Database {
    */
   removeUser(
     username: string
-  ): Promise<ArangoApiResponse<Record<string, never>>> {
+  ): Promise<void> {
     return this.request(
       {
         method: "DELETE",
         path: `/_api/user/${encodeURIComponent(username)}`,
       },
-      (res) => res.parsedBody
+      () => undefined,
     );
   }
 
@@ -3737,17 +1831,17 @@ export class Database {
    */
   getUserAccessLevel(
     username: string,
-    { database, collection }: UserAccessLevelOptions
-  ): Promise<AccessLevel> {
+    { database, collection }: users.UserAccessLevelOptions
+  ): Promise<users.AccessLevel> {
     const databaseName = isArangoDatabase(database)
       ? database.name
       : database ??
-      (isArangoCollection(collection)
+      (collections.isArangoCollection(collection)
         ? ((collection as any)._db as Database).name
         : this._name);
     const suffix = collection
       ? `/${encodeURIComponent(
-        isArangoCollection(collection) ? collection.name : collection
+        collections.isArangoCollection(collection) ? collection.name : collection
       )}`
       : "";
     return this.request(
@@ -3838,17 +1932,17 @@ export class Database {
       database,
       collection,
       grant,
-    }: UserAccessLevelOptions & { grant: AccessLevel }
-  ): Promise<ArangoApiResponse<Record<string, AccessLevel>>> {
+    }: users.UserAccessLevelOptions & { grant: users.AccessLevel }
+  ): Promise<connection.ArangoApiResponse<Record<string, users.AccessLevel>>> {
     const databaseName = isArangoDatabase(database)
       ? database.name
       : database ??
-      (isArangoCollection(collection)
-        ? ((collection as any)._db as Database).name
+      (collection instanceof collections.Collection
+        ? collection.database.name
         : this._name);
     const suffix = collection
       ? `/${encodeURIComponent(
-        isArangoCollection(collection) ? collection.name : collection
+        collections.isArangoCollection(collection) ? collection.name : collection
       )}`
       : "";
     return this.request(
@@ -3928,17 +2022,17 @@ export class Database {
    */
   clearUserAccessLevel(
     username: string,
-    { database, collection }: UserAccessLevelOptions
-  ): Promise<ArangoApiResponse<Record<string, AccessLevel>>> {
+    { database, collection }: users.UserAccessLevelOptions
+  ): Promise<connection.ArangoApiResponse<Record<string, users.AccessLevel>>> {
     const databaseName = isArangoDatabase(database)
       ? database.name
       : database ??
-      (isArangoCollection(collection)
+      (collection instanceof collections.Collection
         ? ((collection as any)._db as Database).name
         : this._name);
     const suffix = collection
       ? `/${encodeURIComponent(
-        isArangoCollection(collection) ? collection.name : collection
+        collections.isArangoCollection(collection) ? collection.name : collection
       )}`
       : "";
     return this.request(
@@ -3971,7 +2065,7 @@ export class Database {
   getUserDatabases(
     username: string,
     full?: false
-  ): Promise<Record<string, AccessLevel>>;
+  ): Promise<Record<string, users.AccessLevel>>;
   /**
    * Fetches an object mapping names of databases to the access level of the
    * given ArangoDB user for those databases and the collections within each
@@ -3999,8 +2093,8 @@ export class Database {
     Record<
       string,
       {
-        permission: AccessLevel;
-        collections: Record<string, AccessLevel | "undefined">;
+        permission: users.AccessLevel;
+        collections: Record<string, users.AccessLevel | "undefined">;
       }
     >
   >;
@@ -4021,9 +2115,9 @@ export class Database {
    * value.
    *
    * Collections can be specified as collection names (strings) or objects
-   * implementing the {@link collection.ArangoCollection} interface: `Collection`,
-   * {@link graph.GraphVertexCollection}, {@link graph.GraphEdgeCollection} as well as
-   * (in TypeScript) {@link collection.DocumentCollection} and {@link collection.EdgeCollection}.
+   * implementing the {@link collections.ArangoCollection} interface: `Collection`,
+   * {@link graphs.GraphVertexCollection}, {@link graphs.GraphEdgeCollection} as well as
+   * (in TypeScript) {@link collections.DocumentCollection} and {@link collections.EdgeCollection}.
    *
    * **Note**: The `action` function will be evaluated and executed on the
    * server inside ArangoDB's embedded JavaScript environment and can not
@@ -4066,17 +2160,17 @@ export class Database {
    * ```
    */
   executeTransaction(
-    collections: TransactionCollections & { allowImplicit?: boolean },
+    collections: transactions.TransactionCollectionOptions & { allowImplicit?: boolean },
     action: string,
-    options?: TransactionOptions & { params?: any }
+    options?: transactions.TransactionOptions & { params?: any }
   ): Promise<any>;
   /**
    * Performs a server-side transaction and returns its return value.
    *
    * Collections can be specified as collection names (strings) or objects
-   * implementing the {@link collection.ArangoCollection} interface: `Collection`,
-   * {@link graph.GraphVertexCollection}, {@link graph.GraphEdgeCollection} as well as
-   * (in TypeScript) {@link collection.DocumentCollection} and {@link collection.EdgeCollection}.
+   * implementing the {@link collections.ArangoCollection} interface: `Collection`,
+   * {@link graphs.GraphVertexCollection}, {@link graphs.GraphEdgeCollection} as well as
+   * (in TypeScript) {@link collections.DocumentCollection} and {@link collections.EdgeCollection}.
    *
    * **Note**: The `action` function will be evaluated and executed on the
    * server inside ArangoDB's embedded JavaScript environment and can not
@@ -4115,17 +2209,17 @@ export class Database {
    * ```
    */
   executeTransaction(
-    collections: (string | ArangoCollection)[],
+    collections: (string | collections.ArangoCollection)[],
     action: string,
-    options?: TransactionOptions & { params?: any }
+    options?: transactions.TransactionOptions & { params?: any }
   ): Promise<any>;
   /**
    * Performs a server-side transaction and returns its return value.
    *
    * The Collection can be specified as a collection name (string) or an object
-   * implementing the {@link collection.ArangoCollection} interface: `Collection`,
-   * {@link graph.GraphVertexCollection}, {@link graph.GraphEdgeCollection} as well as
-   * (in TypeScript) {@link collection.DocumentCollection} and {@link collection.EdgeCollection}.
+   * implementing the {@link collections.ArangoCollection} interface: `Collection`,
+   * {@link graphs.GraphVertexCollection}, {@link graphs.GraphEdgeCollection} as well as
+   * (in TypeScript) {@link collections.DocumentCollection} and {@link collections.EdgeCollection}.
    *
    * **Note**: The `action` function will be evaluated and executed on the
    * server inside ArangoDB's embedded JavaScript environment and can not
@@ -4164,18 +2258,18 @@ export class Database {
    * ```
    */
   executeTransaction(
-    collection: string | ArangoCollection,
+    collection: string | collections.ArangoCollection,
     action: string,
-    options?: TransactionOptions & { params?: any }
+    options?: transactions.TransactionOptions & { params?: any }
   ): Promise<any>;
   executeTransaction(
     collections:
-      | (TransactionCollections & { allowImplicit?: boolean })
-      | (string | ArangoCollection)[]
+      | (transactions.TransactionCollectionOptions & { allowImplicit?: boolean })
+      | (string | collections.ArangoCollection)[]
       | string
-      | ArangoCollection,
+      | collections.ArangoCollection,
     action: string,
-    options: TransactionOptions & { params?: any } = {}
+    options: transactions.TransactionOptions & { params?: any } = {}
   ): Promise<any> {
     const { allowDirtyRead = undefined, ...opts } = options;
     return this.request(
@@ -4184,7 +2278,7 @@ export class Database {
         path: "/_api/transaction",
         allowDirtyRead,
         body: {
-          collections: coerceTransactionCollections(collections),
+          collections: transactions.coerceTransactionCollections(collections),
           action,
           ...opts,
         },
@@ -4194,7 +2288,7 @@ export class Database {
   }
 
   /**
-   * Returns a {@link transaction.Transaction} instance for an existing streaming
+   * Returns a {@link transactions.Transaction} instance for an existing streaming
    * transaction with the given `id`.
    *
    * See also {@link Database#beginTransaction}.
@@ -4210,19 +2304,19 @@ export class Database {
    * await trx2.commit();
    * ```
    */
-  transaction(transactionId: string): Transaction {
-    return new Transaction(this, transactionId);
+  transaction(transactionId: string): transactions.Transaction {
+    return new transactions.Transaction(this, transactionId);
   }
 
   /**
    * Begins a new streaming transaction for the given collections, then returns
-   * a {@link transaction.Transaction} instance for the transaction.
+   * a {@link transactions.Transaction} instance for the transaction.
    *
    * Collections can be specified as collection names (strings) or objects
-   * implementing the {@link collection.ArangoCollection} interface: `Collection`,
-   * {@link graph.GraphVertexCollection}, {@link graph.GraphEdgeCollection} as
-   * well as (in TypeScript) {@link collection.DocumentCollection} and
-   * {@link collection.EdgeCollection}.
+   * implementing the {@link collections.ArangoCollection} interface: `Collection`,
+   * {@link graphs.GraphVertexCollection}, {@link graphs.GraphEdgeCollection} as
+   * well as (in TypeScript) {@link collections.DocumentCollection} and
+   * {@link collections.EdgeCollection}.
    *
    * @param collections - Collections involved in the transaction.
    * @param options - Options for the transaction.
@@ -4242,17 +2336,17 @@ export class Database {
    * ```
    */
   beginTransaction(
-    collections: TransactionCollections,
-    options?: TransactionOptions
-  ): Promise<Transaction>;
+    collections: transactions.TransactionCollectionOptions,
+    options?: transactions.TransactionOptions
+  ): Promise<transactions.Transaction>;
   /**
    * Begins a new streaming transaction for the given collections, then returns
-   * a {@link transaction.Transaction} instance for the transaction.
+   * a {@link transactions.Transaction} instance for the transaction.
    *
    * Collections can be specified as collection names (strings) or objects
-   * implementing the {@link collection.ArangoCollection} interface: `Collection`,
-   * {@link graph.GraphVertexCollection}, {@link graph.GraphEdgeCollection} as well as
-   * (in TypeScript) {@link collection.DocumentCollection} and {@link collection.EdgeCollection}.
+   * implementing the {@link collections.ArangoCollection} interface: `Collection`,
+   * {@link graphs.GraphVertexCollection}, {@link graphs.GraphEdgeCollection} as well as
+   * (in TypeScript) {@link collections.DocumentCollection} and {@link collections.EdgeCollection}.
    *
    * @param collections - Collections that can be read from and written to
    * during the transaction.
@@ -4273,17 +2367,17 @@ export class Database {
    * ```
    */
   beginTransaction(
-    collections: (string | ArangoCollection)[],
-    options?: TransactionOptions
-  ): Promise<Transaction>;
+    collections: (string | collections.ArangoCollection)[],
+    options?: transactions.TransactionOptions
+  ): Promise<transactions.Transaction>;
   /**
    * Begins a new streaming transaction for the given collections, then returns
-   * a {@link transaction.Transaction} instance for the transaction.
+   * a {@link transactions.Transaction} instance for the transaction.
    *
    * The Collection can be specified as a collection name (string) or an object
-   * implementing the {@link collection.ArangoCollection} interface: `Collection`,
-   * {@link graph.GraphVertexCollection}, {@link graph.GraphEdgeCollection} as well as
-   * (in TypeScript) {@link collection.DocumentCollection} and {@link collection.EdgeCollection}.
+   * implementing the {@link collections.ArangoCollection} interface: `Collection`,
+   * {@link graphs.GraphVertexCollection}, {@link graphs.GraphEdgeCollection} as well as
+   * (in TypeScript) {@link collections.DocumentCollection} and {@link collections.EdgeCollection}.
    *
    * @param collection - A collection that can be read from and written to
    * during the transaction.
@@ -4303,17 +2397,17 @@ export class Database {
    * ```
    */
   beginTransaction(
-    collection: string | ArangoCollection,
-    options?: TransactionOptions
-  ): Promise<Transaction>;
+    collection: string | collections.ArangoCollection,
+    options?: transactions.TransactionOptions
+  ): Promise<transactions.Transaction>;
   beginTransaction(
     collections:
-      | TransactionCollections
-      | (string | ArangoCollection)[]
+      | transactions.TransactionCollectionOptions
+      | (string | collections.ArangoCollection)[]
       | string
-      | ArangoCollection,
-    options: TransactionOptions = {}
-  ): Promise<Transaction> {
+      | collections.ArangoCollection,
+    options: transactions.TransactionOptions = {}
+  ): Promise<transactions.Transaction> {
     const { allowDirtyRead = undefined, ...opts } = options;
     return this.request(
       {
@@ -4321,11 +2415,11 @@ export class Database {
         path: "/_api/transaction/begin",
         allowDirtyRead,
         body: {
-          collections: coerceTransactionCollections(collections),
+          collections: transactions.coerceTransactionCollections(collections),
           ...opts,
         },
       },
-      (res) => new Transaction(this, res.parsedBody.result.id)
+      (res) => new transactions.Transaction(this, res.parsedBody.result.id)
     );
   }
 
@@ -4336,10 +2430,10 @@ export class Database {
    * is rejected, the transaction will be aborted.
    *
    * Collections can be specified as collection names (strings) or objects
-   * implementing the {@link collection.ArangoCollection} interface: `Collection`,
-   * {@link graph.GraphVertexCollection}, {@link graph.GraphEdgeCollection} as
-   * well as (in TypeScript) {@link collection.DocumentCollection} and
-   * {@link collection.EdgeCollection}.
+   * implementing the {@link collections.ArangoCollection} interface: `Collection`,
+   * {@link graphs.GraphVertexCollection}, {@link graphs.GraphEdgeCollection} as
+   * well as (in TypeScript) {@link collections.DocumentCollection} and
+   * {@link collections.EdgeCollection}.
    *
    * @param collections - Collections involved in the transaction.
    * @param callback - Callback function executing the transaction steps.
@@ -4363,9 +2457,9 @@ export class Database {
    * ```
    */
   withTransaction<T>(
-    collections: TransactionCollections,
-    callback: (step: Transaction["step"]) => Promise<T>,
-    options?: TransactionOptions
+    collections: transactions.TransactionCollectionOptions,
+    callback: (step: transactions.Transaction["step"]) => Promise<T>,
+    options?: transactions.TransactionOptions
   ): Promise<T>;
   /**
    * Begins and commits a transaction using the given callback. Individual
@@ -4374,9 +2468,9 @@ export class Database {
    * is rejected, the transaction will be aborted.
    *
    * Collections can be specified as collection names (strings) or objects
-   * implementing the {@link collection.ArangoCollection} interface: `Collection`,
-   * {@link graph.GraphVertexCollection}, {@link graph.GraphEdgeCollection} as well as
-   * (in TypeScript) {@link collection.DocumentCollection} and {@link collection.EdgeCollection}.
+   * implementing the {@link collections.ArangoCollection} interface: `Collection`,
+   * {@link graphs.GraphVertexCollection}, {@link graphs.GraphEdgeCollection} as well as
+   * (in TypeScript) {@link collections.DocumentCollection} and {@link collections.EdgeCollection}.
    *
    * @param collections - Collections that can be read from and written to
    * during the transaction.
@@ -4401,9 +2495,9 @@ export class Database {
    * ```
    */
   withTransaction<T>(
-    collections: (string | ArangoCollection)[],
-    callback: (step: Transaction["step"]) => Promise<T>,
-    options?: TransactionOptions
+    collections: (string | collections.ArangoCollection)[],
+    callback: (step: transactions.Transaction["step"]) => Promise<T>,
+    options?: transactions.TransactionOptions
   ): Promise<T>;
   /**
    * Begins and commits a transaction using the given callback. Individual
@@ -4412,9 +2506,9 @@ export class Database {
    * is rejected, the transaction will be aborted.
    *
    * The Collection can be specified as a collection name (string) or an object
-   * implementing the {@link collection.ArangoCollection} interface: `Collection`,
-   * {@link graph.GraphVertexCollection}, {@link graph.GraphEdgeCollection} as well as
-   * (in TypeScript) {@link collection.DocumentCollection} and {@link collection.EdgeCollection}.
+   * implementing the {@link collections.ArangoCollection} interface: `Collection`,
+   * {@link graphs.GraphVertexCollection}, {@link graphs.GraphEdgeCollection} as well as
+   * (in TypeScript) {@link collections.DocumentCollection} and {@link collections.EdgeCollection}.
    *
    * @param collection - A collection that can be read from and written to
    * during the transaction.
@@ -4436,21 +2530,21 @@ export class Database {
    * ```
    */
   withTransaction<T>(
-    collection: string | ArangoCollection,
-    callback: (step: Transaction["step"]) => Promise<T>,
-    options?: TransactionOptions
+    collection: string | collections.ArangoCollection,
+    callback: (step: transactions.Transaction["step"]) => Promise<T>,
+    options?: transactions.TransactionOptions
   ): Promise<T>;
   async withTransaction<T>(
     collections:
-      | TransactionCollections
-      | (string | ArangoCollection)[]
+      | transactions.TransactionCollectionOptions
+      | (string | collections.ArangoCollection)[]
       | string
-      | ArangoCollection,
-    callback: (step: Transaction["step"]) => Promise<T>,
-    options: TransactionOptions = {}
+      | collections.ArangoCollection,
+    callback: (step: transactions.Transaction["step"]) => Promise<T>,
+    options: transactions.TransactionOptions = {}
   ): Promise<T> {
     const trx = await this.beginTransaction(
-      collections as TransactionCollections,
+      collections as transactions.TransactionCollectionOptions,
       options
     );
     try {
@@ -4478,7 +2572,7 @@ export class Database {
    * // transactions is an array of transaction descriptions
    * ```
    */
-  listTransactions(): Promise<TransactionDetails[]> {
+  listTransactions(): Promise<transactions.TransactionDetails[]> {
     return this._connection.request(
       { path: "/_api/transaction" },
       (res) => res.parsedBody.transactions
@@ -4487,7 +2581,7 @@ export class Database {
 
   /**
    * Fetches all active transactions from the database and returns an array of
-   * {@link transaction.Transaction} instances for those transactions.
+   * {@link transactions.Transaction} instances for those transactions.
    *
    * See also {@link Database#listTransactions}.
    *
@@ -4498,7 +2592,7 @@ export class Database {
    * // transactions is an array of transactions
    * ```
    */
-  async transactions(): Promise<Transaction[]> {
+  async transactions(): Promise<transactions.Transaction[]> {
     const transactions = await this.listTransactions();
     return transactions.map((data) => this.transaction(data.id));
   }
@@ -4507,9 +2601,9 @@ export class Database {
   //#region queries
   /**
    * Performs a database query using the given `query`, then returns a new
-   * {@link cursor.ArrayCursor} instance for the result set.
+   * {@link cursors.Cursor} instance for the result set.
    *
-   * See the {@link aql!aql} template string handler for information about how
+   * See the {@link aql.aql} template string handler for information about how
    * to create a query string without manually defining bind parameters nor
    * having to worry about escaping variables.
    *
@@ -4518,7 +2612,7 @@ export class Database {
    * you do not need to use the `step` method to consume it.
    *
    * @param query - An object containing an AQL query string and bind
-   * parameters, e.g. the object returned from an {@link aql!aql} template string.
+   * parameters, e.g. the object returned from an {@link aql.aql} template string.
    * @param options - Options for the query execution.
    *
    * @example
@@ -4556,14 +2650,14 @@ export class Database {
    * ```
    */
   query<T = any>(
-    query: AqlQuery<T>,
-    options?: QueryOptions
-  ): Promise<ArrayCursor<T>>;
+    query: aql.AqlQuery<T>,
+    options?: queries.QueryOptions
+  ): Promise<cursors.Cursor<T>>;
   /**
    * Performs a database query using the given `query` and `bindVars`, then
-   * returns a new {@link cursor.ArrayCursor} instance for the result set.
+   * returns a new {@link cursors.Cursor} instance for the result set.
    *
-   * See the {@link aql!aql} template string handler for a safer and easier
+   * See the {@link aql.aql} template string handler for a safer and easier
    * alternative to passing strings directly.
    *
    * **Note**: When executing a query in a streaming transaction using the
@@ -4609,20 +2703,20 @@ export class Database {
    * ```
    */
   query<T = any>(
-    query: string | AqlLiteral,
+    query: string | aql.AqlLiteral,
     bindVars?: Record<string, any>,
-    options?: QueryOptions
-  ): Promise<ArrayCursor<T>>;
+    options?: queries.QueryOptions
+  ): Promise<cursors.Cursor<T>>;
   query<T = any>(
-    query: string | AqlQuery | AqlLiteral,
+    query: string | aql.AqlQuery | aql.AqlLiteral,
     bindVars?: Record<string, any>,
-    options: QueryOptions = {}
-  ): Promise<ArrayCursor<T>> {
-    if (isAqlQuery(query)) {
+    options: queries.QueryOptions = {}
+  ): Promise<cursors.Cursor<T>> {
+    if (aql.isAqlQuery(query)) {
       options = bindVars ?? {};
       bindVars = query.bindVars;
       query = query.query;
-    } else if (isAqlLiteral(query)) {
+    } else if (aql.isAqlLiteral(query)) {
       query = query.toAQL();
     }
     const {
@@ -4655,7 +2749,7 @@ export class Database {
         timeout,
       },
       (res) =>
-        new BatchedArrayCursor<T>(
+        new cursors.BatchCursor<T>(
           this,
           res.parsedBody,
           res.arangojsHostUrl,
@@ -4667,12 +2761,12 @@ export class Database {
   /**
    * Explains a database query using the given `query`.
    *
-   * See the {@link aql!aql} template string handler for information about how
+   * See the {@link aql.aql} template string handler for information about how
    * to create a query string without manually defining bind parameters nor
    * having to worry about escaping variables.
    *
    * @param query - An object containing an AQL query string and bind
-   * parameters, e.g. the object returned from an {@link aql!aql} template string.
+   * parameters, e.g. the object returned from an {@link aql.aql} template string.
    * @param options - Options for explaining the query.
    *
    * @example
@@ -4687,18 +2781,18 @@ export class Database {
    * ```
    */
   explain(
-    query: AqlQuery,
-    options?: ExplainOptions & { allPlans?: false }
-  ): Promise<ArangoApiResponse<SingleExplainResult>>;
+    query: aql.AqlQuery,
+    options?: queries.ExplainOptions & { allPlans?: false }
+  ): Promise<connection.ArangoApiResponse<queries.SingleExplainResult>>;
   /**
    * Explains a database query using the given `query`.
    *
-   * See the {@link aql!aql} template string handler for information about how
+   * See the {@link aql.aql} template string handler for information about how
    * to create a query string without manually defining bind parameters nor
    * having to worry about escaping variables.
    *
    * @param query - An object containing an AQL query string and bind
-   * parameters, e.g. the object returned from an {@link aql!aql} template string.
+   * parameters, e.g. the object returned from an {@link aql.aql} template string.
    * @param options - Options for explaining the query.
    *
    * @example
@@ -4716,13 +2810,13 @@ export class Database {
    * ```
    */
   explain(
-    query: AqlQuery,
-    options?: ExplainOptions & { allPlans: true }
-  ): Promise<ArangoApiResponse<MultiExplainResult>>;
+    query: aql.AqlQuery,
+    options?: queries.ExplainOptions & { allPlans: true }
+  ): Promise<connection.ArangoApiResponse<queries.MultiExplainResult>>;
   /**
    * Explains a database query using the given `query` and `bindVars`.
    *
-   * See the {@link aql!aql} template string handler for a safer and easier
+   * See the {@link aql.aql} template string handler for a safer and easier
    * alternative to passing strings directly.
    *
    * @param query - An AQL query string.
@@ -4744,14 +2838,14 @@ export class Database {
    * ```
    */
   explain(
-    query: string | AqlLiteral,
+    query: string | aql.AqlLiteral,
     bindVars?: Record<string, any>,
-    options?: ExplainOptions & { allPlans?: false }
-  ): Promise<ArangoApiResponse<SingleExplainResult>>;
+    options?: queries.ExplainOptions & { allPlans?: false }
+  ): Promise<connection.ArangoApiResponse<queries.SingleExplainResult>>;
   /**
    * Explains a database query using the given `query` and `bindVars`.
    *
-   * See the {@link aql!aql} template string handler for a safer and easier
+   * See the {@link aql.aql} template string handler for a safer and easier
    * alternative to passing strings directly.
    *
    * @param query - An AQL query string.
@@ -4774,20 +2868,20 @@ export class Database {
    * ```
    */
   explain(
-    query: string | AqlLiteral,
+    query: string | aql.AqlLiteral,
     bindVars?: Record<string, any>,
-    options?: ExplainOptions & { allPlans: true }
-  ): Promise<ArangoApiResponse<MultiExplainResult>>;
+    options?: queries.ExplainOptions & { allPlans: true }
+  ): Promise<connection.ArangoApiResponse<queries.MultiExplainResult>>;
   explain(
-    query: string | AqlQuery | AqlLiteral,
+    query: string | aql.AqlQuery | aql.AqlLiteral,
     bindVars?: Record<string, any>,
-    options?: ExplainOptions
-  ): Promise<ArangoApiResponse<SingleExplainResult | MultiExplainResult>> {
-    if (isAqlQuery(query)) {
+    options?: queries.ExplainOptions
+  ): Promise<connection.ArangoApiResponse<queries.SingleExplainResult | queries.MultiExplainResult>> {
+    if (aql.isAqlQuery(query)) {
       options = bindVars;
       bindVars = query.bindVars;
       query = query.query;
-    } else if (isAqlLiteral(query)) {
+    } else if (aql.isAqlLiteral(query)) {
       query = query.toAQL();
     }
     return this.request({
@@ -4800,12 +2894,12 @@ export class Database {
   /**
    * Parses the given query and returns the result.
    *
-   * See the {@link aql!aql} template string handler for information about how
+   * See the {@link aql.aql} template string handler for information about how
    * to create a query string without manually defining bind parameters nor
    * having to worry about escaping variables.
    *
    * @param query - An AQL query string or an object containing an AQL query
-   * string and bind parameters, e.g. the object returned from an {@link aql!aql}
+   * string and bind parameters, e.g. the object returned from an {@link aql.aql}
    * template string.
    *
    * @example
@@ -4818,11 +2912,11 @@ export class Database {
    *   RETURN doc._key
    * `);
    * ```
-   */
-  parse(query: string | AqlQuery | AqlLiteral): Promise<ParseResult> {
-    if (isAqlQuery(query)) {
+   aql.*/
+  parse(query: string | aql.AqlQuery | aql.AqlLiteral): Promise<queries.ParseResult> {
+    if (aql.isAqlQuery(query)) {
       query = query.query;
-    } else if (isAqlLiteral(query)) {
+    } else if (aql.isAqlLiteral(query)) {
       query = query.toAQL();
     }
     return this.request({
@@ -4844,7 +2938,7 @@ export class Database {
    * }
    * ```
    */
-  queryRules(): Promise<QueryOptimizerRule[]> {
+  queryRules(): Promise<queries.QueryOptimizerRule[]> {
     return this.request({
       path: "/_api/query/rules",
     });
@@ -4860,7 +2954,7 @@ export class Database {
    * console.log(tracking.enabled);
    * ```
    */
-  queryTracking(): Promise<QueryTracking>;
+  queryTracking(): Promise<queries.QueryTrackingInfo>;
   /**
    * Modifies the query tracking properties.
    *
@@ -4878,8 +2972,8 @@ export class Database {
    * });
    * ```
    */
-  queryTracking(options: QueryTrackingOptions): Promise<QueryTracking>;
-  queryTracking(options?: QueryTrackingOptions): Promise<QueryTracking> {
+  queryTracking(options: queries.QueryTrackingOptions): Promise<queries.QueryTrackingInfo>;
+  queryTracking(options?: queries.QueryTrackingOptions): Promise<queries.QueryTrackingInfo> {
     return this.request(
       options
         ? {
@@ -4905,7 +2999,7 @@ export class Database {
    * const queries = await db.listRunningQueries();
    * ```
    */
-  listRunningQueries(): Promise<QueryInfo[]> {
+  listRunningQueries(): Promise<queries.QueryDescription[]> {
     return this.request({
       method: "GET",
       path: "/_api/query/current",
@@ -4925,7 +3019,7 @@ export class Database {
    * // Only works if slow query tracking is enabled
    * ```
    */
-  listSlowQueries(): Promise<QueryInfo[]> {
+  listSlowQueries(): Promise<queries.QueryDescription[]> {
     return this.request({
       method: "GET",
       path: "/_api/query/slow",
@@ -4985,18 +3079,18 @@ export class Database {
   }
   //#endregion
 
-  //#region functions
+  //#region user functions
   /**
    * Fetches a list of all AQL user functions registered with the database.
    *
    * @example
    * ```js
    * const db = new Database();
-   * const functions = await db.listFunctions();
+   * const functions = await db.listUserFunctions();
    * const names = functions.map(fn => fn.name);
    * ```
    */
-  listFunctions(): Promise<AqlUserFunction[]> {
+  listUserFunctions(): Promise<queries.UserFunctionDescription[]> {
     return this.request(
       { path: "/_api/aqlfunction" },
       (res) => res.parsedBody.result
@@ -5019,7 +3113,7 @@ export class Database {
    * @example
    * ```js
    * const db = new Database();
-   * await db.createFunction(
+   * await db.createUserFunction(
    *   "ACME::ACCOUNTING::CALCULATE_VAT",
    *   "(price) => price * 0.19"
    * );
@@ -5034,11 +3128,11 @@ export class Database {
    * // cursor is a cursor for the query result
    * ```
    */
-  createFunction(
+  createUserFunction(
     name: string,
     code: string,
     isDeterministic: boolean = false
-  ): Promise<ArangoApiResponse<{ isNewlyCreated: boolean }>> {
+  ): Promise<connection.ArangoApiResponse<{ isNewlyCreated: boolean }>> {
     return this.request({
       method: "POST",
       path: "/_api/aqlfunction",
@@ -5057,14 +3151,14 @@ export class Database {
    * @example
    * ```js
    * const db = new Database();
-   * await db.dropFunction("ACME::ACCOUNTING::CALCULATE_VAT");
+   * await db.dropUserFunction("ACME::ACCOUNTING::CALCULATE_VAT");
    * // the function no longer exists
    * ```
    */
-  dropFunction(
+  dropUserFunction(
     name: string,
     group: boolean = false
-  ): Promise<ArangoApiResponse<{ deletedCount: number }>> {
+  ): Promise<connection.ArangoApiResponse<{ deletedCount: number }>> {
     return this.request({
       method: "DELETE",
       path: `/_api/aqlfunction/${encodeURIComponent(name)}`,
@@ -5091,7 +3185,7 @@ export class Database {
    * const services = await db.listServices(false); // all services
    * ```
    */
-  listServices(excludeSystem: boolean = true): Promise<ServiceSummary[]> {
+  listServices(excludeSystem: boolean = true): Promise<services.ServiceSummary[]> {
     return this.request({
       path: "/_api/foxx",
       search: { excludeSystem },
@@ -5133,8 +3227,8 @@ export class Database {
   async installService(
     mount: string,
     source: File | Blob | string,
-    options: InstallServiceOptions = {}
-  ): Promise<ServiceInfo> {
+    options: services.InstallServiceOptions = {}
+  ): Promise<services.ServiceDescription> {
     const { configuration, dependencies, ...search } = options;
     const form = new FormData();
     if (configuration) {
@@ -5191,8 +3285,8 @@ export class Database {
   async replaceService(
     mount: string,
     source: File | Blob | string,
-    options: ReplaceServiceOptions = {}
-  ): Promise<ServiceInfo> {
+    options: services.ReplaceServiceOptions = {}
+  ): Promise<services.ServiceDescription> {
     const { configuration, dependencies, ...search } = options;
     const form = new FormData();
     if (configuration) {
@@ -5249,8 +3343,8 @@ export class Database {
   async upgradeService(
     mount: string,
     source: File | Blob | string,
-    options: UpgradeServiceOptions = {}
-  ): Promise<ServiceInfo> {
+    options: services.UpgradeServiceOptions = {}
+  ): Promise<services.ServiceDescription> {
     const { configuration, dependencies, ...search } = options;
     const form = new FormData();
     if (configuration) {
@@ -5285,7 +3379,7 @@ export class Database {
    */
   uninstallService(
     mount: string,
-    options?: UninstallServiceOptions
+    options?: services.UninstallServiceOptions
   ): Promise<void> {
     return this.request(
       {
@@ -5309,7 +3403,7 @@ export class Database {
    * // info contains detailed information about the service
    * ```
    */
-  getService(mount: string): Promise<ServiceInfo> {
+  getService(mount: string): Promise<services.ServiceDescription> {
     return this.request({
       path: "/_api/foxx/service",
       search: { mount },
@@ -5340,7 +3434,7 @@ export class Database {
   getServiceConfiguration(
     mount: string,
     minimal?: false
-  ): Promise<Record<string, ServiceConfiguration>>;
+  ): Promise<Record<string, services.ServiceConfiguration>>;
   /**
    * Retrieves information about the service's configuration options and their
    * current values.
@@ -5401,7 +3495,7 @@ export class Database {
     mount: string,
     cfg: Record<string, any>,
     minimal?: false
-  ): Promise<Record<string, ServiceConfiguration & { warning?: string }>>;
+  ): Promise<Record<string, services.ServiceConfiguration & { warning?: string }>>;
   /**
    * Replaces the configuration of the given service, discarding any existing
    * values for options not specified.
@@ -5475,7 +3569,7 @@ export class Database {
     mount: string,
     cfg: Record<string, any>,
     minimal?: false
-  ): Promise<Record<string, ServiceConfiguration & { warning?: string }>>;
+  ): Promise<Record<string, services.ServiceConfiguration & { warning?: string }>>;
   /**
    * Updates the configuration of the given service while maintaining any
    * existing values for options not specified.
@@ -5545,7 +3639,7 @@ export class Database {
   getServiceDependencies(
     mount: string,
     minimal?: false
-  ): Promise<Record<string, SingleServiceDependency | MultiServiceDependency>>;
+  ): Promise<Record<string, services.SingleServiceDependency | services.MultiServiceDependency>>;
   /**
    * Retrieves information about the service's dependencies and their current
    * mount points.
@@ -5609,7 +3703,7 @@ export class Database {
   ): Promise<
     Record<
       string,
-      (SingleServiceDependency | MultiServiceDependency) & { warning?: string }
+      (services.SingleServiceDependency | services.MultiServiceDependency) & { warning?: string }
     >
   >;
   /**
@@ -5692,7 +3786,7 @@ export class Database {
   ): Promise<
     Record<
       string,
-      (SingleServiceDependency | MultiServiceDependency) & { warning?: string }
+      (services.SingleServiceDependency | services.MultiServiceDependency) & { warning?: string }
     >
   >;
   /**
@@ -5762,7 +3856,7 @@ export class Database {
   setServiceDevelopmentMode(
     mount: string,
     enabled: boolean = true
-  ): Promise<ServiceInfo> {
+  ): Promise<services.ServiceDescription> {
     return this.request({
       method: enabled ? "POST" : "DELETE",
       path: "/_api/foxx/development",
@@ -5771,21 +3865,21 @@ export class Database {
   }
 
   /**
-   * Retrieves a list of scripts defined in the service manifest's "scripts"
-   * section mapped to their human readable representations.
+   * Retrieves an object mapping script names to their human readable
+   * representations, as defined in the service manifest's "scripts" section.
    *
    * @param mount - The service's mount point, relative to the database.
    *
    * @example
    * ```js
    * const db = new Database();
-   * const scripts = await db.listServiceScripts("/my-service");
+   * const scripts = await db.getServiceScripts("/my-service");
    * for (const [name, title] of Object.entries(scripts)) {
    *   console.log(`${name}: ${title}`);
    * }
    * ```
    */
-  listServiceScripts(mount: string): Promise<Record<string, string>> {
+  getServiceScripts(mount: string): Promise<Record<string, string>> {
     return this.request({
       path: "/_api/foxx/scripts",
       search: { mount },
@@ -5853,7 +3947,7 @@ export class Database {
        */
       filter?: string;
     }
-  ): Promise<ServiceTestDefaultReport>;
+  ): Promise<services.ServiceTestDefaultReport>;
   /**
    * Runs the tests of a given service and returns the results using the
    * "suite" reporter, which groups the test result by test suite.
@@ -5885,7 +3979,7 @@ export class Database {
        */
       filter?: string;
     }
-  ): Promise<ServiceTestSuiteReport>;
+  ): Promise<services.ServiceTestSuiteReport>;
   /**
    * Runs the tests of a given service and returns the results using the
    * "stream" reporter, which represents the results as a sequence of tuples
@@ -5918,7 +4012,7 @@ export class Database {
        */
       filter?: string;
     }
-  ): Promise<ServiceTestStreamReport>;
+  ): Promise<services.ServiceTestStreamReport>;
   /**
    * Runs the tests of a given service and returns the results using the
    * "tap" reporter, which represents the results as an array of strings using
@@ -5951,7 +4045,7 @@ export class Database {
        */
       filter?: string;
     }
-  ): Promise<ServiceTestTapReport>;
+  ): Promise<services.ServiceTestTapReport>;
   /**
    * Runs the tests of a given service and returns the results using the
    * "xunit" reporter, which represents the results as an XML document using
@@ -5984,7 +4078,7 @@ export class Database {
        */
       filter?: string;
     }
-  ): Promise<ServiceTestXunitReport>;
+  ): Promise<services.ServiceTestXunitReport>;
   /**
    * Runs the tests of a given service and returns the results as a string
    * using the "stream" reporter in "idiomatic" mode, which represents the
@@ -6140,7 +4234,7 @@ export class Database {
    * // spec is a Swagger API description of the service
    * ```
    */
-  getServiceDocumentation(mount: string): Promise<SwaggerJson> {
+  getServiceDocumentation(mount: string): Promise<services.SwaggerJson> {
     return this.request({
       path: "/_api/foxx/swagger",
       search: { mount },
@@ -6215,7 +4309,9 @@ export class Database {
    * // a hot backup has been created
    * ```
    */
-  createHotBackup(options: HotBackupOptions = {}): Promise<HotBackupResult> {
+  createHotBackup(
+    options: hotBackups.HotBackupOptions = {}
+  ): Promise<hotBackups.HotBackupResult> {
     return this.request(
       {
         method: "POST",
@@ -6235,13 +4331,13 @@ export class Database {
    *
    * @example
    * ```js
-   * const backups = await db.listHotBackups();
-   * for (const backup of backups) {
+   * const backups = await db.getHotBackups();
+   * for (const backup of backups.list) {
    *   console.log(backup.id);
    * }
    * ```
    */
-  listHotBackups(id?: string | string[]): Promise<HotBackupList> {
+  getHotBackups(id?: string | string[]): Promise<hotBackups.HotBackupList> {
     return this.request(
       {
         method: "POST",
@@ -6314,7 +4410,7 @@ export class Database {
    * }
    * ```
    */
-  getLogEntries(options?: LogEntriesOptions): Promise<LogEntries> {
+  getLogEntries(options?: logs.LogEntriesOptions): Promise<logs.LogEntries> {
     return this.request(
       {
         path: "/_admin/log/entries",
@@ -6334,13 +4430,15 @@ export class Database {
    *
    * @example
    * ```js
-   * const messages = await db.getLogMessages();
+   * const messages = await db.listLogMessages();
    * for (const m of messages) {
    *   console.log(`${m.date} - [${m.level}] ${m.message} (#${m.id})`);
    * }
    * ```
    */
-  getLogMessages(options?: LogEntriesOptions): Promise<LogMessage[]> {
+  listLogMessages(
+    options?: logs.LogEntriesOptions
+  ): Promise<logs.LogMessage[]> {
     return this.request(
       {
         path: "/_admin/log",
@@ -6359,7 +4457,7 @@ export class Database {
    * console.log(levels.request); // log level for incoming requests
    * ```
    */
-  getLogLevel(): Promise<Record<string, LogLevelSetting>> {
+  getLogLevel(): Promise<Record<string, logs.LogLevelSetting>> {
     return this.request({
       path: "/_admin/log/level",
     });
@@ -6379,8 +4477,8 @@ export class Database {
    * ```
    */
   setLogLevel(
-    levels: Record<string, LogLevelSetting>
-  ): Promise<Record<string, LogLevelSetting>> {
+    levels: Record<string, logs.LogLevelSetting>
+  ): Promise<Record<string, logs.LogLevelSetting>> {
     return this.request({
       method: "PUT",
       path: "/_admin/log/level",
@@ -6395,7 +4493,7 @@ export class Database {
    * database request performed by the callback will be marked for asynchronous
    * execution and its result will be made available as an async job.
    *
-   * Returns a {@link Job} instance that can be used to retrieve the result
+   * Returns a {@link jobs.Job} instance that can be used to retrieve the result
    * of the callback function once the request has been executed.
    *
    * @param callback - Callback function to execute as an async job.
@@ -6411,7 +4509,7 @@ export class Database {
    * // job.result is a list of Collection instances
    * ```
    */
-  async createJob<T>(callback: () => Promise<T>): Promise<Job<T>> {
+  async createJob<T>(callback: () => Promise<T>): Promise<jobs.Job<T>> {
     const trap = new Promise<TrappedError | TrappedRequest<T>>((resolveTrap) => {
       this._trapRequest = (trapped) => resolveTrap(trapped);
     });
@@ -6419,7 +4517,7 @@ export class Database {
     const trapped = await trap;
     if (trapped.error) return eventualResult as Promise<any>;
     const { jobId, onResolve, onReject } = trapped;
-    return new Job(
+    return new jobs.Job(
       this,
       jobId,
       (res) => {
@@ -6434,7 +4532,7 @@ export class Database {
   }
 
   /**
-   * Returns a {@link job.Job} instance for the given `jobId`.
+   * Returns a {@link jobs.Job} instance for the given `jobId`.
    *
    * @param jobId - ID of the async job.
    *
@@ -6444,8 +4542,8 @@ export class Database {
    * const job = db.job("12345");
    * ```
    */
-  job(jobId: string): Job {
-    return new Job(this, jobId);
+  job(jobId: string): jobs.Job {
+    return new jobs.Job(this, jobId);
   }
 
   /**
@@ -6525,3 +4623,4 @@ export class Database {
   }
   //#endregion
 }
+//#endregion

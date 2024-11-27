@@ -3,48 +3,23 @@
  * import type {
  *   DocumentCollection,
  *   EdgeCollection,
- * } from "arangojs/collection.js";
+ * } from "arangojs/collections";
  * ```
  *
- * The "collection" module provides collection related types and interfaces
+ * The "collections" module provides collection related types and interfaces
  * for TypeScript.
  *
  * @packageDocumentation
  */
-import { AqlLiteral, AqlQuery, isAqlLiteral, isAqlQuery } from "./aql.js";
-import { ArangoApiResponse } from "./connection.js";
-import { Database } from "./database.js";
-import {
-  Document,
-  DocumentData,
-  DocumentMetadata,
-  DocumentSelector,
-  Edge,
-  EdgeData,
-  ObjectWithKey,
-  Patch,
-  _documentHandle,
-} from "./documents.js";
-import { HttpError, isArangoError } from "./error.js";
-import {
-  EnsureGeoIndexOptions,
-  EnsureInvertedIndexOptions,
-  EnsurePersistentIndexOptions,
-  EnsureTtlIndexOptions,
-  EnsureMdiIndexOptions,
-  GeoIndex,
-  Index,
-  IndexSelector,
-  InvertedIndex,
-  PersistentIndex,
-  TtlIndex,
-  MdiIndex,
-  _indexHandle,
-  EnsureIndexOptions,
-  HiddenIndex,
-} from "./indexes.js";
+import * as aql from "./aql.js";
+import * as connection from "./connection.js";
+import * as databases from "./databases.js";
+import * as documents from "./documents.js";
+import * as errors from "./errors.js";
+import * as indexes from "./indexes.js";
 import { COLLECTION_NOT_FOUND, DOCUMENT_NOT_FOUND } from "./lib/codes.js";
 
+//#region ArangoCollection interface
 /**
  * Indicates whether the given value represents an {@link ArangoCollection}.
  *
@@ -74,7 +49,7 @@ export function collectionToString(
  * A marker interface identifying objects that can be used in AQL template
  * strings to create references to ArangoDB collections.
  *
- * See {@link aql!aql}.
+ * See {@link aql.aql}.
  */
 export interface ArangoCollection {
   /**
@@ -88,7 +63,9 @@ export interface ArangoCollection {
    */
   readonly name: string;
 }
+//#endregion
 
+//#region Shared types
 /**
  * Integer values indicating the collection type.
  */
@@ -140,73 +117,260 @@ export type ValidationLevel = "none" | "new" | "moderate" | "strict";
  * Write operation that can result in a computed value being computed.
  */
 export type WriteOperation = "insert" | "update" | "replace";
+//#endregion
 
+//#region Collection operation options
 /**
- * Represents a bulk operation failure for an individual document.
+ * Options for creating a collection.
+ *
+ * See {@link databases.Database#createCollection}, {@link databases.Database#createEdgeCollection}
+ * and {@link DocumentCollection#create} or {@link EdgeCollection#create}.
  */
-export type DocumentOperationFailure = {
+export type CreateCollectionOptions = CollectionPropertiesOptions & {
   /**
-   * Indicates that the operation failed.
+   * @internal
+   *
+   * Whether the collection should be created as a system collection.
+   *
+   * Default: `false`
    */
-  error: true;
+  isSystem?: boolean;
   /**
-   * Human-readable description of the failure.
+   * An object defining the collection's key generation.
    */
-  errorMessage: string;
+  keyOptions?: CollectionKeyOptions;
   /**
-   * Numeric representation of the failure.
+   * (Cluster only.) Unless set to `false`, the server will wait for all
+   * replicas to create the collection before returning.
+   *
+   * Default: `true`
    */
-  errorNum: number;
+  waitForSyncReplication?: boolean;
+  /**
+   * (Cluster only.) Unless set to `false`, the server will check whether
+   * enough replicas are available at creation time and bail out otherwise.
+   *
+   * Default: `true`
+   */
+  enforceReplicationFactor?: boolean;
+  /**
+   * (Cluster only.) Number of shards to distribute the collection across.
+   *
+   * Default: `1`
+   */
+  numberOfShards?: number;
+  /**
+   * (Cluster only.) Document attributes to use to determine the target shard
+   * for each document.
+   *
+   * Default: `["_key"]`
+   */
+  shardKeys?: string[];
+  /**
+   * (Cluster only.) Sharding strategy to use.
+   */
+  shardingStrategy?: ShardingStrategy;
+  /**
+   * (Enterprise Edition cluster only.) If set to a collection name, sharding
+   * of the new collection will follow the rules for that collection. As long
+   * as the new collection exists, the indicated collection can not be dropped.
+   */
+  distributeShardsLike?: string;
+  /**
+   * (Enterprise Edition cluster only.) Attribute containing the shard key
+   * value of the referred-to smart join collection.
+   */
+  smartJoinAttribute?: string;
+  /**
+   * (Enterprise Edition cluster only.) Attribute used for sharding.
+   */
+  smartGraphAttribute?: string;
 };
 
 /**
- * Metadata returned by a document operation.
+ * An object defining the collection's key generation.
  */
-export type DocumentOperationMetadata = DocumentMetadata & {
+export type CollectionKeyOptions = {
   /**
-   * Revision of the document that was updated or replaced by this operation.
+   * Type of key generator to use.
    */
-  _oldRev?: string;
+  type?: KeyGenerator;
+  /**
+   * Unless set to `false`, documents can be created with a user-specified
+   * `_key` attribute.
+   *
+   * Default: `true`
+   */
+  allowUserKeys?: boolean;
+  /**
+   * (Autoincrement only.) How many steps to increment the key each time.
+   */
+  increment?: number;
+  /**
+   * (Autoincrement only.) Initial offset for the key.
+   */
+  offset?: number;
 };
 
 /**
- * Properties defining a computed value.
+ * Options for setting a collection's properties.
+ *
+ * See {@link DocumentCollection#properties} and {@link EdgeCollection#properties}.
  */
-export type ComputedValueProperties = {
+export type CollectionPropertiesOptions = {
+  /**
+   * If set to `true`, data will be synchronized to disk before returning from
+   * a document create, update, replace or removal operation.
+   *
+   * Default: `false`
+   */
+  waitForSync?: boolean;
+  /**
+   * (Cluster only.) How many copies of each document should be kept in the
+   * cluster.
+   *
+   * Default: `1`
+   */
+  replicationFactor?: number | "satellite";
+  /**
+   * (Cluster only.) Write concern for this collection.
+   */
+  writeConcern?: number;
+  /**
+   * Options for validating documents in this collection.
+   */
+  schema?: SchemaOptions;
+  /**
+   * Computed values to apply to documents in this collection.
+   */
+  computedValues?: ComputedValueOptions[];
+  /**
+   * Whether the in-memory hash cache is enabled for this collection.
+   *
+   * Default: `false`
+   */
+  cacheEnabled?: boolean;
+};
+
+/**
+ * Options for validating collection documents.
+ */
+export type SchemaOptions = {
+  /**
+   * JSON Schema description of the validation schema for documents.
+   */
+  rule: any;
+  /**
+   * When validation should be applied.
+   *
+   * Default: `"strict"`
+   */
+  level?: ValidationLevel;
+  /**
+   * Message to be used if validation fails.
+   */
+  message?: string;
+};
+
+/**
+ * Options for creating a computed value.
+ */
+export type ComputedValueOptions = {
   /**
    * Name of the target attribute of the computed value.
    */
   name: string;
   /**
    * AQL `RETURN` expression that computes the value.
+   *
+   * Note that when passing an AQL query object, the `bindVars` will be ignored.
    */
-  expression: string;
+  expression: string | aql.AqlLiteral | aql.AqlQuery;
   /**
    * If set to `false`, the computed value will not be applied if the
    * expression evaluates to `null`.
+   *
+   * Default: `true`
    */
-  overwrite: boolean;
+  overwrite?: boolean;
   /**
    * Which operations should result in the value being computed.
+   *
+   * Default: `["insert", "update", "replace"]`
    */
-  computeOn: WriteOperation[];
+  computeOn?: WriteOperation[];
   /**
    * If set to `false`, the field will be unset if the expression evaluates to
    * `null`. Otherwise the field will be set to the value `null`. Has no effect
    * if `overwrite` is set to `false`.
+   *
+   * Default: `true`
    */
-  keepNull: boolean;
+  keepNull?: boolean;
   /**
    * Whether the write operation should fail if the expression produces a
    * warning.
+   *
+   * Default: `false`
    */
-  failOnWarning: boolean;
+  failOnWarning?: boolean;
 };
 
 /**
+ * Options for retrieving a collection checksum.
+ */
+export type CollectionChecksumOptions = {
+  /**
+   * If set to `true`, revision IDs will be included in the calculation
+   * of the checksum.
+   *
+   * Default: `false`
+   */
+  withRevisions?: boolean;
+  /**
+   * If set to `true`, document data will be included in the calculation
+   * of the checksum.
+   *
+   * Default: `false`
+   */
+  withData?: boolean;
+};
+
+/**
+ * Options for truncating collections.
+ */
+export type CollectionTruncateOptions = {
+  /**
+   * Whether the collection should be compacted after truncation.
+   */
+  compact?: boolean;
+  /**
+   * Whether data should be synchronized to disk before returning from this
+   * operation.
+   */
+  waitForSync?: boolean;
+};
+
+/**
+ * Options for dropping collections.
+ */
+export type CollectionDropOptions = {
+  /**
+   * Whether the collection is a system collection. If the collection is a
+   * system collection, this option must be set to `true` or ArangoDB will
+   * refuse to drop the collection.
+   *
+   * Default: `false`
+   */
+  isSystem?: boolean;
+};
+//#endregion
+
+//#region CollectionDescription
+/**
  * General information about a collection.
  */
-export type CollectionMetadata = {
+export type CollectionDescription = {
   /**
    * Collection name.
    */
@@ -230,55 +394,9 @@ export type CollectionMetadata = {
    */
   isSystem: boolean;
 };
+//#endregion
 
-/**
- * An object defining the collection's key generation.
- */
-export type CollectionKeyProperties = {
-  /**
-   * Type of key generator to use.
-   */
-  type: KeyGenerator;
-  /**
-   * Whether documents can be created with a user-specified `_key` attribute.
-   */
-  allowUserKeys: boolean;
-  /**
-   * (Autoincrement only.) How many steps to increment the key each time.
-   */
-  increment?: number;
-  /**
-   * (Autoincrement only.) Initial offset for the key.
-   */
-  offset?: number;
-  /**
-   * Most recent key that has been generated.
-   */
-  lastValue: number;
-};
-
-/**
- * Properties for validating documents in a collection.
- */
-export type SchemaProperties = {
-  /**
-   * Type of document validation.
-   */
-  type: "json";
-  /**
-   * JSON Schema description of the validation schema for documents.
-   */
-  rule: any;
-  /**
-   * When validation should be applied.
-   */
-  level: ValidationLevel;
-  /**
-   * Message to be used if validation fails.
-   */
-  message: string;
-};
-
+//#region CollectionProperties
 /**
  * An object defining the properties of a collection.
  */
@@ -359,174 +477,18 @@ export type CollectionProperties = {
   isDisjoint?: string;
 };
 
-// Options
-
-/**
- * Options for creating a computed value.
- */
-export type ComputedValueOptions = {
-  /**
-   * Name of the target attribute of the computed value.
-   */
-  name: string;
-  /**
-   * AQL `RETURN` expression that computes the value.
-   *
-   * Note that when passing an AQL query object, the `bindVars` will be ignored.
-   */
-  expression: string | AqlLiteral | AqlQuery;
-  /**
-   * If set to `false`, the computed value will not be applied if the
-   * expression evaluates to `null`.
-   *
-   * Default: `true`
-   */
-  overwrite?: boolean;
-  /**
-   * Which operations should result in the value being computed.
-   *
-   * Default: `["insert", "update", "replace"]`
-   */
-  computeOn?: WriteOperation[];
-  /**
-   * If set to `false`, the field will be unset if the expression evaluates to
-   * `null`. Otherwise the field will be set to the value `null`. Has no effect
-   * if `overwrite` is set to `false`.
-   *
-   * Default: `true`
-   */
-  keepNull?: boolean;
-  /**
-   * Whether the write operation should fail if the expression produces a
-   * warning.
-   *
-   * Default: `false`
-   */
-  failOnWarning?: boolean;
-};
-
-/**
- * Options for validating collection documents.
- */
-export type SchemaOptions = {
-  /**
-   * JSON Schema description of the validation schema for documents.
-   */
-  rule: any;
-  /**
-   * When validation should be applied.
-   *
-   * Default: `"strict"`
-   */
-  level?: ValidationLevel;
-  /**
-   * Message to be used if validation fails.
-   */
-  message?: string;
-};
-
-/**
- * Options for setting a collection's properties.
- *
- * See {@link DocumentCollection#properties} and {@link EdgeCollection#properties}.
- */
-export type CollectionPropertiesOptions = {
-  /**
-   * Whether data should be synchronized to disk before returning from
-   * a document create, update, replace or removal operation.
-   */
-  waitForSync?: boolean;
-  /**
-   * (Cluster only.) How many copies of each document should be kept in the
-   * cluster.
-   *
-   * Default: `1`
-   */
-  replicationFactor?: number | "satellite";
-  /**
-   * (Cluster only.) Write concern for this collection.
-   */
-  writeConcern?: number;
-  /**
-   * Options for validating documents in this collection.
-   */
-  schema?: SchemaOptions;
-  /**
-   * Computed values to apply to documents in this collection.
-   */
-  computedValues?: ComputedValueOptions[];
-  /**
-   * Whether the in-memory hash cache is enabled for this collection.
-   *
-   * Default: `false`
-   */
-  cacheEnabled?: boolean;
-};
-
-/**
- * Options for retrieving a collection checksum.
- */
-export type CollectionChecksumOptions = {
-  /**
-   * If set to `true`, revision IDs will be included in the calculation
-   * of the checksum.
-   *
-   * Default: `false`
-   */
-  withRevisions?: boolean;
-  /**
-   * If set to `true`, document data will be included in the calculation
-   * of the checksum.
-   *
-   * Default: `false`
-   */
-  withData?: boolean;
-};
-
-/**
- * Options for truncating collections.
- */
-export type CollectionTruncateOptions = {
-  /**
-   * Whether the collection should be compacted after truncation.
-   */
-  compact?: boolean;
-  /**
-   * Whether data should be synchronized to disk before returning from this
-   * operation.
-   */
-  waitForSync?: boolean;
-};
-
-/**
- * Options for dropping collections.
- */
-export type CollectionDropOptions = {
-  /**
-   * Whether the collection is a system collection. If the collection is a
-   * system collection, this option must be set to `true` or ArangoDB will
-   * refuse to drop the collection.
-   *
-   * Default: `false`
-   */
-  isSystem?: boolean;
-};
-
 /**
  * An object defining the collection's key generation.
  */
-export type CollectionKeyOptions = {
+export type CollectionKeyProperties = {
   /**
    * Type of key generator to use.
    */
-  type?: KeyGenerator;
+  type: KeyGenerator;
   /**
-   * Unless set to `false`, documents can be created with a user-specified
-   * `_key` attribute.
-   *
-   * Default: `true`
+   * Whether documents can be created with a user-specified `_key` attribute.
    */
-  allowUserKeys?: boolean;
+  allowUserKeys: boolean;
   /**
    * (Autoincrement only.) How many steps to increment the key each time.
    */
@@ -535,547 +497,72 @@ export type CollectionKeyOptions = {
    * (Autoincrement only.) Initial offset for the key.
    */
   offset?: number;
+  /**
+   * Most recent key that has been generated.
+   */
+  lastValue: number;
 };
 
 /**
- * Options for creating a collection.
- *
- * See {@link database.Database#createCollection}, {@link database.Database#createEdgeCollection}
- * and {@link DocumentCollection#create} or {@link EdgeCollection#create}.
+ * Properties for validating documents in a collection.
  */
-export type CreateCollectionOptions = {
+export type SchemaProperties = {
   /**
-   * If set to `true`, data will be synchronized to disk before returning from
-   * a document create, update, replace or removal operation.
-   *
-   * Default: `false`
+   * Type of document validation.
    */
-  waitForSync?: boolean;
+  type: "json";
   /**
-   * @internal
-   *
-   * Whether the collection should be created as a system collection.
-   *
-   * Default: `false`
+   * JSON Schema description of the validation schema for documents.
    */
-  isSystem?: boolean;
+  rule: any;
   /**
-   * An object defining the collection's key generation.
+   * When validation should be applied.
    */
-  keyOptions?: CollectionKeyOptions;
+  level: ValidationLevel;
   /**
-   * Options for validating documents in the collection.
+   * Message to be used if validation fails.
    */
-  schema?: SchemaOptions;
-  /**
-   * (Cluster only.) Unless set to `false`, the server will wait for all
-   * replicas to create the collection before returning.
-   *
-   * Default: `true`
-   */
-  waitForSyncReplication?: boolean;
-  /**
-   * (Cluster only.) Unless set to `false`, the server will check whether
-   * enough replicas are available at creation time and bail out otherwise.
-   *
-   * Default: `true`
-   */
-  enforceReplicationFactor?: boolean;
-  /**
-   * (Cluster only.) Number of shards to distribute the collection across.
-   *
-   * Default: `1`
-   */
-  numberOfShards?: number;
-  /**
-   * (Cluster only.) Document attributes to use to determine the target shard
-   * for each document.
-   *
-   * Default: `["_key"]`
-   */
-  shardKeys?: string[];
-  /**
-   * (Cluster only.) How many copies of each document should be kept in the
-   * cluster.
-   *
-   * Default: `1`
-   */
-  replicationFactor?: number;
-  /**
-   * (Cluster only.) Write concern for this collection.
-   */
-  writeConcern?: number;
-  /**
-   * (Cluster only.) Sharding strategy to use.
-   */
-  shardingStrategy?: ShardingStrategy;
-  /**
-   * (Enterprise Edition cluster only.) If set to a collection name, sharding
-   * of the new collection will follow the rules for that collection. As long
-   * as the new collection exists, the indicated collection can not be dropped.
-   */
-  distributeShardsLike?: string;
-  /**
-   * (Enterprise Edition cluster only.) Attribute containing the shard key
-   * value of the referred-to smart join collection.
-   */
-  smartJoinAttribute?: string;
-  /**
-   * (Enterprise Edition cluster only.) Attribute used for sharding.
-   */
-  smartGraphAttribute?: string;
-  /**
-   * Computed values to apply to documents in this collection.
-   */
-  computedValues?: ComputedValueOptions[];
-  /**
-   * Whether the in-memory hash cache is enabled for this collection.
-   */
-  cacheEnabled?: boolean;
+  message: string;
 };
 
 /**
- * Options for checking whether a document exists in a collection.
+ * Properties defining a computed value.
  */
-export type DocumentExistsOptions = {
+export type ComputedValueProperties = {
   /**
-   * If set to `true`, the request will explicitly permit ArangoDB to return a
-   * potentially dirty or stale result and arangojs will load balance the
-   * request without distinguishing between leaders and followers.
+   * Name of the target attribute of the computed value.
    */
-  allowDirtyRead?: boolean;
+  name: string;
   /**
-   * If set to a document revision, the document will only match if its `_rev`
-   * matches the given revision.
+   * AQL `RETURN` expression that computes the value.
    */
-  ifMatch?: string;
+  expression: string;
   /**
-   * If set to a document revision, the document will only match if its `_rev`
-   * does not match the given revision.
+   * If set to `false`, the computed value will not be applied if the
+   * expression evaluates to `null`.
    */
-  ifNoneMatch?: string;
+  overwrite: boolean;
+  /**
+   * Which operations should result in the value being computed.
+   */
+  computeOn: WriteOperation[];
+  /**
+   * If set to `false`, the field will be unset if the expression evaluates to
+   * `null`. Otherwise the field will be set to the value `null`. Has no effect
+   * if `overwrite` is set to `false`.
+   */
+  keepNull: boolean;
+  /**
+   * Whether the write operation should fail if the expression produces a
+   * warning.
+   */
+  failOnWarning: boolean;
 };
+//#endregion
 
+//#region DocumentCollection interface
 /**
- * Options for retrieving a document from a collection.
- */
-export type CollectionReadOptions = {
-  /**
-   * If set to `true`, `null` is returned instead of an exception being thrown
-   * if the document does not exist.
-   */
-  graceful?: boolean;
-  /**
-   * If set to `true`, the request will explicitly permit ArangoDB to return a
-   * potentially dirty or stale result and arangojs will load balance the
-   * request without distinguishing between leaders and followers.
-   */
-  allowDirtyRead?: boolean;
-  /**
-   * If set to a document revision, the request will fail with an error if the
-   * document exists but its `_rev` does not match the given revision.
-   */
-  ifMatch?: string;
-  /**
-   * If set to a document revision, the request will fail with an error if the
-   * document exists and its `_rev` matches the given revision. Note that an
-   * `HttpError` with code 304 will be thrown instead of an `ArangoError`.
-   */
-  ifNoneMatch?: string;
-};
-
-/**
- * Options for retrieving multiple documents from a collection.
- */
-export type CollectionBatchReadOptions = {
-  /**
-   * If set to `true`, the request will explicitly permit ArangoDB to return a
-   * potentially dirty or stale result and arangojs will load balance the
-   * request without distinguishing between leaders and followers.
-   */
-  allowDirtyRead?: boolean;
-  /**
-   * If set to `false`, the existing document will only be modified if its
-   * `_rev` property matches the same property on the new data.
-   *
-   * Default: `true`
-   */
-  ignoreRevs?: boolean;
-};
-
-/**
- * Options for inserting a new document into a collection.
- */
-export type CollectionInsertOptions = {
-  /**
-   * If set to `true`, data will be synchronized to disk before returning.
-   *
-   * Default: `false`
-   */
-  waitForSync?: boolean;
-  /**
-   * If set to `true`, no data will be returned by the server. This option can
-   * be used to reduce network traffic.
-   *
-   * Default: `false`
-   */
-  silent?: boolean;
-  /**
-   * If set to `true`, the complete new document will be returned as the `new`
-   * property on the result object. Has no effect if `silent` is set to `true`.
-   *
-   * Default: `false`
-   */
-  returnNew?: boolean;
-  /**
-   * If set to `true`, the complete old document will be returned as the `old`
-   * property on the result object. Has no effect if `silent` is set to `true`.
-   * This option is only available when `overwriteMode` is set to `"update"` or
-   * `"replace"`.
-   *
-   * Default: `false`
-   */
-  returnOld?: boolean;
-  /**
-   * Defines what should happen if a document with the same `_key` or `_id`
-   * already exists, instead of throwing an exception.
-   *
-   * Default: `"conflict"
-   */
-  overwriteMode?: "ignore" | "update" | "replace" | "conflict";
-  /**
-   * If set to `false`, properties with a value of `null` will be removed from
-   * the new document.
-   *
-   * Default: `true`
-   */
-  keepNull?: boolean;
-  /**
-   * If set to `false`, object properties that already exist in the old
-   * document will be overwritten rather than merged when an existing document
-   * with the same `_key` or `_id` is updated. This does not affect arrays.
-   *
-   * Default: `true`
-   */
-  mergeObjects?: boolean;
-  /**
-   * If set to `true`, new entries will be added to in-memory index caches if
-   * document insertions affect the edge index or cache-enabled persistent
-   * indexes.
-   *
-   * Default: `false`
-   */
-  refillIndexCaches?: boolean;
-  /**
-   * If set, the attribute with the name specified by the option is looked up
-   * in the stored document and the attribute value is compared numerically to
-   * the value of the versioning attribute in the supplied document that is
-   * supposed to update/replace it.
-   */
-  versionAttribute?: string;
-};
-
-/**
- * Options for replacing an existing document in a collection.
- */
-export type CollectionReplaceOptions = {
-  /**
-   * If set to `true`, data will be synchronized to disk before returning.
-   *
-   * Default: `false`
-   */
-  waitForSync?: boolean;
-  /**
-   * If set to `true`, no data will be returned by the server. This option can
-   * be used to reduce network traffic.
-   *
-   * Default: `false`
-   */
-  silent?: boolean;
-  /**
-   * If set to `true`, the complete new document will be returned as the `new`
-   * property on the result object. Has no effect if `silent` is set to `true`.
-   *
-   * Default: `false`
-   */
-  returnNew?: boolean;
-  /**
-   * If set to `false`, the existing document will only be modified if its
-   * `_rev` property matches the same property on the new data.
-   *
-   * Default: `true`
-   */
-  ignoreRevs?: boolean;
-  /**
-   * If set to `true`, the complete old document will be returned as the `old`
-   * property on the result object. Has no effect if `silent` is set to `true`.
-   *
-   * Default: `false`
-   */
-  returnOld?: boolean;
-  /**
-   * If set to a document revision, the document will only be replaced if its
-   * `_rev` matches the given revision.
-   */
-  ifMatch?: string;
-  /**
-   * If set to `true`, existing entries in in-memory index caches will be
-   * updated if document replacements affect the edge index or cache-enabled
-   * persistent indexes.
-   *
-   * Default: `false`
-   */
-  refillIndexCaches?: boolean;
-  /**
-   * If set, the attribute with the name specified by the option is looked up
-   * in the stored document and the attribute value is compared numerically to
-   * the value of the versioning attribute in the supplied document that is
-   * supposed to update/replace it.
-   */
-  versionAttribute?: string;
-};
-
-/**
- * Options for updating a document in a collection.
- */
-export type CollectionUpdateOptions = {
-  /**
-   * If set to `true`, data will be synchronized to disk before returning.
-   *
-   * Default: `false`
-   */
-  waitForSync?: boolean;
-  /**
-   * If set to `true`, no data will be returned by the server. This option can
-   * be used to reduce network traffic.
-   *
-   * Default: `false`
-   */
-  silent?: boolean;
-  /**
-   * If set to `true`, the complete new document will be returned as the `new`
-   * property on the result object. Has no effect if `silent` is set to `true`.
-   *
-   * Default: `false`
-   */
-  returnNew?: boolean;
-  /**
-   * If set to `false`, the existing document will only be modified if its
-   * `_rev` property matches the same property on the new data.
-   *
-   * Default: `true`
-   */
-  ignoreRevs?: boolean;
-  /**
-   * If set to `true`, the complete old document will be returned as the `old`
-   * property on the result object. Has no effect if `silent` is set to `true`.
-   *
-   * Default: `false`
-   */
-  returnOld?: boolean;
-  /**
-   * If set to `false`, properties with a value of `null` will be removed from
-   * the new document.
-   *
-   * Default: `true`
-   */
-  keepNull?: boolean;
-  /**
-   * If set to `false`, object properties that already exist in the old
-   * document will be overwritten rather than merged. This does not affect
-   * arrays.
-   *
-   * Default: `true`
-   */
-  mergeObjects?: boolean;
-  /**
-   * If set to a document revision, the document will only be updated if its
-   * `_rev` matches the given revision.
-   */
-  ifMatch?: string;
-  /**
-   * If set to `true`, existing entries in in-memory index caches will be
-   * updated if document updates affect the edge index or cache-enabled
-   * persistent indexes.
-   *
-   * Default: `false`
-   */
-  refillIndexCaches?: boolean;
-  /**
-   * If set, the attribute with the name specified by the option is looked up
-   * in the stored document and the attribute value is compared numerically to
-   * the value of the versioning attribute in the supplied document that is
-   * supposed to update/replace it.
-   */
-  versionAttribute?: string;
-};
-
-/**
- * Options for removing a document from a collection.
- */
-export type CollectionRemoveOptions = {
-  /**
-   * If set to `true`, changes will be synchronized to disk before returning.
-   *
-   * Default: `false`
-   */
-  waitForSync?: boolean;
-  /**
-   * If set to `true`, the complete old document will be returned as the `old`
-   * property on the result object. Has no effect if `silent` is set to `true`.
-   *
-   * Default: `false`
-   */
-  returnOld?: boolean;
-  /**
-   * If set to `true`, no data will be returned by the server. This option can
-   * be used to reduce network traffic.
-   *
-   * Default: `false`
-   */
-  silent?: boolean;
-  /**
-   * If set to a document revision, the document will only be removed if its
-   * `_rev` matches the given revision.
-   */
-  ifMatch?: string;
-  /**
-   * If set to `true`, existing entries in in-memory index caches will be
-   * deleted if document removals affect the edge index or cache-enabled
-   * persistent indexes.
-   *
-   * Default: `false`
-   */
-  refillIndexCaches?: boolean;
-};
-
-/**
- * Options for bulk importing documents into a collection.
- */
-export type CollectionImportOptions = {
-  /**
-   * (Edge collections only.) Prefix to prepend to `_from` attribute values.
-   */
-  fromPrefix?: string;
-  /**
-   * (Edge collections only.) Prefix to prepend to `_to` attribute values.
-   */
-  toPrefix?: string;
-  /**
-   * If set to `true`, the collection is truncated before the data is imported.
-   *
-   * Default: `false`
-   */
-  overwrite?: boolean;
-  /**
-   * Whether to wait for the documents to have been synced to disk.
-   */
-  waitForSync?: boolean;
-  /**
-   * Controls behavior when a unique constraint is violated on the document key.
-   *
-   * * `"error"`: the document will not be imported.
-   * * `"update`: the document will be merged into the existing document.
-   * * `"replace"`: the document will replace the existing document.
-   * * `"ignore"`: the document will not be imported and the unique constraint
-   *   error will be ignored.
-   *
-   * Default: `"error"`
-   */
-  onDuplicate?: "error" | "update" | "replace" | "ignore";
-  /**
-   * If set to `true`, the import will abort if any error occurs.
-   */
-  complete?: boolean;
-  /**
-   * Whether the response should contain additional details about documents
-   * that could not be imported.
-   */
-  details?: boolean;
-};
-
-/**
- * Options for retrieving a document's edges from a collection.
- */
-export type CollectionEdgesOptions = {
-  /**
-   * If set to `true`, the request will explicitly permit ArangoDB to return a
-   * potentially dirty or stale result and arangojs will load balance the
-   * request without distinguishing between leaders and followers.
-   */
-  allowDirtyRead?: boolean;
-};
-
-export type IndexListOptions = {
-  /**
-   * If set to `true`, includes additional information about each index.
-   *
-   * Default: `false`
-   */
-  withStats?: boolean;
-  /**
-   * If set to `true`, includes internal indexes as well as indexes that are
-   * not yet fully built but are in the building phase.
-   *
-   * You should cast the resulting indexes to `HiddenIndex` to ensure internal
-   * and incomplete indexes are accurately represented.
-   *
-   * Default: `false`.
-   */
-  withHidden?: boolean;
-};
-
-// Results
-
-/**
- * Result of a collection bulk import.
- */
-export type CollectionImportResult = {
-  /**
-   * Whether the import failed.
-   */
-  error: false;
-  /**
-   * Number of new documents imported.
-   */
-  created: number;
-  /**
-   * Number of documents that failed with an error.
-   */
-  errors: number;
-  /**
-   * Number of empty documents.
-   */
-  empty: number;
-  /**
-   * Number of documents updated.
-   */
-  updated: number;
-  /**
-   * Number of documents that failed with an error that is ignored.
-   */
-  ignored: number;
-  /**
-   * Additional details about any errors encountered during the import.
-   */
-  details?: string[];
-};
-
-/**
- * Result of retrieving edges in a collection.
- */
-export type CollectionEdgesResult<T extends Record<string, any> = any> = {
-  edges: Edge<T>[];
-  stats: {
-    scannedIndex: number;
-    filtered: number;
-  };
-};
-
-// Collections
-
-/**
- * Represents an document collection in a {@link database.Database}.
+ * Represents an document collection in a {@link databases.Database}.
  *
  * See {@link EdgeCollection} for a variant of this interface more suited for
  * edge collections.
@@ -1083,7 +570,10 @@ export type CollectionEdgesResult<T extends Record<string, any> = any> = {
  * When using TypeScript, collections can be cast to a specific document data
  * type to increase type safety.
  *
- * @param T - Type to use for document data. Defaults to `any`.
+ * @param EntryResultType - Type to represent document contents returned by the
+ * server (including computed properties).
+ * @param EntryInputType - Type to represent document contents passed when
+ * inserting or replacing documents (without computed properties).
  *
  * @example
  * ```ts
@@ -1101,7 +591,8 @@ export interface DocumentCollection<
   /**
    * Database this collection belongs to.
    */
-  readonly database: Database;
+  readonly database: databases.Database;
+  //#region Collection operations
   /**
    * Checks whether the collection exists.
    *
@@ -1125,12 +616,12 @@ export interface DocumentCollection<
    * // data contains general information about the collection
    * ```
    */
-  get(): Promise<ArangoApiResponse<CollectionMetadata>>;
+  get(): Promise<connection.ArangoApiResponse<CollectionDescription>>;
   /**
    * Creates a collection with the given `options` and the instance's name.
    *
-   * See also {@link database.Database#createCollection} and
-   * {@link database.Database#createEdgeCollection}.
+   * See also {@link databases.Database#createCollection} and
+   * {@link databases.Database#createEdgeCollection}.
    *
    * **Note**: When called on an {@link EdgeCollection} instance in TypeScript,
    * the `type` option must still be set to the correct {@link CollectionType}.
@@ -1173,7 +664,7 @@ export interface DocumentCollection<
     options?: CreateCollectionOptions & {
       type?: CollectionType;
     }
-  ): Promise<ArangoApiResponse<CollectionMetadata & CollectionProperties>>;
+  ): Promise<connection.ArangoApiResponse<CollectionDescription & CollectionProperties>>;
   /**
    * Retrieves the collection's properties.
    *
@@ -1186,7 +677,7 @@ export interface DocumentCollection<
    * ```
    */
   properties(): Promise<
-    ArangoApiResponse<CollectionMetadata & CollectionProperties>
+    connection.ArangoApiResponse<CollectionDescription & CollectionProperties>
   >;
   /**
    * Replaces the properties of the collection.
@@ -1202,7 +693,7 @@ export interface DocumentCollection<
    */
   properties(
     properties: CollectionPropertiesOptions
-  ): Promise<ArangoApiResponse<CollectionMetadata & CollectionProperties>>;
+  ): Promise<connection.ArangoApiResponse<CollectionDescription & CollectionProperties>>;
   /**
    * Retrieves information about the number of documents in a collection.
    *
@@ -1215,8 +706,8 @@ export interface DocumentCollection<
    * ```
    */
   count(): Promise<
-    ArangoApiResponse<
-      CollectionMetadata & CollectionProperties & { count: number }
+    connection.ArangoApiResponse<
+      CollectionDescription & CollectionProperties & { count: number }
     >
   >;
   /**
@@ -1252,8 +743,8 @@ export interface DocumentCollection<
   figures(
     details?: boolean
   ): Promise<
-    ArangoApiResponse<
-      CollectionMetadata &
+    connection.ArangoApiResponse<
+      CollectionDescription &
       CollectionProperties & { count: number; figures: Record<string, any> }
     >
   >;
@@ -1269,8 +760,8 @@ export interface DocumentCollection<
    * ```
    */
   revision(): Promise<
-    ArangoApiResponse<
-      CollectionMetadata & CollectionProperties & { revision: string }
+    connection.ArangoApiResponse<
+      CollectionDescription & CollectionProperties & { revision: string }
     >
   >;
   /**
@@ -1289,27 +780,14 @@ export interface DocumentCollection<
   checksum(
     options?: CollectionChecksumOptions
   ): Promise<
-    ArangoApiResponse<
-      CollectionMetadata & { revision: string; checksum: string }
+    connection.ArangoApiResponse<
+      CollectionDescription & { revision: string; checksum: string }
     >
   >;
   /**
-   * Instructs ArangoDB to load as many indexes of the collection into memory
-   * as permitted by the memory limit.
-   *
-   * @example
-   * ```js
-   * const db = new Database();
-   * const collection = db.collection("indexed-collection");
-   * await collection.loadIndexes();
-   * // the indexes are now loaded into memory
-   * ```
-   */
-  loadIndexes(): Promise<boolean>;
-  /**
    * Renames the collection and updates the instance's `name` to `newName`.
    *
-   * Additionally removes the instance from the {@link database.Database}'s internal
+   * Additionally removes the instance from the {@link databases.Database}'s internal
    * cache.
    *
    * **Note**: Renaming collections may not be supported when ArangoDB is
@@ -1328,7 +806,7 @@ export interface DocumentCollection<
    * // collection1 and collection3 represent the same ArangoDB collection!
    * ```
    */
-  rename(newName: string): Promise<ArangoApiResponse<CollectionMetadata>>;
+  rename(newName: string): Promise<connection.ArangoApiResponse<CollectionDescription>>;
   /**
    * Deletes all documents in the collection.
    *
@@ -1341,7 +819,7 @@ export interface DocumentCollection<
    * // the collection "some-collection" is now empty
    * ```
    */
-  truncate(options?: CollectionTruncateOptions): Promise<ArangoApiResponse<CollectionMetadata>>;
+  truncate(options?: CollectionTruncateOptions): Promise<connection.ArangoApiResponse<CollectionDescription>>;
   /**
    * Deletes the collection from the database.
    *
@@ -1357,9 +835,22 @@ export interface DocumentCollection<
    */
   drop(
     options?: CollectionDropOptions
-  ): Promise<ArangoApiResponse<Record<string, never>>>;
+  ): Promise<connection.ArangoApiResponse<{ id: string }>>;
+  /**
+   * Triggers compaction for a collection.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
+   * await collection.compact();
+   * // Background compaction is triggered on the collection
+   * ```
+   */
+  compact(): Promise<connection.ArangoApiResponse<CollectionDescription>>;
+  //#endregion
 
-  //#region crud
+  //#region Document operations
   /**
    * Retrieves the `shardId` of the shard responsible for the given document.
    *
@@ -1373,7 +864,7 @@ export interface DocumentCollection<
    * ```
    */
   getResponsibleShard(
-    document: Partial<Document<EntryResultType>>
+    document: Partial<documents.Document<EntryResultType>>
   ): Promise<string>;
   /**
    * Derives a document `_id` from the given selector for this collection.
@@ -1408,7 +899,7 @@ export interface DocumentCollection<
    * console.log(collection2.documentId(meta._key)); // ok but wrong collection
    * ```
    */
-  documentId(selector: DocumentSelector): string;
+  documentId(selector: documents.DocumentSelector): string;
   /**
    * Checks whether a document matching the given key or id exists in this
    * collection.
@@ -1430,8 +921,8 @@ export interface DocumentCollection<
    * ```
    */
   documentExists(
-    selector: DocumentSelector,
-    options?: DocumentExistsOptions
+    selector: documents.DocumentSelector,
+    options?: documents.DocumentExistsOptions
   ): Promise<boolean>;
   /**
    * Retrieves the document matching the given key or id.
@@ -1468,9 +959,9 @@ export interface DocumentCollection<
    * ```
    */
   document(
-    selector: DocumentSelector,
-    options?: CollectionReadOptions
-  ): Promise<Document<EntryResultType>>;
+    selector: documents.DocumentSelector,
+    options?: documents.ReadDocumentOptions
+  ): Promise<documents.Document<EntryResultType>>;
   /**
    * Retrieves the document matching the given key or id.
    *
@@ -1507,9 +998,9 @@ export interface DocumentCollection<
    * ```
    */
   document(
-    selector: DocumentSelector,
+    selector: documents.DocumentSelector,
     graceful: boolean
-  ): Promise<Document<EntryResultType>>;
+  ): Promise<documents.Document<EntryResultType>>;
   /**
    * Retrieves the documents matching the given key or id values.
    *
@@ -1533,9 +1024,9 @@ export interface DocumentCollection<
    * ```
    */
   documents(
-    selectors: (string | ObjectWithKey)[],
-    options?: CollectionBatchReadOptions
-  ): Promise<Document<EntryResultType>[]>;
+    selectors: (string | documents.ObjectWithDocumentKey)[],
+    options?: documents.BulkReadDocumentsOptions
+  ): Promise<documents.Document<EntryResultType>[]>;
   /**
    * Inserts a new document with the given `data` into the collection.
    *
@@ -1554,12 +1045,12 @@ export interface DocumentCollection<
    * ```
    */
   save(
-    data: DocumentData<EntryInputType>,
-    options?: CollectionInsertOptions
+    data: documents.DocumentData<EntryInputType>,
+    options?: documents.InsertDocumentOptions
   ): Promise<
-    DocumentOperationMetadata & {
-      new?: Document<EntryResultType>;
-      old?: Document<EntryResultType>;
+    documents.DocumentOperationMetadata & {
+      new?: documents.Document<EntryResultType>;
+      old?: documents.Document<EntryResultType>;
     }
   >;
   /**
@@ -1584,15 +1075,15 @@ export interface DocumentCollection<
    * ```
    */
   saveAll(
-    data: Array<DocumentData<EntryInputType>>,
-    options?: CollectionInsertOptions
+    data: Array<documents.DocumentData<EntryInputType>>,
+    options?: documents.InsertDocumentOptions
   ): Promise<
     Array<
-      | (DocumentOperationMetadata & {
-        new?: Document<EntryResultType>;
-        old?: Document<EntryResultType>;
+      | (documents.DocumentOperationMetadata & {
+        new?: documents.Document<EntryResultType>;
+        old?: documents.Document<EntryResultType>;
       })
-      | DocumentOperationFailure
+      | documents.DocumentOperationFailure
     >
   >;
   /**
@@ -1620,13 +1111,13 @@ export interface DocumentCollection<
    * ```
    */
   replace(
-    selector: DocumentSelector,
-    newData: DocumentData<EntryInputType>,
-    options?: CollectionReplaceOptions
+    selector: documents.DocumentSelector,
+    newData: documents.DocumentData<EntryInputType>,
+    options?: documents.ReplaceDocumentOptions
   ): Promise<
-    DocumentOperationMetadata & {
-      new?: Document<EntryResultType>;
-      old?: Document<EntryResultType>;
+    documents.DocumentOperationMetadata & {
+      new?: documents.Document<EntryResultType>;
+      old?: documents.Document<EntryResultType>;
     }
   >;
   /**
@@ -1655,16 +1146,16 @@ export interface DocumentCollection<
    */
   replaceAll(
     newData: Array<
-      DocumentData<EntryInputType> & ({ _key: string } | { _id: string })
+      documents.DocumentData<EntryInputType> & ({ _key: string } | { _id: string })
     >,
-    options?: Omit<CollectionReplaceOptions, "ifMatch">
+    options?: Omit<documents.ReplaceDocumentOptions, "ifMatch">
   ): Promise<
     Array<
-      | (DocumentOperationMetadata & {
-        new?: Document<EntryResultType>;
-        old?: Document<EntryResultType>;
+      | (documents.DocumentOperationMetadata & {
+        new?: documents.Document<EntryResultType>;
+        old?: documents.Document<EntryResultType>;
       })
-      | DocumentOperationFailure
+      | documents.DocumentOperationFailure
     >
   >;
   /**
@@ -1692,13 +1183,13 @@ export interface DocumentCollection<
    * ```
    */
   update(
-    selector: DocumentSelector,
-    newData: Patch<DocumentData<EntryInputType>>,
-    options?: CollectionUpdateOptions
+    selector: documents.DocumentSelector,
+    newData: documents.Patch<documents.DocumentData<EntryInputType>>,
+    options?: documents.UpdateDocumentOptions
   ): Promise<
-    DocumentOperationMetadata & {
-      new?: Document<EntryResultType>;
-      old?: Document<EntryResultType>;
+    documents.DocumentOperationMetadata & {
+      new?: documents.Document<EntryResultType>;
+      old?: documents.Document<EntryResultType>;
     }
   >;
   /**
@@ -1727,16 +1218,16 @@ export interface DocumentCollection<
    */
   updateAll(
     newData: Array<
-      Patch<DocumentData<EntryInputType>> & ({ _key: string } | { _id: string })
+      documents.Patch<documents.DocumentData<EntryInputType>> & ({ _key: string } | { _id: string })
     >,
-    options?: Omit<CollectionUpdateOptions, "ifMatch">
+    options?: Omit<documents.UpdateDocumentOptions, "ifMatch">
   ): Promise<
     Array<
-      | (DocumentOperationMetadata & {
-        new?: Document<EntryResultType>;
-        old?: Document<EntryResultType>;
+      | (documents.DocumentOperationMetadata & {
+        new?: documents.Document<EntryResultType>;
+        old?: documents.Document<EntryResultType>;
       })
-      | DocumentOperationFailure
+      | documents.DocumentOperationFailure
     >
   >;
   /**
@@ -1767,9 +1258,9 @@ export interface DocumentCollection<
    * ```
    */
   remove(
-    selector: DocumentSelector,
-    options?: CollectionRemoveOptions
-  ): Promise<DocumentMetadata & { old?: Document<EntryResultType> }>;
+    selector: documents.DocumentSelector,
+    options?: documents.RemoveDocumentOptions
+  ): Promise<documents.DocumentMetadata & { old?: documents.Document<EntryResultType> }>;
   /**
    * Removes existing documents from the collection.
    *
@@ -1789,12 +1280,12 @@ export interface DocumentCollection<
    * ```
    */
   removeAll(
-    selectors: (string | ObjectWithKey)[],
-    options?: Omit<CollectionRemoveOptions, "ifMatch">
+    selectors: (string | documents.ObjectWithDocumentKey)[],
+    options?: Omit<documents.RemoveDocumentOptions, "ifMatch">
   ): Promise<
     Array<
-      | (DocumentMetadata & { old?: Document<EntryResultType> })
-      | DocumentOperationFailure
+      | (documents.DocumentMetadata & { old?: documents.Document<EntryResultType> })
+      | documents.DocumentOperationFailure
     >
   >;
   /**
@@ -1817,9 +1308,9 @@ export interface DocumentCollection<
    * ```
    */
   import(
-    data: DocumentData<EntryInputType>[],
-    options?: CollectionImportOptions
-  ): Promise<CollectionImportResult>;
+    data: documents.DocumentData<EntryInputType>[],
+    options?: documents.ImportDocumentsOptions
+  ): Promise<documents.ImportDocumentsResult>;
   /**
    * Bulk imports the given `data` into the collection.
    *
@@ -1844,8 +1335,8 @@ export interface DocumentCollection<
    */
   import(
     data: any[][],
-    options?: CollectionImportOptions
-  ): Promise<CollectionImportResult>;
+    options?: documents.ImportDocumentsOptions
+  ): Promise<documents.ImportDocumentsResult>;
   /**
    * Bulk imports the given `data` into the collection.
    *
@@ -1904,13 +1395,26 @@ export interface DocumentCollection<
    */
   import(
     data: Buffer | Blob | string,
-    options?: CollectionImportOptions & {
+    options?: documents.ImportDocumentsOptions & {
       type?: "documents" | "list" | "auto";
     }
-  ): Promise<CollectionImportResult>;
+  ): Promise<documents.ImportDocumentsResult>;
   //#endregion
 
-  //#region indexes
+  //#region Index operations
+  /**
+   * Instructs ArangoDB to load as many indexes of the collection into memory
+   * as permitted by the memory limit.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collection = db.collection("indexed-collection");
+   * await collection.loadIndexes();
+   * // the indexes are now loaded into memory
+   * ```
+   */
+  loadIndexes(): Promise<boolean>;
   /**
    * Returns a list of all index descriptions for the collection.
    *
@@ -1927,13 +1431,13 @@ export interface DocumentCollection<
    * ```js
    * const db = new Database();
    * const collection = db.collection("some-collection");
-   * const allIndexes = await collection.indexes<HiddenIndex>({
+   * const allIndexes = await collection.indexes<HiddenIndexDescription>({
    *   withHidden: true
    * });
    * ```
    */
-  indexes<IndexType extends Index | HiddenIndex = Index>(
-    options?: IndexListOptions
+  indexes<IndexType extends indexes.IndexDescription | indexes.HiddenIndexDescription = indexes.IndexDescription>(
+    options?: indexes.ListIndexesOptions
   ): Promise<IndexType[]>;
   /**
    * Returns an index description by name or `id` if it exists.
@@ -1947,11 +1451,11 @@ export interface DocumentCollection<
    * const index = await collection.index("some-index");
    * ```
    */
-  index(selector: IndexSelector): Promise<Index>;
+  index(selector: indexes.IndexSelector): Promise<indexes.IndexDescription>;
   /**
    * Creates a persistent index on the collection if it does not already exist.
    *
-   * @param details - Options for creating the persistent index.
+   * @param options - Options for creating the persistent index.
    *
    * @example
    * ```js
@@ -1967,12 +1471,12 @@ export interface DocumentCollection<
    * ```
    */
   ensureIndex(
-    details: EnsurePersistentIndexOptions
-  ): Promise<ArangoApiResponse<PersistentIndex & { isNewlyCreated: boolean }>>;
+    options: indexes.EnsurePersistentIndexOptions
+  ): Promise<connection.ArangoApiResponse<indexes.PersistentIndexDescription & { isNewlyCreated: boolean }>>;
   /**
    * Creates a TTL index on the collection if it does not already exist.
    *
-   * @param details - Options for creating the TTL index.
+   * @param options - Options for creating the TTL index.
    *
    * @example
    * ```js
@@ -1999,12 +1503,12 @@ export interface DocumentCollection<
    * ```
    */
   ensureIndex(
-    details: EnsureTtlIndexOptions
-  ): Promise<ArangoApiResponse<TtlIndex & { isNewlyCreated: boolean }>>;
+    options: indexes.EnsureTtlIndexOptions
+  ): Promise<connection.ArangoApiResponse<indexes.TtlIndexDescription & { isNewlyCreated: boolean }>>;
   /**
    * Creates a multi-dimensional index on the collection if it does not already exist.
    *
-   * @param details - Options for creating the multi-dimensional index.
+   * @param options - Options for creating the multi-dimensional index.
    *
    * @example
    * ```js
@@ -2020,12 +1524,12 @@ export interface DocumentCollection<
    * ```
    */
   ensureIndex(
-    details: EnsureMdiIndexOptions
-  ): Promise<ArangoApiResponse<MdiIndex & { isNewlyCreated: boolean }>>;
+    options: indexes.EnsureMdiIndexOptions
+  ): Promise<connection.ArangoApiResponse<indexes.MdiIndexDescription & { isNewlyCreated: boolean }>>;
   /**
    * Creates a geo index on the collection if it does not already exist.
    *
-   * @param details - Options for creating the geo index.
+   * @param options - Options for creating the geo index.
    *
    * @example
    * ```js
@@ -2040,12 +1544,12 @@ export interface DocumentCollection<
    * ```
    */
   ensureIndex(
-    details: EnsureGeoIndexOptions
-  ): Promise<ArangoApiResponse<GeoIndex & { isNewlyCreated: boolean }>>;
+    options: indexes.EnsureGeoIndexOptions
+  ): Promise<connection.ArangoApiResponse<indexes.GeoIndexDescription & { isNewlyCreated: boolean }>>;
   /**
    * Creates a inverted index on the collection if it does not already exist.
    *
-   * @param details - Options for creating the inverted index.
+   * @param options - Options for creating the inverted index.
    *
    * @example
    * ```js
@@ -2059,12 +1563,12 @@ export interface DocumentCollection<
    * ```
    */
   ensureIndex(
-    details: EnsureInvertedIndexOptions
-  ): Promise<ArangoApiResponse<InvertedIndex & { isNewlyCreated: boolean }>>;
+    options: indexes.EnsureInvertedIndexOptions
+  ): Promise<connection.ArangoApiResponse<indexes.InvertedIndexDescription & { isNewlyCreated: boolean }>>;
   /**
    * Creates an index on the collection if it does not already exist.
    *
-   * @param details - Options for creating the index.
+   * @param options - Options for creating the index.
    *
    * @example
    * ```js
@@ -2080,8 +1584,8 @@ export interface DocumentCollection<
    * ```
    */
   ensureIndex(
-    details: EnsureIndexOptions
-  ): Promise<ArangoApiResponse<Index & { isNewlyCreated: boolean }>>;
+    options: indexes.EnsureIndexOptions
+  ): Promise<connection.ArangoApiResponse<indexes.IndexDescription & { isNewlyCreated: boolean }>>;
   /**
    * Deletes the index with the given name or `id` from the database.
    *
@@ -2096,36 +1600,29 @@ export interface DocumentCollection<
    * ```
    */
   dropIndex(
-    selector: IndexSelector
-  ): Promise<ArangoApiResponse<{ id: string }>>;
-  /**
-   * Triggers compaction for a collection.
-   *
-   * @example
-   * ```js
-   * const db = new Database();
-   * const collection = db.collection("some-collection");
-   * await collection.compact();
-   * // Background compaction is triggered on the collection
-   * ```
-   */
-  compact(): Promise<ArangoApiResponse<Record<string, never>>>;
+    selector: indexes.IndexSelector
+  ): Promise<connection.ArangoApiResponse<{ id: string }>>;
   //#endregion
 }
+//#endregion
 
+//#region EdgeCollection interface
 /**
- * Represents an edge collection in a {@link database.Database}.
+ * Represents an edge collection in a {@link databases.Database}.
  *
  * See {@link DocumentCollection} for a more generic variant of this interface
  * more suited for regular document collections.
  *
- * See also {@link graph.GraphEdgeCollection} for the type representing an edge
- * collection in a {@link graph.Graph}.
+ * See also {@link graphs.GraphEdgeCollection} for the type representing an edge
+ * collection in a {@link graphs.Graph}.
  *
  * When using TypeScript, collections can be cast to a specific edge document
  * data type to increase type safety.
  *
- * @param T - Type to use for edge document data. Defaults to `any`.
+ * @param EntryResultType - Type to represent edge document contents returned
+ * by the server (including computed properties).
+ * @param EntryInputType - Type to represent edge document contents passed when
+ * inserting or replacing edge documents (without computed properties).
  *
  * @example
  * ```ts
@@ -2141,6 +1638,7 @@ export interface EdgeCollection<
   EntryResultType extends Record<string, any> = any,
   EntryInputType extends Record<string, any> = EntryResultType,
 > extends DocumentCollection<EntryResultType, EntryInputType> {
+  //#region Document operations
   /**
    * Retrieves the document matching the given key or id.
    *
@@ -2176,9 +1674,9 @@ export interface EdgeCollection<
    * ```
    */
   document(
-    selector: DocumentSelector,
-    options?: CollectionReadOptions
-  ): Promise<Edge<EntryResultType>>;
+    selector: documents.DocumentSelector,
+    options?: documents.ReadDocumentOptions
+  ): Promise<documents.Edge<EntryResultType>>;
   /**
    * Retrieves the document matching the given key or id.
    *
@@ -2215,9 +1713,9 @@ export interface EdgeCollection<
    * ```
    */
   document(
-    selector: DocumentSelector,
+    selector: documents.DocumentSelector,
     graceful: boolean
-  ): Promise<Edge<EntryResultType>>;
+  ): Promise<documents.Edge<EntryResultType>>;
   /**
    * Retrieves the documents matching the given key or id values.
    *
@@ -2241,9 +1739,9 @@ export interface EdgeCollection<
    * ```
    */
   documents(
-    selectors: (string | ObjectWithKey)[],
-    options?: CollectionBatchReadOptions
-  ): Promise<Edge<EntryResultType>[]>;
+    selectors: (string | documents.ObjectWithDocumentKey)[],
+    options?: documents.BulkReadDocumentsOptions
+  ): Promise<documents.Edge<EntryResultType>[]>;
   /**
    * Inserts a new document with the given `data` into the collection.
    *
@@ -2261,12 +1759,12 @@ export interface EdgeCollection<
    * ```
    */
   save(
-    data: EdgeData<EntryInputType>,
-    options?: CollectionInsertOptions
+    data: documents.EdgeData<EntryInputType>,
+    options?: documents.InsertDocumentOptions
   ): Promise<
-    DocumentOperationMetadata & {
-      new?: Edge<EntryResultType>;
-      old?: Edge<EntryResultType>;
+    documents.DocumentOperationMetadata & {
+      new?: documents.Edge<EntryResultType>;
+      old?: documents.Edge<EntryResultType>;
     }
   >;
   /**
@@ -2289,15 +1787,15 @@ export interface EdgeCollection<
    * ```
    */
   saveAll(
-    data: Array<EdgeData<EntryInputType>>,
-    options?: CollectionInsertOptions
+    data: Array<documents.EdgeData<EntryInputType>>,
+    options?: documents.InsertDocumentOptions
   ): Promise<
     Array<
-      | (DocumentOperationMetadata & {
-        new?: Edge<EntryResultType>;
-        old?: Edge<EntryResultType>;
+      | (documents.DocumentOperationMetadata & {
+        new?: documents.Edge<EntryResultType>;
+        old?: documents.Edge<EntryResultType>;
       })
-      | DocumentOperationFailure
+      | documents.DocumentOperationFailure
     >
   >;
   /**
@@ -2333,13 +1831,13 @@ export interface EdgeCollection<
    * ```
    */
   replace(
-    selector: DocumentSelector,
-    newData: DocumentData<EntryInputType>,
-    options?: CollectionReplaceOptions
+    selector: documents.DocumentSelector,
+    newData: documents.DocumentData<EntryInputType>,
+    options?: documents.ReplaceDocumentOptions
   ): Promise<
-    DocumentOperationMetadata & {
-      new?: Edge<EntryResultType>;
-      old?: Edge<EntryResultType>;
+    documents.DocumentOperationMetadata & {
+      new?: documents.Edge<EntryResultType>;
+      old?: documents.Edge<EntryResultType>;
     }
   >;
   /**
@@ -2384,16 +1882,16 @@ export interface EdgeCollection<
    */
   replaceAll(
     newData: Array<
-      DocumentData<EntryInputType> & ({ _key: string } | { _id: string })
+      documents.DocumentData<EntryInputType> & ({ _key: string } | { _id: string })
     >,
-    options?: CollectionReplaceOptions
+    options?: documents.ReplaceDocumentOptions
   ): Promise<
     Array<
-      | (DocumentOperationMetadata & {
-        new?: Edge<EntryResultType>;
-        old?: Edge<EntryResultType>;
+      | (documents.DocumentOperationMetadata & {
+        new?: documents.Edge<EntryResultType>;
+        old?: documents.Edge<EntryResultType>;
       })
-      | DocumentOperationFailure
+      | documents.DocumentOperationFailure
     >
   >;
   /**
@@ -2429,13 +1927,13 @@ export interface EdgeCollection<
    * ```
    */
   update(
-    selector: DocumentSelector,
-    newData: Patch<DocumentData<EntryInputType>>,
-    options?: CollectionUpdateOptions
+    selector: documents.DocumentSelector,
+    newData: documents.Patch<documents.DocumentData<EntryInputType>>,
+    options?: documents.UpdateDocumentOptions
   ): Promise<
-    DocumentOperationMetadata & {
-      new?: Edge<EntryResultType>;
-      old?: Edge<EntryResultType>;
+    documents.DocumentOperationMetadata & {
+      new?: documents.Edge<EntryResultType>;
+      old?: documents.Edge<EntryResultType>;
     }
   >;
   /**
@@ -2478,16 +1976,16 @@ export interface EdgeCollection<
    */
   updateAll(
     newData: Array<
-      Patch<DocumentData<EntryInputType>> & ({ _key: string } | { _id: string })
+      documents.Patch<documents.DocumentData<EntryInputType>> & ({ _key: string } | { _id: string })
     >,
-    options?: CollectionUpdateOptions
+    options?: documents.UpdateDocumentOptions
   ): Promise<
     Array<
-      | (DocumentOperationMetadata & {
-        new?: Edge<EntryResultType>;
-        old?: Edge<EntryResultType>;
+      | (documents.DocumentOperationMetadata & {
+        new?: documents.Edge<EntryResultType>;
+        old?: documents.Edge<EntryResultType>;
       })
-      | DocumentOperationFailure
+      | documents.DocumentOperationFailure
     >
   >;
   /**
@@ -2510,9 +2008,9 @@ export interface EdgeCollection<
    * ```
    */
   remove(
-    selector: DocumentSelector,
-    options?: CollectionRemoveOptions
-  ): Promise<DocumentMetadata & { old?: Edge<EntryResultType> }>;
+    selector: documents.DocumentSelector,
+    options?: documents.RemoveDocumentOptions
+  ): Promise<documents.DocumentMetadata & { old?: documents.Edge<EntryResultType> }>;
   /**
    * Removes existing documents from the collection.
    *
@@ -2532,12 +2030,12 @@ export interface EdgeCollection<
    * ```
    */
   removeAll(
-    selectors: DocumentSelector[],
-    options?: CollectionRemoveOptions
+    selectors: documents.DocumentSelector[],
+    options?: documents.RemoveDocumentOptions
   ): Promise<
     Array<
-      | (DocumentMetadata & { old?: Edge<EntryResultType> })
-      | DocumentOperationFailure
+      | (documents.DocumentMetadata & { old?: documents.Edge<EntryResultType> })
+      | documents.DocumentOperationFailure
     >
   >;
   /**
@@ -2559,9 +2057,9 @@ export interface EdgeCollection<
    * ```
    */
   import(
-    data: EdgeData<EntryInputType>[],
-    options?: CollectionImportOptions
-  ): Promise<CollectionImportResult>;
+    data: documents.EdgeData<EntryInputType>[],
+    options?: documents.ImportDocumentsOptions
+  ): Promise<documents.ImportDocumentsResult>;
   /**
    * Bulk imports the given `data` into the collection.
    *
@@ -2585,8 +2083,8 @@ export interface EdgeCollection<
    */
   import(
     data: any[][],
-    options?: CollectionImportOptions
-  ): Promise<CollectionImportResult>;
+    options?: documents.ImportDocumentsOptions
+  ): Promise<documents.ImportDocumentsResult>;
   /**
    * Bulk imports the given `data` into the collection.
    *
@@ -2642,16 +2140,16 @@ export interface EdgeCollection<
    */
   import(
     data: Buffer | Blob | string,
-    options?: CollectionImportOptions & {
+    options?: documents.ImportDocumentsOptions & {
       type?: "documents" | "list" | "auto";
     }
-  ): Promise<CollectionImportResult>;
+  ): Promise<documents.ImportDocumentsResult>;
   //#endregion
 
-  //#region edges
+  //#region Edge operations
   /**
-   * Retrieves a list of all edges of the document matching the given
-   * `selector`.
+   * Retrieves a list of all edges in this collection of the document matching
+   * the given `selector`.
    *
    * Throws an exception when passed a document or `_id` from a different
    * collection.
@@ -2675,9 +2173,9 @@ export interface EdgeCollection<
    * ```
    */
   edges(
-    selector: DocumentSelector,
-    options?: CollectionEdgesOptions
-  ): Promise<ArangoApiResponse<CollectionEdgesResult<EntryResultType>>>;
+    selector: documents.DocumentSelector,
+    options?: documents.DocumentEdgesOptions
+  ): Promise<connection.ArangoApiResponse<documents.DocumentEdgesResult<EntryResultType>>>;
   /**
    * Retrieves a list of all incoming edges of the document matching the given
    * `selector`.
@@ -2704,9 +2202,9 @@ export interface EdgeCollection<
    * ```
    */
   inEdges(
-    selector: DocumentSelector,
-    options?: CollectionEdgesOptions
-  ): Promise<ArangoApiResponse<CollectionEdgesResult<EntryResultType>>>;
+    selector: documents.DocumentSelector,
+    options?: documents.DocumentEdgesOptions
+  ): Promise<connection.ArangoApiResponse<documents.DocumentEdgesResult<EntryResultType>>>;
   /**
    * Retrieves a list of all outgoing edges of the document matching the given
    * `selector`.
@@ -2733,13 +2231,14 @@ export interface EdgeCollection<
    * ```
    */
   outEdges(
-    selector: DocumentSelector,
-    options?: CollectionEdgesOptions
-  ): Promise<ArangoApiResponse<CollectionEdgesResult<EntryResultType>>>;
-
+    selector: documents.DocumentSelector,
+    options?: documents.DocumentEdgesOptions
+  ): Promise<connection.ArangoApiResponse<documents.DocumentEdgesResult<EntryResultType>>>;
   //#endregion
 }
+//#endregion
 
+//#region Collection class
 /**
  * @internal
  */
@@ -2750,20 +2249,17 @@ export class Collection<
   implements
   EdgeCollection<EntryResultType, EntryInputType>,
   DocumentCollection<EntryResultType, EntryInputType> {
-  //#region attributes
   protected _name: string;
-  protected _db: Database;
-  //#endregion
+  protected _db: databases.Database;
 
   /**
    * @internal
    */
-  constructor(db: Database, name: string) {
+  constructor(db: databases.Database, name: string) {
     this._name = name;
     this._db = db;
   }
 
-  //#region metadata
   get isArangoCollection(): true {
     return true;
   }
@@ -2776,6 +2272,7 @@ export class Collection<
     return this._name;
   }
 
+  //#region Collection operations
   get() {
     return this._db.request({
       path: `/_api/collection/${encodeURIComponent(this._name)}`,
@@ -2787,7 +2284,7 @@ export class Collection<
       await this.get();
       return true;
     } catch (err: any) {
-      if (isArangoError(err) && err.errorNum === COLLECTION_NOT_FOUND) {
+      if (errors.isArangoError(err) && err.errorNum === COLLECTION_NOT_FOUND) {
         return false;
       }
       throw err;
@@ -2806,13 +2303,13 @@ export class Collection<
     } = options;
     if (opts.computedValues) {
       opts.computedValues = opts.computedValues.map((computedValue) => {
-        if (isAqlLiteral(computedValue.expression)) {
+        if (aql.isAqlLiteral(computedValue.expression)) {
           return {
             ...computedValue,
             expression: computedValue.expression.toAQL(),
           };
         }
-        if (isAqlQuery(computedValue.expression)) {
+        if (aql.isAqlQuery(computedValue.expression)) {
           return {
             ...computedValue,
             expression: computedValue.expression.query,
@@ -2841,7 +2338,7 @@ export class Collection<
 
   properties(
     properties?: CollectionPropertiesOptions
-  ): Promise<ArangoApiResponse<CollectionMetadata & CollectionProperties>> {
+  ): Promise<connection.ArangoApiResponse<CollectionDescription & CollectionProperties>> {
     if (!properties) {
       return this._db.request({
         path: `/_api/collection/${encodeURIComponent(this._name)}/properties`,
@@ -2855,8 +2352,8 @@ export class Collection<
   }
 
   count(): Promise<
-    ArangoApiResponse<
-      CollectionMetadata & CollectionProperties & { count: number }
+    connection.ArangoApiResponse<
+      CollectionDescription & CollectionProperties & { count: number }
     >
   > {
     return this._db.request({
@@ -2879,9 +2376,8 @@ export class Collection<
   figures(
     details = false
   ): Promise<
-    CollectionMetadata &
-    ArangoApiResponse<
-      CollectionProperties & { count: number; figures: Record<string, any> }
+    connection.ArangoApiResponse<
+      CollectionDescription & CollectionProperties & { count: number; figures: Record<string, any> }
     >
   > {
     return this._db.request({
@@ -2891,8 +2387,8 @@ export class Collection<
   }
 
   revision(): Promise<
-    ArangoApiResponse<
-      CollectionMetadata & CollectionProperties & { revision: string }
+    connection.ArangoApiResponse<
+      CollectionDescription & CollectionProperties & { revision: string }
     >
   > {
     return this._db.request({
@@ -2903,8 +2399,8 @@ export class Collection<
   checksum(
     options?: CollectionChecksumOptions
   ): Promise<
-    ArangoApiResponse<
-      CollectionMetadata & { revision: string; checksum: string }
+    connection.ArangoApiResponse<
+      CollectionDescription & { revision: string; checksum: string }
     >
   > {
     return this._db.request({
@@ -2913,25 +2409,13 @@ export class Collection<
     });
   }
 
-  async loadIndexes(): Promise<boolean> {
-    return this._db.request(
-      {
-        method: "PUT",
-        path: `/_api/collection/${encodeURIComponent(
-          this._name
-        )}/loadIndexesIntoMemory`,
-      },
-      (res) => res.parsedBody.result
-    );
-  }
-
   async rename(newName: string) {
     const result = await this._db.renameCollection(this._name, newName);
     this._name = newName;
     return result;
   }
 
-  truncate(options?: CollectionTruncateOptions): Promise<ArangoApiResponse<CollectionMetadata>> {
+  truncate(options?: CollectionTruncateOptions): Promise<connection.ArangoApiResponse<CollectionDescription>> {
     return this._db.request({
       method: "PUT",
       path: `/_api/collection/${this._name}/truncate`,
@@ -2946,11 +2430,20 @@ export class Collection<
       search: options,
     });
   }
+
+  compact() {
+    return this._db.request(
+      {
+        method: "PUT",
+        path: `/_api/collection/${this._name}/compact`,
+      }
+    );
+  }
   //#endregion
 
-  //#region crud
+  //#region Document operations
   getResponsibleShard(
-    document: Partial<Document<EntryResultType>>
+    document: Partial<documents.Document<EntryResultType>>
   ): Promise<string> {
     return this._db.request(
       {
@@ -2964,13 +2457,13 @@ export class Collection<
     );
   }
 
-  documentId(selector: DocumentSelector): string {
-    return _documentHandle(selector, this._name);
+  documentId(selector: documents.DocumentSelector): string {
+    return documents._documentHandle(selector, this._name);
   }
 
   async documentExists(
-    selector: DocumentSelector,
-    options: DocumentExistsOptions = {}
+    selector: documents.DocumentSelector,
+    options: documents.DocumentExistsOptions = {}
   ): Promise<boolean> {
     const { ifMatch = undefined, ifNoneMatch = undefined } = options;
     const headers = {} as Record<string, string>;
@@ -2981,13 +2474,13 @@ export class Collection<
         {
           method: "HEAD",
           path: `/_api/document/${encodeURI(
-            _documentHandle(selector, this._name)
+            documents._documentHandle(selector, this._name)
           )}`,
           headers,
         },
         (res) => {
           if (ifNoneMatch && res.status === 304) {
-            throw new HttpError(res);
+            throw new errors.HttpError(res);
           }
           return true;
         }
@@ -3001,8 +2494,8 @@ export class Collection<
   }
 
   documents(
-    selectors: (string | ObjectWithKey)[],
-    options: CollectionBatchReadOptions = {}
+    selectors: (string | documents.ObjectWithDocumentKey)[],
+    options: documents.BulkReadDocumentsOptions = {}
   ) {
     const { allowDirtyRead = undefined } = options;
     return this._db.request({
@@ -3015,8 +2508,8 @@ export class Collection<
   }
 
   async document(
-    selector: DocumentSelector,
-    options: boolean | CollectionReadOptions = {}
+    selector: documents.DocumentSelector,
+    options: boolean | documents.ReadDocumentOptions = {}
   ) {
     if (typeof options === "boolean") {
       options = { graceful: options };
@@ -3033,14 +2526,14 @@ export class Collection<
     const result = this._db.request(
       {
         path: `/_api/document/${encodeURI(
-          _documentHandle(selector, this._name)
+          documents._documentHandle(selector, this._name)
         )}`,
         headers,
         allowDirtyRead,
       },
       (res) => {
         if (ifNoneMatch && res.status === 304) {
-          throw new HttpError(res);
+          throw new errors.HttpError(res);
         }
         return res.parsedBody;
       }
@@ -3049,14 +2542,14 @@ export class Collection<
     try {
       return await result;
     } catch (err: any) {
-      if (isArangoError(err) && err.errorNum === DOCUMENT_NOT_FOUND) {
+      if (errors.isArangoError(err) && err.errorNum === DOCUMENT_NOT_FOUND) {
         return null;
       }
       throw err;
     }
   }
 
-  save(data: DocumentData<EntryInputType>, options?: CollectionInsertOptions) {
+  save(data: documents.DocumentData<EntryInputType>, options?: documents.InsertDocumentOptions) {
     return this._db.request(
       {
         method: "POST",
@@ -3069,8 +2562,8 @@ export class Collection<
   }
 
   saveAll(
-    data: Array<DocumentData<EntryInputType>>,
-    options?: CollectionInsertOptions
+    data: Array<documents.DocumentData<EntryInputType>>,
+    options?: documents.InsertDocumentOptions
   ) {
     return this._db.request(
       {
@@ -3084,9 +2577,9 @@ export class Collection<
   }
 
   replace(
-    selector: DocumentSelector,
-    newData: DocumentData<EntryInputType>,
-    options: CollectionReplaceOptions = {}
+    selector: documents.DocumentSelector,
+    newData: documents.DocumentData<EntryInputType>,
+    options: documents.ReplaceDocumentOptions = {}
   ) {
     const { ifMatch = undefined, ...opts } = options;
     const headers = {} as Record<string, string>;
@@ -3095,7 +2588,7 @@ export class Collection<
       {
         method: "PUT",
         path: `/_api/document/${encodeURI(
-          _documentHandle(selector, this._name)
+          documents._documentHandle(selector, this._name)
         )}`,
         headers,
         body: newData,
@@ -3107,9 +2600,9 @@ export class Collection<
 
   replaceAll(
     newData: Array<
-      DocumentData<EntryInputType> & ({ _key: string } | { _id: string })
+      documents.DocumentData<EntryInputType> & ({ _key: string } | { _id: string })
     >,
-    options?: CollectionReplaceOptions
+    options?: documents.ReplaceDocumentOptions
   ) {
     return this._db.request(
       {
@@ -3123,9 +2616,9 @@ export class Collection<
   }
 
   update(
-    selector: DocumentSelector,
-    newData: Patch<DocumentData<EntryInputType>>,
-    options: CollectionUpdateOptions = {}
+    selector: documents.DocumentSelector,
+    newData: documents.Patch<documents.DocumentData<EntryInputType>>,
+    options: documents.UpdateDocumentOptions = {}
   ) {
     const { ifMatch = undefined, ...opts } = options;
     const headers = {} as Record<string, string>;
@@ -3134,7 +2627,7 @@ export class Collection<
       {
         method: "PATCH",
         path: `/_api/document/${encodeURI(
-          _documentHandle(selector, this._name)
+          documents._documentHandle(selector, this._name)
         )}`,
         headers,
         body: newData,
@@ -3146,9 +2639,9 @@ export class Collection<
 
   updateAll(
     newData: Array<
-      Patch<DocumentData<EntryInputType>> & ({ _key: string } | { _id: string })
+      documents.Patch<documents.DocumentData<EntryInputType>> & ({ _key: string } | { _id: string })
     >,
-    options?: CollectionUpdateOptions
+    options?: documents.UpdateDocumentOptions
   ) {
     return this._db.request(
       {
@@ -3161,7 +2654,7 @@ export class Collection<
     );
   }
 
-  remove(selector: DocumentSelector, options: CollectionRemoveOptions = {}) {
+  remove(selector: documents.DocumentSelector, options: documents.RemoveDocumentOptions = {}) {
     const { ifMatch = undefined, ...opts } = options;
     const headers = {} as Record<string, string>;
     if (ifMatch) headers["if-match"] = ifMatch;
@@ -3169,7 +2662,7 @@ export class Collection<
       {
         method: "DELETE",
         path: `/_api/document/${encodeURI(
-          _documentHandle(selector, this._name)
+          documents._documentHandle(selector, this._name)
         )}`,
         headers,
         search: opts,
@@ -3179,8 +2672,8 @@ export class Collection<
   }
 
   removeAll(
-    selectors: (string | ObjectWithKey)[],
-    options?: CollectionRemoveOptions
+    selectors: (string | documents.ObjectWithDocumentKey)[],
+    options?: documents.RemoveDocumentOptions
   ) {
     return this._db.request(
       {
@@ -3195,10 +2688,10 @@ export class Collection<
 
   import(
     data: Buffer | Blob | string | any[],
-    options: CollectionImportOptions & {
+    options: documents.ImportDocumentsOptions & {
       type?: "documents" | "list" | "auto";
     } = {}
-  ): Promise<CollectionImportResult> {
+  ): Promise<documents.ImportDocumentsResult> {
     const search = { ...options, collection: this._name };
     if (Array.isArray(data)) {
       search.type = Array.isArray(data[0]) ? undefined : "documents";
@@ -3215,10 +2708,10 @@ export class Collection<
   }
   //#endregion
 
-  //#region edges
+  //#region Edge operations
   protected _edges(
-    selector: DocumentSelector,
-    options: CollectionEdgesOptions = {},
+    selector: documents.DocumentSelector,
+    options: documents.DocumentEdgesOptions = {},
     direction?: "in" | "out"
   ) {
     const { allowDirtyRead = undefined } = options;
@@ -3227,26 +2720,38 @@ export class Collection<
       allowDirtyRead,
       search: {
         direction,
-        vertex: _documentHandle(selector, this._name, false),
+        vertex: documents._documentHandle(selector, this._name, false),
       },
     });
   }
 
-  edges(vertex: DocumentSelector, options?: CollectionEdgesOptions) {
+  edges(vertex: documents.DocumentSelector, options?: documents.DocumentEdgesOptions) {
     return this._edges(vertex, options);
   }
 
-  inEdges(vertex: DocumentSelector, options?: CollectionEdgesOptions) {
+  inEdges(vertex: documents.DocumentSelector, options?: documents.DocumentEdgesOptions) {
     return this._edges(vertex, options, "in");
   }
 
-  outEdges(vertex: DocumentSelector, options?: CollectionEdgesOptions) {
+  outEdges(vertex: documents.DocumentSelector, options?: documents.DocumentEdgesOptions) {
     return this._edges(vertex, options, "out");
   }
   //#endregion
 
-  //#region indexes
-  indexes(options?: IndexListOptions) {
+  //#region Index operations
+  async loadIndexes(): Promise<boolean> {
+    return this._db.request(
+      {
+        method: "PUT",
+        path: `/_api/collection/${encodeURIComponent(
+          this._name
+        )}/loadIndexesIntoMemory`,
+      },
+      (res) => res.parsedBody.result
+    );
+  }
+
+  indexes(options?: indexes.ListIndexesOptions) {
     return this._db.request(
       {
         path: "/_api/index",
@@ -3256,20 +2761,13 @@ export class Collection<
     );
   }
 
-  index(selector: IndexSelector) {
+  index(selector: indexes.IndexSelector) {
     return this._db.request({
-      path: `/_api/index/${encodeURI(_indexHandle(selector, this._name))}`,
+      path: `/_api/index/${encodeURI(indexes._indexHandle(selector, this._name))}`,
     });
   }
 
-  ensureIndex(
-    options:
-      | EnsurePersistentIndexOptions
-      | EnsureGeoIndexOptions
-      | EnsureTtlIndexOptions
-      | EnsureMdiIndexOptions
-      | EnsureInvertedIndexOptions
-  ) {
+  ensureIndex(options: indexes.EnsureIndexOptions) {
     return this._db.request({
       method: "POST",
       path: "/_api/index",
@@ -3278,21 +2776,12 @@ export class Collection<
     });
   }
 
-  dropIndex(selector: IndexSelector) {
+  dropIndex(selector: indexes.IndexSelector) {
     return this._db.request({
       method: "DELETE",
-      path: `/_api/index/${encodeURI(_indexHandle(selector, this._name))}`,
+      path: `/_api/index/${encodeURI(indexes._indexHandle(selector, this._name))}`,
     });
-  }
-
-  compact() {
-    return this._db.request(
-      {
-        method: "PUT",
-        path: `/_api/collection/${this._name}/compact`,
-      },
-      (res) => res.parsedBody
-    );
   }
   //#endregion
 }
+//#endregion

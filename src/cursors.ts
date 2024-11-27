@@ -1,19 +1,21 @@
 /**
  * ```ts
- * import type { ArrayCursor, BatchedArrayCursor } from "arangojs/cursor.js";
+ * import type { Cursor, BatchCursor } from "arangojs/cursors";
  * ```
  *
- * The "cursor" module provides cursor-related interfaces for TypeScript.
+ * The "cursors" module provides cursor-related types and interfaces for
+ * TypeScript.
  *
  * @packageDocumentation
  */
 import { LinkedList } from "./lib/linkedList.js";
-import { Database } from "./database.js";
+import * as databases from "./databases.js";
 
+//#region Cursor properties
 /**
  * Additional information about the cursor.
  */
-export interface CursorExtras {
+export type CursorExtras = {
   /**
    * Warnings encountered while executing the query.
    */
@@ -33,12 +35,12 @@ export interface CursorExtras {
    * Additional statistics about the query execution.
    */
   stats?: CursorStats;
-}
+};
 
 /**
  * Additional statics about the query execution of the cursor.
  */
-export interface CursorStats {
+export type CursorStats = {
   /**
    * Total number of index entries read from in-memory caches for indexes of
    * type edge or persistent.
@@ -115,27 +117,31 @@ export interface CursorStats {
      */
     runtime: number;
   }[];
-}
-
-interface BatchView<T = any> {
-  isEmpty: boolean;
-  more(): Promise<void>;
-  shift(): T | undefined;
-}
+};
 
 /**
- * The `BatchedArrayCursor` provides a batch-wise API to an {@link ArrayCursor}.
+ * A low-level interface for consuming the items of a {@link BatchCursor}.
+ */
+export interface BatchCursorItemsView<ItemType = any> {
+  readonly isEmpty: boolean;
+  more(): Promise<void>;
+  shift(): ItemType | undefined;
+}
+//#endregion
+
+/**
+ * The `BatchCursor` provides a batch-wise API to an {@link Cursor}.
  *
  * When using TypeScript, cursors can be cast to a specific item type in order
  * to increase type safety.
  *
- * @param T - Type to use for each item. Defaults to `any`.
+ * @param ItemType - Type to use for each item. Defaults to `any`.
  *
  * @example
  * ```ts
  * const db = new Database();
  * const query = aql`FOR x IN 1..5 RETURN x`;
- * const cursor = await db.query(query) as ArrayCursor<number>;
+ * const cursor = await db.query(query) as Cursor<number>;
  * const batches = cursor.batches;
  * ```
  *
@@ -152,9 +158,9 @@ interface BatchView<T = any> {
  * }
  * ```
  */
-export class BatchedArrayCursor<T = any> {
-  protected _db: Database;
-  protected _batches: LinkedList<LinkedList<any>>;
+export class BatchCursor<ItemType = any> {
+  protected _db: databases.Database;
+  protected _batches: LinkedList<LinkedList<ItemType>>;
   protected _count?: number;
   protected _extra: CursorExtras;
   protected _hasMore: boolean;
@@ -162,16 +168,16 @@ export class BatchedArrayCursor<T = any> {
   protected _id: string | undefined;
   protected _hostUrl?: string;
   protected _allowDirtyRead?: boolean;
-  protected _itemsCursor: ArrayCursor<T>;
+  protected _itemsCursor: Cursor<ItemType>;
 
   /**
    * @internal
    */
   constructor(
-    db: Database,
+    db: databases.Database,
     body: {
-      extra: any;
-      result: T[];
+      extra: CursorExtras;
+      result: ItemType[];
       hasMore: boolean;
       nextBatchId?: string;
       id: string;
@@ -192,23 +198,7 @@ export class BatchedArrayCursor<T = any> {
     this._count = body.count;
     this._extra = body.extra;
     this._allowDirtyRead = allowDirtyRead;
-    this._itemsCursor = new ArrayCursor(this, {
-      get isEmpty() {
-        return !batches.length;
-      },
-      more: () => this._more(),
-      shift: () => {
-        let batch = batches.first?.value;
-        while (batch && !batch.length) {
-          batches.shift();
-          batch = batches.first?.value;
-        }
-        if (!batch) return undefined;
-        const value = batch.shift();
-        if (!batch.length) batches.shift();
-        return value;
-      },
-    });
+    this._itemsCursor = new Cursor(this, this.itemsView);
   }
 
   protected async _more(): Promise<void> {
@@ -241,12 +231,36 @@ export class BatchedArrayCursor<T = any> {
   }
 
   /**
-   * An {@link ArrayCursor} providing item-wise access to the cursor result set.
+   * An {@link Cursor} providing item-wise access to the cursor result set.
    *
-   * See also {@link ArrayCursor#batches}.
+   * See also {@link Cursor#batches}.
    */
   get items() {
     return this._itemsCursor;
+  }
+
+  /**
+   * A low-level interface for consuming the items of this {@link BatchCursor}.
+   */
+  get itemsView(): BatchCursorItemsView<ItemType> {
+    const batches = this._batches;
+    return {
+      get isEmpty() {
+        return !batches.length;
+      },
+      more: () => this._more(),
+      shift: () => {
+        let batch = batches.first?.value;
+        while (batch && !batch.length) {
+          batches.shift();
+          batch = batches.first?.value;
+        }
+        if (!batch) return undefined;
+        const value = batch.shift();
+        if (!batch.length) batches.shift();
+        return value;
+      },
+    };
   }
 
   /**
@@ -305,9 +319,9 @@ export class BatchedArrayCursor<T = any> {
    * }
    * ```
    */
-  async *[Symbol.asyncIterator](): AsyncGenerator<T[], undefined, undefined> {
+  async *[Symbol.asyncIterator](): AsyncGenerator<ItemType[], undefined, undefined> {
     while (this.hasNext) {
-      yield this.next() as Promise<T[]>;
+      yield this.next() as Promise<ItemType[]>;
     }
     return undefined;
   }
@@ -354,7 +368,7 @@ export class BatchedArrayCursor<T = any> {
    * console.log(cursor.hasNext); // false
    * ```
    */
-  async all(): Promise<T[][]> {
+  async all(): Promise<ItemType[][]> {
     return this.map((batch) => batch);
   }
 
@@ -381,7 +395,7 @@ export class BatchedArrayCursor<T = any> {
    * console.log(cursor.hasNext); // false
    * ```
    */
-  async next(): Promise<T[] | undefined> {
+  async next(): Promise<ItemType[] | undefined> {
     while (!this._batches.length && this.hasNext) {
       await this._more();
     }
@@ -443,7 +457,7 @@ export class BatchedArrayCursor<T = any> {
    * ```
    */
   async forEach(
-    callback: (currentBatch: T[], index: number, self: this) => false | void
+    callback: (currentBatch: ItemType[], index: number, self: this) => false | void
   ): Promise<boolean> {
     let index = 0;
     while (this.hasNext) {
@@ -463,8 +477,8 @@ export class BatchedArrayCursor<T = any> {
    *
    * **Note**: This creates an array of all return values, which may impact
    * memory use when working with very large query result sets. Consider using
-   * {@link BatchedArrayCursor#forEach}, {@link BatchedArrayCursor#reduce} or
-   * {@link BatchedArrayCursor#flatMap} instead.
+   * {@link BatchCursor#forEach}, {@link BatchCursor#reduce} or
+   * {@link BatchCursor#flatMap} instead.
    *
    * See also:
    * [`Array.prototype.map`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map).
@@ -486,7 +500,7 @@ export class BatchedArrayCursor<T = any> {
    * ```
    */
   async map<R>(
-    callback: (currentBatch: T[], index: number, self: this) => R
+    callback: (currentBatch: ItemType[], index: number, self: this) => R
   ): Promise<R[]> {
     let index = 0;
     const result: any[] = [];
@@ -543,7 +557,7 @@ export class BatchedArrayCursor<T = any> {
    * ```
    */
   async flatMap<R>(
-    callback: (currentBatch: T[], index: number, self: this) => R | R[]
+    callback: (currentBatch: ItemType[], index: number, self: this) => R | R[]
   ): Promise<R[]> {
     let index = 0;
     const result: any[] = [];
@@ -566,7 +580,7 @@ export class BatchedArrayCursor<T = any> {
    * for the last batch.
    *
    * **Note**: Most complex uses of the `reduce` method can be replaced with
-   * simpler code using {@link BatchedArrayCursor#forEach} or the `for await`
+   * simpler code using {@link BatchCursor#forEach} or the `for await`
    * syntax.
    *
    * **Note**: If the result set spans multiple batches, any remaining batches
@@ -632,7 +646,7 @@ export class BatchedArrayCursor<T = any> {
   async reduce<R>(
     reducer: (
       accumulator: R,
-      currentBatch: T[],
+      currentBatch: ItemType[],
       index: number,
       self: this
     ) => R,
@@ -672,8 +686,8 @@ export class BatchedArrayCursor<T = any> {
    */
   async reduce<R>(
     reducer: (
-      accumulator: T[] | R,
-      currentBatch: T[],
+      accumulator: ItemType[] | R,
+      currentBatch: ItemType[],
       index: number,
       self: this
     ) => R
@@ -681,7 +695,7 @@ export class BatchedArrayCursor<T = any> {
   async reduce<R>(
     reducer: (
       accumulator: R,
-      currentBatch: T[],
+      currentBatch: ItemType[],
       index: number,
       self: this
     ) => R,
@@ -743,21 +757,21 @@ export class BatchedArrayCursor<T = any> {
 }
 
 /**
- * The `ArrayCursor` type represents a cursor returned from a
- * {@link database.Database#query}.
+ * The `Cursor` type represents a cursor returned from a
+ * {@link databases.Database#query}.
  *
  * When using TypeScript, cursors can be cast to a specific item type in order
  * to increase type safety.
  *
- * See also {@link BatchedArrayCursor}.
+ * See also {@link BatchCursor}.
  *
- * @param T - Type to use for each item. Defaults to `any`.
+ * @param ItemType - Type to use for each item. Defaults to `any`.
  *
  * @example
  * ```ts
  * const db = new Database();
  * const query = aql`FOR x IN 1..5 RETURN x`;
- * const result = await db.query(query) as ArrayCursor<number>;
+ * const result = await db.query(query) as Cursor<number>;
  * ```
  *
  * @example
@@ -771,14 +785,14 @@ export class BatchedArrayCursor<T = any> {
  * }
  * ```
  */
-export class ArrayCursor<T = any> {
-  protected _batches: BatchedArrayCursor<T>;
-  protected _view: BatchView<T>;
+export class Cursor<ItemType = any> {
+  protected _batches: BatchCursor<ItemType>;
+  protected _view: BatchCursorItemsView<ItemType>;
 
   /**
    * @internal
    */
-  constructor(batchedCursor: BatchedArrayCursor, view: BatchView<T>) {
+  constructor(batchedCursor: BatchCursor, view: BatchCursorItemsView<ItemType>) {
     this._batches = batchedCursor;
     this._view = view;
   }
@@ -798,10 +812,10 @@ export class ArrayCursor<T = any> {
   }
 
   /**
-   * A {@link BatchedArrayCursor} providing batch-wise access to the cursor
+   * A {@link BatchCursor} providing batch-wise access to the cursor
    * result set.
    *
-   * See also {@link BatchedArrayCursor#items}.
+   * See also {@link BatchCursor#items}.
    */
   get batches() {
     return this._batches;
@@ -851,9 +865,9 @@ export class ArrayCursor<T = any> {
    * }
    * ```
    */
-  async *[Symbol.asyncIterator](): AsyncGenerator<T, undefined, undefined> {
+  async *[Symbol.asyncIterator](): AsyncGenerator<ItemType, undefined, undefined> {
     while (this.hasNext) {
-      yield this.next() as Promise<T>;
+      yield this.next() as Promise<ItemType>;
     }
     return undefined;
   }
@@ -869,7 +883,7 @@ export class ArrayCursor<T = any> {
    * console.log(cursor.hasNext); // false
    * ```
    */
-  async all(): Promise<T[]> {
+  async all(): Promise<ItemType[]> {
     return this.batches.flatMap((v) => v);
   }
 
@@ -891,7 +905,7 @@ export class ArrayCursor<T = any> {
    * const empty = await cursor.next(); // undefined
    * ```
    */
-  async next(): Promise<T | undefined> {
+  async next(): Promise<ItemType | undefined> {
     while (this._view.isEmpty && this.batches.hasMore) {
       await this._view.more();
     }
@@ -939,7 +953,7 @@ export class ArrayCursor<T = any> {
    * ```
    */
   async forEach(
-    callback: (currentValue: T, index: number, self: this) => false | void
+    callback: (currentValue: ItemType, index: number, self: this) => false | void
   ): Promise<boolean> {
     let index = 0;
     while (this.hasNext) {
@@ -958,8 +972,8 @@ export class ArrayCursor<T = any> {
    *
    * **Note**: This creates an array of all return values, which may impact
    * memory use when working with very large query result sets. Consider using
-   * {@link ArrayCursor#forEach}, {@link ArrayCursor#reduce} or
-   * {@link ArrayCursor#flatMap} instead.
+   * {@link Cursor#forEach}, {@link Cursor#reduce} or
+   * {@link Cursor#flatMap} instead.
    *
    * See also:
    * [`Array.prototype.map`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map).
@@ -978,7 +992,7 @@ export class ArrayCursor<T = any> {
    * ```
    */
   async map<R>(
-    callback: (currentValue: T, index: number, self: this) => R
+    callback: (currentValue: ItemType, index: number, self: this) => R
   ): Promise<R[]> {
     let index = 0;
     const result: any[] = [];
@@ -1029,7 +1043,7 @@ export class ArrayCursor<T = any> {
    * ```
    */
   async flatMap<R>(
-    callback: (currentValue: T, index: number, self: this) => R | R[]
+    callback: (currentValue: ItemType, index: number, self: this) => R | R[]
   ): Promise<R[]> {
     let index = 0;
     const result: any[] = [];
@@ -1052,7 +1066,7 @@ export class ArrayCursor<T = any> {
    * for the last item.
    *
    * **Note**: Most complex uses of the `reduce` method can be replaced with
-   * simpler code using {@link ArrayCursor#forEach} or the `for await` syntax.
+   * simpler code using {@link Cursor#forEach} or the `for await` syntax.
    *
    * **Note**: If the result set spans multiple batches, any remaining batches
    * will only be fetched on demand. Depending on the cursor's TTL and the
@@ -1109,7 +1123,7 @@ export class ArrayCursor<T = any> {
    * ```
    */
   async reduce<R>(
-    reducer: (accumulator: R, currentValue: T, index: number, self: this) => R,
+    reducer: (accumulator: R, currentValue: ItemType, index: number, self: this) => R,
     initialValue: R
   ): Promise<R>;
   /**
@@ -1143,14 +1157,14 @@ export class ArrayCursor<T = any> {
    */
   async reduce<R>(
     reducer: (
-      accumulator: T | R,
-      currentValue: T,
+      accumulator: ItemType | R,
+      currentValue: ItemType,
       index: number,
       self: this
     ) => R
   ): Promise<R | undefined>;
   async reduce<R>(
-    reducer: (accumulator: R, currentValue: T, index: number, self: this) => R,
+    reducer: (accumulator: R, currentValue: ItemType, index: number, self: this) => R,
     initialValue?: R
   ): Promise<R | undefined> {
     let index = 0;

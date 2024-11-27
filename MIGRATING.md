@@ -18,6 +18,38 @@ try {
 }
 ```
 
+### Module name changes
+
+Module names referring to resource types such as analyzers, collections,
+databases, or views have been changed to use the plural form:
+
+```diff
+-import { Database } from "arangojs/database";
++import { Database } from "arangojs/databases";
+```
+
+Note that the `aql` module and `foxx-manifest` modules have not been renamed
+as these are utility modules.
+
+### Type imports
+
+Types that were previously exported by the `database` module but are not
+related to managing databases have been moved to separate modules:
+
+```diff
+-import type {
+-  ParseResult,
+-  TransactionOptions,
+-  VersionInfo
+-} from "arangojs/database";
++import type { VersionInfo } from "arangojs/administration";
++import type { TransactionOptions } from "arangojs/transactions";
++import type { ParseResult } from "arangojs/queries";
+```
+
+Additionally, some types were renamed. For a full list of changes, see the
+[changelog](./CHANGELOG.md).
+
 ## v8 to v9
 
 Version 9 reverts the automatic NFC normalization introduced in v7.7.0. This

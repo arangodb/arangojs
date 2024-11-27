@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import { aql, join, literal } from "../aql.js";
-import { Database } from "../database.js";
+import { Database } from "../databases.js";
 
 describe("AQL helpers", function () {
   describe("aql", () => {

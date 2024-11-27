@@ -1,15 +1,15 @@
 /**
  * ```ts
- * import type { ArangoError, HttpError } from "arangojs/error.js";
+ * import type { ArangoError, HttpError } from "arangojs/errors";
  * ```
  *
- * The "error" module provides types and interfaces for TypeScript related
+ * The "errors" module provides types and interfaces for TypeScript related
  * to arangojs error handling.
  *
  * @packageDocumentation
  */
 
-import { ProcessedResponse } from "./connection.js";
+import * as connection from "./connection.js";
 import { ERROR_ARANGO_MAINTENANCE_MODE } from "./lib/codes.js";
 
 const messages: { [key: number]: string } = {
@@ -271,12 +271,12 @@ export class HttpError extends NetworkError {
   /**
    * Server response object.
    */
-  response: ProcessedResponse;
+  response: connection.ProcessedResponse;
 
   /**
    * @internal
    */
-  constructor(response: ProcessedResponse, options: { cause?: Error, isSafeToRetry?: boolean | null } = {}) {
+  constructor(response: connection.ProcessedResponse, options: { cause?: Error, isSafeToRetry?: boolean | null } = {}) {
     const message = messages[response.status] ?? messages[500];
     super(message, { ...options, request: response.request });
     this.response = response;
@@ -329,7 +329,7 @@ export class ArangoError extends Error {
    *
    * Creates a new `ArangoError` from a response object.
    */
-  static from(response: ProcessedResponse<ArangoErrorResponse>): ArangoError {
+  static from(response: connection.ProcessedResponse<ArangoErrorResponse>): ArangoError {
     return new ArangoError(response.parsedBody!, {
       cause: new HttpError(response)
     });
@@ -355,7 +355,7 @@ export class ArangoError extends Error {
   /**
    * Server response object.
    */
-  get response(): ProcessedResponse<ArangoErrorResponse> | undefined {
+  get response(): connection.ProcessedResponse<ArangoErrorResponse> | undefined {
     const cause = this.cause;
     if (cause instanceof HttpError) {
       return cause.response;

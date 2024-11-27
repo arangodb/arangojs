@@ -1,6 +1,6 @@
 import { expect } from "chai";
-import { Database } from "../database.js";
-import { ArangoSearchViewProperties, View } from "../view.js";
+import { Database } from "../databases.js";
+import { ArangoSearchViewProperties, View } from "../views.js";
 import { config } from "./_config.js";
 
 describe("View metadata", function () {

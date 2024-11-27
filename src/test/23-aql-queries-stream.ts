@@ -1,13 +1,14 @@
 import { expect } from "chai";
 import { aql } from "../aql.js";
-import { ArrayCursor } from "../cursor.js";
-import { Database, QueryOptions } from "../database.js";
+import { Cursor } from "../cursors.js";
+import { Database } from "../databases.js";
 import { config } from "./_config.js";
+import { QueryOptions } from "../queries.js";
 
 describe("AQL Stream queries", function () {
   const name = `testdb_${Date.now()}`;
   let system: Database, db: Database;
-  let allCursors: ArrayCursor[];
+  let allCursors: Cursor[];
   before(async () => {
     allCursors = [];
     system = new Database(config);
@@ -29,7 +30,7 @@ describe("AQL Stream queries", function () {
     it("returns a cursor for the query result", async () => {
       const cursor = await db.query("RETURN 23", {}, { stream: true });
       allCursors.push(cursor);
-      expect(cursor).to.be.an.instanceof(ArrayCursor);
+      expect(cursor).to.be.an.instanceof(Cursor);
     });
     it("supports bindVars", async () => {
       const cursor = await db.query("RETURN @x", { x: 5 }, { stream: true });
@@ -91,7 +92,7 @@ describe("AQL Stream queries", function () {
       allCursors.push(...cursors);
       await Promise.all(
         cursors.map((c) =>
-          (c as ArrayCursor).forEach(() => {
+          (c as Cursor).forEach(() => {
             count++;
           })
         )

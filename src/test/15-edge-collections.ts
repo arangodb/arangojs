@@ -1,6 +1,6 @@
 import { expect } from "chai";
-import { EdgeCollection } from "../collection.js";
-import { Database } from "../database.js";
+import { EdgeCollection } from "../collections.js";
+import { Database } from "../databases.js";
 import { DocumentMetadata } from "../documents.js";
 import { config } from "./_config.js";
 

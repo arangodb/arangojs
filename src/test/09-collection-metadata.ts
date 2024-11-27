@@ -1,6 +1,6 @@
 import { expect } from "chai";
-import { DocumentCollection } from "../collection.js";
-import { Database } from "../database.js";
+import { DocumentCollection } from "../collections.js";
+import { Database } from "../databases.js";
 import { COLLECTION_NOT_FOUND } from "../lib/codes.js";
 import { config } from "./_config.js";
 

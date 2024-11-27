@@ -1,9 +1,9 @@
 /* eslint-disable no-console */
 import { expect } from "chai";
-import { DocumentCollection } from "../collection.js";
+import { DocumentCollection } from "../collections.js";
 import { Connection } from "../connection.js";
-import { Database } from "../database.js";
-import { Transaction } from "../transaction.js";
+import { Database } from "../databases.js";
+import { Transaction } from "../transactions.js";
 import { config } from "./_config.js";
 
 const delay = (ms: number) =>
@@ -37,7 +37,7 @@ describe("Transactions", function () {
       );
       try {
         await system.dropDatabase(name);
-      } catch {}
+      } catch { }
     });
     beforeEach(async () => {
       collection = await db.createCollection(`collection-${Date.now()}`);

@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { Database } from "../database.js";
+import { Database } from "../databases.js";
 import { config } from "./_config.js";
 
 describe("Managing functions", function () {
@@ -20,15 +20,15 @@ describe("Managing functions", function () {
   });
   describe("database.listFunctions", () => {
     it("should be empty per default", async () => {
-      const result = await db.listFunctions();
+      const result = await db.listUserFunctions();
       expect(result).to.be.instanceof(Array);
       expect(result).to.be.empty;
     });
     it("should include before created function", async () => {
       const name = "myfunctions::temperature::celsiustofahrenheit";
       const code = "function (celsius) { return celsius * 1.8 + 32; }";
-      await db.createFunction(name, code);
-      const result = await db.listFunctions();
+      await db.createUserFunction(name, code);
+      const result = await db.listUserFunctions();
       expect(result).to.be.instanceof(Array);
       expect(result.length).to.equal(1);
       expect(result[0]).to.eql({
@@ -39,7 +39,7 @@ describe("Managing functions", function () {
     });
     describe("database.createFunction", () => {
       it("should create a function", async () => {
-        const info = await db.createFunction(
+        const info = await db.createUserFunction(
           "myfunctions::temperature::celsiustofahrenheit2",
           "function (celsius) { return celsius * 1.8 + 32; }"
         );
@@ -50,11 +50,11 @@ describe("Managing functions", function () {
     describe("database.dropFunction", () => {
       it("should drop a existing function", async () => {
         const name = "myfunctions::temperature::celsiustofahrenheit";
-        await db.createFunction(
+        await db.createUserFunction(
           name,
           "function (celsius) { return celsius * 1.8 + 32; }"
         );
-        const info = await db.dropFunction(name);
+        const info = await db.dropUserFunction(name);
         expect(info).to.have.property("deletedCount", 1);
       });
     });

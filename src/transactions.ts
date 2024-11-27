@@ -1,28 +1,135 @@
 /**
  * ```ts
- * import type { Transaction } from "arangojs/transaction.js";
+ * import type { Transaction } from "arangojs/transactions";
  * ```
  *
- * The "transaction" module provides transaction related types and interfaces
+ * The "transactions" module provides transaction related types and interfaces
  * for TypeScript.
  *
  * @packageDocumentation
  */
-import { Connection } from "./connection.js";
-import { Database } from "./database.js";
-import { isArangoError } from "./error.js";
+import * as collections from "./collections.js";
+import * as connection from "./connection.js";
+import * as databases from "./databases.js";
+import * as errors from "./errors.js";
 import { TRANSACTION_NOT_FOUND } from "./lib/codes.js";
 
+//#region Transaction operation options
 /**
- * Indicates whether the given value represents a {@link Transaction}.
- *
- * @param transaction - A value that might be a transaction.
+ * Collections involved in a transaction.
  */
-export function isArangoTransaction(
-  transaction: any
-): transaction is Transaction {
-  return Boolean(transaction && transaction.isArangoTransaction);
+export type TransactionCollectionOptions = {
+  /**
+   * An array of collections or a single collection that will be read from or
+   * written to during the transaction with no other writes being able to run
+   * in parallel.
+   */
+  exclusive?: (string | collections.ArangoCollection)[] | string | collections.ArangoCollection;
+  /**
+   * An array of collections or a single collection that will be read from or
+   * written to during the transaction.
+   */
+  write?: (string | collections.ArangoCollection)[] | string | collections.ArangoCollection;
+  /**
+   * An array of collections or a single collection that will be read from
+   * during the transaction.
+   */
+  read?: (string | collections.ArangoCollection)[] | string | collections.ArangoCollection;
+};
+
+/**
+ * @internal
+ */
+export function coerceTransactionCollections(
+  options:
+    | (TransactionCollectionOptions & { allowImplicit?: boolean })
+    | (string | collections.ArangoCollection)[]
+    | string
+    | collections.ArangoCollection
+): CoercedTransactionCollections {
+  if (typeof options === "string") {
+    return { write: [options] };
+  }
+  if (Array.isArray(options)) {
+    return { write: options.map(collections.collectionToString) };
+  }
+  if (collections.isArangoCollection(options)) {
+    return { write: collections.collectionToString(options) };
+  }
+  const opts: CoercedTransactionCollections = {};
+  if (options) {
+    if (options.allowImplicit !== undefined) {
+      opts.allowImplicit = options.allowImplicit;
+    }
+    if (options.read) {
+      opts.read = Array.isArray(options.read)
+        ? options.read.map(collections.collectionToString)
+        : collections.collectionToString(options.read);
+    }
+    if (options.write) {
+      opts.write = Array.isArray(options.write)
+        ? options.write.map(collections.collectionToString)
+        : collections.collectionToString(options.write);
+    }
+    if (options.exclusive) {
+      opts.exclusive = Array.isArray(options.exclusive)
+        ? options.exclusive.map(collections.collectionToString)
+        : collections.collectionToString(options.exclusive);
+    }
+  }
+  return opts;
 }
+
+/**
+ * @internal
+ */
+type CoercedTransactionCollections = {
+  allowImplicit?: boolean;
+  exclusive?: string | string[];
+  write?: string | string[];
+  read?: string | string[];
+};
+
+/**
+ * Options for how the transaction should be performed.
+ */
+export type TransactionOptions = {
+  /**
+   * Whether the transaction may read from collections not specified for this
+   * transaction. If set to `false`, accessing any collections not specified
+   * will result in the transaction being aborted to avoid potential deadlocks.
+   *
+   * Default: `true`.
+   */
+  allowImplicit?: boolean;
+  /**
+   * If set to `true`, the request will explicitly permit ArangoDB to return a
+   * potentially dirty or stale result and arangojs will load balance the
+   * request without distinguishing between leaders and followers.
+   */
+  allowDirtyRead?: boolean;
+  /**
+   * Determines whether to force the transaction to write all data to disk
+   * before returning.
+   */
+  waitForSync?: boolean;
+  /**
+   * Determines how long the database will wait while attempting to gain locks
+   * on collections used by the transaction before timing out.
+   */
+  lockTimeout?: number;
+  /**
+   * Determines the transaction size limit in bytes.
+   */
+  maxTransactionSize?: number;
+  /**
+   * If set to `true`, the fast lock round will be skipped, which makes each
+   * locking operation take longer but guarantees deterministic locking order
+   * and may avoid deadlocks when many concurrent transactions are queued and
+   * try to access the same collection with an exclusive lock.
+   */
+  skipFastLockRound?: boolean;
+};
 
 /**
  * Options for how the transaction should be committed.
@@ -47,13 +154,31 @@ export type TransactionAbortOptions = {
    */
   allowDirtyRead?: boolean;
 };
+//#endregion
+
+//#region Transaction operation results
+/**
+ * Details for a transaction.
+ *
+ * See also {@link TransactionInfo}.
+ */
+export type TransactionDetails = {
+  /**
+   * Unique identifier of the transaction.
+   */
+  id: string;
+  /**
+   * Status (or "state") of the transaction.
+   */
+  state: "running" | "committed" | "aborted";
+};
 
 /**
  * Status of a given transaction.
  *
- * See also {@link database.TransactionDetails}.
+ * See also {@link TransactionDetails}.
  */
-export type TransactionStatus = {
+export type TransactionInfo = {
   /**
    * Unique identifier of the transaction.
    */
@@ -63,18 +188,30 @@ export type TransactionStatus = {
    */
   status: "running" | "committed" | "aborted";
 };
+//#endregion
+//#region Transaction class
+/**
+ * Indicates whether the given value represents a {@link Transaction}.
+ *
+ * @param transaction - A value that might be a transaction.
+ */
+export function isArangoTransaction(
+  transaction: any
+): transaction is Transaction {
+  return Boolean(transaction && transaction.isArangoTransaction);
+}
 
 /**
- * Represents a streaming transaction in a {@link database.Database}.
+ * Represents a streaming transaction in a {@link databases.Database}.
  */
 export class Transaction {
-  protected _db: Database;
+  protected _db: databases.Database;
   protected _id: string;
 
   /**
    * @internal
    */
-  constructor(db: Database, id: string) {
+  constructor(db: databases.Database, id: string) {
     this._db = db;
     this._id = id;
   }
@@ -98,7 +235,7 @@ export class Transaction {
   /**
    * Unique identifier of this transaction.
    *
-   * See {@link database.Database#transaction}.
+   * See {@link databases.Database#transaction}.
    */
   get id() {
     return this._id;
@@ -120,7 +257,7 @@ export class Transaction {
       await this.get();
       return true;
     } catch (err: any) {
-      if (isArangoError(err) && err.errorNum === TRANSACTION_NOT_FOUND) {
+      if (errors.isArangoError(err) && err.errorNum === TRANSACTION_NOT_FOUND) {
         return false;
       }
       throw err;
@@ -140,7 +277,7 @@ export class Transaction {
    * // the transaction exists
    * ```
    */
-  get(): Promise<TransactionStatus> {
+  get(): Promise<TransactionInfo> {
     return this._db.request(
       {
         path: `/_api/transaction/${encodeURIComponent(this.id)}`,
@@ -164,7 +301,7 @@ export class Transaction {
    * // result indicates the updated transaction status
    * ```
    */
-  commit(options: TransactionCommitOptions = {}): Promise<TransactionStatus> {
+  commit(options: TransactionCommitOptions = {}): Promise<TransactionInfo> {
     const { allowDirtyRead = undefined } = options;
     return this._db.request(
       {
@@ -191,7 +328,7 @@ export class Transaction {
    * // result indicates the updated transaction status
    * ```
    */
-  abort(options: TransactionAbortOptions = {}): Promise<TransactionStatus> {
+  abort(options: TransactionAbortOptions = {}): Promise<TransactionInfo> {
     const { allowDirtyRead = undefined } = options;
     return this._db.request(
       {
@@ -391,7 +528,7 @@ export class Transaction {
    * ```
    */
   step<T>(callback: () => Promise<T>): Promise<T> {
-    const conn = (this._db as any)._connection as Connection;
+    const conn = (this._db as any)._connection as connection.Connection;
     conn.setTransactionId(this.id);
     try {
       const promise = callback();
@@ -406,3 +543,4 @@ export class Transaction {
     }
   }
 }
+//#endregion

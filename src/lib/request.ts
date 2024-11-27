@@ -5,7 +5,7 @@
  * @internal
  */
 
-import { FetchFailedError, NetworkError, RequestAbortedError, ResponseTimeoutError } from "../error.js";
+import { FetchFailedError, NetworkError, RequestAbortedError, ResponseTimeoutError } from "../errors.js";
 
 function timer(timeout: number, cb: () => void) {
   const t = setTimeout(cb, timeout);

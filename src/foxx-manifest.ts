@@ -1,6 +1,6 @@
 /**
  * ```ts
- * import type { FoxxManifest } from "arangojs/foxx-manifest.js";
+ * import type { FoxxManifest } from "arangojs/foxx-manifest";
  * ```
  *
  * The "foxx-manifest" module provides the Foxx manifest type for TypeScript.
@@ -103,14 +103,14 @@ export type Configuration = {
    * The type of value expected for this option.
    */
   type:
-    | "integer"
-    | "boolean"
-    | "number"
-    | "string"
-    | "json"
-    | "password"
-    | "int"
-    | "bool";
+  | "integer"
+  | "boolean"
+  | "number"
+  | "string"
+  | "json"
+  | "password"
+  | "int"
+  | "bool";
   /**
    * The default value for this option in plain JSON. Can be omitted to provide no default value.
    */

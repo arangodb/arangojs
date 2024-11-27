@@ -1,6 +1,6 @@
 /**
  * ```ts
- * import type { Config } from "arangojs/connection.js";
+ * import type { Config } from "arangojs/connection";
  * ```
  *
  * The "connection" module provides connection and configuration related types
@@ -8,20 +8,11 @@
  *
  * @packageDocumentation
  */
+import * as administration from "./administration.js";
+import * as databases from "./databases.js";
+import * as errors from "./errors.js";
 import { LinkedList } from "./lib/linkedList.js";
-import { Database } from "./database.js";
-import {
-  ArangoError,
-  HttpError,
-  NetworkError,
-  PropagationTimeoutError,
-  isArangoError,
-  isArangoErrorResponse,
-  isNetworkError,
-} from "./error.js";
-import {
-  ERROR_ARANGO_CONFLICT,
-} from "./lib/codes.js";
+import { ERROR_ARANGO_CONFLICT } from "./lib/codes.js";
 import { normalizeUrl } from "./lib/normalizeUrl.js";
 import {
   createRequest,
@@ -233,7 +224,7 @@ export type Config = {
   /**
    * Base URL of the ArangoDB server or list of server URLs.
    *
-   * When working with a cluster, the method {@link database.Database#acquireHostList}
+   * When working with a cluster, the method {@link databases.Database#acquireHostList}
    * can be used to automatically pick up additional coordinators/followers at
    * any point.
    *
@@ -263,8 +254,8 @@ export type Config = {
   /**
    * Credentials to use for authentication.
    *
-   * See also {@link database.Database#useBasicAuth} and
-   * {@link database.Database#useBearerAuth}.
+   * See also {@link databases.Database#useBasicAuth} and
+   * {@link databases.Database#useBearerAuth}.
    *
    * Default: `{ username: "root", password: "" }`
    */
@@ -374,7 +365,7 @@ export type Config = {
    * @param err - Error encountered when handling this request or `null`.
    * @param res - Response object for this request, if no error occurred.
    */
-  afterResponse?: (err: NetworkError | null, res?: globalThis.Response & { request: globalThis.Request }) => void | Promise<void>;
+  afterResponse?: (err: errors.NetworkError | null, res?: globalThis.Response & { request: globalThis.Request }) => void | Promise<void>;
   /**
    * Callback that will be invoked when a request 
    *
@@ -392,7 +383,7 @@ export type Config = {
    * An object with additional headers to send with every request.
    *
    * If an `"authorization"` header is provided, it will be overridden when
-   * using {@link database.Database#useBasicAuth}, {@link database.Database#useBearerAuth} or
+   * using {@link databases.Database#useBasicAuth}, {@link databases.Database#useBearerAuth} or
    * the `auth` configuration option.
    */
   headers?: Headers | Record<string, string>;
@@ -407,7 +398,7 @@ export type Config = {
   precaptureStackTraces?: boolean;
   /**
    * Limits the number of values of server-reported response queue times that
-   * will be stored and accessible using {@link database.Database#queueTime}. If set to
+   * will be stored and accessible using {@link databases.Database#queueTime}. If set to
    * a finite value, older values will be discarded to make room for new values
    * when that limit is reached.
    *
@@ -442,7 +433,7 @@ export class Connection {
   protected _requestConfig: RequestConfig;
   protected _retryOnConflict: number;
   protected _queue = new LinkedList<Task>();
-  protected _databases = new Map<string, Database>();
+  protected _databases = new Map<string, databases.Database>();
   protected _hosts: RequestFunction[] = [];
   protected _hostUrls: string[] = [];
   protected _activeHostUrl: string;
@@ -530,7 +521,7 @@ export class Connection {
     return true;
   }
 
-  get queueTime() {
+  get queueTime(): administration.QueueTimeMetrics {
     return {
       getLatest: () => this._queueTimes.last?.value[1],
       getValues: () => Array.from(this._queueTimes.values()),
@@ -595,12 +586,12 @@ export class Connection {
           } catch {
             // noop
           }
-          if (isArangoErrorResponse(errorBody)) {
+          if (errors.isArangoErrorResponse(errorBody)) {
             res.parsedBody = errorBody;
-            throw ArangoError.from(res);
+            throw errors.ArangoError.from(res);
           }
         }
-        throw new HttpError(res);
+        throw new errors.HttpError(res);
       }
       if (res.body) {
         if (task.options.expectBinary) {
@@ -626,7 +617,7 @@ export class Connection {
         this._activeHostUrl = this._hostUrls[i % this._hostUrls.length];
       }
       if (
-        isArangoError(err) &&
+        errors.isArangoError(err) &&
         err.errorNum === ERROR_ARANGO_CONFLICT &&
         task.retryOnConflict > 0
       ) {
@@ -635,7 +626,7 @@ export class Connection {
         return;
       }
       if (
-        (isNetworkError(err) || isArangoError(err)) &&
+        (errors.isNetworkError(err) || errors.isArangoError(err)) &&
         err.isSafeToRetry &&
         task.hostUrl === undefined &&
         this._maxRetries !== false &&
@@ -689,26 +680,26 @@ export class Connection {
   /**
    * @internal
    *
-   * Fetches a {@link database.Database} instance for the given database name from the
+   * Fetches a {@link databases.Database} instance for the given database name from the
    * internal cache, if available.
    *
    * @param databaseName - Name of the database.
    */
-  database(databaseName: string): Database | undefined;
+  database(databaseName: string): databases.Database | undefined;
   /**
    * @internal
    *
-   * Adds a {@link database.Database} instance for the given database name to the
+   * Adds a {@link databases.Database} instance for the given database name to the
    * internal cache.
    *
    * @param databaseName - Name of the database.
    * @param database - Database instance to add to the cache.
    */
-  database(databaseName: string, database: Database): Database;
+  database(databaseName: string, database: databases.Database): databases.Database;
   /**
    * @internal
    *
-   * Clears any {@link database.Database} instance stored for the given database name
+   * Clears any {@link databases.Database} instance stored for the given database name
    * from the internal cache, if present.
    *
    * @param databaseName - Name of the database.
@@ -717,8 +708,8 @@ export class Connection {
   database(databaseName: string, database: null): undefined;
   database(
     databaseName: string,
-    database?: Database | null
-  ): Database | undefined {
+    database?: databases.Database | null
+  ): databases.Database | undefined {
     if (database === null) {
       this._databases.delete(databaseName);
       return undefined;
@@ -834,7 +825,7 @@ export class Connection {
    *
    * Closes all open connections.
    *
-   * See {@link database.Database#close}.
+   * See {@link databases.Database#close}.
    */
   close() {
     for (const host of this._hosts) {
@@ -847,7 +838,7 @@ export class Connection {
    *
    * Waits for propagation.
    *
-   * See {@link database.Database#waitForPropagation}.
+   * See {@link databases.Database#waitForPropagation}.
    *
    * @param request - Request to perform against each coordinator.
    * @param timeout - Maximum number of milliseconds to wait for propagation.
@@ -874,7 +865,7 @@ export class Connection {
         });
       } catch (e) {
         if (endOfTime < Date.now()) {
-          throw new PropagationTimeoutError(
+          throw new errors.PropagationTimeoutError(
             undefined,
             { cause: e as Error }
           );

@@ -1,7 +1,7 @@
 import { expect } from "chai";
-import { Database } from "../database.js";
+import { Database } from "../databases.js";
 import { DocumentMetadata } from "../documents.js";
-import { GraphEdgeCollection } from "../graph.js";
+import { GraphEdgeCollection } from "../graphs.js";
 import { config } from "./_config.js";
 
 describe("GraphEdgeCollection API", function () {

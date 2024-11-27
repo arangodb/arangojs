@@ -1,7 +1,7 @@
 import { expect } from "chai";
-import { Database } from "../database.js";
+import { Database } from "../databases.js";
 import { DocumentMetadata } from "../documents.js";
-import { GraphVertexCollection } from "../graph.js";
+import { GraphVertexCollection } from "../graphs.js";
 import { config } from "./_config.js";
 
 describe("GraphVertexCollection API", function () {

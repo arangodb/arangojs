@@ -14,14 +14,210 @@ This driver uses semantic versioning:
 - A change in the major version (e.g. 1.Y.Z -> 2.0.0) indicates _breaking_
   changes that require changes in your code to upgrade.
 
-## [9.2.0] - 2024-11-27
+## [Unreleased]
 
 This is a major release and breaks backwards compatibility.
 
 See [the migration guide](./MIGRATING.md#v9-to-v10) for detailed instructions
 for upgrading your code to arangojs v10.
 
+### Removed
+
+- Removed unused `CreateUserOptions` type
+
+  The actual type used by the `db.createUser` method is still `UserOptions`.
+
+- Removed unused `IndexDetails` type
+
+  This type was intended to be returned by `collection.indexes` when the
+  `withStats` option is set to `true` but the `figures` property is already
+  included in the current return type.
+
 ### Changed
+
+- Changed `QueueTimeMetrics` type to an interface
+
+- Changed `CursorExtras` and `CursorStats` interfaces to types
+
+- Changed `GraphVertexCollection` and `GraphEdgeCollection` generic types to
+  take separate `EntryResultType` and `EntryInputType` type parameters
+
+- Changed `db.collection`, `db.createCollection` and `db.createEdgeCollection`
+  methods to take separate `EntryResultType` and `EntryInputType` type
+  parameters
+
+  These type parameters are used to narrow the the returned collection type.
+
+- Renamed `db.listServiceScripts` method to `db.getServiceScripts`
+- Renamed `db.listHotBackups` method to `db.getHotBackups`
+- Renamed `db.getLogMessages` method to `db.listLogMessages`
+- Renamed `db.listFunctions` method to `db.listUserFunctions`
+- Renamed `db.createFunction` method to `db.createUserFunction`
+- Renamed `db.dropFunction` method to `db.dropUserFunction`
+- Changed `db.removeUser` method to return `void`
+
+#### Module renaming
+
+- Renamed most modules to plural form for consistency
+
+  The following modules were renamed:
+
+  - `arangojs/analyzer` -> `arangojs/analyzers`
+  - `arangojs/collection` -> `arangojs/collections`
+  - `arangojs/cursor` -> `arangojs/cursors`
+  - `arangojs/database` -> `arangojs/databases`
+  - `arangojs/error` -> `arangojs/errors`
+  - `arangojs/graph` -> `arangojs/graphs`
+  - `arangojs/job` -> `arangojs/jobs`
+  - `arangojs/route` -> `arangojs/routes`
+  - `arangojs/transaction` -> `arangojs/transactions`
+  - `arangojs/view` -> `arangojs/views`
+
+#### Moved types
+
+- Moved document related types from `arangojs/collection` module to
+  `arangojs/documents` module
+
+  The following types were moved: `DocumentOperationFailure`,
+  `DocumentOperationMetadata`, `DocumentExistsOptions`, 
+  `CollectionReadOptions`, `CollectionBatchReadOptions`,
+  `CollectionInsertOptions`, `CollectionReplaceOptions`,
+  `CollectionUpdateOptions`, `CollectionRemoveOptions`,
+  `CollectionImportOptions`, `CollectionEdgesOptions`,
+  `CollectionImportResult` and `CollectionEdgesResult`
+
+- Moved index related types from `arangojs/collection` module to
+  `arangojs/indexes` module
+
+  The following types were moved: `IndexListOptions`.
+
+- Moved transaction related types from `arangojs/database` module to
+  `arangojs/transactions` module
+
+  The following types were moved: `TransactionCollections`,
+  `TransactionOptions` and `TransactionDetails`.
+
+- Moved cluster related types from `arangojs/database` module to new
+  `arangojs/clusters` module
+
+  The following types were moved: `ClusterImbalanceInfo`,
+  `ClusterRebalanceState`, `ClusterRebalanceOptions`, `ClusterRebalanceMove`
+  and `ClusterRebalanceResult`.
+
+- Moved hot backup related types from `arangojs/database` module to new
+  `arangojs/hot-backups` module
+
+  The following types were moved: `HotBackupOptions`, `HotBackupResult` and
+  `HotBackupList`.
+
+- Moved query related types from `arangojs/database` module to new
+  `arangojs/queries` module
+
+  The following types were moved: `QueryOptions`, `ExplainOptions`,
+  `ExplainPlan`, `ExplainStats`, `SingleExplainResult`, `MultiExplainResult`,
+  `AstNode`, `ParseResult`, `QueryOptimizerRule`, `QueryTracking`,
+  `QueryTrackingOptions`, `QueryInfo` and `AqlUserFunction`.
+
+- Moved service related types from `arangojs/database` module to new
+  `arangojs/services` module
+
+  The following types were moved: `InstallServiceOptions`,
+  `ReplaceServiceOptions`, `UpgradeServiceOptions`, `UninstallServiceOptions`,
+  `ServiceSummary`, `ServiceInfo`, `ServiceConfiguration`,
+  `SingleServiceDependency`, `MultiServiceDependency`, `ServiceTestStats`,
+  `ServiceTestStreamTest`, `ServiceTestStreamReport`, `ServiceTestSuiteTest`,
+  `ServiceTestSuite`, `ServiceTestSuiteReport`, `ServiceTestXunitTest`,
+  `ServiceTestXunitReport`, `ServiceTestTapReport`, `ServiceTestDefaultTest`,
+  `ServiceTestDefaultReport` and `SwaggerJson`.
+
+- Moved user related types from `arangojs/database` module to new
+  `arangojs/users` module
+
+  The following types were moved: `AccessLevel`, `ArangoUser`, `UserOptions`,
+  `UserAccessLevelOptions` and `CreateDatabaseUser`.
+
+- Moved server administration related types from `arangojs/database` module to
+  new `arangojs/administration` module
+
+  The following types were moved: `QueueTimeMetrics` and `VersionInfo`.
+
+#### Renamed types
+
+- Renamed `Index` types to `IndexDescription` for consistency
+
+  The specific index types were also renamed accordingly:
+
+  - `Index` -> `IndexDescription`
+  - `GeoIndex` -> `GeoIndexDescription`
+  - `PersistentIndex` -> `PersistentIndexDescription`
+  - `PrimaryIndex` -> `PrimaryIndexDescription`
+  - `TtlIndex` -> `TtlIndexDescription`
+  - `MdiIndex` -> `MdiIndexDescription`
+  - `InvertedIndex` -> `InvertedIndexDescription`
+  - `InternalArangosearchIndex` -> `ArangosearchIndexDescription`
+  - `InternalIndex` -> `InternalIndexDescription`
+  - `HiddenIndex` -> `HiddenIndexDescription`
+
+  Note that the "Internal" prefix was dropped from `ArangosearchIndexDescription`
+  to more accurately reflect the index type name. The index type still refers
+  to an internal index, however.
+
+- Renamed various types for consistency:
+
+  - `AqlUserFunction` -> `UserFunctionDescription`
+  - `CollectionMetadata` -> `CollectionDescription`
+  - `DatabaseInfo` -> `DatabaseDescription`
+  - `GraphInfo` -> `GraphDescription`
+  - `ServiceInfo` -> `ServiceDescription`
+  - `QueryInfo` -> `QueryDescription`
+  - `QueryTracking` -> `QueryTrackingInfo`
+  - `TransactionDetails` -> `TransactionInfo`
+  - `TransactionCollections` -> `TransactionCollectionOptions`
+  - `CreateDatabaseUser` -> `CreateDatabaseUserOptions`
+
+  - Index operations:
+    - `IndexListOptions` -> `ListIndexesOptions`
+
+  - Collection document operations:
+    - `DocumentExistsOptions` -> `DocumentExistsOptions`
+    - `CollectionReadOptions` -> `ReadDocumentOptions`
+    - `CollectionBatchReadOptions` -> `BulkReadDocumentsOptions`
+    - `CollectionInsertOptions` -> `InsertDocumentOptions`
+    - `CollectionReplaceOptions` -> `ReplaceDocumentOptions`
+    - `CollectionUpdateOptions` -> `UpdateDocumentOptions`
+    - `CollectionRemoveOptions` -> `RemoveDocumentOptions`
+    - `CollectionImportOptions` -> `ImportDocumentsOptions`
+    - `CollectionEdgesOptions` -> `DocumentEdgesOptions`
+    - `CollectionImportResult` -> `ImportDocumentsResult`
+    - `CollectionEdgesResult` -> `DocumentEdgesResult`
+
+  - Graph collection document operation:
+    - `GraphCollectionReadOptions` -> `ReadGraphDocumentOptions`
+    - `GraphCollectionInsertOptions` -> `CreateGraphDocumentOptions`
+    - `GraphCollectionReplaceOptions` -> `ReplaceGraphDocumentOptions`
+    - `GraphCollectionRemoveOptions` -> `RemoveGraphDocumentOptions`
+    - `ViewPatchPropertiesOptions` -> `UpdateViewPropertiesOptions`
+
+  - View operations:
+    - `ArangoSearchViewPatchPropertiesOptions` -> `UpdateArangoSearchViewPropertiesOptions`
+    - `SearchAliasViewPatchPropertiesOptions` -> `UpdateSearchAliasViewPropertiesOptions`
+    - `SearchAliasViewPatchIndexOptions` -> `UpdateSearchAliasViewIndexOptions`
+    - `ArangoSearchViewStoredValueOptions` -> `CreateArangoSearchViewStoredValueOptions`
+
+- Renamed `ArrayCursor` and `BatchedArrayCursor` classes to `Cursor` and
+  `BatchCursor` respectively
+
+  The previous name was misleading because it conflicted with how the ArangoDB
+  distinguishes between array cursors and streaming cursors in the interactive
+  shell. This distinction does not apply to the driver.
+
+- Renamed various types to reduce ambiguity:
+
+  - `ObjectWithId` (in `indexes` module) -> `ObjectWithIndexId`
+  - `ObjectWithId` (in `documents` module) -> `ObjectWithDocumentId`
+  - `ObjectWithKey` (in `documents` module) -> `ObjectWithDocumentKey`
+
+#### Error handling
 
 - Errors encountered before a request completes are now wrapped in a
   `NetworkError` or a subclass thereof
@@ -76,13 +272,10 @@ for upgrading your code to arangojs v10.
 
 ### Added
 
-- Added `database.availability` method
+- Added `BatchCursor#itemsView` property and `BatchCursorItemsView` interface
 
-- Added `database.engine` method (DE-931)
-
-- Added `database.status` method ([#811](https://github.com/arangodb/arangojs/issues/811))
-
-- Added `database.supportInfo` method
+  This property provides a low-level interface for consuming the items of the
+  cursor and is used by the regular item-wise `Cursor` class internally.
 
 - Added `onError` option to `Config` (DE-955)
 
@@ -145,6 +338,18 @@ for upgrading your code to arangojs v10.
   This property is always present if the error has a `response` property. In
   normal use this should always be the case.
 
+## [9.2.0] - 2024-11-27
+
+### Added
+
+- Added `database.availability` method
+
+- Added `database.engine` method (DE-931)
+
+- Added `database.status` method ([#811](https://github.com/arangodb/arangojs/issues/811))
+
+- Added `database.supportInfo` method
+
 - Added `keepNull` option to `CollectionInsertOptions` type (DE-946)
 
   This option was previously missing from the type.
@@ -184,6 +389,8 @@ for upgrading your code to arangojs v10.
 
   This property is only available when fetching indexes with the `withHidden`
   option set to `true`.
+
+### Added
 
 - Added `HiddenIndex` type (DE-849)
 
@@ -2081,6 +2288,7 @@ For a detailed list of changes between pre-release versions of v7 see the
 
   Graph methods now only return the relevant part of the response body.
 
+[unreleased]: https://github.com/arangodb/arangojs/compare/v9.2.0...HEAD
 [9.2.0]: https://github.com/arangodb/arangojs/compare/v9.1.0...v9.2.0
 [9.1.0]: https://github.com/arangodb/arangojs/compare/v9.0.0...v9.1.0
 [9.0.0]: https://github.com/arangodb/arangojs/compare/v8.8.1...v9.0.0

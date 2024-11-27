@@ -1,6 +1,6 @@
 import { expect } from "chai";
-import { Analyzer } from "../analyzer.js";
-import { Database } from "../database.js";
+import { Analyzer } from "../analyzers.js";
+import { Database } from "../databases.js";
 import { config } from "./_config.js";
 
 function waitForAnalyzer(db: Database, name: string) {
@@ -42,7 +42,7 @@ describe("Manipulating analyzers", function () {
     after(async () => {
       try {
         await analyzer.drop();
-      } catch {}
+      } catch { }
     });
     it("fetches information about the analyzer", async () => {
       const data = await analyzer.get();

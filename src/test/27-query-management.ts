@@ -1,8 +1,8 @@
 import { expect } from "chai";
 import { aql } from "../aql.js";
-import { ArrayCursor } from "../cursor.js";
-import { Database } from "../database.js";
-import { ArangoError, ResponseTimeoutError } from "../error.js";
+import { Cursor } from "../cursors.js";
+import { Database } from "../databases.js";
+import { ArangoError, ResponseTimeoutError } from "../errors.js";
 import { config } from "./_config.js";
 
 // NOTE These tests will not reliably work with load balancing.
@@ -18,7 +18,7 @@ async function sleep(ms: number) {
 describe("Query Management API", function () {
   const dbName = `testdb_${Date.now()}`;
   let system: Database, db: Database;
-  let allCursors: ArrayCursor[];
+  let allCursors: Cursor[];
   before(async () => {
     allCursors = [];
     system = new Database(config);
@@ -46,7 +46,7 @@ describe("Query Management API", function () {
     it("returns a cursor for the query result", async () => {
       const cursor = await db.query("RETURN 23");
       allCursors.push(cursor);
-      expect(cursor).to.be.an.instanceof(ArrayCursor);
+      expect(cursor).to.be.an.instanceof(Cursor);
     });
     it("throws an exception on error", async () => {
       try {

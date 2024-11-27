@@ -1,6 +1,6 @@
 import { expect } from "chai";
-import { Database } from "../database.js";
-import { View } from "../view.js";
+import { Database } from "../databases.js";
+import { View } from "../views.js";
 import { config } from "./_config.js";
 
 const range = (n: number): number[] => Array.from(Array(n).keys());

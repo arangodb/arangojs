@@ -1,6 +1,6 @@
 import { expect } from "chai";
-import { Database } from "../database.js";
-import { ArangoError } from "../error.js";
+import { Database } from "../databases.js";
+import { ArangoError } from "../errors.js";
 import { config } from "./_config.js";
 
 describe("Manipulating databases", function () {
@@ -77,7 +77,7 @@ describe("Manipulating databases", function () {
     after(async () => {
       try {
         await system.dropDatabase(name);
-      } catch {}
+      } catch { }
     });
     it("deletes the given database from the server", async () => {
       await system.dropDatabase(name);

@@ -1,7 +1,7 @@
 import { expect } from "chai";
-import { DocumentCollection } from "../collection.js";
-import { Database } from "../database.js";
-import { Transaction } from "../transaction.js";
+import { DocumentCollection } from "../collections.js";
+import { Database } from "../databases.js";
+import { Transaction } from "../transactions.js";
 import { config } from "./_config.js";
 
 describe("Transactions", () => {
@@ -127,7 +127,7 @@ describe("Transactions", () => {
       let doc: any;
       try {
         doc = await collection.document("test");
-      } catch (e: any) {}
+      } catch (e: any) { }
       if (doc) expect.fail("Document should not exist yet.");
       const { id, status } = await trx.commit();
       expect(id).to.equal(trx.id);
@@ -142,11 +142,11 @@ describe("Transactions", () => {
       let doc: any;
       try {
         doc = await collection.document("test1");
-      } catch (e: any) {}
+      } catch (e: any) { }
       if (doc) expect.fail("Document should not exist yet.");
       try {
         doc = await collection.document("test2");
-      } catch (e: any) {}
+      } catch (e: any) { }
       if (doc) expect.fail("Document should not exist yet.");
       const { id, status } = await trx.commit();
       expect(id).to.equal(trx.id);
@@ -164,7 +164,7 @@ describe("Transactions", () => {
       let doc: any;
       try {
         doc = await collection.document("test");
-      } catch (e: any) {}
+      } catch (e: any) { }
       if (doc) expect.fail("Document should not exist yet.");
     });
 

@@ -2,8 +2,8 @@
 import { expect } from "chai";
 import * as fs from "fs";
 import * as path from "path";
-import { Database } from "../database.js";
-import { ArangoError } from "../error.js";
+import { Database } from "../databases.js";
+import { ArangoError } from "../errors.js";
 import { config } from "./_config.js";
 
 const localAppsPath = path.resolve(".", "fixtures");
@@ -33,7 +33,7 @@ describe("Foxx service", () => {
   after(async () => {
     try {
       await db.uninstallService(serviceServiceMount, { force: true });
-    } catch (e: any) {}
+    } catch (e: any) { }
     try {
       await system.dropDatabase(name);
     } finally {
@@ -44,7 +44,7 @@ describe("Foxx service", () => {
   afterEach(async () => {
     try {
       await db.uninstallService(mount, { force: true });
-    } catch (e: any) {}
+    } catch (e: any) { }
   });
 
   const cases = [
@@ -125,7 +125,7 @@ describe("Foxx service", () => {
     try {
       await db.route(mount).get();
       expect.fail();
-    } catch (e: any) {}
+    } catch (e: any) { }
   });
 
   it("empty configuration should be available", async () => {
@@ -683,7 +683,7 @@ describe("Foxx service", () => {
         ),
       ])
     );
-    const scripts = await db.listServiceScripts(mount);
+    const scripts = await db.getServiceScripts(mount);
     expect(scripts).to.have.property("setup", "Setup");
     expect(scripts).to.have.property("teardown", "Teardown");
   });
@@ -853,7 +853,7 @@ describe("Foxx service", () => {
       "getServiceDependencies",
       (mount: string) => db.getServiceDependencies(mount),
     ],
-    ["listServiceScripts", (mount: string) => db.listServiceScripts(mount)],
+    ["listServiceScripts", (mount: string) => db.getServiceScripts(mount)],
     ["upgradeService", (mount: string) => db.upgradeService(mount, {} as any)],
     [
       "updateServiceConfiguration",

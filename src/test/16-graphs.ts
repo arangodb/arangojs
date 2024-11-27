@@ -1,6 +1,6 @@
 import { expect } from "chai";
-import { Database } from "../database.js";
-import { Graph } from "../graph.js";
+import { Database } from "../databases.js";
+import { Graph } from "../graphs.js";
 import { config } from "./_config.js";
 
 const range = (n: number): number[] => Array.from(Array(n).keys());
@@ -90,12 +90,12 @@ describe("Graph API", function () {
         ...edgeCollectionNames.map(async (name) => {
           try {
             await graph.removeEdgeDefinition(name, true);
-          } catch {}
+          } catch { }
         }),
         ...vertexCollectionNames.map(async (name) => {
           try {
             await graph.removeVertexCollection(name, true);
-          } catch {}
+          } catch { }
         }),
       ]);
     });

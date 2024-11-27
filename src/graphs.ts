@@ -4,52 +4,26 @@
  *   Graph,
  *   GraphVertexCollection,
  *   GraphEdgeCollection,
- * } from "arangojs/graph.js";
+ * } from "arangojs/graphs";
  * ```
  *
- * The "graph" module provides graph related types and interfaces
+ * The "graphs" module provides graph related types and interfaces
  * for TypeScript.
  *
  * @packageDocumentation
  */
-import {
-  ArangoCollection,
-  collectionToString,
-  DocumentCollection,
-  EdgeCollection,
-} from "./collection.js";
-import { Database } from "./database.js";
-import {
-  Document,
-  DocumentData,
-  DocumentMetadata,
-  DocumentSelector,
-  Edge,
-  EdgeData,
-  Patch,
-  _documentHandle,
-} from "./documents.js";
-import { isArangoError } from "./error.js";
+import * as collections from "./collections.js";
+import * as databases from "./databases.js";
+import * as documents from "./documents.js";
+import * as errors from "./errors.js";
 import { DOCUMENT_NOT_FOUND, GRAPH_NOT_FOUND } from "./lib/codes.js";
-
-/**
- * Indicates whether the given value represents a {@link graph.Graph}.
- *
- * @param graph - A value that might be a Graph.
- */
-export function isArangoGraph(graph: any): graph is Graph {
-  return Boolean(graph && graph.isArangoGraph);
-}
 
 /**
  * @internal
  */
 function mungeGharialResponse(body: any, prop: "vertex" | "edge" | "removed") {
-  const { new: newDoc, old: oldDoc, [prop]: doc, ...meta } = body;
-  const result = { ...meta, ...doc };
-  if (typeof newDoc !== "undefined") result.new = newDoc;
-  if (typeof oldDoc !== "undefined") result.old = oldDoc;
-  return result;
+  const { [prop]: doc, ...meta } = body;
+  return { ...meta, ...doc };
 }
 
 /**
@@ -57,20 +31,21 @@ function mungeGharialResponse(body: any, prop: "vertex" | "edge" | "removed") {
  */
 function coerceEdgeDefinition(options: EdgeDefinitionOptions): EdgeDefinition {
   const edgeDefinition = {} as EdgeDefinition;
-  edgeDefinition.collection = collectionToString(options.collection);
+  edgeDefinition.collection = collections.collectionToString(options.collection);
   edgeDefinition.from = Array.isArray(options.from)
-    ? options.from.map(collectionToString)
-    : [collectionToString(options.from)];
+    ? options.from.map(collections.collectionToString)
+    : [collections.collectionToString(options.from)];
   edgeDefinition.to = Array.isArray(options.to)
-    ? options.to.map(collectionToString)
-    : [collectionToString(options.to)];
+    ? options.to.map(collections.collectionToString)
+    : [collections.collectionToString(options.to)];
   return edgeDefinition;
 }
 
+//#region Graph document operation options
 /**
  * Options for retrieving a document from a graph collection.
  */
-export type GraphCollectionReadOptions = {
+export type ReadGraphDocumentOptions = {
   /**
    * If set to a document revision, the document will only be returned if its
    * `_rev` property matches this value.
@@ -98,7 +73,7 @@ export type GraphCollectionReadOptions = {
 /**
  * Options for inserting a document into a graph collection.
  */
-export type GraphCollectionInsertOptions = {
+export type InsertGraphDocumentOptions = {
   /**
    * If set to `true`, data will be synchronized to disk before returning.
    *
@@ -117,7 +92,7 @@ export type GraphCollectionInsertOptions = {
 /**
  * Options for replacing a document in a graph collection.
  */
-export type GraphCollectionReplaceOptions = {
+export type ReplaceGraphDocumentOptions = {
   /**
    * If set to a document revision, the document will only be modified if its
    * `_rev` property matches this value.
@@ -157,7 +132,7 @@ export type GraphCollectionReplaceOptions = {
 /**
  * Options for removing a document from a graph collection.
  */
-export type GraphCollectionRemoveOptions = {
+export type RemoveGraphDocumentOptions = {
   /**
    * If set to a document revision, the document will only be removed if its
    * `_rev` property matches this value.
@@ -179,47 +154,33 @@ export type GraphCollectionRemoveOptions = {
    */
   returnOld?: boolean;
 };
+//#endregion
 
+//#region Edge definition operation options
 /**
- * Definition of a relation in a {@link graph.Graph}.
- */
-export type EdgeDefinition = {
-  /**
-   * Name of the collection containing the edges.
-   */
-  collection: string;
-  /**
-   * Array of names of collections containing the start vertices.
-   */
-  from: string[];
-  /**
-   * Array of names of collections containing the end vertices.
-   */
-  to: string[];
-};
-
-/**
- * An edge definition used to define a collection of edges in a {@link graph.Graph}.
+ * An edge definition used to define a collection of edges in a {@link Graph}.
  */
 export type EdgeDefinitionOptions = {
   /**
    * Collection containing the edges.
    */
-  collection: string | ArangoCollection;
+  collection: string | collections.ArangoCollection;
   /**
    * Collection or collections containing the start vertices.
    */
-  from: (string | ArangoCollection)[] | string | ArangoCollection;
+  from: (string | collections.ArangoCollection)[] | string | collections.ArangoCollection;
   /**
    * Collection or collections containing the end vertices.
    */
-  to: (string | ArangoCollection)[] | string | ArangoCollection;
+  to: (string | collections.ArangoCollection)[] | string | collections.ArangoCollection;
 };
+//#endregion
 
+//#region GraphDescription
 /**
  * General information about a graph.
  */
-export type GraphInfo = {
+export type GraphDescription = {
   /**
    * Key of the document internally representing this graph.
    *
@@ -295,6 +256,26 @@ export type GraphInfo = {
 };
 
 /**
+ * Definition of a relation in a {@link Graph}.
+ */
+export type EdgeDefinition = {
+  /**
+   * Name of the collection containing the edges.
+   */
+  collection: string;
+  /**
+   * Array of names of collections containing the start vertices.
+   */
+  from: string[];
+  /**
+   * Array of names of collections containing the end vertices.
+   */
+  to: string[];
+};
+//#endregion
+
+//#region Graph operation options
+/**
  * Option for creating a graph.
  */
 export type CreateGraphOptions = {
@@ -309,7 +290,7 @@ export type CreateGraphOptions = {
    * Additional vertex collections. Documents within these collections do not
    * have edges within this graph.
    */
-  orphanCollections?: (string | ArangoCollection)[] | string | ArangoCollection;
+  orphanCollections?: (string | collections.ArangoCollection)[] | string | collections.ArangoCollection;
 
   /**
    * (Cluster only.) Number of shards that is used for every collection
@@ -356,25 +337,34 @@ export type CreateGraphOptions = {
    * (Enterprise Edition cluster only.) Collections to be included in a Hybrid
    * SmartGraph.
    */
-  satellites?: (string | ArangoCollection)[];
+  satellites?: (string | collections.ArangoCollection)[];
 };
 
+/**
+ * Options for adding a vertex collection to a graph.
+ */
 export type AddVertexCollectionOptions = {
   /**
    * (Enterprise Edition cluster only.) Collections to be included in a Hybrid
    * SmartGraph.
    */
-  satellites?: (string | ArangoCollection)[];
+  satellites?: (string | collections.ArangoCollection)[];
 };
 
+/**
+ * Options for adding an edge definition to a graph.
+ */
 export type AddEdgeDefinitionOptions = {
   /**
    * (Enterprise Edition cluster only.) Collections to be included in a Hybrid
    * SmartGraph.
    */
-  satellites?: (string | ArangoCollection)[];
+  satellites?: (string | collections.ArangoCollection)[];
 };
 
+/**
+ * Options for replacing an edge definition in a graph.
+ */
 export type ReplaceEdgeDefinitionOptions = {
   /**
    * (Enterprise Edition cluster only.) Collections to be included in a Hybrid
@@ -382,23 +372,31 @@ export type ReplaceEdgeDefinitionOptions = {
    */
   satellites?: string[];
 };
+//#endregion
 
+//#region GraphVertexCollection class
 /**
- * Represents a {@link collection.DocumentCollection} of vertices in a {@link graph.Graph}.
+ * Represents a {@link collections.DocumentCollection} of vertices in a {@link Graph}.
  *
- * @param T - Type to use for document data. Defaults to `any`.
+ * @param EntryResultType - Type to represent vertex document contents returned
+ * by the server (including computed properties).
+ * @param EntryInputType - Type to represent vertex document contents passed
+ * when inserting or replacing vertex documents (without computed properties).
  */
-export class GraphVertexCollection<T extends Record<string, any> = any>
-  implements ArangoCollection {
-  protected _db: Database;
+export class GraphVertexCollection<
+  EntryResultType extends Record<string, any> = any,
+  EntryInputType extends Record<string, any> = EntryResultType,
+>
+  implements collections.ArangoCollection {
+  protected _db: databases.Database;
   protected _name: string;
   protected _graph: Graph;
-  protected _collection: DocumentCollection<T>;
+  protected _collection: collections.DocumentCollection<EntryResultType, EntryInputType>;
 
   /**
    * @internal
    */
-  constructor(db: Database, name: string, graph: Graph) {
+  constructor(db: databases.Database, name: string, graph: Graph) {
     this._db = db;
     this._collection = db.collection(name);
     this._name = this._collection.name;
@@ -429,14 +427,14 @@ export class GraphVertexCollection<T extends Record<string, any> = any>
   }
 
   /**
-   * A {@link collection.DocumentCollection} instance for this vertex collection.
+   * A {@link collections.DocumentCollection} instance for this vertex collection.
    */
   get collection() {
     return this._collection;
   }
 
   /**
-   * The {@link graph.Graph} instance this vertex collection is bound to.
+   * The {@link Graph} instance this vertex collection is bound to.
    */
   get graph() {
     return this._graph;
@@ -462,14 +460,14 @@ export class GraphVertexCollection<T extends Record<string, any> = any>
    * }
    * ```
    */
-  async vertexExists(selector: DocumentSelector): Promise<boolean> {
+  async vertexExists(selector: documents.DocumentSelector): Promise<boolean> {
     try {
       return await this._db.request(
         {
           method: "HEAD",
           path: `/_api/gharial/${encodeURIComponent(
             this.graph.name
-          )}/vertex/${encodeURI(_documentHandle(selector, this._name))}`,
+          )}/vertex/${encodeURI(documents._documentHandle(selector, this._name))}`,
         },
         () => true
       );
@@ -516,9 +514,9 @@ export class GraphVertexCollection<T extends Record<string, any> = any>
    * ```
    */
   async vertex(
-    selector: DocumentSelector,
-    options?: GraphCollectionReadOptions
-  ): Promise<Document<T>>;
+    selector: documents.DocumentSelector,
+    options?: ReadGraphDocumentOptions
+  ): Promise<documents.Document<EntryResultType>>;
   /**
    * Retrieves the vertex matching the given key or id.
    *
@@ -555,13 +553,13 @@ export class GraphVertexCollection<T extends Record<string, any> = any>
    * ```
    */
   async vertex(
-    selector: DocumentSelector,
+    selector: documents.DocumentSelector,
     graceful: boolean
-  ): Promise<Document<T>>;
+  ): Promise<documents.Document<EntryResultType>>;
   async vertex(
-    selector: DocumentSelector,
-    options: boolean | GraphCollectionReadOptions = {}
-  ): Promise<Document<T> | null> {
+    selector: documents.DocumentSelector,
+    options: boolean | ReadGraphDocumentOptions = {}
+  ): Promise<documents.Document<EntryResultType> | null> {
     if (typeof options === "boolean") {
       options = { graceful: options };
     }
@@ -577,7 +575,7 @@ export class GraphVertexCollection<T extends Record<string, any> = any>
       {
         path: `/_api/gharial/${encodeURIComponent(
           this.graph.name
-        )}/vertex/${encodeURI(_documentHandle(selector, this._name))}`,
+        )}/vertex/${encodeURI(documents._documentHandle(selector, this._name))}`,
         headers,
         search,
         allowDirtyRead,
@@ -588,7 +586,7 @@ export class GraphVertexCollection<T extends Record<string, any> = any>
     try {
       return await result;
     } catch (err: any) {
-      if (isArangoError(err) && err.errorNum === DOCUMENT_NOT_FOUND) {
+      if (errors.isArangoError(err) && err.errorNum === DOCUMENT_NOT_FOUND) {
         return null;
       }
       throw err;
@@ -613,10 +611,10 @@ export class GraphVertexCollection<T extends Record<string, any> = any>
    * ```
    */
   save(
-    data: DocumentData<T>,
-    options?: GraphCollectionInsertOptions
-  ): Promise<DocumentMetadata & { new?: Document<T> }>;
-  save(data: DocumentData<T>, options?: GraphCollectionInsertOptions) {
+    data: documents.DocumentData<EntryInputType>,
+    options?: InsertGraphDocumentOptions
+  ): Promise<documents.DocumentMetadata & { new?: documents.Document<EntryResultType> }>;
+  save(data: documents.DocumentData<EntryInputType>, options?: InsertGraphDocumentOptions) {
     return this._db.request(
       {
         method: "POST",
@@ -655,14 +653,14 @@ export class GraphVertexCollection<T extends Record<string, any> = any>
    * ```
    */
   replace(
-    selector: DocumentSelector,
-    newValue: DocumentData<T>,
-    options?: GraphCollectionReplaceOptions
-  ): Promise<DocumentMetadata & { new?: Document<T>; old?: Document<T> }>;
+    selector: documents.DocumentSelector,
+    newValue: documents.DocumentData<EntryInputType>,
+    options?: ReplaceGraphDocumentOptions
+  ): Promise<documents.DocumentMetadata & { new?: documents.Document<EntryResultType>; old?: documents.Document<EntryResultType> }>;
   replace(
-    selector: DocumentSelector,
-    newValue: DocumentData<T>,
-    options: GraphCollectionReplaceOptions = {}
+    selector: documents.DocumentSelector,
+    newValue: documents.DocumentData<EntryInputType>,
+    options: ReplaceGraphDocumentOptions = {}
   ) {
     if (typeof options === "string") {
       options = { rev: options };
@@ -675,7 +673,7 @@ export class GraphVertexCollection<T extends Record<string, any> = any>
         method: "PUT",
         path: `/_api/gharial/${encodeURIComponent(
           this.graph.name
-        )}/vertex/${encodeURI(_documentHandle(selector, this._name))}`,
+        )}/vertex/${encodeURI(documents._documentHandle(selector, this._name))}`,
         body: newValue,
         search,
         headers,
@@ -709,14 +707,14 @@ export class GraphVertexCollection<T extends Record<string, any> = any>
    * ```
    */
   update(
-    selector: DocumentSelector,
-    newValue: Patch<DocumentData<T>>,
-    options?: GraphCollectionReplaceOptions
-  ): Promise<DocumentMetadata & { new?: Document<T>; old?: Document<T> }>;
+    selector: documents.DocumentSelector,
+    newValue: documents.Patch<documents.DocumentData<EntryInputType>>,
+    options?: ReplaceGraphDocumentOptions
+  ): Promise<documents.DocumentMetadata & { new?: documents.Document<EntryResultType>; old?: documents.Document<EntryResultType> }>;
   update(
-    selector: DocumentSelector,
-    newValue: Patch<DocumentData<T>>,
-    options: GraphCollectionReplaceOptions = {}
+    selector: documents.DocumentSelector,
+    newValue: documents.Patch<documents.DocumentData<EntryInputType>>,
+    options: ReplaceGraphDocumentOptions = {}
   ) {
     if (typeof options === "string") {
       options = { rev: options };
@@ -729,7 +727,7 @@ export class GraphVertexCollection<T extends Record<string, any> = any>
         method: "PATCH",
         path: `/_api/gharial/${encodeURIComponent(
           this.graph.name
-        )}/vertex/${encodeURI(_documentHandle(selector, this._name))}`,
+        )}/vertex/${encodeURI(documents._documentHandle(selector, this._name))}`,
         body: newValue,
         search,
         headers,
@@ -766,12 +764,12 @@ export class GraphVertexCollection<T extends Record<string, any> = any>
    * ```
    */
   remove(
-    selector: DocumentSelector,
-    options?: GraphCollectionRemoveOptions
-  ): Promise<DocumentMetadata & { old?: Document<T> }>;
+    selector: documents.DocumentSelector,
+    options?: RemoveGraphDocumentOptions
+  ): Promise<documents.DocumentMetadata & { old?: documents.Document<EntryResultType> }>;
   remove(
-    selector: DocumentSelector,
-    options: GraphCollectionRemoveOptions = {}
+    selector: documents.DocumentSelector,
+    options: RemoveGraphDocumentOptions = {}
   ) {
     if (typeof options === "string") {
       options = { rev: options };
@@ -784,7 +782,7 @@ export class GraphVertexCollection<T extends Record<string, any> = any>
         method: "DELETE",
         path: `/_api/gharial/${encodeURIComponent(
           this.graph.name
-        )}/vertex/${encodeURI(_documentHandle(selector, this._name))}`,
+        )}/vertex/${encodeURI(documents._documentHandle(selector, this._name))}`,
         search,
         headers,
       },
@@ -792,23 +790,31 @@ export class GraphVertexCollection<T extends Record<string, any> = any>
     );
   }
 }
+//#endregion
 
+//#region GraphEdgeCollection class
 /**
- * Represents a {@link collection.EdgeCollection} of edges in a {@link graph.Graph}.
+ * Represents a {@link collections.EdgeCollection} of edges in a {@link Graph}.
  *
- * @param T - Type to use for document data. Defaults to `any`.
+ * @param EntryResultType - Type to represent edge document contents returned
+ * by the server (including computed properties).
+ * @param EntryInputType - Type to represent edge document contents passed
+ * when inserting or replacing edge documents (without computed properties).
  */
-export class GraphEdgeCollection<T extends Record<string, any> = any>
-  implements ArangoCollection {
-  protected _db: Database;
+export class GraphEdgeCollection<
+  EntryResultType extends Record<string, any> = any,
+  EntryInputType extends Record<string, any> = EntryResultType,
+>
+  implements collections.ArangoCollection {
+  protected _db: databases.Database;
   protected _name: string;
   protected _graph: Graph;
-  protected _collection: EdgeCollection<T>;
+  protected _collection: collections.EdgeCollection<EntryResultType, EntryInputType>;
 
   /**
    * @internal
    */
-  constructor(db: Database, name: string, graph: Graph) {
+  constructor(db: databases.Database, name: string, graph: Graph) {
     this._db = db;
     this._collection = db.collection(name);
     this._name = this._collection.name;
@@ -839,14 +845,14 @@ export class GraphEdgeCollection<T extends Record<string, any> = any>
   }
 
   /**
-   * A {@link collection.EdgeCollection} instance for this edge collection.
+   * A {@link collections.EdgeCollection} instance for this edge collection.
    */
   get collection() {
     return this._collection;
   }
 
   /**
-   * The {@link graph.Graph} instance this edge collection is bound to.
+   * The {@link Graph} instance this edge collection is bound to.
    */
   get graph() {
     return this._graph;
@@ -872,14 +878,14 @@ export class GraphEdgeCollection<T extends Record<string, any> = any>
    * }
    * ```
    */
-  async edgeExists(selector: DocumentSelector): Promise<boolean> {
+  async edgeExists(selector: documents.DocumentSelector): Promise<boolean> {
     try {
       return await this._db.request(
         {
           method: "HEAD",
           path: `/_api/gharial/${encodeURIComponent(
             this.graph.name
-          )}/edge/${encodeURI(_documentHandle(selector, this._name))}`,
+          )}/edge/${encodeURI(documents._documentHandle(selector, this._name))}`,
         },
         () => true
       );
@@ -926,9 +932,9 @@ export class GraphEdgeCollection<T extends Record<string, any> = any>
    * ```
    */
   async edge(
-    selector: DocumentSelector,
-    options?: GraphCollectionReadOptions
-  ): Promise<Edge<T>>;
+    selector: documents.DocumentSelector,
+    options?: ReadGraphDocumentOptions
+  ): Promise<documents.Edge<EntryResultType>>;
   /**
    * Retrieves the edge matching the given key or id.
    *
@@ -964,11 +970,11 @@ export class GraphEdgeCollection<T extends Record<string, any> = any>
    * }
    * ```
    */
-  async edge(selector: DocumentSelector, graceful: boolean): Promise<Edge<T>>;
+  async edge(selector: documents.DocumentSelector, graceful: boolean): Promise<documents.Edge<EntryResultType>>;
   async edge(
-    selector: DocumentSelector,
-    options: boolean | GraphCollectionReadOptions = {}
-  ): Promise<Edge<T> | null> {
+    selector: documents.DocumentSelector,
+    options: boolean | ReadGraphDocumentOptions = {}
+  ): Promise<documents.Edge<EntryResultType> | null> {
     if (typeof options === "boolean") {
       options = { graceful: options };
     }
@@ -984,7 +990,7 @@ export class GraphEdgeCollection<T extends Record<string, any> = any>
       {
         path: `/_api/gharial/${encodeURIComponent(
           this.graph.name
-        )}/edge/${encodeURI(_documentHandle(selector, this._name))}`,
+        )}/edge/${encodeURI(documents._documentHandle(selector, this._name))}`,
         search,
         allowDirtyRead,
       },
@@ -994,7 +1000,7 @@ export class GraphEdgeCollection<T extends Record<string, any> = any>
     try {
       return await result;
     } catch (err: any) {
-      if (isArangoError(err) && err.errorNum === DOCUMENT_NOT_FOUND) {
+      if (errors.isArangoError(err) && err.errorNum === DOCUMENT_NOT_FOUND) {
         return null;
       }
       throw err;
@@ -1018,10 +1024,10 @@ export class GraphEdgeCollection<T extends Record<string, any> = any>
    * ```
    */
   save(
-    data: EdgeData<T>,
-    options?: GraphCollectionInsertOptions
-  ): Promise<DocumentMetadata & { new?: Edge<T> }>;
-  save(data: EdgeData<T>, options?: GraphCollectionInsertOptions) {
+    data: documents.EdgeData<EntryInputType>,
+    options?: InsertGraphDocumentOptions
+  ): Promise<documents.DocumentMetadata & { new?: documents.Edge<EntryResultType> }>;
+  save(data: documents.EdgeData<EntryInputType>, options?: InsertGraphDocumentOptions) {
     return this._db.request(
       {
         method: "POST",
@@ -1068,14 +1074,14 @@ export class GraphEdgeCollection<T extends Record<string, any> = any>
    * ```
    */
   replace(
-    selector: DocumentSelector,
-    newValue: EdgeData<T>,
-    options?: GraphCollectionReplaceOptions
-  ): Promise<DocumentMetadata & { new?: Edge<T>; old?: Edge<T> }>;
+    selector: documents.DocumentSelector,
+    newValue: documents.EdgeData<EntryInputType>,
+    options?: ReplaceGraphDocumentOptions
+  ): Promise<documents.DocumentMetadata & { new?: documents.Edge<EntryResultType>; old?: documents.Edge<EntryResultType> }>;
   replace(
-    selector: DocumentSelector,
-    newValue: EdgeData<T>,
-    options: GraphCollectionReplaceOptions = {}
+    selector: documents.DocumentSelector,
+    newValue: documents.EdgeData<EntryInputType>,
+    options: ReplaceGraphDocumentOptions = {}
   ) {
     if (typeof options === "string") {
       options = { rev: options };
@@ -1088,7 +1094,7 @@ export class GraphEdgeCollection<T extends Record<string, any> = any>
         method: "PUT",
         path: `/_api/gharial/${encodeURIComponent(
           this.graph.name
-        )}/edge/${encodeURI(_documentHandle(selector, this._name))}`,
+        )}/edge/${encodeURI(documents._documentHandle(selector, this._name))}`,
         body: newValue,
         search,
         headers,
@@ -1130,14 +1136,14 @@ export class GraphEdgeCollection<T extends Record<string, any> = any>
    * ```
    */
   update(
-    selector: DocumentSelector,
-    newValue: Patch<EdgeData<T>>,
-    options?: GraphCollectionReplaceOptions
-  ): Promise<DocumentMetadata & { new?: Edge<T>; old?: Edge<T> }>;
+    selector: documents.DocumentSelector,
+    newValue: documents.Patch<documents.EdgeData<EntryInputType>>,
+    options?: ReplaceGraphDocumentOptions
+  ): Promise<documents.DocumentMetadata & { new?: documents.Edge<EntryResultType>; old?: documents.Edge<EntryResultType> }>;
   update(
-    selector: DocumentSelector,
-    newValue: Patch<EdgeData<T>>,
-    options: GraphCollectionReplaceOptions = {}
+    selector: documents.DocumentSelector,
+    newValue: documents.Patch<documents.EdgeData<EntryInputType>>,
+    options: ReplaceGraphDocumentOptions = {}
   ) {
     if (typeof options === "string") {
       options = { rev: options };
@@ -1150,7 +1156,7 @@ export class GraphEdgeCollection<T extends Record<string, any> = any>
         method: "PATCH",
         path: `/_api/gharial/${encodeURIComponent(
           this.graph.name
-        )}/edge/${encodeURI(_documentHandle(selector, this._name))}`,
+        )}/edge/${encodeURI(documents._documentHandle(selector, this._name))}`,
         body: newValue,
         search,
         headers,
@@ -1179,12 +1185,12 @@ export class GraphEdgeCollection<T extends Record<string, any> = any>
    * ```
    */
   remove(
-    selector: DocumentSelector,
-    options?: GraphCollectionRemoveOptions
-  ): Promise<DocumentMetadata & { old?: Edge<T> }>;
+    selector: documents.DocumentSelector,
+    options?: RemoveGraphDocumentOptions
+  ): Promise<documents.DocumentMetadata & { old?: documents.Edge<EntryResultType> }>;
   remove(
-    selector: DocumentSelector,
-    options: GraphCollectionRemoveOptions = {}
+    selector: documents.DocumentSelector,
+    options: RemoveGraphDocumentOptions = {}
   ) {
     if (typeof options === "string") {
       options = { rev: options };
@@ -1197,7 +1203,7 @@ export class GraphEdgeCollection<T extends Record<string, any> = any>
         method: "DELETE",
         path: `/_api/gharial/${encodeURIComponent(
           this.graph.name
-        )}/edge/${encodeURI(_documentHandle(selector, this._name))}`,
+        )}/edge/${encodeURI(documents._documentHandle(selector, this._name))}`,
         search,
         headers,
       },
@@ -1205,26 +1211,35 @@ export class GraphEdgeCollection<T extends Record<string, any> = any>
     );
   }
 }
+//#endregion
+
+//#region Graph class
+/**
+ * Indicates whether the given value represents a {@link Graph}.
+ *
+ * @param graph - A value that might be a Graph.
+ */
+export function isArangoGraph(graph: any): graph is Graph {
+  return Boolean(graph && graph.isArangoGraph);
+}
 
 /**
- * Represents a graph in a {@link database.Database}.
+ * Represents a graph in a {@link databases.Database}.
  */
 export class Graph {
   protected _name: string;
 
-  protected _db: Database;
+  protected _db: databases.Database;
 
   /**
    * @internal
    */
-  constructor(db: Database, name: string) {
+  constructor(db: databases.Database, name: string) {
     this._db = db;
     this._name = name;
   }
 
   /**
-   * @internal
-   *
    * Indicates that this object represents an ArangoDB Graph.
    */
   get isArangoGraph(): true {
@@ -1261,7 +1276,7 @@ export class Graph {
       await this.get();
       return true;
     } catch (err: any) {
-      if (isArangoError(err) && err.errorNum === GRAPH_NOT_FOUND) {
+      if (errors.isArangoError(err) && err.errorNum === GRAPH_NOT_FOUND) {
         return false;
       }
       throw err;
@@ -1279,7 +1294,7 @@ export class Graph {
    * // data contains general information about the graph
    * ```
    */
-  get(): Promise<GraphInfo> {
+  get(): Promise<GraphDescription> {
     return this._db.request(
       { path: `/_api/gharial/${encodeURIComponent(this._name)}` },
       (res) => res.parsedBody.graph
@@ -1310,7 +1325,7 @@ export class Graph {
   create(
     edgeDefinitions: EdgeDefinitionOptions[],
     options: CreateGraphOptions = {}
-  ): Promise<GraphInfo> {
+  ): Promise<GraphDescription> {
     const { orphanCollections, satellites, waitForSync, isSmart, ...opts } =
       options;
     return this._db.request(
@@ -1321,12 +1336,12 @@ export class Graph {
           orphanCollections:
             orphanCollections &&
             (Array.isArray(orphanCollections)
-              ? orphanCollections.map(collectionToString)
-              : [collectionToString(orphanCollections)]),
+              ? orphanCollections.map(collections.collectionToString)
+              : [collections.collectionToString(orphanCollections)]),
           edgeDefinitions: edgeDefinitions.map(coerceEdgeDefinition),
           isSmart,
           name: this._name,
-          options: { ...opts, satellites: satellites?.map(collectionToString) },
+          options: { ...opts, satellites: satellites?.map(collections.collectionToString) },
         },
         search: { waitForSync },
       },
@@ -1360,18 +1375,18 @@ export class Graph {
   }
 
   /**
-   * Returns a {@link graph.GraphVertexCollection} instance for the given collection
+   * Returns a {@link GraphVertexCollection} instance for the given collection
    * name representing the collection in this graph.
    *
    * @param T - Type to use for document data. Defaults to `any`.
    * @param collection - Name of the vertex collection.
    */
   vertexCollection<T extends Record<string, any> = any>(
-    collection: string | ArangoCollection
+    collection: string | collections.ArangoCollection
   ): GraphVertexCollection<T> {
     return new GraphVertexCollection<T>(
       this._db,
-      collectionToString(collection),
+      collections.collectionToString(collection),
       this
     );
   }
@@ -1380,7 +1395,7 @@ export class Graph {
    * Fetches all vertex collections of this graph from the database and returns
    * an array of their names.
    *
-   * See also {@link graph.Graph#vertexCollections}.
+   * See also {@link Graph#vertexCollections}.
    *
    * @example
    * ```js
@@ -1406,9 +1421,9 @@ export class Graph {
 
   /**
    * Fetches all vertex collections of this graph from the database and returns
-   * an array of {@link graph.GraphVertexCollection} instances.
+   * an array of {@link GraphVertexCollection} instances.
    *
-   * See also {@link graph.Graph#listVertexCollections}.
+   * See also {@link Graph#listVertexCollections}.
    *
    * @example
    * ```js
@@ -1451,17 +1466,17 @@ export class Graph {
    * ```
    */
   addVertexCollection(
-    collection: string | ArangoCollection,
+    collection: string | collections.ArangoCollection,
     options: AddVertexCollectionOptions = {}
-  ): Promise<GraphInfo> {
+  ): Promise<GraphDescription> {
     const { satellites, ...opts } = options;
     return this._db.request(
       {
         method: "POST",
         path: `/_api/gharial/${encodeURIComponent(this._name)}/vertex`,
         body: {
-          collection: collectionToString(collection),
-          options: { ...opts, satellites: satellites?.map(collectionToString) },
+          collection: collections.collectionToString(collection),
+          options: { ...opts, satellites: satellites?.map(collections.collectionToString) },
         },
       },
       (res) => res.parsedBody.graph
@@ -1491,15 +1506,15 @@ export class Graph {
    * ```
    */
   removeVertexCollection(
-    collection: string | ArangoCollection,
+    collection: string | collections.ArangoCollection,
     dropCollection: boolean = false
-  ): Promise<GraphInfo> {
+  ): Promise<GraphDescription> {
     return this._db.request(
       {
         method: "DELETE",
         path: `/_api/gharial/${encodeURIComponent(
           this._name
-        )}/vertex/${encodeURIComponent(collectionToString(collection))}`,
+        )}/vertex/${encodeURIComponent(collections.collectionToString(collection))}`,
         search: {
           dropCollection,
         },
@@ -1509,7 +1524,7 @@ export class Graph {
   }
 
   /**
-   * Returns a {@link graph.GraphEdgeCollection} instance for the given collection
+   * Returns a {@link GraphEdgeCollection} instance for the given collection
    * name representing the collection in this graph.
    *
    * @param T - Type to use for document data. Defaults to `any`.
@@ -1532,11 +1547,11 @@ export class Graph {
    * ```
    */
   edgeCollection<T extends Record<string, any> = any>(
-    collection: string | ArangoCollection
+    collection: string | collections.ArangoCollection
   ): GraphEdgeCollection<T> {
     return new GraphEdgeCollection<T>(
       this._db,
-      collectionToString(collection),
+      collections.collectionToString(collection),
       this
     );
   }
@@ -1545,7 +1560,7 @@ export class Graph {
    * Fetches all edge collections of this graph from the database and returns
    * an array of their names.
    *
-   * See also {@link graph.Graph#edgeCollections}.
+   * See also {@link Graph#edgeCollections}.
    *
    * @example
    * ```js
@@ -1571,9 +1586,9 @@ export class Graph {
 
   /**
    * Fetches all edge collections of this graph from the database and returns
-   * an array of {@link graph.GraphEdgeCollection} instances.
+   * an array of {@link GraphEdgeCollection} instances.
    *
-   * See also {@link graph.Graph#listEdgeCollections}.
+   * See also {@link Graph#listEdgeCollections}.
    *
    * @example
    * ```js
@@ -1618,7 +1633,7 @@ export class Graph {
   addEdgeDefinition(
     edgeDefinition: EdgeDefinitionOptions,
     options: AddEdgeDefinitionOptions = {}
-  ): Promise<GraphInfo> {
+  ): Promise<GraphDescription> {
     const { satellites, ...opts } = options;
     return this._db.request(
       {
@@ -1626,7 +1641,7 @@ export class Graph {
         path: `/_api/gharial/${encodeURIComponent(this._name)}/edge`,
         body: {
           ...coerceEdgeDefinition(edgeDefinition),
-          options: { ...opts, satellites: satellites?.map(collectionToString) },
+          options: { ...opts, satellites: satellites?.map(collections.collectionToString) },
         },
       },
       (res) => res.parsedBody.graph
@@ -1661,7 +1676,7 @@ export class Graph {
   replaceEdgeDefinition(
     edgeDefinition: EdgeDefinitionOptions,
     options?: ReplaceEdgeDefinitionOptions
-  ): Promise<GraphInfo>;
+  ): Promise<GraphDescription>;
   /**
    * Replaces an edge definition in this graph. The existing edge definition
    * for the given edge collection will be overwritten.
@@ -1689,14 +1704,14 @@ export class Graph {
    * ```
    */
   replaceEdgeDefinition(
-    collection: string | ArangoCollection,
+    collection: string | collections.ArangoCollection,
     edgeDefinition: EdgeDefinitionOptions,
     options?: ReplaceEdgeDefinitionOptions
-  ): Promise<GraphInfo>;
+  ): Promise<GraphDescription>;
   replaceEdgeDefinition(
     collectionOrEdgeDefinitionOptions:
       | string
-      | ArangoCollection
+      | collections.ArangoCollection
       | EdgeDefinitionOptions,
     edgeDefinitionOrOptions?:
       | EdgeDefinitionOptions
@@ -1705,7 +1720,7 @@ export class Graph {
   ) {
     let collection = collectionOrEdgeDefinitionOptions as
       | string
-      | ArangoCollection;
+      | collections.ArangoCollection;
     let edgeDefinition = edgeDefinitionOrOptions as EdgeDefinitionOptions;
     if (
       edgeDefinitionOrOptions &&
@@ -1725,10 +1740,10 @@ export class Graph {
         method: "PUT",
         path: `/_api/gharial/${encodeURIComponent(
           this._name
-        )}/edge/${encodeURIComponent(collectionToString(collection))}`,
+        )}/edge/${encodeURIComponent(collections.collectionToString(collection))}`,
         body: {
           ...coerceEdgeDefinition(edgeDefinition),
-          options: { ...opts, satellites: satellites?.map(collectionToString) },
+          options: { ...opts, satellites: satellites?.map(collections.collectionToString) },
         },
       },
       (res) => res.parsedBody.graph
@@ -1758,15 +1773,15 @@ export class Graph {
    * ```
    */
   removeEdgeDefinition(
-    collection: string | ArangoCollection,
+    collection: string | collections.ArangoCollection,
     dropCollection: boolean = false
-  ): Promise<GraphInfo> {
+  ): Promise<GraphDescription> {
     return this._db.request(
       {
         method: "DELETE",
         path: `/_api/gharial/${encodeURIComponent(
           this._name
-        )}/edge/${encodeURIComponent(collectionToString(collection))}`,
+        )}/edge/${encodeURIComponent(collections.collectionToString(collection))}`,
         search: {
           dropCollection,
         },
@@ -1775,3 +1790,4 @@ export class Graph {
     );
   }
 }
+//#endregion
