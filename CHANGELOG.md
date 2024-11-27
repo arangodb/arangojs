@@ -19,122 +19,17 @@ This driver uses semantic versioning:
 - A change in the major version (e.g. 1.Y.Z -> 2.0.0) indicates _breaking_
   changes that require changes in your code to upgrade.
 
-## [Unreleased]
-
-### Changed
-
-- Errors encountered before a request completes are now wrapped in a `NetworkError`
-
-  This should help making it easier to diagnose network issues and distinguish
-  the relevant error conditions.
-
-  The originating error can still be accessed using the `cause` property of the
-  `NetworkError` error.
-
-- `HttpError` now extends the `NetworkError` type
-
-  This allows treating all non-`ArangoError` errors as one category of errors,
-  even when there is no server response available.
-
-- `db.waitForPropagation` now throws a `PropagationTimeoutError` error when
-  invoked with a `timeout` option and the timeout duration is exceeded
-
-  The method would previously throw the most recent error encountered while
-  waiting for replication. The originating error can still be accessed using
-  the `cause` property of the `PropagationTimeoutError` error.
-
-- `db.waitForPropagation` now respects the `timeout` option more strictly
-
-  Previously the method would only time out if the timeout duration was
-  exceeded after the most recent request failed. Now the timeout is
-  recalculated and passed on to each request, preventing it from exceeding
-  the specified duration.
-
-  If the propagation timed out due to an underlying request exceeding the
-  timeout duration, the `cause` property of the `PropagationTimeoutError`
-  error will be a `ResponseTimeoutError` error.
-
-- `config.beforeRequest` and `config.afterResponse` callbacks can now return
-  promises
-
-  If the callback returns a promise, it will be awaited before the request
-  and response cycle proceeds. If either callback throws an error or returns
-  a promise that is rejected, that error will be thrown instead.
-
-- `config.afterResponse` callback signature changed
-
-  The callback signature previously used the internal `ArangojsResponse` type.
-  The new signature uses the `Response` type of the Fetch API with an
-  additional `request` property to more accurately represent the actual value
-  it receives as the `parsedBody` property will never be present.
-
-- `response` property on `ArangoError` is now optional
-
-  This property should always be present but this allows using the error in
-  situations where a response might not be available.
+## [9.2.0] - 2024-11-27
 
 ### Added
 
-- Added `onError` option to `Config` (DE-955)
+- Added `database.availability` method
 
-  This option can be used to specify a callback function that will be invoked
-  whenever a request results in an error. Unlike `afterResponse`, this callback
-  will be invoked even if the request completed but returned an error status.
-  In this case the error will be the `HttpError` or `ArangoError` representing
-  the error response.
+- Added `database.engine` method (DE-931)
 
-  If the `onError` callback throws an error or returns a promise that is
-  rejected, that error will be thrown instead.
+- Added `database.status` method ([#811](https://github.com/arangodb/arangojs/issues/811))
 
-- Added `NetworkError` error type
-
-  This is the common base class for all errors (including `HttpError`) that
-  occur while making a request. The originating error can be accessed using the
-  `cause` property. The request object can be accessed using the `request`
-  property.
-
-  Note that `ArangoError` and the new `PropagationTimeoutError` error type
-  do not extend `NetworkError` but may wrap an underlying error, which can
-  be accessed using the `cause` property.
-
-- Added `ResponseTimeoutError` error type
-
-  This error extends `NetworkError` and is thrown when a request deliberately
-  times out using the `timeout` option.
-
-- Added `RequestAbortedError` error type
-
-  This error extends `NetworkError` and is thrown when a request is aborted
-  by using the `db.close` method.
-
-- Added `FetchFailedError` error type
-
-  This error extends `NetworkError` and is thrown when a request fails because
-  the underlying `fetch` call fails (usually with a `TypeError`).
-
-  In Node.js the root cause of this error (e.g. a network failure) can often be
-  found in the `cause` property of the originating error, i.e. the `cause`
-  property of the `cause` property of this error.
-
-  In browsers the root cause is usually not exposed directly but can often
-  be diagnosed by examining the developer console or network tab.
-
-- Added `PropagationTimeoutError` error type
-
-  This error does not extend `NetworkError` but wraps the most recent error
-  encountered while waiting for replication, which can be accessed using the
-  `cause` property. This error is only thrown when `db.waitForPropagation`
-  is invoked with a `timeout` option and the timeout duration is exceeded.
-
-- Added `ProcessedResponse` type
-
-  This type replaces the previously internal `ArangojsResponse` type and
-  extends the native `Response` type with additional properties.
-
-- Added optional `request` property to `ArangoError`
-
-  This property is always present if the error has a `response` property. In
-  normal use this should always be the case.
+- Added `database.supportInfo` method
 
 - Added `keepNull` option to `CollectionInsertOptions` type (DE-946)
 
@@ -153,17 +48,17 @@ This driver uses semantic versioning:
   There was previously no way to pass options to the `truncate` method.
 
 - Added `database` property to `Analyzer`, `ArrayCursor`, `BatchedArrayCursor`,
-  `Collection`, `Graph`, `Job`, `Route`, `Transaction` and `View` types (DE-935)
+  `Collection`, `Graph`, `Job`, `Route`, `Transaction` and `View` (DE-935)
 
   This property can be used to access the database instance a given object
   belongs to.
 
-- Added `headers` and `path` properties to `Route` type
+- Added `Route#headers` and `Route#path` properties
 
   These properties can be used to access the headers and path used when creating
   the route.
 
-- Added `id` property to `ArrayCursor` and `BatchedArrayCursor` types (DE-936)
+- Added `ArrayCursor#id` and `BatchedArrayCursor#id` properties (DE-936)
 
   This property can be used to access the ID of the cursor.
 
@@ -2072,6 +1967,7 @@ For a detailed list of changes between pre-release versions of v7 see the
 
   Graph methods now only return the relevant part of the response body.
 
+[9.2.0]: https://github.com/arangodb/arangojs/compare/v9.1.0...v9.2.0
 [9.1.0]: https://github.com/arangodb/arangojs/compare/v9.0.0...v9.1.0
 [9.0.0]: https://github.com/arangodb/arangojs/compare/v8.8.1...v9.0.0
 [8.8.1]: https://github.com/arangodb/arangojs/compare/v8.8.0...v8.8.1
