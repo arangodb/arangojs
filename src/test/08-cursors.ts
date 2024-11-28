@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { LinkedList } from "../lib/linkedList.js";
+import { LinkedList } from "../lib/x3-linkedlist.js";
 import { aql } from "../aql.js";
 import { Cursor, BatchCursor } from "../cursors.js";
 import { Database } from "../databases.js";

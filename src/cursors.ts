@@ -8,7 +8,7 @@
  *
  * @packageDocumentation
  */
-import { LinkedList } from "./lib/linkedList.js";
+import { LinkedList } from "./lib/x3-linkedlist.js";
 import * as databases from "./databases.js";
 
 //#region Cursor properties

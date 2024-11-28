@@ -10,7 +10,7 @@
  */
 import * as connections from "./connection.js";
 import * as databases from "./databases.js";
-import { mergeHeaders } from "./lib/mergeHeaders.js";
+import { mergeHeaders } from "./lib/util.js";
 
 /**
  * Represents an arbitrary route relative to an ArangoDB database.

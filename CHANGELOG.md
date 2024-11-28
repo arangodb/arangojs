@@ -19,11 +19,34 @@ This driver uses semantic versioning:
 ### Changed
 
 - Renamed `CollectionDropOptions` type to `DropCollectionOptions`
+
 - Renamed `CollectionTruncateOptions` type to `TruncateCollectionOptions`
+
 - Changed error type constructor signatures
 
   The `request` property is now always positional and the `options` property
   is always optional.
+
+- Moved configuration related types to new `config` module
+
+  The following types were moved: `Config`, `LoadBalancingStrategy`,
+  `BasicAuthCredentials` and `BearerAuthCredentials`.
+
+- Moved `ArangoErrorResponse` type to `connection` module
+
+  The type is now also no longer marked as internal.
+
+- Moved internal utility functions to new `lib/util` module
+
+  These methods are all still marked as internal and should not be used
+  directly.
+
+- Closing a connection now closes all open requests
+
+  Previously in certain situations only the most recent request would be
+  closed per server. Note that this still merely aborts the requests but
+  does not guarantee the underlying connections are closed as these are
+  handled by Node.js or the browser natively.
 
 ## [10.0.0-alpha.0] - 2024-11-28
 

@@ -82,7 +82,7 @@ export function isNetworkError(error: any): error is NetworkError {
 *
  * Indicates whether the given value represents an ArangoDB error response.
  */
-export function isArangoErrorResponse(body: any): body is ArangoErrorResponse {
+export function isArangoErrorResponse(body: any): body is connection.ArangoErrorResponse {
   return (
     body &&
     body.error === true &&
@@ -134,18 +134,6 @@ function isSafeToRetryFailedFetch(cause: Error): boolean | null {
     return true;
   }
   return null;
-}
-
-/**
- * @internal
-*
- * Interface representing an ArangoDB error response.
- */
-export interface ArangoErrorResponse {
-  error: true;
-  code: number;
-  errorMessage: string;
-  errorNum: number;
 }
 
 /**
@@ -336,7 +324,7 @@ export class ArangoError extends Error {
    *
    * Creates a new `ArangoError` from a response object.
    */
-  static from(response: connection.ProcessedResponse<ArangoErrorResponse>): ArangoError {
+  static from(response: connection.ProcessedResponse<connection.ArangoErrorResponse>): ArangoError {
     return new ArangoError(response.parsedBody!, {
       cause: new HttpError(response)
     });
@@ -345,7 +333,7 @@ export class ArangoError extends Error {
   /**
    * Creates a new `ArangoError` from an ArangoDB error response.
    */
-  constructor(data: ArangoErrorResponse, options: { cause?: Error, isSafeToRetry?: boolean | null } = {}) {
+  constructor(data: connection.ArangoErrorResponse, options: { cause?: Error, isSafeToRetry?: boolean | null } = {}) {
     const { isSafeToRetry, ...opts } = options;
     super(data.errorMessage, opts);
     this.errorNum = data.errorNum;
@@ -362,7 +350,7 @@ export class ArangoError extends Error {
   /**
    * Server response object.
    */
-  get response(): connection.ProcessedResponse<ArangoErrorResponse> | undefined {
+  get response(): connection.ProcessedResponse<connection.ArangoErrorResponse> | undefined {
     const cause = this.cause;
     if (cause instanceof HttpError) {
       return cause.response;
@@ -390,7 +378,7 @@ export class ArangoError extends Error {
     return true;
   }
 
-  toJSON(): ArangoErrorResponse {
+  toJSON(): connection.ArangoErrorResponse {
     return {
       error: true,
       errorMessage: this.errorMessage,
