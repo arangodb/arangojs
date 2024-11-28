@@ -339,7 +339,7 @@ export type CollectionChecksumOptions = {
 /**
  * Options for truncating collections.
  */
-export type CollectionTruncateOptions = {
+export type TruncateCollectionOptions = {
   /**
    * Whether the collection should be compacted after truncation.
    */
@@ -354,7 +354,7 @@ export type CollectionTruncateOptions = {
 /**
  * Options for dropping collections.
  */
-export type CollectionDropOptions = {
+export type DropCollectionOptions = {
   /**
    * Whether the collection is a system collection. If the collection is a
    * system collection, this option must be set to `true` or ArangoDB will
@@ -819,7 +819,7 @@ export interface DocumentCollection<
    * // the collection "some-collection" is now empty
    * ```
    */
-  truncate(options?: CollectionTruncateOptions): Promise<connection.ArangoApiResponse<CollectionDescription>>;
+  truncate(options?: TruncateCollectionOptions): Promise<connection.ArangoApiResponse<CollectionDescription>>;
   /**
    * Deletes the collection from the database.
    *
@@ -834,7 +834,7 @@ export interface DocumentCollection<
    * ```
    */
   drop(
-    options?: CollectionDropOptions
+    options?: DropCollectionOptions
   ): Promise<connection.ArangoApiResponse<{ id: string }>>;
   /**
    * Triggers compaction for a collection.
@@ -2415,7 +2415,7 @@ export class Collection<
     return result;
   }
 
-  truncate(options?: CollectionTruncateOptions): Promise<connection.ArangoApiResponse<CollectionDescription>> {
+  truncate(options?: TruncateCollectionOptions): Promise<connection.ArangoApiResponse<CollectionDescription>> {
     return this._db.request({
       method: "PUT",
       path: `/_api/collection/${this._name}/truncate`,
@@ -2423,7 +2423,7 @@ export class Collection<
     });
   }
 
-  drop(options?: CollectionDropOptions) {
+  drop(options?: DropCollectionOptions) {
     return this._db.request({
       method: "DELETE",
       path: `/_api/collection/${encodeURIComponent(this._name)}`,

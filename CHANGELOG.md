@@ -14,6 +14,13 @@ This driver uses semantic versioning:
 - A change in the major version (e.g. 1.Y.Z -> 2.0.0) indicates _breaking_
   changes that require changes in your code to upgrade.
 
+## [Unreleased]
+
+### Changed
+
+- Renamed `CollectionDropOptions` type to `DropCollectionOptions`
+- Renamed `CollectionTruncateOptions` type to `TruncateCollectionOptions`
+
 ## [10.0.0-alpha.0] - 2024-11-28
 
 This is a major release and breaks backwards compatibility.
