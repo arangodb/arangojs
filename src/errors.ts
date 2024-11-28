@@ -175,7 +175,7 @@ interface SystemError extends Error {
 export class PropagationTimeoutError extends Error {
   name = "PropagationTimeoutError";
 
-  constructor(message: string | undefined, options: { cause: Error }) {
+  constructor(message?: string, options: { cause?: Error } = {}) {
     super(message ?? 'Timed out while waiting for propagation', options);
   }
 }
@@ -196,8 +196,8 @@ export class NetworkError extends Error {
    */
   request: globalThis.Request;
 
-  constructor(message: string, options: { request: globalThis.Request, cause?: Error, isSafeToRetry?: boolean | null }) {
-    const { request, isSafeToRetry = null, ...opts } = options;
+  constructor(message: string, request: globalThis.Request, options: { cause?: Error, isSafeToRetry?: boolean | null } = {}) {
+    const { isSafeToRetry = null, ...opts } = options;
     super(message, opts);
     this.request = request;
     this.isSafeToRetry = isSafeToRetry;
@@ -219,8 +219,8 @@ export class NetworkError extends Error {
 export class ResponseTimeoutError extends NetworkError {
   name = "ResponseTimeoutError";
 
-  constructor(message: string | undefined, options: { request: globalThis.Request, cause?: Error, isSafeToRetry?: boolean | null }) {
-    super(message ?? 'Timed out while waiting for server response', options);
+  constructor(message: string | undefined, request: globalThis.Request, options: { cause?: Error, isSafeToRetry?: boolean | null } = {}) {
+    super(message ?? 'Timed out while waiting for server response', request, options);
   }
 }
 
@@ -230,8 +230,8 @@ export class ResponseTimeoutError extends NetworkError {
 export class RequestAbortedError extends NetworkError {
   name = "RequestAbortedError";
 
-  constructor(message: string | undefined, options: { request: globalThis.Request, cause?: Error, isSafeToRetry?: boolean | null }) {
-    super(message ?? 'Request aborted', options);
+  constructor(message: string | undefined, request: globalThis.Request, options: { cause?: Error, isSafeToRetry?: boolean | null } = {}) {
+    super(message ?? 'Request aborted', request, options);
   }
 }
 
@@ -243,9 +243,9 @@ export class RequestAbortedError extends NetworkError {
 export class FetchFailedError extends NetworkError {
   name = "FetchFailedError";
 
-  constructor(message: string | undefined, options: { request: globalThis.Request, cause: TypeError, isSafeToRetry?: boolean | null }) {
+  constructor(message: string | undefined, request: globalThis.Request, options: { cause?: TypeError, isSafeToRetry?: boolean | null } = {}) {
     let isSafeToRetry = options.isSafeToRetry;
-    if (options.cause.cause instanceof Error) {
+    if (options.cause?.cause instanceof Error) {
       if (isSafeToRetry === undefined) {
         isSafeToRetry = isSafeToRetryFailedFetch(options.cause.cause) || undefined;
       }
@@ -253,7 +253,7 @@ export class FetchFailedError extends NetworkError {
         message = `Fetch failed: ${options.cause.cause.message}`;
       }
     }
-    super(message ?? 'Fetch failed', { ...options, isSafeToRetry });
+    super(message ?? 'Fetch failed', request, { ...options, isSafeToRetry });
   }
 }
 
@@ -278,7 +278,7 @@ export class HttpError extends NetworkError {
    */
   constructor(response: connection.ProcessedResponse, options: { cause?: Error, isSafeToRetry?: boolean | null } = {}) {
     const message = messages[response.status] ?? messages[500];
-    super(message, { ...options, request: response.request });
+    super(message, response.request, options);
     this.response = response;
     this.code = response.status;
   }
@@ -304,6 +304,13 @@ export class ArangoError extends Error {
    * @internal
    */
   isSafeToRetry: boolean | null = null;
+
+  /**
+   * @internal
+   */
+  get error(): true {
+    return true;
+  }
 
   /**
    * ArangoDB error code.
@@ -338,7 +345,7 @@ export class ArangoError extends Error {
   /**
    * Creates a new `ArangoError` from an ArangoDB error response.
    */
-  constructor(data: ArangoErrorResponse, options: { cause?: Error, isSafeToRetry?: boolean | null }) {
+  constructor(data: ArangoErrorResponse, options: { cause?: Error, isSafeToRetry?: boolean | null } = {}) {
     const { isSafeToRetry, ...opts } = options;
     super(data.errorMessage, opts);
     this.errorNum = data.errorNum;
@@ -390,5 +397,9 @@ export class ArangoError extends Error {
       errorNum: this.errorNum,
       code: this.code,
     };
+  }
+
+  toString() {
+    return `${this.name} ${this.errorNum}: ${this.message}`;
   }
 }

@@ -20,6 +20,10 @@ This driver uses semantic versioning:
 
 - Renamed `CollectionDropOptions` type to `DropCollectionOptions`
 - Renamed `CollectionTruncateOptions` type to `TruncateCollectionOptions`
+- Changed error type constructor signatures
+
+  The `request` property is now always positional and the `options` property
+  is always optional.
 
 ## [10.0.0-alpha.0] - 2024-11-28
 

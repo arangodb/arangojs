@@ -128,14 +128,14 @@ export function createRequest(
         if (signal.aborted) {
           const reason = typeof signal.reason == 'string' ? signal.reason : undefined;
           if (reason === REASON_TIMEOUT) {
-            error = new ResponseTimeoutError(undefined, { request });
+            error = new ResponseTimeoutError(undefined, request, { cause });
           } else {
-            error = new RequestAbortedError(reason, { request, cause });
+            error = new RequestAbortedError(reason, request, { cause });
           }
         } else if (cause instanceof TypeError) {
-          error = new FetchFailedError(undefined, { request, cause });
+          error = new FetchFailedError(undefined, request, { cause });
         } else {
-          error = new NetworkError(cause.message, { request, cause });
+          error = new NetworkError(cause.message, request, { cause });
         }
         if (config.afterResponse) {
           const p = config.afterResponse(error);
