@@ -255,7 +255,7 @@ allowing arangojs to provide more meaningful stack traces at the cost of an
 impact to performance even when no error occurs.
 
 ```diff
-  const { Database } = require("arangojs");
+  import { Database } from "arangojs";
 
   const db = new Database({
     url: ARANGODB_SERVER,
@@ -269,15 +269,47 @@ that do not support the `stack` property on error objects, this option will
 still impact performance but not result in any additional information becoming
 available.
 
+### Unix domain sockets
+
+If you want to use Unix domain sockets, you need to install the `undici` module,
+which is an optional dependency of arangojs.
+
+```sh
+npm install --save undici
+```
+
+If the `undici` module is not installed and arangojs attempts to make a request
+over a Unix domain socket, the request will fail with a plain `Error` with a
+message indicating that the `undici` module is unavailable.
+
 ### Node.js with self-signed HTTPS certificates
 
-If you need to support self-signed HTTPS certificates in Node.js, you may have
-to override the global fetch agent. At the time of this writing, there is no
-official way to do this for the native `fetch` implementation in Node.js.
+If you need to support self-signed HTTPS certificates in Node.js, you will need
+to install the `undici` module, which is an optional dependency of arangojs.
 
-However as Node.js uses the `undici` module for its `fetch` implementation
-internally, you can override the global agent by adding `undici` as a
-dependency to your project and using its `setGlobalDispatcher` as follows:
+```sh
+npm install --save undici
+```
+
+You can instruct arangojs to use the `undici` module by setting the
+`config.agentOptions` option:
+
+```diff
+  import { Database } from "arangojs";
+
+  const db = new Database({
+    url: ARANGODB_SERVER,
++   agentOptions: {
++     ca: [
++       fs.readFileSync(".ssl/sub.class1.server.ca.pem"),
++       fs.readFileSync(".ssl/ca.pem"),
++     ],
++   },
+  });
+```
+
+To override the global fetch agent instead, you can use the `undici` module's
+`setGlobalDispatcher` method as follows:
 
 ```js
 import { Agent, setGlobalDispatcher } from "undici";
@@ -293,20 +325,22 @@ setGlobalDispatcher(
 ```
 
 Although this is **strongly discouraged**, it's also possible to disable
-HTTPS certificate validation entirely, but note this has
+HTTPS certificate validation entirely this way, but note this has
 **extremely dangerous** security implications:
 
-```js
-import { Agent, setGlobalDispatcher } from "undici";
+```diff
+  import { Database } from "arangojs";
 
-setGlobalDispatcher(
-  new Agent({
-    rejectUnauthorized: false,
-  })
-);
+  const db = new Database({
+    url: ARANGODB_SERVER,
++   agentOptions: {
++     rejectUnauthorized: false,
++   },
+  });
 ```
 
-This is a [known limitation](https://github.com/orgs/nodejs/discussions/44038#discussioncomment-5701073)
+The requirement to use the `undici` module to override these settings is a
+[known limitation](https://github.com/orgs/nodejs/discussions/44038#discussioncomment-5701073)
 of Node.js at the time of this writing.
 
 When using arangojs in the browser, self-signed HTTPS certificates need to

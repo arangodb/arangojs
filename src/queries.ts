@@ -4,7 +4,7 @@
  * ```
  *
  * The "query" module provides query related types for TypeScript.
- * 
+ *
  * @packageDocumentation
  */
 

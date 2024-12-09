@@ -38,14 +38,14 @@ describe("Accessing graphs", function () {
         ...vertexCollectionNames.map(async (name) => {
           const collection = await db.createCollection(name);
           await db.waitForPropagation(
-            { path: `/_api/collection/${collection.name}` },
+            { pathname: `/_api/collection/${collection.name}` },
             10000
           );
         }),
         ...edgeCollectionNames.map(async (name) => {
           const collection = await db.createEdgeCollection(name);
           await db.waitForPropagation(
-            { path: `/_api/collection/${collection.name}` },
+            { pathname: `/_api/collection/${collection.name}` },
             10000
           );
         }),
@@ -61,7 +61,7 @@ describe("Accessing graphs", function () {
             }))
           );
           await db.waitForPropagation(
-            { path: `/_api/gharial/${graph.name}` },
+            { pathname: `/_api/gharial/${graph.name}` },
             10000
           );
         }),
@@ -90,14 +90,14 @@ describe("Accessing graphs", function () {
         ...vertexCollectionNames.map(async (name) => {
           const collection = await db.createCollection(name);
           await db.waitForPropagation(
-            { path: `/_api/collection/${collection.name}` },
+            { pathname: `/_api/collection/${collection.name}` },
             10000
           );
         }),
         ...edgeCollectionNames.map(async (name) => {
           const collection = await db.createEdgeCollection(name);
           await db.waitForPropagation(
-            { path: `/_api/collection/${collection.name}` },
+            { pathname: `/_api/collection/${collection.name}` },
             10000
           );
         }),
@@ -113,7 +113,7 @@ describe("Accessing graphs", function () {
             }))
           );
           await db.waitForPropagation(
-            { path: `/_api/gharial/${graph.name}` },
+            { pathname: `/_api/gharial/${graph.name}` },
             10000
           );
         }),

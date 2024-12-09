@@ -141,7 +141,7 @@ export type ServerStatusInformation = {
   license: "community" | "enterprise";
   /**
    * Server operation mode.
-   * 
+   *
    * @deprecated use `operationMode` instead
    */
   mode: "server" | "console";
@@ -213,7 +213,7 @@ export type ServerStatusInformation = {
     version: string;
     /**
      * Whether writes are enabled.
-     * 
+     *
      * @deprecated Use `readOnly` instead.
      */
     writeOpsEnabled: boolean;
@@ -224,9 +224,9 @@ export type ServerStatusInformation = {
  * Server availability.
  *
  * - `"default"`: The server is operational.
- * 
+ *
  * - `"readonly"`: The server is in read-only mode.
- * 
+ *
  * - `false`: The server is not available.
  */
 export type ServerAvailability = "default" | "readonly" | false;
@@ -245,9 +245,9 @@ export type SingleServerSupportInfo = {
   deployment: {
     /**
      * Deployment mode:
-     * 
+     *
      * - `"single"`: A single server deployment.
-     * 
+     *
      * - `"cluster"`: A cluster deployment.
      */
     type: "single";
@@ -268,9 +268,9 @@ export type ClusterSupportInfo = {
   deployment: {
     /**
      * Deployment mode:
-     * 
+     *
      * - `"single"`: A single server deployment.
-     * 
+     *
      * - `"cluster"`: A cluster deployment.
      */
     type: "cluster";

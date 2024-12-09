@@ -4,7 +4,7 @@ import { Database } from "../databases.js";
 import { config } from "./_config.js";
 
 function waitForAnalyzer(db: Database, name: string) {
-  return db.waitForPropagation({ path: `/_api/analyzer/${name}` }, 30000);
+  return db.waitForPropagation({ pathname: `/_api/analyzer/${name}` }, 30000);
 }
 
 describe("Manipulating analyzers", function () {

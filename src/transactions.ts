@@ -280,7 +280,7 @@ export class Transaction {
   get(): Promise<TransactionInfo> {
     return this._db.request(
       {
-        path: `/_api/transaction/${encodeURIComponent(this.id)}`,
+        pathname: `/_api/transaction/${encodeURIComponent(this.id)}`,
       },
       (res) => res.parsedBody.result
     );
@@ -306,7 +306,7 @@ export class Transaction {
     return this._db.request(
       {
         method: "PUT",
-        path: `/_api/transaction/${encodeURIComponent(this.id)}`,
+        pathname: `/_api/transaction/${encodeURIComponent(this.id)}`,
         allowDirtyRead,
       },
       (res) => res.parsedBody.result
@@ -333,7 +333,7 @@ export class Transaction {
     return this._db.request(
       {
         method: "DELETE",
-        path: `/_api/transaction/${encodeURIComponent(this.id)}`,
+        pathname: `/_api/transaction/${encodeURIComponent(this.id)}`,
         allowDirtyRead,
       },
       (res) => res.parsedBody.result

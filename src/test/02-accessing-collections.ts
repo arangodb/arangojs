@@ -42,7 +42,7 @@ describe("Accessing collections", function () {
         ...nonSystemCollectionNames.map(async (name) => {
           const collection = await db.createCollection(name);
           await db.waitForPropagation(
-            { path: `/_api/collection/${collection.name}` },
+            { pathname: `/_api/collection/${collection.name}` },
             10000
           );
         }),
@@ -50,7 +50,7 @@ describe("Accessing collections", function () {
           const collection = db.collection(name);
           await collection.create({ isSystem: true });
           await db.waitForPropagation(
-            { path: `/_api/collection/${collection.name}` },
+            { pathname: `/_api/collection/${collection.name}` },
             10000
           );
         }),
@@ -94,14 +94,14 @@ describe("Accessing collections", function () {
         ...documentCollectionNames.map(async (name) => {
           const collection = await db.createCollection(name);
           await db.waitForPropagation(
-            { path: `/_api/collection/${collection.name}` },
+            { pathname: `/_api/collection/${collection.name}` },
             10000
           );
         }),
         ...edgeCollectionNames.map(async (name) => {
           const collection = await db.createEdgeCollection(name);
           await db.waitForPropagation(
-            { path: `/_api/collection/${collection.name}` },
+            { pathname: `/_api/collection/${collection.name}` },
             10000
           );
         }),
@@ -109,7 +109,7 @@ describe("Accessing collections", function () {
           const collection = db.collection(name);
           await collection.create({ isSystem: true });
           await db.waitForPropagation(
-            { path: `/_api/collection/${collection.name}` },
+            { pathname: `/_api/collection/${collection.name}` },
             10000
           );
         }),

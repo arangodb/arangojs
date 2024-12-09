@@ -42,7 +42,7 @@ describe("Accessing analyzers", function () {
           const analyzer = db.analyzer(name.replace(/^[^:]+::/, ""));
           await analyzer.create({ type: "identity" });
           await db.waitForPropagation(
-            { path: `/_api/analyzer/${analyzer.name}` },
+            { pathname: `/_api/analyzer/${analyzer.name}` },
             65000
           );
         })
@@ -70,7 +70,7 @@ describe("Accessing analyzers", function () {
           const analyzer = db.analyzer(name.replace(/^[^:]+::/, ""));
           await analyzer.create({ type: "identity" });
           await db.waitForPropagation(
-            { path: `/_api/analyzer/${analyzer.name}` },
+            { pathname: `/_api/analyzer/${analyzer.name}` },
             65000
           );
         })

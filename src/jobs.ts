@@ -89,7 +89,7 @@ export class Job<ResultType = any> {
         res = await this._db.request(
           {
             method: "PUT",
-            path: `/_api/job/${this._id}`,
+            pathname: `/_api/job/${this._id}`,
           },
           false
         );
@@ -119,7 +119,7 @@ export class Job<ResultType = any> {
     return this._db.request(
       {
         method: "PUT",
-        path: `/_api/job/${this._id}/cancel`,
+        pathname: `/_api/job/${this._id}/cancel`,
       },
       () => undefined
     );
@@ -132,7 +132,7 @@ export class Job<ResultType = any> {
     return this._db.request(
       {
         method: "DELETE",
-        path: `/_api/job/${this._id}`,
+        pathname: `/_api/job/${this._id}`,
       },
       () => undefined
     );
@@ -157,7 +157,7 @@ export class Job<ResultType = any> {
   getCompleted(): Promise<boolean> {
     return this._db.request(
       {
-        path: `/_api/job/${this._id}`,
+        pathname: `/_api/job/${this._id}`,
       },
       (res) => res.status !== 204
     );

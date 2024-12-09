@@ -2275,7 +2275,7 @@ export class Collection<
   //#region Collection operations
   get() {
     return this._db.request({
-      path: `/_api/collection/${encodeURIComponent(this._name)}`,
+      pathname: `/_api/collection/${encodeURIComponent(this._name)}`,
     });
   }
 
@@ -2327,7 +2327,7 @@ export class Collection<
     }
     return this._db.request({
       method: "POST",
-      path: "/_api/collection",
+      pathname: "/_api/collection",
       search,
       body: {
         ...opts,
@@ -2341,12 +2341,12 @@ export class Collection<
   ): Promise<connection.ArangoApiResponse<CollectionDescription & CollectionProperties>> {
     if (!properties) {
       return this._db.request({
-        path: `/_api/collection/${encodeURIComponent(this._name)}/properties`,
+        pathname: `/_api/collection/${encodeURIComponent(this._name)}/properties`,
       });
     }
     return this._db.request({
       method: "PUT",
-      path: `/_api/collection/${encodeURIComponent(this._name)}/properties`,
+      pathname: `/_api/collection/${encodeURIComponent(this._name)}/properties`,
       body: properties,
     });
   }
@@ -2357,7 +2357,7 @@ export class Collection<
     >
   > {
     return this._db.request({
-      path: `/_api/collection/${encodeURIComponent(this._name)}/count`,
+      pathname: `/_api/collection/${encodeURIComponent(this._name)}/count`,
     });
   }
 
@@ -2365,7 +2365,7 @@ export class Collection<
     return this._db.request(
       {
         method: "PUT",
-        path: `/_api/collection/${encodeURIComponent(
+        pathname: `/_api/collection/${encodeURIComponent(
           this._name
         )}/recalculateCount`,
       },
@@ -2381,7 +2381,7 @@ export class Collection<
     >
   > {
     return this._db.request({
-      path: `/_api/collection/${encodeURIComponent(this._name)}/figures`,
+      pathname: `/_api/collection/${encodeURIComponent(this._name)}/figures`,
       search: { details },
     });
   }
@@ -2392,7 +2392,7 @@ export class Collection<
     >
   > {
     return this._db.request({
-      path: `/_api/collection/${encodeURIComponent(this._name)}/revision`,
+      pathname: `/_api/collection/${encodeURIComponent(this._name)}/revision`,
     });
   }
 
@@ -2404,7 +2404,7 @@ export class Collection<
     >
   > {
     return this._db.request({
-      path: `/_api/collection/${encodeURIComponent(this._name)}/checksum`,
+      pathname: `/_api/collection/${encodeURIComponent(this._name)}/checksum`,
       search: options,
     });
   }
@@ -2418,7 +2418,7 @@ export class Collection<
   truncate(options?: TruncateCollectionOptions): Promise<connection.ArangoApiResponse<CollectionDescription>> {
     return this._db.request({
       method: "PUT",
-      path: `/_api/collection/${this._name}/truncate`,
+      pathname: `/_api/collection/${this._name}/truncate`,
       search: options,
     });
   }
@@ -2426,7 +2426,7 @@ export class Collection<
   drop(options?: DropCollectionOptions) {
     return this._db.request({
       method: "DELETE",
-      path: `/_api/collection/${encodeURIComponent(this._name)}`,
+      pathname: `/_api/collection/${encodeURIComponent(this._name)}`,
       search: options,
     });
   }
@@ -2435,7 +2435,7 @@ export class Collection<
     return this._db.request(
       {
         method: "PUT",
-        path: `/_api/collection/${this._name}/compact`,
+        pathname: `/_api/collection/${this._name}/compact`,
       }
     );
   }
@@ -2448,7 +2448,7 @@ export class Collection<
     return this._db.request(
       {
         method: "PUT",
-        path: `/_api/collection/${encodeURIComponent(
+        pathname: `/_api/collection/${encodeURIComponent(
           this._name
         )}/responsibleShard`,
         body: document,
@@ -2473,7 +2473,7 @@ export class Collection<
       return await this._db.request(
         {
           method: "HEAD",
-          path: `/_api/document/${encodeURI(
+          pathname: `/_api/document/${encodeURI(
             documents._documentHandle(selector, this._name)
           )}`,
           headers,
@@ -2500,7 +2500,7 @@ export class Collection<
     const { allowDirtyRead = undefined } = options;
     return this._db.request({
       method: "PUT",
-      path: `/_api/document/${encodeURIComponent(this._name)}`,
+      pathname: `/_api/document/${encodeURIComponent(this._name)}`,
       search: { onlyget: true },
       allowDirtyRead,
       body: selectors,
@@ -2525,7 +2525,7 @@ export class Collection<
     if (ifNoneMatch) headers["if-none-match"] = ifNoneMatch;
     const result = this._db.request(
       {
-        path: `/_api/document/${encodeURI(
+        pathname: `/_api/document/${encodeURI(
           documents._documentHandle(selector, this._name)
         )}`,
         headers,
@@ -2553,7 +2553,7 @@ export class Collection<
     return this._db.request(
       {
         method: "POST",
-        path: `/_api/document/${encodeURIComponent(this._name)}`,
+        pathname: `/_api/document/${encodeURIComponent(this._name)}`,
         body: data,
         search: options,
       },
@@ -2568,7 +2568,7 @@ export class Collection<
     return this._db.request(
       {
         method: "POST",
-        path: `/_api/document/${encodeURIComponent(this._name)}`,
+        pathname: `/_api/document/${encodeURIComponent(this._name)}`,
         body: data,
         search: options,
       },
@@ -2587,7 +2587,7 @@ export class Collection<
     return this._db.request(
       {
         method: "PUT",
-        path: `/_api/document/${encodeURI(
+        pathname: `/_api/document/${encodeURI(
           documents._documentHandle(selector, this._name)
         )}`,
         headers,
@@ -2607,7 +2607,7 @@ export class Collection<
     return this._db.request(
       {
         method: "PUT",
-        path: `/_api/document/${encodeURIComponent(this._name)}`,
+        pathname: `/_api/document/${encodeURIComponent(this._name)}`,
         body: newData,
         search: options,
       },
@@ -2626,7 +2626,7 @@ export class Collection<
     return this._db.request(
       {
         method: "PATCH",
-        path: `/_api/document/${encodeURI(
+        pathname: `/_api/document/${encodeURI(
           documents._documentHandle(selector, this._name)
         )}`,
         headers,
@@ -2646,7 +2646,7 @@ export class Collection<
     return this._db.request(
       {
         method: "PATCH",
-        path: `/_api/document/${encodeURIComponent(this._name)}`,
+        pathname: `/_api/document/${encodeURIComponent(this._name)}`,
         body: newData,
         search: options,
       },
@@ -2661,7 +2661,7 @@ export class Collection<
     return this._db.request(
       {
         method: "DELETE",
-        path: `/_api/document/${encodeURI(
+        pathname: `/_api/document/${encodeURI(
           documents._documentHandle(selector, this._name)
         )}`,
         headers,
@@ -2678,7 +2678,7 @@ export class Collection<
     return this._db.request(
       {
         method: "DELETE",
-        path: `/_api/document/${encodeURIComponent(this._name)}`,
+        pathname: `/_api/document/${encodeURIComponent(this._name)}`,
         body: selectors,
         search: options,
       },
@@ -2700,7 +2700,7 @@ export class Collection<
     }
     return this._db.request({
       method: "POST",
-      path: "/_api/import",
+      pathname: "/_api/import",
       body: data,
       isBinary: true,
       search,
@@ -2716,7 +2716,7 @@ export class Collection<
   ) {
     const { allowDirtyRead = undefined } = options;
     return this._db.request({
-      path: `/_api/edges/${encodeURIComponent(this._name)}`,
+      pathname: `/_api/edges/${encodeURIComponent(this._name)}`,
       allowDirtyRead,
       search: {
         direction,
@@ -2743,7 +2743,7 @@ export class Collection<
     return this._db.request(
       {
         method: "PUT",
-        path: `/_api/collection/${encodeURIComponent(
+        pathname: `/_api/collection/${encodeURIComponent(
           this._name
         )}/loadIndexesIntoMemory`,
       },
@@ -2754,7 +2754,7 @@ export class Collection<
   indexes(options?: indexes.ListIndexesOptions) {
     return this._db.request(
       {
-        path: "/_api/index",
+        pathname: "/_api/index",
         search: { collection: this._name, ...options },
       },
       (res) => res.parsedBody.indexes
@@ -2763,14 +2763,14 @@ export class Collection<
 
   index(selector: indexes.IndexSelector) {
     return this._db.request({
-      path: `/_api/index/${encodeURI(indexes._indexHandle(selector, this._name))}`,
+      pathname: `/_api/index/${encodeURI(indexes._indexHandle(selector, this._name))}`,
     });
   }
 
   ensureIndex(options: indexes.EnsureIndexOptions) {
     return this._db.request({
       method: "POST",
-      path: "/_api/index",
+      pathname: "/_api/index",
       body: options,
       search: { collection: this._name },
     });
@@ -2779,7 +2779,7 @@ export class Collection<
   dropIndex(selector: indexes.IndexSelector) {
     return this._db.request({
       method: "DELETE",
-      path: `/_api/index/${encodeURI(indexes._indexHandle(selector, this._name))}`,
+      pathname: `/_api/index/${encodeURI(indexes._indexHandle(selector, this._name))}`,
     });
   }
   //#endregion

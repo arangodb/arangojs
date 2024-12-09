@@ -28,7 +28,7 @@ describe("Query Management API", function () {
     // the following makes calls to /_db/${name} on all coordinators, thus waiting
     // long enough for the database to become available on all instances
     if (Array.isArray(config.url)) {
-      await db.waitForPropagation({ path: `/_api/version` }, 10000);
+      await db.waitForPropagation({ pathname: `/_api/version` }, 10000);
     }
   });
   after(async () => {
@@ -95,7 +95,7 @@ describe("Query Management API", function () {
       });
       allCursors.push(cursor);
       expect(cursor.count).to.equal(10);
-      expect((cursor as any).batches.hasMore).to.equal(true);
+      expect(cursor.batches.hasMore).to.equal(true);
     });
     it("supports AQB queries", async () => {
       const cursor = await db.query({ toAQL: () => "RETURN 42" });
@@ -126,7 +126,7 @@ describe("Query Management API", function () {
       const cursor = await db.query(query, { batchSize: 2, count: true });
       allCursors.push(cursor);
       expect(cursor.count).to.equal(10);
-      expect((cursor as any).batches.hasMore).to.equal(true);
+      expect(cursor.batches.hasMore).to.equal(true);
     });
   });
 

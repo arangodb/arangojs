@@ -226,7 +226,7 @@ describe("Item-wise Cursor API", () => {
       try {
         await db.request({
           method: "PUT",
-          path: `/_api/cursor/${id}`,
+          pathname: `/_api/cursor/${id}`,
           hostUrl: hostUrl,
         });
       } catch (e: any) {
@@ -442,7 +442,7 @@ describe("Batch-wise Cursor API", () => {
       try {
         await db.request({
           method: "PUT",
-          path: `/_api/cursor/${id}`,
+          pathname: `/_api/cursor/${id}`,
           hostUrl: hostUrl,
         });
       } catch (e: any) {

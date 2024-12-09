@@ -37,7 +37,7 @@ describe("Accessing views", function () {
           const view = db.view(name);
           await view.create({ type: "arangosearch" });
           await db.waitForPropagation(
-            { path: `/_api/view/${view.name}` },
+            { pathname: `/_api/view/${view.name}` },
             10000
           );
         })
@@ -60,7 +60,7 @@ describe("Accessing views", function () {
           const view = db.view(name);
           await view.create({ type: "arangosearch" });
           await db.waitForPropagation(
-            { path: `/_api/view/${view.name}` },
+            { pathname: `/_api/view/${view.name}` },
             10000
           );
         })

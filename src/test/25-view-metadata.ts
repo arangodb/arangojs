@@ -16,7 +16,7 @@ describe("View metadata", function () {
     db = system.database(dbName);
     view = db.view(viewName);
     await view.create({ type: "arangosearch" });
-    await db.waitForPropagation({ path: `/_api/view/${view.name}` }, 10000);
+    await db.waitForPropagation({ pathname: `/_api/view/${view.name}` }, 10000);
   });
   after(async () => {
     await system.dropDatabase(dbName);

@@ -24,7 +24,7 @@ describe("DocumentCollection API", function () {
   beforeEach(async () => {
     collection = await db.createCollection(`c_${Date.now()}`);
     await db.waitForPropagation(
-      { path: `/_api/collection/${collection.name}` },
+      { pathname: `/_api/collection/${collection.name}` },
       10000
     );
   });

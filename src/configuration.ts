@@ -1,13 +1,14 @@
 /**
  * ```ts
- * import type { Config } from "arangojs/config";
+ * import type { ConfigOptions } from "arangojs/configuration";
  * ```
  *
- * The "config" module provides configuration related types for TypeScript.
+ * The "configuration" module provides configuration related types for
+ * TypeScript.
  *
  * @packageDocumentation
  */
-import * as errors from "./errors.js";
+import * as connection from "./connection.js";
 
 //#region Shared types
 /**
@@ -62,7 +63,7 @@ export function isBearerAuth(auth: BasicAuthCredentials | BearerAuthCredentials)
 /**
  * Options for configuring arangojs.
  */
-export type Config = {
+export type ConfigOptions = connection.CommonRequestOptions & {
   /**
    * Name of the database to use.
    *
@@ -136,35 +137,6 @@ export type Config = {
    */
   loadBalancingStrategy?: LoadBalancingStrategy;
   /**
-   * Determines the behavior when a request fails because the underlying
-   * connection to the server could not be opened
-   * (i.e. [`ECONNREFUSED` in Node.js](https://nodejs.org/api/errors.html#errors_common_system_errors)):
-   *
-   * - `false`: the request fails immediately.
-   *
-   * - `0`: the request is retried until a server can be reached but only a
-   *   total number of times matching the number of known servers (including
-   *   the initial failed request).
-   *
-   * - any other number: the request is retried until a server can be reached
-   *   or the request has been retried a total of `maxRetries` number of times
-   *   (not including the initial failed request).
-   *
-   * When working with a single server, the retries (if any) will be made to
-   * the same server.
-   *
-   * This setting currently has no effect when using arangojs in a browser.
-   *
-   * **Note**: Requests bound to a specific server (e.g. fetching query results)
-   * will never be retried automatically and ignore this setting.
-   *
-   * **Note**: To set the number of retries when a write-write conflict is
-   * encountered, see `retryOnConflict` instead.
-   *
-   * Default: `0`
-   */
-  maxRetries?: false | number;
-  /**
    * Maximum number of parallel requests arangojs will perform. If any
    * additional requests are attempted, they will be enqueued until one of the
    * active requests has completed.
@@ -177,64 +149,28 @@ export type Config = {
    */
   poolSize?: number;
   /**
-   * (Browser only.) Determines whether credentials (e.g. cookies) will be sent
-   * with requests to the ArangoDB server.
+   * Default options to pass to the `fetch` function when making requests.
    *
-   * If set to `same-origin`, credentials will only be included with requests
-   * on the same URL origin as the invoking script. If set to `include`,
-   * credentials will always be sent. If set to `omit`, credentials will be
-   * excluded from all requests.
-   *
-   * Default: `same-origin`
+   * See [the Fetch API specification](https://fetch.spec.whatwg.org/#request-class)
+   * or the [MDN Web Docs](https://developer.mozilla.org/en-US/docs/Web/API/RequestInit)
+   * for more information on the available options.
    */
-  credentials?: "omit" | "include" | "same-origin";
+  fetchOptions?: connection.CommonFetchOptions;
   /**
-   * If set to `true`, requests will keep the underlying connection open until
-   * it times out or is closed. In browsers this prevents requests from being
-   * cancelled when the user navigates away from the page.
+   * If set, arangojs will use the [`undici`](https://www.npmjs.com/package/undici)
+   * package to make requests and the provided options will be used to create
+   * the `undici` agent.
    *
-   * Default: `true`
+   * See [the `undici` documentation](https://undici.nodejs.org/#/docs/api/Agent?id=parameter-agentoptions)
+   * for more information on the available options.
    */
-  keepalive?: boolean;
-  /**
-   * Callback that will be invoked with the finished request object before it
-   * is finalized. In the browser the request may already have been sent.
-   *
-   * @param req - Request object or XHR instance used for this request.
-   */
-  beforeRequest?: (req: globalThis.Request) => void | Promise<void>;
-  /**
-   * Callback that will be invoked when the server response has been received
-   * and processed or when the request has been failed without a response.
-   *
-   * The originating request will be available as the `request` property
-   * on either the error or response object.
-   *
-   * @param err - Error encountered when handling this request or `null`.
-   * @param res - Response object for this request, if no error occurred.
-   */
-  afterResponse?: (err: errors.NetworkError | null, res?: globalThis.Response & { request: globalThis.Request; }) => void | Promise<void>;
+  agentOptions?: any;
   /**
    * Callback that will be invoked when a request
    *
    * @param err - Error encountered when handling this request.
    */
   onError?: (err: Error) => void | Promise<void>;
-  /**
-   * If set to a positive number, requests will automatically be retried at
-   * most this many times if they result in a write-write conflict.
-   *
-   * Default: `0`
-   */
-  retryOnConflict?: number;
-  /**
-   * An object with additional headers to send with every request.
-   *
-   * If an `"authorization"` header is provided, it will be overridden when
-   * using {@link databases.Database#useBasicAuth}, {@link databases.Database#useBearerAuth} or
-   * the `auth` configuration option.
-   */
-  headers?: Headers | Record<string, string>;
   /**
    * If set to `true`, arangojs will generate stack traces every time a request
    * is initiated and augment the stack traces of any errors it generates.

@@ -1,5 +1,4 @@
-import { LoadBalancingStrategy } from "../connection.js";
-import { Config } from "../config.js";
+import { ConfigOptions, LoadBalancingStrategy } from "../configuration.js";
 
 const ARANGO_URL = process.env.TEST_ARANGODB_URL || "http://127.0.0.1:8529";
 const ARANGO_VERSION = Number(
@@ -18,8 +17,8 @@ else if (ARANGO_RELEASE.includes(".")) {
 const ARANGO_LOAD_BALANCING_STRATEGY = process.env
   .TEST_ARANGO_LOAD_BALANCING_STRATEGY as LoadBalancingStrategy | undefined;
 
-export const config: Config & {
-  arangoVersion: NonNullable<Config["arangoVersion"]>;
+export const config: ConfigOptions & {
+  arangoVersion: NonNullable<ConfigOptions["arangoVersion"]>;
 } = ARANGO_URL.includes(",")
     ? {
       url: ARANGO_URL.split(",").filter((s) => Boolean(s)),

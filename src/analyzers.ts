@@ -912,7 +912,7 @@ export class Analyzer {
    */
   get(): Promise<connection.ArangoApiResponse<AnalyzerDescription>> {
     return this._db.request({
-      path: `/_api/analyzer/${encodeURIComponent(this._name)}`,
+      pathname: `/_api/analyzer/${encodeURIComponent(this._name)}`,
     });
   }
 
@@ -972,7 +972,7 @@ export class Analyzer {
   > {
     return this._db.request({
       method: "POST",
-      path: "/_api/analyzer",
+      pathname: "/_api/analyzer",
       body: { name: this._name, ...options },
     });
   }
@@ -994,7 +994,7 @@ export class Analyzer {
   drop(force: boolean = false): Promise<connection.ArangoApiResponse<{ name: string }>> {
     return this._db.request({
       method: "DELETE",
-      path: `/_api/analyzer/${encodeURIComponent(this._name)}`,
+      pathname: `/_api/analyzer/${encodeURIComponent(this._name)}`,
       search: { force },
     });
   }

@@ -14,14 +14,14 @@ async function createCollections(db: Database) {
     ...vertexCollectionNames.map(async (name) => {
       const collection = await db.createCollection(name);
       await db.waitForPropagation(
-        { path: `/_api/collection/${collection.name}` },
+        { pathname: `/_api/collection/${collection.name}` },
         10000
       );
     }),
     ...edgeCollectionNames.map(async (name) => {
       const collection = await db.createEdgeCollection(name);
       await db.waitForPropagation(
-        { path: `/_api/collection/${collection.name}` },
+        { pathname: `/_api/collection/${collection.name}` },
         10000
       );
     }),
@@ -41,8 +41,8 @@ async function createGraph(
       to: vertexCollectionNames,
     }))
   );
-  await (graph as any)._db.waitForPropagation(
-    { path: `/_api/gharial/${graph.name}` },
+  await graph.database.waitForPropagation(
+    { pathname: `/_api/gharial/${graph.name}` },
     10000
   );
   return result;
@@ -91,7 +91,7 @@ describe("Manipulating graph vertices", function () {
     beforeEach(async () => {
       vertexCollection = await db.createCollection(`xc_${Date.now()}`);
       await db.waitForPropagation(
-        { path: `/_api/collection/${vertexCollection.name}` },
+        { pathname: `/_api/collection/${vertexCollection.name}` },
         10000
       );
     });
@@ -108,7 +108,7 @@ describe("Manipulating graph vertices", function () {
     beforeEach(async () => {
       vertexCollection = await db.createCollection(`xc_${Date.now()}`);
       await db.waitForPropagation(
-        { path: `/_api/collection/${vertexCollection.name}` },
+        { pathname: `/_api/collection/${vertexCollection.name}` },
         10000
       );
       await graph.addVertexCollection(vertexCollection.name);

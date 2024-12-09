@@ -553,7 +553,7 @@ export class View {
    */
   get(): Promise<connections.ArangoApiResponse<ViewDescription>> {
     return this._db.request({
-      path: `/_api/view/${encodeURIComponent(this._name)}`,
+      pathname: `/_api/view/${encodeURIComponent(this._name)}`,
     });
   }
 
@@ -604,7 +604,7 @@ export class View {
   > {
     return this._db.request({
       method: "POST",
-      path: "/_api/view",
+      pathname: "/_api/view",
       body: {
         ...options,
         name: this._name,
@@ -653,7 +653,7 @@ export class View {
    */
   properties(): Promise<connections.ArangoApiResponse<ViewProperties>> {
     return this._db.request({
-      path: `/_api/view/${encodeURIComponent(this._name)}/properties`,
+      pathname: `/_api/view/${encodeURIComponent(this._name)}/properties`,
     });
   }
 
@@ -683,7 +683,7 @@ export class View {
   > {
     return this._db.request({
       method: "PATCH",
-      path: `/_api/view/${encodeURIComponent(this._name)}/properties`,
+      pathname: `/_api/view/${encodeURIComponent(this._name)}/properties`,
       body: properties ?? {},
     });
   }
@@ -714,7 +714,7 @@ export class View {
   > {
     return this._db.request({
       method: "PUT",
-      path: `/_api/view/${encodeURIComponent(this._name)}/properties`,
+      pathname: `/_api/view/${encodeURIComponent(this._name)}/properties`,
       body: properties ?? {},
     });
   }
@@ -735,7 +735,7 @@ export class View {
     return this._db.request(
       {
         method: "DELETE",
-        path: `/_api/view/${encodeURIComponent(this._name)}`,
+        pathname: `/_api/view/${encodeURIComponent(this._name)}`,
       },
       (res) => res.parsedBody.result
     );

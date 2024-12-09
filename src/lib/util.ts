@@ -10,16 +10,21 @@ const THIRTY_MINUTES = 30 * 60_000;
 /**
  * @internal
  *
- * Helper to merge two path segments.
+ * Helper to merge path segments.
  */
 export function joinPath(
-  basePath: string | undefined,
-  path: string | undefined
-): string | undefined {
-  if (!basePath) return path;
-  if (!path) return basePath;
-  if (!basePath.endsWith("/")) basePath += "/";
-  return basePath + path.replace(/^\//g, "");
+  ...pathList: (string | undefined)[]
+): string {
+  if (!pathList.length) return "";
+  return pathList.flatMap((path, i) => {
+    if (!path) return [];
+    if (i === pathList.length - 1) {
+      if (i === 0) return [path];
+      return [path.replace(/^\/+/, "")];
+    }
+    if (i === 0) return [path.replace(/\/+$/, "")];
+    return [path.replace(/^\/+|\/+$/, "")];
+  }).join("/");
 }
 
 /**
@@ -28,12 +33,12 @@ export function joinPath(
  * Utility function for merging headers.
  */
 export function mergeHeaders(
-  ...headerses: (Headers | string[][] | Record<string, string | ReadonlyArray<string>> | undefined)[]
+  ...headersList: (Headers | string[][] | Record<string, string | ReadonlyArray<string>> | undefined)[]
 ) {
-  if (!headerses.length) return new Headers();
+  if (!headersList.length) return new Headers();
   return new Headers([
-    ...headerses.flatMap(item => item ? [
-      ...((item instanceof Headers || Array.isArray(item)) ? item : new Headers(item))
+    ...headersList.flatMap(headers => headers ? [
+      ...((headers instanceof Headers || Array.isArray(headers)) ? headers : new Headers(headers))
     ] : []),
   ]);
 }
@@ -48,6 +53,7 @@ export function normalizeUrl(url: string): string {
   if (raw) url = (raw[1] === "tcp" ? "http" : "https") + raw[2];
   const unix = url.match(/^(?:(http|https)\+)?unix:\/\/(\/.+)/);
   if (unix) url = `${unix[1] || "http"}://unix:${unix[2]}`;
+  else if (!url.endsWith('/')) url += '/';
   return url;
 }
 

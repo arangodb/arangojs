@@ -42,7 +42,7 @@ describe("Transactions", function () {
     beforeEach(async () => {
       collection = await db.createCollection(`collection-${Date.now()}`);
       await db.waitForPropagation(
-        { path: `/_api/collection/${collection.name}` },
+        { pathname: `/_api/collection/${collection.name}` },
         10000
       );
     });
@@ -57,7 +57,7 @@ describe("Transactions", function () {
 
     it("can run concurrent transactions in parallel", async () => {
       const conn = (db as any)._connection as Connection;
-      const range = Array.from(Array((conn as any)._maxTasks).keys()).map(
+      const range = Array.from(Array((conn as any)._taskPoolSize).keys()).map(
         (i) => i + 1
       );
       let failed = 0;
@@ -112,7 +112,7 @@ describe("Transactions", function () {
     });
     it("respects transactional guarantees", async () => {
       const conn = (db as any)._connection as Connection;
-      const range = Array.from(Array((conn as any)._maxTasks).keys()).map(
+      const range = Array.from(Array((conn as any)._taskPoolSize).keys()).map(
         (i) => i + 1
       );
       const key = "test";

@@ -52,7 +52,7 @@ describe("Transactions", () => {
     beforeEach(async () => {
       collection = await db.createCollection(`collection-${Date.now()}`);
       await db.waitForPropagation(
-        { path: `/_api/collection/${collection.name}` },
+        { pathname: `/_api/collection/${collection.name}` },
         10000
       );
     });

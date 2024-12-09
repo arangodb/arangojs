@@ -46,7 +46,7 @@ describe("AQL Stream queries", function () {
       });
       allCursors.push(cursor);
       expect(cursor.count).to.equal(undefined);
-      expect((cursor as any).batches.hasMore).to.equal(true);
+      expect(cursor.batches.hasMore).to.equal(true);
     });
     it("supports compact queries with options", async () => {
       const query: any = {
@@ -60,7 +60,7 @@ describe("AQL Stream queries", function () {
       });
       allCursors.push(cursor);
       expect(cursor.count).to.equal(undefined); // count will be ignored
-      expect((cursor as any).batches.hasMore).to.equal(true);
+      expect(cursor.batches.hasMore).to.equal(true);
     });
   });
   describe("with some data", () => {
@@ -68,7 +68,7 @@ describe("AQL Stream queries", function () {
     before(async () => {
       const collection = await db.createCollection(cname);
       await db.waitForPropagation(
-        { path: `/_api/collection/${collection.name}` },
+        { pathname: `/_api/collection/${collection.name}` },
         10000
       );
       await Promise.all(

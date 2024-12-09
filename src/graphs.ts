@@ -465,7 +465,7 @@ export class GraphVertexCollection<
       return await this._db.request(
         {
           method: "HEAD",
-          path: `/_api/gharial/${encodeURIComponent(
+          pathname: `/_api/gharial/${encodeURIComponent(
             this.graph.name
           )}/vertex/${encodeURI(documents._documentHandle(selector, this._name))}`,
         },
@@ -573,7 +573,7 @@ export class GraphVertexCollection<
     if (rev) headers["if-match"] = rev;
     const result = this._db.request(
       {
-        path: `/_api/gharial/${encodeURIComponent(
+        pathname: `/_api/gharial/${encodeURIComponent(
           this.graph.name
         )}/vertex/${encodeURI(documents._documentHandle(selector, this._name))}`,
         headers,
@@ -618,7 +618,7 @@ export class GraphVertexCollection<
     return this._db.request(
       {
         method: "POST",
-        path: `/_api/gharial/${encodeURIComponent(
+        pathname: `/_api/gharial/${encodeURIComponent(
           this.graph.name
         )}/vertex/${encodeURIComponent(this._name)}`,
         body: data,
@@ -671,7 +671,7 @@ export class GraphVertexCollection<
     return this._db.request(
       {
         method: "PUT",
-        path: `/_api/gharial/${encodeURIComponent(
+        pathname: `/_api/gharial/${encodeURIComponent(
           this.graph.name
         )}/vertex/${encodeURI(documents._documentHandle(selector, this._name))}`,
         body: newValue,
@@ -725,7 +725,7 @@ export class GraphVertexCollection<
     return this._db.request(
       {
         method: "PATCH",
-        path: `/_api/gharial/${encodeURIComponent(
+        pathname: `/_api/gharial/${encodeURIComponent(
           this.graph.name
         )}/vertex/${encodeURI(documents._documentHandle(selector, this._name))}`,
         body: newValue,
@@ -780,7 +780,7 @@ export class GraphVertexCollection<
     return this._db.request(
       {
         method: "DELETE",
-        path: `/_api/gharial/${encodeURIComponent(
+        pathname: `/_api/gharial/${encodeURIComponent(
           this.graph.name
         )}/vertex/${encodeURI(documents._documentHandle(selector, this._name))}`,
         search,
@@ -883,7 +883,7 @@ export class GraphEdgeCollection<
       return await this._db.request(
         {
           method: "HEAD",
-          path: `/_api/gharial/${encodeURIComponent(
+          pathname: `/_api/gharial/${encodeURIComponent(
             this.graph.name
           )}/edge/${encodeURI(documents._documentHandle(selector, this._name))}`,
         },
@@ -988,7 +988,7 @@ export class GraphEdgeCollection<
     if (rev) headers["if-match"] = rev;
     const result = this._db.request(
       {
-        path: `/_api/gharial/${encodeURIComponent(
+        pathname: `/_api/gharial/${encodeURIComponent(
           this.graph.name
         )}/edge/${encodeURI(documents._documentHandle(selector, this._name))}`,
         search,
@@ -1031,7 +1031,7 @@ export class GraphEdgeCollection<
     return this._db.request(
       {
         method: "POST",
-        path: `/_api/gharial/${encodeURIComponent(
+        pathname: `/_api/gharial/${encodeURIComponent(
           this.graph.name
         )}/edge/${encodeURIComponent(this._name)}`,
         body: data,
@@ -1092,7 +1092,7 @@ export class GraphEdgeCollection<
     return this._db.request(
       {
         method: "PUT",
-        path: `/_api/gharial/${encodeURIComponent(
+        pathname: `/_api/gharial/${encodeURIComponent(
           this.graph.name
         )}/edge/${encodeURI(documents._documentHandle(selector, this._name))}`,
         body: newValue,
@@ -1154,7 +1154,7 @@ export class GraphEdgeCollection<
     return this._db.request(
       {
         method: "PATCH",
-        path: `/_api/gharial/${encodeURIComponent(
+        pathname: `/_api/gharial/${encodeURIComponent(
           this.graph.name
         )}/edge/${encodeURI(documents._documentHandle(selector, this._name))}`,
         body: newValue,
@@ -1201,7 +1201,7 @@ export class GraphEdgeCollection<
     return this._db.request(
       {
         method: "DELETE",
-        path: `/_api/gharial/${encodeURIComponent(
+        pathname: `/_api/gharial/${encodeURIComponent(
           this.graph.name
         )}/edge/${encodeURI(documents._documentHandle(selector, this._name))}`,
         search,
@@ -1296,7 +1296,7 @@ export class Graph {
    */
   get(): Promise<GraphDescription> {
     return this._db.request(
-      { path: `/_api/gharial/${encodeURIComponent(this._name)}` },
+      { pathname: `/_api/gharial/${encodeURIComponent(this._name)}` },
       (res) => res.parsedBody.graph
     );
   }
@@ -1331,7 +1331,7 @@ export class Graph {
     return this._db.request(
       {
         method: "POST",
-        path: "/_api/gharial",
+        pathname: "/_api/gharial",
         body: {
           orphanCollections:
             orphanCollections &&
@@ -1367,7 +1367,7 @@ export class Graph {
     return this._db.request(
       {
         method: "DELETE",
-        path: `/_api/gharial/${encodeURIComponent(this._name)}`,
+        pathname: `/_api/gharial/${encodeURIComponent(this._name)}`,
         search: { dropCollections },
       },
       (res) => res.parsedBody.removed
@@ -1414,7 +1414,7 @@ export class Graph {
    */
   listVertexCollections(): Promise<string[]> {
     return this._db.request(
-      { path: `/_api/gharial/${encodeURIComponent(this._name)}/vertex` },
+      { pathname: `/_api/gharial/${encodeURIComponent(this._name)}/vertex` },
       (res) => res.parsedBody.collections
     );
   }
@@ -1473,7 +1473,7 @@ export class Graph {
     return this._db.request(
       {
         method: "POST",
-        path: `/_api/gharial/${encodeURIComponent(this._name)}/vertex`,
+        pathname: `/_api/gharial/${encodeURIComponent(this._name)}/vertex`,
         body: {
           collection: collections.collectionToString(collection),
           options: { ...opts, satellites: satellites?.map(collections.collectionToString) },
@@ -1512,7 +1512,7 @@ export class Graph {
     return this._db.request(
       {
         method: "DELETE",
-        path: `/_api/gharial/${encodeURIComponent(
+        pathname: `/_api/gharial/${encodeURIComponent(
           this._name
         )}/vertex/${encodeURIComponent(collections.collectionToString(collection))}`,
         search: {
@@ -1579,7 +1579,7 @@ export class Graph {
    */
   listEdgeCollections(): Promise<string[]> {
     return this._db.request(
-      { path: `/_api/gharial/${encodeURIComponent(this._name)}/edge` },
+      { pathname: `/_api/gharial/${encodeURIComponent(this._name)}/edge` },
       (res) => res.parsedBody.collections
     );
   }
@@ -1638,7 +1638,7 @@ export class Graph {
     return this._db.request(
       {
         method: "POST",
-        path: `/_api/gharial/${encodeURIComponent(this._name)}/edge`,
+        pathname: `/_api/gharial/${encodeURIComponent(this._name)}/edge`,
         body: {
           ...coerceEdgeDefinition(edgeDefinition),
           options: { ...opts, satellites: satellites?.map(collections.collectionToString) },
@@ -1738,7 +1738,7 @@ export class Graph {
     return this._db.request(
       {
         method: "PUT",
-        path: `/_api/gharial/${encodeURIComponent(
+        pathname: `/_api/gharial/${encodeURIComponent(
           this._name
         )}/edge/${encodeURIComponent(collections.collectionToString(collection))}`,
         body: {
@@ -1779,7 +1779,7 @@ export class Graph {
     return this._db.request(
       {
         method: "DELETE",
-        path: `/_api/gharial/${encodeURIComponent(
+        pathname: `/_api/gharial/${encodeURIComponent(
           this._name
         )}/edge/${encodeURIComponent(collections.collectionToString(collection))}`,
         search: {

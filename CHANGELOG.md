@@ -22,6 +22,18 @@ This driver uses semantic versioning:
 
 - Renamed `CollectionTruncateOptions` type to `TruncateCollectionOptions`
 
+- Renamed `Config` type to `ConfigOptions`
+
+- Renamed `path` option to `pathname` in `RequestOptions` type
+
+  This affects the `db.waitForPropagation` and `route.request` methods.
+
+- Removed `basePath` option from `RequestOptions` type
+
+  This affects the `db.waitForPropagation` and `route.request` methods.
+
+- Renamed `route.path` property to `route.pathname`
+
 - Changed error type constructor signatures
 
   The `request` property is now always positional and the `options` property
@@ -36,6 +48,11 @@ This driver uses semantic versioning:
 
   The type is now also no longer marked as internal.
 
+- Moved configuration related types to new `configuration` module
+
+  The following types were moved: `ConfigOptions`, `LoadBalancingStrategy`,
+  `BasicAuthCredentials` and `BearerAuthCredentials`.
+
 - Moved internal utility functions to new `lib/util` module
 
   These methods are all still marked as internal and should not be used
@@ -47,6 +64,17 @@ This driver uses semantic versioning:
   closed per server. Note that this still merely aborts the requests but
   does not guarantee the underlying connections are closed as these are
   handled by Node.js or the browser natively.
+
+### Added
+
+- Restored support for Unix domain sockets
+
+  Using Unix domain sockets requires the `undici` library to be installed.
+
+- Restored support for `config.agentOptions`
+
+  The `config.agentOptions` option can now be used to create a custom `undici`
+  agent if the `undici` library is installed.
 
 ## [10.0.0-alpha.0] - 2024-11-28
 

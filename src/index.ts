@@ -12,7 +12,7 @@
  *
  * @packageDocumentation
  */
-import * as connection from "./connection.js";
+import * as configuration from "./configuration.js";
 import * as databases from "./databases.js";
 
 if (typeof module !== "undefined" && typeof exports !== "undefined") {
@@ -34,14 +34,14 @@ if (typeof module !== "undefined" && typeof exports !== "undefined") {
  * });
  * ```
  */
-export function arangojs(config?: connection.Config): databases.Database;
+export function arangojs(config?: configuration.ConfigOptions): databases.Database;
 /**
  * Creates a new `Database` instance with its own connection pool.
  *
  * This is a wrapper function for the {@link databases.Database:constructor}.
  *
  * @param url - Base URL of the ArangoDB server or list of server URLs.
- * Equivalent to the `url` option in {@link connection.Config}.
+ * Equivalent to the `url` option in {@link configuration.ConfigOptions}.
  *
  * @example
  * ```js
@@ -50,7 +50,7 @@ export function arangojs(config?: connection.Config): databases.Database;
  * ```
  */
 export function arangojs(url: string | string[], name?: string): databases.Database;
-export function arangojs(config?: string | string[] | connection.Config, name?: string) {
+export function arangojs(config?: string | string[] | configuration.ConfigOptions, name?: string) {
   if (typeof config === "string" || Array.isArray(config)) {
     const url = config;
     return new databases.Database(url, name);

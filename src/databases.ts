@@ -15,6 +15,7 @@ import * as analyzers from "./analyzers.js";
 import * as aql from "./aql.js";
 import * as cluster from "./cluster.js";
 import * as collections from "./collections.js";
+import * as configuration from "./configuration.js";
 import * as connection from "./connection.js";
 import * as cursors from "./cursors.js";
 import * as errors from "./errors.js";
@@ -27,6 +28,7 @@ import * as routes from "./routes.js";
 import * as services from "./services.js";
 import * as transactions from "./transactions.js";
 import * as users from "./users.js";
+import * as util from "./lib/util.js";
 import * as views from "./views.js";
 import { DATABASE_NOT_FOUND } from "./lib/codes.js";
 
@@ -161,14 +163,14 @@ export class Database {
    * });
    * ```
    */
-  constructor(config?: connection.Config);
+  constructor(config?: configuration.ConfigOptions);
   /**
    * Creates a new `Database` instance with its own connection pool.
    *
    * See also {@link Database#database}.
    *
    * @param url - Base URL of the ArangoDB server or list of server URLs.
-   * Equivalent to the `url` option in {@link connection.Config}.
+   * Equivalent to the `url` option in {@link configuration.ConfigOptions}.
    *
    * @example
    * ```js
@@ -182,7 +184,7 @@ export class Database {
    */
   constructor(database: Database, name?: string);
   constructor(
-    configOrDatabase: string | string[] | connection.Config | Database = {},
+    configOrDatabase: string | string[] | configuration.ConfigOptions | Database = {},
     name?: string
   ) {
     if (isArangoDatabase(configOrDatabase)) {
@@ -251,16 +253,14 @@ export class Database {
    *
    * Performs an arbitrary HTTP request against the database.
    *
-   * If `absolutePath` is set to `true`, the database path will not be
-   * automatically prepended to the `basePath`.
-   *
-   * @param T - Return type to use. Defaults to the response object type.
+   * @param BodyType - Type of the expected response body.
+   * @param ReturnType - Type the response body will be transformed to.
    * @param options - Options for this request.
    * @param transform - An optional function to transform the low-level
    * response object to a more useful return value.
    */
   async request<BodyType = any, ReturnType = BodyType>(
-    options: connection.RequestOptions & { absolutePath?: boolean },
+    options: connection.RequestOptions,
     transform?: (res: connection.ProcessedResponse<BodyType>) => ReturnType
   ): Promise<ReturnType>;
   /**
@@ -268,38 +268,32 @@ export class Database {
    *
    * Performs an arbitrary HTTP request against the database.
    *
-   * If `absolutePath` is set to `true`, the database path will not be
-   * automatically prepended to the `basePath`.
-   *
+   * @param BodyType - Type of the expected response body.
    * @param options - Options for this request.
    * @param transform - If set to `false`, the raw response object will be
    * returned.
    */
   async request<BodyType = any>(
-    options: connection.RequestOptions & { absolutePath?: boolean },
+    options: connection.RequestOptions,
     transform: false
   ): Promise<connection.ProcessedResponse<BodyType>>;
   async request<BodyType = any, ReturnType = BodyType>(
     {
-      absolutePath = false,
-      basePath,
+      pathname,
       ...opts
-    }: connection.RequestOptions & { absolutePath?: boolean },
+    }: connection.RequestOptions,
     transform: false | ((res: connection.ProcessedResponse<BodyType>) => ReturnType) = (res) => res.parsedBody as ReturnType
   ): Promise<ReturnType> {
-    if (!absolutePath) {
-      basePath = `/_db/${encodeURIComponent(this._name)}${basePath || ""}`;
-    }
+    pathname = util.joinPath('_db', encodeURIComponent(this._name), pathname);
     if (this._trapRequest) {
       const trap = this._trapRequest;
       this._trapRequest = undefined;
       return new Promise<ReturnType>(async (resolveRequest, rejectRequest) => {
-        const options = { ...opts };
-        options.headers = new Headers(options.headers);
-        options.headers.set("x-arango-async", "store");
+        opts.headers = new Headers(opts.headers);
+        opts.headers.set("x-arango-async", "store");
         let jobRes: connection.ProcessedResponse<any>;
         try {
-          jobRes = await this._connection.request({ basePath, ...options });
+          jobRes = await this._connection.request({ pathname, ...opts });
         } catch (e) {
           trap({ error: true });
           rejectRequest(e);
@@ -321,7 +315,7 @@ export class Database {
       });
     }
     return this._connection.request(
-      { basePath, ...opts },
+      { pathname, ...opts },
       transform || undefined
     );
   }
@@ -329,7 +323,7 @@ export class Database {
   /**
    * Updates the URL list by requesting a list of all coordinators in the
    * cluster and adding any endpoints not initially specified in the
-   * {@link connection.Config}.
+   * {@link configuration.ConfigOptions}.
    *
    * For long-running processes communicating with an ArangoDB cluster it is
    * recommended to run this method periodically (e.g. once per hour) to make
@@ -354,7 +348,7 @@ export class Database {
    */
   async acquireHostList(overwrite = false): Promise<void> {
     const urls: string[] = await this.request(
-      { path: "/_api/cluster/endpoints" },
+      { pathname: "/_api/cluster/endpoints" },
       (res) =>
         res.parsedBody.endpoints.map((endpoint: any) => endpoint.endpoint)
     );
@@ -409,7 +403,7 @@ export class Database {
    * const analyzer = db.analyzer("my-analyzer");
    * await analyzer.create();
    * await db.waitForPropagation(
-   *   { path: `/_api/analyzer/${encodeURIComponent(analyzer.name)}` },
+   *   { pathname: `/_api/analyzer/${encodeURIComponent(analyzer.name)}` },
    *   30000
    * );
    * // Analyzer has been propagated to all coordinators and can safely be used
@@ -423,13 +417,13 @@ export class Database {
     timeout?: number
   ): Promise<void>;
   async waitForPropagation(
-    { basePath, ...request }: connection.RequestOptions,
+    { pathname, ...request }: connection.RequestOptions,
     timeout?: number
   ): Promise<void> {
     await this._connection.waitForPropagation(
       {
         ...request,
-        basePath: `/_db/${encodeURIComponent(this._name)}${basePath || ""}`,
+        pathname: util.joinPath('_db', encodeURIComponent(this._name), pathname),
       },
       timeout
     );
@@ -513,7 +507,7 @@ export class Database {
     return this.request(
       {
         method: "POST",
-        path: "/_open/auth",
+        pathname: "/_open/auth",
         body: { username, password },
       },
       (res) => {
@@ -541,7 +535,7 @@ export class Database {
     return this.request(
       {
         method: "POST",
-        path: "/_open/auth/renew",
+        pathname: "/_open/auth/renew",
       },
       (res) => {
         if (!res.parsedBody.jwt) return null;
@@ -572,7 +566,7 @@ export class Database {
   version(details?: boolean): Promise<administration.VersionInfo> {
     return this.request({
       method: "GET",
-      path: "/_api/version",
+      pathname: "/_api/version",
       search: { details },
     });
   }
@@ -591,7 +585,7 @@ export class Database {
   engine(): Promise<administration.EngineInfo> {
     return this.request({
       method: "GET",
-      path: "/_api/engine",
+      pathname: "/_api/engine",
     });
   }
 
@@ -603,7 +597,7 @@ export class Database {
     return this.request(
       {
         method: "GET",
-        path: "/_admin/time",
+        pathname: "/_admin/time",
       },
       (res) => res.parsedBody.time * 1000
     );
@@ -624,13 +618,13 @@ export class Database {
   status(): Promise<administration.ServerStatusInformation> {
     return this.request({
       method: "GET",
-      path: "/_admin/status",
+      pathname: "/_admin/status",
     });
   }
 
   /**
    * Fetches availability information about the server.
-   * 
+   *
    * @param graceful - If set to `true`, the method will always return `false`
    * instead of throwing an error; otherwise `false` will only be returned
    * when the server responds with a 503 status code or an ArangoDB error with
@@ -646,7 +640,7 @@ export class Database {
     try {
       return this.request({
         method: "GET",
-        path: "/_admin/server/availability",
+        pathname: "/_admin/server/availability",
       }, (res) => res.parsedBody.mode);
     } catch (e) {
       if (graceful) return false;
@@ -659,13 +653,13 @@ export class Database {
 
   /**
    * Fetches deployment information about the server for support purposes.
-   * 
+   *
    * Note that this API may reveal sensitive data about the deployment.
    */
   supportInfo(): Promise<administration.SingleServerSupportInfo | administration.ClusterSupportInfo> {
     return this.request({
       method: "GET",
-      path: "/_admin/support-info",
+      pathname: "/_admin/support-info",
     });
   }
 
@@ -676,7 +670,7 @@ export class Database {
     return this.request(
       {
         method: "DELETE",
-        path: "/_admin/shutdown",
+        pathname: "/_admin/shutdown",
       },
       () => undefined
     );
@@ -695,7 +689,7 @@ export class Database {
    */
   getClusterImbalance(): Promise<cluster.ClusterRebalanceState> {
     return this.request(
-      { path: "/_admin/cluster/rebalance" },
+      { pathname: "/_admin/cluster/rebalance" },
       (res) => res.parsedBody.result
     );
   }
@@ -721,7 +715,7 @@ export class Database {
     return this.request(
       {
         method: "POST",
-        path: "/_admin/cluster/rebalance",
+        pathname: "/_admin/cluster/rebalance",
         body: {
           version: 1,
           ...options,
@@ -749,7 +743,7 @@ export class Database {
   executeClusterRebalance(moves: cluster.ClusterRebalanceMove[]): Promise<unknown> {
     return this.request({
       method: "POST",
-      path: "/_admin/cluster/rebalance/execute",
+      pathname: "/_admin/cluster/rebalance/execute",
       body: {
         version: 1,
         moves,
@@ -776,7 +770,7 @@ export class Database {
   ): Promise<cluster.ClusterRebalanceResult> {
     return this.request({
       method: "PUT",
-      path: "/_admin/cluster/rebalance",
+      pathname: "/_admin/cluster/rebalance",
       body: {
         version: 1,
         ...opts,
@@ -816,7 +810,7 @@ export class Database {
    */
   get(): Promise<DatabaseDescription> {
     return this.request(
-      { path: "/_api/database/current" },
+      { pathname: "/_api/database/current" },
       (res) => res.parsedBody.result
     );
   }
@@ -891,7 +885,7 @@ export class Database {
     return this.request(
       {
         method: "POST",
-        path: "/_api/database",
+        pathname: "/_api/database",
         body: { name: databaseName, users, options },
       },
       () => this.database(databaseName)
@@ -913,7 +907,7 @@ export class Database {
    */
   listDatabases(): Promise<string[]> {
     return this.request(
-      { path: "/_api/database" },
+      { pathname: "/_api/database" },
       (res) => res.parsedBody.result
     );
   }
@@ -934,7 +928,7 @@ export class Database {
    */
   listUserDatabases(): Promise<string[]> {
     return this.request(
-      { path: "/_api/database/user" },
+      { pathname: "/_api/database/user" },
       (res) => res.parsedBody.result
     );
   }
@@ -954,7 +948,7 @@ export class Database {
    * ```
    */
   databases(): Promise<Database[]> {
-    return this.request({ path: "/_api/database" }, (res) =>
+    return this.request({ pathname: "/_api/database" }, (res) =>
       (res.parsedBody.result as string[]).map((databaseName) =>
         this.database(databaseName)
       )
@@ -976,7 +970,7 @@ export class Database {
    * ```
    */
   userDatabases(): Promise<Database[]> {
-    return this.request({ path: "/_api/database/user" }, (res) =>
+    return this.request({ pathname: "/_api/database/user" }, (res) =>
       (res.parsedBody.result as string[]).map((databaseName) =>
         this.database(databaseName)
       )
@@ -999,7 +993,7 @@ export class Database {
     return this.request(
       {
         method: "DELETE",
-        path: `/_api/database/${encodeURIComponent(databaseName)}`,
+        pathname: `/_api/database/${encodeURIComponent(databaseName)}`,
       },
       (res) => res.parsedBody.result
     );
@@ -1220,7 +1214,7 @@ export class Database {
   ): Promise<connection.ArangoApiResponse<collections.CollectionDescription>> {
     const result = await this.request({
       method: "PUT",
-      path: `/_api/collection/${encodeURIComponent(collectionName)}/rename`,
+      pathname: `/_api/collection/${encodeURIComponent(collectionName)}/rename`,
       body: { name: newName },
     });
     this._collections.delete(collectionName);
@@ -1256,7 +1250,7 @@ export class Database {
   ): Promise<collections.CollectionDescription[]> {
     return this.request(
       {
-        path: "/_api/collection",
+        pathname: "/_api/collection",
         search: { excludeSystem },
       },
       (res) => res.parsedBody.result
@@ -1352,7 +1346,7 @@ export class Database {
    */
   listGraphs(): Promise<graphs.GraphDescription[]> {
     return this.request(
-      { path: "/_api/gharial" },
+      { pathname: "/_api/gharial" },
       (res) => res.parsedBody.graphs
     );
   }
@@ -1436,7 +1430,7 @@ export class Database {
   ): Promise<connection.ArangoApiResponse<views.ViewDescription>> {
     const result = await this.request({
       method: "PUT",
-      path: `/_api/view/${encodeURIComponent(viewName)}/rename`,
+      pathname: `/_api/view/${encodeURIComponent(viewName)}/rename`,
       body: { name: newName },
     });
     this._views.delete(viewName);
@@ -1458,7 +1452,7 @@ export class Database {
    * ```
    */
   listViews(): Promise<views.ViewDescription[]> {
-    return this.request({ path: "/_api/view" }, (res) => res.parsedBody.result);
+    return this.request({ pathname: "/_api/view" }, (res) => res.parsedBody.result);
   }
 
   /**
@@ -1541,7 +1535,7 @@ export class Database {
    */
   listAnalyzers(): Promise<analyzers.AnalyzerDescription[]> {
     return this.request(
-      { path: "/_api/analyzer" },
+      { pathname: "/_api/analyzer" },
       (res) => res.parsedBody.result
     );
   }
@@ -1580,7 +1574,7 @@ export class Database {
   listUsers(): Promise<users.ArangoUser[]> {
     return this.request(
       {
-        path: "/_api/user",
+        pathname: "/_api/user",
       },
       (res) => res.parsedBody.result
     );
@@ -1600,7 +1594,7 @@ export class Database {
    */
   getUser(username: string): Promise<connection.ArangoApiResponse<users.ArangoUser>> {
     return this.request({
-      path: `/_api/user/${encodeURIComponent(username)}`,
+      pathname: `/_api/user/${encodeURIComponent(username)}`,
     });
   }
 
@@ -1648,7 +1642,7 @@ export class Database {
     return this.request(
       {
         method: "POST",
-        path: "/_api/user",
+        pathname: "/_api/user",
         body: { user: username, ...options },
       },
       (res) => res.parsedBody
@@ -1699,7 +1693,7 @@ export class Database {
     return this.request(
       {
         method: "PATCH",
-        path: `/_api/user/${encodeURIComponent(username)}`,
+        pathname: `/_api/user/${encodeURIComponent(username)}`,
         body: options,
       },
       (res) => res.parsedBody
@@ -1729,7 +1723,7 @@ export class Database {
     return this.request(
       {
         method: "PUT",
-        path: `/_api/user/${encodeURIComponent(username)}`,
+        pathname: `/_api/user/${encodeURIComponent(username)}`,
         body: options,
       },
       (res) => res.parsedBody
@@ -1754,7 +1748,7 @@ export class Database {
     return this.request(
       {
         method: "DELETE",
-        path: `/_api/user/${encodeURIComponent(username)}`,
+        pathname: `/_api/user/${encodeURIComponent(username)}`,
       },
       () => undefined,
     );
@@ -1836,8 +1830,8 @@ export class Database {
     const databaseName = isArangoDatabase(database)
       ? database.name
       : database ??
-      (collections.isArangoCollection(collection)
-        ? ((collection as any)._db as Database).name
+      (collection instanceof collections.Collection
+        ? collection.database.name
         : this._name);
     const suffix = collection
       ? `/${encodeURIComponent(
@@ -1846,7 +1840,7 @@ export class Database {
       : "";
     return this.request(
       {
-        path: `/_api/user/${encodeURIComponent(
+        pathname: `/_api/user/${encodeURIComponent(
           username
         )}/database/${encodeURIComponent(databaseName)}${suffix}`,
       },
@@ -1948,7 +1942,7 @@ export class Database {
     return this.request(
       {
         method: "PUT",
-        path: `/_api/user/${encodeURIComponent(
+        pathname: `/_api/user/${encodeURIComponent(
           username
         )}/database/${encodeURIComponent(databaseName)}${suffix}`,
         body: { grant },
@@ -2028,7 +2022,7 @@ export class Database {
       ? database.name
       : database ??
       (collection instanceof collections.Collection
-        ? ((collection as any)._db as Database).name
+        ? collection.database.name
         : this._name);
     const suffix = collection
       ? `/${encodeURIComponent(
@@ -2038,7 +2032,7 @@ export class Database {
     return this.request(
       {
         method: "DELETE",
-        path: `/_api/user/${encodeURIComponent(
+        pathname: `/_api/user/${encodeURIComponent(
           username
         )}/database/${encodeURIComponent(databaseName)}${suffix}`,
       },
@@ -2101,7 +2095,7 @@ export class Database {
   getUserDatabases(username: string, full?: boolean) {
     return this.request(
       {
-        path: `/_api/user/${encodeURIComponent(username)}/database`,
+        pathname: `/_api/user/${encodeURIComponent(username)}/database`,
         search: { full },
       },
       (res) => res.parsedBody.result
@@ -2275,7 +2269,7 @@ export class Database {
     return this.request(
       {
         method: "POST",
-        path: "/_api/transaction",
+        pathname: "/_api/transaction",
         allowDirtyRead,
         body: {
           collections: transactions.coerceTransactionCollections(collections),
@@ -2412,7 +2406,7 @@ export class Database {
     return this.request(
       {
         method: "POST",
-        path: "/_api/transaction/begin",
+        pathname: "/_api/transaction/begin",
         allowDirtyRead,
         body: {
           collections: transactions.coerceTransactionCollections(collections),
@@ -2574,7 +2568,7 @@ export class Database {
    */
   listTransactions(): Promise<transactions.TransactionDetails[]> {
     return this._connection.request(
-      { path: "/_api/transaction" },
+      { pathname: "/_api/transaction" },
       (res) => res.parsedBody.transactions
     );
   }
@@ -2733,7 +2727,7 @@ export class Database {
     return this.request(
       {
         method: "POST",
-        path: "/_api/cursor",
+        pathname: "/_api/cursor",
         body: {
           query,
           bindVars,
@@ -2886,7 +2880,7 @@ export class Database {
     }
     return this.request({
       method: "POST",
-      path: "/_api/explain",
+      pathname: "/_api/explain",
       body: { query, bindVars, options },
     });
   }
@@ -2921,7 +2915,7 @@ export class Database {
     }
     return this.request({
       method: "POST",
-      path: "/_api/query",
+      pathname: "/_api/query",
       body: { query },
     });
   }
@@ -2940,7 +2934,7 @@ export class Database {
    */
   queryRules(): Promise<queries.QueryOptimizerRule[]> {
     return this.request({
-      path: "/_api/query/rules",
+      pathname: "/_api/query/rules",
     });
   }
 
@@ -2978,12 +2972,12 @@ export class Database {
       options
         ? {
           method: "PUT",
-          path: "/_api/query/properties",
+          pathname: "/_api/query/properties",
           body: options,
         }
         : {
           method: "GET",
-          path: "/_api/query/properties",
+          pathname: "/_api/query/properties",
         }
     );
   }
@@ -3002,7 +2996,7 @@ export class Database {
   listRunningQueries(): Promise<queries.QueryDescription[]> {
     return this.request({
       method: "GET",
-      path: "/_api/query/current",
+      pathname: "/_api/query/current",
     });
   }
 
@@ -3022,7 +3016,7 @@ export class Database {
   listSlowQueries(): Promise<queries.QueryDescription[]> {
     return this.request({
       method: "GET",
-      path: "/_api/query/slow",
+      pathname: "/_api/query/slow",
     });
   }
 
@@ -3042,7 +3036,7 @@ export class Database {
     return this.request(
       {
         method: "DELETE",
-        path: "/_api/query/slow",
+        pathname: "/_api/query/slow",
       },
       () => undefined
     );
@@ -3072,7 +3066,7 @@ export class Database {
     return this.request(
       {
         method: "DELETE",
-        path: `/_api/query/${encodeURIComponent(queryId)}`,
+        pathname: `/_api/query/${encodeURIComponent(queryId)}`,
       },
       () => undefined
     );
@@ -3092,7 +3086,7 @@ export class Database {
    */
   listUserFunctions(): Promise<queries.UserFunctionDescription[]> {
     return this.request(
-      { path: "/_api/aqlfunction" },
+      { pathname: "/_api/aqlfunction" },
       (res) => res.parsedBody.result
     );
   }
@@ -3135,7 +3129,7 @@ export class Database {
   ): Promise<connection.ArangoApiResponse<{ isNewlyCreated: boolean }>> {
     return this.request({
       method: "POST",
-      path: "/_api/aqlfunction",
+      pathname: "/_api/aqlfunction",
       body: { name, code, isDeterministic },
     });
   }
@@ -3161,7 +3155,7 @@ export class Database {
   ): Promise<connection.ArangoApiResponse<{ deletedCount: number }>> {
     return this.request({
       method: "DELETE",
-      path: `/_api/aqlfunction/${encodeURIComponent(name)}`,
+      pathname: `/_api/aqlfunction/${encodeURIComponent(name)}`,
       search: { group },
     });
   }
@@ -3187,7 +3181,7 @@ export class Database {
    */
   listServices(excludeSystem: boolean = true): Promise<services.ServiceSummary[]> {
     return this.request({
-      path: "/_api/foxx",
+      pathname: "/_api/foxx",
       search: { excludeSystem },
     });
   }
@@ -3244,7 +3238,7 @@ export class Database {
     return await this.request({
       body: form,
       method: "POST",
-      path: "/_api/foxx",
+      pathname: "/_api/foxx",
       search: { ...search, mount },
     });
   }
@@ -3302,7 +3296,7 @@ export class Database {
     return await this.request({
       body: form,
       method: "PUT",
-      path: "/_api/foxx/service",
+      pathname: "/_api/foxx/service",
       search: { ...search, mount },
     });
   }
@@ -3360,7 +3354,7 @@ export class Database {
     return await this.request({
       body: form,
       method: "PATCH",
-      path: "/_api/foxx/service",
+      pathname: "/_api/foxx/service",
       search: { ...search, mount },
     });
   }
@@ -3384,7 +3378,7 @@ export class Database {
     return this.request(
       {
         method: "DELETE",
-        path: "/_api/foxx/service",
+        pathname: "/_api/foxx/service",
         search: { ...options, mount },
       },
       () => undefined
@@ -3405,7 +3399,7 @@ export class Database {
    */
   getService(mount: string): Promise<services.ServiceDescription> {
     return this.request({
-      path: "/_api/foxx/service",
+      pathname: "/_api/foxx/service",
       search: { mount },
     });
   }
@@ -3462,7 +3456,7 @@ export class Database {
   ): Promise<Record<string, any>>;
   getServiceConfiguration(mount: string, minimal: boolean = false) {
     return this.request({
-      path: "/_api/foxx/configuration",
+      pathname: "/_api/foxx/configuration",
       search: { mount, minimal },
     });
   }
@@ -3535,7 +3529,7 @@ export class Database {
   ) {
     return this.request({
       method: "PUT",
-      path: "/_api/foxx/configuration",
+      pathname: "/_api/foxx/configuration",
       body: cfg,
       search: { mount, minimal },
     });
@@ -3609,7 +3603,7 @@ export class Database {
   ) {
     return this.request({
       method: "PATCH",
-      path: "/_api/foxx/configuration",
+      pathname: "/_api/foxx/configuration",
       body: cfg,
       search: { mount, minimal },
     });
@@ -3667,7 +3661,7 @@ export class Database {
   ): Promise<Record<string, string | string[]>>;
   getServiceDependencies(mount: string, minimal: boolean = false) {
     return this.request({
-      path: "/_api/foxx/dependencies",
+      pathname: "/_api/foxx/dependencies",
       search: { mount, minimal },
     });
   }
@@ -3749,7 +3743,7 @@ export class Database {
   ) {
     return this.request({
       method: "PUT",
-      path: "/_api/foxx/dependencies",
+      pathname: "/_api/foxx/dependencies",
       body: deps,
       search: { mount, minimal },
     });
@@ -3832,7 +3826,7 @@ export class Database {
   ) {
     return this.request({
       method: "PATCH",
-      path: "/_api/foxx/dependencies",
+      pathname: "/_api/foxx/dependencies",
       body: deps,
       search: { mount, minimal },
     });
@@ -3859,7 +3853,7 @@ export class Database {
   ): Promise<services.ServiceDescription> {
     return this.request({
       method: enabled ? "POST" : "DELETE",
-      path: "/_api/foxx/development",
+      pathname: "/_api/foxx/development",
       search: { mount },
     });
   }
@@ -3881,7 +3875,7 @@ export class Database {
    */
   getServiceScripts(mount: string): Promise<Record<string, string>> {
     return this.request({
-      path: "/_api/foxx/scripts",
+      pathname: "/_api/foxx/scripts",
       search: { mount },
     });
   }
@@ -3913,7 +3907,7 @@ export class Database {
   runServiceScript(mount: string, name: string, params?: any): Promise<any> {
     return this.request({
       method: "POST",
-      path: `/_api/foxx/scripts/${encodeURIComponent(name)}`,
+      pathname: `/_api/foxx/scripts/${encodeURIComponent(name)}`,
       body: params,
       search: { mount },
     });
@@ -4191,7 +4185,7 @@ export class Database {
   ) {
     return this.request({
       method: "POST",
-      path: "/_api/foxx/tests",
+      pathname: "/_api/foxx/tests",
       search: {
         ...options,
         mount,
@@ -4216,7 +4210,7 @@ export class Database {
    */
   getServiceReadme(mount: string): Promise<string | undefined> {
     return this.request({
-      path: "/_api/foxx/readme",
+      pathname: "/_api/foxx/readme",
       search: { mount },
     });
   }
@@ -4236,7 +4230,7 @@ export class Database {
    */
   getServiceDocumentation(mount: string): Promise<services.SwaggerJson> {
     return this.request({
-      path: "/_api/foxx/swagger",
+      pathname: "/_api/foxx/swagger",
       search: { mount },
     });
   }
@@ -4257,7 +4251,7 @@ export class Database {
   downloadService(mount: string): Promise<Buffer | Blob> {
     return this.request({
       method: "POST",
-      path: "/_api/foxx/download",
+      pathname: "/_api/foxx/download",
       search: { mount },
       expectBinary: true,
     });
@@ -4287,7 +4281,7 @@ export class Database {
     return this.request(
       {
         method: "POST",
-        path: "/_api/foxx/commit",
+        pathname: "/_api/foxx/commit",
         search: { replace },
       },
       () => undefined
@@ -4315,7 +4309,7 @@ export class Database {
     return this.request(
       {
         method: "POST",
-        path: "/_admin/backup/create",
+        pathname: "/_admin/backup/create",
         body: options,
       },
       (res) => res.parsedBody.result
@@ -4341,7 +4335,7 @@ export class Database {
     return this.request(
       {
         method: "POST",
-        path: "/_admin/backup/list",
+        pathname: "/_admin/backup/list",
         body: id ? { id } : undefined,
       },
       (res) => res.parsedBody.result
@@ -4365,7 +4359,7 @@ export class Database {
     return this.request(
       {
         method: "POST",
-        path: "/_admin/backup/restore",
+        pathname: "/_admin/backup/restore",
         body: { id },
       },
       (res) => res.parsedBody.result.previous
@@ -4387,7 +4381,7 @@ export class Database {
     return this.request(
       {
         method: "POST",
-        path: "/_admin/backup/delete",
+        pathname: "/_admin/backup/delete",
         body: { id },
       },
       () => undefined
@@ -4413,7 +4407,7 @@ export class Database {
   getLogEntries(options?: logs.LogEntriesOptions): Promise<logs.LogEntries> {
     return this.request(
       {
-        path: "/_admin/log/entries",
+        pathname: "/_admin/log/entries",
         search: options,
       },
       (res) => res.parsedBody
@@ -4441,7 +4435,7 @@ export class Database {
   ): Promise<logs.LogMessage[]> {
     return this.request(
       {
-        path: "/_admin/log",
+        pathname: "/_admin/log",
         search: options,
       },
       (res) => res.parsedBody.messages
@@ -4459,7 +4453,7 @@ export class Database {
    */
   getLogLevel(): Promise<Record<string, logs.LogLevelSetting>> {
     return this.request({
-      path: "/_admin/log/level",
+      pathname: "/_admin/log/level",
     });
   }
 
@@ -4481,7 +4475,7 @@ export class Database {
   ): Promise<Record<string, logs.LogLevelSetting>> {
     return this.request({
       method: "PUT",
-      path: "/_admin/log/level",
+      pathname: "/_admin/log/level",
       body: levels,
     });
   }
@@ -4559,7 +4553,7 @@ export class Database {
   listPendingJobs(): Promise<string[]> {
     return this.request(
       {
-        path: "/_api/job/pending",
+        pathname: "/_api/job/pending",
       },
       (res) => res.parsedBody
     );
@@ -4578,7 +4572,7 @@ export class Database {
   listCompletedJobs(): Promise<string[]> {
     return this.request(
       {
-        path: "/_api/job/done",
+        pathname: "/_api/job/done",
       },
       (res) => res.parsedBody
     );
@@ -4602,7 +4596,7 @@ export class Database {
     return this.request(
       {
         method: "DELETE",
-        path: `/_api/job/expired`,
+        pathname: `/_api/job/expired`,
         search: { stamp: threshold / 1000 },
       },
       () => undefined
@@ -4616,7 +4610,7 @@ export class Database {
     return this.request(
       {
         method: "DELETE",
-        path: `/_api/job/all`,
+        pathname: `/_api/job/all`,
       },
       () => undefined
     );

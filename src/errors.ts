@@ -12,53 +12,6 @@
 import * as connection from "./connection.js";
 import { ERROR_ARANGO_MAINTENANCE_MODE } from "./lib/codes.js";
 
-const messages: { [key: number]: string } = {
-  0: "Network Error",
-  304: "Not Modified",
-  400: "Bad Request",
-  401: "Unauthorized",
-  402: "Payment Required",
-  403: "Forbidden",
-  404: "Not Found",
-  405: "Method Not Allowed",
-  406: "Not Acceptable",
-  407: "Proxy Authentication Required",
-  408: "Request Timeout",
-  409: "Conflict",
-  410: "Gone",
-  411: "Length Required",
-  412: "Precondition Failed",
-  413: "Payload Too Large",
-  414: "Request-URI Too Long",
-  415: "Unsupported Media Type",
-  416: "Requested Range Not Satisfiable",
-  417: "Expectation Failed",
-  418: "I'm a teapot",
-  421: "Misdirected Request",
-  422: "Unprocessable Entity",
-  423: "Locked",
-  424: "Failed Dependency",
-  426: "Upgrade Required",
-  428: "Precondition Required",
-  429: "Too Many Requests",
-  431: "Request Header Fields Too Large",
-  444: "Connection Closed Without Response",
-  451: "Unavailable For Legal Reasons",
-  499: "Client Closed Request",
-  500: "Internal Server Error",
-  501: "Not Implemented",
-  502: "Bad Gateway",
-  503: "Service Unavailable",
-  504: "Gateway Timeout",
-  505: "HTTP Version Not Supported",
-  506: "Variant Also Negotiates",
-  507: "Insufficient Storage",
-  508: "Loop Detected",
-  510: "Not Extended",
-  511: "Network Authentication Required",
-  599: "Network Connect Timeout Error",
-};
-
 /**
  * Indicates whether the given value represents an {@link ArangoError}.
  *
@@ -79,46 +32,28 @@ export function isNetworkError(error: any): error is NetworkError {
 
 /**
  * @internal
-*
- * Indicates whether the given value represents an ArangoDB error response.
- */
-export function isArangoErrorResponse(body: any): body is connection.ArangoErrorResponse {
-  return (
-    body &&
-    body.error === true &&
-    typeof body.code === 'number' &&
-    typeof body.errorMessage === 'string' &&
-    typeof body.errorNum === 'number'
-  );
-}
-
-/**
- * @internal
- * 
+ *
  * Indicates whether the given value represents a Node.js `SystemError`.
  */
-function isSystemError(err: any): err is SystemError {
-  return (
-    err &&
-    Object.getPrototypeOf(err) === Error.prototype &&
-    typeof err.code === 'string' &&
-    typeof err.errno !== 'undefined' &&
-    typeof err.syscall === 'string'
-  );
+export function isSystemError(err: any): err is SystemError {
+  if (!err || !(err instanceof Error)) return false;
+  if (Object.getPrototypeOf(err) !== Error.prototype) return false;
+  const error = err as SystemError;
+  if (typeof error.code !== 'string') return false;
+  if (typeof error.syscall !== 'string') return false;
+  return typeof error.errno === 'number' || typeof error.errno === 'string';
 }
 
 /**
  * @internal
- * 
+ *
  * Indicates whether the given value represents a Node.js `UndiciError`.
  */
-function isUndiciError(err: any): err is UndiciError {
-  return (
-    err &&
-    err instanceof Error &&
-    typeof (err as UndiciError).code === 'string' &&
-    (err as UndiciError).code.startsWith('UND_')
-  );
+export function isUndiciError(err: any): err is UndiciError {
+  if (!err || !(err instanceof Error)) return false;
+  const error = err as UndiciError;
+  if (typeof error.code !== 'string') return false;
+  return error.code.startsWith('UND_');
 }
 
 /**
@@ -126,31 +61,36 @@ function isUndiciError(err: any): err is UndiciError {
  *
  * Determines whether the given failed fetch error cause is safe to retry.
  */
-function isSafeToRetryFailedFetch(cause: Error): boolean | null {
+function isSafeToRetryFailedFetch(error?: Error): boolean | null {
+  if (!error || !error.cause) return null;
+  let cause = error.cause as Error;
+  if (isArangoError(cause) || isNetworkError(cause)) {
+    return cause.isSafeToRetry;
+  }
   if (isSystemError(cause) && cause.syscall === 'connect' && cause.code === 'ECONNREFUSED') {
     return true;
   }
   if (isUndiciError(cause) && cause.code === 'UND_ERR_CONNECT_TIMEOUT') {
     return true;
   }
-  return null;
+  return isSafeToRetryFailedFetch(cause);
 }
 
 /**
  * Interface representing a Node.js `UndiciError`.
- * 
+ *
  * @internal
  */
-interface UndiciError extends Error {
+export interface UndiciError extends Error {
   code: `UND_${string}`;
 }
 
 /**
  * Interface representing a Node.js `SystemError`.
- * 
+ *
  * @internal
  */
-interface SystemError extends Error {
+export interface SystemError extends Error {
   code: string;
   errno: number | string;
   syscall: string;
@@ -225,21 +165,16 @@ export class RequestAbortedError extends NetworkError {
 
 /**
  * Represents an error from a failed fetch request.
- * 
+ *
  * The root cause is often extremely difficult to determine.
  */
 export class FetchFailedError extends NetworkError {
   name = "FetchFailedError";
 
-  constructor(message: string | undefined, request: globalThis.Request, options: { cause?: TypeError, isSafeToRetry?: boolean | null } = {}) {
-    let isSafeToRetry = options.isSafeToRetry;
-    if (options.cause?.cause instanceof Error) {
-      if (isSafeToRetry === undefined) {
-        isSafeToRetry = isSafeToRetryFailedFetch(options.cause.cause) || undefined;
-      }
-      if (message === undefined) {
-        message = `Fetch failed: ${options.cause.cause.message}`;
-      }
+  constructor(message: string | undefined, request: globalThis.Request, options: { cause?: Error, isSafeToRetry?: boolean | null } = {}) {
+    let isSafeToRetry = options.isSafeToRetry ?? isSafeToRetryFailedFetch(options.cause);
+    if (options.cause?.cause instanceof Error && options.cause.cause.message) {
+      message = `Fetch failed: ${options.cause.cause.message}`;
     }
     super(message ?? 'Fetch failed', request, { ...options, isSafeToRetry });
   }
@@ -265,8 +200,7 @@ export class HttpError extends NetworkError {
    * @internal
    */
   constructor(response: connection.ProcessedResponse, options: { cause?: Error, isSafeToRetry?: boolean | null } = {}) {
-    const message = messages[response.status] ?? messages[500];
-    super(message, response.request, options);
+    super(connection.getStatusMessage(response), response.request, options);
     this.response = response;
     this.code = response.status;
   }
@@ -278,6 +212,10 @@ export class HttpError extends NetworkError {
       code: this.code,
     };
   }
+
+  toString() {
+    return `${this.name} ${this.code}: ${this.message}`;
+  }
 }
 
 /**
@@ -288,7 +226,7 @@ export class ArangoError extends Error {
 
   /**
    * Indicates whether the request that caused this error can be safely retried.
-   * 
+   *
    * @internal
    */
   isSafeToRetry: boolean | null = null;

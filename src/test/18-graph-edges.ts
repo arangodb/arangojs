@@ -31,7 +31,7 @@ describe("Manipulating graph edges", function () {
         to: ["person"],
       },
     ]);
-    await db.waitForPropagation({ path: `/_api/gharial/${graph.name}` }, 10000);
+    await db.waitForPropagation({ pathname: `/_api/gharial/${graph.name}` }, 10000);
   });
   afterEach(async () => {
     await graph.drop();

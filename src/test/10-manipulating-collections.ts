@@ -23,7 +23,7 @@ describe("Manipulating collections", function () {
   beforeEach(async () => {
     collection = await db.createCollection(`collection-${Date.now()}`);
     await db.waitForPropagation(
-      { path: `/_api/collection/${collection.name}` },
+      { pathname: `/_api/collection/${collection.name}` },
       10000
     );
   });
@@ -41,7 +41,7 @@ describe("Manipulating collections", function () {
         `document-collection-${Date.now()}`
       );
       await db.waitForPropagation(
-        { path: `/_api/collection/${collection.name}` },
+        { pathname: `/_api/collection/${collection.name}` },
         10000
       );
       const info = await db.collection(collection.name).get();
@@ -55,7 +55,7 @@ describe("Manipulating collections", function () {
         `edge-collection-${Date.now()}`
       );
       await db.waitForPropagation(
-        { path: `/_api/collection/${collection.name}` },
+        { pathname: `/_api/collection/${collection.name}` },
         10000
       );
       const info = await db.collection(collection.name).get();

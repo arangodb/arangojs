@@ -205,7 +205,7 @@ export class BatchCursor<ItemType = any> {
     if (!this._id || !this.hasMore) return;
     const body = await this._db.request({
       method: "POST",
-      path: this._nextBatchId
+      pathname: this._nextBatchId
         ? `/_api/cursor/${encodeURIComponent(this._id)}/${this._nextBatchId}`
         : `/_api/cursor/${encodeURIComponent(this._id)}`,
       hostUrl: this._hostUrl,
@@ -746,7 +746,7 @@ export class BatchCursor<ItemType = any> {
     return this._db.request(
       {
         method: "DELETE",
-        path: `/_api/cursor/${encodeURIComponent(this._id!)}`,
+        pathname: `/_api/cursor/${encodeURIComponent(this._id!)}`,
       },
       () => {
         this._hasMore = false;

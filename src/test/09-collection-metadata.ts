@@ -17,7 +17,7 @@ describe("Collection metadata", function () {
     db = system.database(dbName);
     collection = await db.createCollection(collectionName);
     await db.waitForPropagation(
-      { path: `/_api/collection/${collection.name}` },
+      { pathname: `/_api/collection/${collection.name}` },
       10000
     );
   });
