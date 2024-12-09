@@ -71,7 +71,9 @@ function createHost(arangojsHostUrl: string, agentOptions?: any): Host {
     createDispatcher = (async () => {
       let undici: any;
       try {
-        undici = await import("undici");
+        // Prevent overzealous bundlers from attempting to bundle undici
+        const undiciName = "undici";
+        undici = await import(undiciName);
       } catch (cause) {
         if (socketPath) {
           throw new Error('Undici is required for Unix domain sockets', { cause });
