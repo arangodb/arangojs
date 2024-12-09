@@ -14,7 +14,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/arangodb/arangojs.git"
+    "url": "git+https://github.com/arangodb/arangojs.git"
   },
   "author": "ArangoDB GmbH",
   "contributors": [
