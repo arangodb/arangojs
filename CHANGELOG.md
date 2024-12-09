@@ -19,6 +19,68 @@ This driver uses semantic versioning:
 - A change in the major version (e.g. 1.Y.Z -> 2.0.0) indicates _breaking_
   changes that require changes in your code to upgrade.
 
+## [10.0.0-alpha.1] - 2024-12-09
+
+### Changed
+
+- Renamed `CollectionDropOptions` type to `DropCollectionOptions`
+
+- Renamed `CollectionTruncateOptions` type to `TruncateCollectionOptions`
+
+- Renamed `Config` type to `ConfigOptions`
+
+- Renamed `path` option to `pathname` in `RequestOptions` type
+
+  This affects the `db.waitForPropagation` and `route.request` methods.
+
+- Removed `basePath` option from `RequestOptions` type
+
+  This affects the `db.waitForPropagation` and `route.request` methods.
+
+- Renamed `route.path` property to `route.pathname`
+
+- Changed error type constructor signatures
+
+  The `request` property is now always positional and the `options` property
+  is always optional.
+
+- Moved configuration related types to new `config` module
+
+  The following types were moved: `Config`, `LoadBalancingStrategy`,
+  `BasicAuthCredentials` and `BearerAuthCredentials`.
+
+- Moved `ArangoErrorResponse` type to `connection` module
+
+  The type is now also no longer marked as internal.
+
+- Moved configuration related types to new `configuration` module
+
+  The following types were moved: `ConfigOptions`, `LoadBalancingStrategy`,
+  `BasicAuthCredentials` and `BearerAuthCredentials`.
+
+- Moved internal utility functions to new `lib/util` module
+
+  These methods are all still marked as internal and should not be used
+  directly.
+
+- Closing a connection now closes all open requests
+
+  Previously in certain situations only the most recent request would be
+  closed per server. Note that this still merely aborts the requests but
+  does not guarantee the underlying connections are closed as these are
+  handled by Node.js or the browser natively.
+
+### Added
+
+- Restored support for Unix domain sockets
+
+  Using Unix domain sockets requires the `undici` library to be installed.
+
+- Restored support for `config.agentOptions`
+
+  The `config.agentOptions` option can now be used to create a custom `undici`
+  agent if the `undici` library is installed.
+
 ## [10.0.0-alpha.0] - 2024-11-28
 
 This is a major release and breaks backwards compatibility.
@@ -2293,6 +2355,7 @@ For a detailed list of changes between pre-release versions of v7 see the
 
   Graph methods now only return the relevant part of the response body.
 
+[10.0.0-alpha.1]: https://github.com/arangodb/arangojs/compare/v10.0.0-alpha.0...v10.0.0-alpha.1
 [10.0.0-alpha.0]: https://github.com/arangodb/arangojs/compare/v9.2.0...v10.0.0-alpha.0
 [9.2.0]: https://github.com/arangodb/arangojs/compare/v9.1.0...v9.2.0
 [9.1.0]: https://github.com/arangodb/arangojs/compare/v9.0.0...v9.1.0
