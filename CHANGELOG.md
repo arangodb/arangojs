@@ -14,7 +14,7 @@ This driver uses semantic versioning:
 - A change in the major version (e.g. 1.Y.Z -> 2.0.0) indicates _breaking_
   changes that require changes in your code to upgrade.
 
-## [Unreleased]
+## [10.0.0-alpha.1] - 2024-12-09
 
 ### Changed
 
@@ -2350,6 +2350,7 @@ For a detailed list of changes between pre-release versions of v7 see the
 
   Graph methods now only return the relevant part of the response body.
 
+[10.0.0-alpha.1]: https://github.com/arangodb/arangojs/compare/v10.0.0-alpha.0...v10.0.0-alpha.1
 [10.0.0-alpha.0]: https://github.com/arangodb/arangojs/compare/v9.2.0...v10.0.0-alpha.0
 [9.2.0]: https://github.com/arangodb/arangojs/compare/v9.1.0...v9.2.0
 [9.1.0]: https://github.com/arangodb/arangojs/compare/v9.0.0...v9.1.0
