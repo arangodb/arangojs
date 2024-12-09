@@ -16,6 +16,11 @@ This driver uses semantic versioning:
 
 ## [10.0.0-alpha.1] - 2024-12-09
 
+This is a major release and breaks backwards compatibility.
+
+See [the migration guide](./MIGRATING.md#v9-to-v10) for detailed instructions
+for upgrading your code to arangojs v10.
+
 ### Changed
 
 - Renamed `CollectionDropOptions` type to `DropCollectionOptions`
