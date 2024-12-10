@@ -41,7 +41,7 @@ type Host = {
       | "hostUrl"
       | "expectBinary"
       | "isBinary"
-    >,
+    >
   ) => Promise<globalThis.Response & { request: globalThis.Request }>;
   /**
    * @internal
@@ -134,8 +134,8 @@ function createHost(arangojsHostUrl: string, agentOptions?: any): Host {
         headers.set(
           "authorization",
           `Basic ${btoa(
-            `${baseUrl.username || "root"}:${baseUrl.password || ""}`,
-          )}`,
+            `${baseUrl.username || "root"}:${baseUrl.password || ""}`
+          )}`
         );
       }
       const abortController = new AbortController();
@@ -171,10 +171,15 @@ function createHost(arangojsHostUrl: string, agentOptions?: any): Host {
           request,
           arangojsHostUrl,
         });
+        if (fetchOptions?.redirect === "manual" && isRedirect(response)) {
+          throw new errors.HttpError(response);
+        }
       } catch (e: unknown) {
         const cause = e instanceof Error ? e : new Error(String(e));
         let error: errors.NetworkError;
-        if (signal.aborted) {
+        if (cause instanceof errors.NetworkError) {
+          error = cause;
+        } else if (signal.aborted) {
           const reason =
             typeof signal.reason == "string" ? signal.reason : undefined;
           if (reason === REASON_TIMEOUT) {
@@ -276,7 +281,7 @@ const STATUS_CODE_DEFAULT_MESSAGES = {
 
 type KnownStatusCode = keyof typeof STATUS_CODE_DEFAULT_MESSAGES;
 const KNOWN_STATUS_CODES = Object.keys(STATUS_CODE_DEFAULT_MESSAGES).map((k) =>
-  Number(k),
+  Number(k)
 ) as KnownStatusCode[];
 const REDIRECT_CODES = [301, 302, 303, 307, 308] satisfies KnownStatusCode[];
 type RedirectStatusCode = (typeof REDIRECT_CODES)[number];
@@ -292,9 +297,11 @@ function isKnownStatusCode(code: number): code is KnownStatusCode {
 }
 
 /**
+ * @internal
+ *
  * Indicates whether the given status code represents a redirect.
  */
-export function isRedirect(response: ProcessedResponse): boolean {
+function isRedirect(response: ProcessedResponse): boolean {
   return REDIRECT_CODES.includes(response.status as RedirectStatusCode);
 }
 
@@ -333,7 +340,7 @@ export type ArangoApiResponse<T> = T & ArangoResponseMetadata;
  * Indicates whether the given value represents an ArangoDB error response.
  */
 export function isArangoErrorResponse(
-  body: unknown,
+  body: unknown
 ): body is ArangoErrorResponse {
   if (!body || typeof body !== "object") return false;
   const obj = body as Record<string, unknown>;
@@ -576,7 +583,7 @@ export type CommonRequestOptions = {
    */
   afterResponse?: (
     err: errors.NetworkError | null,
-    res?: globalThis.Response & { request: globalThis.Request },
+    res?: globalThis.Response & { request: globalThis.Request }
   ) => void | Promise<void>;
 };
 
@@ -726,11 +733,11 @@ export class Connection {
 
     this._commonFetchOptions.headers.set(
       "x-arango-version",
-      String(arangoVersion),
+      String(arangoVersion)
     );
     this._commonFetchOptions.headers.set(
       "x-arango-driver",
-      `arangojs/${process.env.ARANGOJS_VERSION} (cloud)`,
+      `arangojs/${process.env.ARANGOJS_VERSION} (cloud)`
     );
 
     this.addToHostList(URLS);
@@ -908,7 +915,7 @@ export class Connection {
   setBasicAuth(auth: configuration.BasicAuthCredentials) {
     this.setHeader(
       "authorization",
-      `Basic ${btoa(`${auth.username}:${auth.password}`)}`,
+      `Basic ${btoa(`${auth.username}:${auth.password}`)}`
     );
   }
 
@@ -942,7 +949,7 @@ export class Connection {
    */
   database(
     databaseName: string,
-    database: databases.Database,
+    database: databases.Database
   ): databases.Database;
   /**
    * @internal
@@ -956,7 +963,7 @@ export class Connection {
   database(databaseName: string, database: null): undefined;
   database(
     databaseName: string,
-    database?: databases.Database | null,
+    database?: databases.Database | null
   ): databases.Database | undefined {
     if (database === null) {
       this._databases.delete(databaseName);
@@ -987,7 +994,7 @@ export class Connection {
         const i = this._hostUrls.indexOf(url);
         if (i !== -1) return this._hosts[i];
         return createHost(url);
-      }),
+      })
     );
     this._hostUrls.splice(0, this._hostUrls.length, ...cleanUrls);
   }
@@ -1003,10 +1010,10 @@ export class Connection {
    */
   addToHostList(urls: string | string[]): string[] {
     const cleanUrls = (Array.isArray(urls) ? urls : [urls]).map((url) =>
-      util.normalizeUrl(url),
+      util.normalizeUrl(url)
     );
     const newUrls = cleanUrls.filter(
-      (url) => this._hostUrls.indexOf(url) === -1,
+      (url) => this._hostUrls.indexOf(url) === -1
     );
     this._hostUrls.push(...newUrls);
     this._hosts.push(...newUrls.map((url) => createHost(url)));
@@ -1127,8 +1134,8 @@ export class Connection {
       res: globalThis.Response & {
         request: globalThis.Request;
         parsedBody?: any;
-      },
-    ) => T,
+      }
+    ) => T
   ): Promise<T> {
     const {
       hostUrl,
@@ -1146,7 +1153,7 @@ export class Connection {
 
     const headers = util.mergeHeaders(
       this._commonFetchOptions.headers,
-      requestHeaders,
+      requestHeaders
     );
 
     let body = requestBody;

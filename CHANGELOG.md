@@ -390,6 +390,17 @@ for upgrading your code to arangojs v10.
   If the `onError` callback throws an error or returns a promise that is
   rejected, that error will be thrown instead.
 
+- Added support for `config.fetchOptions.redirect` option ([#613](https://github.com/arangodb/arangojs/issues/613))
+
+  This option can now be used to specify the redirect mode for requests.
+
+  When set to `"manual"`, arangojs will throw an `HttpError` wrapping the
+  redirect response instead of automatically following redirects.
+
+  Note that when set to `"error"`, the native fetch API will throw a
+  non-specific error (usually a `TypeError`) that arangojs will wrap in a
+  `FetchFailedError` instead.
+
 - Added optional `ArangoError#request` property
 
   This property is always present if the error has a `response` property. In
