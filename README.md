@@ -272,7 +272,7 @@ available.
 ### Unix domain sockets
 
 If you want to use Unix domain sockets, you need to install the `undici` module,
-which is an optional dependency of arangojs.
+which is an optional peer dependency of arangojs.
 
 ```sh
 npm install --save undici
@@ -285,7 +285,8 @@ message indicating that the `undici` module is unavailable.
 ### Node.js with self-signed HTTPS certificates
 
 If you need to support self-signed HTTPS certificates in Node.js, you will need
-to install the `undici` module, which is an optional dependency of arangojs.
+to install the `undici` module, which is an optional peer dependency of
+arangojs.
 
 ```sh
 npm install --save undici

@@ -14,6 +14,16 @@ This driver uses semantic versioning:
 - A change in the major version (e.g. 1.Y.Z -> 2.0.0) indicates _breaking_
   changes that require changes in your code to upgrade.
 
+## [Unreleased]
+
+### Changed
+
+- Changed `undici` from an optional dependency to an optional peer dependency
+
+  The `undici` module is only required when using Unix domain sockets or
+  overriding the fetch agent in Node.js and does not need to be installed
+  otherwise.
+
 ## [10.0.0-alpha.1] - 2024-12-09
 
 This is a major release and breaks backwards compatibility.
@@ -146,7 +156,7 @@ for upgrading your code to arangojs v10.
   `arangojs/documents` module
 
   The following types were moved: `DocumentOperationFailure`,
-  `DocumentOperationMetadata`, `DocumentExistsOptions`, 
+  `DocumentOperationMetadata`, `DocumentExistsOptions`,
   `CollectionReadOptions`, `CollectionBatchReadOptions`,
   `CollectionInsertOptions`, `CollectionReplaceOptions`,
   `CollectionUpdateOptions`, `CollectionRemoveOptions`,
@@ -243,9 +253,11 @@ for upgrading your code to arangojs v10.
   - `CreateDatabaseUser` -> `CreateDatabaseUserOptions`
 
   - Index operations:
+
     - `IndexListOptions` -> `ListIndexesOptions`
 
   - Collection document operations:
+
     - `DocumentExistsOptions` -> `DocumentExistsOptions`
     - `CollectionReadOptions` -> `ReadDocumentOptions`
     - `CollectionBatchReadOptions` -> `BulkReadDocumentsOptions`
@@ -259,6 +271,7 @@ for upgrading your code to arangojs v10.
     - `CollectionEdgesResult` -> `DocumentEdgesResult`
 
   - Graph collection document operation:
+
     - `GraphCollectionReadOptions` -> `ReadGraphDocumentOptions`
     - `GraphCollectionInsertOptions` -> `CreateGraphDocumentOptions`
     - `GraphCollectionReplaceOptions` -> `ReplaceGraphDocumentOptions`
@@ -2355,6 +2368,7 @@ For a detailed list of changes between pre-release versions of v7 see the
 
   Graph methods now only return the relevant part of the response body.
 
+[unreleased]: https://github.com/arangodb/arangojs/compare/v10.0.0-alpha.1...v10
 [10.0.0-alpha.1]: https://github.com/arangodb/arangojs/compare/v10.0.0-alpha.0...v10.0.0-alpha.1
 [10.0.0-alpha.0]: https://github.com/arangodb/arangojs/compare/v9.2.0...v10.0.0-alpha.0
 [9.2.0]: https://github.com/arangodb/arangojs/compare/v9.1.0...v9.2.0
