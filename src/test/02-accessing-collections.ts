@@ -34,7 +34,7 @@ describe("Accessing collections", function () {
   });
   describe("database.listCollections", () => {
     const nonSystemCollectionNames = range(4).map(
-      (i) => `c_${Date.now()}_${i}`
+      (i) => `c_${Date.now()}_${i}`,
     );
     const systemCollectionNames = range(4).map((i) => `_c_${Date.now()}_${i}`);
     before(async () => {
@@ -43,7 +43,7 @@ describe("Accessing collections", function () {
           const collection = await db.createCollection(name);
           await db.waitForPropagation(
             { pathname: `/_api/collection/${collection.name}` },
-            10000
+            10000,
           );
         }),
         ...systemCollectionNames.map(async (name) => {
@@ -51,7 +51,7 @@ describe("Accessing collections", function () {
           await collection.create({ isSystem: true });
           await db.waitForPropagation(
             { pathname: `/_api/collection/${collection.name}` },
-            10000
+            10000,
           );
         }),
       ] as Promise<void>[]);
@@ -60,7 +60,7 @@ describe("Accessing collections", function () {
       await Promise.all([
         ...nonSystemCollectionNames.map((name) => db.collection(name).drop()),
         ...systemCollectionNames.map((name) =>
-          db.collection(name).drop({ isSystem: true })
+          db.collection(name).drop({ isSystem: true }),
         ),
       ]);
     });
@@ -68,7 +68,7 @@ describe("Accessing collections", function () {
       const collections = await db.listCollections();
       expect(collections.length).to.equal(nonSystemCollectionNames.length);
       expect(collections.map((c: any) => c.name).sort()).to.eql(
-        nonSystemCollectionNames
+        nonSystemCollectionNames,
       );
     });
     it("includes system collections if explicitly passed false", async () => {
@@ -79,13 +79,13 @@ describe("Accessing collections", function () {
         .sort();
       expect(collections.length).to.be.at.least(allCollectionNames.length);
       expect(collections.map((c: any) => c.name).sort()).to.eql(
-        allCollectionNames
+        allCollectionNames,
       );
     });
   });
   describe("database.collections", () => {
     const documentCollectionNames = range(4).map(
-      (i) => `dc_${Date.now()}_${i}`
+      (i) => `dc_${Date.now()}_${i}`,
     );
     const edgeCollectionNames = range(4).map((i) => `ec_${Date.now()}_${i}`);
     const systemCollectionNames = range(4).map((i) => `_c_${Date.now()}_${i}`);
@@ -95,14 +95,14 @@ describe("Accessing collections", function () {
           const collection = await db.createCollection(name);
           await db.waitForPropagation(
             { pathname: `/_api/collection/${collection.name}` },
-            10000
+            10000,
           );
         }),
         ...edgeCollectionNames.map(async (name) => {
           const collection = await db.createEdgeCollection(name);
           await db.waitForPropagation(
             { pathname: `/_api/collection/${collection.name}` },
-            10000
+            10000,
           );
         }),
         ...systemCollectionNames.map(async (name) => {
@@ -110,7 +110,7 @@ describe("Accessing collections", function () {
           await collection.create({ isSystem: true });
           await db.waitForPropagation(
             { pathname: `/_api/collection/${collection.name}` },
-            10000
+            10000,
           );
         }),
       ] as Promise<void>[]);
@@ -120,17 +120,17 @@ describe("Accessing collections", function () {
         ...documentCollectionNames.map((name) => db.collection(name).drop()),
         ...edgeCollectionNames.map((name) => db.collection(name).drop()),
         ...systemCollectionNames.map((name) =>
-          db.collection(name).drop({ isSystem: true })
+          db.collection(name).drop({ isSystem: true }),
         ),
       ]);
     });
     it("creates Collection instances", async () => {
       const collections = await db.collections();
       expect(collections.length).to.equal(
-        documentCollectionNames.length + edgeCollectionNames.length
+        documentCollectionNames.length + edgeCollectionNames.length,
       );
       expect(collections.map((c) => c.name).sort()).to.eql(
-        [...documentCollectionNames, ...edgeCollectionNames].sort()
+        [...documentCollectionNames, ...edgeCollectionNames].sort(),
       );
     });
     it("includes system collections if explicitly passed false", async () => {
@@ -142,7 +142,7 @@ describe("Accessing collections", function () {
         ...builtinSystemCollections,
       ].sort();
       expect(collections.map((c: any) => c.name).sort()).to.eql(
-        allCollectionNames
+        allCollectionNames,
       );
     });
   });

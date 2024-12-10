@@ -18,7 +18,9 @@ import * as databases from "./databases.js";
 export class Job<ResultType = any> {
   protected _id: string;
   protected _db: databases.Database;
-  protected _transformResponse?: (res: connection.ProcessedResponse) => Promise<ResultType>;
+  protected _transformResponse?: (
+    res: connection.ProcessedResponse,
+  ) => Promise<ResultType>;
   protected _transformError?: (error: any) => Promise<ResultType>;
   protected _loaded: boolean = false;
   protected _result: ResultType | undefined;
@@ -29,8 +31,10 @@ export class Job<ResultType = any> {
   constructor(
     db: databases.Database,
     id: string,
-    transformResponse?: (res: connection.ProcessedResponse) => Promise<ResultType>,
-    transformError?: (error: any) => Promise<ResultType>
+    transformResponse?: (
+      res: connection.ProcessedResponse,
+    ) => Promise<ResultType>,
+    transformError?: (error: any) => Promise<ResultType>,
   ) {
     this._db = db;
     this._id = id;
@@ -91,7 +95,7 @@ export class Job<ResultType = any> {
             method: "PUT",
             pathname: `/_api/job/${this._id}`,
           },
-          false
+          false,
         );
       } catch (e) {
         if (this._transformError) {
@@ -121,7 +125,7 @@ export class Job<ResultType = any> {
         method: "PUT",
         pathname: `/_api/job/${this._id}/cancel`,
       },
-      () => undefined
+      () => undefined,
     );
   }
 
@@ -134,7 +138,7 @@ export class Job<ResultType = any> {
         method: "DELETE",
         pathname: `/_api/job/${this._id}`,
       },
-      () => undefined
+      () => undefined,
     );
   }
 
@@ -159,7 +163,7 @@ export class Job<ResultType = any> {
       {
         pathname: `/_api/job/${this._id}`,
       },
-      (res) => res.status !== 204
+      (res) => res.status !== 204,
     );
   }
 }

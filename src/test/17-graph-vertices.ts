@@ -15,14 +15,14 @@ async function createCollections(db: Database) {
       const collection = await db.createCollection(name);
       await db.waitForPropagation(
         { pathname: `/_api/collection/${collection.name}` },
-        10000
+        10000,
       );
     }),
     ...edgeCollectionNames.map(async (name) => {
       const collection = await db.createEdgeCollection(name);
       await db.waitForPropagation(
         { pathname: `/_api/collection/${collection.name}` },
-        10000
+        10000,
       );
     }),
   ] as Promise<void>[]);
@@ -32,18 +32,18 @@ async function createCollections(db: Database) {
 async function createGraph(
   graph: Graph,
   vertexCollectionNames: string[],
-  edgeCollectionNames: string[]
+  edgeCollectionNames: string[],
 ) {
   const result = await graph.create(
     edgeCollectionNames.map((name) => ({
       collection: name,
       from: vertexCollectionNames,
       to: vertexCollectionNames,
-    }))
+    })),
   );
   await graph.database.waitForPropagation(
     { pathname: `/_api/gharial/${graph.name}` },
-    10000
+    10000,
   );
   return result;
 }
@@ -75,7 +75,7 @@ describe("Manipulating graph vertices", function () {
   afterEach(async () => {
     await graph.drop();
     await Promise.all(
-      collectionNames.map((name) => db.collection(name).drop())
+      collectionNames.map((name) => db.collection(name).drop()),
     );
   });
   describe("graph.vertexCollection", () => {
@@ -92,7 +92,7 @@ describe("Manipulating graph vertices", function () {
       vertexCollection = await db.createCollection(`xc_${Date.now()}`);
       await db.waitForPropagation(
         { pathname: `/_api/collection/${vertexCollection.name}` },
-        10000
+        10000,
       );
     });
     afterEach(async () => {
@@ -109,7 +109,7 @@ describe("Manipulating graph vertices", function () {
       vertexCollection = await db.createCollection(`xc_${Date.now()}`);
       await db.waitForPropagation(
         { pathname: `/_api/collection/${vertexCollection.name}` },
-        10000
+        10000,
       );
       await graph.addVertexCollection(vertexCollection.name);
     });
@@ -121,7 +121,7 @@ describe("Manipulating graph vertices", function () {
     it("destroys the collection if explicitly passed true", async () => {
       const data = await graph.removeVertexCollection(
         vertexCollection.name,
-        true
+        true,
       );
       expect(data.orphanCollections).not.to.contain(vertexCollection.name);
       try {

@@ -12,19 +12,19 @@ const THIRTY_MINUTES = 30 * 60_000;
  *
  * Helper to merge path segments.
  */
-export function joinPath(
-  ...pathList: (string | undefined)[]
-): string {
+export function joinPath(...pathList: (string | undefined)[]): string {
   if (!pathList.length) return "";
-  return pathList.flatMap((path, i) => {
-    if (!path) return [];
-    if (i === pathList.length - 1) {
-      if (i === 0) return [path];
-      return [path.replace(/^\/+/, "")];
-    }
-    if (i === 0) return [path.replace(/\/+$/, "")];
-    return [path.replace(/^\/+|\/+$/, "")];
-  }).join("/");
+  return pathList
+    .flatMap((path, i) => {
+      if (!path) return [];
+      if (i === pathList.length - 1) {
+        if (i === 0) return [path];
+        return [path.replace(/^\/+/, "")];
+      }
+      if (i === 0) return [path.replace(/\/+$/, "")];
+      return [path.replace(/^\/+|\/+$/, "")];
+    })
+    .join("/");
 }
 
 /**
@@ -33,13 +33,24 @@ export function joinPath(
  * Utility function for merging headers.
  */
 export function mergeHeaders(
-  ...headersList: (Headers | string[][] | Record<string, string | ReadonlyArray<string>> | undefined)[]
+  ...headersList: (
+    | Headers
+    | string[][]
+    | Record<string, string | ReadonlyArray<string>>
+    | undefined
+  )[]
 ) {
   if (!headersList.length) return new Headers();
   return new Headers([
-    ...headersList.flatMap(headers => headers ? [
-      ...((headers instanceof Headers || Array.isArray(headers)) ? headers : new Headers(headers))
-    ] : []),
+    ...headersList.flatMap((headers) =>
+      headers
+        ? [
+            ...(headers instanceof Headers || Array.isArray(headers)
+              ? headers
+              : new Headers(headers)),
+          ]
+        : [],
+    ),
   ]);
 }
 
@@ -53,7 +64,7 @@ export function normalizeUrl(url: string): string {
   if (raw) url = (raw[1] === "tcp" ? "http" : "https") + raw[2];
   const unix = url.match(/^(?:(http|https)\+)?unix:\/\/(\/.+)/);
   if (unix) url = `${unix[1] || "http"}://unix:${unix[2]}`;
-  else if (!url.endsWith('/')) url += '/';
+  else if (!url.endsWith("/")) url += "/";
   return url;
 }
 

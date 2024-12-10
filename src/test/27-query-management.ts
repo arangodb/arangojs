@@ -33,7 +33,7 @@ describe("Query Management API", function () {
   });
   after(async () => {
     await Promise.all(
-      allCursors.map((cursor) => cursor.kill().catch(() => undefined))
+      allCursors.map((cursor) => cursor.kill().catch(() => undefined)),
     );
     try {
       await system.dropDatabase(dbName);
@@ -200,7 +200,7 @@ describe("Query Management API", function () {
         // must filter the list here, as there could be other (system) queries
         // ongoing at the same time
         queries = (await db.listRunningQueries()).filter(
-          (i: any) => i.query === query
+          (i: any) => i.query === query,
         );
         if (queries.length > 0) {
           break;
@@ -237,7 +237,7 @@ describe("Query Management API", function () {
       allCursors.push(cursor);
       // must filter the list here, as there could have been other (system) queries
       const queries = (await db.listSlowQueries()).filter(
-        (i: any) => i.query === query
+        (i: any) => i.query === query,
       );
       expect(queries).to.have.lengthOf(1);
       expect(queries[0]).to.have.property("query", query);
@@ -266,12 +266,12 @@ describe("Query Management API", function () {
       allCursors.push(cursor);
       // must filter the list here, as there could have been other (system) queries
       const queries1 = (await db.listSlowQueries()).filter(
-        (i: any) => i.query === query
+        (i: any) => i.query === query,
       );
       expect(queries1).to.have.lengthOf(1);
       await db.clearSlowQueries();
       const queries2 = (await db.listSlowQueries()).filter(
-        (i: any) => i.query === query
+        (i: any) => i.query === query,
       );
       expect(queries2).to.have.lengthOf(0);
     });
@@ -285,7 +285,7 @@ describe("Query Management API", function () {
       const p1 = db.query(query);
       p1.then((cursor) => allCursors.push(cursor));
       const queries = (await db.listSlowQueries()).filter(
-        (i: any) => i.query === query
+        (i: any) => i.query === query,
       );
       expect(queries).to.have.lengthOf(1);
       expect(queries[0]).to.have.property("bindVars");

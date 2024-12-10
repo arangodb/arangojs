@@ -34,7 +34,9 @@ if (typeof module !== "undefined" && typeof exports !== "undefined") {
  * });
  * ```
  */
-export function arangojs(config?: configuration.ConfigOptions): databases.Database;
+export function arangojs(
+  config?: configuration.ConfigOptions,
+): databases.Database;
 /**
  * Creates a new `Database` instance with its own connection pool.
  *
@@ -49,8 +51,14 @@ export function arangojs(config?: configuration.ConfigOptions): databases.Databa
  * db.useBasicAuth("admin", "hunter2");
  * ```
  */
-export function arangojs(url: string | string[], name?: string): databases.Database;
-export function arangojs(config?: string | string[] | configuration.ConfigOptions, name?: string) {
+export function arangojs(
+  url: string | string[],
+  name?: string,
+): databases.Database;
+export function arangojs(
+  config?: string | string[] | configuration.ConfigOptions,
+  name?: string,
+) {
   if (typeof config === "string" || Array.isArray(config)) {
     const url = config;
     return new databases.Database(url, name);

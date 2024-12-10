@@ -144,7 +144,7 @@ export class Database {
   protected _graphs = new Map<string, graphs.Graph>();
   protected _views = new Map<string, views.View>();
   protected _trapRequest?: (
-    trapped: TrappedError | TrappedRequest<any>
+    trapped: TrappedError | TrappedRequest<any>,
   ) => void;
 
   /**
@@ -184,8 +184,12 @@ export class Database {
    */
   constructor(database: Database, name?: string);
   constructor(
-    configOrDatabase: string | string[] | configuration.ConfigOptions | Database = {},
-    name?: string
+    configOrDatabase:
+      | string
+      | string[]
+      | configuration.ConfigOptions
+      | Database = {},
+    name?: string,
   ) {
     if (isArangoDatabase(configOrDatabase)) {
       const connection = configOrDatabase._connection;
@@ -244,7 +248,10 @@ export class Database {
    * // with JSON request body '{"username": "admin", "password": "hunter2"}'
    * ```
    */
-  route(path?: string, headers?: Headers | Record<string, string>): routes.Route {
+  route(
+    path?: string,
+    headers?: Headers | Record<string, string>,
+  ): routes.Route {
     return new routes.Route(this, path, headers);
   }
 
@@ -261,7 +268,7 @@ export class Database {
    */
   async request<BodyType = any, ReturnType = BodyType>(
     options: connection.RequestOptions,
-    transform?: (res: connection.ProcessedResponse<BodyType>) => ReturnType
+    transform?: (res: connection.ProcessedResponse<BodyType>) => ReturnType,
   ): Promise<ReturnType>;
   /**
    * @internal
@@ -275,16 +282,16 @@ export class Database {
    */
   async request<BodyType = any>(
     options: connection.RequestOptions,
-    transform: false
+    transform: false,
   ): Promise<connection.ProcessedResponse<BodyType>>;
   async request<BodyType = any, ReturnType = BodyType>(
-    {
-      pathname,
-      ...opts
-    }: connection.RequestOptions,
-    transform: false | ((res: connection.ProcessedResponse<BodyType>) => ReturnType) = (res) => res.parsedBody as ReturnType
+    { pathname, ...opts }: connection.RequestOptions,
+    transform:
+      | false
+      | ((res: connection.ProcessedResponse<BodyType>) => ReturnType) = (res) =>
+      res.parsedBody as ReturnType,
   ): Promise<ReturnType> {
-    pathname = util.joinPath('_db', encodeURIComponent(this._name), pathname);
+    pathname = util.joinPath("_db", encodeURIComponent(this._name), pathname);
     if (this._trapRequest) {
       const trap = this._trapRequest;
       this._trapRequest = undefined;
@@ -316,7 +323,7 @@ export class Database {
     }
     return this._connection.request(
       { pathname, ...opts },
-      transform || undefined
+      transform || undefined,
     );
   }
 
@@ -350,7 +357,7 @@ export class Database {
     const urls: string[] = await this.request(
       { pathname: "/_api/cluster/endpoints" },
       (res) =>
-        res.parsedBody.endpoints.map((endpoint: any) => endpoint.endpoint)
+        res.parsedBody.endpoints.map((endpoint: any) => endpoint.endpoint),
     );
     if (urls.length > 0) {
       if (overwrite) this._connection.setHostList(urls);
@@ -414,18 +421,22 @@ export class Database {
    */
   async waitForPropagation(
     request: connection.RequestOptions,
-    timeout?: number
+    timeout?: number,
   ): Promise<void>;
   async waitForPropagation(
     { pathname, ...request }: connection.RequestOptions,
-    timeout?: number
+    timeout?: number,
   ): Promise<void> {
     await this._connection.waitForPropagation(
       {
         ...request,
-        pathname: util.joinPath('_db', encodeURIComponent(this._name), pathname),
+        pathname: util.joinPath(
+          "_db",
+          encodeURIComponent(this._name),
+          pathname,
+        ),
       },
-      timeout
+      timeout,
     );
   }
 
@@ -513,7 +524,7 @@ export class Database {
       (res) => {
         this.useBearerAuth(res.parsedBody.jwt);
         return res.parsedBody.jwt;
-      }
+      },
     );
   }
 
@@ -541,7 +552,7 @@ export class Database {
         if (!res.parsedBody.jwt) return null;
         this.useBearerAuth(res.parsedBody.jwt);
         return res.parsedBody.jwt;
-      }
+      },
     );
   }
   //#endregion
@@ -599,7 +610,7 @@ export class Database {
         method: "GET",
         pathname: "/_admin/time",
       },
-      (res) => res.parsedBody.time * 1000
+      (res) => res.parsedBody.time * 1000,
     );
   }
 
@@ -636,15 +647,23 @@ export class Database {
    * // availability is either "default", "readonly", or false
    * ```
    */
-  async availability(graceful = false): Promise<administration.ServerAvailability> {
+  async availability(
+    graceful = false,
+  ): Promise<administration.ServerAvailability> {
     try {
-      return this.request({
-        method: "GET",
-        pathname: "/_admin/server/availability",
-      }, (res) => res.parsedBody.mode);
+      return this.request(
+        {
+          method: "GET",
+          pathname: "/_admin/server/availability",
+        },
+        (res) => res.parsedBody.mode,
+      );
     } catch (e) {
       if (graceful) return false;
-      if ((errors.isArangoError(e) || e instanceof errors.HttpError) && e.code === 503) {
+      if (
+        (errors.isArangoError(e) || e instanceof errors.HttpError) &&
+        e.code === 503
+      ) {
         return false;
       }
       throw e;
@@ -656,7 +675,9 @@ export class Database {
    *
    * Note that this API may reveal sensitive data about the deployment.
    */
-  supportInfo(): Promise<administration.SingleServerSupportInfo | administration.ClusterSupportInfo> {
+  supportInfo(): Promise<
+    administration.SingleServerSupportInfo | administration.ClusterSupportInfo
+  > {
     return this.request({
       method: "GET",
       pathname: "/_admin/support-info",
@@ -672,7 +693,7 @@ export class Database {
         method: "DELETE",
         pathname: "/_admin/shutdown",
       },
-      () => undefined
+      () => undefined,
     );
   }
   //#endregion
@@ -690,7 +711,7 @@ export class Database {
   getClusterImbalance(): Promise<cluster.ClusterRebalanceState> {
     return this.request(
       { pathname: "/_admin/cluster/rebalance" },
-      (res) => res.parsedBody.result
+      (res) => res.parsedBody.result,
     );
   }
 
@@ -710,7 +731,7 @@ export class Database {
    * ```
    */
   computeClusterRebalance(
-    options: cluster.ClusterRebalanceOptions
+    options: cluster.ClusterRebalanceOptions,
   ): Promise<cluster.ClusterRebalanceResult> {
     return this.request(
       {
@@ -721,7 +742,7 @@ export class Database {
           ...options,
         },
       },
-      (res) => res.parsedBody.result
+      (res) => res.parsedBody.result,
     );
   }
 
@@ -740,7 +761,9 @@ export class Database {
    * }
    * ```
    */
-  executeClusterRebalance(moves: cluster.ClusterRebalanceMove[]): Promise<unknown> {
+  executeClusterRebalance(
+    moves: cluster.ClusterRebalanceMove[],
+  ): Promise<unknown> {
     return this.request({
       method: "POST",
       pathname: "/_admin/cluster/rebalance/execute",
@@ -766,7 +789,7 @@ export class Database {
    * ```
    */
   rebalanceCluster(
-    opts: cluster.ClusterRebalanceOptions
+    opts: cluster.ClusterRebalanceOptions,
   ): Promise<cluster.ClusterRebalanceResult> {
     return this.request({
       method: "PUT",
@@ -811,7 +834,7 @@ export class Database {
   get(): Promise<DatabaseDescription> {
     return this.request(
       { pathname: "/_api/database/current" },
-      (res) => res.parsedBody.result
+      (res) => res.parsedBody.result,
     );
   }
 
@@ -855,7 +878,7 @@ export class Database {
    */
   createDatabase(
     databaseName: string,
-    options?: CreateDatabaseOptions
+    options?: CreateDatabaseOptions,
   ): Promise<Database>;
   /**
    * Creates a new database with the given `databaseName` with the given
@@ -873,11 +896,13 @@ export class Database {
    */
   createDatabase(
     databaseName: string,
-    users: users.CreateDatabaseUserOptions[]
+    users: users.CreateDatabaseUserOptions[],
   ): Promise<Database>;
   createDatabase(
     databaseName: string,
-    usersOrOptions: users.CreateDatabaseUserOptions[] | CreateDatabaseOptions = {}
+    usersOrOptions:
+      | users.CreateDatabaseUserOptions[]
+      | CreateDatabaseOptions = {},
   ): Promise<Database> {
     const { users, ...options } = Array.isArray(usersOrOptions)
       ? { users: usersOrOptions }
@@ -888,7 +913,7 @@ export class Database {
         pathname: "/_api/database",
         body: { name: databaseName, users, options },
       },
-      () => this.database(databaseName)
+      () => this.database(databaseName),
     );
   }
 
@@ -908,7 +933,7 @@ export class Database {
   listDatabases(): Promise<string[]> {
     return this.request(
       { pathname: "/_api/database" },
-      (res) => res.parsedBody.result
+      (res) => res.parsedBody.result,
     );
   }
 
@@ -929,7 +954,7 @@ export class Database {
   listUserDatabases(): Promise<string[]> {
     return this.request(
       { pathname: "/_api/database/user" },
-      (res) => res.parsedBody.result
+      (res) => res.parsedBody.result,
     );
   }
 
@@ -950,8 +975,8 @@ export class Database {
   databases(): Promise<Database[]> {
     return this.request({ pathname: "/_api/database" }, (res) =>
       (res.parsedBody.result as string[]).map((databaseName) =>
-        this.database(databaseName)
-      )
+        this.database(databaseName),
+      ),
     );
   }
 
@@ -972,8 +997,8 @@ export class Database {
   userDatabases(): Promise<Database[]> {
     return this.request({ pathname: "/_api/database/user" }, (res) =>
       (res.parsedBody.result as string[]).map((databaseName) =>
-        this.database(databaseName)
-      )
+        this.database(databaseName),
+      ),
     );
   }
 
@@ -995,7 +1020,7 @@ export class Database {
         method: "DELETE",
         pathname: `/_api/database/${encodeURIComponent(databaseName)}`,
       },
-      (res) => res.parsedBody.result
+      (res) => res.parsedBody.result,
     );
   }
   //#endregion
@@ -1047,14 +1072,14 @@ export class Database {
     EntryResultType extends Record<string, any> = any,
     EntryInputType extends Record<string, any> = EntryResultType,
   >(
-    collectionName: string
+    collectionName: string,
   ): collections.DocumentCollection<EntryResultType, EntryInputType> &
     collections.EdgeCollection<EntryResultType, EntryInputType> {
     collectionName = collectionName;
     if (!this._collections.has(collectionName)) {
       this._collections.set(
         collectionName,
-        new collections.Collection(this, collectionName)
+        new collections.Collection(this, collectionName),
       );
     }
     return this._collections.get(collectionName)!;
@@ -1093,7 +1118,7 @@ export class Database {
     collectionName: string,
     options?: collections.CreateCollectionOptions & {
       type?: collections.CollectionType.DOCUMENT_COLLECTION;
-    }
+    },
   ): Promise<collections.DocumentCollection<EntryResultType, EntryInputType>>;
   /**
    * Creates a new edge collection with the given `collectionName` and
@@ -1134,7 +1159,7 @@ export class Database {
     collectionName: string,
     options: collections.CreateCollectionOptions & {
       type: collections.CollectionType.EDGE_COLLECTION;
-    }
+    },
   ): Promise<collections.EdgeCollection<EntryResultType, EntryInputType>>;
   async createCollection<
     EntryResultType extends Record<string, any> = any,
@@ -1143,9 +1168,11 @@ export class Database {
     collectionName: string,
     options?: collections.CreateCollectionOptions & {
       type?: collections.CollectionType;
-    }
-  ): Promise<collections.DocumentCollection<EntryResultType, EntryInputType> &
-    collections.EdgeCollection<EntryResultType, EntryInputType>> {
+    },
+  ): Promise<
+    collections.DocumentCollection<EntryResultType, EntryInputType> &
+      collections.EdgeCollection<EntryResultType, EntryInputType>
+  > {
     const collection = this.collection(collectionName);
     await collection.create(options);
     return collection;
@@ -1187,9 +1214,8 @@ export class Database {
     EntryInputType extends Record<string, any> = EntryResultType,
   >(
     collectionName: string,
-    options?: collections.CreateCollectionOptions
-  ): Promise<
-    collections.EdgeCollection<EntryResultType, EntryInputType>> {
+    options?: collections.CreateCollectionOptions,
+  ): Promise<collections.EdgeCollection<EntryResultType, EntryInputType>> {
     return this.createCollection(collectionName, {
       ...options,
       type: collections.CollectionType.EDGE_COLLECTION,
@@ -1210,7 +1236,7 @@ export class Database {
    */
   async renameCollection(
     collectionName: string,
-    newName: string
+    newName: string,
   ): Promise<connection.ArangoApiResponse<collections.CollectionDescription>> {
     const result = await this.request({
       method: "PUT",
@@ -1246,14 +1272,14 @@ export class Database {
    * ```
    */
   listCollections(
-    excludeSystem: boolean = true
+    excludeSystem: boolean = true,
   ): Promise<collections.CollectionDescription[]> {
     return this.request(
       {
         pathname: "/_api/collection",
         search: { excludeSystem },
       },
-      (res) => res.parsedBody.result
+      (res) => res.parsedBody.result,
     );
   }
 
@@ -1286,8 +1312,10 @@ export class Database {
    * ```
    */
   async collections(
-    excludeSystem: boolean = true
-  ): Promise<Array<collections.DocumentCollection & collections.EdgeCollection>> {
+    excludeSystem: boolean = true,
+  ): Promise<
+    Array<collections.DocumentCollection & collections.EdgeCollection>
+  > {
     const collections = await this.listCollections(excludeSystem);
     return collections.map((data) => this.collection(data.name));
   }
@@ -1324,7 +1352,7 @@ export class Database {
   async createGraph(
     graphName: string,
     edgeDefinitions: graphs.EdgeDefinitionOptions[],
-    options?: graphs.CreateGraphOptions
+    options?: graphs.CreateGraphOptions,
   ): Promise<graphs.Graph> {
     const graph = this.graph(graphName);
     await graph.create(edgeDefinitions, options);
@@ -1347,7 +1375,7 @@ export class Database {
   listGraphs(): Promise<graphs.GraphDescription[]> {
     return this.request(
       { pathname: "/_api/gharial" },
-      (res) => res.parsedBody.graphs
+      (res) => res.parsedBody.graphs,
     );
   }
 
@@ -1405,7 +1433,7 @@ export class Database {
    */
   async createView(
     viewName: string,
-    options: views.CreateViewOptions
+    options: views.CreateViewOptions,
   ): Promise<views.View> {
     const view = this.view(viewName);
     await view.create(options);
@@ -1426,7 +1454,7 @@ export class Database {
    */
   async renameView(
     viewName: string,
-    newName: string
+    newName: string,
   ): Promise<connection.ArangoApiResponse<views.ViewDescription>> {
     const result = await this.request({
       method: "PUT",
@@ -1452,7 +1480,10 @@ export class Database {
    * ```
    */
   listViews(): Promise<views.ViewDescription[]> {
-    return this.request({ pathname: "/_api/view" }, (res) => res.parsedBody.result);
+    return this.request(
+      { pathname: "/_api/view" },
+      (res) => res.parsedBody.result,
+    );
   }
 
   /**
@@ -1491,7 +1522,7 @@ export class Database {
     if (!this._analyzers.has(analyzerName)) {
       this._analyzers.set(
         analyzerName,
-        new analyzers.Analyzer(this, analyzerName)
+        new analyzers.Analyzer(this, analyzerName),
       );
     }
     return this._analyzers.get(analyzerName)!;
@@ -1513,7 +1544,7 @@ export class Database {
    */
   async createAnalyzer(
     analyzerName: string,
-    options: analyzers.CreateAnalyzerOptions
+    options: analyzers.CreateAnalyzerOptions,
   ): Promise<analyzers.Analyzer> {
     const analyzer = this.analyzer(analyzerName);
     await analyzer.create(options);
@@ -1536,7 +1567,7 @@ export class Database {
   listAnalyzers(): Promise<analyzers.AnalyzerDescription[]> {
     return this.request(
       { pathname: "/_api/analyzer" },
-      (res) => res.parsedBody.result
+      (res) => res.parsedBody.result,
     );
   }
 
@@ -1576,7 +1607,7 @@ export class Database {
       {
         pathname: "/_api/user",
       },
-      (res) => res.parsedBody.result
+      (res) => res.parsedBody.result,
     );
   }
 
@@ -1592,7 +1623,9 @@ export class Database {
    * // user is the user object for the user named "steve"
    * ```
    */
-  getUser(username: string): Promise<connection.ArangoApiResponse<users.ArangoUser>> {
+  getUser(
+    username: string,
+  ): Promise<connection.ArangoApiResponse<users.ArangoUser>> {
     return this.request({
       pathname: `/_api/user/${encodeURIComponent(username)}`,
     });
@@ -1613,7 +1646,7 @@ export class Database {
    */
   createUser(
     username: string,
-    passwd: string
+    passwd: string,
   ): Promise<connection.ArangoApiResponse<users.ArangoUser>>;
   /**
    * Creates a new ArangoDB user with the given options.
@@ -1630,11 +1663,11 @@ export class Database {
    */
   createUser(
     username: string,
-    options: users.UserOptions
+    options: users.UserOptions,
   ): Promise<connection.ArangoApiResponse<users.ArangoUser>>;
   createUser(
     username: string,
-    options: string | users.UserOptions
+    options: string | users.UserOptions,
   ): Promise<connection.ArangoApiResponse<users.ArangoUser>> {
     if (typeof options === "string") {
       options = { passwd: options };
@@ -1645,7 +1678,7 @@ export class Database {
         pathname: "/_api/user",
         body: { user: username, ...options },
       },
-      (res) => res.parsedBody
+      (res) => res.parsedBody,
     );
   }
 
@@ -1664,7 +1697,7 @@ export class Database {
    */
   updateUser(
     username: string,
-    passwd: string
+    passwd: string,
   ): Promise<connection.ArangoApiResponse<users.ArangoUser>>;
   /**
    * Updates the ArangoDB user with the new options.
@@ -1681,11 +1714,11 @@ export class Database {
    */
   updateUser(
     username: string,
-    options: Partial<users.UserOptions>
+    options: Partial<users.UserOptions>,
   ): Promise<connection.ArangoApiResponse<users.ArangoUser>>;
   updateUser(
     username: string,
-    options: string | Partial<users.UserOptions>
+    options: string | Partial<users.UserOptions>,
   ): Promise<connection.ArangoApiResponse<users.ArangoUser>> {
     if (typeof options === "string") {
       options = { passwd: options };
@@ -1696,7 +1729,7 @@ export class Database {
         pathname: `/_api/user/${encodeURIComponent(username)}`,
         body: options,
       },
-      (res) => res.parsedBody
+      (res) => res.parsedBody,
     );
   }
 
@@ -1715,7 +1748,7 @@ export class Database {
    */
   replaceUser(
     username: string,
-    options: users.UserOptions
+    options: users.UserOptions,
   ): Promise<connection.ArangoApiResponse<users.ArangoUser>> {
     if (typeof options === "string") {
       options = { passwd: options };
@@ -1726,7 +1759,7 @@ export class Database {
         pathname: `/_api/user/${encodeURIComponent(username)}`,
         body: options,
       },
-      (res) => res.parsedBody
+      (res) => res.parsedBody,
     );
   }
 
@@ -1742,9 +1775,7 @@ export class Database {
    * // The user "steve" has been removed
    * ```
    */
-  removeUser(
-    username: string
-  ): Promise<void> {
+  removeUser(username: string): Promise<void> {
     return this.request(
       {
         method: "DELETE",
@@ -1825,26 +1856,28 @@ export class Database {
    */
   getUserAccessLevel(
     username: string,
-    { database, collection }: users.UserAccessLevelOptions
+    { database, collection }: users.UserAccessLevelOptions,
   ): Promise<users.AccessLevel> {
     const databaseName = isArangoDatabase(database)
       ? database.name
-      : database ??
-      (collection instanceof collections.Collection
-        ? collection.database.name
-        : this._name);
+      : (database ??
+        (collection instanceof collections.Collection
+          ? collection.database.name
+          : this._name));
     const suffix = collection
       ? `/${encodeURIComponent(
-        collections.isArangoCollection(collection) ? collection.name : collection
-      )}`
+          collections.isArangoCollection(collection)
+            ? collection.name
+            : collection,
+        )}`
       : "";
     return this.request(
       {
         pathname: `/_api/user/${encodeURIComponent(
-          username
+          username,
         )}/database/${encodeURIComponent(databaseName)}${suffix}`,
       },
-      (res) => res.parsedBody.result
+      (res) => res.parsedBody.result,
     );
   }
 
@@ -1926,28 +1959,30 @@ export class Database {
       database,
       collection,
       grant,
-    }: users.UserAccessLevelOptions & { grant: users.AccessLevel }
+    }: users.UserAccessLevelOptions & { grant: users.AccessLevel },
   ): Promise<connection.ArangoApiResponse<Record<string, users.AccessLevel>>> {
     const databaseName = isArangoDatabase(database)
       ? database.name
-      : database ??
-      (collection instanceof collections.Collection
-        ? collection.database.name
-        : this._name);
+      : (database ??
+        (collection instanceof collections.Collection
+          ? collection.database.name
+          : this._name));
     const suffix = collection
       ? `/${encodeURIComponent(
-        collections.isArangoCollection(collection) ? collection.name : collection
-      )}`
+          collections.isArangoCollection(collection)
+            ? collection.name
+            : collection,
+        )}`
       : "";
     return this.request(
       {
         method: "PUT",
         pathname: `/_api/user/${encodeURIComponent(
-          username
+          username,
         )}/database/${encodeURIComponent(databaseName)}${suffix}`,
         body: { grant },
       },
-      (res) => res.parsedBody
+      (res) => res.parsedBody,
     );
   }
 
@@ -2016,27 +2051,29 @@ export class Database {
    */
   clearUserAccessLevel(
     username: string,
-    { database, collection }: users.UserAccessLevelOptions
+    { database, collection }: users.UserAccessLevelOptions,
   ): Promise<connection.ArangoApiResponse<Record<string, users.AccessLevel>>> {
     const databaseName = isArangoDatabase(database)
       ? database.name
-      : database ??
-      (collection instanceof collections.Collection
-        ? collection.database.name
-        : this._name);
+      : (database ??
+        (collection instanceof collections.Collection
+          ? collection.database.name
+          : this._name));
     const suffix = collection
       ? `/${encodeURIComponent(
-        collections.isArangoCollection(collection) ? collection.name : collection
-      )}`
+          collections.isArangoCollection(collection)
+            ? collection.name
+            : collection,
+        )}`
       : "";
     return this.request(
       {
         method: "DELETE",
         pathname: `/_api/user/${encodeURIComponent(
-          username
+          username,
         )}/database/${encodeURIComponent(databaseName)}${suffix}`,
       },
-      (res) => res.parsedBody
+      (res) => res.parsedBody,
     );
   }
 
@@ -2058,7 +2095,7 @@ export class Database {
    */
   getUserDatabases(
     username: string,
-    full?: false
+    full?: false,
   ): Promise<Record<string, users.AccessLevel>>;
   /**
    * Fetches an object mapping names of databases to the access level of the
@@ -2082,7 +2119,7 @@ export class Database {
    */
   getUserDatabases(
     username: string,
-    full: true
+    full: true,
   ): Promise<
     Record<
       string,
@@ -2098,7 +2135,7 @@ export class Database {
         pathname: `/_api/user/${encodeURIComponent(username)}/database`,
         search: { full },
       },
-      (res) => res.parsedBody.result
+      (res) => res.parsedBody.result,
     );
   }
   //#endregion
@@ -2154,9 +2191,11 @@ export class Database {
    * ```
    */
   executeTransaction(
-    collections: transactions.TransactionCollectionOptions & { allowImplicit?: boolean },
+    collections: transactions.TransactionCollectionOptions & {
+      allowImplicit?: boolean;
+    },
     action: string,
-    options?: transactions.TransactionOptions & { params?: any }
+    options?: transactions.TransactionOptions & { params?: any },
   ): Promise<any>;
   /**
    * Performs a server-side transaction and returns its return value.
@@ -2205,7 +2244,7 @@ export class Database {
   executeTransaction(
     collections: (string | collections.ArangoCollection)[],
     action: string,
-    options?: transactions.TransactionOptions & { params?: any }
+    options?: transactions.TransactionOptions & { params?: any },
   ): Promise<any>;
   /**
    * Performs a server-side transaction and returns its return value.
@@ -2254,16 +2293,18 @@ export class Database {
   executeTransaction(
     collection: string | collections.ArangoCollection,
     action: string,
-    options?: transactions.TransactionOptions & { params?: any }
+    options?: transactions.TransactionOptions & { params?: any },
   ): Promise<any>;
   executeTransaction(
     collections:
-      | (transactions.TransactionCollectionOptions & { allowImplicit?: boolean })
+      | (transactions.TransactionCollectionOptions & {
+          allowImplicit?: boolean;
+        })
       | (string | collections.ArangoCollection)[]
       | string
       | collections.ArangoCollection,
     action: string,
-    options: transactions.TransactionOptions & { params?: any } = {}
+    options: transactions.TransactionOptions & { params?: any } = {},
   ): Promise<any> {
     const { allowDirtyRead = undefined, ...opts } = options;
     return this.request(
@@ -2277,7 +2318,7 @@ export class Database {
           ...opts,
         },
       },
-      (res) => res.parsedBody.result
+      (res) => res.parsedBody.result,
     );
   }
 
@@ -2331,7 +2372,7 @@ export class Database {
    */
   beginTransaction(
     collections: transactions.TransactionCollectionOptions,
-    options?: transactions.TransactionOptions
+    options?: transactions.TransactionOptions,
   ): Promise<transactions.Transaction>;
   /**
    * Begins a new streaming transaction for the given collections, then returns
@@ -2362,7 +2403,7 @@ export class Database {
    */
   beginTransaction(
     collections: (string | collections.ArangoCollection)[],
-    options?: transactions.TransactionOptions
+    options?: transactions.TransactionOptions,
   ): Promise<transactions.Transaction>;
   /**
    * Begins a new streaming transaction for the given collections, then returns
@@ -2392,7 +2433,7 @@ export class Database {
    */
   beginTransaction(
     collection: string | collections.ArangoCollection,
-    options?: transactions.TransactionOptions
+    options?: transactions.TransactionOptions,
   ): Promise<transactions.Transaction>;
   beginTransaction(
     collections:
@@ -2400,7 +2441,7 @@ export class Database {
       | (string | collections.ArangoCollection)[]
       | string
       | collections.ArangoCollection,
-    options: transactions.TransactionOptions = {}
+    options: transactions.TransactionOptions = {},
   ): Promise<transactions.Transaction> {
     const { allowDirtyRead = undefined, ...opts } = options;
     return this.request(
@@ -2413,7 +2454,7 @@ export class Database {
           ...opts,
         },
       },
-      (res) => new transactions.Transaction(this, res.parsedBody.result.id)
+      (res) => new transactions.Transaction(this, res.parsedBody.result.id),
     );
   }
 
@@ -2453,7 +2494,7 @@ export class Database {
   withTransaction<T>(
     collections: transactions.TransactionCollectionOptions,
     callback: (step: transactions.Transaction["step"]) => Promise<T>,
-    options?: transactions.TransactionOptions
+    options?: transactions.TransactionOptions,
   ): Promise<T>;
   /**
    * Begins and commits a transaction using the given callback. Individual
@@ -2491,7 +2532,7 @@ export class Database {
   withTransaction<T>(
     collections: (string | collections.ArangoCollection)[],
     callback: (step: transactions.Transaction["step"]) => Promise<T>,
-    options?: transactions.TransactionOptions
+    options?: transactions.TransactionOptions,
   ): Promise<T>;
   /**
    * Begins and commits a transaction using the given callback. Individual
@@ -2526,7 +2567,7 @@ export class Database {
   withTransaction<T>(
     collection: string | collections.ArangoCollection,
     callback: (step: transactions.Transaction["step"]) => Promise<T>,
-    options?: transactions.TransactionOptions
+    options?: transactions.TransactionOptions,
   ): Promise<T>;
   async withTransaction<T>(
     collections:
@@ -2535,11 +2576,11 @@ export class Database {
       | string
       | collections.ArangoCollection,
     callback: (step: transactions.Transaction["step"]) => Promise<T>,
-    options: transactions.TransactionOptions = {}
+    options: transactions.TransactionOptions = {},
   ): Promise<T> {
     const trx = await this.beginTransaction(
       collections as transactions.TransactionCollectionOptions,
-      options
+      options,
     );
     try {
       const result = await callback((fn) => trx.step(fn));
@@ -2548,7 +2589,7 @@ export class Database {
     } catch (e) {
       try {
         await trx.abort();
-      } catch { }
+      } catch {}
       throw e;
     }
   }
@@ -2569,7 +2610,7 @@ export class Database {
   listTransactions(): Promise<transactions.TransactionDetails[]> {
     return this._connection.request(
       { pathname: "/_api/transaction" },
-      (res) => res.parsedBody.transactions
+      (res) => res.parsedBody.transactions,
     );
   }
 
@@ -2645,7 +2686,7 @@ export class Database {
    */
   query<T = any>(
     query: aql.AqlQuery<T>,
-    options?: queries.QueryOptions
+    options?: queries.QueryOptions,
   ): Promise<cursors.Cursor<T>>;
   /**
    * Performs a database query using the given `query` and `bindVars`, then
@@ -2699,12 +2740,12 @@ export class Database {
   query<T = any>(
     query: string | aql.AqlLiteral,
     bindVars?: Record<string, any>,
-    options?: queries.QueryOptions
+    options?: queries.QueryOptions,
   ): Promise<cursors.Cursor<T>>;
   query<T = any>(
     query: string | aql.AqlQuery | aql.AqlLiteral,
     bindVars?: Record<string, any>,
-    options: queries.QueryOptions = {}
+    options: queries.QueryOptions = {},
   ): Promise<cursors.Cursor<T>> {
     if (aql.isAqlQuery(query)) {
       options = bindVars ?? {};
@@ -2747,8 +2788,8 @@ export class Database {
           this,
           res.parsedBody,
           res.arangojsHostUrl,
-          allowDirtyRead
-        ).items
+          allowDirtyRead,
+        ).items,
     );
   }
 
@@ -2776,7 +2817,7 @@ export class Database {
    */
   explain(
     query: aql.AqlQuery,
-    options?: queries.ExplainOptions & { allPlans?: false }
+    options?: queries.ExplainOptions & { allPlans?: false },
   ): Promise<connection.ArangoApiResponse<queries.SingleExplainResult>>;
   /**
    * Explains a database query using the given `query`.
@@ -2805,7 +2846,7 @@ export class Database {
    */
   explain(
     query: aql.AqlQuery,
-    options?: queries.ExplainOptions & { allPlans: true }
+    options?: queries.ExplainOptions & { allPlans: true },
   ): Promise<connection.ArangoApiResponse<queries.MultiExplainResult>>;
   /**
    * Explains a database query using the given `query` and `bindVars`.
@@ -2834,7 +2875,7 @@ export class Database {
   explain(
     query: string | aql.AqlLiteral,
     bindVars?: Record<string, any>,
-    options?: queries.ExplainOptions & { allPlans?: false }
+    options?: queries.ExplainOptions & { allPlans?: false },
   ): Promise<connection.ArangoApiResponse<queries.SingleExplainResult>>;
   /**
    * Explains a database query using the given `query` and `bindVars`.
@@ -2864,13 +2905,17 @@ export class Database {
   explain(
     query: string | aql.AqlLiteral,
     bindVars?: Record<string, any>,
-    options?: queries.ExplainOptions & { allPlans: true }
+    options?: queries.ExplainOptions & { allPlans: true },
   ): Promise<connection.ArangoApiResponse<queries.MultiExplainResult>>;
   explain(
     query: string | aql.AqlQuery | aql.AqlLiteral,
     bindVars?: Record<string, any>,
-    options?: queries.ExplainOptions
-  ): Promise<connection.ArangoApiResponse<queries.SingleExplainResult | queries.MultiExplainResult>> {
+    options?: queries.ExplainOptions,
+  ): Promise<
+    connection.ArangoApiResponse<
+      queries.SingleExplainResult | queries.MultiExplainResult
+    >
+  > {
     if (aql.isAqlQuery(query)) {
       options = bindVars;
       bindVars = query.bindVars;
@@ -2907,7 +2952,9 @@ export class Database {
    * `);
    * ```
    aql.*/
-  parse(query: string | aql.AqlQuery | aql.AqlLiteral): Promise<queries.ParseResult> {
+  parse(
+    query: string | aql.AqlQuery | aql.AqlLiteral,
+  ): Promise<queries.ParseResult> {
     if (aql.isAqlQuery(query)) {
       query = query.query;
     } else if (aql.isAqlLiteral(query)) {
@@ -2966,19 +3013,23 @@ export class Database {
    * });
    * ```
    */
-  queryTracking(options: queries.QueryTrackingOptions): Promise<queries.QueryTrackingInfo>;
-  queryTracking(options?: queries.QueryTrackingOptions): Promise<queries.QueryTrackingInfo> {
+  queryTracking(
+    options: queries.QueryTrackingOptions,
+  ): Promise<queries.QueryTrackingInfo>;
+  queryTracking(
+    options?: queries.QueryTrackingOptions,
+  ): Promise<queries.QueryTrackingInfo> {
     return this.request(
       options
         ? {
-          method: "PUT",
-          pathname: "/_api/query/properties",
-          body: options,
-        }
+            method: "PUT",
+            pathname: "/_api/query/properties",
+            body: options,
+          }
         : {
-          method: "GET",
-          pathname: "/_api/query/properties",
-        }
+            method: "GET",
+            pathname: "/_api/query/properties",
+          },
     );
   }
 
@@ -3038,7 +3089,7 @@ export class Database {
         method: "DELETE",
         pathname: "/_api/query/slow",
       },
-      () => undefined
+      () => undefined,
     );
   }
 
@@ -3068,7 +3119,7 @@ export class Database {
         method: "DELETE",
         pathname: `/_api/query/${encodeURIComponent(queryId)}`,
       },
-      () => undefined
+      () => undefined,
     );
   }
   //#endregion
@@ -3087,7 +3138,7 @@ export class Database {
   listUserFunctions(): Promise<queries.UserFunctionDescription[]> {
     return this.request(
       { pathname: "/_api/aqlfunction" },
-      (res) => res.parsedBody.result
+      (res) => res.parsedBody.result,
     );
   }
 
@@ -3125,7 +3176,7 @@ export class Database {
   createUserFunction(
     name: string,
     code: string,
-    isDeterministic: boolean = false
+    isDeterministic: boolean = false,
   ): Promise<connection.ArangoApiResponse<{ isNewlyCreated: boolean }>> {
     return this.request({
       method: "POST",
@@ -3151,7 +3202,7 @@ export class Database {
    */
   dropUserFunction(
     name: string,
-    group: boolean = false
+    group: boolean = false,
   ): Promise<connection.ArangoApiResponse<{ deletedCount: number }>> {
     return this.request({
       method: "DELETE",
@@ -3179,7 +3230,9 @@ export class Database {
    * const services = await db.listServices(false); // all services
    * ```
    */
-  listServices(excludeSystem: boolean = true): Promise<services.ServiceSummary[]> {
+  listServices(
+    excludeSystem: boolean = true,
+  ): Promise<services.ServiceSummary[]> {
     return this.request({
       pathname: "/_api/foxx",
       search: { excludeSystem },
@@ -3221,7 +3274,7 @@ export class Database {
   async installService(
     mount: string,
     source: File | Blob | string,
-    options: services.InstallServiceOptions = {}
+    options: services.InstallServiceOptions = {},
   ): Promise<services.ServiceDescription> {
     const { configuration, dependencies, ...search } = options;
     const form = new FormData();
@@ -3233,7 +3286,7 @@ export class Database {
     }
     form.append(
       "source",
-      typeof source === "string" ? JSON.stringify(source) : source
+      typeof source === "string" ? JSON.stringify(source) : source,
     );
     return await this.request({
       body: form,
@@ -3279,7 +3332,7 @@ export class Database {
   async replaceService(
     mount: string,
     source: File | Blob | string,
-    options: services.ReplaceServiceOptions = {}
+    options: services.ReplaceServiceOptions = {},
   ): Promise<services.ServiceDescription> {
     const { configuration, dependencies, ...search } = options;
     const form = new FormData();
@@ -3291,7 +3344,7 @@ export class Database {
     }
     form.append(
       "source",
-      typeof source === "string" ? JSON.stringify(source) : source
+      typeof source === "string" ? JSON.stringify(source) : source,
     );
     return await this.request({
       body: form,
@@ -3337,7 +3390,7 @@ export class Database {
   async upgradeService(
     mount: string,
     source: File | Blob | string,
-    options: services.UpgradeServiceOptions = {}
+    options: services.UpgradeServiceOptions = {},
   ): Promise<services.ServiceDescription> {
     const { configuration, dependencies, ...search } = options;
     const form = new FormData();
@@ -3349,7 +3402,7 @@ export class Database {
     }
     form.append(
       "source",
-      typeof source === "string" ? JSON.stringify(source) : source
+      typeof source === "string" ? JSON.stringify(source) : source,
     );
     return await this.request({
       body: form,
@@ -3373,7 +3426,7 @@ export class Database {
    */
   uninstallService(
     mount: string,
-    options?: services.UninstallServiceOptions
+    options?: services.UninstallServiceOptions,
   ): Promise<void> {
     return this.request(
       {
@@ -3381,7 +3434,7 @@ export class Database {
         pathname: "/_api/foxx/service",
         search: { ...options, mount },
       },
-      () => undefined
+      () => undefined,
     );
   }
 
@@ -3427,7 +3480,7 @@ export class Database {
    */
   getServiceConfiguration(
     mount: string,
-    minimal?: false
+    minimal?: false,
   ): Promise<Record<string, services.ServiceConfiguration>>;
   /**
    * Retrieves information about the service's configuration options and their
@@ -3452,7 +3505,7 @@ export class Database {
    */
   getServiceConfiguration(
     mount: string,
-    minimal: true
+    minimal: true,
   ): Promise<Record<string, any>>;
   getServiceConfiguration(mount: string, minimal: boolean = false) {
     return this.request({
@@ -3488,8 +3541,10 @@ export class Database {
   replaceServiceConfiguration(
     mount: string,
     cfg: Record<string, any>,
-    minimal?: false
-  ): Promise<Record<string, services.ServiceConfiguration & { warning?: string }>>;
+    minimal?: false,
+  ): Promise<
+    Record<string, services.ServiceConfiguration & { warning?: string }>
+  >;
   /**
    * Replaces the configuration of the given service, discarding any existing
    * values for options not specified.
@@ -3517,7 +3572,7 @@ export class Database {
   replaceServiceConfiguration(
     mount: string,
     cfg: Record<string, any>,
-    minimal: true
+    minimal: true,
   ): Promise<{
     values: Record<string, any>;
     warnings: Record<string, string>;
@@ -3525,7 +3580,7 @@ export class Database {
   replaceServiceConfiguration(
     mount: string,
     cfg: Record<string, any>,
-    minimal: boolean = false
+    minimal: boolean = false,
   ) {
     return this.request({
       method: "PUT",
@@ -3562,8 +3617,10 @@ export class Database {
   updateServiceConfiguration(
     mount: string,
     cfg: Record<string, any>,
-    minimal?: false
-  ): Promise<Record<string, services.ServiceConfiguration & { warning?: string }>>;
+    minimal?: false,
+  ): Promise<
+    Record<string, services.ServiceConfiguration & { warning?: string }>
+  >;
   /**
    * Updates the configuration of the given service while maintaining any
    * existing values for options not specified.
@@ -3591,7 +3648,7 @@ export class Database {
   updateServiceConfiguration(
     mount: string,
     cfg: Record<string, any>,
-    minimal: true
+    minimal: true,
   ): Promise<{
     values: Record<string, any>;
     warnings: Record<string, string>;
@@ -3599,7 +3656,7 @@ export class Database {
   updateServiceConfiguration(
     mount: string,
     cfg: Record<string, any>,
-    minimal: boolean = false
+    minimal: boolean = false,
   ) {
     return this.request({
       method: "PATCH",
@@ -3632,8 +3689,13 @@ export class Database {
    */
   getServiceDependencies(
     mount: string,
-    minimal?: false
-  ): Promise<Record<string, services.SingleServiceDependency | services.MultiServiceDependency>>;
+    minimal?: false,
+  ): Promise<
+    Record<
+      string,
+      services.SingleServiceDependency | services.MultiServiceDependency
+    >
+  >;
   /**
    * Retrieves information about the service's dependencies and their current
    * mount points.
@@ -3657,7 +3719,7 @@ export class Database {
    */
   getServiceDependencies(
     mount: string,
-    minimal: true
+    minimal: true,
   ): Promise<Record<string, string | string[]>>;
   getServiceDependencies(mount: string, minimal: boolean = false) {
     return this.request({
@@ -3693,11 +3755,13 @@ export class Database {
   replaceServiceDependencies(
     mount: string,
     deps: Record<string, string>,
-    minimal?: false
+    minimal?: false,
   ): Promise<
     Record<
       string,
-      (services.SingleServiceDependency | services.MultiServiceDependency) & { warning?: string }
+      (services.SingleServiceDependency | services.MultiServiceDependency) & {
+        warning?: string;
+      }
     >
   >;
   /**
@@ -3731,7 +3795,7 @@ export class Database {
   replaceServiceDependencies(
     mount: string,
     deps: Record<string, string>,
-    minimal: true
+    minimal: true,
   ): Promise<{
     values: Record<string, string>;
     warnings: Record<string, string>;
@@ -3739,7 +3803,7 @@ export class Database {
   replaceServiceDependencies(
     mount: string,
     deps: Record<string, string>,
-    minimal: boolean = false
+    minimal: boolean = false,
   ) {
     return this.request({
       method: "PUT",
@@ -3776,11 +3840,13 @@ export class Database {
   updateServiceDependencies(
     mount: string,
     deps: Record<string, string>,
-    minimal?: false
+    minimal?: false,
   ): Promise<
     Record<
       string,
-      (services.SingleServiceDependency | services.MultiServiceDependency) & { warning?: string }
+      (services.SingleServiceDependency | services.MultiServiceDependency) & {
+        warning?: string;
+      }
     >
   >;
   /**
@@ -3814,7 +3880,7 @@ export class Database {
   updateServiceDependencies(
     mount: string,
     deps: Record<string, string>,
-    minimal: true
+    minimal: true,
   ): Promise<{
     values: Record<string, string>;
     warnings: Record<string, string>;
@@ -3822,7 +3888,7 @@ export class Database {
   updateServiceDependencies(
     mount: string,
     deps: Record<string, string>,
-    minimal: boolean = false
+    minimal: boolean = false,
   ) {
     return this.request({
       method: "PATCH",
@@ -3849,7 +3915,7 @@ export class Database {
    */
   setServiceDevelopmentMode(
     mount: string,
-    enabled: boolean = true
+    enabled: boolean = true,
   ): Promise<services.ServiceDescription> {
     return this.request({
       method: enabled ? "POST" : "DELETE",
@@ -3940,7 +4006,7 @@ export class Database {
        * executed.
        */
       filter?: string;
-    }
+    },
   ): Promise<services.ServiceTestDefaultReport>;
   /**
    * Runs the tests of a given service and returns the results using the
@@ -3972,7 +4038,7 @@ export class Database {
        * executed.
        */
       filter?: string;
-    }
+    },
   ): Promise<services.ServiceTestSuiteReport>;
   /**
    * Runs the tests of a given service and returns the results using the
@@ -4005,7 +4071,7 @@ export class Database {
        * executed.
        */
       filter?: string;
-    }
+    },
   ): Promise<services.ServiceTestStreamReport>;
   /**
    * Runs the tests of a given service and returns the results using the
@@ -4038,7 +4104,7 @@ export class Database {
        * executed.
        */
       filter?: string;
-    }
+    },
   ): Promise<services.ServiceTestTapReport>;
   /**
    * Runs the tests of a given service and returns the results using the
@@ -4071,7 +4137,7 @@ export class Database {
        * executed.
        */
       filter?: string;
-    }
+    },
   ): Promise<services.ServiceTestXunitReport>;
   /**
    * Runs the tests of a given service and returns the results as a string
@@ -4105,7 +4171,7 @@ export class Database {
        * executed.
        */
       filter?: string;
-    }
+    },
   ): Promise<string>;
   /**
    * Runs the tests of a given service and returns the results as a string
@@ -4139,7 +4205,7 @@ export class Database {
        * executed.
        */
       filter?: string;
-    }
+    },
   ): Promise<string>;
   /**
    * Runs the tests of a given service and returns the results as a string
@@ -4173,7 +4239,7 @@ export class Database {
        * executed.
        */
       filter?: string;
-    }
+    },
   ): Promise<string>;
   runServiceTests(
     mount: string,
@@ -4181,7 +4247,7 @@ export class Database {
       reporter?: string;
       idiomatic?: boolean;
       filter?: string;
-    }
+    },
   ) {
     return this.request({
       method: "POST",
@@ -4284,7 +4350,7 @@ export class Database {
         pathname: "/_api/foxx/commit",
         search: { replace },
       },
-      () => undefined
+      () => undefined,
     );
   }
   //#endregion
@@ -4304,7 +4370,7 @@ export class Database {
    * ```
    */
   createHotBackup(
-    options: hotBackups.HotBackupOptions = {}
+    options: hotBackups.HotBackupOptions = {},
   ): Promise<hotBackups.HotBackupResult> {
     return this.request(
       {
@@ -4312,7 +4378,7 @@ export class Database {
         pathname: "/_admin/backup/create",
         body: options,
       },
-      (res) => res.parsedBody.result
+      (res) => res.parsedBody.result,
     );
   }
 
@@ -4338,7 +4404,7 @@ export class Database {
         pathname: "/_admin/backup/list",
         body: id ? { id } : undefined,
       },
-      (res) => res.parsedBody.result
+      (res) => res.parsedBody.result,
     );
   }
 
@@ -4362,7 +4428,7 @@ export class Database {
         pathname: "/_admin/backup/restore",
         body: { id },
       },
-      (res) => res.parsedBody.result.previous
+      (res) => res.parsedBody.result.previous,
     );
   }
 
@@ -4384,7 +4450,7 @@ export class Database {
         pathname: "/_admin/backup/delete",
         body: { id },
       },
-      () => undefined
+      () => undefined,
     );
   }
   //#endregion
@@ -4410,7 +4476,7 @@ export class Database {
         pathname: "/_admin/log/entries",
         search: options,
       },
-      (res) => res.parsedBody
+      (res) => res.parsedBody,
     );
   }
 
@@ -4431,14 +4497,14 @@ export class Database {
    * ```
    */
   listLogMessages(
-    options?: logs.LogEntriesOptions
+    options?: logs.LogEntriesOptions,
   ): Promise<logs.LogMessage[]> {
     return this.request(
       {
         pathname: "/_admin/log",
         search: options,
       },
-      (res) => res.parsedBody.messages
+      (res) => res.parsedBody.messages,
     );
   }
 
@@ -4471,7 +4537,7 @@ export class Database {
    * ```
    */
   setLogLevel(
-    levels: Record<string, logs.LogLevelSetting>
+    levels: Record<string, logs.LogLevelSetting>,
   ): Promise<Record<string, logs.LogLevelSetting>> {
     return this.request({
       method: "PUT",
@@ -4504,9 +4570,11 @@ export class Database {
    * ```
    */
   async createJob<T>(callback: () => Promise<T>): Promise<jobs.Job<T>> {
-    const trap = new Promise<TrappedError | TrappedRequest<T>>((resolveTrap) => {
-      this._trapRequest = (trapped) => resolveTrap(trapped);
-    });
+    const trap = new Promise<TrappedError | TrappedRequest<T>>(
+      (resolveTrap) => {
+        this._trapRequest = (trapped) => resolveTrap(trapped);
+      },
+    );
     const eventualResult = callback();
     const trapped = await trap;
     if (trapped.error) return eventualResult as Promise<any>;
@@ -4521,7 +4589,7 @@ export class Database {
       (e) => {
         onReject(e);
         return eventualResult;
-      }
+      },
     );
   }
 
@@ -4555,7 +4623,7 @@ export class Database {
       {
         pathname: "/_api/job/pending",
       },
-      (res) => res.parsedBody
+      (res) => res.parsedBody,
     );
   }
 
@@ -4574,7 +4642,7 @@ export class Database {
       {
         pathname: "/_api/job/done",
       },
-      (res) => res.parsedBody
+      (res) => res.parsedBody,
     );
   }
 
@@ -4599,7 +4667,7 @@ export class Database {
         pathname: `/_api/job/expired`,
         search: { stamp: threshold / 1000 },
       },
-      () => undefined
+      () => undefined,
     );
   }
 
@@ -4612,7 +4680,7 @@ export class Database {
         method: "DELETE",
         pathname: `/_api/job/all`,
       },
-      () => undefined
+      () => undefined,
     );
   }
   //#endregion

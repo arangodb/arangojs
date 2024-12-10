@@ -25,7 +25,7 @@ describe("DocumentCollection API", function () {
     collection = await db.createCollection(`c_${Date.now()}`);
     await db.waitForPropagation(
       { pathname: `/_api/collection/${collection.name}` },
-      10000
+      10000,
     );
   });
   afterEach(async () => {
@@ -177,7 +177,7 @@ describe("DocumentCollection API", function () {
       await collection.update(
         doc,
         { sup: "dawg", empty: null },
-        { keepNull: false }
+        { keepNull: false },
       );
       const newData = await collection.document(doc._key);
       expect(newData).to.have.property("potato").that.equals(doc.potato);

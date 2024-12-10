@@ -27,7 +27,7 @@ describe("Transactions", () => {
       const result = await db.executeTransaction(
         [],
         "function (params) {return params;}",
-        { params: "test" }
+        { params: "test" },
       );
       expect(result).to.equal("test");
     });
@@ -44,8 +44,8 @@ describe("Transactions", () => {
     after(async () => {
       await Promise.all(
         allTransactions.map((transaction) =>
-          transaction.abort().catch(() => undefined)
-        )
+          transaction.abort().catch(() => undefined),
+        ),
       );
       await system.dropDatabase(name);
     });
@@ -53,7 +53,7 @@ describe("Transactions", () => {
       collection = await db.createCollection(`collection-${Date.now()}`);
       await db.waitForPropagation(
         { pathname: `/_api/collection/${collection.name}` },
-        10000
+        10000,
       );
     });
     afterEach(async () => {
@@ -127,7 +127,7 @@ describe("Transactions", () => {
       let doc: any;
       try {
         doc = await collection.document("test");
-      } catch (e: any) { }
+      } catch (e: any) {}
       if (doc) expect.fail("Document should not exist yet.");
       const { id, status } = await trx.commit();
       expect(id).to.equal(trx.id);
@@ -142,11 +142,11 @@ describe("Transactions", () => {
       let doc: any;
       try {
         doc = await collection.document("test1");
-      } catch (e: any) { }
+      } catch (e: any) {}
       if (doc) expect.fail("Document should not exist yet.");
       try {
         doc = await collection.document("test2");
-      } catch (e: any) { }
+      } catch (e: any) {}
       if (doc) expect.fail("Document should not exist yet.");
       const { id, status } = await trx.commit();
       expect(id).to.equal(trx.id);
@@ -164,7 +164,7 @@ describe("Transactions", () => {
       let doc: any;
       try {
         doc = await collection.document("test");
-      } catch (e: any) { }
+      } catch (e: any) {}
       if (doc) expect.fail("Document should not exist yet.");
     });
 

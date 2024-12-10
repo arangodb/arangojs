@@ -54,7 +54,9 @@ export type BearerAuthCredentials = {
 /**
  * Determines if the given credentials are for Bearer token authentication.
  */
-export function isBearerAuth(auth: BasicAuthCredentials | BearerAuthCredentials): auth is BearerAuthCredentials {
+export function isBearerAuth(
+  auth: BasicAuthCredentials | BearerAuthCredentials,
+): auth is BearerAuthCredentials {
   return auth.hasOwnProperty("token");
 }
 //#endregion

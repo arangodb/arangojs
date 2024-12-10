@@ -20,7 +20,7 @@ describe("config.maxRetries", () => {
     collection = await db.createCollection(collectionName);
     await db.waitForPropagation(
       { pathname: `/_api/collection/${collection.name}` },
-      10000
+      10000,
     );
   });
   after(async () => {
@@ -45,12 +45,12 @@ describe("config.maxRetries", () => {
               LET doc = DOCUMENT(${collection}, ${docKey})
               UPDATE doc WITH { data: doc.data + 1 } IN ${collection}
             `,
-            { retryOnConflict: 0 }
-          )
-        )
+            { retryOnConflict: 0 },
+          ),
+        ),
       );
       expect(
-        result.filter(({ status }) => status === "rejected")
+        result.filter(({ status }) => status === "rejected"),
       ).not.to.have.lengthOf(0);
       const { data } = await collection.document(docKey);
       expect(data).not.to.equal(1_000);
@@ -65,9 +65,9 @@ describe("config.maxRetries", () => {
               LET doc = DOCUMENT(${collection}, ${docKey})
               UPDATE doc WITH { data: doc.data + 1 } IN ${collection}
             `,
-            { retryOnConflict: 100 }
-          )
-        )
+            { retryOnConflict: 100 },
+          ),
+        ),
       );
       const { data } = await collection.document(docKey);
       expect(data).to.equal(1_000);

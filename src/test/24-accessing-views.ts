@@ -38,9 +38,9 @@ describe("Accessing views", function () {
           await view.create({ type: "arangosearch" });
           await db.waitForPropagation(
             { pathname: `/_api/view/${view.name}` },
-            10000
+            10000,
           );
-        })
+        }),
       );
     });
     after(async () => {
@@ -61,14 +61,14 @@ describe("Accessing views", function () {
           await view.create({ type: "arangosearch" });
           await db.waitForPropagation(
             { pathname: `/_api/view/${view.name}` },
-            10000
+            10000,
           );
-        })
+        }),
       );
     });
     after(async () => {
       await Promise.all(
-        arangoSearchViewNames.map((name) => db.view(name).drop())
+        arangoSearchViewNames.map((name) => db.view(name).drop()),
       );
     });
     it("creates View instances", async () => {
@@ -76,7 +76,7 @@ describe("Accessing views", function () {
       const arangoSearchViews = views.filter((v) => v instanceof View).sort();
       expect(arangoSearchViews.length).to.equal(arangoSearchViewNames.length);
       expect(arangoSearchViews.map((v) => v.name).sort()).to.eql(
-        arangoSearchViewNames
+        arangoSearchViewNames,
       );
     });
   });

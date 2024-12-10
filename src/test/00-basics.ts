@@ -39,7 +39,7 @@ describe("Configuring the driver", () => {
             "x-one": "1",
             "x-two": "2",
           },
-        }
+        },
       });
       (db as any)._connection._hosts = [
         {
@@ -48,10 +48,10 @@ describe("Configuring the driver", () => {
             expect(headers.get("x-two")).to.equal("2");
             done();
           },
-          close: () => { },
+          close: () => {},
         },
       ];
-      db.request({ headers: {} }, () => { });
+      db.request({ headers: {} }, () => {});
     });
   });
   describe("with an arangoVersion", () => {
@@ -63,10 +63,10 @@ describe("Configuring the driver", () => {
             expect(headers.get("x-arango-version")).to.equal("99999");
             done();
           },
-          close: () => { },
+          close: () => {},
         },
       ];
-      db.request({ headers: {} }, () => { });
+      db.request({ headers: {} }, () => {});
     });
   });
 });

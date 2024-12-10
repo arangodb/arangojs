@@ -542,7 +542,10 @@ export type DocumentEdgesResult<T extends Record<string, any> = any> = {
  *
  * See {@link DocumentMetadata}.
  */
-export type DocumentSelector = ObjectWithDocumentId | ObjectWithDocumentKey | string;
+export type DocumentSelector =
+  | ObjectWithDocumentId
+  | ObjectWithDocumentKey
+  | string;
 
 /**
  * An object with an ArangoDB document `_id` property.
@@ -570,7 +573,7 @@ export type ObjectWithDocumentKey = {
 export function _documentHandle(
   selector: DocumentSelector,
   collectionName: string,
-  strict: boolean = true
+  strict: boolean = true,
 ): string {
   if (typeof selector !== "string") {
     if (selector._id) {
@@ -580,14 +583,14 @@ export function _documentHandle(
       return _documentHandle(selector._key, collectionName);
     }
     throw new Error(
-      "Document handle must be a string or an object with a _key or _id attribute"
+      "Document handle must be a string or an object with a _key or _id attribute",
     );
   }
   if (selector.includes("/")) {
     const [head] = selector.split("/");
     if (strict && head !== collectionName) {
       throw new Error(
-        `Document ID "${selector}" does not match collection name "${collectionName}"`
+        `Document ID "${selector}" does not match collection name "${collectionName}"`,
       );
     }
     return selector;

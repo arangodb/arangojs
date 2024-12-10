@@ -18,7 +18,7 @@ describe("Collection metadata", function () {
     collection = await db.createCollection(collectionName);
     await db.waitForPropagation(
       { pathname: `/_api/collection/${collection.name}` },
-      10000
+      10000,
     );
   });
   after(async () => {

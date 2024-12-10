@@ -18,7 +18,7 @@ describe("AQL Stream queries", function () {
   });
   after(async () => {
     await Promise.all(
-      allCursors.map((cursor) => cursor.kill().catch(() => undefined))
+      allCursors.map((cursor) => cursor.kill().catch(() => undefined)),
     );
     try {
       await system.dropDatabase(name);
@@ -69,12 +69,12 @@ describe("AQL Stream queries", function () {
       const collection = await db.createCollection(cname);
       await db.waitForPropagation(
         { pathname: `/_api/collection/${collection.name}` },
-        10000
+        10000,
       );
       await Promise.all(
         Array.from(Array(1000).keys()).map((i: number) =>
-          collection.save({ hallo: i })
-        )
+          collection.save({ hallo: i }),
+        ),
       );
     });
     /*after(async () => {
@@ -87,15 +87,15 @@ describe("AQL Stream queries", function () {
 
       let count = 0;
       const cursors = await Promise.all(
-        Array.from(Array(25)).map(() => db.query(query, options))
+        Array.from(Array(25)).map(() => db.query(query, options)),
       );
       allCursors.push(...cursors);
       await Promise.all(
         cursors.map((c) =>
           (c as Cursor).forEach(() => {
             count++;
-          })
-        )
+          }),
+        ),
       );
       expect(count).to.equal(25 * 1000);
     });

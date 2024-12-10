@@ -32,18 +32,18 @@ describe("Transactions", function () {
     after(async () => {
       await Promise.all(
         allTransactions.map((transaction) =>
-          transaction.abort().catch(() => undefined)
-        )
+          transaction.abort().catch(() => undefined),
+        ),
       );
       try {
         await system.dropDatabase(name);
-      } catch { }
+      } catch {}
     });
     beforeEach(async () => {
       collection = await db.createCollection(`collection-${Date.now()}`);
       await db.waitForPropagation(
         { pathname: `/_api/collection/${collection.name}` },
-        10000
+        10000,
       );
     });
     afterEach(async () => {
@@ -58,7 +58,7 @@ describe("Transactions", function () {
     it("can run concurrent transactions in parallel", async () => {
       const conn = (db as any)._connection as Connection;
       const range = Array.from(Array((conn as any)._taskPoolSize).keys()).map(
-        (i) => i + 1
+        (i) => i + 1,
       );
       let failed = 0;
       await Promise.all(
@@ -73,7 +73,7 @@ describe("Transactions", function () {
               trx.id,
               "completed begin after",
               Date.now() - started,
-              "ms elapsed"
+              "ms elapsed",
             );
             await trx.step(() => collection.save({ enabled: true }));
             console.log(
@@ -82,7 +82,7 @@ describe("Transactions", function () {
               trx.id,
               "completed save after",
               Date.now() - started,
-              "ms elapsed"
+              "ms elapsed",
             );
             await delay(Math.random() * 10);
             await trx.commit();
@@ -92,7 +92,7 @@ describe("Transactions", function () {
               trx.id,
               "completed commit after",
               Date.now() - started,
-              "ms elapsed"
+              "ms elapsed",
             );
           } catch (e: any) {
             console.error(
@@ -102,18 +102,18 @@ describe("Transactions", function () {
               "failed after",
               Date.now() - started,
               "ms elapsed:",
-              String(e)
+              String(e),
             );
             failed++;
           }
-        })
+        }),
       );
       expect(failed).to.equal(0);
     });
     it("respects transactional guarantees", async () => {
       const conn = (db as any)._connection as Connection;
       const range = Array.from(Array((conn as any)._taskPoolSize).keys()).map(
-        (i) => i + 1
+        (i) => i + 1,
       );
       const key = "test";
       await collection.save({ _key: key, i: 0 });
@@ -134,7 +134,7 @@ describe("Transactions", function () {
               "adding",
               value,
               "=",
-              doc.i + value
+              doc.i + value,
             );
             await trx.step(() => collection.update(key, { i: doc.i + value }));
             console.log(value, "committing");
@@ -144,7 +144,7 @@ describe("Transactions", function () {
             console.error(value, "failed:", String(e));
             failed++;
           }
-        })
+        }),
       );
       const doc = await collection.document(key);
       expect(doc.i).to.equal(range.reduce((a, b) => a + b));

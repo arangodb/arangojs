@@ -51,7 +51,7 @@ export class LinkedListItem<T> {
     /**
      *Function to run on unlink() call. Usually used by LinkedList to fix first and last pointers and reduce length.
      */
-    protected unlinkCleanup?: (item: LinkedListItem<T>) => void
+    protected unlinkCleanup?: (item: LinkedListItem<T>) => void,
   ) {}
 
   /**
@@ -60,7 +60,7 @@ export class LinkedListItem<T> {
    */
   public insertBehind(
     /** LinkListItem to be inserted behind this one */
-    item: LinkedListItem<T>
+    item: LinkedListItem<T>,
   ): void {
     item.insertBefore(this);
 
@@ -80,7 +80,7 @@ export class LinkedListItem<T> {
    */
   public unlink(
     /** If true, additionally removes the reference to the item before and behind */
-    unchain = false
+    unchain = false,
   ): void {
     if (this.before) this.before.behind = this.behind;
 
@@ -105,7 +105,7 @@ export class LinkedListItem<T> {
    */
   protected insertBefore(
     /** LinkListItem to be inserted before this one */
-    before: LinkedListItem<T>
+    before: LinkedListItem<T>,
   ): void {
     this.before = before;
     if (!this.unlinkCleanup) {
@@ -137,7 +137,7 @@ export class LinkedList<T> {
 
   constructor(
     /** Values to be added initially into list */
-    values?: Iterable<T> | LinkedList<T>
+    values?: Iterable<T> | LinkedList<T>,
   ) {
     if (values) {
       if (values instanceof LinkedList) values = values.values();
@@ -160,7 +160,7 @@ export class LinkedList<T> {
    */
   public clear(
     /** If `true`, remove link info from every item. Changes complexity to O(n)! */
-    unchain = false
+    unchain = false,
   ): void {
     if (unchain) {
       while (this.first) {
@@ -181,7 +181,7 @@ export class LinkedList<T> {
     /** Runs for every item in the LinkedList */
     callback: (value: T, item: LinkedListItem<T>, list: this) => boolean,
     /** If given, callback function will be bound to thisArg */
-    thisArg?: C
+    thisArg?: C,
   ): boolean {
     if (thisArg) {
       callback = callback.bind(thisArg);
@@ -203,7 +203,7 @@ export class LinkedList<T> {
     /** decides wether given element should be part of new LinkedList */
     callback: (value: T, item: LinkedListItem<T>, list: this) => boolean,
     /** If given, callback function will be bound to thisArg */
-    thisArg?: C
+    thisArg?: C,
   ): LinkedList<T> {
     if (thisArg) {
       callback = callback.bind(thisArg);
@@ -226,7 +226,7 @@ export class LinkedList<T> {
     /** runs for every value in LinkedList. If it returns truthy, current value is returned. */
     callback: (value: T, item: LinkedListItem<T>, list: this) => boolean,
     /** If given, callback function will be bound to thisArg */
-    thisArg?: C
+    thisArg?: C,
   ): T | undefined {
     if (thisArg) {
       callback = callback.bind(thisArg);
@@ -249,7 +249,7 @@ export class LinkedList<T> {
     /** runs for every LinkedListItem in LinkedList. If it returns truthy, current LinkedListItem is returned. */
     callback: (value: T, item: LinkedListItem<T>, list: this) => boolean,
     /** If given, callback function will be bound to thisArg */
-    thisArg?: C
+    thisArg?: C,
   ): LinkedListItem<T> | undefined {
     if (thisArg) {
       callback = callback.bind(thisArg);
@@ -272,7 +272,7 @@ export class LinkedList<T> {
     /** Gets every value in LinkedList once with corresponding LinkedListItem and LinkedList */
     callback: (value: T, item: LinkedListItem<T>, list: this) => void,
     /** If given, callback function will be bound to thisArg */
-    thisArg?: C
+    thisArg?: C,
   ): void {
     if (thisArg) {
       callback = callback.bind(thisArg);
@@ -291,7 +291,7 @@ export class LinkedList<T> {
     /** value to be found in this */
     value: T,
     /** Starting index. Supports negative values for which `this.size - 1 + fromIndex` will be used as starting point. */
-    fromIndex = 0
+    fromIndex = 0,
   ): boolean {
     let current = this.getItemByIndex(fromIndex);
     while (current) {
@@ -311,7 +311,7 @@ export class LinkedList<T> {
     /** Value to be found */
     searchedValue: T,
     /** Index to start from */
-    fromIndex = 0
+    fromIndex = 0,
   ): LinkedListItem<T> | undefined {
     let current = this.getItemByIndex(fromIndex);
     while (current) {
@@ -331,7 +331,7 @@ export class LinkedList<T> {
     /** Value to be found */
     searchedValue: T,
     /** Index to start from */
-    fromIndex = -1
+    fromIndex = -1,
   ): LinkedListItem<T> | undefined {
     let current = this.getItemByIndex(fromIndex);
     while (current) {
@@ -351,7 +351,7 @@ export class LinkedList<T> {
     /** Gets value, LinkedListeItem and LinkedList. The response will be used as value in the new LinkedList */
     callback: (value: T, item: LinkedListItem<T>, list: this) => V,
     /** If given, callback function will be bound to thisArg */
-    thisArg?: C
+    thisArg?: C,
   ): LinkedList<V> {
     if (thisArg) {
       callback = callback.bind(thisArg);
@@ -378,8 +378,8 @@ export class LinkedList<T> {
       accumulator: T,
       currentValue: T,
       currentItem: LinkedListItem<T>,
-      list: this
-    ) => V
+      list: this,
+    ) => V,
   ): V;
   public reduce<V>(
     /**
@@ -390,25 +390,25 @@ export class LinkedList<T> {
       accumulator: V,
       currentValue: T,
       currentItem: LinkedListItem<T>,
-      list: this
+      list: this,
     ) => V,
     /** Value for the first call of callback */
-    initialValue: V
+    initialValue: V,
   ): V;
   public reduce<V>(
     callback: (
       accumulator: V | T,
       currentValue: T,
       currentItem: LinkedListItem<T>,
-      list: this
+      list: this,
     ) => V,
-    initialValue?: V | T
+    initialValue?: V | T,
   ): V | T {
     let current = this.first;
     if (!current) {
       if (!initialValue) {
         throw new TypeError(
-          "Empty accumulator on empty LinkedList is not allowed."
+          "Empty accumulator on empty LinkedList is not allowed.",
         );
       }
       return initialValue;
@@ -445,8 +445,8 @@ export class LinkedList<T> {
       accumulator: T,
       currentValue: T,
       currentItem: LinkedListItem<T>,
-      list: this
-    ) => V
+      list: this,
+    ) => V,
   ): V;
   public reduceRight<V>(
     /**
@@ -457,25 +457,25 @@ export class LinkedList<T> {
       accumulator: V,
       currentValue: T,
       currentItem: LinkedListItem<T>,
-      list: this
+      list: this,
     ) => V,
     /** Value for the first call of callback */
-    initialValue: V
+    initialValue: V,
   ): V;
   public reduceRight<V>(
     callback: (
       accumulator: V | T,
       currentValue: T,
       currentItem: LinkedListItem<T>,
-      list: this
+      list: this,
     ) => V,
-    initialValue?: V | T
+    initialValue?: V | T,
   ): V | T {
     let current = this.last;
     if (!current) {
       if (!initialValue) {
         throw new TypeError(
-          "Empty accumulator on empty LinkedList is not allowed."
+          "Empty accumulator on empty LinkedList is not allowed.",
         );
       }
       return initialValue;
@@ -503,7 +503,7 @@ export class LinkedList<T> {
     /** called for every element. If response is truthy, this currentvalue will be returned by `.some()`. */
     callback: (currentValue: T, item: LinkedListItem<T>, list: this) => boolean,
     /** If given, callback function will be bound to thisArg */
-    thisArg?: C
+    thisArg?: C,
   ): boolean {
     if (thisArg) {
       callback = callback.bind(thisArg);
@@ -522,7 +522,7 @@ export class LinkedList<T> {
    */
   public join(
     /** separator between items in the resulting string */
-    separator?: string
+    separator?: string,
   ): string {
     return [...this.values()].join(separator);
   }
@@ -604,7 +604,7 @@ export class LinkedList<T> {
    */
   public remove(
     /** value to remove once */
-    value: T
+    value: T,
   ): boolean {
     for (const item of this.keys()) {
       if (item.value === value) {
@@ -621,7 +621,7 @@ export class LinkedList<T> {
    */
   public removeAllOccurrences(
     /** value to remove completely */
-    value: T
+    value: T,
   ): boolean {
     let foundSomethingToDelete = false;
 
@@ -704,7 +704,7 @@ export class LinkedList<T> {
    */
   private getItemByIndex(
     /** Index of item to get from list */
-    index: number
+    index: number,
   ): LinkedListItem<T> | undefined {
     if (index === undefined) {
       throw new Error("index must be a number!");
@@ -738,7 +738,7 @@ export class LinkedList<T> {
    */
   private unlinkCleanup = (
     /** Item that has been unlinked */
-    item: LinkedListItem<T>
+    item: LinkedListItem<T>,
   ): void => {
     if (this.first === item) {
       this.first = this.first.behind;

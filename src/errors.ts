@@ -39,9 +39,9 @@ export function isSystemError(err: any): err is SystemError {
   if (!err || !(err instanceof Error)) return false;
   if (Object.getPrototypeOf(err) !== Error.prototype) return false;
   const error = err as SystemError;
-  if (typeof error.code !== 'string') return false;
-  if (typeof error.syscall !== 'string') return false;
-  return typeof error.errno === 'number' || typeof error.errno === 'string';
+  if (typeof error.code !== "string") return false;
+  if (typeof error.syscall !== "string") return false;
+  return typeof error.errno === "number" || typeof error.errno === "string";
 }
 
 /**
@@ -52,8 +52,8 @@ export function isSystemError(err: any): err is SystemError {
 export function isUndiciError(err: any): err is UndiciError {
   if (!err || !(err instanceof Error)) return false;
   const error = err as UndiciError;
-  if (typeof error.code !== 'string') return false;
-  return error.code.startsWith('UND_');
+  if (typeof error.code !== "string") return false;
+  return error.code.startsWith("UND_");
 }
 
 /**
@@ -67,10 +67,14 @@ function isSafeToRetryFailedFetch(error?: Error): boolean | null {
   if (isArangoError(cause) || isNetworkError(cause)) {
     return cause.isSafeToRetry;
   }
-  if (isSystemError(cause) && cause.syscall === 'connect' && cause.code === 'ECONNREFUSED') {
+  if (
+    isSystemError(cause) &&
+    cause.syscall === "connect" &&
+    cause.code === "ECONNREFUSED"
+  ) {
     return true;
   }
-  if (isUndiciError(cause) && cause.code === 'UND_ERR_CONNECT_TIMEOUT') {
+  if (isUndiciError(cause) && cause.code === "UND_ERR_CONNECT_TIMEOUT") {
     return true;
   }
   return isSafeToRetryFailedFetch(cause);
@@ -104,7 +108,7 @@ export class PropagationTimeoutError extends Error {
   name = "PropagationTimeoutError";
 
   constructor(message?: string, options: { cause?: Error } = {}) {
-    super(message ?? 'Timed out while waiting for propagation', options);
+    super(message ?? "Timed out while waiting for propagation", options);
   }
 }
 
@@ -124,7 +128,11 @@ export class NetworkError extends Error {
    */
   request: globalThis.Request;
 
-  constructor(message: string, request: globalThis.Request, options: { cause?: Error, isSafeToRetry?: boolean | null } = {}) {
+  constructor(
+    message: string,
+    request: globalThis.Request,
+    options: { cause?: Error; isSafeToRetry?: boolean | null } = {},
+  ) {
     const { isSafeToRetry = null, ...opts } = options;
     super(message, opts);
     this.request = request;
@@ -147,8 +155,16 @@ export class NetworkError extends Error {
 export class ResponseTimeoutError extends NetworkError {
   name = "ResponseTimeoutError";
 
-  constructor(message: string | undefined, request: globalThis.Request, options: { cause?: Error, isSafeToRetry?: boolean | null } = {}) {
-    super(message ?? 'Timed out while waiting for server response', request, options);
+  constructor(
+    message: string | undefined,
+    request: globalThis.Request,
+    options: { cause?: Error; isSafeToRetry?: boolean | null } = {},
+  ) {
+    super(
+      message ?? "Timed out while waiting for server response",
+      request,
+      options,
+    );
   }
 }
 
@@ -158,8 +174,12 @@ export class ResponseTimeoutError extends NetworkError {
 export class RequestAbortedError extends NetworkError {
   name = "RequestAbortedError";
 
-  constructor(message: string | undefined, request: globalThis.Request, options: { cause?: Error, isSafeToRetry?: boolean | null } = {}) {
-    super(message ?? 'Request aborted', request, options);
+  constructor(
+    message: string | undefined,
+    request: globalThis.Request,
+    options: { cause?: Error; isSafeToRetry?: boolean | null } = {},
+  ) {
+    super(message ?? "Request aborted", request, options);
   }
 }
 
@@ -171,12 +191,17 @@ export class RequestAbortedError extends NetworkError {
 export class FetchFailedError extends NetworkError {
   name = "FetchFailedError";
 
-  constructor(message: string | undefined, request: globalThis.Request, options: { cause?: Error, isSafeToRetry?: boolean | null } = {}) {
-    let isSafeToRetry = options.isSafeToRetry ?? isSafeToRetryFailedFetch(options.cause);
+  constructor(
+    message: string | undefined,
+    request: globalThis.Request,
+    options: { cause?: Error; isSafeToRetry?: boolean | null } = {},
+  ) {
+    let isSafeToRetry =
+      options.isSafeToRetry ?? isSafeToRetryFailedFetch(options.cause);
     if (options.cause?.cause instanceof Error && options.cause.cause.message) {
       message = `Fetch failed: ${options.cause.cause.message}`;
     }
-    super(message ?? 'Fetch failed', request, { ...options, isSafeToRetry });
+    super(message ?? "Fetch failed", request, { ...options, isSafeToRetry });
   }
 }
 
@@ -199,7 +224,10 @@ export class HttpError extends NetworkError {
   /**
    * @internal
    */
-  constructor(response: connection.ProcessedResponse, options: { cause?: Error, isSafeToRetry?: boolean | null } = {}) {
+  constructor(
+    response: connection.ProcessedResponse,
+    options: { cause?: Error; isSafeToRetry?: boolean | null } = {},
+  ) {
     super(connection.getStatusMessage(response), response.request, options);
     this.response = response;
     this.code = response.status;
@@ -262,9 +290,11 @@ export class ArangoError extends Error {
    *
    * Creates a new `ArangoError` from a response object.
    */
-  static from(response: connection.ProcessedResponse<connection.ArangoErrorResponse>): ArangoError {
+  static from(
+    response: connection.ProcessedResponse<connection.ArangoErrorResponse>,
+  ): ArangoError {
     return new ArangoError(response.parsedBody!, {
-      cause: new HttpError(response)
+      cause: new HttpError(response),
     });
   }
 
@@ -291,7 +321,9 @@ export class ArangoError extends Error {
   /**
    * Server response object.
    */
-  get response(): connection.ProcessedResponse<connection.ArangoErrorResponse> | undefined {
+  get response():
+    | connection.ProcessedResponse<connection.ArangoErrorResponse>
+    | undefined {
     const cause = this.cause;
     if (cause instanceof HttpError) {
       return cause.response;

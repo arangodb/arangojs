@@ -39,14 +39,14 @@ describe("Accessing graphs", function () {
           const collection = await db.createCollection(name);
           await db.waitForPropagation(
             { pathname: `/_api/collection/${collection.name}` },
-            10000
+            10000,
           );
         }),
         ...edgeCollectionNames.map(async (name) => {
           const collection = await db.createEdgeCollection(name);
           await db.waitForPropagation(
             { pathname: `/_api/collection/${collection.name}` },
-            10000
+            10000,
           );
         }),
       ] as Promise<void>[]);
@@ -58,11 +58,11 @@ describe("Accessing graphs", function () {
               collection: name,
               from: vertexCollectionNames,
               to: vertexCollectionNames,
-            }))
+            })),
           );
           await db.waitForPropagation(
             { pathname: `/_api/gharial/${graph.name}` },
-            10000
+            10000,
           );
         }),
       ]);
@@ -72,7 +72,7 @@ describe("Accessing graphs", function () {
       await Promise.all(
         vertexCollectionNames
           .concat(edgeCollectionNames)
-          .map((name) => db.collection(name).drop())
+          .map((name) => db.collection(name).drop()),
       );
     });
     it("fetches information about all graphs", async () => {
@@ -91,14 +91,14 @@ describe("Accessing graphs", function () {
           const collection = await db.createCollection(name);
           await db.waitForPropagation(
             { pathname: `/_api/collection/${collection.name}` },
-            10000
+            10000,
           );
         }),
         ...edgeCollectionNames.map(async (name) => {
           const collection = await db.createEdgeCollection(name);
           await db.waitForPropagation(
             { pathname: `/_api/collection/${collection.name}` },
-            10000
+            10000,
           );
         }),
       ] as Promise<void>[]);
@@ -110,11 +110,11 @@ describe("Accessing graphs", function () {
               collection: name,
               from: vertexCollectionNames,
               to: vertexCollectionNames,
-            }))
+            })),
           );
           await db.waitForPropagation(
             { pathname: `/_api/gharial/${graph.name}` },
-            10000
+            10000,
           );
         }),
       ]);
@@ -124,7 +124,7 @@ describe("Accessing graphs", function () {
       await Promise.all(
         vertexCollectionNames
           .concat(edgeCollectionNames)
-          .map((name) => db.collection(name).drop())
+          .map((name) => db.collection(name).drop()),
       );
     });
     it("creates Graph instances", async () => {

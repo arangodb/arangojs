@@ -77,43 +77,42 @@ export type CreateAnalyzerOptions =
 
 type CreateAnalyzerOptionsType<
   Type extends AnalyzerType,
-  Properties = void
+  Properties = void,
 > = Properties extends void
   ? {
-    /**
-     * Type of the Analyzer.
-     */
-    type: Type;
-    /**
-     * Features to enable for this Analyzer.
-     */
-    features?: AnalyzerFeature[];
-    /**
-     * This Analyzer does not take additional properties.
-     */
-    properties?: Record<string, never>;
-  }
+      /**
+       * Type of the Analyzer.
+       */
+      type: Type;
+      /**
+       * Features to enable for this Analyzer.
+       */
+      features?: AnalyzerFeature[];
+      /**
+       * This Analyzer does not take additional properties.
+       */
+      properties?: Record<string, never>;
+    }
   : {
-    /**
-     * Type of the Analyzer.
-     */
-    type: Type;
-    /**
-     * Features to enable for this Analyzer.
-     */
-    features?: AnalyzerFeature[];
-    /**
-     * Additional properties for the Analyzer.
-     */
-    properties: Properties;
-  };
+      /**
+       * Type of the Analyzer.
+       */
+      type: Type;
+      /**
+       * Features to enable for this Analyzer.
+       */
+      features?: AnalyzerFeature[];
+      /**
+       * Additional properties for the Analyzer.
+       */
+      properties: Properties;
+    };
 
 /**
  * Options for creating an Identity Analyzer.
  */
-export type CreateIdentityAnalyzerOptions = CreateAnalyzerOptionsType<
-  "identity"
->;
+export type CreateIdentityAnalyzerOptions =
+  CreateAnalyzerOptionsType<"identity">;
 
 /**
  * Options for creating a Delimiter Analyzer.
@@ -122,12 +121,12 @@ export type CreateDelimiterAnalyzerOptions = CreateAnalyzerOptionsType<
   "delimiter",
   | string
   | {
-    /**
-     * This value will be used as delimiter to split text into tokens as
-     * specified in RFC 4180, without starting new records on newlines.
-     */
-    delimiter: string;
-  }
+      /**
+       * This value will be used as delimiter to split text into tokens as
+       * specified in RFC 4180, without starting new records on newlines.
+       */
+      delimiter: string;
+    }
 >;
 
 /**
@@ -583,7 +582,7 @@ export type AnalyzerDescription =
  */
 type AnalyzerDescriptionType<
   Type extends string,
-  Properties = Record<string, never>
+  Properties = Record<string, never>,
 > = {
   /**
    * A unique name for this Analyzer.
@@ -932,43 +931,43 @@ export class Analyzer {
    * ```
    */
   create<Options extends CreateAnalyzerOptions>(
-    options: Options
+    options: Options,
   ): Promise<
     Options extends CreateIdentityAnalyzerOptions
-    ? IdentityAnalyzerDescription
-    : Options extends CreateDelimiterAnalyzerOptions
-    ? DelimiterAnalyzerDescription
-    : Options extends CreateStemAnalyzerOptions
-    ? StemAnalyzerDescription
-    : Options extends CreateNormAnalyzerOptions
-    ? NormAnalyzerDescription
-    : Options extends CreateNgramAnalyzerOptions
-    ? NgramAnalyzerDescription
-    : Options extends CreateTextAnalyzerOptions
-    ? TextAnalyzerDescription
-    : Options extends CreateSegmentationAnalyzerOptions
-    ? SegmentationAnalyzerDescription
-    : Options extends CreateAqlAnalyzerOptions
-    ? AqlAnalyzerDescription
-    : Options extends CreatePipelineAnalyzerOptions
-    ? PipelineAnalyzerDescription
-    : Options extends CreateStopwordsAnalyzerOptions
-    ? StopwordsAnalyzerDescription
-    : Options extends CreateCollationAnalyzerOptions
-    ? CollationAnalyzerDescription
-    : Options extends CreateMinHashAnalyzerOptions
-    ? MinHashAnalyzerDescription
-    : Options extends CreateClassificationAnalyzerOptions
-    ? ClassificationAnalyzerDescription
-    : Options extends CreateNearestNeighborsAnalyzerOptions
-    ? NearestNeighborsAnalyzerDescription
-    : Options extends CreateGeoJsonAnalyzerOptions
-    ? GeoJsonAnalyzerDescription
-    : Options extends CreateGeoPointAnalyzerOptions
-    ? GeoPointAnalyzerDescription
-    : Options extends CreateGeoS2AnalyzerOptions
-    ? GeoS2AnalyzerDescription
-    : AnalyzerDescription
+      ? IdentityAnalyzerDescription
+      : Options extends CreateDelimiterAnalyzerOptions
+        ? DelimiterAnalyzerDescription
+        : Options extends CreateStemAnalyzerOptions
+          ? StemAnalyzerDescription
+          : Options extends CreateNormAnalyzerOptions
+            ? NormAnalyzerDescription
+            : Options extends CreateNgramAnalyzerOptions
+              ? NgramAnalyzerDescription
+              : Options extends CreateTextAnalyzerOptions
+                ? TextAnalyzerDescription
+                : Options extends CreateSegmentationAnalyzerOptions
+                  ? SegmentationAnalyzerDescription
+                  : Options extends CreateAqlAnalyzerOptions
+                    ? AqlAnalyzerDescription
+                    : Options extends CreatePipelineAnalyzerOptions
+                      ? PipelineAnalyzerDescription
+                      : Options extends CreateStopwordsAnalyzerOptions
+                        ? StopwordsAnalyzerDescription
+                        : Options extends CreateCollationAnalyzerOptions
+                          ? CollationAnalyzerDescription
+                          : Options extends CreateMinHashAnalyzerOptions
+                            ? MinHashAnalyzerDescription
+                            : Options extends CreateClassificationAnalyzerOptions
+                              ? ClassificationAnalyzerDescription
+                              : Options extends CreateNearestNeighborsAnalyzerOptions
+                                ? NearestNeighborsAnalyzerDescription
+                                : Options extends CreateGeoJsonAnalyzerOptions
+                                  ? GeoJsonAnalyzerDescription
+                                  : Options extends CreateGeoPointAnalyzerOptions
+                                    ? GeoPointAnalyzerDescription
+                                    : Options extends CreateGeoS2AnalyzerOptions
+                                      ? GeoS2AnalyzerDescription
+                                      : AnalyzerDescription
   > {
     return this._db.request({
       method: "POST",
@@ -991,7 +990,9 @@ export class Analyzer {
    * // the Analyzer "some-analyzer" no longer exists
    * ```
    */
-  drop(force: boolean = false): Promise<connection.ArangoApiResponse<{ name: string }>> {
+  drop(
+    force: boolean = false,
+  ): Promise<connection.ArangoApiResponse<{ name: string }>> {
     return this._db.request({
       method: "DELETE",
       pathname: `/_api/analyzer/${encodeURIComponent(this._name)}`,

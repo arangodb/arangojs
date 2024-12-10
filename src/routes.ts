@@ -26,7 +26,7 @@ export class Route {
   constructor(
     db: databases.Database,
     pathname: string = "",
-    headers: Headers | Record<string, string> = {}
+    headers: Headers | Record<string, string> = {},
   ) {
     if (!pathname) pathname = "";
     else if (pathname.charAt(0) !== "/") pathname = `/${pathname}`;
@@ -74,7 +74,7 @@ export class Route {
     return new Route(
       this._db,
       util.joinPath(this._pathname, pathname),
-      util.mergeHeaders(this._headers, headers)
+      util.mergeHeaders(this._headers, headers),
     );
   }
 
@@ -100,12 +100,15 @@ export class Route {
    */
   request(options: connections.RequestOptions = {}) {
     const { method = "GET", pathname, headers, ...opts } = options;
-    return this._db.request({
-      ...opts,
-      method: method.toUpperCase(),
-      pathname: util.joinPath(this._pathname, pathname),
-      headers: util.mergeHeaders(this._headers, headers),
-    }, false);
+    return this._db.request(
+      {
+        ...opts,
+        method: method.toUpperCase(),
+        pathname: util.joinPath(this._pathname, pathname),
+        headers: util.mergeHeaders(this._headers, headers),
+      },
+      false,
+    );
   }
 
   /**
@@ -126,7 +129,7 @@ export class Route {
   delete(
     pathname: string,
     search?: URLSearchParams | Record<string, any>,
-    headers?: Headers | Record<string, string>
+    headers?: Headers | Record<string, string>,
   ): Promise<connections.ProcessedResponse>;
   /**
    * Performs a DELETE request against the given path relative to this route
@@ -145,7 +148,7 @@ export class Route {
    */
   delete(
     search?: URLSearchParams | Record<string, any>,
-    headers?: Headers | Record<string, string>
+    headers?: Headers | Record<string, string>,
   ): Promise<connections.ProcessedResponse>;
   delete(...args: any[]): Promise<connections.ProcessedResponse> {
     const pathname = typeof args[0] === "string" ? args.shift() : undefined;
@@ -171,7 +174,7 @@ export class Route {
   get(
     pathname: string,
     search?: URLSearchParams | Record<string, any>,
-    headers?: Headers | Record<string, string>
+    headers?: Headers | Record<string, string>,
   ): Promise<connections.ProcessedResponse>;
   /**
    * Performs a GET request against the given path relative to this route
@@ -190,7 +193,7 @@ export class Route {
    */
   get(
     search?: URLSearchParams | Record<string, any>,
-    headers?: Headers | Record<string, string>
+    headers?: Headers | Record<string, string>,
   ): Promise<connections.ProcessedResponse>;
   get(...args: any[]): Promise<connections.ProcessedResponse> {
     const pathname = typeof args[0] === "string" ? args.shift() : undefined;
@@ -216,7 +219,7 @@ export class Route {
   head(
     pathname: string,
     search?: URLSearchParams | Record<string, any>,
-    headers?: Headers | Record<string, string>
+    headers?: Headers | Record<string, string>,
   ): Promise<connections.ProcessedResponse>;
   /**
    * Performs a HEAD request against the given path relative to this route
@@ -235,7 +238,7 @@ export class Route {
    */
   head(
     search?: URLSearchParams | Record<string, any>,
-    headers?: Headers | Record<string, string>
+    headers?: Headers | Record<string, string>,
   ): Promise<connections.ProcessedResponse>;
   head(...args: any[]): Promise<connections.ProcessedResponse> {
     const pathname = typeof args[0] === "string" ? args.shift() : undefined;
@@ -263,7 +266,7 @@ export class Route {
     pathname: string,
     body?: any,
     search?: URLSearchParams | Record<string, any>,
-    headers?: Headers | Record<string, string>
+    headers?: Headers | Record<string, string>,
   ): Promise<connections.ProcessedResponse>;
   /**
    * Performs a PATCH request against the given path relative to this route
@@ -286,7 +289,7 @@ export class Route {
   patch(
     body?: any,
     search?: URLSearchParams | Record<string, any>,
-    headers?: Headers | Record<string, string>
+    headers?: Headers | Record<string, string>,
   ): Promise<connections.ProcessedResponse>;
   patch(...args: any[]): Promise<connections.ProcessedResponse> {
     const pathname = typeof args[0] === "string" ? args.shift() : undefined;
@@ -317,7 +320,7 @@ export class Route {
     pathname: string,
     body?: any,
     search?: URLSearchParams | Record<string, any>,
-    headers?: Headers | Record<string, string>
+    headers?: Headers | Record<string, string>,
   ): Promise<connections.ProcessedResponse>;
   /**
    * Performs a POST request against the given path relative to this route
@@ -343,7 +346,7 @@ export class Route {
   post(
     body?: any,
     search?: URLSearchParams | Record<string, any>,
-    headers?: Headers | Record<string, string>
+    headers?: Headers | Record<string, string>,
   ): Promise<connections.ProcessedResponse>;
   post(...args: any[]): Promise<connections.ProcessedResponse> {
     const pathname = typeof args[0] === "string" ? args.shift() : undefined;
@@ -371,7 +374,7 @@ export class Route {
     pathname: string,
     body?: any,
     search?: URLSearchParams | Record<string, any>,
-    headers?: Headers | Record<string, string>
+    headers?: Headers | Record<string, string>,
   ): Promise<connections.ProcessedResponse>;
   /**
    * Performs a PUT request against the given path relative to this route
@@ -394,7 +397,7 @@ export class Route {
   put(
     body?: any,
     search?: URLSearchParams | Record<string, any>,
-    headers?: Headers | Record<string, string>
+    headers?: Headers | Record<string, string>,
   ): Promise<connections.ProcessedResponse>;
   put(...args: any[]): Promise<connections.ProcessedResponse> {
     const pathname = typeof args[0] === "string" ? args.shift() : undefined;

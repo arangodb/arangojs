@@ -41,7 +41,7 @@ describe("Managing functions", function () {
       it("should create a function", async () => {
         const info = await db.createUserFunction(
           "myfunctions::temperature::celsiustofahrenheit2",
-          "function (celsius) { return celsius * 1.8 + 32; }"
+          "function (celsius) { return celsius * 1.8 + 32; }",
         );
         expect(info).to.have.property("code", 201);
         expect(info).to.have.property("error", false);
@@ -52,7 +52,7 @@ describe("Managing functions", function () {
         const name = "myfunctions::temperature::celsiustofahrenheit";
         await db.createUserFunction(
           name,
-          "function (celsius) { return celsius * 1.8 + 32; }"
+          "function (celsius) { return celsius * 1.8 + 32; }",
         );
         const info = await db.dropUserFunction(name);
         expect(info).to.have.property("deletedCount", 1);

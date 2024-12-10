@@ -224,7 +224,7 @@ export function aql<T = any>(
           2,
           strings[i] + src.strings[0],
           ...src.strings.slice(1, src.args.length),
-          src.strings[src.args.length] + strings[i + 1]
+          src.strings[src.args.length] + strings[i + 1],
         );
       } else {
         query += rawValue.query + strings[i + 1];
@@ -319,7 +319,7 @@ export function aql<T = any>(
  * ```
  */
 export function literal(
-  value: string | number | boolean | AqlLiteral | null | undefined
+  value: string | number | boolean | AqlLiteral | null | undefined,
 ): AqlLiteral {
   if (isAqlLiteral(value)) {
     return value;

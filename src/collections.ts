@@ -26,7 +26,7 @@ import { COLLECTION_NOT_FOUND, DOCUMENT_NOT_FOUND } from "./lib/codes.js";
  * @param collection - A value that might be a collection.
  */
 export function isArangoCollection(
-  collection: any
+  collection: any,
 ): collection is ArangoCollection {
   return Boolean(collection && collection.isArangoCollection);
 }
@@ -38,7 +38,7 @@ export function isArangoCollection(
  * @param collection - Collection name or {@link ArangoCollection} object.
  */
 export function collectionToString(
-  collection: string | ArangoCollection
+  collection: string | ArangoCollection,
 ): string {
   if (isArangoCollection(collection)) {
     return String(collection.name);
@@ -663,8 +663,10 @@ export interface DocumentCollection<
   create(
     options?: CreateCollectionOptions & {
       type?: CollectionType;
-    }
-  ): Promise<connection.ArangoApiResponse<CollectionDescription & CollectionProperties>>;
+    },
+  ): Promise<
+    connection.ArangoApiResponse<CollectionDescription & CollectionProperties>
+  >;
   /**
    * Retrieves the collection's properties.
    *
@@ -692,8 +694,10 @@ export interface DocumentCollection<
    * ```
    */
   properties(
-    properties: CollectionPropertiesOptions
-  ): Promise<connection.ArangoApiResponse<CollectionDescription & CollectionProperties>>;
+    properties: CollectionPropertiesOptions,
+  ): Promise<
+    connection.ArangoApiResponse<CollectionDescription & CollectionProperties>
+  >;
   /**
    * Retrieves information about the number of documents in a collection.
    *
@@ -741,11 +745,11 @@ export interface DocumentCollection<
    * ```
    */
   figures(
-    details?: boolean
+    details?: boolean,
   ): Promise<
     connection.ArangoApiResponse<
       CollectionDescription &
-      CollectionProperties & { count: number; figures: Record<string, any> }
+        CollectionProperties & { count: number; figures: Record<string, any> }
     >
   >;
   /**
@@ -778,7 +782,7 @@ export interface DocumentCollection<
    * ```
    */
   checksum(
-    options?: CollectionChecksumOptions
+    options?: CollectionChecksumOptions,
   ): Promise<
     connection.ArangoApiResponse<
       CollectionDescription & { revision: string; checksum: string }
@@ -806,7 +810,9 @@ export interface DocumentCollection<
    * // collection1 and collection3 represent the same ArangoDB collection!
    * ```
    */
-  rename(newName: string): Promise<connection.ArangoApiResponse<CollectionDescription>>;
+  rename(
+    newName: string,
+  ): Promise<connection.ArangoApiResponse<CollectionDescription>>;
   /**
    * Deletes all documents in the collection.
    *
@@ -819,7 +825,9 @@ export interface DocumentCollection<
    * // the collection "some-collection" is now empty
    * ```
    */
-  truncate(options?: TruncateCollectionOptions): Promise<connection.ArangoApiResponse<CollectionDescription>>;
+  truncate(
+    options?: TruncateCollectionOptions,
+  ): Promise<connection.ArangoApiResponse<CollectionDescription>>;
   /**
    * Deletes the collection from the database.
    *
@@ -834,7 +842,7 @@ export interface DocumentCollection<
    * ```
    */
   drop(
-    options?: DropCollectionOptions
+    options?: DropCollectionOptions,
   ): Promise<connection.ArangoApiResponse<{ id: string }>>;
   /**
    * Triggers compaction for a collection.
@@ -864,7 +872,7 @@ export interface DocumentCollection<
    * ```
    */
   getResponsibleShard(
-    document: Partial<documents.Document<EntryResultType>>
+    document: Partial<documents.Document<EntryResultType>>,
   ): Promise<string>;
   /**
    * Derives a document `_id` from the given selector for this collection.
@@ -922,7 +930,7 @@ export interface DocumentCollection<
    */
   documentExists(
     selector: documents.DocumentSelector,
-    options?: documents.DocumentExistsOptions
+    options?: documents.DocumentExistsOptions,
   ): Promise<boolean>;
   /**
    * Retrieves the document matching the given key or id.
@@ -960,7 +968,7 @@ export interface DocumentCollection<
    */
   document(
     selector: documents.DocumentSelector,
-    options?: documents.ReadDocumentOptions
+    options?: documents.ReadDocumentOptions,
   ): Promise<documents.Document<EntryResultType>>;
   /**
    * Retrieves the document matching the given key or id.
@@ -999,7 +1007,7 @@ export interface DocumentCollection<
    */
   document(
     selector: documents.DocumentSelector,
-    graceful: boolean
+    graceful: boolean,
   ): Promise<documents.Document<EntryResultType>>;
   /**
    * Retrieves the documents matching the given key or id values.
@@ -1025,7 +1033,7 @@ export interface DocumentCollection<
    */
   documents(
     selectors: (string | documents.ObjectWithDocumentKey)[],
-    options?: documents.BulkReadDocumentsOptions
+    options?: documents.BulkReadDocumentsOptions,
   ): Promise<documents.Document<EntryResultType>[]>;
   /**
    * Inserts a new document with the given `data` into the collection.
@@ -1046,7 +1054,7 @@ export interface DocumentCollection<
    */
   save(
     data: documents.DocumentData<EntryInputType>,
-    options?: documents.InsertDocumentOptions
+    options?: documents.InsertDocumentOptions,
   ): Promise<
     documents.DocumentOperationMetadata & {
       new?: documents.Document<EntryResultType>;
@@ -1076,13 +1084,13 @@ export interface DocumentCollection<
    */
   saveAll(
     data: Array<documents.DocumentData<EntryInputType>>,
-    options?: documents.InsertDocumentOptions
+    options?: documents.InsertDocumentOptions,
   ): Promise<
     Array<
       | (documents.DocumentOperationMetadata & {
-        new?: documents.Document<EntryResultType>;
-        old?: documents.Document<EntryResultType>;
-      })
+          new?: documents.Document<EntryResultType>;
+          old?: documents.Document<EntryResultType>;
+        })
       | documents.DocumentOperationFailure
     >
   >;
@@ -1113,7 +1121,7 @@ export interface DocumentCollection<
   replace(
     selector: documents.DocumentSelector,
     newData: documents.DocumentData<EntryInputType>,
-    options?: documents.ReplaceDocumentOptions
+    options?: documents.ReplaceDocumentOptions,
   ): Promise<
     documents.DocumentOperationMetadata & {
       new?: documents.Document<EntryResultType>;
@@ -1146,15 +1154,16 @@ export interface DocumentCollection<
    */
   replaceAll(
     newData: Array<
-      documents.DocumentData<EntryInputType> & ({ _key: string } | { _id: string })
+      documents.DocumentData<EntryInputType> &
+        ({ _key: string } | { _id: string })
     >,
-    options?: Omit<documents.ReplaceDocumentOptions, "ifMatch">
+    options?: Omit<documents.ReplaceDocumentOptions, "ifMatch">,
   ): Promise<
     Array<
       | (documents.DocumentOperationMetadata & {
-        new?: documents.Document<EntryResultType>;
-        old?: documents.Document<EntryResultType>;
-      })
+          new?: documents.Document<EntryResultType>;
+          old?: documents.Document<EntryResultType>;
+        })
       | documents.DocumentOperationFailure
     >
   >;
@@ -1185,7 +1194,7 @@ export interface DocumentCollection<
   update(
     selector: documents.DocumentSelector,
     newData: documents.Patch<documents.DocumentData<EntryInputType>>,
-    options?: documents.UpdateDocumentOptions
+    options?: documents.UpdateDocumentOptions,
   ): Promise<
     documents.DocumentOperationMetadata & {
       new?: documents.Document<EntryResultType>;
@@ -1218,15 +1227,16 @@ export interface DocumentCollection<
    */
   updateAll(
     newData: Array<
-      documents.Patch<documents.DocumentData<EntryInputType>> & ({ _key: string } | { _id: string })
+      documents.Patch<documents.DocumentData<EntryInputType>> &
+        ({ _key: string } | { _id: string })
     >,
-    options?: Omit<documents.UpdateDocumentOptions, "ifMatch">
+    options?: Omit<documents.UpdateDocumentOptions, "ifMatch">,
   ): Promise<
     Array<
       | (documents.DocumentOperationMetadata & {
-        new?: documents.Document<EntryResultType>;
-        old?: documents.Document<EntryResultType>;
-      })
+          new?: documents.Document<EntryResultType>;
+          old?: documents.Document<EntryResultType>;
+        })
       | documents.DocumentOperationFailure
     >
   >;
@@ -1259,8 +1269,10 @@ export interface DocumentCollection<
    */
   remove(
     selector: documents.DocumentSelector,
-    options?: documents.RemoveDocumentOptions
-  ): Promise<documents.DocumentMetadata & { old?: documents.Document<EntryResultType> }>;
+    options?: documents.RemoveDocumentOptions,
+  ): Promise<
+    documents.DocumentMetadata & { old?: documents.Document<EntryResultType> }
+  >;
   /**
    * Removes existing documents from the collection.
    *
@@ -1281,10 +1293,12 @@ export interface DocumentCollection<
    */
   removeAll(
     selectors: (string | documents.ObjectWithDocumentKey)[],
-    options?: Omit<documents.RemoveDocumentOptions, "ifMatch">
+    options?: Omit<documents.RemoveDocumentOptions, "ifMatch">,
   ): Promise<
     Array<
-      | (documents.DocumentMetadata & { old?: documents.Document<EntryResultType> })
+      | (documents.DocumentMetadata & {
+          old?: documents.Document<EntryResultType>;
+        })
       | documents.DocumentOperationFailure
     >
   >;
@@ -1309,7 +1323,7 @@ export interface DocumentCollection<
    */
   import(
     data: documents.DocumentData<EntryInputType>[],
-    options?: documents.ImportDocumentsOptions
+    options?: documents.ImportDocumentsOptions,
   ): Promise<documents.ImportDocumentsResult>;
   /**
    * Bulk imports the given `data` into the collection.
@@ -1335,7 +1349,7 @@ export interface DocumentCollection<
    */
   import(
     data: any[][],
-    options?: documents.ImportDocumentsOptions
+    options?: documents.ImportDocumentsOptions,
   ): Promise<documents.ImportDocumentsResult>;
   /**
    * Bulk imports the given `data` into the collection.
@@ -1397,7 +1411,7 @@ export interface DocumentCollection<
     data: Buffer | Blob | string,
     options?: documents.ImportDocumentsOptions & {
       type?: "documents" | "list" | "auto";
-    }
+    },
   ): Promise<documents.ImportDocumentsResult>;
   //#endregion
 
@@ -1436,8 +1450,12 @@ export interface DocumentCollection<
    * });
    * ```
    */
-  indexes<IndexType extends indexes.IndexDescription | indexes.HiddenIndexDescription = indexes.IndexDescription>(
-    options?: indexes.ListIndexesOptions
+  indexes<
+    IndexType extends
+      | indexes.IndexDescription
+      | indexes.HiddenIndexDescription = indexes.IndexDescription,
+  >(
+    options?: indexes.ListIndexesOptions,
   ): Promise<IndexType[]>;
   /**
    * Returns an index description by name or `id` if it exists.
@@ -1471,8 +1489,12 @@ export interface DocumentCollection<
    * ```
    */
   ensureIndex(
-    options: indexes.EnsurePersistentIndexOptions
-  ): Promise<connection.ArangoApiResponse<indexes.PersistentIndexDescription & { isNewlyCreated: boolean }>>;
+    options: indexes.EnsurePersistentIndexOptions,
+  ): Promise<
+    connection.ArangoApiResponse<
+      indexes.PersistentIndexDescription & { isNewlyCreated: boolean }
+    >
+  >;
   /**
    * Creates a TTL index on the collection if it does not already exist.
    *
@@ -1503,8 +1525,12 @@ export interface DocumentCollection<
    * ```
    */
   ensureIndex(
-    options: indexes.EnsureTtlIndexOptions
-  ): Promise<connection.ArangoApiResponse<indexes.TtlIndexDescription & { isNewlyCreated: boolean }>>;
+    options: indexes.EnsureTtlIndexOptions,
+  ): Promise<
+    connection.ArangoApiResponse<
+      indexes.TtlIndexDescription & { isNewlyCreated: boolean }
+    >
+  >;
   /**
    * Creates a multi-dimensional index on the collection if it does not already exist.
    *
@@ -1524,8 +1550,12 @@ export interface DocumentCollection<
    * ```
    */
   ensureIndex(
-    options: indexes.EnsureMdiIndexOptions
-  ): Promise<connection.ArangoApiResponse<indexes.MdiIndexDescription & { isNewlyCreated: boolean }>>;
+    options: indexes.EnsureMdiIndexOptions,
+  ): Promise<
+    connection.ArangoApiResponse<
+      indexes.MdiIndexDescription & { isNewlyCreated: boolean }
+    >
+  >;
   /**
    * Creates a geo index on the collection if it does not already exist.
    *
@@ -1544,8 +1574,12 @@ export interface DocumentCollection<
    * ```
    */
   ensureIndex(
-    options: indexes.EnsureGeoIndexOptions
-  ): Promise<connection.ArangoApiResponse<indexes.GeoIndexDescription & { isNewlyCreated: boolean }>>;
+    options: indexes.EnsureGeoIndexOptions,
+  ): Promise<
+    connection.ArangoApiResponse<
+      indexes.GeoIndexDescription & { isNewlyCreated: boolean }
+    >
+  >;
   /**
    * Creates a inverted index on the collection if it does not already exist.
    *
@@ -1563,8 +1597,12 @@ export interface DocumentCollection<
    * ```
    */
   ensureIndex(
-    options: indexes.EnsureInvertedIndexOptions
-  ): Promise<connection.ArangoApiResponse<indexes.InvertedIndexDescription & { isNewlyCreated: boolean }>>;
+    options: indexes.EnsureInvertedIndexOptions,
+  ): Promise<
+    connection.ArangoApiResponse<
+      indexes.InvertedIndexDescription & { isNewlyCreated: boolean }
+    >
+  >;
   /**
    * Creates an index on the collection if it does not already exist.
    *
@@ -1584,8 +1622,12 @@ export interface DocumentCollection<
    * ```
    */
   ensureIndex(
-    options: indexes.EnsureIndexOptions
-  ): Promise<connection.ArangoApiResponse<indexes.IndexDescription & { isNewlyCreated: boolean }>>;
+    options: indexes.EnsureIndexOptions,
+  ): Promise<
+    connection.ArangoApiResponse<
+      indexes.IndexDescription & { isNewlyCreated: boolean }
+    >
+  >;
   /**
    * Deletes the index with the given name or `id` from the database.
    *
@@ -1600,7 +1642,7 @@ export interface DocumentCollection<
    * ```
    */
   dropIndex(
-    selector: indexes.IndexSelector
+    selector: indexes.IndexSelector,
   ): Promise<connection.ArangoApiResponse<{ id: string }>>;
   //#endregion
 }
@@ -1675,7 +1717,7 @@ export interface EdgeCollection<
    */
   document(
     selector: documents.DocumentSelector,
-    options?: documents.ReadDocumentOptions
+    options?: documents.ReadDocumentOptions,
   ): Promise<documents.Edge<EntryResultType>>;
   /**
    * Retrieves the document matching the given key or id.
@@ -1714,7 +1756,7 @@ export interface EdgeCollection<
    */
   document(
     selector: documents.DocumentSelector,
-    graceful: boolean
+    graceful: boolean,
   ): Promise<documents.Edge<EntryResultType>>;
   /**
    * Retrieves the documents matching the given key or id values.
@@ -1740,7 +1782,7 @@ export interface EdgeCollection<
    */
   documents(
     selectors: (string | documents.ObjectWithDocumentKey)[],
-    options?: documents.BulkReadDocumentsOptions
+    options?: documents.BulkReadDocumentsOptions,
   ): Promise<documents.Edge<EntryResultType>[]>;
   /**
    * Inserts a new document with the given `data` into the collection.
@@ -1760,7 +1802,7 @@ export interface EdgeCollection<
    */
   save(
     data: documents.EdgeData<EntryInputType>,
-    options?: documents.InsertDocumentOptions
+    options?: documents.InsertDocumentOptions,
   ): Promise<
     documents.DocumentOperationMetadata & {
       new?: documents.Edge<EntryResultType>;
@@ -1788,13 +1830,13 @@ export interface EdgeCollection<
    */
   saveAll(
     data: Array<documents.EdgeData<EntryInputType>>,
-    options?: documents.InsertDocumentOptions
+    options?: documents.InsertDocumentOptions,
   ): Promise<
     Array<
       | (documents.DocumentOperationMetadata & {
-        new?: documents.Edge<EntryResultType>;
-        old?: documents.Edge<EntryResultType>;
-      })
+          new?: documents.Edge<EntryResultType>;
+          old?: documents.Edge<EntryResultType>;
+        })
       | documents.DocumentOperationFailure
     >
   >;
@@ -1833,7 +1875,7 @@ export interface EdgeCollection<
   replace(
     selector: documents.DocumentSelector,
     newData: documents.DocumentData<EntryInputType>,
-    options?: documents.ReplaceDocumentOptions
+    options?: documents.ReplaceDocumentOptions,
   ): Promise<
     documents.DocumentOperationMetadata & {
       new?: documents.Edge<EntryResultType>;
@@ -1882,15 +1924,16 @@ export interface EdgeCollection<
    */
   replaceAll(
     newData: Array<
-      documents.DocumentData<EntryInputType> & ({ _key: string } | { _id: string })
+      documents.DocumentData<EntryInputType> &
+        ({ _key: string } | { _id: string })
     >,
-    options?: documents.ReplaceDocumentOptions
+    options?: documents.ReplaceDocumentOptions,
   ): Promise<
     Array<
       | (documents.DocumentOperationMetadata & {
-        new?: documents.Edge<EntryResultType>;
-        old?: documents.Edge<EntryResultType>;
-      })
+          new?: documents.Edge<EntryResultType>;
+          old?: documents.Edge<EntryResultType>;
+        })
       | documents.DocumentOperationFailure
     >
   >;
@@ -1929,7 +1972,7 @@ export interface EdgeCollection<
   update(
     selector: documents.DocumentSelector,
     newData: documents.Patch<documents.DocumentData<EntryInputType>>,
-    options?: documents.UpdateDocumentOptions
+    options?: documents.UpdateDocumentOptions,
   ): Promise<
     documents.DocumentOperationMetadata & {
       new?: documents.Edge<EntryResultType>;
@@ -1976,15 +2019,16 @@ export interface EdgeCollection<
    */
   updateAll(
     newData: Array<
-      documents.Patch<documents.DocumentData<EntryInputType>> & ({ _key: string } | { _id: string })
+      documents.Patch<documents.DocumentData<EntryInputType>> &
+        ({ _key: string } | { _id: string })
     >,
-    options?: documents.UpdateDocumentOptions
+    options?: documents.UpdateDocumentOptions,
   ): Promise<
     Array<
       | (documents.DocumentOperationMetadata & {
-        new?: documents.Edge<EntryResultType>;
-        old?: documents.Edge<EntryResultType>;
-      })
+          new?: documents.Edge<EntryResultType>;
+          old?: documents.Edge<EntryResultType>;
+        })
       | documents.DocumentOperationFailure
     >
   >;
@@ -2009,8 +2053,10 @@ export interface EdgeCollection<
    */
   remove(
     selector: documents.DocumentSelector,
-    options?: documents.RemoveDocumentOptions
-  ): Promise<documents.DocumentMetadata & { old?: documents.Edge<EntryResultType> }>;
+    options?: documents.RemoveDocumentOptions,
+  ): Promise<
+    documents.DocumentMetadata & { old?: documents.Edge<EntryResultType> }
+  >;
   /**
    * Removes existing documents from the collection.
    *
@@ -2031,7 +2077,7 @@ export interface EdgeCollection<
    */
   removeAll(
     selectors: documents.DocumentSelector[],
-    options?: documents.RemoveDocumentOptions
+    options?: documents.RemoveDocumentOptions,
   ): Promise<
     Array<
       | (documents.DocumentMetadata & { old?: documents.Edge<EntryResultType> })
@@ -2058,7 +2104,7 @@ export interface EdgeCollection<
    */
   import(
     data: documents.EdgeData<EntryInputType>[],
-    options?: documents.ImportDocumentsOptions
+    options?: documents.ImportDocumentsOptions,
   ): Promise<documents.ImportDocumentsResult>;
   /**
    * Bulk imports the given `data` into the collection.
@@ -2083,7 +2129,7 @@ export interface EdgeCollection<
    */
   import(
     data: any[][],
-    options?: documents.ImportDocumentsOptions
+    options?: documents.ImportDocumentsOptions,
   ): Promise<documents.ImportDocumentsResult>;
   /**
    * Bulk imports the given `data` into the collection.
@@ -2142,7 +2188,7 @@ export interface EdgeCollection<
     data: Buffer | Blob | string,
     options?: documents.ImportDocumentsOptions & {
       type?: "documents" | "list" | "auto";
-    }
+    },
   ): Promise<documents.ImportDocumentsResult>;
   //#endregion
 
@@ -2174,8 +2220,10 @@ export interface EdgeCollection<
    */
   edges(
     selector: documents.DocumentSelector,
-    options?: documents.DocumentEdgesOptions
-  ): Promise<connection.ArangoApiResponse<documents.DocumentEdgesResult<EntryResultType>>>;
+    options?: documents.DocumentEdgesOptions,
+  ): Promise<
+    connection.ArangoApiResponse<documents.DocumentEdgesResult<EntryResultType>>
+  >;
   /**
    * Retrieves a list of all incoming edges of the document matching the given
    * `selector`.
@@ -2203,8 +2251,10 @@ export interface EdgeCollection<
    */
   inEdges(
     selector: documents.DocumentSelector,
-    options?: documents.DocumentEdgesOptions
-  ): Promise<connection.ArangoApiResponse<documents.DocumentEdgesResult<EntryResultType>>>;
+    options?: documents.DocumentEdgesOptions,
+  ): Promise<
+    connection.ArangoApiResponse<documents.DocumentEdgesResult<EntryResultType>>
+  >;
   /**
    * Retrieves a list of all outgoing edges of the document matching the given
    * `selector`.
@@ -2232,8 +2282,10 @@ export interface EdgeCollection<
    */
   outEdges(
     selector: documents.DocumentSelector,
-    options?: documents.DocumentEdgesOptions
-  ): Promise<connection.ArangoApiResponse<documents.DocumentEdgesResult<EntryResultType>>>;
+    options?: documents.DocumentEdgesOptions,
+  ): Promise<
+    connection.ArangoApiResponse<documents.DocumentEdgesResult<EntryResultType>>
+  >;
   //#endregion
 }
 //#endregion
@@ -2243,12 +2295,13 @@ export interface EdgeCollection<
  * @internal
  */
 export class Collection<
-  EntryResultType extends Record<string, any> = any,
-  EntryInputType extends Record<string, any> = EntryResultType,
->
+    EntryResultType extends Record<string, any> = any,
+    EntryInputType extends Record<string, any> = EntryResultType,
+  >
   implements
-  EdgeCollection<EntryResultType, EntryInputType>,
-  DocumentCollection<EntryResultType, EntryInputType> {
+    EdgeCollection<EntryResultType, EntryInputType>,
+    DocumentCollection<EntryResultType, EntryInputType>
+{
   protected _name: string;
   protected _db: databases.Database;
 
@@ -2294,7 +2347,7 @@ export class Collection<
   create(
     options: CreateCollectionOptions & {
       type?: CollectionType;
-    } = {}
+    } = {},
   ) {
     const {
       waitForSyncReplication = undefined,
@@ -2337,8 +2390,10 @@ export class Collection<
   }
 
   properties(
-    properties?: CollectionPropertiesOptions
-  ): Promise<connection.ArangoApiResponse<CollectionDescription & CollectionProperties>> {
+    properties?: CollectionPropertiesOptions,
+  ): Promise<
+    connection.ArangoApiResponse<CollectionDescription & CollectionProperties>
+  > {
     if (!properties) {
       return this._db.request({
         pathname: `/_api/collection/${encodeURIComponent(this._name)}/properties`,
@@ -2366,18 +2421,19 @@ export class Collection<
       {
         method: "PUT",
         pathname: `/_api/collection/${encodeURIComponent(
-          this._name
+          this._name,
         )}/recalculateCount`,
       },
-      (res) => res.parsedBody.result
+      (res) => res.parsedBody.result,
     );
   }
 
   figures(
-    details = false
+    details = false,
   ): Promise<
     connection.ArangoApiResponse<
-      CollectionDescription & CollectionProperties & { count: number; figures: Record<string, any> }
+      CollectionDescription &
+        CollectionProperties & { count: number; figures: Record<string, any> }
     >
   > {
     return this._db.request({
@@ -2397,7 +2453,7 @@ export class Collection<
   }
 
   checksum(
-    options?: CollectionChecksumOptions
+    options?: CollectionChecksumOptions,
   ): Promise<
     connection.ArangoApiResponse<
       CollectionDescription & { revision: string; checksum: string }
@@ -2415,7 +2471,9 @@ export class Collection<
     return result;
   }
 
-  truncate(options?: TruncateCollectionOptions): Promise<connection.ArangoApiResponse<CollectionDescription>> {
+  truncate(
+    options?: TruncateCollectionOptions,
+  ): Promise<connection.ArangoApiResponse<CollectionDescription>> {
     return this._db.request({
       method: "PUT",
       pathname: `/_api/collection/${this._name}/truncate`,
@@ -2432,28 +2490,26 @@ export class Collection<
   }
 
   compact() {
-    return this._db.request(
-      {
-        method: "PUT",
-        pathname: `/_api/collection/${this._name}/compact`,
-      }
-    );
+    return this._db.request({
+      method: "PUT",
+      pathname: `/_api/collection/${this._name}/compact`,
+    });
   }
   //#endregion
 
   //#region Document operations
   getResponsibleShard(
-    document: Partial<documents.Document<EntryResultType>>
+    document: Partial<documents.Document<EntryResultType>>,
   ): Promise<string> {
     return this._db.request(
       {
         method: "PUT",
         pathname: `/_api/collection/${encodeURIComponent(
-          this._name
+          this._name,
         )}/responsibleShard`,
         body: document,
       },
-      (res) => res.parsedBody.shardId
+      (res) => res.parsedBody.shardId,
     );
   }
 
@@ -2463,7 +2519,7 @@ export class Collection<
 
   async documentExists(
     selector: documents.DocumentSelector,
-    options: documents.DocumentExistsOptions = {}
+    options: documents.DocumentExistsOptions = {},
   ): Promise<boolean> {
     const { ifMatch = undefined, ifNoneMatch = undefined } = options;
     const headers = {} as Record<string, string>;
@@ -2474,7 +2530,7 @@ export class Collection<
         {
           method: "HEAD",
           pathname: `/_api/document/${encodeURI(
-            documents._documentHandle(selector, this._name)
+            documents._documentHandle(selector, this._name),
           )}`,
           headers,
         },
@@ -2483,7 +2539,7 @@ export class Collection<
             throw new errors.HttpError(res);
           }
           return true;
-        }
+        },
       );
     } catch (err: any) {
       if (err.code === 404) {
@@ -2495,7 +2551,7 @@ export class Collection<
 
   documents(
     selectors: (string | documents.ObjectWithDocumentKey)[],
-    options: documents.BulkReadDocumentsOptions = {}
+    options: documents.BulkReadDocumentsOptions = {},
   ) {
     const { allowDirtyRead = undefined } = options;
     return this._db.request({
@@ -2509,7 +2565,7 @@ export class Collection<
 
   async document(
     selector: documents.DocumentSelector,
-    options: boolean | documents.ReadDocumentOptions = {}
+    options: boolean | documents.ReadDocumentOptions = {},
   ) {
     if (typeof options === "boolean") {
       options = { graceful: options };
@@ -2526,7 +2582,7 @@ export class Collection<
     const result = this._db.request(
       {
         pathname: `/_api/document/${encodeURI(
-          documents._documentHandle(selector, this._name)
+          documents._documentHandle(selector, this._name),
         )}`,
         headers,
         allowDirtyRead,
@@ -2536,7 +2592,7 @@ export class Collection<
           throw new errors.HttpError(res);
         }
         return res.parsedBody;
-      }
+      },
     );
     if (!graceful) return result;
     try {
@@ -2549,21 +2605,9 @@ export class Collection<
     }
   }
 
-  save(data: documents.DocumentData<EntryInputType>, options?: documents.InsertDocumentOptions) {
-    return this._db.request(
-      {
-        method: "POST",
-        pathname: `/_api/document/${encodeURIComponent(this._name)}`,
-        body: data,
-        search: options,
-      },
-      (res) => (options?.silent ? undefined : res.parsedBody)
-    );
-  }
-
-  saveAll(
-    data: Array<documents.DocumentData<EntryInputType>>,
-    options?: documents.InsertDocumentOptions
+  save(
+    data: documents.DocumentData<EntryInputType>,
+    options?: documents.InsertDocumentOptions,
   ) {
     return this._db.request(
       {
@@ -2572,14 +2616,29 @@ export class Collection<
         body: data,
         search: options,
       },
-      (res) => (options?.silent ? undefined : res.parsedBody)
+      (res) => (options?.silent ? undefined : res.parsedBody),
+    );
+  }
+
+  saveAll(
+    data: Array<documents.DocumentData<EntryInputType>>,
+    options?: documents.InsertDocumentOptions,
+  ) {
+    return this._db.request(
+      {
+        method: "POST",
+        pathname: `/_api/document/${encodeURIComponent(this._name)}`,
+        body: data,
+        search: options,
+      },
+      (res) => (options?.silent ? undefined : res.parsedBody),
     );
   }
 
   replace(
     selector: documents.DocumentSelector,
     newData: documents.DocumentData<EntryInputType>,
-    options: documents.ReplaceDocumentOptions = {}
+    options: documents.ReplaceDocumentOptions = {},
   ) {
     const { ifMatch = undefined, ...opts } = options;
     const headers = {} as Record<string, string>;
@@ -2588,21 +2647,22 @@ export class Collection<
       {
         method: "PUT",
         pathname: `/_api/document/${encodeURI(
-          documents._documentHandle(selector, this._name)
+          documents._documentHandle(selector, this._name),
         )}`,
         headers,
         body: newData,
         search: opts,
       },
-      (res) => (options?.silent ? undefined : res.parsedBody)
+      (res) => (options?.silent ? undefined : res.parsedBody),
     );
   }
 
   replaceAll(
     newData: Array<
-      documents.DocumentData<EntryInputType> & ({ _key: string } | { _id: string })
+      documents.DocumentData<EntryInputType> &
+        ({ _key: string } | { _id: string })
     >,
-    options?: documents.ReplaceDocumentOptions
+    options?: documents.ReplaceDocumentOptions,
   ) {
     return this._db.request(
       {
@@ -2611,14 +2671,14 @@ export class Collection<
         body: newData,
         search: options,
       },
-      (res) => (options?.silent ? undefined : res.parsedBody)
+      (res) => (options?.silent ? undefined : res.parsedBody),
     );
   }
 
   update(
     selector: documents.DocumentSelector,
     newData: documents.Patch<documents.DocumentData<EntryInputType>>,
-    options: documents.UpdateDocumentOptions = {}
+    options: documents.UpdateDocumentOptions = {},
   ) {
     const { ifMatch = undefined, ...opts } = options;
     const headers = {} as Record<string, string>;
@@ -2627,21 +2687,22 @@ export class Collection<
       {
         method: "PATCH",
         pathname: `/_api/document/${encodeURI(
-          documents._documentHandle(selector, this._name)
+          documents._documentHandle(selector, this._name),
         )}`,
         headers,
         body: newData,
         search: opts,
       },
-      (res) => (options?.silent ? undefined : res.parsedBody)
+      (res) => (options?.silent ? undefined : res.parsedBody),
     );
   }
 
   updateAll(
     newData: Array<
-      documents.Patch<documents.DocumentData<EntryInputType>> & ({ _key: string } | { _id: string })
+      documents.Patch<documents.DocumentData<EntryInputType>> &
+        ({ _key: string } | { _id: string })
     >,
-    options?: documents.UpdateDocumentOptions
+    options?: documents.UpdateDocumentOptions,
   ) {
     return this._db.request(
       {
@@ -2650,11 +2711,14 @@ export class Collection<
         body: newData,
         search: options,
       },
-      (res) => (options?.silent ? undefined : res.parsedBody)
+      (res) => (options?.silent ? undefined : res.parsedBody),
     );
   }
 
-  remove(selector: documents.DocumentSelector, options: documents.RemoveDocumentOptions = {}) {
+  remove(
+    selector: documents.DocumentSelector,
+    options: documents.RemoveDocumentOptions = {},
+  ) {
     const { ifMatch = undefined, ...opts } = options;
     const headers = {} as Record<string, string>;
     if (ifMatch) headers["if-match"] = ifMatch;
@@ -2662,18 +2726,18 @@ export class Collection<
       {
         method: "DELETE",
         pathname: `/_api/document/${encodeURI(
-          documents._documentHandle(selector, this._name)
+          documents._documentHandle(selector, this._name),
         )}`,
         headers,
         search: opts,
       },
-      (res) => (options?.silent ? undefined : res.parsedBody)
+      (res) => (options?.silent ? undefined : res.parsedBody),
     );
   }
 
   removeAll(
     selectors: (string | documents.ObjectWithDocumentKey)[],
-    options?: documents.RemoveDocumentOptions
+    options?: documents.RemoveDocumentOptions,
   ) {
     return this._db.request(
       {
@@ -2682,7 +2746,7 @@ export class Collection<
         body: selectors,
         search: options,
       },
-      (res) => (options?.silent ? undefined : res.parsedBody)
+      (res) => (options?.silent ? undefined : res.parsedBody),
     );
   }
 
@@ -2690,7 +2754,7 @@ export class Collection<
     data: Buffer | Blob | string | any[],
     options: documents.ImportDocumentsOptions & {
       type?: "documents" | "list" | "auto";
-    } = {}
+    } = {},
   ): Promise<documents.ImportDocumentsResult> {
     const search = { ...options, collection: this._name };
     if (Array.isArray(data)) {
@@ -2712,7 +2776,7 @@ export class Collection<
   protected _edges(
     selector: documents.DocumentSelector,
     options: documents.DocumentEdgesOptions = {},
-    direction?: "in" | "out"
+    direction?: "in" | "out",
   ) {
     const { allowDirtyRead = undefined } = options;
     return this._db.request({
@@ -2725,15 +2789,24 @@ export class Collection<
     });
   }
 
-  edges(vertex: documents.DocumentSelector, options?: documents.DocumentEdgesOptions) {
+  edges(
+    vertex: documents.DocumentSelector,
+    options?: documents.DocumentEdgesOptions,
+  ) {
     return this._edges(vertex, options);
   }
 
-  inEdges(vertex: documents.DocumentSelector, options?: documents.DocumentEdgesOptions) {
+  inEdges(
+    vertex: documents.DocumentSelector,
+    options?: documents.DocumentEdgesOptions,
+  ) {
     return this._edges(vertex, options, "in");
   }
 
-  outEdges(vertex: documents.DocumentSelector, options?: documents.DocumentEdgesOptions) {
+  outEdges(
+    vertex: documents.DocumentSelector,
+    options?: documents.DocumentEdgesOptions,
+  ) {
     return this._edges(vertex, options, "out");
   }
   //#endregion
@@ -2744,10 +2817,10 @@ export class Collection<
       {
         method: "PUT",
         pathname: `/_api/collection/${encodeURIComponent(
-          this._name
+          this._name,
         )}/loadIndexesIntoMemory`,
       },
-      (res) => res.parsedBody.result
+      (res) => res.parsedBody.result,
     );
   }
 
@@ -2757,7 +2830,7 @@ export class Collection<
         pathname: "/_api/index",
         search: { collection: this._name, ...options },
       },
-      (res) => res.parsedBody.indexes
+      (res) => res.parsedBody.indexes,
     );
   }
 

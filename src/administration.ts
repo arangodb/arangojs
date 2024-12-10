@@ -58,7 +58,7 @@ export type EngineInfo = {
        * Index type aliases supported by the storage engine.
        */
       indexes?: Record<string, string>;
-    }
+    };
   };
 };
 
@@ -127,7 +127,7 @@ export type ServerStatusInformation = {
    */
   foxxApi: boolean;
   /**
-   * A host identifier defined by the HOST or NODE_NAME environment variable, 
+   * A host identifier defined by the HOST or NODE_NAME environment variable,
    * or a fallback value using a machine identifier or the cluster/Agency address.
    */
   host: string;
@@ -318,7 +318,7 @@ export type ClusterSupportInfo = {
        * Number of servers in the cluster.
        */
       servers: number;
-    }
+    };
   };
   /**
    * (Cluster only.) Information about the ArangoDB instance as well as the
@@ -347,4 +347,4 @@ export interface QueueTimeMetrics {
    * in seconds.
    */
   getAvg(): number;
-};
+}

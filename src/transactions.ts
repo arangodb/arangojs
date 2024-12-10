@@ -24,17 +24,26 @@ export type TransactionCollectionOptions = {
    * written to during the transaction with no other writes being able to run
    * in parallel.
    */
-  exclusive?: (string | collections.ArangoCollection)[] | string | collections.ArangoCollection;
+  exclusive?:
+    | (string | collections.ArangoCollection)[]
+    | string
+    | collections.ArangoCollection;
   /**
    * An array of collections or a single collection that will be read from or
    * written to during the transaction.
    */
-  write?: (string | collections.ArangoCollection)[] | string | collections.ArangoCollection;
+  write?:
+    | (string | collections.ArangoCollection)[]
+    | string
+    | collections.ArangoCollection;
   /**
    * An array of collections or a single collection that will be read from
    * during the transaction.
    */
-  read?: (string | collections.ArangoCollection)[] | string | collections.ArangoCollection;
+  read?:
+    | (string | collections.ArangoCollection)[]
+    | string
+    | collections.ArangoCollection;
 };
 
 /**
@@ -45,7 +54,7 @@ export function coerceTransactionCollections(
     | (TransactionCollectionOptions & { allowImplicit?: boolean })
     | (string | collections.ArangoCollection)[]
     | string
-    | collections.ArangoCollection
+    | collections.ArangoCollection,
 ): CoercedTransactionCollections {
   if (typeof options === "string") {
     return { write: [options] };
@@ -196,7 +205,7 @@ export type TransactionInfo = {
  * @param transaction - A value that might be a transaction.
  */
 export function isArangoTransaction(
-  transaction: any
+  transaction: any,
 ): transaction is Transaction {
   return Boolean(transaction && transaction.isArangoTransaction);
 }
@@ -282,7 +291,7 @@ export class Transaction {
       {
         pathname: `/_api/transaction/${encodeURIComponent(this.id)}`,
       },
-      (res) => res.parsedBody.result
+      (res) => res.parsedBody.result,
     );
   }
 
@@ -309,7 +318,7 @@ export class Transaction {
         pathname: `/_api/transaction/${encodeURIComponent(this.id)}`,
         allowDirtyRead,
       },
-      (res) => res.parsedBody.result
+      (res) => res.parsedBody.result,
     );
   }
 
@@ -336,7 +345,7 @@ export class Transaction {
         pathname: `/_api/transaction/${encodeURIComponent(this.id)}`,
         allowDirtyRead,
       },
-      (res) => res.parsedBody.result
+      (res) => res.parsedBody.result,
     );
   }
 
@@ -534,7 +543,7 @@ export class Transaction {
       const promise = callback();
       if (!promise) {
         throw new Error(
-          "Transaction callback was not an async function or did not return a promise!"
+          "Transaction callback was not an async function or did not return a promise!",
         );
       }
       return Promise.resolve(promise);

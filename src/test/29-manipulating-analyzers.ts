@@ -42,7 +42,7 @@ describe("Manipulating analyzers", function () {
     after(async () => {
       try {
         await analyzer.drop();
-      } catch { }
+      } catch {}
     });
     it("fetches information about the analyzer", async () => {
       const data = await analyzer.get();

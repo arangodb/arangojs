@@ -28,7 +28,7 @@ describe("Item-wise Cursor API", () => {
   });
   after(async () => {
     await Promise.all(
-      allCursors.map((cursor) => cursor.kill().catch(() => undefined))
+      allCursors.map((cursor) => cursor.kill().catch(() => undefined)),
     );
     try {
       await system.dropDatabase(name);
@@ -199,7 +199,7 @@ describe("Item-wise Cursor API", () => {
           .reduce((acc, next) => {
             acc.push(...next);
             return acc;
-          }, [] as number[])
+          }, [] as number[]),
       );
     });
     it("doesn't choke on non-arrays", async () => {
@@ -252,7 +252,7 @@ describe("Batch-wise Cursor API", () => {
   });
   after(async () => {
     await Promise.all(
-      allCursors.map((cursor) => cursor.kill().catch(() => undefined))
+      allCursors.map((cursor) => cursor.kill().catch(() => undefined)),
     );
     try {
       await system.dropDatabase(name);
@@ -395,7 +395,7 @@ describe("Batch-wise Cursor API", () => {
           .reduce((acc, next) => {
             acc.push(...next);
             return acc;
-          }, [] as number[])
+          }, [] as number[]),
       );
     });
     it("doesn't choke on non-arrays", async () => {

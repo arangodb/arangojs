@@ -19,7 +19,7 @@ describe("Queue time metrics", function () {
     collection = await db.createCollection(`c_${Date.now()}`);
     await db.waitForPropagation(
       { pathname: `/_api/collection/${collection.name}` },
-      10000
+      10000,
     );
   });
   after(async () => {
@@ -34,7 +34,7 @@ describe("Queue time metrics", function () {
     });
     it("should trim existing queue times when set to a lower value", async () => {
       await Promise.all(
-        range(10).map(() => collection.save({ value: Math.random() }))
+        range(10).map(() => collection.save({ value: Math.random() })),
       );
       expect(db.queueTime.getValues().length).to.equal(10);
       db.setResponseQueueTimeSamples(5);
@@ -42,23 +42,23 @@ describe("Queue time metrics", function () {
     });
     it("should allow more values when set to a higher value", async () => {
       await Promise.all(
-        range(10).map(() => collection.save({ value: Math.random() }))
+        range(10).map(() => collection.save({ value: Math.random() })),
       );
       expect(db.queueTime.getValues().length).to.equal(10);
       db.setResponseQueueTimeSamples(20);
       await Promise.all(
-        range(10).map(() => collection.save({ value: Math.random() }))
+        range(10).map(() => collection.save({ value: Math.random() })),
       );
       expect(db.queueTime.getValues().length).to.equal(20);
     });
     it("should allow fewer values when set to a lower value", async () => {
       await Promise.all(
-        range(10).map(() => collection.save({ value: Math.random() }))
+        range(10).map(() => collection.save({ value: Math.random() })),
       );
       expect(db.queueTime.getValues().length).to.equal(10);
       db.setResponseQueueTimeSamples(5);
       await Promise.all(
-        range(10).map(() => collection.save({ value: Math.random() }))
+        range(10).map(() => collection.save({ value: Math.random() })),
       );
       expect(db.queueTime.getValues().length).to.equal(5);
     });
@@ -67,7 +67,7 @@ describe("Queue time metrics", function () {
     it("should return the latest value", async () => {
       expect(db.queueTime.getLatest()).to.equal(undefined);
       await Promise.all(
-        range(10).map(() => collection.save({ value: Math.random() }))
+        range(10).map(() => collection.save({ value: Math.random() })),
       );
       const values = db.queueTime.getValues();
       expect(values.length).to.be.greaterThan(0);
@@ -79,7 +79,7 @@ describe("Queue time metrics", function () {
       const min = Date.now();
       expect(db.queueTime.getValues()).to.eql([]);
       await Promise.all(
-        range(10).map(() => collection.save({ value: Math.random() }))
+        range(10).map(() => collection.save({ value: Math.random() })),
       );
       const max = Date.now();
       const values = db.queueTime.getValues();
@@ -96,7 +96,7 @@ describe("Queue time metrics", function () {
     it("should return the arithmetic average of all current values", async () => {
       expect(db.queueTime.getAvg()).to.equal(0);
       await Promise.all(
-        range(10).map(() => collection.save({ value: Math.random() }))
+        range(10).map(() => collection.save({ value: Math.random() })),
       );
       const values = db.queueTime.getValues();
       expect(values.length).to.be.greaterThan(0);

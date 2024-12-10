@@ -11,13 +11,13 @@ import * as administration from "./administration.js";
 import * as configuration from "./configuration.js";
 import * as databases from "./databases.js";
 import * as errors from "./errors.js";
+import { ERROR_ARANGO_CONFLICT } from "./lib/codes.js";
 import * as util from "./lib/util.js";
 import { LinkedList } from "./lib/x3-linkedlist.js";
-import { ERROR_ARANGO_CONFLICT } from "./lib/codes.js";
 
 const MIME_JSON = /\/(json|javascript)(\W|$)/;
 const LEADER_ENDPOINT_HEADER = "x-arango-endpoint";
-const REASON_TIMEOUT = 'timeout';
+const REASON_TIMEOUT = "timeout";
 
 //#region Host
 /**
@@ -32,7 +32,17 @@ type Host = {
    * @param pathname - URL path, relative to the server URL.
    * @param options - Options for this fetch request.
    */
-  fetch: (options: Omit<RequestOptions, "maxRetries" | "retryOnConflict" | "allowDirtyRead" | "hostUrl" | "expectBinary" | "isBinary">) => Promise<globalThis.Response & { request: globalThis.Request }>;
+  fetch: (
+    options: Omit<
+      RequestOptions,
+      | "maxRetries"
+      | "retryOnConflict"
+      | "allowDirtyRead"
+      | "hostUrl"
+      | "expectBinary"
+      | "isBinary"
+    >,
+  ) => Promise<globalThis.Response & { request: globalThis.Request }>;
   /**
    * @internal
    *
@@ -68,7 +78,7 @@ function createHost(arangojsHostUrl: string, agentOptions?: any): Host {
     };
   }
   if (agentOptions) {
-    createDispatcher = (async () => {
+    createDispatcher = async () => {
       let undici: any;
       try {
         // Prevent overzealous bundlers from attempting to bundle undici
@@ -76,35 +86,45 @@ function createHost(arangojsHostUrl: string, agentOptions?: any): Host {
         undici = await import(undiciName);
       } catch (cause) {
         if (socketPath) {
-          throw new Error('Undici is required for Unix domain sockets', { cause });
+          throw new Error("Undici is required for Unix domain sockets", {
+            cause,
+          });
         }
-        throw new Error('Undici is required when using config.agentOptions', { cause });
+        throw new Error("Undici is required when using config.agentOptions", {
+          cause,
+        });
       }
       fetch = undici.fetch;
       return new undici.Agent(agentOptions);
-    });
+    };
   }
   const pending = new Map<string, AbortController>();
   return {
-    async fetch(
-      {
-        method,
-        pathname,
-        search,
-        headers: requestHeaders,
-        body,
-        timeout,
-        fetchOptions,
-        beforeRequest,
-        afterResponse,
-      }: Omit<RequestOptions, "maxRetries" | "retryOnConflict" | "allowDirtyRead" | "hostUrl" | "expectBinary" | "isBinary">) {
+    async fetch({
+      method,
+      pathname,
+      search,
+      headers: requestHeaders,
+      body,
+      timeout,
+      fetchOptions,
+      beforeRequest,
+      afterResponse,
+    }: Omit<
+      RequestOptions,
+      | "maxRetries"
+      | "retryOnConflict"
+      | "allowDirtyRead"
+      | "hostUrl"
+      | "expectBinary"
+      | "isBinary"
+    >) {
       const url = new URL(pathname + baseUrl.search, baseUrl);
       if (search) {
-        const searchParams = (
+        const searchParams =
           search instanceof URLSearchParams
             ? search
-            : new URLSearchParams(search)
-        );
+            : new URLSearchParams(search);
         for (const [key, value] of searchParams) {
           url.searchParams.append(key, value);
         }
@@ -114,8 +134,8 @@ function createHost(arangojsHostUrl: string, agentOptions?: any): Host {
         headers.set(
           "authorization",
           `Basic ${btoa(
-            `${baseUrl.username || "root"}:${baseUrl.password || ""}`
-          )}`
+            `${baseUrl.username || "root"}:${baseUrl.password || ""}`,
+          )}`,
         );
       }
       const abortController = new AbortController();
@@ -147,14 +167,20 @@ function createHost(arangojsHostUrl: string, agentOptions?: any): Host {
       }
       let response: globalThis.Response & { request: globalThis.Request };
       try {
-        response = Object.assign(await fetch(request), { request, arangojsHostUrl });
+        response = Object.assign(await fetch(request), {
+          request,
+          arangojsHostUrl,
+        });
       } catch (e: unknown) {
         const cause = e instanceof Error ? e : new Error(String(e));
         let error: errors.NetworkError;
         if (signal.aborted) {
-          const reason = typeof signal.reason == 'string' ? signal.reason : undefined;
+          const reason =
+            typeof signal.reason == "string" ? signal.reason : undefined;
           if (reason === REASON_TIMEOUT) {
-            error = new errors.ResponseTimeoutError(undefined, request, { cause });
+            error = new errors.ResponseTimeoutError(undefined, request, {
+              cause,
+            });
           } else {
             error = new errors.RequestAbortedError(reason, request, { cause });
           }
@@ -249,9 +275,11 @@ const STATUS_CODE_DEFAULT_MESSAGES = {
 };
 
 type KnownStatusCode = keyof typeof STATUS_CODE_DEFAULT_MESSAGES;
-const KNOWN_STATUS_CODES = Object.keys(STATUS_CODE_DEFAULT_MESSAGES).map((k) => Number(k)) as KnownStatusCode[];
+const KNOWN_STATUS_CODES = Object.keys(STATUS_CODE_DEFAULT_MESSAGES).map((k) =>
+  Number(k),
+) as KnownStatusCode[];
 const REDIRECT_CODES = [301, 302, 303, 307, 308] satisfies KnownStatusCode[];
-type RedirectStatusCode = typeof REDIRECT_CODES[number];
+type RedirectStatusCode = (typeof REDIRECT_CODES)[number];
 
 /**
  * @internal
@@ -340,7 +368,7 @@ export type ArangoErrorResponse = {
    * for more information.
    */
   errorNum: number;
-}
+};
 
 /**
  * Processed response object.
@@ -360,7 +388,7 @@ export interface ProcessedResponse<T = any> extends globalThis.Response {
    * Parsed response body.
    */
   parsedBody?: T;
-};
+}
 //#endregion
 
 //#region Request options
@@ -374,7 +402,10 @@ export type CommonFetchOptions = {
    * Note that the `Authorization` header will be overridden if the `auth`
    * configuration option is set.
    */
-  headers?: string[][] | Record<string, string | ReadonlyArray<string>> | Headers;
+  headers?:
+    | string[][]
+    | Record<string, string | ReadonlyArray<string>>
+    | Headers;
   /**
    * Controls whether the socket should be reused for subsequent requests.
    *
@@ -390,7 +421,7 @@ export type CommonFetchOptions = {
    *
    * Default: `"follow"`
    */
-  redirect?: 'error' | 'follow' | 'manual';
+  redirect?: "error" | "follow" | "manual";
   /**
    * Value to use for the `Referer` header.
    *
@@ -424,7 +455,7 @@ export type CommonFetchOptions = {
    *
    * Default: `"same-origin"`
    */
-  credentials?: 'omit' | 'include' | 'same-origin';
+  credentials?: "omit" | "include" | "same-origin";
   /**
    * (Node.js only.) Undici `Dispatcher` instance to use for the request.
    *
@@ -450,7 +481,7 @@ export type CommonFetchOptions = {
    *
    * Default: `"auto"`
    */
-  priority?: 'low' | 'high' | 'auto';
+  priority?: "low" | "high" | "auto";
   /**
    * (Browser only.) Policy to use for the `Referer` header, equivalent to the
    * semantics of the `Referrer-Policy` header.
@@ -543,7 +574,10 @@ export type CommonRequestOptions = {
    * @param err - Error encountered when handling this request or `null`.
    * @param res - Response object for this request, if no error occurred.
    */
-  afterResponse?: (err: errors.NetworkError | null, res?: globalThis.Response & { request: globalThis.Request; }) => void | Promise<void>;
+  afterResponse?: (
+    err: errors.NetworkError | null,
+    res?: globalThis.Response & { request: globalThis.Request },
+  ) => void | Promise<void>;
 };
 
 /**
@@ -576,7 +610,10 @@ export type RequestOptions = CommonRequestOptions & {
    * Note that the `Authorization` header will be overridden if the `auth`
    * configuration option is set.
    */
-  headers?: string[][] | Record<string, string | ReadonlyArray<string>> | Headers;
+  headers?:
+    | string[][]
+    | Record<string, string | ReadonlyArray<string>>
+    | Headers;
   /**
    * Request body data.
    */
@@ -662,9 +699,10 @@ export class Connection {
       arangoVersion = 31100,
       loadBalancingStrategy = "NONE",
       maxRetries = 0,
-      poolSize = 3 * (
-        loadBalancingStrategy === "ROUND_ROBIN" && Array.isArray(url) ? url.length : 1
-      ),
+      poolSize = 3 *
+        (loadBalancingStrategy === "ROUND_ROBIN" && Array.isArray(url)
+          ? url.length
+          : 1),
       fetchOptions: { headers, ...commonFetchOptions } = {},
       onError,
       precaptureStackTraces = false,
@@ -674,9 +712,8 @@ export class Connection {
     const URLS = Array.isArray(url) ? url : [url];
     this._loadBalancingStrategy = loadBalancingStrategy;
     this._precaptureStackTraces = precaptureStackTraces;
-    this._responseQueueTimeSamples = (
-      responseQueueTimeSamples < 0 ? Infinity : responseQueueTimeSamples
-    );
+    this._responseQueueTimeSamples =
+      responseQueueTimeSamples < 0 ? Infinity : responseQueueTimeSamples;
     this._arangoVersion = arangoVersion;
     this._taskPoolSize = poolSize;
     this._onError = onError;
@@ -689,11 +726,11 @@ export class Connection {
 
     this._commonFetchOptions.headers.set(
       "x-arango-version",
-      String(arangoVersion)
+      String(arangoVersion),
     );
     this._commonFetchOptions.headers.set(
       "x-arango-driver",
-      `arangojs/${process.env.ARANGOJS_VERSION} (cloud)`
+      `arangojs/${process.env.ARANGOJS_VERSION} (cloud)`,
     );
 
     this.addToHostList(URLS);
@@ -762,10 +799,9 @@ export class Connection {
         request: globalThis.Request;
         arangojsHostUrl: string;
         parsedBody?: any;
-      } = Object.assign(
-        await host.fetch(task.options),
-        { arangojsHostUrl: hostUrl }
-      );
+      } = Object.assign(await host.fetch(task.options), {
+        arangojsHostUrl: hostUrl,
+      });
       const leaderEndpoint = res.headers.get(LEADER_ENDPOINT_HEADER);
       if (res.status === 503 && leaderEndpoint) {
         const [cleanUrl] = this.addToHostList(leaderEndpoint);
@@ -838,7 +874,8 @@ export class Connection {
         err.isSafeToRetry &&
         task.options.hostUrl === undefined &&
         this._commonRequestOptions.maxRetries !== false &&
-        task.retries < (this._commonRequestOptions.maxRetries || this._hosts.length - 1)
+        task.retries <
+          (this._commonRequestOptions.maxRetries || this._hosts.length - 1)
       ) {
         task.retries += 1;
         this._queue.push(task);
@@ -871,7 +908,7 @@ export class Connection {
   setBasicAuth(auth: configuration.BasicAuthCredentials) {
     this.setHeader(
       "authorization",
-      `Basic ${btoa(`${auth.username}:${auth.password}`)}`
+      `Basic ${btoa(`${auth.username}:${auth.password}`)}`,
     );
   }
 
@@ -903,7 +940,10 @@ export class Connection {
    * @param databaseName - Name of the database.
    * @param database - Database instance to add to the cache.
    */
-  database(databaseName: string, database: databases.Database): databases.Database;
+  database(
+    databaseName: string,
+    database: databases.Database,
+  ): databases.Database;
   /**
    * @internal
    *
@@ -916,7 +956,7 @@ export class Connection {
   database(databaseName: string, database: null): undefined;
   database(
     databaseName: string,
-    database?: databases.Database | null
+    database?: databases.Database | null,
   ): databases.Database | undefined {
     if (database === null) {
       this._databases.delete(databaseName);
@@ -947,7 +987,7 @@ export class Connection {
         const i = this._hostUrls.indexOf(url);
         if (i !== -1) return this._hosts[i];
         return createHost(url);
-      })
+      }),
     );
     this._hostUrls.splice(0, this._hostUrls.length, ...cleanUrls);
   }
@@ -963,15 +1003,13 @@ export class Connection {
    */
   addToHostList(urls: string | string[]): string[] {
     const cleanUrls = (Array.isArray(urls) ? urls : [urls]).map((url) =>
-      util.normalizeUrl(url)
+      util.normalizeUrl(url),
     );
     const newUrls = cleanUrls.filter(
-      (url) => this._hostUrls.indexOf(url) === -1
+      (url) => this._hostUrls.indexOf(url) === -1,
     );
     this._hostUrls.push(...newUrls);
-    this._hosts.push(
-      ...newUrls.map(url => createHost(url))
-    );
+    this._hosts.push(...newUrls.map((url) => createHost(url)));
     return cleanUrls;
   }
 
@@ -1063,10 +1101,9 @@ export class Connection {
         });
       } catch (e) {
         if (endOfTime < Date.now()) {
-          throw new errors.PropagationTimeoutError(
-            undefined,
-            { cause: e as Error }
-          );
+          throw new errors.PropagationTimeoutError(undefined, {
+            cause: e as Error,
+          });
         }
         await new Promise((resolve) => setTimeout(resolve, 1000));
         continue;
@@ -1082,9 +1119,16 @@ export class Connection {
    *
    * Performs a request using the arangojs connection pool.
    */
-  async request<T = globalThis.Response & { request: globalThis.Request; parsedBody?: any }>(
+  async request<
+    T = globalThis.Response & { request: globalThis.Request; parsedBody?: any },
+  >(
     requestOptions: RequestOptions & { isBinary?: boolean },
-    transform?: (res: globalThis.Response & { request: globalThis.Request; parsedBody?: any }) => T
+    transform?: (
+      res: globalThis.Response & {
+        request: globalThis.Request;
+        parsedBody?: any;
+      },
+    ) => T,
   ): Promise<T> {
     const {
       hostUrl,
@@ -1102,7 +1146,7 @@ export class Connection {
 
     const headers = util.mergeHeaders(
       this._commonFetchOptions.headers,
-      requestHeaders
+      requestHeaders,
     );
 
     let body = requestBody;
@@ -1164,7 +1208,9 @@ export class Connection {
           task.stack = () =>
             `\n${capture.stack.split("\n").slice(3).join("\n")}`;
         } else {
-          const capture = util.generateStackTrace() as { readonly stack: string };
+          const capture = util.generateStackTrace() as {
+            readonly stack: string;
+          };
           if (Object.prototype.hasOwnProperty.call(capture, "stack")) {
             task.stack = () =>
               `\n${capture.stack.split("\n").slice(4).join("\n")}`;

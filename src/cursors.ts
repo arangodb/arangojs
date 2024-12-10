@@ -184,10 +184,10 @@ export class BatchCursor<ItemType = any> {
       count: number;
     },
     hostUrl?: string,
-    allowDirtyRead?: boolean
+    allowDirtyRead?: boolean,
   ) {
     const batches = new LinkedList(
-      body.result.length ? [new LinkedList(body.result)] : []
+      body.result.length ? [new LinkedList(body.result)] : [],
     );
     this._db = db;
     this._batches = batches;
@@ -319,7 +319,11 @@ export class BatchCursor<ItemType = any> {
    * }
    * ```
    */
-  async *[Symbol.asyncIterator](): AsyncGenerator<ItemType[], undefined, undefined> {
+  async *[Symbol.asyncIterator](): AsyncGenerator<
+    ItemType[],
+    undefined,
+    undefined
+  > {
     while (this.hasNext) {
       yield this.next() as Promise<ItemType[]>;
     }
@@ -457,7 +461,11 @@ export class BatchCursor<ItemType = any> {
    * ```
    */
   async forEach(
-    callback: (currentBatch: ItemType[], index: number, self: this) => false | void
+    callback: (
+      currentBatch: ItemType[],
+      index: number,
+      self: this,
+    ) => false | void,
   ): Promise<boolean> {
     let index = 0;
     while (this.hasNext) {
@@ -500,7 +508,7 @@ export class BatchCursor<ItemType = any> {
    * ```
    */
   async map<R>(
-    callback: (currentBatch: ItemType[], index: number, self: this) => R
+    callback: (currentBatch: ItemType[], index: number, self: this) => R,
   ): Promise<R[]> {
     let index = 0;
     const result: any[] = [];
@@ -557,7 +565,7 @@ export class BatchCursor<ItemType = any> {
    * ```
    */
   async flatMap<R>(
-    callback: (currentBatch: ItemType[], index: number, self: this) => R | R[]
+    callback: (currentBatch: ItemType[], index: number, self: this) => R | R[],
   ): Promise<R[]> {
     let index = 0;
     const result: any[] = [];
@@ -648,9 +656,9 @@ export class BatchCursor<ItemType = any> {
       accumulator: R,
       currentBatch: ItemType[],
       index: number,
-      self: this
+      self: this,
     ) => R,
-    initialValue: R
+    initialValue: R,
   ): Promise<R>;
 
   /**
@@ -689,17 +697,17 @@ export class BatchCursor<ItemType = any> {
       accumulator: ItemType[] | R,
       currentBatch: ItemType[],
       index: number,
-      self: this
-    ) => R
+      self: this,
+    ) => R,
   ): Promise<R | undefined>;
   async reduce<R>(
     reducer: (
       accumulator: R,
       currentBatch: ItemType[],
       index: number,
-      self: this
+      self: this,
     ) => R,
-    initialValue?: R
+    initialValue?: R,
   ): Promise<R | undefined> {
     let index = 0;
     if (!this.hasNext) return initialValue;
@@ -751,7 +759,7 @@ export class BatchCursor<ItemType = any> {
       () => {
         this._hasMore = false;
         return undefined;
-      }
+      },
     );
   }
 }
@@ -792,7 +800,10 @@ export class Cursor<ItemType = any> {
   /**
    * @internal
    */
-  constructor(batchedCursor: BatchCursor, view: BatchCursorItemsView<ItemType>) {
+  constructor(
+    batchedCursor: BatchCursor,
+    view: BatchCursorItemsView<ItemType>,
+  ) {
     this._batches = batchedCursor;
     this._view = view;
   }
@@ -865,7 +876,11 @@ export class Cursor<ItemType = any> {
    * }
    * ```
    */
-  async *[Symbol.asyncIterator](): AsyncGenerator<ItemType, undefined, undefined> {
+  async *[Symbol.asyncIterator](): AsyncGenerator<
+    ItemType,
+    undefined,
+    undefined
+  > {
     while (this.hasNext) {
       yield this.next() as Promise<ItemType>;
     }
@@ -953,7 +968,11 @@ export class Cursor<ItemType = any> {
    * ```
    */
   async forEach(
-    callback: (currentValue: ItemType, index: number, self: this) => false | void
+    callback: (
+      currentValue: ItemType,
+      index: number,
+      self: this,
+    ) => false | void,
   ): Promise<boolean> {
     let index = 0;
     while (this.hasNext) {
@@ -992,7 +1011,7 @@ export class Cursor<ItemType = any> {
    * ```
    */
   async map<R>(
-    callback: (currentValue: ItemType, index: number, self: this) => R
+    callback: (currentValue: ItemType, index: number, self: this) => R,
   ): Promise<R[]> {
     let index = 0;
     const result: any[] = [];
@@ -1043,7 +1062,7 @@ export class Cursor<ItemType = any> {
    * ```
    */
   async flatMap<R>(
-    callback: (currentValue: ItemType, index: number, self: this) => R | R[]
+    callback: (currentValue: ItemType, index: number, self: this) => R | R[],
   ): Promise<R[]> {
     let index = 0;
     const result: any[] = [];
@@ -1123,8 +1142,13 @@ export class Cursor<ItemType = any> {
    * ```
    */
   async reduce<R>(
-    reducer: (accumulator: R, currentValue: ItemType, index: number, self: this) => R,
-    initialValue: R
+    reducer: (
+      accumulator: R,
+      currentValue: ItemType,
+      index: number,
+      self: this,
+    ) => R,
+    initialValue: R,
   ): Promise<R>;
   /**
    * Depletes the cursor by applying the `reducer` function to each item in
@@ -1160,12 +1184,17 @@ export class Cursor<ItemType = any> {
       accumulator: ItemType | R,
       currentValue: ItemType,
       index: number,
-      self: this
-    ) => R
+      self: this,
+    ) => R,
   ): Promise<R | undefined>;
   async reduce<R>(
-    reducer: (accumulator: R, currentValue: ItemType, index: number, self: this) => R,
-    initialValue?: R
+    reducer: (
+      accumulator: R,
+      currentValue: ItemType,
+      index: number,
+      self: this,
+    ) => R,
+    initialValue?: R,
   ): Promise<R | undefined> {
     let index = 0;
     if (!this.hasNext) return initialValue;

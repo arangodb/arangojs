@@ -2,7 +2,7 @@ import { ConfigOptions, LoadBalancingStrategy } from "../configuration.js";
 
 const ARANGO_URL = process.env.TEST_ARANGODB_URL || "http://127.0.0.1:8529";
 const ARANGO_VERSION = Number(
-  process.env.ARANGO_VERSION || process.env.ARANGOJS_DEVEL_VERSION || 0
+  process.env.ARANGO_VERSION || process.env.ARANGOJS_DEVEL_VERSION || 0,
 );
 const ARANGO_RELEASE = process.env.ARANGO_RELEASE || "";
 let arangoVersion: number = 39999;
@@ -20,13 +20,13 @@ const ARANGO_LOAD_BALANCING_STRATEGY = process.env
 export const config: ConfigOptions & {
   arangoVersion: NonNullable<ConfigOptions["arangoVersion"]>;
 } = ARANGO_URL.includes(",")
-    ? {
+  ? {
       url: ARANGO_URL.split(",").filter((s) => Boolean(s)),
       arangoVersion,
       precaptureStackTraces: true,
       loadBalancingStrategy: ARANGO_LOAD_BALANCING_STRATEGY || "ROUND_ROBIN",
     }
-    : {
+  : {
       url: ARANGO_URL,
       arangoVersion,
       precaptureStackTraces: true,

@@ -232,14 +232,14 @@ export type ServiceConfiguration = {
    * by software when managing the service.
    */
   type:
-  | "integer"
-  | "boolean"
-  | "string"
-  | "number"
-  | "json"
-  | "password"
-  | "int"
-  | "bool";
+    | "integer"
+    | "boolean"
+    | "string"
+    | "number"
+    | "json"
+    | "password"
+    | "int"
+    | "bool";
   /**
    * Current value of the configuration option as stored internally.
    */
@@ -436,10 +436,10 @@ export type ServiceTestXunitReport = [
 export type ServiceTestXunitTest =
   | ["testcase", { classname: string; name: string; time: number }]
   | [
-    "testcase",
-    { classname: string; name: string; time: number },
-    ["failure", { message: string; type: string }, string],
-  ];
+      "testcase",
+      { classname: string; name: string; time: number },
+      ["failure", { message: string; type: string }, string],
+    ];
 
 /**
  * Test results for a Foxx service's tests in TAP format.

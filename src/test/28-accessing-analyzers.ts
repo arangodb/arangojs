@@ -43,16 +43,16 @@ describe("Accessing analyzers", function () {
           await analyzer.create({ type: "identity" });
           await db.waitForPropagation(
             { pathname: `/_api/analyzer/${analyzer.name}` },
-            65000
+            65000,
           );
-        })
+        }),
       );
     });
     after(async () => {
       await Promise.all(
         analyzerNames.map((name) =>
-          db.analyzer(name.replace(/^[^:]+::/, "")).drop()
-        )
+          db.analyzer(name.replace(/^[^:]+::/, "")).drop(),
+        ),
       );
     });
     it("fetches information about all analyzers", async () => {
@@ -71,16 +71,16 @@ describe("Accessing analyzers", function () {
           await analyzer.create({ type: "identity" });
           await db.waitForPropagation(
             { pathname: `/_api/analyzer/${analyzer.name}` },
-            65000
+            65000,
           );
-        })
+        }),
       );
     });
     after(async () => {
       await Promise.all(
         analyzerNames.map((name) =>
-          db.analyzer(name.replace(/^[^:]+::/, "")).drop()
-        )
+          db.analyzer(name.replace(/^[^:]+::/, "")).drop(),
+        ),
       );
     });
     it("creates Analyzer instances", async () => {

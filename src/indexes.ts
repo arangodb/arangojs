@@ -66,7 +66,7 @@ export type EnsureIndexOptions =
 type EnsureIndexOptionsType<
   Type extends IndexType,
   Fields extends any[],
-  Extra extends {} = {}
+  Extra extends {} = {},
 > = {
   /**
    * A unique name for this index.
@@ -93,7 +93,8 @@ type EnsureIndexOptionsType<
  * Options for creating a persistent index.
  */
 export type EnsurePersistentIndexOptions = EnsureIndexOptionsType<
-  "persistent", string[],
+  "persistent",
+  string[],
   {
     /**
      * If set to `true`, a unique index will be created.
@@ -142,7 +143,8 @@ export type EnsurePersistentIndexOptions = EnsureIndexOptionsType<
  * Options for creating a geo index.
  */
 export type EnsureGeoIndexOptions = EnsureIndexOptionsType<
-  "geo", [string, string] | [string],
+  "geo",
+  [string, string] | [string],
   {
     /**
      * If set to `true`, `fields` must be an array containing a single attribute
@@ -172,7 +174,8 @@ export type EnsureGeoIndexOptions = EnsureIndexOptionsType<
  * Options for creating a TTL index.
  */
 export type EnsureTtlIndexOptions = EnsureIndexOptionsType<
-  "ttl", [string],
+  "ttl",
+  [string],
   {
     /**
      * Duration in seconds after the attribute value at which the document will
@@ -186,7 +189,8 @@ export type EnsureTtlIndexOptions = EnsureIndexOptionsType<
  * Options for creating a MDI index.
  */
 export type EnsureMdiIndexOptions = EnsureIndexOptionsType<
-  "mdi", string[],
+  "mdi",
+  string[],
   {
     /**
      * Data type of the dimension attributes.
@@ -205,7 +209,8 @@ export type EnsureMdiIndexOptions = EnsureIndexOptionsType<
  * Options for creating an inverted index.
  */
 export type EnsureInvertedIndexOptions = EnsureIndexOptionsType<
-  "inverted", (string | InvertedIndexFieldOptions)[],
+  "inverted",
+  (string | InvertedIndexFieldOptions)[],
   {
     /**
      * If set to `true` array values will by default be indexed using the same
@@ -502,13 +507,16 @@ export type IndexDescription =
 /**
  * An object representing a system index.
  */
-export type SystemIndexDescription =
-  | PrimaryIndexDescription;
+export type SystemIndexDescription = PrimaryIndexDescription;
 
 /**
  * Shared attributes of all index types.
  */
-export type IndexDescriptionType<Type extends string, Fields extends any[], Extra extends {} = {}> = {
+export type IndexDescriptionType<
+  Type extends string,
+  Fields extends any[],
+  Extra extends {} = {},
+> = {
   /**
    * A unique name for this index.
    */
@@ -518,12 +526,12 @@ export type IndexDescriptionType<Type extends string, Fields extends any[], Extr
    */
   id: string;
   /**
-    * Type of this index.
-    */
+   * Type of this index.
+   */
   type: Type;
   /**
-    * An array of attribute paths.
-    */
+   * An array of attribute paths.
+   */
   fields: Fields;
   /**
    * Whether documents not containing at least one of the attribute paths
@@ -544,7 +552,8 @@ export type IndexDescriptionType<Type extends string, Fields extends any[], Extr
  * An object representing a persistent index.
  */
 export type PersistentIndexDescription = IndexDescriptionType<
-  "persistent", string[],
+  "persistent",
+  string[],
   {
     cacheEnabled: boolean;
     deduplicate: boolean;
@@ -557,7 +566,8 @@ export type PersistentIndexDescription = IndexDescriptionType<
  * An object representing a primary index.
  */
 export type PrimaryIndexDescription = IndexDescriptionType<
-  "primary", string[],
+  "primary",
+  string[],
   {
     selectivityEstimate: number;
   }
@@ -567,7 +577,8 @@ export type PrimaryIndexDescription = IndexDescriptionType<
  * An object representing a geo index.
  */
 export type GeoIndexDescription = IndexDescriptionType<
-  "geo", [string] | [string, string],
+  "geo",
+  [string] | [string, string],
   {
     geoJson: boolean;
     legacyPolygons: boolean;
@@ -581,7 +592,8 @@ export type GeoIndexDescription = IndexDescriptionType<
  * An object representing a TTL index.
  */
 export type TtlIndexDescription = IndexDescriptionType<
-  "ttl", [string],
+  "ttl",
+  [string],
   {
     expireAfter: number;
     selectivityEstimate: number;
@@ -592,7 +604,8 @@ export type TtlIndexDescription = IndexDescriptionType<
  * An object representing a MDI index.
  */
 export type MdiIndexDescription = IndexDescriptionType<
-  "mdi", string[],
+  "mdi",
+  string[],
   {
     fieldValueTypes: "double";
   }
@@ -602,7 +615,8 @@ export type MdiIndexDescription = IndexDescriptionType<
  * An object representing an inverted index.
  */
 export type InvertedIndexDescription = IndexDescriptionType<
-  "inverted", InvertedIndexField[],
+  "inverted",
+  InvertedIndexField[],
   {
     searchField: boolean;
     cache?: boolean;
@@ -697,7 +711,10 @@ export type InternalIndexDescription = ArangosearchIndexDescription;
  * // property
  * ```
  */
-export type HiddenIndexDescription = (IndexDescription | InternalIndexDescription) & {
+export type HiddenIndexDescription = (
+  | IndexDescription
+  | InternalIndexDescription
+) & {
   /**
    * Progress of this index if it is still being created.
    */
@@ -732,21 +749,21 @@ export type ObjectWithName = {
  */
 export function _indexHandle(
   selector: IndexSelector,
-  collectionName: string
+  collectionName: string,
 ): string {
   if (typeof selector !== "string") {
     if (selector.id) {
       return _indexHandle(selector.id, collectionName);
     }
     throw new Error(
-      "Index handle must be a string or an object with an id attribute"
+      "Index handle must be a string or an object with an id attribute",
     );
   }
   if (selector.includes("/")) {
     const [head] = selector.split("/");
     if (head !== collectionName) {
       throw new Error(
-        `Index ID "${selector}" does not match collection name "${collectionName}"`
+        `Index ID "${selector}" does not match collection name "${collectionName}"`,
       );
     }
     return selector;

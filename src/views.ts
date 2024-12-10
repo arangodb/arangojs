@@ -166,7 +166,10 @@ export type CreateArangoSearchViewOptions = CreateViewOptionsType<
      * Attribute paths for which values should be stored in the view index
      * in addition to those used for sorting via `primarySort`.
      */
-    storedValues?: CreateArangoSearchViewStoredValueOptions[] | string[] | string[][];
+    storedValues?:
+      | CreateArangoSearchViewStoredValueOptions[]
+      | string[]
+      | string[][];
     /**
      * An array of strings defining sort expressions to optimize.
      */
@@ -177,32 +180,31 @@ export type CreateArangoSearchViewOptions = CreateViewOptionsType<
 /**
  * Options for creating a primary sort in an ArangoSearch View.
  */
-export type CreateArangoSearchViewPrimarySortOptions = (
+export type CreateArangoSearchViewPrimarySortOptions =
   | {
-    /**
-     * Attribute path for the value of each document to use for
-     * sorting.
-     */
-    field: string;
-    /**
-     * If set to `"asc"`, the primary sorting order will be ascending.
-     * If set to `"desc"`, the primary sorting order will be descending.
-     */
-    direction: Direction;
-  }
+      /**
+       * Attribute path for the value of each document to use for
+       * sorting.
+       */
+      field: string;
+      /**
+       * If set to `"asc"`, the primary sorting order will be ascending.
+       * If set to `"desc"`, the primary sorting order will be descending.
+       */
+      direction: Direction;
+    }
   | {
-    /**
-     * Attribute path for the value of each document to use for
-     * sorting.
-     */
-    field: string;
-    /**
-     * If set to `true`, the primary sorting order will be ascending.
-     * If set to `false`, the primary sorting order will be descending.
-     */
-    asc: boolean;
-  }
-);
+      /**
+       * Attribute path for the value of each document to use for
+       * sorting.
+       */
+      field: string;
+      /**
+       * If set to `true`, the primary sorting order will be ascending.
+       * If set to `false`, the primary sorting order will be descending.
+       */
+      asc: boolean;
+    };
 
 /**
  * Options for creating a stored value in an ArangoSearch View.
@@ -594,13 +596,13 @@ export class View {
    * ```
    */
   create<Options extends CreateViewOptions>(
-    options: CreateViewOptions
+    options: CreateViewOptions,
   ): Promise<
     typeof options extends CreateArangoSearchViewOptions
-    ? ArangoSearchViewDescription
-    : Options extends CreateSearchAliasViewOptions
-    ? SearchAliasViewDescription
-    : ViewDescription
+      ? ArangoSearchViewDescription
+      : Options extends CreateSearchAliasViewOptions
+        ? SearchAliasViewDescription
+        : ViewDescription
   > {
     return this._db.request({
       method: "POST",
@@ -634,7 +636,9 @@ export class View {
    * // view1 and view3 represent the same ArangoDB view!
    * ```
    */
-  async rename(newName: string): Promise<connections.ArangoApiResponse<ViewDescription>> {
+  async rename(
+    newName: string,
+  ): Promise<connections.ArangoApiResponse<ViewDescription>> {
     const result = this._db.renameView(this._name, newName);
     this._name = newName;
     return result;
@@ -673,13 +677,13 @@ export class View {
    * ```
    */
   updateProperties<Properties extends UpdateViewPropertiesOptions | undefined>(
-    properties?: Properties
+    properties?: Properties,
   ): Promise<
     Properties extends UpdateArangoSearchViewPropertiesOptions
-    ? ArangoSearchViewProperties
-    : Properties extends UpdateSearchAliasViewPropertiesOptions
-    ? SearchAliasViewProperties
-    : ViewProperties
+      ? ArangoSearchViewProperties
+      : Properties extends UpdateSearchAliasViewPropertiesOptions
+        ? SearchAliasViewProperties
+        : ViewProperties
   > {
     return this._db.request({
       method: "PATCH",
@@ -704,13 +708,13 @@ export class View {
    * ```
    */
   replaceProperties<Properties extends ViewPropertiesOptions | undefined>(
-    properties?: Properties
+    properties?: Properties,
   ): Promise<
     Properties extends ArangoSearchViewPropertiesOptions
-    ? ArangoSearchViewProperties
-    : Properties extends SearchAliasViewPropertiesOptions
-    ? SearchAliasViewProperties
-    : ViewProperties
+      ? ArangoSearchViewProperties
+      : Properties extends SearchAliasViewPropertiesOptions
+        ? SearchAliasViewProperties
+        : ViewProperties
   > {
     return this._db.request({
       method: "PUT",
@@ -737,7 +741,7 @@ export class View {
         method: "DELETE",
         pathname: `/_api/view/${encodeURIComponent(this._name)}`,
       },
-      (res) => res.parsedBody.result
+      (res) => res.parsedBody.result,
     );
   }
 }
