@@ -54,7 +54,7 @@ export function coerceTransactionCollections(
     | (TransactionCollectionOptions & { allowImplicit?: boolean })
     | (string | collections.ArangoCollection)[]
     | string
-    | collections.ArangoCollection,
+    | collections.ArangoCollection
 ): CoercedTransactionCollections {
   if (typeof options === "string") {
     return { write: [options] };
@@ -167,11 +167,11 @@ export type TransactionAbortOptions = {
 
 //#region Transaction operation results
 /**
- * Details for a transaction.
+ * Description of a transaction in a list of transactions.
  *
  * See also {@link TransactionInfo}.
  */
-export type TransactionDetails = {
+export type TransactionDescription = {
   /**
    * Unique identifier of the transaction.
    */
@@ -185,7 +185,7 @@ export type TransactionDetails = {
 /**
  * Status of a given transaction.
  *
- * See also {@link TransactionDetails}.
+ * See also {@link TransactionDescription}.
  */
 export type TransactionInfo = {
   /**
@@ -205,7 +205,7 @@ export type TransactionInfo = {
  * @param transaction - A value that might be a transaction.
  */
 export function isArangoTransaction(
-  transaction: any,
+  transaction: any
 ): transaction is Transaction {
   return Boolean(transaction && transaction.isArangoTransaction);
 }
@@ -291,7 +291,7 @@ export class Transaction {
       {
         pathname: `/_api/transaction/${encodeURIComponent(this.id)}`,
       },
-      (res) => res.parsedBody.result,
+      (res) => res.parsedBody.result
     );
   }
 
@@ -318,7 +318,7 @@ export class Transaction {
         pathname: `/_api/transaction/${encodeURIComponent(this.id)}`,
         allowDirtyRead,
       },
-      (res) => res.parsedBody.result,
+      (res) => res.parsedBody.result
     );
   }
 
@@ -345,7 +345,7 @@ export class Transaction {
         pathname: `/_api/transaction/${encodeURIComponent(this.id)}`,
         allowDirtyRead,
       },
-      (res) => res.parsedBody.result,
+      (res) => res.parsedBody.result
     );
   }
 
@@ -543,7 +543,7 @@ export class Transaction {
       const promise = callback();
       if (!promise) {
         throw new Error(
-          "Transaction callback was not an async function or did not return a promise!",
+          "Transaction callback was not an async function or did not return a promise!"
         );
       }
       return Promise.resolve(promise);

@@ -16,83 +16,6 @@ This driver uses semantic versioning:
 
 ## [Unreleased]
 
-### Changed
-
-- Changed `undici` from an optional dependency to an optional peer dependency
-
-  The `undici` module is only required when using Unix domain sockets or
-  overriding the fetch agent in Node.js and does not need to be installed
-  otherwise.
-
-## [10.0.0-alpha.1] - 2024-12-09
-
-This is a major release and breaks backwards compatibility.
-
-See [the migration guide](./MIGRATING.md#v9-to-v10) for detailed instructions
-for upgrading your code to arangojs v10.
-
-### Changed
-
-- Renamed `CollectionDropOptions` type to `DropCollectionOptions`
-
-- Renamed `CollectionTruncateOptions` type to `TruncateCollectionOptions`
-
-- Renamed `Config` type to `ConfigOptions`
-
-- Renamed `path` option to `pathname` in `RequestOptions` type
-
-  This affects the `db.waitForPropagation` and `route.request` methods.
-
-- Removed `basePath` option from `RequestOptions` type
-
-  This affects the `db.waitForPropagation` and `route.request` methods.
-
-- Renamed `route.path` property to `route.pathname`
-
-- Changed error type constructor signatures
-
-  The `request` property is now always positional and the `options` property
-  is always optional.
-
-- Moved configuration related types to new `config` module
-
-  The following types were moved: `Config`, `LoadBalancingStrategy`,
-  `BasicAuthCredentials` and `BearerAuthCredentials`.
-
-- Moved `ArangoErrorResponse` type to `connection` module
-
-  The type is now also no longer marked as internal.
-
-- Moved configuration related types to new `configuration` module
-
-  The following types were moved: `ConfigOptions`, `LoadBalancingStrategy`,
-  `BasicAuthCredentials` and `BearerAuthCredentials`.
-
-- Moved internal utility functions to new `lib/util` module
-
-  These methods are all still marked as internal and should not be used
-  directly.
-
-- Closing a connection now closes all open requests
-
-  Previously in certain situations only the most recent request would be
-  closed per server. Note that this still merely aborts the requests but
-  does not guarantee the underlying connections are closed as these are
-  handled by Node.js or the browser natively.
-
-### Added
-
-- Restored support for Unix domain sockets
-
-  Using Unix domain sockets requires the `undici` library to be installed.
-
-- Restored support for `config.agentOptions`
-
-  The `config.agentOptions` option can now be used to create a custom `undici`
-  agent if the `undici` library is installed.
-
-## [10.0.0-alpha.0] - 2024-11-28
-
 This is a major release and breaks backwards compatibility.
 
 See [the migration guide](./MIGRATING.md#v9-to-v10) for detailed instructions
@@ -112,9 +35,72 @@ for upgrading your code to arangojs v10.
 
 ### Changed
 
-- Changed `QueueTimeMetrics` type to an interface
+- Closing a connection now closes all open requests
 
-- Changed `CursorExtras` and `CursorStats` interfaces to types
+  Previously in certain situations only the most recent request would be
+  closed per server. Note that this still merely aborts the requests but
+  does not guarantee the underlying connections are closed as these are
+  handled by Node.js or the browser natively. need to be installed
+  otherwise.
+
+- Moved fetch-specific `config` options from into `config.fetchOptions`
+
+  The following options were moved: `credentials`, `headers` and `keepalive`.
+
+#### Error handling
+
+- Errors encountered before a request completes are now wrapped in a
+  `NetworkError` or a subclass thereof
+
+  This should help making it easier to diagnose network issues and distinguish
+  the relevant error conditions.
+
+  The originating error can still be accessed using the `cause` property of the
+  `NetworkError` error.
+
+- `HttpError` now extends the `NetworkError` class
+
+  This allows treating all non-`ArangoError` errors as one category of errors,
+  even when there is no server response available.
+
+- `db.waitForPropagation` now throws a `PropagationTimeoutError` error when
+  invoked with a `timeout` option and the timeout duration is exceeded
+
+  The method would previously throw the most recent error encountered while
+  waiting for replication. The originating error can still be accessed using
+  the `cause` property of the `PropagationTimeoutError` error.
+
+- `db.waitForPropagation` now respects the `timeout` option more strictly
+
+  Previously the method would only time out if the timeout duration was
+  exceeded after the most recent request failed. Now the timeout is
+  recalculated and passed on to each request, preventing it from exceeding
+  the specified duration.
+
+  If the propagation timed out due to an underlying request exceeding the
+  timeout duration, the `cause` property of the `PropagationTimeoutError`
+  error will be a `ResponseTimeoutError` error.
+
+- `config.beforeRequest` and `config.afterResponse` callbacks can now return
+  promises
+
+  If the callback returns a promise, it will be awaited before the request
+  and response cycle proceeds. If either callback throws an error or returns
+  a promise that is rejected, that error will be thrown instead.
+
+- `config.afterResponse` callback signature changed
+
+  The callback signature previously used the internal `ArangojsResponse` type.
+  The new signature uses the `Response` type of the Fetch API with an
+  additional `request` property to more accurately represent the actual value
+  it receives as the `parsedBody` property will never be present.
+
+- `response` property on `ArangoError` is now optional
+
+  This property should always be present but this allows using the error in
+  situations where a response might not be available.
+
+#### General type changes
 
 - Changed `GraphVertexCollection` and `GraphEdgeCollection` generic types to
   take separate `EntryResultType` and `EntryInputType` type parameters
@@ -125,13 +111,43 @@ for upgrading your code to arangojs v10.
 
   These type parameters are used to narrow the the returned collection type.
 
-- Renamed `db.listServiceScripts` method to `db.getServiceScripts`
-- Renamed `db.listHotBackups` method to `db.getHotBackups`
-- Renamed `db.getLogMessages` method to `db.listLogMessages`
-- Renamed `db.listFunctions` method to `db.listUserFunctions`
-- Renamed `db.createFunction` method to `db.createUserFunction`
-- Renamed `db.dropFunction` method to `db.dropUserFunction`
-- Changed `db.removeUser` method to return `void`
+- Changed `db.removeUser` method return type to `Promise<void>`
+
+  The previous return type served no purpose.
+
+- Changed `QueueTimeMetrics` type to an interface
+
+- Changed `CursorExtras` and `CursorStats` interfaces to types
+
+#### Low-level request/route changes
+
+- Renamed `path` option to `pathname` in `RequestOptions` type
+
+  This affects the `db.waitForPropagation` and `route.request` methods.
+
+- Removed `basePath` option from `RequestOptions` type
+
+  This affects the `db.waitForPropagation` and `route.request` methods.
+
+- Renamed `route.path` property to `route.pathname`
+
+#### Renamed methods
+
+- Renamed various methods for consistency:
+
+  Methods that return an array now follow the `listNouns` pattern, methods that
+  return a "list of nouns" wrapped in an object have been renamed to follow the
+  `getNouns` pattern to avoid confusion:
+
+  - `db.listServiceScripts` -> `db.getServiceScripts`
+  - `db.listHotBackups` -> `db.getHotBackups`
+  - `db.listFunctions` -> `db.listUserFunctions`
+  - `db.getLogMessages` -> `db.listLogMessages`
+
+- Renamed AQL user function management methods:
+
+  - `db.createFunction` -> `db.createUserFunction`
+  - `db.dropFunction` -> `db.dropUserFunction`
 
 #### Module renaming
 
@@ -149,6 +165,11 @@ for upgrading your code to arangojs v10.
   - `arangojs/route` -> `arangojs/routes`
   - `arangojs/transaction` -> `arangojs/transactions`
   - `arangojs/view` -> `arangojs/views`
+
+- Moved internal utility functions to new `arangojs/lib/util` module
+
+  These methods are all still marked as internal and should not be used
+  directly.
 
 #### Moved types
 
@@ -218,6 +239,20 @@ for upgrading your code to arangojs v10.
 
   The following types were moved: `QueueTimeMetrics` and `VersionInfo`.
 
+- Moved configuration related types to new `arangojs/config` module
+
+  The following types were moved: `Config`, `LoadBalancingStrategy`,
+  `BasicAuthCredentials` and `BearerAuthCredentials`.
+
+- Moved `ArangoErrorResponse` type to `arangojs/connection` module
+
+  The type is now also no longer marked as internal.
+
+- Moved configuration related types to new `arangojs/configuration` module
+
+  The following types were moved: `ConfigOptions`, `LoadBalancingStrategy`,
+  `BasicAuthCredentials` and `BearerAuthCredentials`.
+
 #### Renamed types
 
 - Renamed `Index` types to `IndexDescription` for consistency
@@ -241,20 +276,39 @@ for upgrading your code to arangojs v10.
 
 - Renamed various types for consistency:
 
+  Types representing an instance of a specific entity type in ArangoDB like a
+  collection, graph or query now follow the `NounDescription` naming pattern:
+
   - `AqlUserFunction` -> `UserFunctionDescription`
   - `CollectionMetadata` -> `CollectionDescription`
   - `DatabaseInfo` -> `DatabaseDescription`
   - `GraphInfo` -> `GraphDescription`
   - `ServiceInfo` -> `ServiceDescription`
   - `QueryInfo` -> `QueryDescription`
+  - `TransactionDetails` -> `TransactionDescription`
+
+  Note that the `TransactionDescription` type used by `db.listTransactions`
+  is slightly different from the `TransactionInfo` type used by methods of
+  `Transaction` objects due to implementation details of ArangoDB.
+
+  Types representing general information rather than an instance of something
+  now generally follow the `NounInfo` naming pattern, whereas types
+  representing the result of an operation generally follow the `NounResult`
+  or `VerbNounResult` naming pattern:
+
   - `QueryTracking` -> `QueryTrackingInfo`
-  - `TransactionDetails` -> `TransactionInfo`
+  - `CollectionImportResult` -> `ImportDocumentsResult`
+  - `CollectionEdgesResult` -> `DocumentEdgesResult`
+
+  Types for options passed to methods now generally follow the `NounOptions`,
+  `VerbNounOptions` or `VerbNounAttributeOptions` naming patterns:
+
+  - `Config` -> `ConfigOptions`
   - `TransactionCollections` -> `TransactionCollectionOptions`
   - `CreateDatabaseUser` -> `CreateDatabaseUserOptions`
-
-  - Index operations:
-
-    - `IndexListOptions` -> `ListIndexesOptions`
+  - `CollectionDropOptions` -> `DropCollectionOptions`
+  - `CollectionTruncateOptions` -> `TruncateCollectionOptions`
+  - `IndexListOptions` -> `ListIndexesOptions`
 
   - Collection document operations:
 
@@ -267,8 +321,6 @@ for upgrading your code to arangojs v10.
     - `CollectionRemoveOptions` -> `RemoveDocumentOptions`
     - `CollectionImportOptions` -> `ImportDocumentsOptions`
     - `CollectionEdgesOptions` -> `DocumentEdgesOptions`
-    - `CollectionImportResult` -> `ImportDocumentsResult`
-    - `CollectionEdgesResult` -> `DocumentEdgesResult`
 
   - Graph collection document operation:
 
@@ -279,6 +331,7 @@ for upgrading your code to arangojs v10.
     - `ViewPatchPropertiesOptions` -> `UpdateViewPropertiesOptions`
 
   - View operations:
+
     - `ArangoSearchViewPatchPropertiesOptions` -> `UpdateArangoSearchViewPropertiesOptions`
     - `SearchAliasViewPatchPropertiesOptions` -> `UpdateSearchAliasViewPropertiesOptions`
     - `SearchAliasViewPatchIndexOptions` -> `UpdateSearchAliasViewIndexOptions`
@@ -297,67 +350,36 @@ for upgrading your code to arangojs v10.
   - `ObjectWithId` (in `documents` module) -> `ObjectWithDocumentId`
   - `ObjectWithKey` (in `documents` module) -> `ObjectWithDocumentKey`
 
-#### Error handling
-
-- Errors encountered before a request completes are now wrapped in a
-  `NetworkError` or a subclass thereof
-
-  This should help making it easier to diagnose network issues and distinguish
-  the relevant error conditions.
-
-  The originating error can still be accessed using the `cause` property of the
-  `NetworkError` error.
-
-- `HttpError` now extends the `NetworkError` class
-
-  This allows treating all non-`ArangoError` errors as one category of errors,
-  even when there is no server response available.
-
-- `db.waitForPropagation` now throws a `PropagationTimeoutError` error when
-  invoked with a `timeout` option and the timeout duration is exceeded
-
-  The method would previously throw the most recent error encountered while
-  waiting for replication. The originating error can still be accessed using
-  the `cause` property of the `PropagationTimeoutError` error.
-
-- `db.waitForPropagation` now respects the `timeout` option more strictly
-
-  Previously the method would only time out if the timeout duration was
-  exceeded after the most recent request failed. Now the timeout is
-  recalculated and passed on to each request, preventing it from exceeding
-  the specified duration.
-
-  If the propagation timed out due to an underlying request exceeding the
-  timeout duration, the `cause` property of the `PropagationTimeoutError`
-  error will be a `ResponseTimeoutError` error.
-
-- `config.beforeRequest` and `config.afterResponse` callbacks can now return
-  promises
-
-  If the callback returns a promise, it will be awaited before the request
-  and response cycle proceeds. If either callback throws an error or returns
-  a promise that is rejected, that error will be thrown instead.
-
-- `config.afterResponse` callback signature changed
-
-  The callback signature previously used the internal `ArangojsResponse` type.
-  The new signature uses the `Response` type of the Fetch API with an
-  additional `request` property to more accurately represent the actual value
-  it receives as the `parsedBody` property will never be present.
-
-- `response` property on `ArangoError` is now optional
-
-  This property should always be present but this allows using the error in
-  situations where a response might not be available.
-
 ### Added
+
+- Restored support for Unix domain sockets
+
+  Using Unix domain sockets requires the `undici` library to be installed.
+
+- Restored support for `config.agentOptions`
+
+  The `config.agentOptions` option can now be used to create a custom `undici`
+  agent if the `undici` library is installed.
+
+- Added `config.fetchOptions` option
+
+  This option can now be used to specify default options for the `fetch`
+  function used by arangojs like `headers`, `credentials`, `keepalive` and
+  `redirect`.
 
 - Added `BatchCursor#itemsView` property and `BatchCursorItemsView` interface
 
   This property provides a low-level interface for consuming the items of the
   cursor and is used by the regular item-wise `Cursor` class internally.
 
-- Added `onError` option to `Config` (DE-955)
+- Added `ProcessedResponse` type
+
+  This type replaces the previously internal `ArangojsResponse` type and
+  extends the native `Response` type with additional properties.
+
+#### Error handling
+
+- Added `config.onError` option (DE-955)
 
   This option can be used to specify a callback function that will be invoked
   whenever a request results in an error. Unlike `afterResponse`, this callback
@@ -367,6 +389,11 @@ for upgrading your code to arangojs v10.
 
   If the `onError` callback throws an error or returns a promise that is
   rejected, that error will be thrown instead.
+
+- Added optional `ArangoError#request` property
+
+  This property is always present if the error has a `response` property. In
+  normal use this should always be the case.
 
 - Added `NetworkError` class
 
@@ -407,16 +434,6 @@ for upgrading your code to arangojs v10.
   encountered while waiting for replication, which can be accessed using the
   `cause` property. This error is only thrown when `db.waitForPropagation`
   is invoked with a `timeout` option and the timeout duration is exceeded.
-
-- Added `ProcessedResponse` type
-
-  This type replaces the previously internal `ArangojsResponse` type and
-  extends the native `Response` type with additional properties.
-
-- Added optional `ArangoError#request` property
-
-  This property is always present if the error has a `response` property. In
-  normal use this should always be the case.
 
 ## [9.2.0] - 2024-11-27
 
@@ -2368,9 +2385,7 @@ For a detailed list of changes between pre-release versions of v7 see the
 
   Graph methods now only return the relevant part of the response body.
 
-[unreleased]: https://github.com/arangodb/arangojs/compare/v10.0.0-alpha.1...v10
-[10.0.0-alpha.1]: https://github.com/arangodb/arangojs/compare/v10.0.0-alpha.0...v10.0.0-alpha.1
-[10.0.0-alpha.0]: https://github.com/arangodb/arangojs/compare/v9.2.0...v10.0.0-alpha.0
+[unreleased]: https://github.com/arangodb/arangojs/compare/v9.2.0...v10
 [9.2.0]: https://github.com/arangodb/arangojs/compare/v9.1.0...v9.2.0
 [9.1.0]: https://github.com/arangodb/arangojs/compare/v9.0.0...v9.1.0
 [9.0.0]: https://github.com/arangodb/arangojs/compare/v8.8.1...v9.0.0
