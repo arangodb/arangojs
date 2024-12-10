@@ -304,13 +304,16 @@ export type ArangoApiResponse<T> = T & ArangoResponseMetadata;
 /**
  * Indicates whether the given value represents an ArangoDB error response.
  */
-export function isArangoErrorResponse(body: any): body is ArangoErrorResponse {
-  if (!body || typeof body !== 'object') return false;
+export function isArangoErrorResponse(
+  body: unknown,
+): body is ArangoErrorResponse {
+  if (!body || typeof body !== "object") return false;
+  const obj = body as Record<string, unknown>;
   return (
-    body.error === true &&
-    typeof body.code === 'number' &&
-    typeof body.errorMessage === 'string' &&
-    typeof body.errorNum === 'number'
+    obj.error === true &&
+    typeof obj.errorMessage === "string" &&
+    typeof obj.errorNum === "number" &&
+    (obj.code === undefined || typeof obj.code === "number")
   );
 }
 
@@ -325,7 +328,7 @@ export type ArangoErrorResponse = {
   /**
    * Intended response status code as provided in the response body.
    */
-  code: number;
+  code?: number;
   /**
    * Error message as provided in the response body.
    */

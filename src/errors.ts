@@ -255,7 +255,7 @@ export class ArangoError extends Error {
   /**
    * HTTP status code included in the server error response object.
    */
-  code: number;
+  code?: number;
 
   /**
    * @internal
@@ -271,7 +271,10 @@ export class ArangoError extends Error {
   /**
    * Creates a new `ArangoError` from an ArangoDB error response.
    */
-  constructor(data: connection.ArangoErrorResponse, options: { cause?: Error, isSafeToRetry?: boolean | null } = {}) {
+  constructor(
+    data: Omit<connection.ArangoErrorResponse, "error">,
+    options: { cause?: Error; isSafeToRetry?: boolean | null } = {},
+  ) {
     const { isSafeToRetry, ...opts } = options;
     super(data.errorMessage, opts);
     this.errorNum = data.errorNum;
