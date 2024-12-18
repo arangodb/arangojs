@@ -14,6 +14,22 @@ This driver uses semantic versioning:
 - A change in the major version (e.g. 1.Y.Z -> 2.0.0) indicates _breaking_
   changes that require changes in your code to upgrade.
 
+## [Unreleased]
+
+### Added
+
+- Added support for `mdi-prefixed` indexes (DE-956)
+
+- Restored `fulltext` index type support (DE-957)
+
+  The `fulltext` index type is still no longer supported for creating new
+  indexes but can be used to cast existing indexes from `IndexDescription`.
+
+- Added support for `edge` indexes (DE-958)
+
+  The `SystemIndexDescription` type now includes the `EdgeIndexDescription`
+  type as well as the `PrimaryIndexDescription` type.
+
 ## [10.0.0-rc.0] - 2024-12-10
 
 This is a major release and breaks backwards compatibility.

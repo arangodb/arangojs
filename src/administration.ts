@@ -142,7 +142,7 @@ export type ServerStatusInformation = {
   /**
    * Server operation mode.
    *
-   * @deprecated use `operationMode` instead
+   * @deprecated Use `operationMode` instead
    */
   mode: "server" | "console";
   /**

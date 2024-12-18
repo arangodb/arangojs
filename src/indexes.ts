@@ -61,6 +61,7 @@ export type EnsureIndexOptions =
   | EnsureGeoIndexOptions
   | EnsureTtlIndexOptions
   | EnsureMdiIndexOptions
+  | EnsureMdiPrefixedIndexOptions
   | EnsureInvertedIndexOptions;
 
 type EnsureIndexOptionsType<
@@ -202,6 +203,70 @@ export type EnsureMdiIndexOptions = EnsureIndexOptionsType<
      * Default: `false`
      */
     unique?: boolean;
+    /**
+     * If set to `true`, the index will omit documents that do not contain at
+     * least one of the attribute paths in `fields` and these documents will be
+     * ignored for uniqueness checks.
+     *
+     * Default: `false`
+     */
+    sparse?: boolean;
+    /**
+     * If set to `false`, index selectivity estimates will be disabled for this
+     * index.
+     *
+     * Default: `true`
+     */
+    estimates?: boolean;
+    /**
+     * An array of attribute paths that will be stored in the index but can not
+     * be used for index lookups or sorting but can avoid full document lookups.
+     */
+    storedValues?: string[];
+  }
+>;
+
+/**
+ * Options for creating a prefixed MDI index.
+ */
+export type EnsureMdiPrefixedIndexOptions = EnsureIndexOptionsType<
+  "mdi-prefixed",
+  string[],
+  {
+    /**
+     * An array of attribute names used as a search prefix.
+     */
+    prefixFields: string[];
+    /**
+     * Data type of the dimension attributes.
+     */
+    fieldValueTypes: "double";
+    /**
+     * If set to `true`, a unique index will be created.
+     *
+     * Default: `false`
+     */
+    unique?: boolean;
+    /**
+     * If set to `true`, the index will omit documents that do not contain at
+     * least one of the attribute paths in `fields` and these documents will be
+     * ignored for uniqueness checks.
+     *
+     * Default: `false`
+     */
+    sparse?: boolean;
+    /**
+     * If set to `false`, index selectivity estimates will be disabled for this
+     * index.
+     *
+     * Default: `true`
+     */
+    estimates?: boolean;
+    /**
+     * An array of attribute paths that will be stored in the index but can not
+     * be used for index lookups or sorting but can avoid full document lookups.
+     */
+    storedValues?: string[];
   }
 >;
 
@@ -497,17 +562,21 @@ export type InvertedIndexStoredValueOptions = {
  * An object representing an index.
  */
 export type IndexDescription =
+  | FulltextIndexDescription
   | GeoIndexDescription
   | PersistentIndexDescription
   | TtlIndexDescription
   | MdiIndexDescription
+  | MdiPrefixedIndexDescription
   | InvertedIndexDescription
   | SystemIndexDescription;
 
 /**
  * An object representing a system index.
  */
-export type SystemIndexDescription = PrimaryIndexDescription;
+export type SystemIndexDescription =
+  | PrimaryIndexDescription
+  | EdgeIndexDescription;
 
 /**
  * Shared attributes of all index types.
@@ -558,6 +627,7 @@ export type PersistentIndexDescription = IndexDescriptionType<
     cacheEnabled: boolean;
     deduplicate: boolean;
     estimates: boolean;
+    selectivityEstimate: number;
     storedValues?: string[];
   }
 >;
@@ -567,9 +637,34 @@ export type PersistentIndexDescription = IndexDescriptionType<
  */
 export type PrimaryIndexDescription = IndexDescriptionType<
   "primary",
-  string[],
+  ["_key"],
   {
     selectivityEstimate: number;
+  }
+>;
+
+/**
+ * An object representing an edge index.
+ */
+export type EdgeIndexDescription = IndexDescriptionType<
+  "edge",
+  ["_from", "_to"],
+  {
+    selectivityEstimate: number;
+  }
+>;
+
+/**
+ * An object representing a fulltext index.
+ *
+ * @deprecated The `fulltext` index type was deprecated in ArangoDB 3.10. Use
+ * {@link views.ArangoSearchView} instead.
+ */
+export type FulltextIndexDescription = IndexDescriptionType<
+  "fulltext",
+  [string],
+  {
+    minLength: number;
   }
 >;
 
@@ -596,6 +691,7 @@ export type TtlIndexDescription = IndexDescriptionType<
   [string],
   {
     expireAfter: number;
+    estimates: boolean;
     selectivityEstimate: number;
   }
 >;
@@ -608,6 +704,24 @@ export type MdiIndexDescription = IndexDescriptionType<
   string[],
   {
     fieldValueTypes: "double";
+    estimates: boolean;
+    selectivityEstimate: number;
+    storedValues?: string[];
+  }
+>;
+
+/**
+ * An object representing a prefixed MDI index.
+ */
+export type MdiPrefixedIndexDescription = IndexDescriptionType<
+  "mdi-prefixed",
+  string[],
+  {
+    fieldValueTypes: "double";
+    estimates: boolean;
+    selectivityEstimate: number;
+    storedValues?: string[];
+    prefixFields: string[];
   }
 >;
 
@@ -749,21 +863,21 @@ export type ObjectWithName = {
  */
 export function _indexHandle(
   selector: IndexSelector,
-  collectionName: string,
+  collectionName: string
 ): string {
   if (typeof selector !== "string") {
     if (selector.id) {
       return _indexHandle(selector.id, collectionName);
     }
     throw new Error(
-      "Index handle must be a string or an object with an id attribute",
+      "Index handle must be a string or an object with an id attribute"
     );
   }
   if (selector.includes("/")) {
     const [head] = selector.split("/");
     if (head !== collectionName) {
       throw new Error(
-        `Index ID "${selector}" does not match collection name "${collectionName}"`,
+        `Index ID "${selector}" does not match collection name "${collectionName}"`
       );
     }
     return selector;
