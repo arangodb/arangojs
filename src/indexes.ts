@@ -88,74 +88,74 @@ export type EnsurePersistentIndexOptions = {
  */
 export type EnsureGeoIndexOptions =
   | {
-    type: "geo";
-    /**
-     * If set to `true`, `fields` must be an array containing a single attribute
-     * path and the attribute value must be an array with two values, the first
-     * of which will be interpreted as the longitude and the second of which will
-     * be interpreted as the latitude of the document.
-     *
-     * Default: `false`
-     */
-    geoJson?: false;
-    /**
-     * If set to `true`, the index will use pre-3.10 rules for parsing
-     * GeoJSON polygons. This option is always implicitly `true` when using
-     * ArangoDB 3.9 or lower.
-     */
-    legacyPolygons?: boolean;
-    /**
-     * Attribute paths for the document's latitude and longitude values.
-     */
-    fields: [string, string];
-    /**
-     * A unique name for this index.
-     */
-    name?: string;
-    /**
-     * If set to `true`, the index will be created in the background to reduce
-     * the write-lock duration for the collection during index creation.
-     *
-     * Default: `false`
-     */
-    inBackground?: boolean;
-  }
+      type: "geo";
+      /**
+       * If set to `true`, `fields` must be an array containing a single attribute
+       * path and the attribute value must be an array with two values, the first
+       * of which will be interpreted as the longitude and the second of which will
+       * be interpreted as the latitude of the document.
+       *
+       * Default: `false`
+       */
+      geoJson?: false;
+      /**
+       * If set to `true`, the index will use pre-3.10 rules for parsing
+       * GeoJSON polygons. This option is always implicitly `true` when using
+       * ArangoDB 3.9 or lower.
+       */
+      legacyPolygons?: boolean;
+      /**
+       * Attribute paths for the document's latitude and longitude values.
+       */
+      fields: [string, string];
+      /**
+       * A unique name for this index.
+       */
+      name?: string;
+      /**
+       * If set to `true`, the index will be created in the background to reduce
+       * the write-lock duration for the collection during index creation.
+       *
+       * Default: `false`
+       */
+      inBackground?: boolean;
+    }
   | {
-    type: "geo";
-    /**
-     * If set to `true`, `fields` must be an array containing a single attribute
-     * path and the attribute value must be an array with two values, the first
-     * of which will be interpreted as the longitude and the second of which will
-     * be interpreted as the latitude of the document.
-     *
-     * Default: `false`
-     */
-    geoJson?: boolean;
-    /**
-     * If set to `true`, the index will use pre-3.10 rules for parsing
-     * GeoJSON polygons. This option is always implicitly `true` when using
-     * ArangoDB 3.9 or lower.
-     */
-    legacyPolygons?: boolean;
-    /**
-     * An array containing the attribute path for an array containing two values,
-     * the first of which will be interpreted as the latitude, the second as the
-     * longitude. If `geoJson` is set to `true`, the order is reversed to match
-     * the GeoJSON format.
-     */
-    fields: [string];
-    /**
-     * A unique name for this index.
-     */
-    name?: string;
-    /**
-     * If set to `true`, the index will be created in the background to reduce
-     * the write-lock duration for the collection during index creation.
-     *
-     * Default: `false`
-     */
-    inBackground?: boolean;
-  };
+      type: "geo";
+      /**
+       * If set to `true`, `fields` must be an array containing a single attribute
+       * path and the attribute value must be an array with two values, the first
+       * of which will be interpreted as the longitude and the second of which will
+       * be interpreted as the latitude of the document.
+       *
+       * Default: `false`
+       */
+      geoJson?: boolean;
+      /**
+       * If set to `true`, the index will use pre-3.10 rules for parsing
+       * GeoJSON polygons. This option is always implicitly `true` when using
+       * ArangoDB 3.9 or lower.
+       */
+      legacyPolygons?: boolean;
+      /**
+       * An array containing the attribute path for an array containing two values,
+       * the first of which will be interpreted as the latitude, the second as the
+       * longitude. If `geoJson` is set to `true`, the order is reversed to match
+       * the GeoJSON format.
+       */
+      fields: [string];
+      /**
+       * A unique name for this index.
+       */
+      name?: string;
+      /**
+       * If set to `true`, the index will be created in the background to reduce
+       * the write-lock duration for the collection during index creation.
+       *
+       * Default: `false`
+       */
+      inBackground?: boolean;
+    };
 
 /**
  * Options for creating a TTL index.
@@ -203,6 +203,45 @@ export type EnsureMdiIndexOptions = {
    * Data type of the dimension attributes.
    */
   fieldValueTypes: "double";
+  /**
+   * A unique name for this index.
+   */
+  name?: string;
+  /**
+   * If set to `true`, a unique index will be created.
+   *
+   * Default: `false`
+   */
+  unique?: boolean;
+  /**
+   * If set to `true`, the index will be created in the background to reduce
+   * the write-lock duration for the collection during index creation.
+   *
+   * Default: `false`
+   */
+  inBackground?: boolean;
+};
+
+/**
+ * Options for creating a prefixed MDI index.
+ */
+export type EnsureMdiPrefixedIndexOptions = {
+  /**
+   * Type of this index.
+   */
+  type: "mdi-prefixed";
+  /**
+   * An array containing attribute paths for the dimensions.
+   */
+  fields: string[];
+  /**
+   * Data type of the dimension attributes.
+   */
+  fieldValueTypes: "double";
+  /**
+   * An array of attribute names used as a search prefix.
+   */
+  prefixFields: string[];
   /**
    * A unique name for this index.
    */
@@ -526,6 +565,7 @@ export type EnsureIndexOptions =
   | EnsureGeoIndexOptions
   | EnsureTtlIndexOptions
   | EnsureMdiIndexOptions
+  | EnsureMdiPrefixedIndexOptions
   | EnsureInvertedIndexOptions;
 
 /**
@@ -564,6 +604,7 @@ export type PersistentIndex = GenericIndex & {
   cacheEnabled: boolean;
   deduplicate: boolean;
   estimates: boolean;
+  selectivityEstimate: number;
   storedValues?: string[];
 };
 
@@ -574,6 +615,27 @@ export type PrimaryIndex = GenericIndex & {
   type: "primary";
   fields: string[];
   selectivityEstimate: number;
+};
+
+/**
+ * An object representing an edge index.
+ */
+export type EdgeIndex = GenericIndex & {
+  type: "edge";
+  fields: ["_from", "_to"];
+  selectivityEstimate: number;
+};
+
+/**
+ * An object representing a fulltext index.
+ *
+ * @deprecated The `fulltext` index type was deprecated in ArangoDB 3.10. Use
+ * {@link views.ArangoSearchView} instead.
+ */
+export type FulltextIndex = GenericIndex & {
+  type: "fulltext";
+  fields: [string];
+  minLength: number;
 };
 
 /**
@@ -596,6 +658,7 @@ export type TtlIndex = GenericIndex & {
   type: "ttl";
   fields: [string];
   expireAfter: number;
+  estimates: boolean;
   selectivityEstimate: number;
 };
 
@@ -606,6 +669,20 @@ export type MdiIndex = GenericIndex & {
   type: "mdi";
   fields: string[];
   fieldValueTypes: "double";
+  estimates: boolean;
+  selectivityEstimate: number;
+};
+
+/**
+ * An object representing a prefixed MDI index.
+ */
+export type MdiPrefixedIndex = GenericIndex & {
+  type: "mdi-prefixed";
+  fields: string[];
+  prefixFields: string[];
+  fieldValueTypes: "double";
+  estimates: boolean;
+  selectivityEstimate: number;
 };
 
 /**
@@ -688,8 +765,11 @@ export type Index =
   | GeoIndex
   | PersistentIndex
   | PrimaryIndex
+  | EdgeIndex
+  | FulltextIndex
   | TtlIndex
   | MdiIndex
+  | MdiPrefixedIndex
   | InvertedIndex;
 
 /**

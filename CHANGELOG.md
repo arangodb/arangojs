@@ -14,6 +14,21 @@ This driver uses semantic versioning:
 - A change in the major version (e.g. 1.Y.Z -> 2.0.0) indicates _breaking_
   changes that require changes in your code to upgrade.
 
+## [Unreleased]
+
+### Added
+
+- Added support for `mdi-prefixed` indexes (DE-956)
+
+- Restored `fulltext` index type support (DE-957)
+
+  The `fulltext` index type is still no longer supported for creating new
+  indexes but can be used to cast existing indexes from `Index`.
+
+- Added support for `edge` indexes (DE-958)
+
+  The `Index` type now can also be cast to the `EdgeIndex` type.
+
 ## [9.2.0] - 2024-11-27
 
 ### Added
@@ -1962,6 +1977,7 @@ For a detailed list of changes between pre-release versions of v7 see the
 
   Graph methods now only return the relevant part of the response body.
 
+[unreleased]: https://github.com/arangodb/arangojs/compare/v9.2.0...HEAD
 [9.2.0]: https://github.com/arangodb/arangojs/compare/v9.1.0...v9.2.0
 [9.1.0]: https://github.com/arangodb/arangojs/compare/v9.0.0...v9.1.0
 [9.0.0]: https://github.com/arangodb/arangojs/compare/v8.8.1...v9.0.0

@@ -28,20 +28,22 @@ import {
 import { HttpError, isArangoError } from "./error.js";
 import {
   EnsureGeoIndexOptions,
+  EnsureIndexOptions,
   EnsureInvertedIndexOptions,
+  EnsureMdiIndexOptions,
+  EnsureMdiPrefixedIndexOptions,
   EnsurePersistentIndexOptions,
   EnsureTtlIndexOptions,
-  EnsureMdiIndexOptions,
   GeoIndex,
+  HiddenIndex,
   Index,
   IndexSelector,
   InvertedIndex,
+  MdiIndex,
+  MdiPrefixedIndex,
   PersistentIndex,
   TtlIndex,
-  MdiIndex,
   _indexHandle,
-  EnsureIndexOptions,
-  HiddenIndex,
 } from "./indexes.js";
 import { COLLECTION_NOT_FOUND, DOCUMENT_NOT_FOUND } from "./lib/codes.js";
 
@@ -1254,7 +1256,7 @@ export interface DocumentCollection<
   ): Promise<
     ArangoApiResponse<
       CollectionMetadata &
-      CollectionProperties & { count: number; figures: Record<string, any> }
+        CollectionProperties & { count: number; figures: Record<string, any> }
     >
   >;
   /**
@@ -1341,7 +1343,9 @@ export interface DocumentCollection<
    * // the collection "some-collection" is now empty
    * ```
    */
-  truncate(options?: CollectionTruncateOptions): Promise<ArangoApiResponse<CollectionMetadata>>;
+  truncate(
+    options?: CollectionTruncateOptions
+  ): Promise<ArangoApiResponse<CollectionMetadata>>;
   /**
    * Deletes the collection from the database.
    *
@@ -1589,9 +1593,9 @@ export interface DocumentCollection<
   ): Promise<
     Array<
       | (DocumentOperationMetadata & {
-        new?: Document<EntryResultType>;
-        old?: Document<EntryResultType>;
-      })
+          new?: Document<EntryResultType>;
+          old?: Document<EntryResultType>;
+        })
       | DocumentOperationFailure
     >
   >;
@@ -1661,9 +1665,9 @@ export interface DocumentCollection<
   ): Promise<
     Array<
       | (DocumentOperationMetadata & {
-        new?: Document<EntryResultType>;
-        old?: Document<EntryResultType>;
-      })
+          new?: Document<EntryResultType>;
+          old?: Document<EntryResultType>;
+        })
       | DocumentOperationFailure
     >
   >;
@@ -1733,9 +1737,9 @@ export interface DocumentCollection<
   ): Promise<
     Array<
       | (DocumentOperationMetadata & {
-        new?: Document<EntryResultType>;
-        old?: Document<EntryResultType>;
-      })
+          new?: Document<EntryResultType>;
+          old?: Document<EntryResultType>;
+        })
       | DocumentOperationFailure
     >
   >;
@@ -2023,6 +2027,28 @@ export interface DocumentCollection<
     details: EnsureMdiIndexOptions
   ): Promise<ArangoApiResponse<MdiIndex & { isNewlyCreated: boolean }>>;
   /**
+   * Creates a prefixed multi-dimensional index on the collection if it does not already exist.
+   *
+   * @param details - Options for creating the prefixed multi-dimensional index.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collection = db.collection("some-points");
+   * // Create a multi-dimensional index for the attributes x, y and z
+   * await collection.ensureIndex({
+   *   type: "mdi-prefixed",
+   *   fields: ["x", "y", "z"],
+   *   prefixFields: ["x"],
+   *   fieldValueTypes: "double"
+   * });
+   * ```
+   * ```
+   */
+  ensureIndex(
+    details: EnsureMdiPrefixedIndexOptions
+  ): Promise<ArangoApiResponse<MdiPrefixedIndex & { isNewlyCreated: boolean }>>;
+  /**
    * Creates a geo index on the collection if it does not already exist.
    *
    * @param details - Options for creating the geo index.
@@ -2294,9 +2320,9 @@ export interface EdgeCollection<
   ): Promise<
     Array<
       | (DocumentOperationMetadata & {
-        new?: Edge<EntryResultType>;
-        old?: Edge<EntryResultType>;
-      })
+          new?: Edge<EntryResultType>;
+          old?: Edge<EntryResultType>;
+        })
       | DocumentOperationFailure
     >
   >;
@@ -2390,9 +2416,9 @@ export interface EdgeCollection<
   ): Promise<
     Array<
       | (DocumentOperationMetadata & {
-        new?: Edge<EntryResultType>;
-        old?: Edge<EntryResultType>;
-      })
+          new?: Edge<EntryResultType>;
+          old?: Edge<EntryResultType>;
+        })
       | DocumentOperationFailure
     >
   >;
@@ -2484,9 +2510,9 @@ export interface EdgeCollection<
   ): Promise<
     Array<
       | (DocumentOperationMetadata & {
-        new?: Edge<EntryResultType>;
-        old?: Edge<EntryResultType>;
-      })
+          new?: Edge<EntryResultType>;
+          old?: Edge<EntryResultType>;
+        })
       | DocumentOperationFailure
     >
   >;
@@ -2744,12 +2770,13 @@ export interface EdgeCollection<
  * @internal
  */
 export class Collection<
-  EntryResultType extends Record<string, any> = any,
-  EntryInputType extends Record<string, any> = EntryResultType,
->
+    EntryResultType extends Record<string, any> = any,
+    EntryInputType extends Record<string, any> = EntryResultType,
+  >
   implements
-  EdgeCollection<EntryResultType, EntryInputType>,
-  DocumentCollection<EntryResultType, EntryInputType> {
+    EdgeCollection<EntryResultType, EntryInputType>,
+    DocumentCollection<EntryResultType, EntryInputType>
+{
   //#region attributes
   protected _name: string;
   protected _db: Database;
@@ -2880,9 +2907,9 @@ export class Collection<
     details = false
   ): Promise<
     CollectionMetadata &
-    ArangoApiResponse<
-      CollectionProperties & { count: number; figures: Record<string, any> }
-    >
+      ArangoApiResponse<
+        CollectionProperties & { count: number; figures: Record<string, any> }
+      >
   > {
     return this._db.request({
       path: `/_api/collection/${encodeURIComponent(this._name)}/figures`,
@@ -2931,7 +2958,9 @@ export class Collection<
     return result;
   }
 
-  truncate(options?: CollectionTruncateOptions): Promise<ArangoApiResponse<CollectionMetadata>> {
+  truncate(
+    options?: CollectionTruncateOptions
+  ): Promise<ArangoApiResponse<CollectionMetadata>> {
     return this._db.request({
       method: "PUT",
       path: `/_api/collection/${this._name}/truncate`,
@@ -3268,6 +3297,7 @@ export class Collection<
       | EnsureGeoIndexOptions
       | EnsureTtlIndexOptions
       | EnsureMdiIndexOptions
+      | EnsureMdiPrefixedIndexOptions
       | EnsureInvertedIndexOptions
   ) {
     return this._db.request({
