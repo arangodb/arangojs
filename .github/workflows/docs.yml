@@ -42,7 +42,7 @@ jobs:
       - name: Set VERSION env from tag name
         if: startsWith(github.ref, 'refs/tags/v')
         run: |
-          REF_NAME="${{ github.ref_name }}"; export VERSION="${REF_NAME:1}"
+          export VERSION=$(cut -c2- <<< ${{ github.ref_name }})
           echo "VERSION=${VERSION}" >> $GITHUB_ENV
           echo "IS_PREVIEW=$(node -p "Number('${VERSION}'.includes('-'))")" >> $GITHUB_ENV
           echo "IS_BACKPORT=$(node -p "Number(require('semver').lt('${VERSION}','$(tail -n 1 gh-pages/VERSION.md)'))")" >> $GITHUB_ENV
