@@ -8,6 +8,27 @@
  * @packageDocumentation
  */
 
+//#region Administrative operation options
+/**
+ * Options for compacting all databases on the server.
+ */
+export type CompactOptions = {
+  /**
+   * Whether compacted data should be moved to the minimum possible level.
+   *
+   * Default: `false`.
+   */
+  changeLevel?: boolean;
+  /**
+   * Whether to compact the bottom-most level of data.
+   *
+   * Default: `false`.
+   */
+  compactBottomMostLevel?: boolean;
+};
+//#endregion
+
+//#region Administrative operation results
 /**
  * Result of retrieving database version information.
  */
@@ -60,6 +81,59 @@ export type EngineInfo = {
       indexes?: Record<string, string>;
     };
   };
+};
+
+/**
+ * Performance and resource usage information about the storage engine.
+ */
+export type EngineStatsInfo = Record<
+  string,
+  string | number | Record<string, number | string>
+>;
+
+/**
+ * Information about the server license.
+ */
+export type LicenseInfo = {
+  /**
+   * Properties of the license.
+   */
+  features: {
+    /**
+     * The timestamp of the expiration date of the license in seconds since the
+     * Unix epoch.
+     */
+    expires?: number;
+  };
+  /**
+   * The hash value of the license.
+   */
+  hash: string;
+  /**
+   * The encrypted license key in base 64 encoding, or `"none"` when running
+   * in the Community Edition.
+   */
+  license?: string;
+  /**
+   * The status of the installed license.
+   *
+   * - `"good"`: The license is valid for more than 2 weeks.
+   *
+   * - `"expiring"`: The license is valid for less than 2 weeks.
+   *
+   * - `"expired"`: The license has expired.
+   *
+   * - `"read-only"`: The license has been expired for more than 2 weeks.
+   */
+  status: "good" | "expiring" | "expired" | "read-only";
+  /**
+   * Whether the server is performing a database upgrade.
+   */
+  upgrading: boolean;
+  /**
+   * The license version number.
+   */
+  version: number;
 };
 
 /**
@@ -326,7 +400,9 @@ export type ClusterSupportInfo = {
    */
   host: Record<string, any>;
 };
+//#endregion
 
+//#region Queue time metrics
 /**
  * An object providing methods for accessing queue time metrics of the most
  * recently received server responses if the server supports this feature.
@@ -348,3 +424,4 @@ export interface QueueTimeMetrics {
    */
   getAvg(): number;
 }
+//#endregion

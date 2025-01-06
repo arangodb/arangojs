@@ -789,6 +789,34 @@ export interface DocumentCollection<
     >
   >;
   /**
+   * Retrieves the collection's shard IDs.
+   *
+   * @param details - If set to `true`, the response will include the responsible
+   * servers for each shard.
+   */
+  shards(
+    details?: false
+  ): Promise<
+    connection.ArangoApiResponse<
+      CollectionDescription & CollectionProperties & { shards: string[] }
+    >
+  >;
+  /**
+   * Retrieves the collection's shard IDs and the responsible servers for each
+   * shard.
+   *
+   * @param details - If set to `false`, the response will only include the
+   * shard IDs without the responsible servers for each shard.
+   */
+  shards(
+    details: true
+  ): Promise<
+    connection.ArangoApiResponse<
+      CollectionDescription &
+        CollectionProperties & { shards: Record<string, string[]> }
+    >
+  >;
+  /**
    * Renames the collection and updates the instance's `name` to `newName`.
    *
    * Additionally removes the instance from the {@link databases.Database}'s internal
@@ -2489,6 +2517,19 @@ export class Collection<
     return this._db.request({
       pathname: `/_api/collection/${encodeURIComponent(this._name)}/checksum`,
       search: options,
+    });
+  }
+
+  shards(
+    details?: boolean
+  ): Promise<
+    connection.ArangoApiResponse<
+      CollectionDescription & CollectionProperties & { shards: any }
+    >
+  > {
+    return this._db.request({
+      pathname: `/_api/collection/${encodeURIComponent(this._name)}/shards`,
+      search: { details },
     });
   }
 

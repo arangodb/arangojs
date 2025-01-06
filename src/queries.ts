@@ -244,6 +244,35 @@ export type QueryTrackingOptions = {
   trackSlowQueries?: boolean;
 };
 
+/**
+ * Options for adjusting the global properties for the AQL query results cache.
+ */
+export type QueryCachePropertiesOptions = {
+  /**
+   * If set to `true`, the query cache will include queries that involve
+   * system collections.
+   */
+  includeSystem?: boolean;
+  /**
+   * Maximum individual size of query results that will be stored per
+   * database-specific cache.
+   */
+  maxEntrySize?: number;
+  /**
+   * Maximum number of query results that will be stored per database-specific
+   * cache.
+   */
+  maxResults?: number;
+  /**
+   * Maximum cumulated size of query results that will be stored per
+   * database-specific cache.
+   */
+  maxResultsSize?: number;
+  /**
+   * Mode the AQL query cache should operate in.
+   */
+  mode?: "off" | "on" | "demand";
+};
 //#endregion
 
 //#region Query operation results
@@ -439,6 +468,79 @@ export type QueryTrackingInfo = {
    * Whether slow queries are being tracked.
    */
   trackSlowQueries: boolean;
+};
+
+/**
+ * Entry in the AQL query results cache.
+ */
+export type QueryCacheEntry = {
+  /**
+   * Hash of the query results.
+   */
+  hash: string;
+  /**
+   * Query string.
+   */
+  query: string;
+  /**
+   * Bind parameters used in the query. Only shown if tracking for bind
+   * variables was enabled at server start.
+   */
+  bindVars: Record<string, any>;
+  /**
+   * Size of the query results and bind parameters in bytes.
+   */
+  size: number;
+  /**
+   * Number of documents/rows in the query results.
+   */
+  results: number;
+  /**
+   * Date and time the query was started as an ISO 8601 timestamp.
+   */
+  started: string;
+  /**
+   * Number of times the result was served from the cache.
+   */
+  hits: number;
+  /**
+   * Running time of the query in seconds.
+   */
+  runTime: number;
+  /**
+   * Collections and views involved in the query.
+   */
+  dataSources: string[];
+};
+
+/**
+ * Properties of the global AQL query results cache configuration.
+ */
+export type QueryCacheProperties = {
+  /**
+   * If set to `true`, the query cache will include queries that involve
+   * system collections.
+   */
+  includeSystem: boolean;
+  /**
+   * Maximum individual size of query results that will be stored per
+   * database-specific cache.
+   */
+  maxEntrySize: number;
+  /**
+   * Maximum number of query results that will be stored per database-specific
+   * cache.
+   */
+  maxResults: number;
+  /**
+   * Maximum cumulated size of query results that will be stored per
+   * database-specific cache.
+   */
+  maxResultsSize: number;
+  /**
+   * Mode the AQL query cache should operate in.
+   */
+  mode: "off" | "on" | "demand";
 };
 //#endregion
 

@@ -601,6 +601,24 @@ export class Database {
   }
 
   /**
+   * Fetches detailed storage engine performance and resource usage information
+   * from the ArangoDB server.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const stats = await db.engineStats();
+   * // the stats object contains the storage engine stats
+   * ```
+   */
+  engineStats(): Promise<administration.EngineStatsInfo> {
+    return this.request({
+      method: "GET",
+      pathname: "/_api/engine/stats",
+    });
+  }
+
+  /**
    * Retrives the server's current system time in milliseconds with microsecond
    * precision.
    */
@@ -682,6 +700,51 @@ export class Database {
       method: "GET",
       pathname: "/_admin/support-info",
     });
+  }
+
+  /**
+   * Fetches the license information and status of an Enterprise Edition server.
+   */
+  getLicense(): Promise<administration.LicenseInfo> {
+    return this.request({
+      method: "GET",
+      pathname: "/_admin/license",
+    });
+  }
+
+  /**
+   * Set a new license for an Enterprise Edition server.
+   *
+   * @param license - The license as a base 64 encoded string.
+   * @param force - If set to `true`, the license will be changed even if it
+   * expires sooner than the current license.
+   */
+  setLicense(license: string, force = false): Promise<void> {
+    return this.request(
+      {
+        method: "PUT",
+        pathname: "/_admin/license",
+        body: license,
+        search: { force },
+      },
+      () => undefined
+    );
+  }
+
+  /**
+   * Compacts all databases on the server.
+   *
+   * @param options - Options for compacting the databases.
+   */
+  compact(options: administration.CompactOptions = {}): Promise<void> {
+    return this.request(
+      {
+        method: "PUT",
+        pathname: "/_admin/compact",
+        body: options,
+      },
+      () => undefined
+    );
   }
 
   /**
@@ -778,6 +841,8 @@ export class Database {
    * Computes a set of move shard operations to rebalance the cluster and
    * executes them.
    *
+   * @param options - Options for rebalancing the cluster.
+   *
    * @example
    * ```js
    * const db = new Database();
@@ -789,14 +854,14 @@ export class Database {
    * ```
    */
   rebalanceCluster(
-    opts: cluster.ClusterRebalanceOptions
+    options: cluster.ClusterRebalanceOptions
   ): Promise<cluster.ClusterRebalanceResult> {
     return this.request({
       method: "PUT",
       pathname: "/_admin/cluster/rebalance",
       body: {
         version: 1,
-        ...opts,
+        ...options,
       },
     });
   }
@@ -3121,6 +3186,80 @@ export class Database {
       },
       () => undefined
     );
+  }
+
+  /**
+   * Fetches a list of all entries in the AQL query results cache of the
+   * current database.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const entries = await db.listQueryCacheEntries();
+   * console.log(entries);
+   * ```
+   */
+  listQueryCacheEntries(): Promise<queries.QueryCacheEntry[]> {
+    return this.request({
+      pathname: "/_api/query-cache/entries",
+    });
+  }
+
+  /**
+   * Clears the AQL query results cache of the current database.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * await db.clearQueryCache();
+   * // Cache is now cleared
+   * ```
+   */
+  clearQueryCache(): Promise<void> {
+    return this.request(
+      {
+        method: "DELETE",
+        pathname: "/_api/query-cache",
+      },
+      () => undefined
+    );
+  }
+
+  /**
+   * Fetches the global properties for the AQL query results cache.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const properties = await db.getQueryCacheProperties();
+   * console.log(properties);
+   * ```
+   */
+  getQueryCacheProperties(): Promise<queries.QueryCacheProperties> {
+    return this.request({
+      pathname: "/_api/query-cache/properties",
+    });
+  }
+
+  /**
+   * Updates the global properties for the AQL query results cache.
+   *
+   * @param properties - The new properties for the AQL query results cache.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * await db.setQueryCacheProperties({ maxResults: 9000 });
+   * ```
+   */
+  setQueryCacheProperties(
+    properties: queries.QueryCachePropertiesOptions
+  ): Promise<queries.QueryCacheProperties> {
+    return this.request({
+      method: "PUT",
+      pathname: "/_api/query-cache/properties",
+      body: properties,
+    });
   }
   //#endregion
 
