@@ -33,6 +33,13 @@ for upgrading your code to arangojs v10.
   `withStats` option is set to `true` but the `figures` property is already
   included in the current return type.
 
+- Removed Node.js 18 support
+
+  Node.js 18 will reach its end of life in May 2025, so arangojs will no
+  longer support this version of Node.js going forward.
+
+  For more information, see [the Node.js release schedule](https://nodejs.dev/en/about/releases/).
+
 ### Changed
 
 - Closing a connection now closes all open requests
