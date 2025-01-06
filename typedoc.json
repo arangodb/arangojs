@@ -1,16 +1,13 @@
 {
   "out": "tsdoc",
+  "cacheBust": true,
   "githubPages": true,
   "disableSources": false,
   "exclude": ["**/lib/*.ts", "**/test/*.ts"],
   "basePath": "./src",
+  "gitRemote": "origin",
   "visibilityFilters": {},
-  "intentionallyNotExported": [
-    "ArangojsError",
-    "ArangojsResponse",
-    "Blob",
-    "GeneratedAqlQuery"
-  ],
+  "intentionallyNotExported": ["Blob", "GeneratedAqlQuery"],
   "excludeInternal": true,
   "excludeProtected": true,
   "excludePrivate": true,
