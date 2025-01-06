@@ -20,11 +20,11 @@ import {
   ArangoCollection,
   Collection,
   CollectionMetadata,
-  collectionToString,
   CollectionType,
   CreateCollectionOptions,
   DocumentCollection,
   EdgeCollection,
+  collectionToString,
   isArangoCollection,
 } from "./collection.js";
 import {
@@ -620,6 +620,109 @@ export type QueryTrackingOptions = {
 };
 
 /**
+ * Entry in the AQL query results cache.
+ */
+export type QueryCacheEntry = {
+  /**
+   * Hash of the query results.
+   */
+  hash: string;
+  /**
+   * Query string.
+   */
+  query: string;
+  /**
+   * Bind parameters used in the query. Only shown if tracking for bind
+   * variables was enabled at server start.
+   */
+  bindVars: Record<string, any>;
+  /**
+   * Size of the query results and bind parameters in bytes.
+   */
+  size: number;
+  /**
+   * Number of documents/rows in the query results.
+   */
+  results: number;
+  /**
+   * Date and time the query was started as an ISO 8601 timestamp.
+   */
+  started: string;
+  /**
+   * Number of times the result was served from the cache.
+   */
+  hits: number;
+  /**
+   * Running time of the query in seconds.
+   */
+  runTime: number;
+  /**
+   * Collections and views involved in the query.
+   */
+  dataSources: string[];
+};
+
+/**
+ * Properties of the global AQL query results cache configuration.
+ */
+export type QueryCacheProperties = {
+  /**
+   * If set to `true`, the query cache will include queries that involve
+   * system collections.
+   */
+  includeSystem: boolean;
+  /**
+   * Maximum individual size of query results that will be stored per
+   * database-specific cache.
+   */
+  maxEntrySize: number;
+  /**
+   * Maximum number of query results that will be stored per database-specific
+   * cache.
+   */
+  maxResults: number;
+  /**
+   * Maximum cumulated size of query results that will be stored per
+   * database-specific cache.
+   */
+  maxResultsSize: number;
+  /**
+   * Mode the AQL query cache should operate in.
+   */
+  mode: "off" | "on" | "demand";
+};
+
+/**
+ * Options for adjusting the global properties for the AQL query results cache.
+ */
+export type QueryCachePropertiesOptions = {
+  /**
+   * If set to `true`, the query cache will include queries that involve
+   * system collections.
+   */
+  includeSystem?: boolean;
+  /**
+   * Maximum individual size of query results that will be stored per
+   * database-specific cache.
+   */
+  maxEntrySize?: number;
+  /**
+   * Maximum number of query results that will be stored per database-specific
+   * cache.
+   */
+  maxResults?: number;
+  /**
+   * Maximum cumulated size of query results that will be stored per
+   * database-specific cache.
+   */
+  maxResultsSize?: number;
+  /**
+   * Mode the AQL query cache should operate in.
+   */
+  mode?: "off" | "on" | "demand";
+};
+
+/**
  * Object describing a query.
  */
 export type QueryInfo = {
@@ -980,9 +1083,17 @@ export type EngineInfo = {
        * Index type aliases supported by the storage engine.
        */
       indexes?: Record<string, string>;
-    }
+    };
   };
 };
+
+/**
+ * Performance and resource usage information about the storage engine.
+ */
+export type EngineStatsInfo = Record<
+  string,
+  string | number | Record<string, number | string>
+>;
 
 /**
  * Information about the server status.
@@ -1049,7 +1160,7 @@ export type ServerStatusInformation = {
    */
   foxxApi: boolean;
   /**
-   * A host identifier defined by the HOST or NODE_NAME environment variable, 
+   * A host identifier defined by the HOST or NODE_NAME environment variable,
    * or a fallback value using a machine identifier or the cluster/Agency address.
    */
   host: string;
@@ -1063,7 +1174,7 @@ export type ServerStatusInformation = {
   license: "community" | "enterprise";
   /**
    * Server operation mode.
-   * 
+   *
    * @deprecated use `operationMode` instead
    */
   mode: "server" | "console";
@@ -1135,7 +1246,7 @@ export type ServerStatusInformation = {
     version: string;
     /**
      * Whether writes are enabled.
-     * 
+     *
      * @deprecated Use `readOnly` instead.
      */
     writeOpsEnabled: boolean;
@@ -1146,9 +1257,9 @@ export type ServerStatusInformation = {
  * Server availability.
  *
  * - `"default"`: The server is operational.
- * 
+ *
  * - `"readonly"`: The server is in read-only mode.
- * 
+ *
  * - `false`: The server is not available.
  */
 export type ServerAvailability = "default" | "readonly" | false;
@@ -1167,9 +1278,9 @@ export type SingleServerSupportInfo = {
   deployment: {
     /**
      * Deployment mode:
-     * 
+     *
      * - `"single"`: A single server deployment.
-     * 
+     *
      * - `"cluster"`: A cluster deployment.
      */
     type: "single";
@@ -1190,9 +1301,9 @@ export type ClusterSupportInfo = {
   deployment: {
     /**
      * Deployment mode:
-     * 
+     *
      * - `"single"`: A single server deployment.
-     * 
+     *
      * - `"cluster"`: A cluster deployment.
      */
     type: "cluster";
@@ -1240,14 +1351,78 @@ export type ClusterSupportInfo = {
        * Number of servers in the cluster.
        */
       servers: number;
-    }
+    };
   };
   /**
    * (Cluster only.) Information about the ArangoDB instance as well as the
    * host machine.
    */
   host: Record<string, any>;
-}
+};
+
+/**
+ * Information about the server license.
+ */
+export type LicenseInfo = {
+  /**
+   * Properties of the license.
+   */
+  features: {
+    /**
+     * The timestamp of the expiration date of the license in seconds since the
+     * Unix epoch.
+     */
+    expires?: number;
+  };
+  /**
+   * The hash value of the license.
+   */
+  hash: string;
+  /**
+   * The encrypted license key in base 64 encoding, or `"none"` when running
+   * in the Community Edition.
+   */
+  license?: string;
+  /**
+   * The status of the installed license.
+   *
+   * - `"good"`: The license is valid for more than 2 weeks.
+   *
+   * - `"expiring"`: The license is valid for less than 2 weeks.
+   *
+   * - `"expired"`: The license has expired.
+   *
+   * - `"read-only"`: The license has been expired for more than 2 weeks.
+   */
+  status: "good" | "expiring" | "expired" | "read-only";
+  /**
+   * Whether the server is performing a database upgrade.
+   */
+  upgrading: boolean;
+  /**
+   * The license version number.
+   */
+  version: number;
+};
+
+/**
+ * Options for compacting all databases on the server.
+ */
+export type CompactOptions = {
+  /**
+   * Whether compacted data should be moved to the minimum possible level.
+   *
+   * Default: `false`.
+   */
+  changeLevel?: boolean;
+  /**
+   * Whether to compact the bottom-most level of data.
+   *
+   * Default: `false`.
+   */
+  compactBottomMostLevel?: boolean;
+};
+
 /**
  * Definition of an AQL User Function.
  */
@@ -1539,14 +1714,14 @@ export type ServiceConfiguration = {
    * by software when managing the service.
    */
   type:
-  | "integer"
-  | "boolean"
-  | "string"
-  | "number"
-  | "json"
-  | "password"
-  | "int"
-  | "bool";
+    | "integer"
+    | "boolean"
+    | "string"
+    | "number"
+    | "json"
+    | "password"
+    | "int"
+    | "bool";
   /**
    * Current value of the configuration option as stored internally.
    */
@@ -1726,10 +1901,10 @@ export type ServiceTestSuiteReport = {
 export type ServiceTestXunitTest =
   | ["testcase", { classname: string; name: string; time: number }]
   | [
-    "testcase",
-    { classname: string; name: string; time: number },
-    ["failure", { message: string; type: string }, string],
-  ];
+      "testcase",
+      { classname: string; name: string; time: number },
+      ["failure", { message: string; type: string }, string],
+    ];
 
 /**
  * Test results for a Foxx service's tests in XUnit format using the JSONML
@@ -2224,7 +2399,8 @@ export class Database {
       basePath,
       ...opts
     }: RequestOptions & { absolutePath?: boolean },
-    transform: false | ((res: ArangojsResponse) => ReturnType) = (res) => res.parsedBody
+    transform: false | ((res: ArangojsResponse) => ReturnType) = (res) =>
+      res.parsedBody
   ): Promise<ReturnType> {
     if (!absolutePath) {
       basePath = `/_db/${encodeURIComponent(this._name)}${basePath || ""}`;
@@ -2535,6 +2711,24 @@ export class Database {
   }
 
   /**
+   * Fetches detailed storage engine performance and resource usage information
+   * from the ArangoDB server.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const stats = await db.engineStats();
+   * // the stats object contains the storage engine stats
+   * ```
+   */
+  engineStats(): Promise<EngineStatsInfo> {
+    return this.request({
+      method: "GET",
+      path: "/_api/engine/stats",
+    });
+  }
+
+  /**
    * Retrives the server's current system time in milliseconds with microsecond
    * precision.
    */
@@ -2569,7 +2763,7 @@ export class Database {
 
   /**
    * Fetches availability information about the server.
-   * 
+   *
    * @param graceful - If set to `true`, the method will always return `false`
    * instead of throwing an error; otherwise `false` will only be returned
    * when the server responds with a 503 status code or an ArangoDB error with
@@ -2583,10 +2777,13 @@ export class Database {
    */
   async availability(graceful = false): Promise<ServerAvailability> {
     try {
-      return this.request({
-        method: "GET",
-        path: "/_admin/server/availability",
-      }, (res) => res.parsedBody.mode);
+      return this.request(
+        {
+          method: "GET",
+          path: "/_admin/server/availability",
+        },
+        (res) => res.parsedBody.mode
+      );
     } catch (e) {
       if (graceful) return false;
       if ((isArangoError(e) || e instanceof HttpError) && e.code === 503) {
@@ -2598,7 +2795,7 @@ export class Database {
 
   /**
    * Fetches deployment information about the server for support purposes.
-   * 
+   *
    * Note that this API may reveal sensitive data about the deployment.
    */
   supportInfo(): Promise<SingleServerSupportInfo | ClusterSupportInfo> {
@@ -2606,6 +2803,51 @@ export class Database {
       method: "GET",
       path: "/_admin/support-info",
     });
+  }
+
+  /**
+   * Fetches the license information and status of an Enterprise Edition server.
+   */
+  getLicense(): Promise<LicenseInfo> {
+    return this.request({
+      method: "GET",
+      path: "/_admin/license",
+    });
+  }
+
+  /**
+   * Set a new license for an Enterprise Edition server.
+   *
+   * @param license - The license as a base 64 encoded string.
+   * @param force - If set to `true`, the license will be changed even if it
+   * expires sooner than the current license.
+   */
+  setLicense(license: string, force = false): Promise<void> {
+    return this.request(
+      {
+        method: "PUT",
+        path: "/_admin/license",
+        body: license,
+        search: { force },
+      },
+      () => undefined
+    );
+  }
+
+  /**
+   * Compacts all databases on the server.
+   *
+   * @param options - Options for compacting the databases.
+   */
+  compact(options: CompactOptions = {}): Promise<void> {
+    return this.request(
+      {
+        method: "PUT",
+        path: "/_admin/compact",
+        body: options,
+      },
+      () => undefined
+    );
   }
 
   /**
@@ -2700,6 +2942,8 @@ export class Database {
    * Computes a set of move shard operations to rebalance the cluster and
    * executes them.
    *
+   * @param options - Options for rebalancing the cluster.
+   *
    * @example
    * ```js
    * const db = new Database();
@@ -2711,14 +2955,14 @@ export class Database {
    * ```
    */
   rebalanceCluster(
-    opts: ClusterRebalanceOptions
+    options: ClusterRebalanceOptions
   ): Promise<ClusterRebalanceResult> {
     return this.request({
       method: "PUT",
       path: "/_admin/cluster/rebalance",
       body: {
         version: 1,
-        ...opts,
+        ...options,
       },
     });
   }
@@ -3739,14 +3983,14 @@ export class Database {
   ): Promise<AccessLevel> {
     const databaseName = isArangoDatabase(database)
       ? database.name
-      : database ??
-      (isArangoCollection(collection)
-        ? ((collection as any)._db as Database).name
-        : this._name);
+      : (database ??
+        (isArangoCollection(collection)
+          ? ((collection as any)._db as Database).name
+          : this._name));
     const suffix = collection
       ? `/${encodeURIComponent(
-        isArangoCollection(collection) ? collection.name : collection
-      )}`
+          isArangoCollection(collection) ? collection.name : collection
+        )}`
       : "";
     return this.request(
       {
@@ -3840,14 +4084,14 @@ export class Database {
   ): Promise<ArangoApiResponse<Record<string, AccessLevel>>> {
     const databaseName = isArangoDatabase(database)
       ? database.name
-      : database ??
-      (isArangoCollection(collection)
-        ? ((collection as any)._db as Database).name
-        : this._name);
+      : (database ??
+        (isArangoCollection(collection)
+          ? ((collection as any)._db as Database).name
+          : this._name));
     const suffix = collection
       ? `/${encodeURIComponent(
-        isArangoCollection(collection) ? collection.name : collection
-      )}`
+          isArangoCollection(collection) ? collection.name : collection
+        )}`
       : "";
     return this.request(
       {
@@ -3930,14 +4174,14 @@ export class Database {
   ): Promise<ArangoApiResponse<Record<string, AccessLevel>>> {
     const databaseName = isArangoDatabase(database)
       ? database.name
-      : database ??
-      (isArangoCollection(collection)
-        ? ((collection as any)._db as Database).name
-        : this._name);
+      : (database ??
+        (isArangoCollection(collection)
+          ? ((collection as any)._db as Database).name
+          : this._name));
     const suffix = collection
       ? `/${encodeURIComponent(
-        isArangoCollection(collection) ? collection.name : collection
-      )}`
+          isArangoCollection(collection) ? collection.name : collection
+        )}`
       : "";
     return this.request(
       {
@@ -4458,7 +4702,7 @@ export class Database {
     } catch (e) {
       try {
         await trx.abort();
-      } catch { }
+      } catch {}
       throw e;
     }
   }
@@ -4881,14 +5125,14 @@ export class Database {
     return this.request(
       options
         ? {
-          method: "PUT",
-          path: "/_api/query/properties",
-          body: options,
-        }
+            method: "PUT",
+            path: "/_api/query/properties",
+            body: options,
+          }
         : {
-          method: "GET",
-          path: "/_api/query/properties",
-        }
+            method: "GET",
+            path: "/_api/query/properties",
+          }
     );
   }
 
@@ -4980,6 +5224,80 @@ export class Database {
       },
       () => undefined
     );
+  }
+
+  /**
+   * Fetches a list of all entries in the AQL query results cache of the
+   * current database.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const entries = await db.listQueryCacheEntries();
+   * console.log(entries);
+   * ```
+   */
+  listQueryCacheEntries(): Promise<QueryCacheEntry[]> {
+    return this.request({
+      path: "/_api/query-cache/entries",
+    });
+  }
+
+  /**
+   * Clears the AQL query results cache of the current database.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * await db.clearQueryCache();
+   * // Cache is now cleared
+   * ```
+   */
+  clearQueryCache(): Promise<void> {
+    return this.request(
+      {
+        method: "DELETE",
+        path: "/_api/query-cache",
+      },
+      () => undefined
+    );
+  }
+
+  /**
+   * Fetches the global properties for the AQL query results cache.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const properties = await db.getQueryCacheProperties();
+   * console.log(properties);
+   * ```
+   */
+  getQueryCacheProperties(): Promise<QueryCacheProperties> {
+    return this.request({
+      path: "/_api/query-cache/properties",
+    });
+  }
+
+  /**
+   * Updates the global properties for the AQL query results cache.
+   *
+   * @param properties - The new properties for the AQL query results cache.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * await db.setQueryCacheProperties({ maxResults: 9000 });
+   * ```
+   */
+  setQueryCacheProperties(
+    properties: QueryCachePropertiesOptions
+  ): Promise<QueryCacheProperties> {
+    return this.request({
+      method: "PUT",
+      path: "/_api/query-cache/properties",
+      body: properties,
+    });
   }
   //#endregion
 

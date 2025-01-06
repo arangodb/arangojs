@@ -18,6 +18,22 @@ This driver uses semantic versioning:
 
 ### Added
 
+- Added `db.compact` method (DE-906)
+
+- Added `db.engineStats` method (DE-932)
+
+- Added `db.getLicense` and `db.setLicense` methods (DE-949)
+
+- Added `db.listQueryCacheEntries` method (DE-149)
+
+- Added `db.clearQueryCache` method (DE-148)
+
+- Added `db.getQueryCacheProperties` method (DE-150)
+
+- Added `db.setQueryCacheProperties` method (DE-151)
+
+- Added `collection.shards` method (DE-939)
+
 - Added support for `mdi-prefixed` indexes (DE-956)
 
 - Restored `fulltext` index type support (DE-957)
@@ -33,13 +49,13 @@ This driver uses semantic versioning:
 
 ### Added
 
-- Added `database.availability` method
+- Added `db.availability` method
 
-- Added `database.engine` method (DE-931)
+- Added `db.engine` method (DE-931)
 
-- Added `database.status` method ([#811](https://github.com/arangodb/arangojs/issues/811))
+- Added `db.status` method ([#811](https://github.com/arangodb/arangojs/issues/811))
 
-- Added `database.supportInfo` method
+- Added `db.supportInfo` method
 
 - Added `keepNull` option to `CollectionInsertOptions` type (DE-946)
 
@@ -1132,7 +1148,7 @@ For a detailed list of changes between pre-release versions of v7 see the
 
 - Changed `db.createDatabase` return type to `Database`
 
-- Renamed `database.setQueryTracking` to `database.queryTracking`
+- Renamed `db.setQueryTracking` to `db.queryTracking`
 
   The method will now return the existing query tracking properties or set the
   new query tracking properties depending on whether an argument is provided.
@@ -1528,7 +1544,7 @@ For a detailed list of changes between pre-release versions of v7 see the
 
 - Added support for ArangoDB 3.5 Analyzers API
 
-  See the documentation of the `database.analyzer` method and the `Analyzer`
+  See the documentation of the `db.analyzer` method and the `Analyzer`
   instances for information on using this API.
 
 - Added `collection.getResponsibleShard` method
@@ -1702,7 +1718,7 @@ For a detailed list of changes between pre-release versions of v7 see the
 
 - Fixed `edgeCollection.save` not respecting options ([#554](https://github.com/arangodb/arangojs/issues/554))
 
-- Fixed `database.createDatabase` TypeScript signature ([#561](https://github.com/arangodb/arangojs/issues/561))
+- Fixed `db.createDatabase` TypeScript signature ([#561](https://github.com/arangodb/arangojs/issues/561))
 
 ## [6.5.0] - 2018-08-03
 
@@ -1743,7 +1759,7 @@ For a detailed list of changes between pre-release versions of v7 see the
 
 - Added `ArangoError` and `CollectionType` to public exports
 
-- Added `database.close` method
+- Added `db.close` method
 
 - Added `opts` parameter to `EdgeCollection#save`
 
@@ -1751,11 +1767,11 @@ For a detailed list of changes between pre-release versions of v7 see the
 
 ### Added
 
-- Added `database.version` method
+- Added `db.version` method
 
-- Added `database.login` method
+- Added `db.login` method
 
-- Added `database.exists` method
+- Added `db.exists` method
 
 - Added `collection.exists` method
 
