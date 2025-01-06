@@ -609,7 +609,7 @@ export type UserFunctionDescription = {
   /**
    * Whether the function is deterministic.
    *
-   * See {@link databases.Database#createFunction}.
+   * See {@link databases.Database#createUserFunction}.
    */
   isDeterministic: boolean;
 };
