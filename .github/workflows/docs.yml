@@ -75,10 +75,10 @@ jobs:
           ./node_modules/.bin/typedoc --out gh-pages/${TAG}
 
       - name: Commit to gh-pages
-        uses: EndBug/add-and-commit@v4
+        uses: EndBug/add-and-commit@v9
         with:
           cwd: ./gh-pages
-          ref: gh-pages
+          push: origin gh-pages --force
           message: Update ${{ env.TAG }} docs via ${{ github.sha }}
         env:
           GITHUB_TOKEN: ${{ github.token }}
