@@ -1,10 +1,10 @@
 import { expect } from "chai";
-import { Analyzer } from "../analyzer.js";
-import { Database } from "../database.js";
+import { Analyzer } from "../analyzers.js";
+import { Database } from "../databases.js";
 import { config } from "./_config.js";
 
 function waitForAnalyzer(db: Database, name: string) {
-  return db.waitForPropagation({ path: `/_api/analyzer/${name}` }, 30000);
+  return db.waitForPropagation({ pathname: `/_api/analyzer/${name}` }, 30000);
 }
 
 describe("Manipulating analyzers", function () {

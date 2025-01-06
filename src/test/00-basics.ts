@@ -34,16 +34,21 @@ describe("Configuring the driver", () => {
   describe("with headers", () => {
     it("applies the headers", (done) => {
       const db = new Database({
-        headers: {
-          "x-one": "1",
-          "x-two": "2",
+        fetchOptions: {
+          headers: {
+            "x-one": "1",
+            "x-two": "2",
+          },
         },
       });
       (db as any)._connection._hosts = [
-        ({ headers }: any) => {
-          expect(headers.get("x-one")).to.equal("1");
-          expect(headers.get("x-two")).to.equal("2");
-          done();
+        {
+          fetch: ({ headers }: any) => {
+            expect(headers.get("x-one")).to.equal("1");
+            expect(headers.get("x-two")).to.equal("2");
+            done();
+          },
+          close: () => {},
         },
       ];
       db.request({ headers: {} }, () => {});
@@ -53,9 +58,12 @@ describe("Configuring the driver", () => {
     it("sets the x-arango-version header", (done) => {
       const db = new Database({ arangoVersion: 99999 });
       (db as any)._connection._hosts = [
-        ({ headers }: any) => {
-          expect(headers.get("x-arango-version")).to.equal("99999");
-          done();
+        {
+          fetch: ({ headers }: any) => {
+            expect(headers.get("x-arango-version")).to.equal("99999");
+            done();
+          },
+          close: () => {},
         },
       ];
       db.request({ headers: {} }, () => {});

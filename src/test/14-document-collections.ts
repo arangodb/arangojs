@@ -1,6 +1,6 @@
 import { expect } from "chai";
-import { DocumentCollection } from "../collection.js";
-import { Database } from "../database.js";
+import { DocumentCollection } from "../collections.js";
+import { Database } from "../databases.js";
 import { DocumentMetadata } from "../documents.js";
 import { config } from "./_config.js";
 
@@ -24,8 +24,8 @@ describe("DocumentCollection API", function () {
   beforeEach(async () => {
     collection = await db.createCollection(`c_${Date.now()}`);
     await db.waitForPropagation(
-      { path: `/_api/collection/${collection.name}` },
-      10000
+      { pathname: `/_api/collection/${collection.name}` },
+      10000,
     );
   });
   afterEach(async () => {
@@ -177,7 +177,7 @@ describe("DocumentCollection API", function () {
       await collection.update(
         doc,
         { sup: "dawg", empty: null },
-        { keepNull: false }
+        { keepNull: false },
       );
       const newData = await collection.document(doc._key);
       expect(newData).to.have.property("potato").that.equals(doc.potato);

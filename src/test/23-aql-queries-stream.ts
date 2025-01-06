@@ -1,13 +1,14 @@
 import { expect } from "chai";
 import { aql } from "../aql.js";
-import { ArrayCursor } from "../cursor.js";
-import { Database, QueryOptions } from "../database.js";
+import { Cursor } from "../cursors.js";
+import { Database } from "../databases.js";
 import { config } from "./_config.js";
+import { QueryOptions } from "../queries.js";
 
 describe("AQL Stream queries", function () {
   const name = `testdb_${Date.now()}`;
   let system: Database, db: Database;
-  let allCursors: ArrayCursor[];
+  let allCursors: Cursor[];
   before(async () => {
     allCursors = [];
     system = new Database(config);
@@ -17,7 +18,7 @@ describe("AQL Stream queries", function () {
   });
   after(async () => {
     await Promise.all(
-      allCursors.map((cursor) => cursor.kill().catch(() => undefined))
+      allCursors.map((cursor) => cursor.kill().catch(() => undefined)),
     );
     try {
       await system.dropDatabase(name);
@@ -29,7 +30,7 @@ describe("AQL Stream queries", function () {
     it("returns a cursor for the query result", async () => {
       const cursor = await db.query("RETURN 23", {}, { stream: true });
       allCursors.push(cursor);
-      expect(cursor).to.be.an.instanceof(ArrayCursor);
+      expect(cursor).to.be.an.instanceof(Cursor);
     });
     it("supports bindVars", async () => {
       const cursor = await db.query("RETURN @x", { x: 5 }, { stream: true });
@@ -45,7 +46,7 @@ describe("AQL Stream queries", function () {
       });
       allCursors.push(cursor);
       expect(cursor.count).to.equal(undefined);
-      expect((cursor as any).batches.hasMore).to.equal(true);
+      expect(cursor.batches.hasMore).to.equal(true);
     });
     it("supports compact queries with options", async () => {
       const query: any = {
@@ -59,7 +60,7 @@ describe("AQL Stream queries", function () {
       });
       allCursors.push(cursor);
       expect(cursor.count).to.equal(undefined); // count will be ignored
-      expect((cursor as any).batches.hasMore).to.equal(true);
+      expect(cursor.batches.hasMore).to.equal(true);
     });
   });
   describe("with some data", () => {
@@ -67,13 +68,13 @@ describe("AQL Stream queries", function () {
     before(async () => {
       const collection = await db.createCollection(cname);
       await db.waitForPropagation(
-        { path: `/_api/collection/${collection.name}` },
-        10000
+        { pathname: `/_api/collection/${collection.name}` },
+        10000,
       );
       await Promise.all(
         Array.from(Array(1000).keys()).map((i: number) =>
-          collection.save({ hallo: i })
-        )
+          collection.save({ hallo: i }),
+        ),
       );
     });
     /*after(async () => {
@@ -86,15 +87,15 @@ describe("AQL Stream queries", function () {
 
       let count = 0;
       const cursors = await Promise.all(
-        Array.from(Array(25)).map(() => db.query(query, options))
+        Array.from(Array(25)).map(() => db.query(query, options)),
       );
       allCursors.push(...cursors);
       await Promise.all(
         cursors.map((c) =>
-          (c as ArrayCursor).forEach(() => {
+          (c as Cursor).forEach(() => {
             count++;
-          })
-        )
+          }),
+        ),
       );
       expect(count).to.equal(25 * 1000);
     });

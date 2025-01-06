@@ -1,6 +1,6 @@
 import { expect } from "chai";
-import { DocumentCollection } from "../collection.js";
-import { Database } from "../database.js";
+import { DocumentCollection } from "../collections.js";
+import { Database } from "../databases.js";
 import { config } from "./_config.js";
 
 describe("Manipulating collections", function () {
@@ -23,8 +23,8 @@ describe("Manipulating collections", function () {
   beforeEach(async () => {
     collection = await db.createCollection(`collection-${Date.now()}`);
     await db.waitForPropagation(
-      { path: `/_api/collection/${collection.name}` },
-      10000
+      { pathname: `/_api/collection/${collection.name}` },
+      10000,
     );
   });
   afterEach(async () => {
@@ -38,11 +38,11 @@ describe("Manipulating collections", function () {
   describe("collection.create", () => {
     it("creates a new document collection", async () => {
       const collection = await db.createCollection(
-        `document-collection-${Date.now()}`
+        `document-collection-${Date.now()}`,
       );
       await db.waitForPropagation(
-        { path: `/_api/collection/${collection.name}` },
-        10000
+        { pathname: `/_api/collection/${collection.name}` },
+        10000,
       );
       const info = await db.collection(collection.name).get();
       expect(info).to.have.property("name", collection.name);
@@ -52,11 +52,11 @@ describe("Manipulating collections", function () {
     });
     it("creates a new edge collection", async () => {
       const collection = await db.createEdgeCollection(
-        `edge-collection-${Date.now()}`
+        `edge-collection-${Date.now()}`,
       );
       await db.waitForPropagation(
-        { path: `/_api/collection/${collection.name}` },
-        10000
+        { pathname: `/_api/collection/${collection.name}` },
+        10000,
       );
       const info = await db.collection(collection.name).get();
       expect(info).to.have.property("name", collection.name);

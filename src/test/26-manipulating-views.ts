@@ -1,6 +1,6 @@
 import { expect } from "chai";
-import { Database } from "../database.js";
-import { ArangoSearchViewProperties, View } from "../view.js";
+import { Database } from "../databases.js";
+import { ArangoSearchViewProperties, View } from "../views.js";
 import { config } from "./_config.js";
 
 // NOTE These tests will not reliably work in a cluster.
@@ -27,7 +27,7 @@ describe("Manipulating views", function () {
   beforeEach(async () => {
     view = db.view(`v-${Date.now()}`);
     await view.create({ type: "arangosearch" });
-    await db.waitForPropagation({ path: `/_api/view/${view.name}` }, 10000);
+    await db.waitForPropagation({ pathname: `/_api/view/${view.name}` }, 10000);
   });
   afterEach(async () => {
     try {
@@ -41,7 +41,10 @@ describe("Manipulating views", function () {
     it("creates a new arangosearch view", async () => {
       const view = db.view(`asv-${Date.now()}`);
       await view.create({ type: "arangosearch" });
-      await db.waitForPropagation({ path: `/_api/view/${view.name}` }, 10000);
+      await db.waitForPropagation(
+        { pathname: `/_api/view/${view.name}` },
+        10000,
+      );
       const info = await view.get();
       expect(info).to.have.property("name", view.name);
       expect(info).to.have.property("type", "arangosearch");
@@ -76,7 +79,7 @@ describe("Manipulating views", function () {
         commitIntervalMsec: 30000,
       });
       expect(properties.consolidationIntervalMsec).to.equal(
-        initial.consolidationIntervalMsec
+        initial.consolidationIntervalMsec,
       );
       expect(properties.commitIntervalMsec).to.equal(30000);
     });

@@ -1,8 +1,8 @@
 import { expect } from "chai";
-import { LinkedList } from "../lib/linkedList.js";
+import { LinkedList } from "../lib/x3-linkedlist.js";
 import { aql } from "../aql.js";
-import { ArrayCursor, BatchedArrayCursor } from "../cursor.js";
-import { Database } from "../database.js";
+import { Cursor, BatchCursor } from "../cursors.js";
+import { Database } from "../databases.js";
 import { config } from "./_config.js";
 
 const aqlQuery = aql`FOR i IN 0..10 RETURN i`;
@@ -17,8 +17,8 @@ async function sleep(ms: number) {
 describe("Item-wise Cursor API", () => {
   const name = `testdb_${Date.now()}`;
   let system: Database, db: Database;
-  let cursor: ArrayCursor;
-  let allCursors: (ArrayCursor | BatchedArrayCursor)[];
+  let cursor: Cursor;
+  let allCursors: (Cursor | BatchCursor)[];
   before(async () => {
     allCursors = [];
     system = new Database(config);
@@ -28,7 +28,7 @@ describe("Item-wise Cursor API", () => {
   });
   after(async () => {
     await Promise.all(
-      allCursors.map((cursor) => cursor.kill().catch(() => undefined))
+      allCursors.map((cursor) => cursor.kill().catch(() => undefined)),
     );
     try {
       await system.dropDatabase(name);
@@ -138,7 +138,7 @@ describe("Item-wise Cursor API", () => {
     });
     it("returns false after last result is consumed (with large amount of results)", async () => {
       const EXPECTED_LENGTH = 10000;
-      async function loadMore(cursor: ArrayCursor, totalLength: number) {
+      async function loadMore(cursor: Cursor, totalLength: number) {
         await cursor.next();
         totalLength++;
         expect(cursor.hasNext).to.equal(totalLength !== EXPECTED_LENGTH);
@@ -199,7 +199,7 @@ describe("Item-wise Cursor API", () => {
           .reduce((acc, next) => {
             acc.push(...next);
             return acc;
-          }, [] as number[])
+          }, [] as number[]),
       );
     });
     it("doesn't choke on non-arrays", async () => {
@@ -226,7 +226,7 @@ describe("Item-wise Cursor API", () => {
       try {
         await db.request({
           method: "PUT",
-          path: `/_api/cursor/${id}`,
+          pathname: `/_api/cursor/${id}`,
           hostUrl: hostUrl,
         });
       } catch (e: any) {
@@ -241,8 +241,8 @@ describe("Item-wise Cursor API", () => {
 describe("Batch-wise Cursor API", () => {
   const name = `testdb_${Date.now()}`;
   let system: Database, db: Database;
-  let cursor: BatchedArrayCursor;
-  let allCursors: (ArrayCursor | BatchedArrayCursor)[];
+  let cursor: BatchCursor;
+  let allCursors: (Cursor | BatchCursor)[];
   before(async () => {
     allCursors = [];
     system = new Database(config);
@@ -252,7 +252,7 @@ describe("Batch-wise Cursor API", () => {
   });
   after(async () => {
     await Promise.all(
-      allCursors.map((cursor) => cursor.kill().catch(() => undefined))
+      allCursors.map((cursor) => cursor.kill().catch(() => undefined)),
     );
     try {
       await system.dropDatabase(name);
@@ -349,7 +349,7 @@ describe("Batch-wise Cursor API", () => {
     });
     it("returns false after last result is consumed (with large amount of results)", async () => {
       const EXPECTED_LENGTH = 10000;
-      async function loadMore(cursor: ArrayCursor, totalLength: number) {
+      async function loadMore(cursor: Cursor, totalLength: number) {
         await cursor.next();
         totalLength++;
         expect(cursor.hasNext).to.equal(totalLength !== EXPECTED_LENGTH);
@@ -395,7 +395,7 @@ describe("Batch-wise Cursor API", () => {
           .reduce((acc, next) => {
             acc.push(...next);
             return acc;
-          }, [] as number[])
+          }, [] as number[]),
       );
     });
     it("doesn't choke on non-arrays", async () => {
@@ -442,7 +442,7 @@ describe("Batch-wise Cursor API", () => {
       try {
         await db.request({
           method: "PUT",
-          path: `/_api/cursor/${id}`,
+          pathname: `/_api/cursor/${id}`,
           hostUrl: hostUrl,
         });
       } catch (e: any) {

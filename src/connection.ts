@@ -1,53 +1,321 @@
 /**
  * ```ts
- * import type { Config } from "arangojs/connection.js";
+ * import type { ArangoApiResponse } from "arangojs/connection";
  * ```
  *
- * The "connection" module provides connection and configuration related types
- * for TypeScript.
+ * The "connection" module provides connection related types for TypeScript.
  *
  * @packageDocumentation
  */
-import { LinkedList } from "./lib/linkedList.js";
-import { Database } from "./database.js";
-import {
-  ArangoError,
-  HttpError,
-  isArangoError,
-  isArangoErrorResponse,
-  isSystemError,
-} from "./error.js";
-import {
-  ERROR_ARANGO_CONFLICT,
-  ERROR_ARANGO_MAINTENANCE_MODE,
-} from "./lib/codes.js";
-import { normalizeUrl } from "./lib/normalizeUrl.js";
-import {
-  ArangojsError,
-  ArangojsResponse,
-  createRequest,
-  RequestConfig,
-  RequestFunction,
-} from "./lib/request.js";
-import { joinPath } from "./lib/joinPath.js";
-import { mergeHeaders } from "./lib/mergeHeaders.js";
+import * as administration from "./administration.js";
+import * as configuration from "./configuration.js";
+import * as databases from "./databases.js";
+import * as errors from "./errors.js";
+import { ERROR_ARANGO_CONFLICT } from "./lib/codes.js";
+import * as util from "./lib/util.js";
+import { LinkedList } from "./lib/x3-linkedlist.js";
 
 const MIME_JSON = /\/(json|javascript)(\W|$)/;
 const LEADER_ENDPOINT_HEADER = "x-arango-endpoint";
+const REASON_TIMEOUT = "timeout";
+
+//#region Host
+/**
+ * @internal
+ */
+type Host = {
+  /**
+   * @internal
+   *
+   * Perform a fetch request against this host.
+   *
+   * @param pathname - URL path, relative to the server URL.
+   * @param options - Options for this fetch request.
+   */
+  fetch: (
+    options: Omit<
+      RequestOptions,
+      | "maxRetries"
+      | "retryOnConflict"
+      | "allowDirtyRead"
+      | "hostUrl"
+      | "expectBinary"
+      | "isBinary"
+    >
+  ) => Promise<globalThis.Response & { request: globalThis.Request }>;
+  /**
+   * @internal
+   *
+   * Close the pending request, if any.
+   */
+  close: () => void;
+};
 
 /**
- * Determines the behavior when multiple URLs are used:
+ * @internal
  *
- * - `"NONE"`: No load balancing. All requests will be handled by the first
- *   URL in the list until a network error is encountered. On network error,
- *   arangojs will advance to using the next URL in the list.
+ * Create a function for performing fetch requests against a given host.
  *
- * - `"ONE_RANDOM"`: Randomly picks one URL from the list initially, then
- *   behaves like `"NONE"`.
- *
- * - `"ROUND_ROBIN"`: Every sequential request uses the next URL in the list.
+ * @param arangojsHostUrl - Base URL of the host, i.e. protocol, port and domain name.
+ * @param options - Options to use for all fetch requests.
  */
-export type LoadBalancingStrategy = "NONE" | "ROUND_ROBIN" | "ONE_RANDOM";
+function createHost(arangojsHostUrl: string, agentOptions?: any): Host {
+  const baseUrl = new URL(arangojsHostUrl);
+  let fetch = globalThis.fetch;
+  let createDispatcher: (() => Promise<any>) | undefined;
+  let dispatcher: any;
+  let socketPath: string | undefined;
+  if (arangojsHostUrl.match(/^\w+:\/\/unix:\//)) {
+    socketPath = baseUrl.pathname;
+    baseUrl.hostname = "localhost";
+    baseUrl.pathname = "/";
+    agentOptions = {
+      ...agentOptions,
+      connect: {
+        ...agentOptions?.connect,
+        socketPath,
+      },
+    };
+  }
+  if (agentOptions) {
+    createDispatcher = async () => {
+      let undici: any;
+      try {
+        // Prevent overzealous bundlers from attempting to bundle undici
+        const undiciName = "undici";
+        undici = await import(undiciName);
+      } catch (cause) {
+        if (socketPath) {
+          throw new Error("Undici is required for Unix domain sockets", {
+            cause,
+          });
+        }
+        throw new Error("Undici is required when using config.agentOptions", {
+          cause,
+        });
+      }
+      fetch = undici.fetch;
+      return new undici.Agent(agentOptions);
+    };
+  }
+  const pending = new Map<string, AbortController>();
+  return {
+    async fetch({
+      method,
+      pathname,
+      search,
+      headers: requestHeaders,
+      body,
+      timeout,
+      fetchOptions,
+      beforeRequest,
+      afterResponse,
+    }: Omit<
+      RequestOptions,
+      | "maxRetries"
+      | "retryOnConflict"
+      | "allowDirtyRead"
+      | "hostUrl"
+      | "expectBinary"
+      | "isBinary"
+    >) {
+      const url = new URL(pathname + baseUrl.search, baseUrl);
+      if (search) {
+        const searchParams =
+          search instanceof URLSearchParams
+            ? search
+            : new URLSearchParams(search);
+        for (const [key, value] of searchParams) {
+          url.searchParams.append(key, value);
+        }
+      }
+      const headers = new Headers(requestHeaders);
+      if (!headers.has("authorization")) {
+        headers.set(
+          "authorization",
+          `Basic ${btoa(
+            `${baseUrl.username || "root"}:${baseUrl.password || ""}`
+          )}`
+        );
+      }
+      const abortController = new AbortController();
+      const signal = abortController.signal;
+      if (createDispatcher) {
+        dispatcher = await createDispatcher();
+        createDispatcher = undefined;
+      }
+      const request = new Request(url, {
+        ...fetchOptions,
+        dispatcher,
+        method,
+        headers,
+        body,
+        signal,
+      } as globalThis.RequestInit);
+      if (beforeRequest) {
+        const p = beforeRequest(request);
+        if (p instanceof Promise) await p;
+      }
+      const requestId = util.generateRequestId();
+      pending.set(requestId, abortController);
+      let clearTimer: (() => void) | undefined;
+      if (timeout) {
+        clearTimer = util.createTimer(timeout, () => {
+          clearTimer = undefined;
+          abortController.abort(REASON_TIMEOUT);
+        });
+      }
+      let response: globalThis.Response & { request: globalThis.Request };
+      try {
+        response = Object.assign(await fetch(request), {
+          request,
+          arangojsHostUrl,
+        });
+        if (fetchOptions?.redirect === "manual" && isRedirect(response)) {
+          throw new errors.HttpError(response);
+        }
+      } catch (e: unknown) {
+        const cause = e instanceof Error ? e : new Error(String(e));
+        let error: errors.NetworkError;
+        if (cause instanceof errors.NetworkError) {
+          error = cause;
+        } else if (signal.aborted) {
+          const reason =
+            typeof signal.reason == "string" ? signal.reason : undefined;
+          if (reason === REASON_TIMEOUT) {
+            error = new errors.ResponseTimeoutError(undefined, request, {
+              cause,
+            });
+          } else {
+            error = new errors.RequestAbortedError(reason, request, { cause });
+          }
+        } else if (cause instanceof TypeError) {
+          error = new errors.FetchFailedError(undefined, request, { cause });
+        } else {
+          error = new errors.NetworkError(cause.message, request, { cause });
+        }
+        if (afterResponse) {
+          const p = afterResponse(error);
+          if (p instanceof Promise) await p;
+        }
+        throw error;
+      } finally {
+        clearTimer?.();
+        pending.delete(requestId);
+      }
+      if (afterResponse) {
+        const p = afterResponse(null, response);
+        if (p instanceof Promise) await p;
+      }
+      return response;
+    },
+    close() {
+      if (!pending.size) return;
+      const controllers = [...pending.values()];
+      pending.clear();
+      for (const controller of controllers) {
+        try {
+          controller.abort();
+        } catch (e) {
+          // noop
+        }
+      }
+    },
+  };
+}
+//#endregion
+
+//#region Response types
+const STATUS_CODE_DEFAULT_MESSAGES = {
+  0: "Network Error",
+  300: "Multiple Choices",
+  301: "Moved Permanently",
+  302: "Found",
+  303: "See Other",
+  304: "Not Modified",
+  307: "Temporary Redirect",
+  308: "Permanent Redirect",
+  400: "Bad Request",
+  401: "Unauthorized",
+  402: "Payment Required",
+  403: "Forbidden",
+  404: "Not Found",
+  405: "Method Not Allowed",
+  406: "Not Acceptable",
+  407: "Proxy Authentication Required",
+  408: "Request Timeout",
+  409: "Conflict",
+  410: "Gone",
+  411: "Length Required",
+  412: "Precondition Failed",
+  413: "Payload Too Large",
+  414: "Request-URI Too Long",
+  415: "Unsupported Media Type",
+  416: "Requested Range Not Satisfiable",
+  417: "Expectation Failed",
+  418: "I'm a teapot",
+  421: "Misdirected Request",
+  422: "Unprocessable Entity",
+  423: "Locked",
+  424: "Failed Dependency",
+  426: "Upgrade Required",
+  428: "Precondition Required",
+  429: "Too Many Requests",
+  431: "Request Header Fields Too Large",
+  444: "Connection Closed Without Response",
+  451: "Unavailable For Legal Reasons",
+  499: "Client Closed Request",
+  500: "Internal Server Error",
+  501: "Not Implemented",
+  502: "Bad Gateway",
+  503: "Service Unavailable",
+  504: "Gateway Timeout",
+  505: "HTTP Version Not Supported",
+  506: "Variant Also Negotiates",
+  507: "Insufficient Storage",
+  508: "Loop Detected",
+  510: "Not Extended",
+  511: "Network Authentication Required",
+  599: "Network Connect Timeout Error",
+};
+
+type KnownStatusCode = keyof typeof STATUS_CODE_DEFAULT_MESSAGES;
+const KNOWN_STATUS_CODES = Object.keys(STATUS_CODE_DEFAULT_MESSAGES).map((k) =>
+  Number(k)
+) as KnownStatusCode[];
+const REDIRECT_CODES = [301, 302, 303, 307, 308] satisfies KnownStatusCode[];
+type RedirectStatusCode = (typeof REDIRECT_CODES)[number];
+
+/**
+ * @internal
+ *
+ * Indicates whether the given status code can be translated to a known status
+ * message.
+ */
+function isKnownStatusCode(code: number): code is KnownStatusCode {
+  return KNOWN_STATUS_CODES.includes(code as KnownStatusCode);
+}
+
+/**
+ * @internal
+ *
+ * Indicates whether the given status code represents a redirect.
+ */
+function isRedirect(response: ProcessedResponse): boolean {
+  return REDIRECT_CODES.includes(response.status as RedirectStatusCode);
+}
+
+/**
+ * Returns the status message for the given response's status code or the
+ * status text of the response.
+ */
+export function getStatusMessage(response: ProcessedResponse): string {
+  if (isKnownStatusCode(response.status)) {
+    return STATUS_CODE_DEFAULT_MESSAGES[response.status];
+  }
+  if (response.statusText) return response.statusText;
+  return "Unknown response status";
+}
 
 /**
  * Generic properties shared by all ArangoDB HTTP API responses.
@@ -69,220 +337,188 @@ export type ArangoResponseMetadata = {
 export type ArangoApiResponse<T> = T & ArangoResponseMetadata;
 
 /**
- * Credentials for HTTP Basic authentication.
+ * Indicates whether the given value represents an ArangoDB error response.
  */
-export type BasicAuthCredentials = {
-  /**
-   * Username to use for authentication, e.g. `"root"`.
-   */
-  username: string;
-  /**
-   * Password to use for authentication. Defaults to an empty string.
-   */
-  password?: string;
-};
-
-/**
- * Credentials for HTTP Bearer token authentication.
- */
-export type BearerAuthCredentials = {
-  /**
-   * Bearer token to use for authentication.
-   */
-  token: string;
-};
-
-function isBearerAuth(auth: any): auth is BearerAuthCredentials {
-  return auth.hasOwnProperty("token");
+export function isArangoErrorResponse(
+  body: unknown
+): body is ArangoErrorResponse {
+  if (!body || typeof body !== "object") return false;
+  const obj = body as Record<string, unknown>;
+  return (
+    obj.error === true &&
+    typeof obj.errorMessage === "string" &&
+    typeof obj.errorNum === "number" &&
+    (obj.code === undefined || typeof obj.code === "number")
+  );
 }
 
 /**
- * @internal
+ * Interface representing an ArangoDB error response.
  */
-function generateStackTrace() {
-  let err = new Error();
-  if (!err.stack) {
-    try {
-      throw err;
-    } catch (e: any) {
-      err = e;
-    }
-  }
-  return err;
-}
+export type ArangoErrorResponse = {
+  /**
+   * Indicates that the request resulted in an error.
+   */
+  error: true;
+  /**
+   * Intended response status code as provided in the response body.
+   */
+  code?: number;
+  /**
+   * Error message as provided in the response body.
+   */
+  errorMessage: string;
+  /**
+   * ArangoDB error code as provided in the response body.
+   *
+   * See the [ArangoDB error documentation](https://docs.arangodb.com/stable/develop/error-codes-and-meanings/)
+   * for more information.
+   */
+  errorNum: number;
+};
 
 /**
- * Options for performing a request with arangojs.
+ * Processed response object.
  */
-export type RequestOptions = {
+export interface ProcessedResponse<T = any> extends globalThis.Response {
   /**
    * @internal
    *
-   * Identifier of a specific ArangoDB host to use when more than one is known.
+   * Identifier of the ArangoDB host that served this request.
    */
-  hostUrl?: string;
+  arangojsHostUrl?: string;
   /**
-   * HTTP method to use in order to perform the request.
+   * Fetch request object.
+   */
+  request: globalThis.Request;
+  /**
+   * Parsed response body.
+   */
+  parsedBody?: T;
+}
+//#endregion
+
+//#region Request options
+/**
+ * Options available for requests made with the Fetch API.
+ */
+export type CommonFetchOptions = {
+  /**
+   * Headers object containing any additional headers to send with the request.
    *
-   * Default: `"GET"`
+   * Note that the `Authorization` header will be overridden if the `auth`
+   * configuration option is set.
    */
-  method?: string;
+  headers?:
+    | string[][]
+    | Record<string, string | ReadonlyArray<string>>
+    | Headers;
   /**
-   * Request body data.
-   */
-  body?: any;
-  /**
-   * If set to `true`, the response body will not be interpreted as JSON and
-   * instead passed as-is.
-   */
-  expectBinary?: boolean;
-  /**
-   * If set to `true`, the request body will not be converted to JSON and
-   * instead passed as-is.
-   */
-  isBinary?: boolean;
-  /**
-   * Whether ArangoDB is allowed to perform a dirty read to respond to this
-   * request. If set to `true`, the response may reflect a dirty state from
-   * a non-authoritative server.
-   */
-  allowDirtyRead?: boolean;
-  /**
-   * If set to a positive number, the request will automatically be retried at
-   * most this many times if it results in a write-write conflict.
+   * Controls whether the socket should be reused for subsequent requests.
    *
-   * Default: `config.retryOnConflict`
+   * Default: `false`
    */
-  retryOnConflict?: number;
+  keepalive?: boolean;
   /**
-   * HTTP headers to pass along with this request in addition to the default
-   * headers generated by arangojs.
-   */
-  headers?: Headers | Record<string, string>;
-  /**
-   * Time in milliseconds after which arangojs will abort the request if the
-   * socket has not already timed out.
+   * Controls what to do when the response status code is a redirect.
    *
-   * See also `agentOptions.timeout` in {@link Config}.
+   * - `"error"`: Abort with a network error.
+   * - `"follow"`: Automatically follow redirects.
+   * - `"manual"`: Abort with an `HttpError`.
+   *
+   * Default: `"follow"`
    */
-  timeout?: number;
+  redirect?: "error" | "follow" | "manual";
   /**
-   * Optional prefix path to prepend to the `path`.
+   * Value to use for the `Referer` header.
+   *
+   * If set to `"about:client"`, the default value for the context in which the
+   * request is made will be used.
+   *
+   * Default: `"about:client"`
    */
-  basePath?: string;
+  referrer?: string;
   /**
-   * URL path, relative to the `basePath` and server domain.
+   * (Browser only.) Controls the Attribution Reporting API specific behavior.
+   *
+   * See the [MDN Web Docs](https://developer.mozilla.org/en-US/docs/Web/API/RequestInit)
+   * for more information on the available options.
    */
-  path?: string;
+  attributionReporting?: any;
   /**
-   * URL parameters to pass as part of the query string.
+   * (Browser only.) Cache mode to use for the request.
+   *
+   * See [the Fetch API specification](https://fetch.spec.whatwg.org/#request-class)
+   * or the [MDN Web Docs](https://developer.mozilla.org/en-US/docs/Web/API/RequestInit)
+   * for more information on the available options.
    */
-  search?: URLSearchParams | Record<string, any>;
+  cache?: string;
+  /**
+   * (Browser only.) Controls sending of credentials and cookies.
+   *
+   * - `"omit"`: Never send cookies.
+   * - `"include"`: Always send cookies.
+   * - `"same-origin"`: Only send cookies if the request is to the same origin.
+   *
+   * Default: `"same-origin"`
+   */
+  credentials?: "omit" | "include" | "same-origin";
+  /**
+   * (Node.js only.) Undici `Dispatcher` instance to use for the request.
+   *
+   * Defaults to the global dispatcher.
+   */
+  dispatcher?: any;
+  /**
+   * (Browser only.) Sets cross-origin behavior for the request.
+   *
+   * See [the Fetch API specification](https://fetch.spec.whatwg.org/#request-class)
+   * or the [MDN Web Docs](https://developer.mozilla.org/en-US/docs/Web/API/RequestInit)
+   * for more information on the available options.
+   *
+   * Default: `"cors"`
+   */
+  mode?: string;
+  /**
+   * (Browser only.) Request priority relative to other requests of the same type.
+   *
+   * See [the Fetch API specification](https://fetch.spec.whatwg.org/#request-class)
+   * or the [MDN Web Docs](https://developer.mozilla.org/en-US/docs/Web/API/RequestInit)
+   * for more information on the available options.
+   *
+   * Default: `"auto"`
+   */
+  priority?: "low" | "high" | "auto";
+  /**
+   * (Browser only.) Policy to use for the `Referer` header, equivalent to the
+   * semantics of the `Referrer-Policy` header.
+   *
+   * See [the Fetch API specification](https://fetch.spec.whatwg.org/#request-class)
+   * or the [MDN Web Docs](https://developer.mozilla.org/en-US/docs/Web/API/RequestInit)
+   * for more information on the available options.
+   */
+  referrerPolicy?: string;
 };
 
 /**
- * @internal
+ * Fetch-specific options for performing a request with arangojs.
  */
-type Task = {
-  hostUrl?: string;
-  stack?: () => string;
-  allowDirtyRead: boolean;
-  retryOnConflict: number;
-  resolve: (result: any) => void;
-  reject: (error: Error) => void;
-  transform?: (res: ArangojsResponse) => any;
-  retries: number;
-  options: {
-    method: string;
-    expectBinary: boolean;
-    timeout?: number;
-    pathname: string;
-    search?: URLSearchParams;
-    headers: Headers;
-    body: any;
-  };
+export type FetchOptions = CommonFetchOptions & {
+  /**
+   * Subresource integrity value to use for the request, formatted as
+   * `<hash-algorithm>-<hash-source>`.
+   */
+  integrity?: `${string}-${string}`;
 };
 
 /**
- * Options for configuring arangojs.
+ * Options that can be shared globally for all requests made with arangojs.
  */
-export type Config = {
-  /**
-   * Name of the database to use.
-   *
-   * Default: `"_system"`
-   */
-  databaseName?: string;
-  /**
-   * Base URL of the ArangoDB server or list of server URLs.
-   *
-   * When working with a cluster, the method {@link database.Database#acquireHostList}
-   * can be used to automatically pick up additional coordinators/followers at
-   * any point.
-   *
-   * When running ArangoDB on a unix socket, e.g. `/tmp/arangodb.sock`, the
-   * following URL formats are supported for unix sockets:
-   *
-   * - `unix:///tmp/arangodb.sock` (no SSL)
-   * - `http+unix:///tmp/arangodb.sock` (or `https+unix://` for SSL)
-   * - `http://unix:/tmp/arangodb.sock` (or `https://unix:` for SSL)
-   *
-   * Additionally `ssl` and `tls` are treated as synonymous with `https` and
-   * `tcp` is treated as synonymous with `http`, so the following URLs are
-   * considered identical:
-   *
-   * - `tcp://127.0.0.1:8529` and `http://127.0.0.1:8529`
-   * - `ssl://127.0.0.1:8529` and `https://127.0.0.1:8529`
-   * - `tcp+unix:///tmp/arangodb.sock` and `http+unix:///tmp/arangodb.sock`
-   * - `ssl+unix:///tmp/arangodb.sock` and `https+unix:///tmp/arangodb.sock`
-   * - `tcp://unix:/tmp/arangodb.sock` and `http://unix:/tmp/arangodb.sock`
-   * - `ssl://unix:/tmp/arangodb.sock` and `https://unix:/tmp/arangodb.sock`
-   *
-   * See also `auth` for passing authentication credentials.
-   *
-   * Default: `"http://127.0.0.1:8529"`
-   */
-  url?: string | string[];
-  /**
-   * Credentials to use for authentication.
-   *
-   * See also {@link database.Database#useBasicAuth} and
-   * {@link database.Database#useBearerAuth}.
-   *
-   * Default: `{ username: "root", password: "" }`
-   */
-  auth?: BasicAuthCredentials | BearerAuthCredentials;
-  /**
-   * Numeric representation of the ArangoDB version the driver should expect.
-   * The format is defined as `XYYZZ` where `X` is the major version, `Y` is
-   * the zero-filled two-digit minor version and `Z` is the zero-filled two-digit
-   * bugfix version, e.g. `30102` for 3.1.2, `20811` for 2.8.11.
-   *
-   * Depending on this value certain methods may become unavailable or change
-   * their behavior to remain compatible with different versions of ArangoDB.
-   *
-   * Default: `31100`
-   */
-  arangoVersion?: number;
-  /**
-   * Determines the behavior when multiple URLs are provided:
-   *
-   * - `"NONE"`: No load balancing. All requests will be handled by the first
-   *   URL in the list until a network error is encountered. On network error,
-   *   arangojs will advance to using the next URL in the list.
-   *
-   * - `"ONE_RANDOM"`: Randomly picks one URL from the list initially, then
-   *   behaves like `"NONE"`.
-   *
-   * - `"ROUND_ROBIN"`: Every sequential request uses the next URL in the list.
-   *
-   * Default: `"NONE"`
-   */
-  loadBalancingStrategy?: LoadBalancingStrategy;
+export type CommonRequestOptions = {
   /**
    * Determines the behavior when a request fails because the underlying
    * connection to the server could not be opened
-   * (i.e. [`ECONNREFUSED` in Node.js](https://nodejs.org/api/errors.html#errors_common_system_errors)):
+   * (e.g. [`ECONNREFUSED` in Node.js](https://nodejs.org/api/errors.html#errors_common_system_errors)):
    *
    * - `false`: the request fails immediately.
    *
@@ -309,44 +545,32 @@ export type Config = {
    */
   maxRetries?: false | number;
   /**
-   * Maximum number of parallel requests arangojs will perform. If any
-   * additional requests are attempted, they will be enqueued until one of the
-   * active requests has completed.
+   * If set to a positive number, requests will automatically be retried at
+   * most this many times if they result in a write-write conflict.
    *
-   * **Note:** when using `ROUND_ROBIN` load balancing and passing an array of
-   * URLs in the `url` option, the default value of this option will be set to
-   * `3 * url.length` instead of `3`.
-   *
-   * Default: `3`
+   * Default: `0`
    */
-  poolSize?: number;
+  retryOnConflict?: number;
   /**
-   * (Browser only.) Determines whether credentials (e.g. cookies) will be sent
-   * with requests to the ArangoDB server.
-   *
-   * If set to `same-origin`, credentials will only be included with requests
-   * on the same URL origin as the invoking script. If set to `include`,
-   * credentials will always be sent. If set to `omit`, credentials will be
-   * excluded from all requests.
-   *
-   * Default: `same-origin`
+   * Time in milliseconds after which arangojs will abort the request if the
+   * socket has not already timed out.
    */
-  credentials?: "omit" | "include" | "same-origin";
+  timeout?: number;
   /**
-   * If set to `true`, requests will keep the underlying connection open until
-   * it times out or is closed. In browsers this prevents requests from being
-   * cancelled when the user navigates away from the page.
+   * Whether ArangoDB is allowed to perform a dirty read to respond to the
+   * request. If set to `true`, the response may reflect a dirty state from
+   * a non-authoritative server.
    *
-   * Default: `true`
+   * Default: `false`
    */
-  keepalive?: boolean;
+  allowDirtyRead?: boolean;
   /**
    * Callback that will be invoked with the finished request object before it
    * is finalized. In the browser the request may already have been sent.
    *
    * @param req - Request object or XHR instance used for this request.
    */
-  beforeRequest?: (req: globalThis.Request) => void;
+  beforeRequest?: (req: globalThis.Request) => void | Promise<void>;
   /**
    * Callback that will be invoked when the server response has been received
    * and processed or when the request has been failed without a response.
@@ -357,40 +581,79 @@ export type Config = {
    * @param err - Error encountered when handling this request or `null`.
    * @param res - Response object for this request, if no error occurred.
    */
-  afterResponse?: (err: ArangojsError | null, res?: ArangojsResponse) => void;
+  afterResponse?: (
+    err: errors.NetworkError | null,
+    res?: globalThis.Response & { request: globalThis.Request }
+  ) => void | Promise<void>;
+};
+
+/**
+ * Options for performing a request with arangojs.
+ */
+export type RequestOptions = CommonRequestOptions & {
   /**
-   * If set to a positive number, requests will automatically be retried at
-   * most this many times if they result in a write-write conflict.
+   * @internal
    *
-   * Default: `0`
+   * Identifier of a specific ArangoDB host to use when more than one is known.
    */
-  retryOnConflict?: number;
+  hostUrl?: string;
   /**
-   * An object with additional headers to send with every request.
+   * HTTP method to use in order to perform the request.
    *
-   * If an `"authorization"` header is provided, it will be overridden when
-   * using {@link database.Database#useBasicAuth}, {@link database.Database#useBearerAuth} or
-   * the `auth` configuration option.
+   * Default: `"GET"`
    */
-  headers?: Headers | Record<string, string>;
+  method?: string;
   /**
-   * If set to `true`, arangojs will generate stack traces every time a request
-   * is initiated and augment the stack traces of any errors it generates.
-   *
-   * **Warning**: This will cause arangojs to generate stack traces in advance
-   * even if the request does not result in an error. Generating stack traces
-   * may negatively impact performance.
+   * URL path, relative to the server domain.
    */
-  precaptureStackTraces?: boolean;
+  pathname?: string;
   /**
-   * Limits the number of values of server-reported response queue times that
-   * will be stored and accessible using {@link database.Database#queueTime}. If set to
-   * a finite value, older values will be discarded to make room for new values
-   * when that limit is reached.
-   *
-   * Default: `10`
+   * URL parameters to pass as part of the query string.
    */
-  responseQueueTimeSamples?: number;
+  search?: URLSearchParams | Record<string, any>;
+  /**
+   * Headers object containing any additional headers to send with the request.
+   *
+   * Note that the `Authorization` header will be overridden if the `auth`
+   * configuration option is set.
+   */
+  headers?:
+    | string[][]
+    | Record<string, string | ReadonlyArray<string>>
+    | Headers;
+  /**
+   * Request body data.
+   */
+  body?: any;
+  /**
+   * Additional options to pass to the `fetch` function.
+   */
+  fetchOptions?: Omit<FetchOptions, "headers">;
+  /**
+   * If set to `true`, the request body will not be converted to JSON and
+   * instead passed as-is.
+   */
+  isBinary?: boolean;
+  /**
+   * If set to `true`, the response body will not be interpreted as JSON and
+   * instead passed as-is.
+   */
+  expectBinary?: boolean;
+};
+//#endregion
+
+//#region Connection class
+/**
+ * @internal
+ */
+type Task<T = any> = {
+  stack?: () => string;
+  resolve: (result: T) => void;
+  reject: (error: unknown) => void;
+  transform?: (res: ProcessedResponse<any>) => T;
+  retries: number;
+  conflicts: number;
+  options: RequestOptions;
 };
 
 /**
@@ -411,20 +674,19 @@ export function isArangoConnection(connection: any): connection is Connection {
  */
 export class Connection {
   protected _activeTasks: number = 0;
-  protected _arangoVersion: number = 31100;
-  protected _headers: Headers;
-  protected _loadBalancingStrategy: LoadBalancingStrategy;
-  protected _maxRetries: number | false;
+  protected _arangoVersion: number;
+  protected _loadBalancingStrategy: configuration.LoadBalancingStrategy;
   protected _taskPoolSize: number;
-  protected _requestConfig: RequestConfig;
-  protected _retryOnConflict: number;
+  protected _commonRequestOptions: CommonRequestOptions;
+  protected _commonFetchOptions: CommonFetchOptions & { headers: Headers };
   protected _queue = new LinkedList<Task>();
-  protected _databases = new Map<string, Database>();
-  protected _hosts: RequestFunction[] = [];
+  protected _databases = new Map<string, databases.Database>();
+  protected _hosts: Host[] = [];
   protected _hostUrls: string[] = [];
   protected _activeHostUrl: string;
   protected _activeDirtyHostUrl: string;
   protected _transactionId: string | null = null;
+  protected _onError?: (err: Error) => void | Promise<void>;
   protected _precaptureStackTraces: boolean;
   protected _queueTimes = new LinkedList<[number, number]>();
   protected _responseQueueTimeSamples: number;
@@ -437,51 +699,54 @@ export class Connection {
    * @param config - An object with configuration options.
    *
    */
-  constructor(config: Omit<Config, "databaseName"> = {}) {
-    const URLS = config.url
-      ? Array.isArray(config.url)
-        ? config.url
-        : [config.url]
-      : ["http://127.0.0.1:8529"];
-    const DEFAULT_POOL_SIZE =
-      3 * (config.loadBalancingStrategy === "ROUND_ROBIN" ? URLS.length : 1);
+  constructor(config: Omit<configuration.ConfigOptions, "databaseName"> = {}) {
+    const {
+      url = "http://127.0.0.1:8529",
+      auth,
+      arangoVersion = 31100,
+      loadBalancingStrategy = "NONE",
+      maxRetries = 0,
+      poolSize = 3 *
+        (loadBalancingStrategy === "ROUND_ROBIN" && Array.isArray(url)
+          ? url.length
+          : 1),
+      fetchOptions: { headers, ...commonFetchOptions } = {},
+      onError,
+      precaptureStackTraces = false,
+      responseQueueTimeSamples = 10,
+      ...commonRequestOptions
+    } = config;
+    const URLS = Array.isArray(url) ? url : [url];
+    this._loadBalancingStrategy = loadBalancingStrategy;
+    this._precaptureStackTraces = precaptureStackTraces;
+    this._responseQueueTimeSamples =
+      responseQueueTimeSamples < 0 ? Infinity : responseQueueTimeSamples;
+    this._arangoVersion = arangoVersion;
+    this._taskPoolSize = poolSize;
+    this._onError = onError;
 
-    if (config.arangoVersion !== undefined) {
-      this._arangoVersion = config.arangoVersion;
-    }
-    this._taskPoolSize = config.poolSize ?? DEFAULT_POOL_SIZE;
-    this._requestConfig = {
-      credentials: config.credentials ?? "same-origin",
-      keepalive: config.keepalive ?? true,
-      beforeRequest: config.beforeRequest,
-      afterResponse: config.afterResponse,
+    this._commonRequestOptions = commonRequestOptions;
+    this._commonFetchOptions = {
+      headers: new Headers(headers),
+      ...commonFetchOptions,
     };
-    this._headers = new Headers(config.headers);
-    this._headers.set("x-arango-version", String(this._arangoVersion));
-    this._headers.set(
+
+    this._commonFetchOptions.headers.set(
+      "x-arango-version",
+      String(arangoVersion)
+    );
+    this._commonFetchOptions.headers.set(
       "x-arango-driver",
       `arangojs/${process.env.ARANGOJS_VERSION} (cloud)`
     );
-    this._loadBalancingStrategy = config.loadBalancingStrategy ?? "NONE";
-    this._precaptureStackTraces = Boolean(config.precaptureStackTraces);
-    this._responseQueueTimeSamples = config.responseQueueTimeSamples ?? 10;
-    this._retryOnConflict = config.retryOnConflict ?? 0;
-    if (this._responseQueueTimeSamples < 0) {
-      this._responseQueueTimeSamples = Infinity;
-    }
-    if (config.maxRetries === false) {
-      this._maxRetries = false;
-    } else {
-      this._maxRetries = Number(config.maxRetries ?? 0);
-    }
 
     this.addToHostList(URLS);
 
-    if (config.auth) {
-      if (isBearerAuth(config.auth)) {
-        this.setBearerAuth(config.auth);
+    if (auth) {
+      if (configuration.isBearerAuth(auth)) {
+        this.setBearerAuth(auth);
       } else {
-        this.setBasicAuth(config.auth);
+        this.setBasicAuth(auth);
       }
     }
 
@@ -505,7 +770,7 @@ export class Connection {
     return true;
   }
 
-  get queueTime() {
+  get queueTime(): administration.QueueTimeMetrics {
     return {
       getLatest: () => this._queueTimes.last?.value[1],
       getValues: () => Array.from(this._queueTimes.values()),
@@ -520,132 +785,134 @@ export class Connection {
   }
 
   protected async _runQueue() {
-    if (!this._queue.length || this._activeTasks >= this._taskPoolSize) return;
-    const task = this._queue.shift()!;
+    if (this._activeTasks >= this._taskPoolSize) return;
+    const task = this._queue.shift();
+    if (!task) return;
     let hostUrl = this._activeHostUrl;
-    if (task.hostUrl !== undefined) {
-      hostUrl = task.hostUrl;
-    } else if (task.allowDirtyRead) {
-      hostUrl = this._activeDirtyHostUrl;
-      this._activeDirtyHostUrl =
-        this._hostUrls[
-          (this._hostUrls.indexOf(this._activeDirtyHostUrl) + 1) %
-            this._hostUrls.length
-        ];
-      task.options.headers.set("x-arango-allow-dirty-read", "true");
-    } else if (this._loadBalancingStrategy === "ROUND_ROBIN") {
-      this._activeHostUrl =
-        this._hostUrls[
-          (this._hostUrls.indexOf(this._activeHostUrl) + 1) %
-            this._hostUrls.length
-        ];
-    }
-    this._activeTasks += 1;
     try {
-      const res = await this._hosts[this._hostUrls.indexOf(hostUrl)](
-        task.options
-      );
+      this._activeTasks += 1;
+      if (task.options.hostUrl !== undefined) {
+        hostUrl = task.options.hostUrl;
+      } else if (task.options.allowDirtyRead) {
+        hostUrl = this._activeDirtyHostUrl;
+        const i = this._hostUrls.indexOf(this._activeDirtyHostUrl) + 1;
+        this._activeDirtyHostUrl = this._hostUrls[i % this._hostUrls.length];
+      } else if (this._loadBalancingStrategy === "ROUND_ROBIN") {
+        const i = this._hostUrls.indexOf(this._activeHostUrl) + 1;
+        this._activeHostUrl = this._hostUrls[i % this._hostUrls.length];
+      }
+      const host = this._hosts[this._hostUrls.indexOf(hostUrl)];
+      const res: globalThis.Response & {
+        request: globalThis.Request;
+        arangojsHostUrl: string;
+        parsedBody?: any;
+      } = Object.assign(await host.fetch(task.options), {
+        arangojsHostUrl: hostUrl,
+      });
       const leaderEndpoint = res.headers.get(LEADER_ENDPOINT_HEADER);
       if (res.status === 503 && leaderEndpoint) {
         const [cleanUrl] = this.addToHostList(leaderEndpoint);
-        task.hostUrl = cleanUrl;
+        task.options.hostUrl = cleanUrl;
         if (this._activeHostUrl === hostUrl) {
           this._activeHostUrl = cleanUrl;
         }
         this._queue.push(task);
-      } else {
-        res.arangojsHostUrl = hostUrl;
-        const contentType = res.headers.get("content-type");
-        const queueTime = res.headers.get("x-arango-queue-time-seconds");
-        if (queueTime) {
-          this._queueTimes.push([Date.now(), Number(queueTime)]);
-          while (this._responseQueueTimeSamples < this._queueTimes.length) {
-            this._queueTimes.shift();
-          }
-        }
-        if (res.status >= 400) {
-          try {
-            if (contentType?.match(MIME_JSON)) {
-              const errorResponse = res.clone();
-              let errorBody: any;
-              try {
-                errorBody = await errorResponse.json();
-              } catch {
-                // noop
-              }
-              if (isArangoErrorResponse(errorBody)) {
-                res.parsedBody = errorBody;
-                throw new ArangoError(res);
-              }
-            }
-            throw new HttpError(res);
-          } catch (err: any) {
-            if (task.stack) {
-              err.stack += task.stack();
-            }
-            throw err;
-          }
-        }
-        if (res.body) {
-          if (task.options.expectBinary) {
-            res.parsedBody = await res.blob();
-          } else if (contentType?.match(MIME_JSON)) {
-            res.parsedBody = await res.json();
-          } else {
-            res.parsedBody = await res.text();
-          }
-        }
-        task.resolve(task.transform ? task.transform(res) : res);
+        return;
       }
-    } catch (err: any) {
+      const queueTime = res.headers.get("x-arango-queue-time-seconds");
+      if (queueTime) {
+        this._queueTimes.push([Date.now(), Number(queueTime)]);
+        while (this._responseQueueTimeSamples < this._queueTimes.length) {
+          this._queueTimes.shift();
+        }
+      }
+      const contentType = res.headers.get("content-type");
+      if (res.status >= 400) {
+        if (contentType?.match(MIME_JSON)) {
+          const errorResponse = res.clone();
+          let errorBody: any;
+          try {
+            errorBody = await errorResponse.json();
+          } catch {
+            // noop
+          }
+          if (isArangoErrorResponse(errorBody)) {
+            res.parsedBody = errorBody;
+            throw errors.ArangoError.from(res);
+          }
+        }
+        throw new errors.HttpError(res);
+      }
+      if (res.body) {
+        if (task.options.expectBinary) {
+          res.parsedBody = await res.blob();
+        } else if (contentType?.match(MIME_JSON)) {
+          res.parsedBody = await res.json();
+        } else {
+          res.parsedBody = await res.text();
+        }
+      }
+      let result: any = res;
+      if (task.transform) result = task.transform(res);
+      task.resolve(result);
+    } catch (e: unknown) {
+      const err = e as Error;
       if (
-        !task.allowDirtyRead &&
+        !task.options.allowDirtyRead &&
         this._hosts.length > 1 &&
         this._activeHostUrl === hostUrl &&
         this._loadBalancingStrategy !== "ROUND_ROBIN"
       ) {
-        this._activeHostUrl =
-          this._hostUrls[
-            (this._hostUrls.indexOf(this._activeHostUrl) + 1) %
-              this._hostUrls.length
-          ];
+        const i = this._hostUrls.indexOf(this._activeHostUrl) + 1;
+        this._activeHostUrl = this._hostUrls[i % this._hostUrls.length];
       }
       if (
-        isArangoError(err) &&
+        errors.isArangoError(err) &&
         err.errorNum === ERROR_ARANGO_CONFLICT &&
-        task.retryOnConflict > 0
+        task.options.retryOnConflict &&
+        task.conflicts < task.options.retryOnConflict
       ) {
-        task.retryOnConflict -= 1;
+        task.conflicts += 1;
         this._queue.push(task);
-      } else if (
-        ((isSystemError(err) &&
-          err.syscall === "connect" &&
-          err.code === "ECONNREFUSED") ||
-          (isArangoError(err) &&
-            err.errorNum === ERROR_ARANGO_MAINTENANCE_MODE)) &&
-        task.hostUrl === undefined &&
-        this._maxRetries !== false &&
-        task.retries < (this._maxRetries || this._hosts.length - 1)
+        return;
+      }
+      if (
+        (errors.isNetworkError(err) || errors.isArangoError(err)) &&
+        err.isSafeToRetry &&
+        task.options.hostUrl === undefined &&
+        this._commonRequestOptions.maxRetries !== false &&
+        task.retries <
+          (this._commonRequestOptions.maxRetries || this._hosts.length - 1)
       ) {
         task.retries += 1;
         this._queue.push(task);
-      } else {
-        if (task.stack) {
-          err.stack += task.stack();
-        }
-        task.reject(err);
+        return;
       }
+      if (task.stack) {
+        err.stack += task.stack();
+      }
+      if (this._onError) {
+        try {
+          const p = this._onError(err);
+          if (p instanceof Promise) await p;
+        } catch (e) {
+          (e as Error).cause = err;
+          task.reject(e);
+          return;
+        }
+      }
+      task.reject(err);
     } finally {
       this._activeTasks -= 1;
+      setTimeout(() => this._runQueue(), 0);
     }
-    this._runQueue();
   }
 
-  setBearerAuth(auth: BearerAuthCredentials) {
+  setBearerAuth(auth: configuration.BearerAuthCredentials) {
     this.setHeader("authorization", `Bearer ${auth.token}`);
   }
 
-  setBasicAuth(auth: BasicAuthCredentials) {
+  setBasicAuth(auth: configuration.BasicAuthCredentials) {
     this.setHeader(
       "authorization",
       `Basic ${btoa(`${auth.username}:${auth.password}`)}`
@@ -665,26 +932,29 @@ export class Connection {
   /**
    * @internal
    *
-   * Fetches a {@link database.Database} instance for the given database name from the
+   * Fetches a {@link databases.Database} instance for the given database name from the
    * internal cache, if available.
    *
    * @param databaseName - Name of the database.
    */
-  database(databaseName: string): Database | undefined;
+  database(databaseName: string): databases.Database | undefined;
   /**
    * @internal
    *
-   * Adds a {@link database.Database} instance for the given database name to the
+   * Adds a {@link databases.Database} instance for the given database name to the
    * internal cache.
    *
    * @param databaseName - Name of the database.
    * @param database - Database instance to add to the cache.
    */
-  database(databaseName: string, database: Database): Database;
+  database(
+    databaseName: string,
+    database: databases.Database
+  ): databases.Database;
   /**
    * @internal
    *
-   * Clears any {@link database.Database} instance stored for the given database name
+   * Clears any {@link databases.Database} instance stored for the given database name
    * from the internal cache, if present.
    *
    * @param databaseName - Name of the database.
@@ -693,8 +963,8 @@ export class Connection {
   database(databaseName: string, database: null): undefined;
   database(
     databaseName: string,
-    database?: Database | null
-  ): Database | undefined {
+    database?: databases.Database | null
+  ): databases.Database | undefined {
     if (database === null) {
       this._databases.delete(databaseName);
       return undefined;
@@ -716,18 +986,14 @@ export class Connection {
    * @param urls - URLs to use as host list.
    */
   setHostList(urls: string[]): void {
-    const cleanUrls = urls.map((url) => normalizeUrl(url));
+    const cleanUrls = urls.map((url) => util.normalizeUrl(url));
     this._hosts.splice(
       0,
       this._hosts.length,
       ...cleanUrls.map((url) => {
         const i = this._hostUrls.indexOf(url);
         if (i !== -1) return this._hosts[i];
-        const parsedUrl = new URL(url);
-        if (!parsedUrl.pathname.endsWith("/")) {
-          parsedUrl.pathname += "/";
-        }
-        return createRequest(parsedUrl, this._requestConfig);
+        return createHost(url);
       })
     );
     this._hostUrls.splice(0, this._hostUrls.length, ...cleanUrls);
@@ -744,21 +1010,13 @@ export class Connection {
    */
   addToHostList(urls: string | string[]): string[] {
     const cleanUrls = (Array.isArray(urls) ? urls : [urls]).map((url) =>
-      normalizeUrl(url)
+      util.normalizeUrl(url)
     );
     const newUrls = cleanUrls.filter(
       (url) => this._hostUrls.indexOf(url) === -1
     );
     this._hostUrls.push(...newUrls);
-    this._hosts.push(
-      ...newUrls.map((url: string) => {
-        const parsedUrl = new URL(url);
-        if (!parsedUrl.pathname.endsWith("/")) {
-          parsedUrl.pathname += "/";
-        }
-        return createRequest(parsedUrl, this._requestConfig);
-      })
-    );
+    this._hosts.push(...newUrls.map((url) => createHost(url)));
     return cleanUrls;
   }
 
@@ -799,9 +1057,9 @@ export class Connection {
    */
   setHeader(headerName: string, value: string | null) {
     if (value === null) {
-      this._headers.delete(headerName);
+      this._commonFetchOptions.headers.delete(headerName);
     } else {
-      this._headers.set(headerName, value);
+      this._commonFetchOptions.headers.set(headerName, value);
     }
   }
 
@@ -810,7 +1068,7 @@ export class Connection {
    *
    * Closes all open connections.
    *
-   * See {@link database.Database#close}.
+   * See {@link databases.Database#close}.
    */
   close() {
     for (const host of this._hosts) {
@@ -823,7 +1081,7 @@ export class Connection {
    *
    * Waits for propagation.
    *
-   * See {@link database.Database#waitForPropagation}.
+   * See {@link databases.Database#waitForPropagation}.
    *
    * @param request - Request to perform against each coordinator.
    * @param timeout - Maximum number of milliseconds to wait for propagation.
@@ -832,6 +1090,7 @@ export class Connection {
     const numHosts = this._hosts.length;
     const propagated = [] as string[];
     const started = Date.now();
+    const endOfTime = started + timeout;
     let index = 0;
     while (true) {
       if (propagated.length === numHosts) {
@@ -842,10 +1101,16 @@ export class Connection {
       }
       const hostUrl = this._hostUrls[index];
       try {
-        await this.request({ ...request, hostUrl });
-      } catch (e: any) {
-        if (started + timeout < Date.now()) {
-          throw e;
+        await this.request({
+          ...request,
+          hostUrl,
+          timeout: endOfTime - Date.now(),
+        });
+      } catch (e) {
+        if (endOfTime < Date.now()) {
+          throw new errors.PropagationTimeoutError(undefined, {
+            cause: e as Error,
+          });
         }
         await new Promise((resolve) => setTimeout(resolve, 1000));
         continue;
@@ -861,67 +1126,86 @@ export class Connection {
    *
    * Performs a request using the arangojs connection pool.
    */
-  request<T = ArangojsResponse>(
-    {
+  async request<
+    T = globalThis.Response & { request: globalThis.Request; parsedBody?: any },
+  >(
+    requestOptions: RequestOptions & { isBinary?: boolean },
+    transform?: (
+      res: globalThis.Response & {
+        request: globalThis.Request;
+        parsedBody?: any;
+      }
+    ) => T
+  ): Promise<T> {
+    const {
       hostUrl,
-      method = "GET",
-      body,
-      expectBinary = false,
-      isBinary = false,
       allowDirtyRead = false,
-      retryOnConflict = this._retryOnConflict,
+      isBinary = false,
+      maxRetries = 0,
+      method = "GET",
+      retryOnConflict = 0,
       timeout = 0,
       headers: requestHeaders,
-      basePath,
-      path,
-      search: params,
-    }: RequestOptions,
-    transform?: (res: ArangojsResponse) => T
-  ): Promise<T> {
+      body: requestBody,
+      fetchOptions,
+      ...taskOptions
+    } = { ...this._commonRequestOptions, ...requestOptions };
+
+    const headers = util.mergeHeaders(
+      this._commonFetchOptions.headers,
+      requestHeaders
+    );
+
+    let body = requestBody;
+    if (body instanceof FormData) {
+      const res = new Response(body);
+      const blob = await res.blob();
+      // Workaround for ArangoDB 3.12.0-rc1 and earlier:
+      // Omitting the final CRLF results in "bad request body" fatal error
+      body = new Blob([blob, "\r\n"], { type: blob.type });
+    } else if (body) {
+      let contentType;
+      if (isBinary) {
+        contentType = "application/octet-stream";
+      } else if (typeof body === "object") {
+        body = JSON.stringify(body);
+        contentType = "application/json";
+      } else {
+        body = String(body);
+        contentType = "text/plain";
+      }
+      if (!headers.has("content-type")) {
+        headers.set("content-type", contentType);
+      }
+    }
+
+    if (this._transactionId) {
+      headers.set("x-arango-trx-id", this._transactionId);
+    }
+
+    if (allowDirtyRead) {
+      headers.set("x-arango-allow-dirty-read", "true");
+    }
+
     return new Promise((resolve, reject) => {
-      const headers = mergeHeaders(this._headers, requestHeaders ?? {});
-
-      if (body && !(body instanceof FormData)) {
-        let contentType;
-        if (isBinary) {
-          contentType = "application/octet-stream";
-        } else if (typeof body === "object") {
-          body = JSON.stringify(body);
-          contentType = "application/json";
-        } else {
-          body = String(body);
-          contentType = "text/plain";
-        }
-        if (!headers.has("content-type")) {
-          headers.set("content-type", contentType);
-        }
-      }
-
-      if (this._transactionId) {
-        headers.set("x-arango-trx-id", this._transactionId);
-      }
-
       const task: Task = {
-        retries: 0,
-        hostUrl,
-        allowDirtyRead,
-        retryOnConflict,
-        options: {
-          pathname: joinPath(basePath, path) ?? "",
-          search:
-            params &&
-            (params instanceof URLSearchParams
-              ? params
-              : new URLSearchParams(params)),
-          headers,
-          timeout,
-          method,
-          expectBinary,
-          body,
-        },
-        reject,
         resolve,
+        reject,
         transform,
+        retries: 0,
+        conflicts: 0,
+        options: {
+          ...taskOptions,
+          hostUrl,
+          method,
+          headers,
+          body,
+          allowDirtyRead,
+          retryOnConflict,
+          maxRetries,
+          fetchOptions,
+          timeout,
+        },
       };
 
       if (this._precaptureStackTraces) {
@@ -931,7 +1215,9 @@ export class Connection {
           task.stack = () =>
             `\n${capture.stack.split("\n").slice(3).join("\n")}`;
         } else {
-          const capture = generateStackTrace() as { readonly stack: string };
+          const capture = util.generateStackTrace() as {
+            readonly stack: string;
+          };
           if (Object.prototype.hasOwnProperty.call(capture, "stack")) {
             task.stack = () =>
               `\n${capture.stack.split("\n").slice(4).join("\n")}`;
@@ -944,3 +1230,4 @@ export class Connection {
     });
   }
 }
+//#endregion

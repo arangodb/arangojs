@@ -1,6 +1,6 @@
 import { expect } from "chai";
-import { DocumentCollection } from "../collection.js";
-import { Database } from "../database.js";
+import { DocumentCollection } from "../collections.js";
+import { Database } from "../databases.js";
 import { config } from "./_config.js";
 
 describe("Bulk imports", function () {
@@ -16,8 +16,8 @@ describe("Bulk imports", function () {
     db = system.database(dbName);
     collection = await db.createCollection(collectionName);
     await db.waitForPropagation(
-      { path: `/_api/collection/${collection.name}` },
-      10000
+      { pathname: `/_api/collection/${collection.name}` },
+      10000,
     );
   });
   after(async () => {
@@ -77,7 +77,7 @@ describe("Bulk imports", function () {
       });
       it("should accept buffer of LDJSON arrays", async () => {
         const data = Buffer.from(
-          '["_key", "data"]\r\n["tb1", "banana"]\r\n["tb2", "peach"]\r\n["tb3", "apricot"]\r\n'
+          '["_key", "data"]\r\n["tb1", "banana"]\r\n["tb2", "peach"]\r\n["tb3", "apricot"]\r\n',
         );
         const info = await collection.import(data);
         expect(info).to.eql({
@@ -106,7 +106,7 @@ describe("Bulk imports", function () {
         });
         it("should accept buffer of LDJSON documents", async () => {
           const data = Buffer.from(
-            `{"_key": "db1-${type}", "data": "banana"}\r\n{"_key": "db2-${type}", "data": "peach"}\r\n{"_key": "db3-${type}", "data": "apricot"}\r\n`
+            `{"_key": "db1-${type}", "data": "banana"}\r\n{"_key": "db2-${type}", "data": "peach"}\r\n{"_key": "db3-${type}", "data": "apricot"}\r\n`,
           );
           const info = await collection.import(data, { type });
           expect(info).to.eql({
@@ -144,7 +144,7 @@ describe("Bulk imports", function () {
               { _key: `jb1-${String(type)}`, data: "banana" },
               { _key: `jb2-${String(type)}`, data: "peach" },
               { _key: `jb3-${String(type)}`, data: "apricot" },
-            ])
+            ]),
           );
           const info = await collection.import(data, { type });
           expect(info).to.eql({

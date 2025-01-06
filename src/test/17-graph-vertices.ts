@@ -1,8 +1,8 @@
 import { expect } from "chai";
-import { DocumentCollection } from "../collection.js";
-import { Database } from "../database.js";
-import { ArangoError } from "../error.js";
-import { Graph, GraphVertexCollection } from "../graph.js";
+import { DocumentCollection } from "../collections.js";
+import { Database } from "../databases.js";
+import { ArangoError } from "../errors.js";
+import { Graph, GraphVertexCollection } from "../graphs.js";
 import { config } from "./_config.js";
 
 const range = (n: number): number[] => Array.from(Array(n).keys());
@@ -14,15 +14,15 @@ async function createCollections(db: Database) {
     ...vertexCollectionNames.map(async (name) => {
       const collection = await db.createCollection(name);
       await db.waitForPropagation(
-        { path: `/_api/collection/${collection.name}` },
-        10000
+        { pathname: `/_api/collection/${collection.name}` },
+        10000,
       );
     }),
     ...edgeCollectionNames.map(async (name) => {
       const collection = await db.createEdgeCollection(name);
       await db.waitForPropagation(
-        { path: `/_api/collection/${collection.name}` },
-        10000
+        { pathname: `/_api/collection/${collection.name}` },
+        10000,
       );
     }),
   ] as Promise<void>[]);
@@ -32,18 +32,18 @@ async function createCollections(db: Database) {
 async function createGraph(
   graph: Graph,
   vertexCollectionNames: string[],
-  edgeCollectionNames: string[]
+  edgeCollectionNames: string[],
 ) {
   const result = await graph.create(
     edgeCollectionNames.map((name) => ({
       collection: name,
       from: vertexCollectionNames,
       to: vertexCollectionNames,
-    }))
+    })),
   );
-  await (graph as any)._db.waitForPropagation(
-    { path: `/_api/gharial/${graph.name}` },
-    10000
+  await graph.database.waitForPropagation(
+    { pathname: `/_api/gharial/${graph.name}` },
+    10000,
   );
   return result;
 }
@@ -75,7 +75,7 @@ describe("Manipulating graph vertices", function () {
   afterEach(async () => {
     await graph.drop();
     await Promise.all(
-      collectionNames.map((name) => db.collection(name).drop())
+      collectionNames.map((name) => db.collection(name).drop()),
     );
   });
   describe("graph.vertexCollection", () => {
@@ -91,8 +91,8 @@ describe("Manipulating graph vertices", function () {
     beforeEach(async () => {
       vertexCollection = await db.createCollection(`xc_${Date.now()}`);
       await db.waitForPropagation(
-        { path: `/_api/collection/${vertexCollection.name}` },
-        10000
+        { pathname: `/_api/collection/${vertexCollection.name}` },
+        10000,
       );
     });
     afterEach(async () => {
@@ -108,8 +108,8 @@ describe("Manipulating graph vertices", function () {
     beforeEach(async () => {
       vertexCollection = await db.createCollection(`xc_${Date.now()}`);
       await db.waitForPropagation(
-        { path: `/_api/collection/${vertexCollection.name}` },
-        10000
+        { pathname: `/_api/collection/${vertexCollection.name}` },
+        10000,
       );
       await graph.addVertexCollection(vertexCollection.name);
     });
@@ -121,7 +121,7 @@ describe("Manipulating graph vertices", function () {
     it("destroys the collection if explicitly passed true", async () => {
       const data = await graph.removeVertexCollection(
         vertexCollection.name,
-        true
+        true,
       );
       expect(data.orphanCollections).not.to.contain(vertexCollection.name);
       try {

@@ -1,6 +1,6 @@
 import { expect } from "chai";
-import { Database } from "../database.js";
-import { Graph } from "../graph.js";
+import { Database } from "../databases.js";
+import { Graph } from "../graphs.js";
 import { config } from "./_config.js";
 
 const range = (n: number): number[] => Array.from(Array(n).keys());
@@ -12,15 +12,15 @@ async function createCollections(db: Database) {
     ...vertexCollectionNames.map(async (name) => {
       const collection = await db.createCollection(name);
       await db.waitForPropagation(
-        { path: `/_api/collection/${collection.name}` },
-        10000
+        { pathname: `/_api/collection/${collection.name}` },
+        10000,
       );
     }),
     ...edgeCollectionNames.map(async (name) => {
       const collection = await db.createEdgeCollection(name);
       await db.waitForPropagation(
-        { path: `/_api/collection/${collection.name}` },
-        10000
+        { pathname: `/_api/collection/${collection.name}` },
+        10000,
       );
     }),
   ] as Promise<void>[]);
@@ -30,14 +30,14 @@ async function createCollections(db: Database) {
 async function createGraph(
   graph: Graph,
   vertexCollectionNames: string[],
-  edgeCollectionNames: string[]
+  edgeCollectionNames: string[],
 ) {
   return await graph.create(
     edgeCollectionNames.map((name) => ({
       collection: name,
       from: vertexCollectionNames,
       to: vertexCollectionNames,
-    }))
+    })),
   );
 }
 
@@ -69,7 +69,7 @@ describe("Graph API", function () {
     after(async () => {
       await graph.drop();
       await Promise.all(
-        collectionNames.map((name) => db.collection(name).drop())
+        collectionNames.map((name) => db.collection(name).drop()),
       );
     });
     it("fetches information about the graph", async () => {
@@ -106,11 +106,11 @@ describe("Graph API", function () {
           collection: name,
           from: vertexCollectionNames,
           to: vertexCollectionNames,
-        }))
+        })),
       );
       await db.waitForPropagation(
-        { path: `/_api/gharial/${graph.name}` },
-        10000
+        { pathname: `/_api/gharial/${graph.name}` },
+        10000,
       );
       const data = await graph.get();
       expect(data).to.have.property("name", graph.name);
@@ -132,8 +132,8 @@ describe("Graph API", function () {
           db
             .collection(name)
             .drop()
-            .catch(() => null)
-        )
+            .catch(() => null),
+        ),
       );
     });
     it("destroys the graph if not passed true", async () => {

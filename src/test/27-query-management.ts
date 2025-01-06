@@ -1,8 +1,8 @@
 import { expect } from "chai";
 import { aql } from "../aql.js";
-import { ArrayCursor } from "../cursor.js";
-import { Database } from "../database.js";
-import { ArangoError } from "../error.js";
+import { Cursor } from "../cursors.js";
+import { Database } from "../databases.js";
+import { ArangoError, ResponseTimeoutError } from "../errors.js";
 import { config } from "./_config.js";
 
 // NOTE These tests will not reliably work with load balancing.
@@ -18,7 +18,7 @@ async function sleep(ms: number) {
 describe("Query Management API", function () {
   const dbName = `testdb_${Date.now()}`;
   let system: Database, db: Database;
-  let allCursors: ArrayCursor[];
+  let allCursors: Cursor[];
   before(async () => {
     allCursors = [];
     system = new Database(config);
@@ -28,12 +28,12 @@ describe("Query Management API", function () {
     // the following makes calls to /_db/${name} on all coordinators, thus waiting
     // long enough for the database to become available on all instances
     if (Array.isArray(config.url)) {
-      await db.waitForPropagation({ path: `/_api/version` }, 10000);
+      await db.waitForPropagation({ pathname: `/_api/version` }, 10000);
     }
   });
   after(async () => {
     await Promise.all(
-      allCursors.map((cursor) => cursor.kill().catch(() => undefined))
+      allCursors.map((cursor) => cursor.kill().catch(() => undefined)),
     );
     try {
       await system.dropDatabase(dbName);
@@ -46,7 +46,7 @@ describe("Query Management API", function () {
     it("returns a cursor for the query result", async () => {
       const cursor = await db.query("RETURN 23");
       allCursors.push(cursor);
-      expect(cursor).to.be.an.instanceof(ArrayCursor);
+      expect(cursor).to.be.an.instanceof(Cursor);
     });
     it("throws an exception on error", async () => {
       try {
@@ -67,7 +67,7 @@ describe("Query Management API", function () {
       } catch (err: any) {
         expect(err).is.instanceof(Error);
         expect(err).is.not.instanceof(ArangoError);
-        expect(err.name).to.equal("AbortError");
+        expect(err).is.instanceof(ResponseTimeoutError);
         return;
       }
       expect.fail();
@@ -95,7 +95,7 @@ describe("Query Management API", function () {
       });
       allCursors.push(cursor);
       expect(cursor.count).to.equal(10);
-      expect((cursor as any).batches.hasMore).to.equal(true);
+      expect(cursor.batches.hasMore).to.equal(true);
     });
     it("supports AQB queries", async () => {
       const cursor = await db.query({ toAQL: () => "RETURN 42" });
@@ -126,7 +126,7 @@ describe("Query Management API", function () {
       const cursor = await db.query(query, { batchSize: 2, count: true });
       allCursors.push(cursor);
       expect(cursor.count).to.equal(10);
-      expect((cursor as any).batches.hasMore).to.equal(true);
+      expect(cursor.batches.hasMore).to.equal(true);
     });
   });
 
@@ -200,7 +200,7 @@ describe("Query Management API", function () {
         // must filter the list here, as there could be other (system) queries
         // ongoing at the same time
         queries = (await db.listRunningQueries()).filter(
-          (i: any) => i.query === query
+          (i: any) => i.query === query,
         );
         if (queries.length > 0) {
           break;
@@ -237,7 +237,7 @@ describe("Query Management API", function () {
       allCursors.push(cursor);
       // must filter the list here, as there could have been other (system) queries
       const queries = (await db.listSlowQueries()).filter(
-        (i: any) => i.query === query
+        (i: any) => i.query === query,
       );
       expect(queries).to.have.lengthOf(1);
       expect(queries[0]).to.have.property("query", query);
@@ -266,12 +266,12 @@ describe("Query Management API", function () {
       allCursors.push(cursor);
       // must filter the list here, as there could have been other (system) queries
       const queries1 = (await db.listSlowQueries()).filter(
-        (i: any) => i.query === query
+        (i: any) => i.query === query,
       );
       expect(queries1).to.have.lengthOf(1);
       await db.clearSlowQueries();
       const queries2 = (await db.listSlowQueries()).filter(
-        (i: any) => i.query === query
+        (i: any) => i.query === query,
       );
       expect(queries2).to.have.lengthOf(0);
     });
@@ -285,7 +285,7 @@ describe("Query Management API", function () {
       const p1 = db.query(query);
       p1.then((cursor) => allCursors.push(cursor));
       const queries = (await db.listSlowQueries()).filter(
-        (i: any) => i.query === query
+        (i: any) => i.query === query,
       );
       expect(queries).to.have.lengthOf(1);
       expect(queries[0]).to.have.property("bindVars");

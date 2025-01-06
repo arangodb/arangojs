@@ -1,6 +1,6 @@
 import { expect } from "chai";
-import { Database } from "../database.js";
-import { Graph } from "../graph.js";
+import { Database } from "../databases.js";
+import { Graph } from "../graphs.js";
 import { config } from "./_config.js";
 
 const range = (n: number): number[] => Array.from(Array(n).keys());
@@ -38,15 +38,15 @@ describe("Accessing graphs", function () {
         ...vertexCollectionNames.map(async (name) => {
           const collection = await db.createCollection(name);
           await db.waitForPropagation(
-            { path: `/_api/collection/${collection.name}` },
-            10000
+            { pathname: `/_api/collection/${collection.name}` },
+            10000,
           );
         }),
         ...edgeCollectionNames.map(async (name) => {
           const collection = await db.createEdgeCollection(name);
           await db.waitForPropagation(
-            { path: `/_api/collection/${collection.name}` },
-            10000
+            { pathname: `/_api/collection/${collection.name}` },
+            10000,
           );
         }),
       ] as Promise<void>[]);
@@ -58,11 +58,11 @@ describe("Accessing graphs", function () {
               collection: name,
               from: vertexCollectionNames,
               to: vertexCollectionNames,
-            }))
+            })),
           );
           await db.waitForPropagation(
-            { path: `/_api/gharial/${graph.name}` },
-            10000
+            { pathname: `/_api/gharial/${graph.name}` },
+            10000,
           );
         }),
       ]);
@@ -72,7 +72,7 @@ describe("Accessing graphs", function () {
       await Promise.all(
         vertexCollectionNames
           .concat(edgeCollectionNames)
-          .map((name) => db.collection(name).drop())
+          .map((name) => db.collection(name).drop()),
       );
     });
     it("fetches information about all graphs", async () => {
@@ -90,15 +90,15 @@ describe("Accessing graphs", function () {
         ...vertexCollectionNames.map(async (name) => {
           const collection = await db.createCollection(name);
           await db.waitForPropagation(
-            { path: `/_api/collection/${collection.name}` },
-            10000
+            { pathname: `/_api/collection/${collection.name}` },
+            10000,
           );
         }),
         ...edgeCollectionNames.map(async (name) => {
           const collection = await db.createEdgeCollection(name);
           await db.waitForPropagation(
-            { path: `/_api/collection/${collection.name}` },
-            10000
+            { pathname: `/_api/collection/${collection.name}` },
+            10000,
           );
         }),
       ] as Promise<void>[]);
@@ -110,11 +110,11 @@ describe("Accessing graphs", function () {
               collection: name,
               from: vertexCollectionNames,
               to: vertexCollectionNames,
-            }))
+            })),
           );
           await db.waitForPropagation(
-            { path: `/_api/gharial/${graph.name}` },
-            10000
+            { pathname: `/_api/gharial/${graph.name}` },
+            10000,
           );
         }),
       ]);
@@ -124,7 +124,7 @@ describe("Accessing graphs", function () {
       await Promise.all(
         vertexCollectionNames
           .concat(edgeCollectionNames)
-          .map((name) => db.collection(name).drop())
+          .map((name) => db.collection(name).drop()),
       );
     });
     it("creates Graph instances", async () => {

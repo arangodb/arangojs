@@ -1,37 +1,37 @@
 /**
  * ```ts
- * import type { Route } from "arangojs/route.js";
+ * import type { Route } from "arangojs/routes";
  * ```
  *
- * The "route" module provides route related types and interfaces for TypeScript.
+ * The "routes" module provides route related types and interfaces for
+ * TypeScript.
  *
  * @packageDocumentation
  */
-import { RequestOptions } from "./connection.js";
-import { Database } from "./database.js";
-import { ArangojsResponse } from "./lib/request.js";
-import { mergeHeaders } from "./lib/mergeHeaders.js";
+import * as connections from "./connection.js";
+import * as databases from "./databases.js";
+import * as util from "./lib/util.js";
 
 /**
  * Represents an arbitrary route relative to an ArangoDB database.
  */
 export class Route {
-  protected _db: Database;
-  protected _path: string;
+  protected _db: databases.Database;
+  protected _pathname: string;
   protected _headers: Headers;
 
   /**
    * @internal
    */
   constructor(
-    db: Database,
-    path: string = "",
-    headers: Headers | Record<string, string> = {}
+    db: databases.Database,
+    pathname: string = "",
+    headers: Headers | Record<string, string> = {},
   ) {
-    if (!path) path = "";
-    else if (path.charAt(0) !== "/") path = `/${path}`;
+    if (!pathname) pathname = "";
+    else if (pathname.charAt(0) !== "/") pathname = `/${pathname}`;
     this._db = db;
-    this._path = path;
+    this._pathname = pathname;
     this._headers = headers instanceof Headers ? headers : new Headers(headers);
   }
 
@@ -45,8 +45,8 @@ export class Route {
   /**
    * Path of this route.
    */
-  get path() {
-    return this._path;
+  get pathname() {
+    return this._pathname;
   }
 
   /**
@@ -60,7 +60,7 @@ export class Route {
    * Creates a new route relative to this route that inherits any of its default
    * HTTP headers.
    *
-   * @param path - Path relative to this route.
+   * @param pathname - Path relative to this route.
    * @param headers - Additional headers that will be sent with each request.
    *
    * @example
@@ -70,13 +70,11 @@ export class Route {
    * const users = foxx.route("/users");
    * ```
    */
-  route(path: string, headers?: Headers | Record<string, string>) {
-    if (!path) path = "";
-    else if (path.charAt(0) !== "/") path = `/${path}`;
+  route(pathname: string, headers?: Headers | Record<string, string>) {
     return new Route(
       this._db,
-      this._path + path,
-      mergeHeaders(this._headers, headers)
+      util.joinPath(this._pathname, pathname),
+      util.mergeHeaders(this._headers, headers),
     );
   }
 
@@ -92,7 +90,7 @@ export class Route {
    * const foxx = db.route("/my-foxx-service");
    * const res = await foxx.request({
    *   method: "POST",
-   *   path: "/users",
+   *   pathname: "/users",
    *   body: {
    *     username: "admin",
    *     password: "hunter2"
@@ -100,22 +98,24 @@ export class Route {
    * });
    * ```
    */
-  request(options?: RequestOptions) {
-    const opts = { ...options };
-    if (!opts.path || opts.path === "/") opts.path = "";
-    else if (!this._path || opts.path.charAt(0) === "/") opts.path = opts.path;
-    else opts.path = `/${opts.path}`;
-    opts.basePath = this._path;
-    opts.headers = mergeHeaders(this._headers, opts.headers);
-    opts.method = opts.method ? opts.method.toUpperCase() : "GET";
-    return this._db.request(opts, false);
+  request(options: connections.RequestOptions = {}) {
+    const { method = "GET", pathname, headers, ...opts } = options;
+    return this._db.request(
+      {
+        ...opts,
+        method: method.toUpperCase(),
+        pathname: util.joinPath(this._pathname, pathname),
+        headers: util.mergeHeaders(this._headers, headers),
+      },
+      false,
+    );
   }
 
   /**
    * Performs a DELETE request against the given path relative to this route
    * and returns the server response.
    *
-   * @param path - Path relative to this route.
+   * @param pathname - Path relative to this route.
    * @param search - Query string parameters for this request.
    * @param headers - Additional headers to send with this request.
    *
@@ -127,10 +127,10 @@ export class Route {
    * ```
    */
   delete(
-    path: string,
+    pathname: string,
     search?: URLSearchParams | Record<string, any>,
-    headers?: Headers | Record<string, string>
-  ): Promise<ArangojsResponse>;
+    headers?: Headers | Record<string, string>,
+  ): Promise<connections.ProcessedResponse>;
   /**
    * Performs a DELETE request against the given path relative to this route
    * and returns the server response.
@@ -148,19 +148,19 @@ export class Route {
    */
   delete(
     search?: URLSearchParams | Record<string, any>,
-    headers?: Headers | Record<string, string>
-  ): Promise<ArangojsResponse>;
-  delete(...args: any[]): Promise<ArangojsResponse> {
-    const path = typeof args[0] === "string" ? args.shift() : undefined;
+    headers?: Headers | Record<string, string>,
+  ): Promise<connections.ProcessedResponse>;
+  delete(...args: any[]): Promise<connections.ProcessedResponse> {
+    const pathname = typeof args[0] === "string" ? args.shift() : undefined;
     const [search, headers] = args;
-    return this.request({ method: "DELETE", path, search, headers });
+    return this.request({ method: "DELETE", pathname, search, headers });
   }
 
   /**
    * Performs a GET request against the given path relative to this route
    * and returns the server response.
    *
-   * @param path - Path relative to this route.
+   * @param pathname - Path relative to this route.
    * @param search - Query string parameters for this request.
    * @param headers - Additional headers to send with this request.
    *
@@ -172,10 +172,10 @@ export class Route {
    * ```
    */
   get(
-    path: string,
+    pathname: string,
     search?: URLSearchParams | Record<string, any>,
-    headers?: Headers | Record<string, string>
-  ): Promise<ArangojsResponse>;
+    headers?: Headers | Record<string, string>,
+  ): Promise<connections.ProcessedResponse>;
   /**
    * Performs a GET request against the given path relative to this route
    * and returns the server response.
@@ -193,19 +193,19 @@ export class Route {
    */
   get(
     search?: URLSearchParams | Record<string, any>,
-    headers?: Headers | Record<string, string>
-  ): Promise<ArangojsResponse>;
-  get(...args: any[]): Promise<ArangojsResponse> {
-    const path = typeof args[0] === "string" ? args.shift() : undefined;
+    headers?: Headers | Record<string, string>,
+  ): Promise<connections.ProcessedResponse>;
+  get(...args: any[]): Promise<connections.ProcessedResponse> {
+    const pathname = typeof args[0] === "string" ? args.shift() : undefined;
     const [search, headers] = args;
-    return this.request({ method: "GET", path, search, headers });
+    return this.request({ method: "GET", pathname, search, headers });
   }
 
   /**
    * Performs a HEAD request against the given path relative to this route
    * and returns the server response.
    *
-   * @param path - Path relative to this route.
+   * @param pathname - Path relative to this route.
    * @param search - Query string parameters for this request.
    * @param headers - Additional headers to send with this request.
    *
@@ -217,10 +217,10 @@ export class Route {
    * ```
    */
   head(
-    path: string,
+    pathname: string,
     search?: URLSearchParams | Record<string, any>,
-    headers?: Headers | Record<string, string>
-  ): Promise<ArangojsResponse>;
+    headers?: Headers | Record<string, string>,
+  ): Promise<connections.ProcessedResponse>;
   /**
    * Performs a HEAD request against the given path relative to this route
    * and returns the server response.
@@ -238,19 +238,19 @@ export class Route {
    */
   head(
     search?: URLSearchParams | Record<string, any>,
-    headers?: Headers | Record<string, string>
-  ): Promise<ArangojsResponse>;
-  head(...args: any[]): Promise<ArangojsResponse> {
-    const path = typeof args[0] === "string" ? args.shift() : undefined;
+    headers?: Headers | Record<string, string>,
+  ): Promise<connections.ProcessedResponse>;
+  head(...args: any[]): Promise<connections.ProcessedResponse> {
+    const pathname = typeof args[0] === "string" ? args.shift() : undefined;
     const [search, headers] = args;
-    return this.request({ method: "HEAD", path, search, headers });
+    return this.request({ method: "HEAD", pathname, search, headers });
   }
 
   /**
    * Performs a PATCH request against the given path relative to this route
    * and returns the server response.
    *
-   * @param path - Path relative to this route.
+   * @param pathname - Path relative to this route.
    * @param body - Body of the request object.
    * @param search - Query string parameters for this request.
    * @param headers - Additional headers to send with this request.
@@ -263,11 +263,11 @@ export class Route {
    * ```
    */
   patch(
-    path: string,
+    pathname: string,
     body?: any,
     search?: URLSearchParams | Record<string, any>,
-    headers?: Headers | Record<string, string>
-  ): Promise<ArangojsResponse>;
+    headers?: Headers | Record<string, string>,
+  ): Promise<connections.ProcessedResponse>;
   /**
    * Performs a PATCH request against the given path relative to this route
    * and returns the server response.
@@ -289,19 +289,19 @@ export class Route {
   patch(
     body?: any,
     search?: URLSearchParams | Record<string, any>,
-    headers?: Headers | Record<string, string>
-  ): Promise<ArangojsResponse>;
-  patch(...args: any[]): Promise<ArangojsResponse> {
-    const path = typeof args[0] === "string" ? args.shift() : undefined;
+    headers?: Headers | Record<string, string>,
+  ): Promise<connections.ProcessedResponse>;
+  patch(...args: any[]): Promise<connections.ProcessedResponse> {
+    const pathname = typeof args[0] === "string" ? args.shift() : undefined;
     const [body, search, headers] = args;
-    return this.request({ method: "PATCH", path, body, search, headers });
+    return this.request({ method: "PATCH", pathname, body, search, headers });
   }
 
   /**
    * Performs a POST request against the given path relative to this route
    * and returns the server response.
    *
-   * @param path - Path relative to this route.
+   * @param pathname - Path relative to this route.
    * @param body - Body of the request object.
    * @param search - Query string parameters for this request.
    * @param headers - Additional headers to send with this request.
@@ -317,11 +317,11 @@ export class Route {
    * ```
    */
   post(
-    path: string,
+    pathname: string,
     body?: any,
     search?: URLSearchParams | Record<string, any>,
-    headers?: Headers | Record<string, string>
-  ): Promise<ArangojsResponse>;
+    headers?: Headers | Record<string, string>,
+  ): Promise<connections.ProcessedResponse>;
   /**
    * Performs a POST request against the given path relative to this route
    * and returns the server response.
@@ -346,19 +346,19 @@ export class Route {
   post(
     body?: any,
     search?: URLSearchParams | Record<string, any>,
-    headers?: Headers | Record<string, string>
-  ): Promise<ArangojsResponse>;
-  post(...args: any[]): Promise<ArangojsResponse> {
-    const path = typeof args[0] === "string" ? args.shift() : undefined;
+    headers?: Headers | Record<string, string>,
+  ): Promise<connections.ProcessedResponse>;
+  post(...args: any[]): Promise<connections.ProcessedResponse> {
+    const pathname = typeof args[0] === "string" ? args.shift() : undefined;
     const [body, search, headers] = args;
-    return this.request({ method: "POST", path, body, search, headers });
+    return this.request({ method: "POST", pathname, body, search, headers });
   }
 
   /**
    * Performs a PUT request against the given path relative to this route
    * and returns the server response.
    *
-   * @param path - Path relative to this route.
+   * @param pathname - Path relative to this route.
    * @param body - Body of the request object.
    * @param search - Query string parameters for this request.
    * @param headers - Additional headers to send with this request.
@@ -371,11 +371,11 @@ export class Route {
    * ```
    */
   put(
-    path: string,
+    pathname: string,
     body?: any,
     search?: URLSearchParams | Record<string, any>,
-    headers?: Headers | Record<string, string>
-  ): Promise<ArangojsResponse>;
+    headers?: Headers | Record<string, string>,
+  ): Promise<connections.ProcessedResponse>;
   /**
    * Performs a PUT request against the given path relative to this route
    * and returns the server response.
@@ -397,11 +397,11 @@ export class Route {
   put(
     body?: any,
     search?: URLSearchParams | Record<string, any>,
-    headers?: Headers | Record<string, string>
-  ): Promise<ArangojsResponse>;
-  put(...args: any[]): Promise<ArangojsResponse> {
-    const path = typeof args[0] === "string" ? args.shift() : undefined;
+    headers?: Headers | Record<string, string>,
+  ): Promise<connections.ProcessedResponse>;
+  put(...args: any[]): Promise<connections.ProcessedResponse> {
+    const pathname = typeof args[0] === "string" ? args.shift() : undefined;
     const [body, search, headers] = args;
-    return this.request({ method: "PUT", path, body, search, headers });
+    return this.request({ method: "PUT", pathname, body, search, headers });
   }
 }

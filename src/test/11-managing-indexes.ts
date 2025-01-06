@@ -1,6 +1,6 @@
 import { expect } from "chai";
-import { DocumentCollection } from "../collection.js";
-import { Database } from "../database.js";
+import { DocumentCollection } from "../collections.js";
+import { Database } from "../databases.js";
 import { config } from "./_config.js";
 
 const it312 = config.arangoVersion! >= 31200 ? it : it.skip;
@@ -18,8 +18,8 @@ describe("Managing indexes", function () {
     db = system.database(dbName);
     collection = await db.createCollection(collectionName);
     await db.waitForPropagation(
-      { path: `/_api/collection/${collection.name}` },
-      10000
+      { pathname: `/_api/collection/${collection.name}` },
+      10000,
     );
   });
   after(async () => {

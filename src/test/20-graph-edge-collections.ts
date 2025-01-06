@@ -1,7 +1,7 @@
 import { expect } from "chai";
-import { Database } from "../database.js";
+import { Database } from "../databases.js";
 import { DocumentMetadata } from "../documents.js";
-import { GraphEdgeCollection } from "../graph.js";
+import { GraphEdgeCollection } from "../graphs.js";
 import { config } from "./_config.js";
 
 describe("GraphEdgeCollection API", function () {
@@ -22,7 +22,10 @@ describe("GraphEdgeCollection API", function () {
         to: ["person"],
       },
     ]);
-    await db.waitForPropagation({ path: `/_api/gharial/${graph.name}` }, 10000);
+    await db.waitForPropagation(
+      { pathname: `/_api/gharial/${graph.name}` },
+      10000,
+    );
     collection = graph.edgeCollection("knows");
     await graph
       .vertexCollection("person")
@@ -163,7 +166,7 @@ describe("GraphEdgeCollection API", function () {
       await collection.update(
         doc,
         { sup: "dawg", empty: null },
-        { keepNull: false }
+        { keepNull: false },
       );
       const newData = await collection.edge(doc._key);
       expect(newData).to.have.property("potato", doc.potato);

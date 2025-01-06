@@ -1,7 +1,7 @@
 import { expect } from "chai";
-import { DocumentCollection } from "../collection.js";
-import { Database } from "../database.js";
-import { Route } from "../route.js";
+import { DocumentCollection } from "../collections.js";
+import { Database } from "../databases.js";
+import { Route } from "../routes.js";
 import { config } from "./_config.js";
 
 describe("Arbitrary HTTP routes", () => {
@@ -17,7 +17,7 @@ describe("Arbitrary HTTP routes", () => {
     it("creates a route for the given path", () => {
       const path = "/hi";
       const route = db.route(path);
-      expect((route as any)._path).to.equal(path);
+      expect((route as any)._pathname).to.equal(path);
     });
     it("passes the given headers to the new route", () => {
       const route = db.route("/hello", { "x-magic": "awesome" });
@@ -38,8 +38,8 @@ describe("Route API", function () {
     db = await system.createDatabase(name);
     collection = await db.createCollection(`c_${Date.now()}`);
     await db.waitForPropagation(
-      { path: `/_api/collection/${collection.name}` },
-      10000
+      { pathname: `/_api/collection/${collection.name}` },
+      10000,
     );
   });
   after(async () => {
@@ -55,7 +55,7 @@ describe("Route API", function () {
   describe("route.route", () => {
     it("should concat path", () => {
       const route = db.route("/_api").route("/version");
-      expect(route).to.have.property("_path", "/_api/version");
+      expect(route).to.have.property("_pathname", "/_api/version");
     });
   });
   describe("route.get", () => {

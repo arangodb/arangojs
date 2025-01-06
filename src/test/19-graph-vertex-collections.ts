@@ -1,7 +1,7 @@
 import { expect } from "chai";
-import { Database } from "../database.js";
+import { Database } from "../databases.js";
 import { DocumentMetadata } from "../documents.js";
-import { GraphVertexCollection } from "../graph.js";
+import { GraphVertexCollection } from "../graphs.js";
 import { config } from "./_config.js";
 
 describe("GraphVertexCollection API", function () {
@@ -22,7 +22,10 @@ describe("GraphVertexCollection API", function () {
         to: ["person"],
       },
     ]);
-    await db.waitForPropagation({ path: `/_api/gharial/${graph.name}` }, 10000);
+    await db.waitForPropagation(
+      { pathname: `/_api/gharial/${graph.name}` },
+      10000,
+    );
     collection = graph.vertexCollection("person");
   });
   after(async () => {
@@ -132,7 +135,7 @@ describe("GraphVertexCollection API", function () {
       await collection.update(
         doc,
         { sup: "dawg", empty: null },
-        { keepNull: false }
+        { keepNull: false },
       );
       const newData = await collection.vertex(doc._key);
       expect(newData).to.have.property("potato").that.equals(doc.potato);

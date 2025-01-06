@@ -1,6 +1,6 @@
 /**
  * ```js
- * import { aql } from "arangojs/aql.js";
+ * import { aql } from "arangojs/aql";
  * ```
  *
  * The "aql" module provides the {@link aql} template string handler and
@@ -10,10 +10,10 @@
  *
  * @packageDocumentation
  */
-import { isArangoAnalyzer } from "./analyzer.js";
-import { ArangoCollection, isArangoCollection } from "./collection.js";
-import { Graph, isArangoGraph } from "./graph.js";
-import { isArangoView, View } from "./view.js";
+import * as analyzers from "./analyzers.js";
+import * as collections from "./collections.js";
+import * as graphs from "./graphs.js";
+import * as views from "./views.js";
 
 declare const type: unique symbol;
 
@@ -72,9 +72,9 @@ export interface AqlLiteral {
  * helper function.
  */
 export type AqlValue =
-  | ArangoCollection
-  | View
-  | Graph
+  | collections.ArangoCollection
+  | views.View
+  | graphs.Graph
   | GeneratedAqlQuery
   | AqlLiteral
   | string
@@ -124,7 +124,7 @@ export function isAqlLiteral(literal: any): literal is AqlLiteral {
  * Tagged template strings will return an {@link AqlQuery} object with
  * `query` and `bindVars` attributes reflecting any interpolated values.
  *
- * Any {@link collection.ArangoCollection} instance used in a query string will
+ * Any {@link collections.ArangoCollection} instance used in a query string will
  * be recognized as a collection reference and generate an AQL collection bind
  * parameter instead of a regular AQL value bind parameter.
  *
@@ -224,7 +224,7 @@ export function aql<T = any>(
           2,
           strings[i] + src.strings[0],
           ...src.strings.slice(1, src.args.length),
-          src.strings[src.args.length] + strings[i + 1]
+          src.strings[src.args.length] + strings[i + 1],
         );
       } else {
         query += rawValue.query + strings[i + 1];
@@ -246,10 +246,10 @@ export function aql<T = any>(
     const isKnown = index !== -1;
     let name = `value${isKnown ? index : bindValues.length}`;
     if (
-      isArangoCollection(rawValue) ||
-      isArangoGraph(rawValue) ||
-      isArangoView(rawValue) ||
-      isArangoAnalyzer(rawValue)
+      collections.isArangoCollection(rawValue) ||
+      graphs.isArangoGraph(rawValue) ||
+      views.isArangoView(rawValue) ||
+      analyzers.isArangoAnalyzer(rawValue)
     ) {
       name = `@${name}`;
       value = rawValue.name;
@@ -319,7 +319,7 @@ export function aql<T = any>(
  * ```
  */
 export function literal(
-  value: string | number | boolean | AqlLiteral | null | undefined
+  value: string | number | boolean | AqlLiteral | null | undefined,
 ): AqlLiteral {
   if (isAqlLiteral(value)) {
     return value;

@@ -1,6 +1,6 @@
 import { expect } from "chai";
-import { Database } from "../database.js";
-import { ArangoSearchViewProperties, View } from "../view.js";
+import { Database } from "../databases.js";
+import { ArangoSearchViewProperties, View } from "../views.js";
 import { config } from "./_config.js";
 
 describe("View metadata", function () {
@@ -16,7 +16,7 @@ describe("View metadata", function () {
     db = system.database(dbName);
     view = db.view(viewName);
     await view.create({ type: "arangosearch" });
-    await db.waitForPropagation({ path: `/_api/view/${view.name}` }, 10000);
+    await db.waitForPropagation({ pathname: `/_api/view/${view.name}` }, 10000);
   });
   after(async () => {
     await system.dropDatabase(dbName);

@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import { aql, join, literal } from "../aql.js";
-import { Database } from "../database.js";
+import { Database } from "../databases.js";
 
 describe("AQL helpers", function () {
   describe("aql", () => {
@@ -20,10 +20,10 @@ describe("AQL helpers", function () {
       ];
       const query = aql`A ${values[0]} B ${values[1]} C ${values[2]} D ${values[3]} E ${values[4]} F ${values[5]} G ${values[6]} H ${values[7]} I ${values[8]} J ${values[9]} K EOF`;
       expect(query.query).to.equal(
-        `A @value0 B @value1 C @value2 D @value3 E @value4 F @value5 G @value6 H @value7 I @value8 J @value9 K EOF`
+        `A @value0 B @value1 C @value2 D @value3 E @value4 F @value5 G @value6 H @value7 I @value8 J @value9 K EOF`,
       );
       const bindVarNames = Object.keys(query.bindVars).sort((a, b) =>
-        +a.substr(5) > +b.substr(5) ? 1 : -1
+        +a.substr(5) > +b.substr(5) ? 1 : -1,
       );
       expect(bindVarNames).to.eql([
         "value0",
@@ -41,7 +41,7 @@ describe("AQL helpers", function () {
     });
     it("omits undefined bindvars and empty queries", () => {
       const query = aql`A ${undefined} B ${aql``} C ${join([])} D ${literal(
-        ""
+        "",
       )} E`;
       expect(query.query).to.equal("A  B  C  D  E");
       expect(query.bindVars).to.eql({});
@@ -111,20 +111,20 @@ describe("AQL helpers", function () {
     it("supports nesting simple queries", () => {
       const query = aql`FOR x IN (${aql`FOR a IN 1..3 RETURN a`}) RETURN x`;
       expect(query.query).to.equal(
-        "FOR x IN (FOR a IN 1..3 RETURN a) RETURN x"
+        "FOR x IN (FOR a IN 1..3 RETURN a) RETURN x",
       );
     });
     it("supports deeply nesting simple queries", () => {
       const query = aql`FOR x IN (${aql`FOR a IN (${aql`FOR b IN 1..3 RETURN b`}) RETURN a`}) RETURN x`;
       expect(query.query).to.equal(
-        "FOR x IN (FOR a IN (FOR b IN 1..3 RETURN b) RETURN a) RETURN x"
+        "FOR x IN (FOR a IN (FOR b IN 1..3 RETURN b) RETURN a) RETURN x",
       );
     });
     it("supports nesting with bindVars", () => {
       const collection = db.collection("paprika");
       const query = aql`A ${collection} B ${aql`X ${collection} Y ${aql`J ${collection} K ${9} L`} Z`} C ${4}`;
       expect(query.query).to.equal(
-        "A @@value0 B X @@value0 Y J @@value0 K @value1 L Z C @value2"
+        "A @@value0 B X @@value0 Y J @@value0 K @value1 L Z C @value2",
       );
       expect(query.bindVars).to.eql({
         "@value0": "paprika",
@@ -138,7 +138,7 @@ describe("AQL helpers", function () {
       const filter = aql`FILTER u.role == ${role}`;
       const query = aql`FOR u IN ${users} ${filter} RETURN u`;
       expect(query.query).to.equal(
-        "FOR u IN @@value0 FILTER u.role == @value1 RETURN u"
+        "FOR u IN @@value0 FILTER u.role == @value1 RETURN u",
       );
       expect(query.bindVars).to.eql({
         "@value0": users.name,
@@ -153,7 +153,7 @@ describe("AQL helpers", function () {
     it("supports deep nesting", () => {
       const query = aql`A ${1} ${aql`a ${2} ${aql`X ${3} ${aql`x ${4} y`} ${5} Y`} ${6} b`} ${7} B`;
       expect(query.query).to.equal(
-        "A @value0 a @value1 X @value2 x @value3 y @value4 Y @value5 b @value6 B"
+        "A @value0 a @value1 X @value2 x @value3 y @value4 Y @value5 b @value6 B",
       );
       expect(query.bindVars).to.eql({
         value0: 1,
@@ -185,7 +185,7 @@ describe("AQL helpers", function () {
     ];
     for (const [value, result] of pairs) {
       it(`returns an AQL literal of "${result}" for ${String(
-        JSON.stringify(value)
+        JSON.stringify(value),
       )}`, () => {
         expect(literal(value).toAQL()).to.equal(result);
       });

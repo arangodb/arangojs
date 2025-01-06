@@ -2,7 +2,7 @@
   "private": true,
   "type": "module",
   "name": "arangojs",
-  "version": "9.3.0",
+  "version": "10.0.0",
   "engines": {
     "node": ">=18"
   },
@@ -14,7 +14,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/arangodb/arangojs.git"
+    "url": "git+https://github.com/arangodb/arangojs.git"
   },
   "author": "ArangoDB GmbH",
   "contributors": [
@@ -102,5 +102,13 @@
     "source-map-support": "^0.5.21",
     "typedoc": "^0.25.12",
     "typescript": "^5.4.2"
+  },
+  "peerDependencies": {
+    "undici": ">=5.21.0"
+  },
+  "peerDependenciesMeta": {
+    "undici": {
+      "optional": true
+    }
   }
 }

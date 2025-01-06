@@ -1,7 +1,7 @@
 import { expect } from "chai";
-import { DocumentCollection } from "../collection.js";
-import { Database } from "../database.js";
-import { Transaction } from "../transaction.js";
+import { DocumentCollection } from "../collections.js";
+import { Database } from "../databases.js";
+import { Transaction } from "../transactions.js";
 import { config } from "./_config.js";
 
 describe("Transactions", () => {
@@ -27,7 +27,7 @@ describe("Transactions", () => {
       const result = await db.executeTransaction(
         [],
         "function (params) {return params;}",
-        { params: "test" }
+        { params: "test" },
       );
       expect(result).to.equal("test");
     });
@@ -44,16 +44,16 @@ describe("Transactions", () => {
     after(async () => {
       await Promise.all(
         allTransactions.map((transaction) =>
-          transaction.abort().catch(() => undefined)
-        )
+          transaction.abort().catch(() => undefined),
+        ),
       );
       await system.dropDatabase(name);
     });
     beforeEach(async () => {
       collection = await db.createCollection(`collection-${Date.now()}`);
       await db.waitForPropagation(
-        { path: `/_api/collection/${collection.name}` },
-        10000
+        { pathname: `/_api/collection/${collection.name}` },
+        10000,
       );
     });
     afterEach(async () => {

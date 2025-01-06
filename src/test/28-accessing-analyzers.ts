@@ -1,6 +1,6 @@
 import { expect } from "chai";
-import { Analyzer } from "../analyzer.js";
-import { Database } from "../database.js";
+import { Analyzer } from "../analyzers.js";
+import { Database } from "../databases.js";
 import { config } from "./_config.js";
 
 const range = (n: number): number[] => Array.from(Array(n).keys());
@@ -42,17 +42,17 @@ describe("Accessing analyzers", function () {
           const analyzer = db.analyzer(name.replace(/^[^:]+::/, ""));
           await analyzer.create({ type: "identity" });
           await db.waitForPropagation(
-            { path: `/_api/analyzer/${analyzer.name}` },
-            65000
+            { pathname: `/_api/analyzer/${analyzer.name}` },
+            65000,
           );
-        })
+        }),
       );
     });
     after(async () => {
       await Promise.all(
         analyzerNames.map((name) =>
-          db.analyzer(name.replace(/^[^:]+::/, "")).drop()
-        )
+          db.analyzer(name.replace(/^[^:]+::/, "")).drop(),
+        ),
       );
     });
     it("fetches information about all analyzers", async () => {
@@ -70,17 +70,17 @@ describe("Accessing analyzers", function () {
           const analyzer = db.analyzer(name.replace(/^[^:]+::/, ""));
           await analyzer.create({ type: "identity" });
           await db.waitForPropagation(
-            { path: `/_api/analyzer/${analyzer.name}` },
-            65000
+            { pathname: `/_api/analyzer/${analyzer.name}` },
+            65000,
           );
-        })
+        }),
       );
     });
     after(async () => {
       await Promise.all(
         analyzerNames.map((name) =>
-          db.analyzer(name.replace(/^[^:]+::/, "")).drop()
-        )
+          db.analyzer(name.replace(/^[^:]+::/, "")).drop(),
+        ),
       );
     });
     it("creates Analyzer instances", async () => {

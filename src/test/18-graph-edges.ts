@@ -1,6 +1,6 @@
 import { expect } from "chai";
-import { Database } from "../database.js";
-import { Graph } from "../graph.js";
+import { Database } from "../databases.js";
+import { Graph } from "../graphs.js";
 import { config } from "./_config.js";
 
 describe("Manipulating graph edges", function () {
@@ -31,7 +31,10 @@ describe("Manipulating graph edges", function () {
         to: ["person"],
       },
     ]);
-    await db.waitForPropagation({ path: `/_api/gharial/${graph.name}` }, 10000);
+    await db.waitForPropagation(
+      { pathname: `/_api/gharial/${graph.name}` },
+      10000,
+    );
   });
   afterEach(async () => {
     await graph.drop();
@@ -45,13 +48,13 @@ describe("Manipulating graph edges", function () {
       expect(info.edgeDefinitions.map((e) => e.collection)).to.contain("knows");
       expect(info.edgeDefinitions.length).to.equal(1);
       const edgeDefinition = info.edgeDefinitions.filter(
-        (e) => e.collection === "knows"
+        (e) => e.collection === "knows",
       );
       expect(
-        edgeDefinition.reduce((arr, e) => [...arr, ...e.from], [] as string[])
+        edgeDefinition.reduce((arr, e) => [...arr, ...e.from], [] as string[]),
       ).to.contain("person");
       expect(
-        edgeDefinition.reduce((arr, e) => [...arr, ...e.to], [] as string[])
+        edgeDefinition.reduce((arr, e) => [...arr, ...e.to], [] as string[]),
       ).to.contain("person");
     });
   });
@@ -90,17 +93,17 @@ describe("Manipulating graph edges", function () {
       expect(info).to.have.property("edgeDefinitions");
       expect(info.edgeDefinitions).to.be.instanceOf(Array);
       expect(info.edgeDefinitions.map((e) => e.collection)).to.contain(
-        "works_in"
+        "works_in",
       );
       expect(info.edgeDefinitions.length).to.equal(2);
       const edgeDefinition = info.edgeDefinitions.filter(
-        (e) => e.collection === "works_in"
+        (e) => e.collection === "works_in",
       );
       expect(
-        edgeDefinition.reduce((arr, e) => [...arr, ...e.from], [] as string[])
+        edgeDefinition.reduce((arr, e) => [...arr, ...e.from], [] as string[]),
       ).to.contain("person");
       expect(
-        edgeDefinition.reduce((arr, e) => [...arr, ...e.to], [] as string[])
+        edgeDefinition.reduce((arr, e) => [...arr, ...e.to], [] as string[]),
       ).to.contain("city");
     });
   });
@@ -117,13 +120,13 @@ describe("Manipulating graph edges", function () {
       expect(info.edgeDefinitions.map((e) => e.collection)).to.contain("knows");
       expect(info.edgeDefinitions.length).to.equal(1);
       const edgeDefinition = info.edgeDefinitions.filter(
-        (e) => e.collection === "knows"
+        (e) => e.collection === "knows",
       );
       expect(
-        edgeDefinition.reduce((arr, e) => [...arr, ...e.from], [] as string[])
+        edgeDefinition.reduce((arr, e) => [...arr, ...e.from], [] as string[]),
       ).to.contain("person");
       expect(
-        edgeDefinition.reduce((arr, e) => [...arr, ...e.to], [] as string[])
+        edgeDefinition.reduce((arr, e) => [...arr, ...e.to], [] as string[]),
       ).to.contain("city");
     });
   });

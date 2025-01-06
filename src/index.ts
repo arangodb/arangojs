@@ -8,12 +8,12 @@
  *
  * If you are just getting started, you probably want to use the
  * {@link arangojs} function, which is also the default export of this module,
- * or the {@link database.Database} class for which it is a wrapper.
+ * or the {@link databases.Database} class for which it is a wrapper.
  *
  * @packageDocumentation
  */
-import { Config } from "./connection.js";
-import { Database } from "./database.js";
+import * as configuration from "./configuration.js";
+import * as databases from "./databases.js";
 
 if (typeof module !== "undefined" && typeof exports !== "undefined") {
   module.exports = exports = arangojs;
@@ -21,7 +21,7 @@ if (typeof module !== "undefined" && typeof exports !== "undefined") {
 /**
  * Creates a new `Database` instance with its own connection pool.
  *
- * This is a wrapper function for the {@link database.Database:constructor}.
+ * This is a wrapper function for the {@link databases.Database:constructor}.
  *
  * @param config - An object with configuration options.
  *
@@ -34,14 +34,16 @@ if (typeof module !== "undefined" && typeof exports !== "undefined") {
  * });
  * ```
  */
-export function arangojs(config?: Config): Database;
+export function arangojs(
+  config?: configuration.ConfigOptions,
+): databases.Database;
 /**
  * Creates a new `Database` instance with its own connection pool.
  *
- * This is a wrapper function for the {@link database.Database:constructor}.
+ * This is a wrapper function for the {@link databases.Database:constructor}.
  *
  * @param url - Base URL of the ArangoDB server or list of server URLs.
- * Equivalent to the `url` option in {@link connection.Config}.
+ * Equivalent to the `url` option in {@link configuration.ConfigOptions}.
  *
  * @example
  * ```js
@@ -49,14 +51,20 @@ export function arangojs(config?: Config): Database;
  * db.useBasicAuth("admin", "hunter2");
  * ```
  */
-export function arangojs(url: string | string[], name?: string): Database;
-export function arangojs(config?: string | string[] | Config, name?: string) {
+export function arangojs(
+  url: string | string[],
+  name?: string,
+): databases.Database;
+export function arangojs(
+  config?: string | string[] | configuration.ConfigOptions,
+  name?: string,
+) {
   if (typeof config === "string" || Array.isArray(config)) {
     const url = config;
-    return new Database(url, name);
+    return new databases.Database(url, name);
   }
-  return new Database(config);
+  return new databases.Database(config);
 }
 export default arangojs;
 export { aql } from "./aql.js";
-export { Database } from "./database.js";
+export { Database } from "./databases.js";

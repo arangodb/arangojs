@@ -1,6 +1,6 @@
 import { expect } from "chai";
-import { EdgeCollection } from "../collection.js";
-import { Database } from "../database.js";
+import { EdgeCollection } from "../collections.js";
+import { Database } from "../databases.js";
 import { DocumentMetadata } from "../documents.js";
 import { config } from "./_config.js";
 
@@ -28,8 +28,8 @@ describe("EdgeCollection API", function () {
   beforeEach(async () => {
     collection = await db.createEdgeCollection(`c_${Date.now()}`);
     await db.waitForPropagation(
-      { path: `/_api/collection/${collection.name}` },
-      10000
+      { pathname: `/_api/collection/${collection.name}` },
+      10000,
     );
   });
   afterEach(async () => {
@@ -110,7 +110,7 @@ describe("EdgeCollection API", function () {
         "_id",
         "_rev",
         "_from",
-        "_to"
+        "_to",
       );
       expect(doc._id).to.equal(meta._id);
       expect(doc._key).to.equal(meta._key);
@@ -138,7 +138,7 @@ describe("EdgeCollection API", function () {
         "_id",
         "_rev",
         "_from",
-        "_to"
+        "_to",
       );
       expect(doc._id).to.equal(meta._id);
       expect(doc._rev).to.equal(meta._rev);
@@ -163,7 +163,7 @@ describe("EdgeCollection API", function () {
         "_id",
         "_rev",
         "_from",
-        "_to"
+        "_to",
       );
       expect(doc.something).to.equal(data.something);
       expect(doc._id).to.equal(meta._id);
@@ -216,7 +216,7 @@ describe("EdgeCollection API", function () {
       await collection.update(
         doc,
         { more: "peanuts", empty: null },
-        { keepNull: false }
+        { keepNull: false },
       );
       const newData = await collection.document(doc._key);
       expect(newData).to.have.property("something", doc.something);

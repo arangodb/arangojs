@@ -139,21 +139,42 @@ and [the `db` object](https://www.arangodb.com/docs/stable/appendix-references-d
 
 ## Error responses
 
-If arangojs encounters an API error, it will throw an `ArangoError` with
-an `errorNum` property indicating the ArangoDB error code and the `code`
-property indicating the HTTP status code from the response body.
+If the server returns an ArangoDB error response, arangojs will throw an
+`ArangoError` with an `errorNum` property indicating the ArangoDB error code
+and expose the response body as the `response` property of the error object.
 
-For any other non-ArangoDB error responses (4xx/5xx status code), it will throw
-an `HttpError` error with the status code indicated by the `code` property.
+For all other errors during the request/response cycle, arangojs will throw a
+`NetworkError` or a more specific subclass thereof and expose the originating
+request object as the `request` property of the error object.
 
-If the server response did not indicate an error but the response body could
-not be parsed, a regular `SyntaxError` may be thrown instead.
+If the server responded with a non-2xx status code, this `NetworkError` will
+be an `HttpError` with a `code` property indicating the HTTP status code of the
+response and a `response` property containing the response object itself.
 
-In all of these cases the server response object will be exposed as the
-`response` property on the error object.
+If the error is caused by an exception, the originating exception will be
+available as the `cause` property of the error object thrown by arangojs. For
+network errors, this will often be a `TypeError`.
 
-If the request failed at a network level or the connection was closed without
-receiving a response, the underlying system error will be thrown instead.
+### Node.js network errors
+
+In Node.js, network errors caused by a `TypeError` will often have a `cause`
+property containing a more detailed exception.
+
+Specifically, these are often either system errors (represented by regular
+`Error` objects with additional properties) or errors from the `undici` module
+Node.js uses internally for its native `fetch` implementation.
+
+Node.js system error objects provide a `code` property containing the specific
+string error code, a `syscall` property identifying the underlying system call
+that triggered the error (e.g. `connect`), as well as other helpful properties.
+
+For more details on Node.js system errors, see the Node.js documentation of the
+[`SystemError` interface](https://nodejs.org/api/errors.html#class-systemerror)
+as well as the section on
+[Node.js error codes](https://nodejs.org/api/errors.html#nodejs-error-codes).
+
+For more details on the errors thrown by `undici`, see the
+[undici errors documentation](https://undici.nodejs.org/#/docs/api/Errors.md).
 
 ## Common issues
 
@@ -169,6 +190,15 @@ your code when upgrading your version of arangojs.
 Additionally please ensure that your version of Node.js (or browser) and
 ArangoDB are supported by the version of arangojs you are trying to use. See
 the [compatibility section](#compatibility) for additional information.
+
+You can install an older version of arangojs using `npm` or `yarn`:
+
+```sh
+# for version 8.x.x
+yarn add arangojs@8
+# - or -
+npm install --save arangojs@8
+```
 
 ### No code intelligence when using require instead of import
 
@@ -225,7 +255,7 @@ allowing arangojs to provide more meaningful stack traces at the cost of an
 impact to performance even when no error occurs.
 
 ```diff
-  const { Database } = require("arangojs");
+  import { Database } from "arangojs";
 
   const db = new Database({
     url: ARANGODB_SERVER,
@@ -239,15 +269,48 @@ that do not support the `stack` property on error objects, this option will
 still impact performance but not result in any additional information becoming
 available.
 
+### Unix domain sockets
+
+If you want to use Unix domain sockets, you need to install the `undici` module,
+which is an optional peer dependency of arangojs.
+
+```sh
+npm install --save undici
+```
+
+If the `undici` module is not installed and arangojs attempts to make a request
+over a Unix domain socket, the request will fail with a plain `Error` with a
+message indicating that the `undici` module is unavailable.
+
 ### Node.js with self-signed HTTPS certificates
 
-If you need to support self-signed HTTPS certificates in Node.js, you may have
-to override the global fetch agent. At the time of this writing, there is no
-official way to do this for the native `fetch` implementation in Node.js.
+If you need to support self-signed HTTPS certificates in Node.js, you will need
+to install the `undici` module, which is an optional peer dependency of
+arangojs.
 
-However as Node.js uses the `undici` module for its `fetch` implementation
-internally, you can override the global agent by adding `undici` as a
-dependency to your project and using its `setGlobalDispatcher` as follows:
+```sh
+npm install --save undici
+```
+
+You can instruct arangojs to use the `undici` module by setting the
+`config.agentOptions` option:
+
+```diff
+  import { Database } from "arangojs";
+
+  const db = new Database({
+    url: ARANGODB_SERVER,
++   agentOptions: {
++     ca: [
++       fs.readFileSync(".ssl/sub.class1.server.ca.pem"),
++       fs.readFileSync(".ssl/ca.pem"),
++     ],
++   },
+  });
+```
+
+To override the global fetch agent instead, you can use the `undici` module's
+`setGlobalDispatcher` method as follows:
 
 ```js
 import { Agent, setGlobalDispatcher } from "undici";
@@ -263,20 +326,22 @@ setGlobalDispatcher(
 ```
 
 Although this is **strongly discouraged**, it's also possible to disable
-HTTPS certificate validation entirely, but note this has
+HTTPS certificate validation entirely this way, but note this has
 **extremely dangerous** security implications:
 
-```js
-import { Agent, setGlobalDispatcher } from "undici";
+```diff
+  import { Database } from "arangojs";
 
-setGlobalDispatcher(
-  new Agent({
-    rejectUnauthorized: false,
-  })
-);
+  const db = new Database({
+    url: ARANGODB_SERVER,
++   agentOptions: {
++     rejectUnauthorized: false,
++   },
+  });
 ```
 
-This is a [known limitation](https://github.com/orgs/nodejs/discussions/44038#discussioncomment-5701073)
+The requirement to use the `undici` module to override these settings is a
+[known limitation](https://github.com/orgs/nodejs/discussions/44038#discussioncomment-5701073)
 of Node.js at the time of this writing.
 
 When using arangojs in the browser, self-signed HTTPS certificates need to

@@ -2,8 +2,8 @@
 import { expect } from "chai";
 import * as fs from "fs";
 import * as path from "path";
-import { Database } from "../database.js";
-import { ArangoError } from "../error.js";
+import { Database } from "../databases.js";
+import { ArangoError } from "../errors.js";
 import { config } from "./_config.js";
 
 const localAppsPath = path.resolve(".", "fixtures");
@@ -23,9 +23,9 @@ describe("Foxx service", () => {
       serviceServiceMount,
       new Blob([
         fs.readFileSync(
-          path.resolve("fixtures", "service-service-service.zip")
+          path.resolve("fixtures", "service-service-service.zip"),
         ),
-      ])
+      ]),
     );
     arangoPaths = (await db.route(serviceServiceMount).get()).parsedBody;
   });
@@ -65,7 +65,7 @@ describe("Foxx service", () => {
       source: () =>
         new Blob([
           fs.readFileSync(
-            path.resolve(localAppsPath, "minimal-working-service.js")
+            path.resolve(localAppsPath, "minimal-working-service.js"),
           ),
         ]),
     },
@@ -74,7 +74,7 @@ describe("Foxx service", () => {
       source: () =>
         new Blob([
           fs.readFileSync(
-            path.resolve(localAppsPath, "minimal-working-service.zip")
+            path.resolve(localAppsPath, "minimal-working-service.zip"),
           ),
         ]),
     },
@@ -92,7 +92,7 @@ describe("Foxx service", () => {
         mount,
         new Blob([
           fs.readFileSync(path.resolve(localAppsPath, "itzpapalotl.zip")),
-        ])
+        ]),
       );
       await db.replaceService(mount, c.source(arangoPaths));
       const resp = await db.route(mount).get();
@@ -104,7 +104,7 @@ describe("Foxx service", () => {
         mount,
         new Blob([
           fs.readFileSync(path.resolve(localAppsPath, "itzpapalotl.zip")),
-        ])
+        ]),
       );
       await db.upgradeService(mount, c.source(arangoPaths));
       const resp = await db.route(mount).get();
@@ -117,9 +117,9 @@ describe("Foxx service", () => {
       mount,
       new Blob([
         fs.readFileSync(
-          path.resolve(localAppsPath, "minimal-working-service.zip")
+          path.resolve(localAppsPath, "minimal-working-service.zip"),
         ),
-      ])
+      ]),
     );
     await db.uninstallService(mount);
     try {
@@ -133,9 +133,9 @@ describe("Foxx service", () => {
       mount,
       new Blob([
         fs.readFileSync(
-          path.resolve(localAppsPath, "minimal-working-service.zip")
+          path.resolve(localAppsPath, "minimal-working-service.zip"),
         ),
-      ])
+      ]),
     );
     const resp = await db.getServiceConfiguration(mount);
     expect(resp).to.eql({});
@@ -146,9 +146,9 @@ describe("Foxx service", () => {
       mount,
       new Blob([
         fs.readFileSync(
-          path.resolve(localAppsPath, "minimal-working-service.zip")
+          path.resolve(localAppsPath, "minimal-working-service.zip"),
         ),
-      ])
+      ]),
     );
     const resp = await db.getServiceConfiguration(mount, true);
     expect(resp).to.eql({});
@@ -159,7 +159,7 @@ describe("Foxx service", () => {
       mount,
       new Blob([
         fs.readFileSync(path.resolve(localAppsPath, "with-configuration.zip")),
-      ])
+      ]),
     );
     const resp = await db.getServiceConfiguration(mount);
     expect(resp).to.have.property("test1");
@@ -173,7 +173,7 @@ describe("Foxx service", () => {
       mount,
       new Blob([
         fs.readFileSync(path.resolve(localAppsPath, "with-configuration.zip")),
-      ])
+      ]),
     );
     const resp = await db.getServiceConfiguration(mount, true);
     expect(resp).to.have.eql({});
@@ -184,7 +184,7 @@ describe("Foxx service", () => {
       mount,
       new Blob([
         fs.readFileSync(path.resolve(localAppsPath, "with-configuration.zip")),
-      ])
+      ]),
     );
     const updateResp = await db.updateServiceConfiguration(mount, {
       test1: "test",
@@ -207,14 +207,14 @@ describe("Foxx service", () => {
       mount,
       new Blob([
         fs.readFileSync(path.resolve(localAppsPath, "with-configuration.zip")),
-      ])
+      ]),
     );
     const updateResp = await db.updateServiceConfiguration(
       mount,
       {
         test1: "test",
       },
-      true
+      true,
     );
     expect(updateResp).to.have.property("values");
     expect(updateResp.values).to.have.property("test1", "test");
@@ -230,7 +230,7 @@ describe("Foxx service", () => {
       mount,
       new Blob([
         fs.readFileSync(path.resolve(localAppsPath, "with-configuration.zip")),
-      ])
+      ]),
     );
     const replaceResp = await db.replaceServiceConfiguration(mount, {
       test1: "test",
@@ -253,14 +253,14 @@ describe("Foxx service", () => {
       mount,
       new Blob([
         fs.readFileSync(path.resolve(localAppsPath, "with-configuration.zip")),
-      ])
+      ]),
     );
     const replaceResp = await db.replaceServiceConfiguration(
       mount,
       {
         test1: "test",
       },
-      true
+      true,
     );
     expect(replaceResp).to.have.property("values");
     expect(replaceResp.values).to.have.property("test1", "test");
@@ -277,7 +277,7 @@ describe("Foxx service", () => {
       mount,
       new Blob([
         fs.readFileSync(path.resolve(localAppsPath, "with-configuration.zip")),
-      ])
+      ]),
     );
     await db.replaceServiceConfiguration(mount, { test2: "test2" });
     await db.updateServiceConfiguration(mount, { test1: "test1" });
@@ -293,7 +293,7 @@ describe("Foxx service", () => {
       mount,
       new Blob([
         fs.readFileSync(path.resolve(localAppsPath, "with-configuration.zip")),
-      ])
+      ]),
     );
     await db.replaceServiceConfiguration(mount, { test2: "test2" }, true);
     await db.updateServiceConfiguration(mount, { test1: "test1" }, true);
@@ -307,7 +307,7 @@ describe("Foxx service", () => {
       mount,
       new Blob([
         fs.readFileSync(path.resolve(localAppsPath, "with-configuration.zip")),
-      ])
+      ]),
     );
     await db.updateServiceConfiguration(mount, { test2: "test2" });
     await db.replaceServiceConfiguration(mount, { test1: "test" });
@@ -323,7 +323,7 @@ describe("Foxx service", () => {
       mount,
       new Blob([
         fs.readFileSync(path.resolve(localAppsPath, "with-configuration.zip")),
-      ])
+      ]),
     );
     await db.updateServiceConfiguration(mount, { test2: "test2" }, true);
     await db.replaceServiceConfiguration(mount, { test1: "test" }, true);
@@ -337,9 +337,9 @@ describe("Foxx service", () => {
       mount,
       new Blob([
         fs.readFileSync(
-          path.resolve(localAppsPath, "minimal-working-service.zip")
+          path.resolve(localAppsPath, "minimal-working-service.zip"),
         ),
-      ])
+      ]),
     );
     const resp = await db.getServiceDependencies(mount);
     expect(resp).to.eql({});
@@ -350,9 +350,9 @@ describe("Foxx service", () => {
       mount,
       new Blob([
         fs.readFileSync(
-          path.resolve(localAppsPath, "minimal-working-service.zip")
+          path.resolve(localAppsPath, "minimal-working-service.zip"),
         ),
-      ])
+      ]),
     );
     const resp = await db.getServiceDependencies(mount, true);
     expect(resp).to.eql({});
@@ -363,7 +363,7 @@ describe("Foxx service", () => {
       mount,
       new Blob([
         fs.readFileSync(path.resolve(localAppsPath, "with-dependencies.zip")),
-      ])
+      ]),
     );
     const resp = await db.getServiceDependencies(mount);
     expect(resp).to.have.property("test1");
@@ -377,7 +377,7 @@ describe("Foxx service", () => {
       mount,
       new Blob([
         fs.readFileSync(path.resolve(localAppsPath, "with-dependencies.zip")),
-      ])
+      ]),
     );
     const resp = await db.getServiceDependencies(mount, true);
     expect(resp).to.eql({});
@@ -388,7 +388,7 @@ describe("Foxx service", () => {
       mount,
       new Blob([
         fs.readFileSync(path.resolve(localAppsPath, "with-dependencies.zip")),
-      ])
+      ]),
     );
     const updateResp = await db.updateServiceDependencies(mount, {
       test1: "/test",
@@ -411,14 +411,14 @@ describe("Foxx service", () => {
       mount,
       new Blob([
         fs.readFileSync(path.resolve(localAppsPath, "with-dependencies.zip")),
-      ])
+      ]),
     );
     const updateResp = await db.updateServiceDependencies(
       mount,
       {
         test1: "/test",
       },
-      true
+      true,
     );
     expect(updateResp).to.have.property("values");
     expect(updateResp.values).to.have.property("test1", "/test");
@@ -434,7 +434,7 @@ describe("Foxx service", () => {
       mount,
       new Blob([
         fs.readFileSync(path.resolve(localAppsPath, "with-dependencies.zip")),
-      ])
+      ]),
     );
     const replaceResp = await db.replaceServiceDependencies(mount, {
       test1: "/test",
@@ -457,14 +457,14 @@ describe("Foxx service", () => {
       mount,
       new Blob([
         fs.readFileSync(path.resolve(localAppsPath, "with-dependencies.zip")),
-      ])
+      ]),
     );
     const replaceResp = await db.replaceServiceDependencies(
       mount,
       {
         test1: "/test",
       },
-      true
+      true,
     );
     expect(replaceResp).to.have.property("values");
     expect(replaceResp.values).to.have.property("test1", "/test");
@@ -481,7 +481,7 @@ describe("Foxx service", () => {
       mount,
       new Blob([
         fs.readFileSync(path.resolve(localAppsPath, "with-dependencies.zip")),
-      ])
+      ]),
     );
     const replaceResp = await db.replaceServiceDependencies(mount, {
       test2: "/test2",
@@ -511,12 +511,12 @@ describe("Foxx service", () => {
       mount,
       new Blob([
         fs.readFileSync(path.resolve(localAppsPath, "with-dependencies.zip")),
-      ])
+      ]),
     );
     const replaceResp = await db.replaceServiceDependencies(
       mount,
       { test2: "/test2" },
-      true
+      true,
     );
     expect(replaceResp).to.have.property("values");
     expect(replaceResp.values).to.have.property("test2", "/test2");
@@ -528,7 +528,7 @@ describe("Foxx service", () => {
       {
         test1: "/test1",
       },
-      true
+      true,
     );
     expect(updateResp).to.have.property("values");
     expect(updateResp.values).to.have.property("test1", "/test1");
@@ -543,7 +543,7 @@ describe("Foxx service", () => {
       mount,
       new Blob([
         fs.readFileSync(path.resolve(localAppsPath, "with-dependencies.zip")),
-      ])
+      ]),
     );
     const updateResp = await db.updateServiceDependencies(mount, {
       test2: "/test2",
@@ -575,14 +575,14 @@ describe("Foxx service", () => {
       mount,
       new Blob([
         fs.readFileSync(path.resolve(localAppsPath, "with-dependencies.zip")),
-      ])
+      ]),
     );
     const updateResp = await db.updateServiceDependencies(
       mount,
       {
         test2: "/test2",
       },
-      true
+      true,
     );
     expect(updateResp).to.have.property("values");
     expect(updateResp.values).to.not.have.property("test1");
@@ -593,7 +593,7 @@ describe("Foxx service", () => {
       {
         test1: "/test1",
       },
-      true
+      true,
     );
     expect(replaceResp).to.have.property("values");
     expect(replaceResp.values).to.have.property("test1", "/test1");
@@ -610,9 +610,9 @@ describe("Foxx service", () => {
       mount,
       new Blob([
         fs.readFileSync(
-          path.resolve(localAppsPath, "minimal-working-service.zip")
+          path.resolve(localAppsPath, "minimal-working-service.zip"),
         ),
-      ])
+      ]),
     );
     const resp = await db.downloadService(mount);
     expect(resp).to.be.instanceof(Blob);
@@ -623,9 +623,9 @@ describe("Foxx service", () => {
       mount,
       new Blob([
         fs.readFileSync(
-          path.resolve(localAppsPath, "minimal-working-service.zip")
+          path.resolve(localAppsPath, "minimal-working-service.zip"),
         ),
-      ])
+      ]),
     );
     const services = await db.listServices();
     expect(services).to.be.instanceOf(Array);
@@ -637,9 +637,9 @@ describe("Foxx service", () => {
       mount,
       new Blob([
         fs.readFileSync(
-          path.resolve(localAppsPath, "minimal-working-service.zip")
+          path.resolve(localAppsPath, "minimal-working-service.zip"),
         ),
-      ])
+      ]),
     );
     const services = await db.listServices();
     const service = services.find((service) => service.mount === mount)!;
@@ -656,9 +656,9 @@ describe("Foxx service", () => {
       mount,
       new Blob([
         fs.readFileSync(
-          path.resolve(localAppsPath, "minimal-working-service.zip")
+          path.resolve(localAppsPath, "minimal-working-service.zip"),
         ),
-      ])
+      ]),
     );
     const service = await db.getService(mount);
     expect(service).to.have.property("mount", mount);
@@ -679,11 +679,11 @@ describe("Foxx service", () => {
       mount,
       new Blob([
         fs.readFileSync(
-          path.resolve(localAppsPath, "minimal-working-setup-teardown.zip")
+          path.resolve(localAppsPath, "minimal-working-setup-teardown.zip"),
         ),
-      ])
+      ]),
     );
-    const scripts = await db.listServiceScripts(mount);
+    const scripts = await db.getServiceScripts(mount);
     expect(scripts).to.have.property("setup", "Setup");
     expect(scripts).to.have.property("teardown", "Teardown");
   });
@@ -693,9 +693,9 @@ describe("Foxx service", () => {
       mount,
       new Blob([
         fs.readFileSync(
-          path.resolve(localAppsPath, "minimal-working-setup-teardown.zip")
+          path.resolve(localAppsPath, "minimal-working-setup-teardown.zip"),
         ),
-      ])
+      ]),
     );
     const col = `${mount}_setup_teardown`.replace(/\//, "").replace(/-/g, "_");
     expect(await db.collection(col).get()).to.be.instanceOf(Object);
@@ -714,7 +714,7 @@ describe("Foxx service", () => {
       mount,
       new Blob([
         fs.readFileSync(path.resolve(localAppsPath, "echo-script.zip")),
-      ])
+      ]),
     );
     try {
       await db.runServiceScript(mount, "no", {});
@@ -730,7 +730,7 @@ describe("Foxx service", () => {
       mount,
       new Blob([
         fs.readFileSync(path.resolve(localAppsPath, "echo-script.zip")),
-      ])
+      ]),
     );
     const argv = { hello: "world" };
     const resp = await db.runServiceScript(mount, "echo", argv);
@@ -742,7 +742,7 @@ describe("Foxx service", () => {
       mount,
       new Blob([
         fs.readFileSync(path.resolve(localAppsPath, "echo-script.zip")),
-      ])
+      ]),
     );
     const argv = ["yes", "please"];
     const resp = await db.runServiceScript(mount, "echo", argv);
@@ -754,9 +754,9 @@ describe("Foxx service", () => {
       mount,
       new Blob([
         fs.readFileSync(
-          path.resolve(localAppsPath, "minimal-working-service.zip")
+          path.resolve(localAppsPath, "minimal-working-service.zip"),
         ),
-      ])
+      ]),
     );
     const resp = await db.getService(mount);
     expect(resp.development).to.equal(false);
@@ -771,10 +771,10 @@ describe("Foxx service", () => {
       mount,
       new Blob([
         fs.readFileSync(
-          path.resolve(localAppsPath, "minimal-working-service.zip")
+          path.resolve(localAppsPath, "minimal-working-service.zip"),
         ),
       ]),
-      { development: true }
+      { development: true },
     );
     const resp = await db.getService(mount);
     expect(resp.development).to.equal(true);
@@ -787,7 +787,9 @@ describe("Foxx service", () => {
   it("tests should run", async () => {
     await db.installService(
       mount,
-      new Blob([fs.readFileSync(path.resolve(localAppsPath, "with-tests.zip"))])
+      new Blob([
+        fs.readFileSync(path.resolve(localAppsPath, "with-tests.zip")),
+      ]),
     );
     const resp = await db.runServiceTests(mount, {});
     expect(resp).to.have.property("stats");
@@ -802,7 +804,7 @@ describe("Foxx service", () => {
       mount,
       new Blob([
         fs.readFileSync(path.resolve(localAppsPath, "with-readme.zip")),
-      ])
+      ]),
     );
     const resp = await db.getServiceReadme(mount);
     expect(resp).to.equal("Please read this.");
@@ -813,9 +815,9 @@ describe("Foxx service", () => {
       mount,
       new Blob([
         fs.readFileSync(
-          path.resolve(localAppsPath, "minimal-working-service.zip")
+          path.resolve(localAppsPath, "minimal-working-service.zip"),
         ),
-      ])
+      ]),
     );
     const resp = await db.getServiceReadme(mount);
     expect(resp).to.equal(undefined);
@@ -826,9 +828,9 @@ describe("Foxx service", () => {
       mount,
       new Blob([
         fs.readFileSync(
-          path.resolve(localAppsPath, "minimal-working-service.zip")
+          path.resolve(localAppsPath, "minimal-working-service.zip"),
         ),
-      ])
+      ]),
     );
     const resp = await db.getServiceDocumentation(mount);
     expect(resp).to.have.property("swagger", "2.0");
@@ -853,7 +855,7 @@ describe("Foxx service", () => {
       "getServiceDependencies",
       (mount: string) => db.getServiceDependencies(mount),
     ],
-    ["listServiceScripts", (mount: string) => db.listServiceScripts(mount)],
+    ["listServiceScripts", (mount: string) => db.getServiceScripts(mount)],
     ["upgradeService", (mount: string) => db.upgradeService(mount, {} as any)],
     [
       "updateServiceConfiguration",

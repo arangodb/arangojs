@@ -1,25 +1,40 @@
-import { Database } from "./database.js";
-import { ArangojsResponse } from "./lib/request.js";
+/**
+ * ```ts
+ * import type { Job } from "arangojs/jobs";
+ * ```
+ *
+ * The "jobs" module provides job-related types for TypeScript.
+ *
+ * @packageDocumentation
+ */
+import * as connection from "./connection.js";
+import * as databases from "./databases.js";
 
 /**
- * Represents an async job in a {@link database.Database}.
+ * Represents an async job in a {@link databases.Database}.
+ *
+ * @param ResultType - The type of the job's result.
  */
-export class Job<T = any> {
+export class Job<ResultType = any> {
   protected _id: string;
-  protected _db: Database;
-  protected _transformResponse?: (res: ArangojsResponse) => Promise<T>;
-  protected _transformError?: (error: any) => Promise<T>;
+  protected _db: databases.Database;
+  protected _transformResponse?: (
+    res: connection.ProcessedResponse,
+  ) => Promise<ResultType>;
+  protected _transformError?: (error: any) => Promise<ResultType>;
   protected _loaded: boolean = false;
-  protected _result: T | undefined;
+  protected _result: ResultType | undefined;
 
   /**
    * @internal
    */
   constructor(
-    db: Database,
+    db: databases.Database,
     id: string,
-    transformResponse?: (res: ArangojsResponse) => Promise<T>,
-    transformError?: (error: any) => Promise<T>
+    transformResponse?: (
+      res: connection.ProcessedResponse,
+    ) => Promise<ResultType>,
+    transformError?: (error: any) => Promise<ResultType>,
   ) {
     this._db = db;
     this._id = id;
@@ -52,7 +67,7 @@ export class Job<T = any> {
   /**
    * The job's result if it has been loaded or `undefined` otherwise.
    */
-  get result(): T | undefined {
+  get result(): ResultType | undefined {
     return this._result;
   }
 
@@ -71,16 +86,16 @@ export class Job<T = any> {
    * console.log(job.result);
    * ```
    */
-  async load(): Promise<T | undefined> {
+  async load(): Promise<ResultType | undefined> {
     if (!this.isLoaded) {
-      let res: ArangojsResponse;
+      let res: connection.ProcessedResponse;
       try {
         res = await this._db.request(
           {
             method: "PUT",
-            path: `/_api/job/${this._id}`,
+            pathname: `/_api/job/${this._id}`,
           },
-          false
+          false,
         );
       } catch (e) {
         if (this._transformError) {
@@ -108,9 +123,9 @@ export class Job<T = any> {
     return this._db.request(
       {
         method: "PUT",
-        path: `/_api/job/${this._id}/cancel`,
+        pathname: `/_api/job/${this._id}/cancel`,
       },
-      () => undefined
+      () => undefined,
     );
   }
 
@@ -121,9 +136,9 @@ export class Job<T = any> {
     return this._db.request(
       {
         method: "DELETE",
-        path: `/_api/job/${this._id}`,
+        pathname: `/_api/job/${this._id}`,
       },
-      () => undefined
+      () => undefined,
     );
   }
 
@@ -146,9 +161,9 @@ export class Job<T = any> {
   getCompleted(): Promise<boolean> {
     return this._db.request(
       {
-        path: `/_api/job/${this._id}`,
+        pathname: `/_api/job/${this._id}`,
       },
-      (res) => res.status !== 204
+      (res) => res.status !== 204,
     );
   }
 }

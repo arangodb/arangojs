@@ -1,6 +1,6 @@
 import { expect } from "chai";
-import { Database } from "../database.js";
-import { View } from "../view.js";
+import { Database } from "../databases.js";
+import { View } from "../views.js";
 import { config } from "./_config.js";
 
 const range = (n: number): number[] => Array.from(Array(n).keys());
@@ -37,10 +37,10 @@ describe("Accessing views", function () {
           const view = db.view(name);
           await view.create({ type: "arangosearch" });
           await db.waitForPropagation(
-            { path: `/_api/view/${view.name}` },
-            10000
+            { pathname: `/_api/view/${view.name}` },
+            10000,
           );
-        })
+        }),
       );
     });
     after(async () => {
@@ -60,15 +60,15 @@ describe("Accessing views", function () {
           const view = db.view(name);
           await view.create({ type: "arangosearch" });
           await db.waitForPropagation(
-            { path: `/_api/view/${view.name}` },
-            10000
+            { pathname: `/_api/view/${view.name}` },
+            10000,
           );
-        })
+        }),
       );
     });
     after(async () => {
       await Promise.all(
-        arangoSearchViewNames.map((name) => db.view(name).drop())
+        arangoSearchViewNames.map((name) => db.view(name).drop()),
       );
     });
     it("creates View instances", async () => {
@@ -76,7 +76,7 @@ describe("Accessing views", function () {
       const arangoSearchViews = views.filter((v) => v instanceof View).sort();
       expect(arangoSearchViews.length).to.equal(arangoSearchViewNames.length);
       expect(arangoSearchViews.map((v) => v.name).sort()).to.eql(
-        arangoSearchViewNames
+        arangoSearchViewNames,
       );
     });
   });
