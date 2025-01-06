@@ -11,7 +11,7 @@
   "excludeInternal": true,
   "excludeProtected": true,
   "excludePrivate": true,
-  "includeVersion": false,
+  "includeVersion": true,
   "entryPoints": ["src"],
   "entryPointStrategy": "expand",
   "validation": {
