@@ -36,7 +36,7 @@ You can also use [jsDelivr CDN](https://www.jsdelivr.com) during development:
 <script type="importmap">
   {
     "imports": {
-      "arangojs": "https://cdn.jsdelivr.net/npm/arangojs@9.0.0/esm/index.js?+esm"
+      "arangojs": "https://cdn.jsdelivr.net/npm/arangojs@10.0.0/esm/index.js?+esm"
     }
   }
 </script>
@@ -183,7 +183,7 @@ For more details on the errors thrown by `undici`, see the
 Please make sure you are using the latest version of this driver and that the
 version of the arangojs documentation you are reading matches that version.
 
-Changes in the major version number of arangojs (e.g. 8.x.y -> 9.0.0) indicate
+Changes in the major version number of arangojs (e.g. 9.x.y -> 10.0.0) indicate
 backwards-incompatible changes in the arangojs API that may require changes in
 your code when upgrading your version of arangojs.
 
@@ -194,10 +194,10 @@ the [compatibility section](#compatibility) for additional information.
 You can install an older version of arangojs using `npm` or `yarn`:
 
 ```sh
-# for version 8.x.x
-yarn add arangojs@8
+# for version 9.x.x
+yarn add arangojs@9
 # - or -
-npm install --save arangojs@8
+npm install --save arangojs@9
 ```
 
 ### No code intelligence when using require instead of import
