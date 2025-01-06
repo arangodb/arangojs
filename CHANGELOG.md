@@ -19,449 +19,48 @@ This driver uses semantic versioning:
 - A change in the major version (e.g. 1.Y.Z -> 2.0.0) indicates _breaking_
   changes that require changes in your code to upgrade.
 
-## [10.0.0-rc.0] - 2024-12-10
-
-This is a major release and breaks backwards compatibility.
-
-See [the migration guide](./MIGRATING.md#v9-to-v10) for detailed instructions
-for upgrading your code to arangojs v10.
-
-### Removed
-
-- Removed unused `CreateUserOptions` type
-
-  The actual type used by the `db.createUser` method is still `UserOptions`.
-
-- Removed unused `IndexDetails` type
-
-  This type was intended to be returned by `collection.indexes` when the
-  `withStats` option is set to `true` but the `figures` property is already
-  included in the current return type.
-
-### Changed
-
-- Closing a connection now closes all open requests
-
-  Previously in certain situations only the most recent request would be
-  closed per server. Note that this still merely aborts the requests but
-  does not guarantee the underlying connections are closed as these are
-  handled by Node.js or the browser natively. need to be installed
-  otherwise.
-
-- Moved fetch-specific `config` options from into `config.fetchOptions`
-
-  The following options were moved: `credentials`, `headers` and `keepalive`.
-
-#### Error handling
-
-- Errors encountered before a request completes are now wrapped in a
-  `NetworkError` or a subclass thereof
-
-  This should help making it easier to diagnose network issues and distinguish
-  the relevant error conditions.
-
-  The originating error can still be accessed using the `cause` property of the
-  `NetworkError` error.
-
-- `HttpError` now extends the `NetworkError` class
-
-  This allows treating all non-`ArangoError` errors as one category of errors,
-  even when there is no server response available.
-
-- `db.waitForPropagation` now throws a `PropagationTimeoutError` error when
-  invoked with a `timeout` option and the timeout duration is exceeded
-
-  The method would previously throw the most recent error encountered while
-  waiting for replication. The originating error can still be accessed using
-  the `cause` property of the `PropagationTimeoutError` error.
-
-- `db.waitForPropagation` now respects the `timeout` option more strictly
-
-  Previously the method would only time out if the timeout duration was
-  exceeded after the most recent request failed. Now the timeout is
-  recalculated and passed on to each request, preventing it from exceeding
-  the specified duration.
-
-  If the propagation timed out due to an underlying request exceeding the
-  timeout duration, the `cause` property of the `PropagationTimeoutError`
-  error will be a `ResponseTimeoutError` error.
-
-- `config.beforeRequest` and `config.afterResponse` callbacks can now return
-  promises
-
-  If the callback returns a promise, it will be awaited before the request
-  and response cycle proceeds. If either callback throws an error or returns
-  a promise that is rejected, that error will be thrown instead.
-
-- `config.afterResponse` callback signature changed
-
-  The callback signature previously used the internal `ArangojsResponse` type.
-  The new signature uses the `Response` type of the Fetch API with an
-  additional `request` property to more accurately represent the actual value
-  it receives as the `parsedBody` property will never be present.
-
-- `response` property on `ArangoError` is now optional
-
-  This property should always be present but this allows using the error in
-  situations where a response might not be available.
-
-#### General type changes
-
-- Changed `GraphVertexCollection` and `GraphEdgeCollection` generic types to
-  take separate `EntryResultType` and `EntryInputType` type parameters
-
-- Changed `db.collection`, `db.createCollection` and `db.createEdgeCollection`
-  methods to take separate `EntryResultType` and `EntryInputType` type
-  parameters
-
-  These type parameters are used to narrow the the returned collection type.
-
-- Changed `db.removeUser` method return type to `Promise<void>`
-
-  The previous return type served no purpose.
-
-- Changed `QueueTimeMetrics` type to an interface
-
-- Changed `CursorExtras` and `CursorStats` interfaces to types
-
-#### Low-level request/route changes
-
-- Renamed `path` option to `pathname` in `RequestOptions` type
-
-  This affects the `db.waitForPropagation` and `route.request` methods.
-
-- Removed `basePath` option from `RequestOptions` type
-
-  This affects the `db.waitForPropagation` and `route.request` methods.
-
-- Renamed `route.path` property to `route.pathname`
-
-#### Renamed methods
-
-- Renamed various methods for consistency:
-
-  Methods that return an array now follow the `listNouns` pattern, methods that
-  return a "list of nouns" wrapped in an object have been renamed to follow the
-  `getNouns` pattern to avoid confusion:
-
-  - `db.listServiceScripts` -> `db.getServiceScripts`
-  - `db.listHotBackups` -> `db.getHotBackups`
-  - `db.listFunctions` -> `db.listUserFunctions`
-  - `db.getLogMessages` -> `db.listLogMessages`
-
-- Renamed AQL user function management methods:
-
-  - `db.createFunction` -> `db.createUserFunction`
-  - `db.dropFunction` -> `db.dropUserFunction`
-
-#### Module renaming
-
-- Renamed most modules to plural form for consistency
-
-  The following modules were renamed:
-
-  - `arangojs/analyzer` -> `arangojs/analyzers`
-  - `arangojs/collection` -> `arangojs/collections`
-  - `arangojs/cursor` -> `arangojs/cursors`
-  - `arangojs/database` -> `arangojs/databases`
-  - `arangojs/error` -> `arangojs/errors`
-  - `arangojs/graph` -> `arangojs/graphs`
-  - `arangojs/job` -> `arangojs/jobs`
-  - `arangojs/route` -> `arangojs/routes`
-  - `arangojs/transaction` -> `arangojs/transactions`
-  - `arangojs/view` -> `arangojs/views`
-
-- Moved internal utility functions to new `arangojs/lib/util` module
-
-  These methods are all still marked as internal and should not be used
-  directly.
-
-#### Moved types
-
-- Moved document related types from `arangojs/collection` module to
-  `arangojs/documents` module
-
-  The following types were moved: `DocumentOperationFailure`,
-  `DocumentOperationMetadata`, `DocumentExistsOptions`,
-  `CollectionReadOptions`, `CollectionBatchReadOptions`,
-  `CollectionInsertOptions`, `CollectionReplaceOptions`,
-  `CollectionUpdateOptions`, `CollectionRemoveOptions`,
-  `CollectionImportOptions`, `CollectionEdgesOptions`,
-  `CollectionImportResult` and `CollectionEdgesResult`
-
-- Moved index related types from `arangojs/collection` module to
-  `arangojs/indexes` module
-
-  The following types were moved: `IndexListOptions`.
-
-- Moved transaction related types from `arangojs/database` module to
-  `arangojs/transactions` module
-
-  The following types were moved: `TransactionCollections`,
-  `TransactionOptions` and `TransactionDetails`.
-
-- Moved cluster related types from `arangojs/database` module to new
-  `arangojs/clusters` module
-
-  The following types were moved: `ClusterImbalanceInfo`,
-  `ClusterRebalanceState`, `ClusterRebalanceOptions`, `ClusterRebalanceMove`
-  and `ClusterRebalanceResult`.
-
-- Moved hot backup related types from `arangojs/database` module to new
-  `arangojs/hot-backups` module
-
-  The following types were moved: `HotBackupOptions`, `HotBackupResult` and
-  `HotBackupList`.
-
-- Moved query related types from `arangojs/database` module to new
-  `arangojs/queries` module
-
-  The following types were moved: `QueryOptions`, `ExplainOptions`,
-  `ExplainPlan`, `ExplainStats`, `SingleExplainResult`, `MultiExplainResult`,
-  `AstNode`, `ParseResult`, `QueryOptimizerRule`, `QueryTracking`,
-  `QueryTrackingOptions`, `QueryInfo` and `AqlUserFunction`.
-
-- Moved service related types from `arangojs/database` module to new
-  `arangojs/services` module
-
-  The following types were moved: `InstallServiceOptions`,
-  `ReplaceServiceOptions`, `UpgradeServiceOptions`, `UninstallServiceOptions`,
-  `ServiceSummary`, `ServiceInfo`, `ServiceConfiguration`,
-  `SingleServiceDependency`, `MultiServiceDependency`, `ServiceTestStats`,
-  `ServiceTestStreamTest`, `ServiceTestStreamReport`, `ServiceTestSuiteTest`,
-  `ServiceTestSuite`, `ServiceTestSuiteReport`, `ServiceTestXunitTest`,
-  `ServiceTestXunitReport`, `ServiceTestTapReport`, `ServiceTestDefaultTest`,
-  `ServiceTestDefaultReport` and `SwaggerJson`.
-
-- Moved user related types from `arangojs/database` module to new
-  `arangojs/users` module
-
-  The following types were moved: `AccessLevel`, `ArangoUser`, `UserOptions`,
-  `UserAccessLevelOptions` and `CreateDatabaseUser`.
-
-- Moved server administration related types from `arangojs/database` module to
-  new `arangojs/administration` module
-
-  The following types were moved: `QueueTimeMetrics` and `VersionInfo`.
-
-- Moved configuration related types to new `arangojs/config` module
-
-  The following types were moved: `Config`, `LoadBalancingStrategy`,
-  `BasicAuthCredentials` and `BearerAuthCredentials`.
-
-- Moved `ArangoErrorResponse` type to `arangojs/connection` module
-
-  The type is now also no longer marked as internal.
-
-- Moved configuration related types to new `arangojs/configuration` module
-
-  The following types were moved: `ConfigOptions`, `LoadBalancingStrategy`,
-  `BasicAuthCredentials` and `BearerAuthCredentials`.
-
-#### Renamed types
-
-- Renamed `Index` types to `IndexDescription` for consistency
-
-  The specific index types were also renamed accordingly:
-
-  - `Index` -> `IndexDescription`
-  - `GeoIndex` -> `GeoIndexDescription`
-  - `PersistentIndex` -> `PersistentIndexDescription`
-  - `PrimaryIndex` -> `PrimaryIndexDescription`
-  - `TtlIndex` -> `TtlIndexDescription`
-  - `MdiIndex` -> `MdiIndexDescription`
-  - `InvertedIndex` -> `InvertedIndexDescription`
-  - `InternalArangosearchIndex` -> `ArangosearchIndexDescription`
-  - `InternalIndex` -> `InternalIndexDescription`
-  - `HiddenIndex` -> `HiddenIndexDescription`
-
-  Note that the "Internal" prefix was dropped from `ArangosearchIndexDescription`
-  to more accurately reflect the index type name. The index type still refers
-  to an internal index, however.
-
-- Renamed various types for consistency:
-
-  Types representing an instance of a specific entity type in ArangoDB like a
-  collection, graph or query now follow the `NounDescription` naming pattern:
-
-  - `AqlUserFunction` -> `UserFunctionDescription`
-  - `CollectionMetadata` -> `CollectionDescription`
-  - `DatabaseInfo` -> `DatabaseDescription`
-  - `GraphInfo` -> `GraphDescription`
-  - `ServiceInfo` -> `ServiceDescription`
-  - `QueryInfo` -> `QueryDescription`
-  - `TransactionDetails` -> `TransactionDescription`
-
-  Note that the `TransactionDescription` type used by `db.listTransactions`
-  is slightly different from the `TransactionInfo` type used by methods of
-  `Transaction` objects due to implementation details of ArangoDB.
-
-  Types representing general information rather than an instance of something
-  now generally follow the `NounInfo` naming pattern, whereas types
-  representing the result of an operation generally follow the `NounResult`
-  or `VerbNounResult` naming pattern:
-
-  - `QueryTracking` -> `QueryTrackingInfo`
-  - `CollectionImportResult` -> `ImportDocumentsResult`
-  - `CollectionEdgesResult` -> `DocumentEdgesResult`
-
-  Types for options passed to methods now generally follow the `NounOptions`,
-  `VerbNounOptions` or `VerbNounAttributeOptions` naming patterns:
-
-  - `Config` -> `ConfigOptions`
-  - `TransactionCollections` -> `TransactionCollectionOptions`
-  - `CreateDatabaseUser` -> `CreateDatabaseUserOptions`
-  - `CollectionDropOptions` -> `DropCollectionOptions`
-  - `CollectionTruncateOptions` -> `TruncateCollectionOptions`
-  - `IndexListOptions` -> `ListIndexesOptions`
-
-  - Collection document operations:
-
-    - `DocumentExistsOptions` -> `DocumentExistsOptions`
-    - `CollectionReadOptions` -> `ReadDocumentOptions`
-    - `CollectionBatchReadOptions` -> `BulkReadDocumentsOptions`
-    - `CollectionInsertOptions` -> `InsertDocumentOptions`
-    - `CollectionReplaceOptions` -> `ReplaceDocumentOptions`
-    - `CollectionUpdateOptions` -> `UpdateDocumentOptions`
-    - `CollectionRemoveOptions` -> `RemoveDocumentOptions`
-    - `CollectionImportOptions` -> `ImportDocumentsOptions`
-    - `CollectionEdgesOptions` -> `DocumentEdgesOptions`
-
-  - Graph collection document operation:
-
-    - `GraphCollectionReadOptions` -> `ReadGraphDocumentOptions`
-    - `GraphCollectionInsertOptions` -> `CreateGraphDocumentOptions`
-    - `GraphCollectionReplaceOptions` -> `ReplaceGraphDocumentOptions`
-    - `GraphCollectionRemoveOptions` -> `RemoveGraphDocumentOptions`
-    - `ViewPatchPropertiesOptions` -> `UpdateViewPropertiesOptions`
-
-  - View operations:
-
-    - `ArangoSearchViewPatchPropertiesOptions` -> `UpdateArangoSearchViewPropertiesOptions`
-    - `SearchAliasViewPatchPropertiesOptions` -> `UpdateSearchAliasViewPropertiesOptions`
-    - `SearchAliasViewPatchIndexOptions` -> `UpdateSearchAliasViewIndexOptions`
-    - `ArangoSearchViewStoredValueOptions` -> `CreateArangoSearchViewStoredValueOptions`
-
-- Renamed `ArrayCursor` and `BatchedArrayCursor` classes to `Cursor` and
-  `BatchCursor` respectively
-
-  The previous name was misleading because it conflicted with how the ArangoDB
-  distinguishes between array cursors and streaming cursors in the interactive
-  shell. This distinction does not apply to the driver.
-
-- Renamed various types to reduce ambiguity:
-
-  - `ObjectWithId` (in `indexes` module) -> `ObjectWithIndexId`
-  - `ObjectWithId` (in `documents` module) -> `ObjectWithDocumentId`
-  - `ObjectWithKey` (in `documents` module) -> `ObjectWithDocumentKey`
+## [9.3.0] - 2025-01-06
 
 ### Added
 
-- Restored support for Unix domain sockets
+- Added `db.compact` method (DE-906)
 
-  Using Unix domain sockets requires the `undici` library to be installed.
+- Added `db.engineStats` method (DE-932)
 
-- Restored support for `config.agentOptions`
+- Added `db.getLicense` and `db.setLicense` methods (DE-949)
 
-  The `config.agentOptions` option can now be used to create a custom `undici`
-  agent if the `undici` library is installed.
+- Added `db.listQueryCacheEntries` method (DE-149)
 
-- Added `config.fetchOptions` option
+- Added `db.clearQueryCache` method (DE-148)
 
-  This option can now be used to specify default options for the `fetch`
-  function used by arangojs like `headers`, `credentials`, `keepalive` and
-  `redirect`.
+- Added `db.getQueryCacheProperties` method (DE-150)
 
-- Added `BatchCursor#itemsView` property and `BatchCursorItemsView` interface
+- Added `db.setQueryCacheProperties` method (DE-151)
 
-  This property provides a low-level interface for consuming the items of the
-  cursor and is used by the regular item-wise `Cursor` class internally.
+- Added `collection.shards` method (DE-939)
 
-- Added `ProcessedResponse` type
+- Added support for `mdi-prefixed` indexes (DE-956)
 
-  This type replaces the previously internal `ArangojsResponse` type and
-  extends the native `Response` type with additional properties.
+- Restored `fulltext` index type support (DE-957)
 
-#### Error handling
+  The `fulltext` index type is still no longer supported for creating new
+  indexes but can be used to cast existing indexes from `Index`.
 
-- Added `config.onError` option (DE-955)
+- Added support for `edge` indexes (DE-958)
 
-  This option can be used to specify a callback function that will be invoked
-  whenever a request results in an error. Unlike `afterResponse`, this callback
-  will be invoked even if the request completed but returned an error status.
-  In this case the error will be the `HttpError` or `ArangoError` representing
-  the error response.
-
-  If the `onError` callback throws an error or returns a promise that is
-  rejected, that error will be thrown instead.
-
-- Added support for `config.fetchOptions.redirect` option ([#613](https://github.com/arangodb/arangojs/issues/613))
-
-  This option can now be used to specify the redirect mode for requests.
-
-  When set to `"manual"`, arangojs will throw an `HttpError` wrapping the
-  redirect response instead of automatically following redirects.
-
-  Note that when set to `"error"`, the native fetch API will throw a
-  non-specific error (usually a `TypeError`) that arangojs will wrap in a
-  `FetchFailedError` instead.
-
-- Added optional `ArangoError#request` property
-
-  This property is always present if the error has a `response` property. In
-  normal use this should always be the case.
-
-- Added `NetworkError` class
-
-  This is the common base class for all errors (including `HttpError`) that
-  occur while making a request. The originating error can be accessed using the
-  `cause` property. The request object can be accessed using the `request`
-  property.
-
-  Note that `ArangoError` and the new `PropagationTimeoutError` error type
-  do not extend `NetworkError` but may wrap an underlying error, which can
-  be accessed using the `cause` property.
-
-- Added `ResponseTimeoutError` class
-
-  This error extends `NetworkError` and is thrown when a request deliberately
-  times out using the `timeout` option.
-
-- Added `RequestAbortedError` class
-
-  This error extends `NetworkError` and is thrown when a request is aborted
-  by using the `db.close` method.
-
-- Added `FetchFailedError` class
-
-  This error extends `NetworkError` and is thrown when a request fails because
-  the underlying `fetch` call fails (usually with a `TypeError`).
-
-  In Node.js the root cause of this error (e.g. a network failure) can often be
-  found in the `cause` property of the originating error, i.e. the `cause`
-  property of the `cause` property of this error.
-
-  In browsers the root cause is usually not exposed directly but can often
-  be diagnosed by examining the developer console or network tab.
-
-- Added `PropagationTimeoutError` class
-
-  This error does not extend `NetworkError` but wraps the most recent error
-  encountered while waiting for replication, which can be accessed using the
-  `cause` property. This error is only thrown when `db.waitForPropagation`
-  is invoked with a `timeout` option and the timeout duration is exceeded.
+  The `Index` type now can also be cast to the `EdgeIndex` type.
 
 ## [9.2.0] - 2024-11-27
 
 ### Added
 
-- Added `database.availability` method
+- Added `db.availability` method
 
-- Added `database.engine` method (DE-931)
+- Added `db.engine` method (DE-931)
 
-- Added `database.status` method ([#811](https://github.com/arangodb/arangojs/issues/811))
+- Added `db.status` method ([#811](https://github.com/arangodb/arangojs/issues/811))
 
-- Added `database.supportInfo` method
+- Added `db.supportInfo` method
 
 - Added `keepNull` option to `CollectionInsertOptions` type (DE-946)
 
@@ -502,8 +101,6 @@ for upgrading your code to arangojs v10.
 
   This property is only available when fetching indexes with the `withHidden`
   option set to `true`.
-
-### Added
 
 - Added `HiddenIndex` type (DE-849)
 
@@ -1556,7 +1153,7 @@ For a detailed list of changes between pre-release versions of v7 see the
 
 - Changed `db.createDatabase` return type to `Database`
 
-- Renamed `database.setQueryTracking` to `database.queryTracking`
+- Renamed `db.setQueryTracking` to `db.queryTracking`
 
   The method will now return the existing query tracking properties or set the
   new query tracking properties depending on whether an argument is provided.
@@ -1952,7 +1549,7 @@ For a detailed list of changes between pre-release versions of v7 see the
 
 - Added support for ArangoDB 3.5 Analyzers API
 
-  See the documentation of the `database.analyzer` method and the `Analyzer`
+  See the documentation of the `db.analyzer` method and the `Analyzer`
   instances for information on using this API.
 
 - Added `collection.getResponsibleShard` method
@@ -2126,7 +1723,7 @@ For a detailed list of changes between pre-release versions of v7 see the
 
 - Fixed `edgeCollection.save` not respecting options ([#554](https://github.com/arangodb/arangojs/issues/554))
 
-- Fixed `database.createDatabase` TypeScript signature ([#561](https://github.com/arangodb/arangojs/issues/561))
+- Fixed `db.createDatabase` TypeScript signature ([#561](https://github.com/arangodb/arangojs/issues/561))
 
 ## [6.5.0] - 2018-08-03
 
@@ -2167,7 +1764,7 @@ For a detailed list of changes between pre-release versions of v7 see the
 
 - Added `ArangoError` and `CollectionType` to public exports
 
-- Added `database.close` method
+- Added `db.close` method
 
 - Added `opts` parameter to `EdgeCollection#save`
 
@@ -2175,11 +1772,11 @@ For a detailed list of changes between pre-release versions of v7 see the
 
 ### Added
 
-- Added `database.version` method
+- Added `db.version` method
 
-- Added `database.login` method
+- Added `db.login` method
 
-- Added `database.exists` method
+- Added `db.exists` method
 
 - Added `collection.exists` method
 
@@ -2401,7 +1998,7 @@ For a detailed list of changes between pre-release versions of v7 see the
 
   Graph methods now only return the relevant part of the response body.
 
-[10.0.0-rc.0]: https://github.com/arangodb/arangojs/compare/v9.2.0...v10.0.0-rc.0
+[9.3.0]: https://github.com/arangodb/arangojs/compare/v9.2.0...v9.3.0
 [9.2.0]: https://github.com/arangodb/arangojs/compare/v9.1.0...v9.2.0
 [9.1.0]: https://github.com/arangodb/arangojs/compare/v9.0.0...v9.1.0
 [9.0.0]: https://github.com/arangodb/arangojs/compare/v8.8.1...v9.0.0
