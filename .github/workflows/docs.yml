@@ -4,8 +4,13 @@ on:
   push:
     tags:
       - "v*.*.*" # all semver release tags
+  workflow_run:
+    workflows:
+      - Tests
     branches:
-      - stable
+      - main
+    types:
+      - completed
 
 jobs:
   publish-docs:
