@@ -14,38 +14,7 @@ This driver uses semantic versioning:
 - A change in the major version (e.g. 1.Y.Z -> 2.0.0) indicates _breaking_
   changes that require changes in your code to upgrade.
 
-## [9.3.0] - 2025-01-06
-
-### Added
-
-- Added `db.compact` method (DE-906)
-
-- Added `db.engineStats` method (DE-932)
-
-- Added `db.getLicense` and `db.setLicense` methods (DE-949)
-
-- Added `db.listQueryCacheEntries` method (DE-149)
-
-- Added `db.clearQueryCache` method (DE-148)
-
-- Added `db.getQueryCacheProperties` method (DE-150)
-
-- Added `db.setQueryCacheProperties` method (DE-151)
-
-- Added `collection.shards` method (DE-939)
-
-- Added support for `mdi-prefixed` indexes (DE-956)
-
-- Restored `fulltext` index type support (DE-957)
-
-  The `fulltext` index type is still no longer supported for creating new
-  indexes but can be used to cast existing indexes from `Index`.
-
-- Added support for `edge` indexes (DE-958)
-
-  The `Index` type now can also be cast to the `EdgeIndex` type.
-
-## [10.0.0-rc.0] - 2024-12-10
+## [Unreleased]
 
 This is a major release and breaks backwards compatibility.
 
@@ -244,7 +213,8 @@ for upgrading your code to arangojs v10.
 
   The following types were moved: `QueryOptions`, `ExplainOptions`,
   `ExplainPlan`, `ExplainStats`, `SingleExplainResult`, `MultiExplainResult`,
-  `AstNode`, `ParseResult`, `QueryOptimizerRule`, `QueryTracking`,
+  `AstNode`, `ParseResult`, `QueryCachePropertiesOptions`, `QueryCacheEntry`,
+  `QueryCacheProperties`, `QueryOptimizerRule`, `QueryTracking`,
   `QueryTrackingOptions`, `QueryInfo` and `AqlUserFunction`.
 
 - Moved service related types from `arangojs/database` module to new
@@ -268,7 +238,10 @@ for upgrading your code to arangojs v10.
 - Moved server administration related types from `arangojs/database` module to
   new `arangojs/administration` module
 
-  The following types were moved: `QueueTimeMetrics` and `VersionInfo`.
+  The following types were moved: `CompactOptions`, `EngineInfo`,
+  `EngineStatsInfo`, `LicenseInfo`, `QueueTimeMetrics`, `ServerAvailability`,
+  `ServerStatusInformation`, `SingleServerSupportInfo`, `ClusterSupportInfo`
+  and `VersionInfo`.
 
 - Moved configuration related types to new `arangojs/config` module
 
@@ -294,8 +267,11 @@ for upgrading your code to arangojs v10.
   - `GeoIndex` -> `GeoIndexDescription`
   - `PersistentIndex` -> `PersistentIndexDescription`
   - `PrimaryIndex` -> `PrimaryIndexDescription`
+  - `EdgeIndex` -> `EdgeIndexDescription`
   - `TtlIndex` -> `TtlIndexDescription`
+  - `FulltextIndex` -> `FulltextIndexDescription`
   - `MdiIndex` -> `MdiIndexDescription`
+  - `MdiPrefixedIndex` -> `MdiPrefixedIndexDescription`
   - `InvertedIndex` -> `InvertedIndexDescription`
   - `InternalArangosearchIndex` -> `ArangosearchIndexDescription`
   - `InternalIndex` -> `InternalIndexDescription`
@@ -328,6 +304,7 @@ for upgrading your code to arangojs v10.
   or `VerbNounResult` naming pattern:
 
   - `QueryTracking` -> `QueryTrackingInfo`
+  - `ServerStatusInformation` -> `ServerStatusInfo`
   - `CollectionImportResult` -> `ImportDocumentsResult`
   - `CollectionEdgesResult` -> `DocumentEdgesResult`
 
@@ -403,6 +380,11 @@ for upgrading your code to arangojs v10.
   This property provides a low-level interface for consuming the items of the
   cursor and is used by the regular item-wise `Cursor` class internally.
 
+- Added `SystemIndexDescription` type
+
+  This type represents either of the system index types `primary` and `edge`
+  and can be used to cast indexes returned by `collection.indexes`.
+
 - Added `ProcessedResponse` type
 
   This type replaces the previously internal `ArangojsResponse` type and
@@ -476,6 +458,37 @@ for upgrading your code to arangojs v10.
   encountered while waiting for replication, which can be accessed using the
   `cause` property. This error is only thrown when `db.waitForPropagation`
   is invoked with a `timeout` option and the timeout duration is exceeded.
+
+## [9.3.0] - 2025-01-06
+
+### Added
+
+- Added `db.compact` method (DE-906)
+
+- Added `db.engineStats` method (DE-932)
+
+- Added `db.getLicense` and `db.setLicense` methods (DE-949)
+
+- Added `db.listQueryCacheEntries` method (DE-149)
+
+- Added `db.clearQueryCache` method (DE-148)
+
+- Added `db.getQueryCacheProperties` method (DE-150)
+
+- Added `db.setQueryCacheProperties` method (DE-151)
+
+- Added `collection.shards` method (DE-939)
+
+- Added support for `mdi-prefixed` indexes (DE-956)
+
+- Restored `fulltext` index type support (DE-957)
+
+  The `fulltext` index type is still no longer supported for creating new
+  indexes but can be used to cast existing indexes from `Index`.
+
+- Added support for `edge` indexes (DE-958)
+
+  The `Index` type now can also be cast to the `EdgeIndex` type.
 
 ## [9.2.0] - 2024-11-27
 
@@ -2427,8 +2440,8 @@ For a detailed list of changes between pre-release versions of v7 see the
 
   Graph methods now only return the relevant part of the response body.
 
+[unreleased]: https://github.com/arangodb/arangojs/compare/v9.3.0...HEAD
 [9.3.0]: https://github.com/arangodb/arangojs/compare/v9.2.0...v9.3.0
-[10.0.0-rc.0]: https://github.com/arangodb/arangojs/compare/v9.2.0...v10.0.0-rc.0
 [9.2.0]: https://github.com/arangodb/arangojs/compare/v9.1.0...v9.2.0
 [9.1.0]: https://github.com/arangodb/arangojs/compare/v9.0.0...v9.1.0
 [9.0.0]: https://github.com/arangodb/arangojs/compare/v8.8.1...v9.0.0

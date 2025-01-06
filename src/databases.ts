@@ -644,7 +644,7 @@ export class Database {
    * // serverInfo: detailed information about the server
    * ```
    */
-  status(): Promise<administration.ServerStatusInformation> {
+  status(): Promise<administration.ServerStatusInfo> {
     return this.request({
       method: "GET",
       pathname: "/_admin/status",

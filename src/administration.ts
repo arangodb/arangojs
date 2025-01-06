@@ -139,7 +139,7 @@ export type LicenseInfo = {
 /**
  * Information about the server status.
  */
-export type ServerStatusInformation = {
+export type ServerStatusInfo = {
   /**
    * (Cluster Coordinators and DB-Servers only.) The address of the server.
    */
