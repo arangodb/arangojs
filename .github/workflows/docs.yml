@@ -33,8 +33,7 @@ jobs:
       - run: npm install -g npm@10
       - run: npm install
 
-      - name: Set TAG env to devel
-        if: startsWith( github.event.ref, 'refs/heads/' )
+      - name: Set TAG env to devel (default)
         run: |
           echo "TAG=devel" >> $GITHUB_ENV
           echo "IS_PREVIEW=1" >> $GITHUB_ENV
