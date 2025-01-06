@@ -7,6 +7,7 @@
  *
  * @packageDocumentation
  */
+/** @import databases from "./databases.js" */
 
 //#region Query operation options
 /**
@@ -185,7 +186,7 @@ export type QueryOptions = {
 /**
  * Options for explaining a query.
  *
- * See {@link Database#explain}.
+ * See {@link databases.Database#explain}.
  */
 export type ExplainOptions = {
   /**
@@ -213,7 +214,7 @@ export type ExplainOptions = {
 /**
  * Options for query tracking.
  *
- * See {@link Database#queryTracking}.
+ * See {@link databases.Database#queryTracking}.
  */
 export type QueryTrackingOptions = {
   /**
@@ -608,7 +609,7 @@ export type UserFunctionDescription = {
   /**
    * Whether the function is deterministic.
    *
-   * See {@link Database#createFunction}.
+   * See {@link databases.Database#createFunction}.
    */
   isDeterministic: boolean;
 };

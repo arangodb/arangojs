@@ -8,8 +8,8 @@
  *
  * @packageDocumentation
  */
-import * as databases from "./databases.js";
 import * as connection from "./connection.js";
+import * as databases from "./databases.js";
 import * as errors from "./errors.js";
 import { ANALYZER_NOT_FOUND } from "./lib/codes.js";
 
@@ -75,7 +75,10 @@ export type CreateAnalyzerOptions =
   | CreateGeoPointAnalyzerOptions
   | CreateGeoS2AnalyzerOptions;
 
-type CreateAnalyzerOptionsType<
+/**
+ * Shared attributes of all Analyzer creation options.
+ */
+export type CreateAnalyzerOptionsType<
   Type extends AnalyzerType,
   Properties = void,
 > = Properties extends void
@@ -580,7 +583,7 @@ export type AnalyzerDescription =
 /**
  * Shared attributes of all Analyzer descriptions.
  */
-type AnalyzerDescriptionType<
+export type AnalyzerDescriptionType<
   Type extends string,
   Properties = Record<string, never>,
 > = {
@@ -931,7 +934,7 @@ export class Analyzer {
    * ```
    */
   create<Options extends CreateAnalyzerOptions>(
-    options: Options,
+    options: Options
   ): Promise<
     Options extends CreateIdentityAnalyzerOptions
       ? IdentityAnalyzerDescription
@@ -991,7 +994,7 @@ export class Analyzer {
    * ```
    */
   drop(
-    force: boolean = false,
+    force: boolean = false
   ): Promise<connection.ArangoApiResponse<{ name: string }>> {
     return this._db.request({
       method: "DELETE",

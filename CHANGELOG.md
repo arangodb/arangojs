@@ -47,6 +47,11 @@ for upgrading your code to arangojs v10.
 
   The following options were moved: `credentials`, `headers` and `keepalive`.
 
+- `db.setUserAccessLevel` now takes `grant` as a separate parameter
+
+  The parameter was previously passed as an additional property in the
+  `options` parameter.
+
 #### Error handling
 
 - Errors encountered before a request completes are now wrapped in a

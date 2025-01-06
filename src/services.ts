@@ -8,30 +8,31 @@
  * @packageDocumentation
  */
 import { FoxxManifest } from "./foxx-manifest.js";
+/** @import databases from "./databases.js" */
 
 //#region Service operation options
 /**
  * Options for installing the service.
  *
- * See {@link Database#installService}.
+ * See {@link databases.Database#installService}.
  */
 export type InstallServiceOptions = {
   /**
    * An object mapping configuration option names to values.
    *
-   * See also {@link Database#getServiceConfiguration}.
+   * See also {@link databases.Database#getServiceConfiguration}.
    */
   configuration?: Record<string, any>;
   /**
    * An object mapping dependency aliases to mount points.
    *
-   * See also {@link Database#getServiceDependencies}.
+   * See also {@link databases.Database#getServiceDependencies}.
    */
   dependencies?: Record<string, string>;
   /**
    * Whether the service should be installed in development mode.
    *
-   * See also {@link Database#setServiceDevelopmentMode}.
+   * See also {@link databases.Database#setServiceDevelopmentMode}.
    *
    * Default: `false`
    */
@@ -55,25 +56,25 @@ export type InstallServiceOptions = {
 /**
  * Options for replacing a service.
  *
- * See {@link Database#replaceService}.
+ * See {@link databases.Database#replaceService}.
  */
 export type ReplaceServiceOptions = {
   /**
    * An object mapping configuration option names to values.
    *
-   * See also {@link Database#getServiceConfiguration}.
+   * See also {@link databases.Database#getServiceConfiguration}.
    */
   configuration?: Record<string, any>;
   /**
    * An object mapping dependency aliases to mount points.
    *
-   * See also {@link Database#getServiceDependencies}.
+   * See also {@link databases.Database#getServiceDependencies}.
    */
   dependencies?: Record<string, string>;
   /**
    * Whether the service should be installed in development mode.
    *
-   * See also {@link Database#setServiceDevelopmentMode}.
+   * See also {@link databases.Database#setServiceDevelopmentMode}.
    *
    * Default: `false`
    */
@@ -111,25 +112,25 @@ export type ReplaceServiceOptions = {
 /**
  * Options for upgrading a service.
  *
- * See {@link Database#upgradeService}.
+ * See {@link databases.Database#upgradeService}.
  */
 export type UpgradeServiceOptions = {
   /**
    * An object mapping configuration option names to values.
    *
-   * See also {@link Database#getServiceConfiguration}.
+   * See also {@link databases.Database#getServiceConfiguration}.
    */
   configuration?: Record<string, any>;
   /**
    * An object mapping dependency aliases to mount points.
    *
-   * See also {@link Database#getServiceDependencies}.
+   * See also {@link databases.Database#getServiceDependencies}.
    */
   dependencies?: Record<string, string>;
   /**
    * Whether the service should be installed in development mode.
    *
-   * See also {@link Database#setServiceDevelopmentMode}.
+   * See also {@link databases.Database#setServiceDevelopmentMode}.
    *
    * Default: `false`
    */
@@ -167,7 +168,7 @@ export type UpgradeServiceOptions = {
 /**
  * Options for uninstalling a service.
  *
- * See {@link Database#uninstallService}.
+ * See {@link databases.Database#uninstallService}.
  */
 export type UninstallServiceOptions = {
   /**

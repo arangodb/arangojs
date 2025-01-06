@@ -32,7 +32,7 @@ function mungeGharialResponse(body: any, prop: "vertex" | "edge" | "removed") {
 function coerceEdgeDefinition(options: EdgeDefinitionOptions): EdgeDefinition {
   const edgeDefinition = {} as EdgeDefinition;
   edgeDefinition.collection = collections.collectionToString(
-    options.collection,
+    options.collection
   );
   edgeDefinition.from = Array.isArray(options.from)
     ? options.from.map(collections.collectionToString)
@@ -480,10 +480,10 @@ export class GraphVertexCollection<
         {
           method: "HEAD",
           pathname: `/_api/gharial/${encodeURIComponent(
-            this.graph.name,
+            this.graph.name
           )}/vertex/${encodeURI(documents._documentHandle(selector, this._name))}`,
         },
-        () => true,
+        () => true
       );
     } catch (err: any) {
       if (err.code === 404) {
@@ -529,7 +529,7 @@ export class GraphVertexCollection<
    */
   async vertex(
     selector: documents.DocumentSelector,
-    options?: ReadGraphDocumentOptions,
+    options?: ReadGraphDocumentOptions
   ): Promise<documents.Document<EntryResultType>>;
   /**
    * Retrieves the vertex matching the given key or id.
@@ -568,11 +568,11 @@ export class GraphVertexCollection<
    */
   async vertex(
     selector: documents.DocumentSelector,
-    graceful: boolean,
+    graceful: boolean
   ): Promise<documents.Document<EntryResultType>>;
   async vertex(
     selector: documents.DocumentSelector,
-    options: boolean | ReadGraphDocumentOptions = {},
+    options: boolean | ReadGraphDocumentOptions = {}
   ): Promise<documents.Document<EntryResultType> | null> {
     if (typeof options === "boolean") {
       options = { graceful: options };
@@ -588,13 +588,13 @@ export class GraphVertexCollection<
     const result = this._db.request(
       {
         pathname: `/_api/gharial/${encodeURIComponent(
-          this.graph.name,
+          this.graph.name
         )}/vertex/${encodeURI(documents._documentHandle(selector, this._name))}`,
         headers,
         search,
         allowDirtyRead,
       },
-      (res) => res.parsedBody.vertex,
+      (res) => res.parsedBody.vertex
     );
     if (!graceful) return result;
     try {
@@ -626,24 +626,24 @@ export class GraphVertexCollection<
    */
   save(
     data: documents.DocumentData<EntryInputType>,
-    options?: InsertGraphDocumentOptions,
+    options?: InsertGraphDocumentOptions
   ): Promise<
     documents.DocumentMetadata & { new?: documents.Document<EntryResultType> }
   >;
   save(
     data: documents.DocumentData<EntryInputType>,
-    options?: InsertGraphDocumentOptions,
+    options?: InsertGraphDocumentOptions
   ) {
     return this._db.request(
       {
         method: "POST",
         pathname: `/_api/gharial/${encodeURIComponent(
-          this.graph.name,
+          this.graph.name
         )}/vertex/${encodeURIComponent(this._name)}`,
         body: data,
         search: options,
       },
-      (res) => mungeGharialResponse(res.parsedBody, "vertex"),
+      (res) => mungeGharialResponse(res.parsedBody, "vertex")
     );
   }
 
@@ -673,8 +673,8 @@ export class GraphVertexCollection<
    */
   replace(
     selector: documents.DocumentSelector,
-    newValue: documents.DocumentData<EntryInputType>,
-    options?: ReplaceGraphDocumentOptions,
+    newData: documents.DocumentData<EntryInputType>,
+    options?: ReplaceGraphDocumentOptions
   ): Promise<
     documents.DocumentMetadata & {
       new?: documents.Document<EntryResultType>;
@@ -683,8 +683,8 @@ export class GraphVertexCollection<
   >;
   replace(
     selector: documents.DocumentSelector,
-    newValue: documents.DocumentData<EntryInputType>,
-    options: ReplaceGraphDocumentOptions = {},
+    newData: documents.DocumentData<EntryInputType>,
+    options: ReplaceGraphDocumentOptions = {}
   ) {
     if (typeof options === "string") {
       options = { rev: options };
@@ -696,13 +696,13 @@ export class GraphVertexCollection<
       {
         method: "PUT",
         pathname: `/_api/gharial/${encodeURIComponent(
-          this.graph.name,
+          this.graph.name
         )}/vertex/${encodeURI(documents._documentHandle(selector, this._name))}`,
-        body: newValue,
+        body: newData,
         search,
         headers,
       },
-      (res) => mungeGharialResponse(res.parsedBody, "vertex"),
+      (res) => mungeGharialResponse(res.parsedBody, "vertex")
     );
   }
 
@@ -732,8 +732,8 @@ export class GraphVertexCollection<
    */
   update(
     selector: documents.DocumentSelector,
-    newValue: documents.Patch<documents.DocumentData<EntryInputType>>,
-    options?: ReplaceGraphDocumentOptions,
+    newData: documents.Patch<documents.DocumentData<EntryInputType>>,
+    options?: ReplaceGraphDocumentOptions
   ): Promise<
     documents.DocumentMetadata & {
       new?: documents.Document<EntryResultType>;
@@ -742,8 +742,8 @@ export class GraphVertexCollection<
   >;
   update(
     selector: documents.DocumentSelector,
-    newValue: documents.Patch<documents.DocumentData<EntryInputType>>,
-    options: ReplaceGraphDocumentOptions = {},
+    newData: documents.Patch<documents.DocumentData<EntryInputType>>,
+    options: ReplaceGraphDocumentOptions = {}
   ) {
     if (typeof options === "string") {
       options = { rev: options };
@@ -755,13 +755,13 @@ export class GraphVertexCollection<
       {
         method: "PATCH",
         pathname: `/_api/gharial/${encodeURIComponent(
-          this.graph.name,
+          this.graph.name
         )}/vertex/${encodeURI(documents._documentHandle(selector, this._name))}`,
-        body: newValue,
+        body: newData,
         search,
         headers,
       },
-      (res) => mungeGharialResponse(res.parsedBody, "vertex"),
+      (res) => mungeGharialResponse(res.parsedBody, "vertex")
     );
   }
 
@@ -794,13 +794,13 @@ export class GraphVertexCollection<
    */
   remove(
     selector: documents.DocumentSelector,
-    options?: RemoveGraphDocumentOptions,
+    options?: RemoveGraphDocumentOptions
   ): Promise<
     documents.DocumentMetadata & { old?: documents.Document<EntryResultType> }
   >;
   remove(
     selector: documents.DocumentSelector,
-    options: RemoveGraphDocumentOptions = {},
+    options: RemoveGraphDocumentOptions = {}
   ) {
     if (typeof options === "string") {
       options = { rev: options };
@@ -812,12 +812,12 @@ export class GraphVertexCollection<
       {
         method: "DELETE",
         pathname: `/_api/gharial/${encodeURIComponent(
-          this.graph.name,
+          this.graph.name
         )}/vertex/${encodeURI(documents._documentHandle(selector, this._name))}`,
         search,
         headers,
       },
-      (res) => mungeGharialResponse(res.parsedBody, "removed"),
+      (res) => mungeGharialResponse(res.parsedBody, "removed")
     );
   }
 }
@@ -918,10 +918,10 @@ export class GraphEdgeCollection<
         {
           method: "HEAD",
           pathname: `/_api/gharial/${encodeURIComponent(
-            this.graph.name,
+            this.graph.name
           )}/edge/${encodeURI(documents._documentHandle(selector, this._name))}`,
         },
-        () => true,
+        () => true
       );
     } catch (err: any) {
       if (err.code === 404) {
@@ -967,7 +967,7 @@ export class GraphEdgeCollection<
    */
   async edge(
     selector: documents.DocumentSelector,
-    options?: ReadGraphDocumentOptions,
+    options?: ReadGraphDocumentOptions
   ): Promise<documents.Edge<EntryResultType>>;
   /**
    * Retrieves the edge matching the given key or id.
@@ -1006,11 +1006,11 @@ export class GraphEdgeCollection<
    */
   async edge(
     selector: documents.DocumentSelector,
-    graceful: boolean,
+    graceful: boolean
   ): Promise<documents.Edge<EntryResultType>>;
   async edge(
     selector: documents.DocumentSelector,
-    options: boolean | ReadGraphDocumentOptions = {},
+    options: boolean | ReadGraphDocumentOptions = {}
   ): Promise<documents.Edge<EntryResultType> | null> {
     if (typeof options === "boolean") {
       options = { graceful: options };
@@ -1026,12 +1026,12 @@ export class GraphEdgeCollection<
     const result = this._db.request(
       {
         pathname: `/_api/gharial/${encodeURIComponent(
-          this.graph.name,
+          this.graph.name
         )}/edge/${encodeURI(documents._documentHandle(selector, this._name))}`,
         search,
         allowDirtyRead,
       },
-      (res) => res.parsedBody.edge,
+      (res) => res.parsedBody.edge
     );
     if (!graceful) return result;
     try {
@@ -1062,24 +1062,24 @@ export class GraphEdgeCollection<
    */
   save(
     data: documents.EdgeData<EntryInputType>,
-    options?: InsertGraphDocumentOptions,
+    options?: InsertGraphDocumentOptions
   ): Promise<
     documents.DocumentMetadata & { new?: documents.Edge<EntryResultType> }
   >;
   save(
     data: documents.EdgeData<EntryInputType>,
-    options?: InsertGraphDocumentOptions,
+    options?: InsertGraphDocumentOptions
   ) {
     return this._db.request(
       {
         method: "POST",
         pathname: `/_api/gharial/${encodeURIComponent(
-          this.graph.name,
+          this.graph.name
         )}/edge/${encodeURIComponent(this._name)}`,
         body: data,
         search: options,
       },
-      (res) => mungeGharialResponse(res.parsedBody, "edge"),
+      (res) => mungeGharialResponse(res.parsedBody, "edge")
     );
   }
 
@@ -1117,8 +1117,8 @@ export class GraphEdgeCollection<
    */
   replace(
     selector: documents.DocumentSelector,
-    newValue: documents.EdgeData<EntryInputType>,
-    options?: ReplaceGraphDocumentOptions,
+    newData: documents.EdgeData<EntryInputType>,
+    options?: ReplaceGraphDocumentOptions
   ): Promise<
     documents.DocumentMetadata & {
       new?: documents.Edge<EntryResultType>;
@@ -1127,8 +1127,8 @@ export class GraphEdgeCollection<
   >;
   replace(
     selector: documents.DocumentSelector,
-    newValue: documents.EdgeData<EntryInputType>,
-    options: ReplaceGraphDocumentOptions = {},
+    newData: documents.EdgeData<EntryInputType>,
+    options: ReplaceGraphDocumentOptions = {}
   ) {
     if (typeof options === "string") {
       options = { rev: options };
@@ -1140,13 +1140,13 @@ export class GraphEdgeCollection<
       {
         method: "PUT",
         pathname: `/_api/gharial/${encodeURIComponent(
-          this.graph.name,
+          this.graph.name
         )}/edge/${encodeURI(documents._documentHandle(selector, this._name))}`,
-        body: newValue,
+        body: newData,
         search,
         headers,
       },
-      (res) => mungeGharialResponse(res.parsedBody, "edge"),
+      (res) => mungeGharialResponse(res.parsedBody, "edge")
     );
   }
 
@@ -1184,8 +1184,8 @@ export class GraphEdgeCollection<
    */
   update(
     selector: documents.DocumentSelector,
-    newValue: documents.Patch<documents.EdgeData<EntryInputType>>,
-    options?: ReplaceGraphDocumentOptions,
+    newData: documents.Patch<documents.EdgeData<EntryInputType>>,
+    options?: ReplaceGraphDocumentOptions
   ): Promise<
     documents.DocumentMetadata & {
       new?: documents.Edge<EntryResultType>;
@@ -1194,8 +1194,8 @@ export class GraphEdgeCollection<
   >;
   update(
     selector: documents.DocumentSelector,
-    newValue: documents.Patch<documents.EdgeData<EntryInputType>>,
-    options: ReplaceGraphDocumentOptions = {},
+    newData: documents.Patch<documents.EdgeData<EntryInputType>>,
+    options: ReplaceGraphDocumentOptions = {}
   ) {
     if (typeof options === "string") {
       options = { rev: options };
@@ -1207,13 +1207,13 @@ export class GraphEdgeCollection<
       {
         method: "PATCH",
         pathname: `/_api/gharial/${encodeURIComponent(
-          this.graph.name,
+          this.graph.name
         )}/edge/${encodeURI(documents._documentHandle(selector, this._name))}`,
-        body: newValue,
+        body: newData,
         search,
         headers,
       },
-      (res) => mungeGharialResponse(res.parsedBody, "edge"),
+      (res) => mungeGharialResponse(res.parsedBody, "edge")
     );
   }
 
@@ -1238,13 +1238,13 @@ export class GraphEdgeCollection<
    */
   remove(
     selector: documents.DocumentSelector,
-    options?: RemoveGraphDocumentOptions,
+    options?: RemoveGraphDocumentOptions
   ): Promise<
     documents.DocumentMetadata & { old?: documents.Edge<EntryResultType> }
   >;
   remove(
     selector: documents.DocumentSelector,
-    options: RemoveGraphDocumentOptions = {},
+    options: RemoveGraphDocumentOptions = {}
   ) {
     if (typeof options === "string") {
       options = { rev: options };
@@ -1256,12 +1256,12 @@ export class GraphEdgeCollection<
       {
         method: "DELETE",
         pathname: `/_api/gharial/${encodeURIComponent(
-          this.graph.name,
+          this.graph.name
         )}/edge/${encodeURI(documents._documentHandle(selector, this._name))}`,
         search,
         headers,
       },
-      (res) => mungeGharialResponse(res.parsedBody, "removed"),
+      (res) => mungeGharialResponse(res.parsedBody, "removed")
     );
   }
 }
@@ -1351,7 +1351,7 @@ export class Graph {
   get(): Promise<GraphDescription> {
     return this._db.request(
       { pathname: `/_api/gharial/${encodeURIComponent(this._name)}` },
-      (res) => res.parsedBody.graph,
+      (res) => res.parsedBody.graph
     );
   }
 
@@ -1378,7 +1378,7 @@ export class Graph {
    */
   create(
     edgeDefinitions: EdgeDefinitionOptions[],
-    options: CreateGraphOptions = {},
+    options: CreateGraphOptions = {}
   ): Promise<GraphDescription> {
     const { orphanCollections, satellites, waitForSync, isSmart, ...opts } =
       options;
@@ -1402,7 +1402,7 @@ export class Graph {
         },
         search: { waitForSync },
       },
-      (res) => res.parsedBody.graph,
+      (res) => res.parsedBody.graph
     );
   }
 
@@ -1427,7 +1427,7 @@ export class Graph {
         pathname: `/_api/gharial/${encodeURIComponent(this._name)}`,
         search: { dropCollections },
       },
-      (res) => res.parsedBody.removed,
+      (res) => res.parsedBody.removed
     );
   }
 
@@ -1439,12 +1439,12 @@ export class Graph {
    * @param collection - Name of the vertex collection.
    */
   vertexCollection<T extends Record<string, any> = any>(
-    collection: string | collections.ArangoCollection,
+    collection: string | collections.ArangoCollection
   ): GraphVertexCollection<T> {
     return new GraphVertexCollection<T>(
       this._db,
       collections.collectionToString(collection),
-      this,
+      this
     );
   }
 
@@ -1472,7 +1472,7 @@ export class Graph {
   listVertexCollections(): Promise<string[]> {
     return this._db.request(
       { pathname: `/_api/gharial/${encodeURIComponent(this._name)}/vertex` },
-      (res) => res.parsedBody.collections,
+      (res) => res.parsedBody.collections
     );
   }
 
@@ -1524,7 +1524,7 @@ export class Graph {
    */
   addVertexCollection(
     collection: string | collections.ArangoCollection,
-    options: AddVertexCollectionOptions = {},
+    options: AddVertexCollectionOptions = {}
   ): Promise<GraphDescription> {
     const { satellites, ...opts } = options;
     return this._db.request(
@@ -1539,7 +1539,7 @@ export class Graph {
           },
         },
       },
-      (res) => res.parsedBody.graph,
+      (res) => res.parsedBody.graph
     );
   }
 
@@ -1567,19 +1567,19 @@ export class Graph {
    */
   removeVertexCollection(
     collection: string | collections.ArangoCollection,
-    dropCollection: boolean = false,
+    dropCollection: boolean = false
   ): Promise<GraphDescription> {
     return this._db.request(
       {
         method: "DELETE",
         pathname: `/_api/gharial/${encodeURIComponent(
-          this._name,
+          this._name
         )}/vertex/${encodeURIComponent(collections.collectionToString(collection))}`,
         search: {
           dropCollection,
         },
       },
-      (res) => res.parsedBody.graph,
+      (res) => res.parsedBody.graph
     );
   }
 
@@ -1607,12 +1607,12 @@ export class Graph {
    * ```
    */
   edgeCollection<T extends Record<string, any> = any>(
-    collection: string | collections.ArangoCollection,
+    collection: string | collections.ArangoCollection
   ): GraphEdgeCollection<T> {
     return new GraphEdgeCollection<T>(
       this._db,
       collections.collectionToString(collection),
-      this,
+      this
     );
   }
 
@@ -1640,7 +1640,7 @@ export class Graph {
   listEdgeCollections(): Promise<string[]> {
     return this._db.request(
       { pathname: `/_api/gharial/${encodeURIComponent(this._name)}/edge` },
-      (res) => res.parsedBody.collections,
+      (res) => res.parsedBody.collections
     );
   }
 
@@ -1692,7 +1692,7 @@ export class Graph {
    */
   addEdgeDefinition(
     edgeDefinition: EdgeDefinitionOptions,
-    options: AddEdgeDefinitionOptions = {},
+    options: AddEdgeDefinitionOptions = {}
   ): Promise<GraphDescription> {
     const { satellites, ...opts } = options;
     return this._db.request(
@@ -1707,7 +1707,7 @@ export class Graph {
           },
         },
       },
-      (res) => res.parsedBody.graph,
+      (res) => res.parsedBody.graph
     );
   }
 
@@ -1738,7 +1738,7 @@ export class Graph {
    */
   replaceEdgeDefinition(
     edgeDefinition: EdgeDefinitionOptions,
-    options?: ReplaceEdgeDefinitionOptions,
+    options?: ReplaceEdgeDefinitionOptions
   ): Promise<GraphDescription>;
   /**
    * Replaces an edge definition in this graph. The existing edge definition
@@ -1769,7 +1769,7 @@ export class Graph {
   replaceEdgeDefinition(
     collection: string | collections.ArangoCollection,
     edgeDefinition: EdgeDefinitionOptions,
-    options?: ReplaceEdgeDefinitionOptions,
+    options?: ReplaceEdgeDefinitionOptions
   ): Promise<GraphDescription>;
   replaceEdgeDefinition(
     collectionOrEdgeDefinitionOptions:
@@ -1779,7 +1779,7 @@ export class Graph {
     edgeDefinitionOrOptions?:
       | EdgeDefinitionOptions
       | ReplaceEdgeDefinitionOptions,
-    options: ReplaceEdgeDefinitionOptions = {},
+    options: ReplaceEdgeDefinitionOptions = {}
   ) {
     let collection = collectionOrEdgeDefinitionOptions as
       | string
@@ -1802,7 +1802,7 @@ export class Graph {
       {
         method: "PUT",
         pathname: `/_api/gharial/${encodeURIComponent(
-          this._name,
+          this._name
         )}/edge/${encodeURIComponent(collections.collectionToString(collection))}`,
         body: {
           ...coerceEdgeDefinition(edgeDefinition),
@@ -1812,7 +1812,7 @@ export class Graph {
           },
         },
       },
-      (res) => res.parsedBody.graph,
+      (res) => res.parsedBody.graph
     );
   }
 
@@ -1840,19 +1840,19 @@ export class Graph {
    */
   removeEdgeDefinition(
     collection: string | collections.ArangoCollection,
-    dropCollection: boolean = false,
+    dropCollection: boolean = false
   ): Promise<GraphDescription> {
     return this._db.request(
       {
         method: "DELETE",
         pathname: `/_api/gharial/${encodeURIComponent(
-          this._name,
+          this._name
         )}/edge/${encodeURIComponent(collections.collectionToString(collection))}`,
         search: {
           dropCollection,
         },
       },
-      (res) => res.parsedBody.graph,
+      (res) => res.parsedBody.graph
     );
   }
 }

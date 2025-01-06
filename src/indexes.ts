@@ -64,7 +64,10 @@ export type EnsureIndexOptions =
   | EnsureMdiPrefixedIndexOptions
   | EnsureInvertedIndexOptions;
 
-type EnsureIndexOptionsType<
+/**
+ * Shared attributes of all index creation options.
+ */
+export type EnsureIndexOptionsType<
   Type extends IndexType,
   Fields extends any[],
   Extra extends {} = {},
@@ -658,7 +661,7 @@ export type EdgeIndexDescription = IndexDescriptionType<
  * An object representing a fulltext index.
  *
  * @deprecated The `fulltext` index type was deprecated in ArangoDB 3.10. Use
- * {@link views.ArangoSearchView} instead.
+ * {@link views.View}s instead.
  */
 export type FulltextIndexDescription = IndexDescriptionType<
   "fulltext",
@@ -683,7 +686,7 @@ export type EdgeIndex = IndexDescriptionType<
  * An object representing a fulltext index.
  *
  * @deprecated The `fulltext` index type was deprecated in ArangoDB 3.10. Use
- * {@link views.ArangoSearchView} instead.
+ * {@link views.View} instead.
  */
 export type FulltextIndex = IndexDescriptionType<
   "fulltext",

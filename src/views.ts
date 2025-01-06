@@ -100,7 +100,10 @@ export type CreateViewOptions =
   | CreateArangoSearchViewOptions
   | CreateSearchAliasViewOptions;
 
-type CreateViewOptionsType<Type extends ViewType, extra extends {}> = {
+/**
+ * Shared attributes of all View creation options.
+ */
+export type CreateViewOptionsType<Type extends ViewType, extra extends {}> = {
   /**
    * Type of the View.
    */
@@ -596,7 +599,7 @@ export class View {
    * ```
    */
   create<Options extends CreateViewOptions>(
-    options: CreateViewOptions,
+    options: CreateViewOptions
   ): Promise<
     typeof options extends CreateArangoSearchViewOptions
       ? ArangoSearchViewDescription
@@ -637,7 +640,7 @@ export class View {
    * ```
    */
   async rename(
-    newName: string,
+    newName: string
   ): Promise<connections.ArangoApiResponse<ViewDescription>> {
     const result = this._db.renameView(this._name, newName);
     this._name = newName;
@@ -677,7 +680,7 @@ export class View {
    * ```
    */
   updateProperties<Properties extends UpdateViewPropertiesOptions | undefined>(
-    properties?: Properties,
+    properties?: Properties
   ): Promise<
     Properties extends UpdateArangoSearchViewPropertiesOptions
       ? ArangoSearchViewProperties
@@ -708,7 +711,7 @@ export class View {
    * ```
    */
   replaceProperties<Properties extends ViewPropertiesOptions | undefined>(
-    properties?: Properties,
+    properties?: Properties
   ): Promise<
     Properties extends ArangoSearchViewPropertiesOptions
       ? ArangoSearchViewProperties
@@ -741,7 +744,7 @@ export class View {
         method: "DELETE",
         pathname: `/_api/view/${encodeURIComponent(this._name)}`,
       },
-      (res) => res.parsedBody.result,
+      (res) => res.parsedBody.result
     );
   }
 }

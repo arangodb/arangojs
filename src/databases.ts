@@ -1855,8 +1855,7 @@ export class Database {
    * given collection in the given database.
    *
    * @param username - Name of the ArangoDB user to fetch the access level for.
-   * @param database - Database to fetch the access level for.
-   * @param collection - Collection to fetch the access level for.
+   * @param options - Collection and/or database to fetch the access level for.
    *
    * @example
    * ```js
@@ -1921,8 +1920,9 @@ export class Database {
    */
   getUserAccessLevel(
     username: string,
-    { database, collection }: users.UserAccessLevelOptions
+    options: users.UserAccessLevelOptions
   ): Promise<users.AccessLevel> {
+    const { database, collection } = options;
     const databaseName = isArangoDatabase(database)
       ? database.name
       : (database ??
@@ -1951,8 +1951,7 @@ export class Database {
    * given collection in the given database.
    *
    * @param username - Name of the ArangoDB user to set the access level for.
-   * @param database - Database to set the access level for.
-   * @param collection - Collection to set the access level for.
+   * @param options - Database and/or collection to set the access level for.
    * @param grant - Access level to set for the given user.
    *
    * @example
@@ -2020,12 +2019,10 @@ export class Database {
    */
   setUserAccessLevel(
     username: string,
-    {
-      database,
-      collection,
-      grant,
-    }: users.UserAccessLevelOptions & { grant: users.AccessLevel }
+    options: users.UserAccessLevelOptions,
+    grant: users.AccessLevel
   ): Promise<connection.ArangoApiResponse<Record<string, users.AccessLevel>>> {
+    const { database, collection } = options;
     const databaseName = isArangoDatabase(database)
       ? database.name
       : (database ??
@@ -2056,8 +2053,7 @@ export class Database {
    * given collection in the given database.
    *
    * @param username - Name of the ArangoDB user to clear the access level for.
-   * @param database - Database to clear the access level for.
-   * @param collection - Collection to clear the access level for.
+   * @param options - Database and/or collection to clear the access level for.
    *
    * @example
    * ```js
@@ -2116,8 +2112,9 @@ export class Database {
    */
   clearUserAccessLevel(
     username: string,
-    { database, collection }: users.UserAccessLevelOptions
+    options: users.UserAccessLevelOptions
   ): Promise<connection.ArangoApiResponse<Record<string, users.AccessLevel>>> {
+    const { database, collection } = options;
     const databaseName = isArangoDatabase(database)
       ? database.name
       : (database ??
@@ -2393,7 +2390,7 @@ export class Database {
    *
    * See also {@link Database#beginTransaction}.
    *
-   * @param id - The `id` of an existing stream transaction.
+   * @param transactionId - The `id` of an existing stream transaction.
    *
    * @example
    * ```js
@@ -3875,7 +3872,7 @@ export class Database {
    * {@link Database#getServiceDependencies}.
    *
    * @param mount - The service's mount point, relative to the database.
-   * @param cfg - An object mapping dependency aliases to mount points.
+   * @param deps - An object mapping dependency aliases to mount points.
    * @param minimal - If set to `true`, the result will only include each
    * dependency's current mount point. Otherwise it will include the full
    * definition for each dependency.
@@ -3911,7 +3908,7 @@ export class Database {
    * {@link Database#getServiceDependencies}.
    *
    * @param mount - The service's mount point, relative to the database.
-   * @param cfg - An object mapping dependency aliases to mount points.
+   * @param deps - An object mapping dependency aliases to mount points.
    * @param minimal - If set to `true`, the result will only include each
    * dependency's current mount point. Otherwise it will include the full
    * definition for each dependency.
@@ -3960,7 +3957,7 @@ export class Database {
    * {@link Database#getServiceDependencies}.
    *
    * @param mount - The service's mount point, relative to the database.
-   * @param cfg - An object mapping dependency aliases to mount points.
+   * @param deps - An object mapping dependency aliases to mount points.
    * @param minimal - If set to `true`, the result will only include each
    * dependency's current mount point. Otherwise it will include the full
    * definition for each dependency.
@@ -3996,7 +3993,7 @@ export class Database {
    * {@link Database#getServiceDependencies}.
    *
    * @param mount - The service's mount point, relative to the database.
-   * @param cfg - An object mapping dependency aliases to mount points.
+   * @param deps - An object mapping dependency aliases to mount points.
    * @param minimal - If set to `true`, the result will only include each
    * dependency's current mount point. Otherwise it will include the full
    * definition for each dependency.
