@@ -373,6 +373,13 @@ export type RemoveDocumentOptions = {
    */
   waitForSync?: boolean;
   /**
+   * If set to `false`, the existing document will only be modified if its
+   * `_rev` property matches the same property on the new data.
+   *
+   * Default: `true`
+   */
+  ignoreRevs?: boolean;
+  /**
    * If set to `true`, the complete old document will be returned as the `old`
    * property on the result object. Has no effect if `silent` is set to `true`.
    *
@@ -573,7 +580,7 @@ export type ObjectWithDocumentKey = {
 export function _documentHandle(
   selector: DocumentSelector,
   collectionName: string,
-  strict: boolean = true,
+  strict: boolean = true
 ): string {
   if (typeof selector !== "string") {
     if (selector._id) {
@@ -583,14 +590,14 @@ export function _documentHandle(
       return _documentHandle(selector._key, collectionName);
     }
     throw new Error(
-      "Document handle must be a string or an object with a _key or _id attribute",
+      "Document handle must be a string or an object with a _key or _id attribute"
     );
   }
   if (selector.includes("/")) {
     const [head] = selector.split("/");
     if (strict && head !== collectionName) {
       throw new Error(
-        `Document ID "${selector}" does not match collection name "${collectionName}"`,
+        `Document ID "${selector}" does not match collection name "${collectionName}"`
       );
     }
     return selector;
