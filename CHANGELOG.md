@@ -19,6 +19,14 @@ This driver uses semantic versioning:
 - A change in the major version (e.g. 1.Y.Z -> 2.0.0) indicates _breaking_
   changes that require changes in your code to upgrade.
 
+## [10.1.0] - 2025-01-13
+
+### Added
+
+- Added `ignoreRevs` option to `RemoveDocumentOptions` type (DE-947)
+
+  This affects the `collection.remove` and `collection.removeAll` methods.
+
 ## [10.0.0] - 2025-01-06
 
 This is a major release and breaks backwards compatibility.
@@ -2457,6 +2465,7 @@ For a detailed list of changes between pre-release versions of v7 see the
 
   Graph methods now only return the relevant part of the response body.
 
+[10.1.0]: https://github.com/arangodb/arangojs/compare/v10.0.0...v10.1.0
 [10.0.0]: https://github.com/arangodb/arangojs/compare/v9.3.0...v10.0.0
 [9.3.0]: https://github.com/arangodb/arangojs/compare/v9.2.0...v9.3.0
 [9.2.0]: https://github.com/arangodb/arangojs/compare/v9.1.0...v9.2.0
