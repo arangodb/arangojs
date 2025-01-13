@@ -3409,7 +3409,7 @@ export class Database {
    */
   async installService(
     mount: string,
-    source: File | Blob | string,
+    source: Blob | string,
     options: services.InstallServiceOptions = {}
   ): Promise<services.ServiceDescription> {
     const { configuration, dependencies, ...search } = options;
@@ -3467,7 +3467,7 @@ export class Database {
    */
   async replaceService(
     mount: string,
-    source: File | Blob | string,
+    source: Blob | string,
     options: services.ReplaceServiceOptions = {}
   ): Promise<services.ServiceDescription> {
     const { configuration, dependencies, ...search } = options;
@@ -3525,7 +3525,7 @@ export class Database {
    */
   async upgradeService(
     mount: string,
-    source: File | Blob | string,
+    source: Blob | string,
     options: services.UpgradeServiceOptions = {}
   ): Promise<services.ServiceDescription> {
     const { configuration, dependencies, ...search } = options;
