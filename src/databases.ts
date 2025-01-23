@@ -350,7 +350,7 @@ export class Database {
    *
    * // later
    * clearInterval(interval);
-   * system.close();
+   * db.close();
    * ```
    */
   async acquireHostList(overwrite = false): Promise<void> {
