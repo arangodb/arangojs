@@ -142,7 +142,7 @@ export class Route {
    * ```js
    * const db = new Database();
    * const foxx = db.route("/my-foxx-service");
-   * const user = foxx.roue("/users/admin");
+   * const user = foxx.route("/users/admin");
    * const res = await user.delete();
    * ```
    */
