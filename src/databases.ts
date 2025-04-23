@@ -3067,7 +3067,7 @@ export class Database {
    * ```js
    * const db = new Database();
    * // track up to 5 slow queries exceeding 5 seconds execution time
-   * await db.setQueryTracking({
+   * await db.queryTracking({
    *   enabled: true,
    *   trackSlowQueries: true,
    *   maxSlowQueries: 5,
