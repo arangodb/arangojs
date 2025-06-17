@@ -855,7 +855,7 @@ describe("Foxx service", () => {
       "getServiceDependencies",
       (mount: string) => db.getServiceDependencies(mount),
     ],
-    ["listServiceScripts", (mount: string) => db.getServiceScripts(mount)],
+    ["getServiceScripts", (mount: string) => db.getServiceScripts(mount)],
     ["upgradeService", (mount: string) => db.upgradeService(mount, {} as any)],
     [
       "updateServiceConfiguration",
@@ -882,11 +882,11 @@ describe("Foxx service", () => {
     ["uninstallService", (mount: string) => db.uninstallService(mount)],
     ["downloadService", (mount: string) => db.downloadService(mount)],
     [
-      "enableServiceDevelopmentMode",
+      "setServiceDevelopmentMode_true",
       (mount: string) => db.setServiceDevelopmentMode(mount, true),
     ],
     [
-      "disableServiceDevelopmentMode",
+      "setServiceDevelopmentMode_false",
       (mount: string) => db.setServiceDevelopmentMode(mount, false),
     ],
     [

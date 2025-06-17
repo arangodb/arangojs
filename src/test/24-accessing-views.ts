@@ -21,7 +21,7 @@ describe("Accessing views", function () {
       system.close();
     }
   });
-  describe("database.arangoSearchView", () => {
+  describe("database.view", () => {
     it("returns a View instance for the view", () => {
       const name = "potato";
       const view = db.view(name);

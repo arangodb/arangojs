@@ -342,9 +342,9 @@ export class BatchCursor<ItemType = any> {
    *   aql`FOR x IN 1..5 RETURN x`,
    *   { batchSize: 1 }
    * );
-   * console.log(cursor.hasMore); // true
+   * console.log(cursor.batches.hasMore); // true
    * await cursor.batches.loadAll();
-   * console.log(cursor.hasMore); // false
+   * console.log(cursor.batches.hasMore); // false
    * console.log(cursor.hasNext); // true
    * for await (const item of cursor) {
    *   console.log(item);
@@ -417,7 +417,7 @@ export class BatchCursor<ItemType = any> {
    * Advances the cursor by applying the `callback` function to each item in
    * the cursor's remaining result list until the cursor is depleted or
    * `callback` returns the exact value `false`. Returns a promise that
-   * evalues to `true` unless the function returned `false`.
+   * evaluates to `true` unless the function returned `false`.
    *
    * **Note**: If the result set spans multiple batches, any remaining batches
    * will only be fetched on demand. Depending on the cursor's TTL and the
@@ -732,14 +732,14 @@ export class BatchCursor<ItemType = any> {
    * @example
    * ```js
    * const cursor1 = await db.query(aql`FOR x IN 1..5 RETURN x`);
-   * console.log(cursor1.hasMore); // false
+   * console.log(cursor1.batches.hasMore); // false
    * await cursor1.kill(); // no effect
    *
    * const cursor2 = await db.query(
    *   aql`FOR x IN 1..5 RETURN x`,
    *   { batchSize: 2 }
    * );
-   * console.log(cursor2.hasMore); // true
+   * console.log(cursor2.batches.hasMore); // true
    * await cursor2.kill(); // cursor is depleted
    * ```
    */
@@ -1220,14 +1220,14 @@ export class Cursor<ItemType = any> {
    * @example
    * ```js
    * const cursor1 = await db.query(aql`FOR x IN 1..5 RETURN x`);
-   * console.log(cursor1.hasMore); // false
+   * console.log(cursor1.batches.hasMore); // false
    * await cursor1.kill(); // no effect
    *
    * const cursor2 = await db.query(
    *   aql`FOR x IN 1..5 RETURN x`,
    *   { batchSize: 2 }
    * );
-   * console.log(cursor2.hasMore); // true
+   * console.log(cursor2.batches.hasMore); // true
    * await cursor2.kill(); // cursor is depleted
    * ```
    */

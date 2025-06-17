@@ -18,7 +18,7 @@ describe("Managing functions", function () {
       system.close();
     }
   });
-  describe("database.listFunctions", () => {
+  describe("database.listUserFunctions", () => {
     it("should be empty per default", async () => {
       const result = await db.listUserFunctions();
       expect(result).to.be.instanceof(Array);
@@ -37,7 +37,7 @@ describe("Managing functions", function () {
         isDeterministic: false,
       });
     });
-    describe("database.createFunction", () => {
+    describe("database.createUserFunction", () => {
       it("should create a function", async () => {
         const info = await db.createUserFunction(
           "myfunctions::temperature::celsiustofahrenheit2",
@@ -47,7 +47,7 @@ describe("Managing functions", function () {
         expect(info).to.have.property("error", false);
       });
     });
-    describe("database.dropFunction", () => {
+    describe("database.dropUserFunction", () => {
       it("should drop a existing function", async () => {
         const name = "myfunctions::temperature::celsiustofahrenheit";
         await db.createUserFunction(

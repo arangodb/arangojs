@@ -65,7 +65,7 @@ describe("Manipulating collections", function () {
       expect(info).to.have.property("type", 3); // edge collection
     });
   });
-  describe("collection.setProperties", () => {
+  describe("collection.properties", () => {
     it("should change properties", async () => {
       const info = await collection.properties({ waitForSync: true });
       expect(info).to.have.property("name", collection.name);

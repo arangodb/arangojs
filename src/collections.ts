@@ -688,7 +688,7 @@ export interface DocumentCollection<
    * ```js
    * const db = new Database();
    * const collection = db.collection("some-collection");
-   * const result = await collection.setProperties({ waitForSync: true });
+   * const result = await collection.properties({ waitForSync: true });
    * // the collection will now wait for data being written to disk
    * // whenever a document is changed
    * ```
