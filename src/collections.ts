@@ -1613,33 +1613,6 @@ export interface DocumentCollection<
     >
   >;
   /**
-   * Creates a prefixed multi-dimensional index on the collection if it does
-   * not already exist.
-   *
-   * @param options - Options for creating the prefixed multi-dimensional index.
-   *
-   * @example
-   * ```js
-   * const db = new Database();
-   * const collection = db.collection("some-points");
-   * // Create a multi-dimensional index for the attributes x, y and z
-   * await collection.ensureIndex({
-   *   type: "mdi-prefixed",
-   *   fields: ["x", "y", "z"],
-   *   prefixFields: ["x"],
-   *   fieldValueTypes: "double"
-   * });
-   * ```
-   * ```
-   */
-  ensureIndex(
-    options: indexes.EnsureMdiPrefixedIndexOptions
-  ): Promise<
-    connection.ArangoApiResponse<
-      indexes.MdiPrefixedIndexDescription & { isNewlyCreated: boolean }
-    >
-  >;
-  /**
    * Creates a prefixed multi-dimensional index on the collection if it does not already exist.
    *
    * @param details - Options for creating the prefixed multi-dimensional index.
