@@ -4,7 +4,6 @@ import { Database } from "../databases.js";
 import { config } from "./_config.js";
 
 const it312 = config.arangoVersion! >= 31200 ? it : it.skip;
-const it31205 = config.arangoVersion! >= 31205 ? it : it.skip;
 
 describe("Managing indexes", function () {
   let system: Database, db: Database;
@@ -31,7 +30,9 @@ describe("Managing indexes", function () {
     }
   });
   describe("collection.ensureIndex#vector", () => {
-    it31205("should create a vector index", async () => {
+    it.skip("should create a vector index", async () => {
+      // Available in ArangoDB 3.12.4+.
+      // Only enabled with the --experimental-vector-index startup option.
       const data = [
         {embedding: [1, 2, 3]},
         {embedding: [1, 2, 3]},
