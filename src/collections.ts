@@ -1466,7 +1466,7 @@ export interface DocumentCollection<
   import(
     data: Buffer | Blob | string,
     options?: documents.ImportDocumentsOptions & {
-      type?: "documents" | "list" | "auto";
+      type?: "" | "documents" | "list" | "auto";
     }
   ): Promise<documents.ImportDocumentsResult>;
   //#endregion
@@ -2296,7 +2296,7 @@ export interface EdgeCollection<
   import(
     data: Buffer | Blob | string,
     options?: documents.ImportDocumentsOptions & {
-      type?: "documents" | "list" | "auto";
+      type?: "" | "documents" | "list" | "auto";
     }
   ): Promise<documents.ImportDocumentsResult>;
   //#endregion
@@ -2875,12 +2875,12 @@ export class Collection<
   import(
     data: Buffer | Blob | string | any[],
     options: documents.ImportDocumentsOptions & {
-      type?: "documents" | "list" | "auto";
+      type?: "" | "documents" | "list" | "auto";
     } = {}
   ): Promise<documents.ImportDocumentsResult> {
     const search = { ...options, collection: this._name };
     if (Array.isArray(data)) {
-      search.type = Array.isArray(data[0]) ? undefined : "documents";
+      search.type = Array.isArray(data[0]) ? "" : "documents";
       const lines = data as any[];
       data = lines.map((line) => JSON.stringify(line)).join("\r\n") + "\r\n";
     }
