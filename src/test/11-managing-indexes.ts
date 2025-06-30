@@ -33,18 +33,17 @@ describe("Managing indexes", function () {
     it.skip("should create a vector index", async () => {
       // Available in ArangoDB 3.12.4+.
       // Only enabled with the --experimental-vector-index startup option.
-      const data = [
-        {embedding: [1, 2, 3]},
-        {embedding: [1, 2, 3]},
-        {embedding: [1, 2, 3]},
-      ];
+      const data = Array.from({ length: 128 }, (_, cnt) => ({
+        _key: `vec${cnt}`,
+        embedding: Array(128).fill(cnt),
+      }));
       await collection.import(data);
       const info = await collection.ensureIndex({
         type: "vector",
         fields: ["embedding"],
         params: {
           metric: "cosine",
-          dimension: 3,
+          dimension: 128,
           nLists: 2,
         },
       });
