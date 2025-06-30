@@ -17,8 +17,8 @@ jobs:
         arangodb-version:
           - arangodb/arangodb:3.11.12
           - arangodb/enterprise:3.11.12
-          - arangodb/arangodb:3.12.3
-          - arangodb/enterprise:3.12.3
+          - arangodb/arangodb:3.12.5
+          - arangodb/enterprise:3.12.5
           - arangodb/arangodb-test:devel-nightly
           - arangodb/enterprise-test:devel-nightly
 
