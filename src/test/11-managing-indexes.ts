@@ -29,6 +29,34 @@ describe("Managing indexes", function () {
       system.close();
     }
   });
+  describe("collection.ensureIndex#vector", () => {
+    it.skip("should create a vector index", async () => {
+      // Available in ArangoDB 3.12.4+.
+      // Only enabled with the --experimental-vector-index startup option.
+      const data = Array.from({ length: 128 }, (_, cnt) => ({
+        _key: `vec${cnt}`,
+        embedding: Array(128).fill(cnt),
+      }));
+      await collection.import(data);
+      const info = await collection.ensureIndex({
+        type: "vector",
+        fields: ["embedding"],
+        params: {
+          metric: "cosine",
+          dimension: 128,
+          nLists: 2,
+        },
+      });
+      expect(info).to.have.property("id");
+      expect(info).to.have.property("type", "vector");
+      expect(info).to.have.property("fields");
+      expect(info.fields).to.eql(["embedding"]);
+      expect(info).to.have.property("isNewlyCreated", true);
+      expect(info).to.have.nested.property("params.metric", "cosine");
+      expect(info).to.have.nested.property("params.dimension", 128);
+      expect(info).to.have.nested.property("params.nLists", 2);
+    });
+  });
   describe("collection.ensureIndex#persistent", () => {
     it("should create a persistent index", async () => {
       const info = await collection.ensureIndex({

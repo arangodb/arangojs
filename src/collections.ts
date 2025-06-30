@@ -1466,7 +1466,7 @@ export interface DocumentCollection<
   import(
     data: Buffer | Blob | string,
     options?: documents.ImportDocumentsOptions & {
-      type?: "documents" | "list" | "auto";
+      type?: "" | "documents" | "list" | "auto";
     }
   ): Promise<documents.ImportDocumentsResult>;
   //#endregion
@@ -1613,33 +1613,6 @@ export interface DocumentCollection<
     >
   >;
   /**
-   * Creates a prefixed multi-dimensional index on the collection if it does
-   * not already exist.
-   *
-   * @param options - Options for creating the prefixed multi-dimensional index.
-   *
-   * @example
-   * ```js
-   * const db = new Database();
-   * const collection = db.collection("some-points");
-   * // Create a multi-dimensional index for the attributes x, y and z
-   * await collection.ensureIndex({
-   *   type: "mdi-prefixed",
-   *   fields: ["x", "y", "z"],
-   *   prefixFields: ["x"],
-   *   fieldValueTypes: "double"
-   * });
-   * ```
-   * ```
-   */
-  ensureIndex(
-    options: indexes.EnsureMdiPrefixedIndexOptions
-  ): Promise<
-    connection.ArangoApiResponse<
-      indexes.MdiPrefixedIndexDescription & { isNewlyCreated: boolean }
-    >
-  >;
-  /**
    * Creates a prefixed multi-dimensional index on the collection if it does not already exist.
    *
    * @param details - Options for creating the prefixed multi-dimensional index.
@@ -1710,6 +1683,33 @@ export interface DocumentCollection<
   ): Promise<
     connection.ArangoApiResponse<
       indexes.InvertedIndexDescription & { isNewlyCreated: boolean }
+    >
+  >;
+  /**
+   * Creates a vector index on the collection if it does not already exist.
+   *
+   * @param options - Options for creating the vector index.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
+   * await collection.ensureIndex({
+   *   type: "vector",
+   *   fields: ["embedding"],
+   *   params: {
+   *     metric: "cosine",
+   *     dimension: 128,
+   *     nLists: 100
+   *   }
+   * });
+   * ```
+   */
+  ensureIndex(
+    options: indexes.EnsureVectorIndexOptions
+  ): Promise<
+    connection.ArangoApiResponse<
+      indexes.VectorIndexDescription & { isNewlyCreated: boolean }
     >
   >;
   /**
@@ -2296,7 +2296,7 @@ export interface EdgeCollection<
   import(
     data: Buffer | Blob | string,
     options?: documents.ImportDocumentsOptions & {
-      type?: "documents" | "list" | "auto";
+      type?: "" | "documents" | "list" | "auto";
     }
   ): Promise<documents.ImportDocumentsResult>;
   //#endregion
@@ -2875,12 +2875,12 @@ export class Collection<
   import(
     data: Buffer | Blob | string | any[],
     options: documents.ImportDocumentsOptions & {
-      type?: "documents" | "list" | "auto";
+      type?: "" | "documents" | "list" | "auto";
     } = {}
   ): Promise<documents.ImportDocumentsResult> {
     const search = { ...options, collection: this._name };
     if (Array.isArray(data)) {
-      search.type = Array.isArray(data[0]) ? undefined : "documents";
+      search.type = Array.isArray(data[0]) ? "" : "documents";
       const lines = data as any[];
       data = lines.map((line) => JSON.stringify(line)).join("\r\n") + "\r\n";
     }

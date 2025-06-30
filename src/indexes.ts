@@ -62,7 +62,8 @@ export type EnsureIndexOptions =
   | EnsureTtlIndexOptions
   | EnsureMdiIndexOptions
   | EnsureMdiPrefixedIndexOptions
-  | EnsureInvertedIndexOptions;
+  | EnsureInvertedIndexOptions
+  | EnsureVectorIndexOptions;
 
 /**
  * Shared attributes of all index creation options.
@@ -558,6 +559,56 @@ export type InvertedIndexStoredValueOptions = {
    */
   cache?: boolean;
 };
+
+/**
+ * Options for creating a vector index.
+ */
+export type EnsureVectorIndexOptions = EnsureIndexOptionsType<
+  "vector",
+  [string],
+  {
+    /**
+     * The number of threads to use for indexing. Default is 2.
+     */
+    parallelism?: number;
+
+    /**
+     * Vector index parameters, following Faiss configuration.
+     */
+    params: {
+      /**
+       * Whether to use cosine or l2 (Euclidean) distance.
+       */
+      metric: "cosine" | "l2";
+
+      /**
+       * Vector dimension. Must match the length of vectors in documents.
+       */
+      dimension: number;
+
+      /**
+       * Number of Voronoi cells (centroids) for IVF. Affects accuracy and index build time.
+       */
+      nLists: number;
+
+      /**
+       * How many neighboring centroids to probe by default. Higher = slower, better recall.
+       */
+      defaultNProbe?: number;
+
+      /**
+       * Training iterations for index build. Default is 25.
+       */
+      trainingIterations?: number;
+
+      /**
+       * Advanced Faiss index factory string.
+       * If not specified, defaults to IVF<nLists>,Flat.
+       */
+      factory?: string;
+    };
+  }
+>;
 //#endregion
 
 //#region IndexDescription
@@ -572,7 +623,8 @@ export type IndexDescription =
   | MdiIndexDescription
   | MdiPrefixedIndexDescription
   | InvertedIndexDescription
-  | SystemIndexDescription;
+  | SystemIndexDescription
+  | VectorIndexDescription;
 
 /**
  * An object representing a system index.
@@ -862,6 +914,26 @@ export type HiddenIndexDescription = (
    */
   progress?: number;
 };
+
+/**
+ * An object representing a vector index.
+ */
+export type VectorIndexDescription = IndexDescriptionType<
+  "vector",
+  [string],
+  {
+    parallelism: number;
+    inBackground: boolean;
+    params: {
+      metric: "cosine" | "l2";
+      dimension: number;
+      nLists: number;
+      defaultNProbe?: number;
+      trainingIterations?: number;
+      factory?: string;
+    };
+  }
+>;
 //#endregion
 
 //#region Index selectors
