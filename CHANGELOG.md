@@ -14,7 +14,7 @@ This driver uses semantic versioning:
 - A change in the major version (e.g. 1.Y.Z -> 2.0.0) indicates _breaking_
   changes that require changes in your code to upgrade.
 
-## [10.1.2]
+## [10.1.2] - 2025-06-30
 
 ### Added
 
