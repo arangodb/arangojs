@@ -83,14 +83,11 @@ describe("Managing indexes", function () {
   });
   describe("collection.ensureIndex#vector", () => {
     it31205("should create a vector index", async () => {
-      await collection.save({
-        _key: "sample1",
-        embedding: Array(128).fill(0.1),
-      });
-      await collection.save({
-        _key: "sample2",
-        embedding: Array(128).fill(0.1),
-      });
+      const data = Array.from({ length: 128 }, (_, cnt) => ({
+        _key: `vec${cnt}`,
+        embedding: Array(128).fill(cnt),
+      }));
+      await collection.import(data);
       const info = await collection.ensureIndex({
         type: "vector",
         fields: ["embedding"],
