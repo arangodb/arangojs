@@ -85,7 +85,7 @@ describe("Managing indexes", function () {
     it31205("should create a vector index", async () => {
       const data = Array.from({ length: 128 }, (_, cnt) => ({
         _key: `vec${cnt}`,
-        embedding: Array(128).fill(cnt),
+        embedding: [1, 2, 3],
       }));
       await collection.import(data);
       const info = await collection.ensureIndex({
@@ -93,7 +93,7 @@ describe("Managing indexes", function () {
         fields: ["embedding"],
         params: {
           metric: "cosine",
-          dimension: 128,
+          dimension: 3,
           nLists: 2,
         },
       });
