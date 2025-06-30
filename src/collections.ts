@@ -1686,6 +1686,33 @@ export interface DocumentCollection<
     >
   >;
   /**
+   * Creates a vector index on the collection if it does not already exist.
+   *
+   * @param options - Options for creating the vector index.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const collection = db.collection("some-collection");
+   * await collection.ensureIndex({
+   *   type: "vector",
+   *   fields: ["embedding"],
+   *   params: {
+   *     metric: "cosine",
+   *     dimension: 128,
+   *     nLists: 100
+   *   }
+   * });
+   * ```
+   */
+  ensureIndex(
+    options: indexes.EnsureVectorIndexOptions
+  ): Promise<
+    connection.ArangoApiResponse<
+      indexes.VectorIndexDescription & { isNewlyCreated: boolean }
+    >
+  >;
+  /**
    * Creates an index on the collection if it does not already exist.
    *
    * @param options - Options for creating the index.
