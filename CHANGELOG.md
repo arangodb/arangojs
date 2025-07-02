@@ -2479,6 +2479,7 @@ For a detailed list of changes between pre-release versions of v7 see the
 
   Graph methods now only return the relevant part of the response body.
 
+[10.1.2]: https://github.com/arangodb/arangojs/compare/v10.1.1...v10.1.2
 [10.1.1]: https://github.com/arangodb/arangojs/compare/v10.1.0...v10.1.1
 [10.1.0]: https://github.com/arangodb/arangojs/compare/v10.0.0...v10.1.0
 [10.0.0]: https://github.com/arangodb/arangojs/compare/v9.3.0...v10.0.0
