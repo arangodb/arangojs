@@ -11,7 +11,8 @@ describe("config.maxRetries", () => {
   const dbName = `testdb_${Date.now()}`;
   const collectionName = `collection-${Date.now()}`;
   let db: Database, collection: DocumentCollection<{ data: number }>;
-  before(async () => {
+  before(async function() {
+    this.timeout(60000);
     system = new Database({ ...config, poolSize: 1_000 });
     if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE") {
       await system.acquireHostList();
