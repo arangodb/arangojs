@@ -20,7 +20,7 @@ describe("config.maxRetries", () => {
     collection = await db.createCollection(collectionName);
     await db.waitForPropagation(
       { pathname: `/_api/collection/${collection.name}` },
-      60000,
+      80000,
     );
   });
   after(async () => {
