@@ -58,6 +58,17 @@ describe("config.maxRetries", () => {
   });
   describe("when set to 100", () => {
     it("should avoid conflicts", async () => {
+      // This test creates, by design, a lot of conflicts and retries until its successfull
+      // On instrumented server builds this test has a very high chance on running for a long time
+      // and hitting the test-timeouts. To still test this behaviour on normal builds we do a check here and
+      // continue only when its not a asan/tsan/coverage build.
+      const version = await db.version(true);
+      if (version.details !== undefined 
+        && (version.details['asan'] === 'true' 
+        || version.details['tsan'] === 'true'
+        || version.details['coverage'] === 'true')) {
+        return;
+      }
       await Promise.all(
         range(1_000).map(() =>
           db.query(
