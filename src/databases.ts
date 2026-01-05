@@ -500,6 +500,34 @@ export class Database {
   }
 
   /**
+   * Updates the underlying connection's `authorization` header to use Basic
+   * authentication with the given access token, then returns itself.
+   *
+   * Access tokens contain embedded username information, so the username field
+   * in Basic Auth can be empty. The token acts as a password replacement.
+   *
+   * @param token - The access token to authenticate with.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const tokenResult = await db.createAccessToken("appUser", {
+   *   name: "CI token"
+   * });
+   * db.useAccessToken(tokenResult.token);
+   * // The database instance now uses the access token for authentication.
+   * ```
+   */
+  useAccessToken(token: string): this {
+    if (!token || typeof token !== "string") {
+      throw new Error("Token must be a non-empty string");
+    }
+    // Access tokens can be used with empty username in Basic Auth
+    // The token contains embedded username information
+    return this.useBasicAuth("", token);
+  }
+
+  /**
    * Validates the given database credentials and exchanges them for an
    * authentication token, then uses the authentication token for future
    * requests and returns it.
@@ -521,7 +549,7 @@ export class Database {
         pathname: "/_open/auth",
         body: { username, password },
       },
-      (res) => {
+      (res: any) => {
         this.useBearerAuth(res.parsedBody.jwt);
         return res.parsedBody.jwt;
       }
@@ -2198,6 +2226,146 @@ export class Database {
         search: { full },
       },
       (res) => res.parsedBody.result
+    );
+  }
+
+  /**
+   * Creates a new access token for the given ArangoDB user.
+   *
+   * Access tokens can be used as password replacements for authentication.
+   * The token value is only returned once in this response and cannot be
+   * retrieved again. Store it securely.
+   *
+   * @param username - Name of the ArangoDB user to create the token for.
+   * @param options - Options for creating the access token.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * // Convert Date to Unix timestamp (seconds)
+   * const expiryDate = new Date("2025-12-31");
+   * const expiryTimestamp = Math.floor(expiryDate.getTime() / 1000);
+   * const token = await db.createAccessToken("appUser", {
+   *   name: "CI token",
+   *   valid_until: expiryTimestamp
+   * });
+   * console.log(token.token); // Store this securely!
+   * ```
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const token = await db.createAccessToken("appUser", {
+   *   name: "Production token",
+   *   valid_until: Math.floor(Date.now() / 1000) + (30 * 24 * 60 * 60) // 30 days
+   * });
+   * ```
+   */
+  createAccessToken(
+    username: string,
+    options: users.CreateAccessTokenOptions
+  ): Promise<connection.ArangoApiResponse<users.AccessToken>> {
+    if (!username || typeof username !== "string") {
+      throw new Error("Username must be a non-empty string");
+    }
+    if (!options || typeof options !== "object") {
+      throw new Error("Options must be an object");
+    }
+    if (!options.name || typeof options.name !== "string") {
+      throw new Error("Token name must be a non-empty string");
+    }
+
+    const body: { name: string; valid_until?: number } = {
+      name: options.name,
+    };
+
+    if (options.valid_until !== undefined) {
+      if (typeof options.valid_until !== "number") {
+        throw new Error(
+          "valid_until must be a Unix timestamp (number in seconds)"
+        );
+      }
+      body.valid_until = options.valid_until;
+    }
+
+    return this.request(
+      {
+        method: "POST",
+        pathname: `/_api/token/${encodeURIComponent(username)}`,
+        body,
+      },
+      (res) => res.parsedBody
+    );
+  }
+
+  /**
+   * Fetches all access tokens for the given ArangoDB user.
+   *
+   * Note: Token values are not returned. Only metadata (id, name, expiry, etc.)
+   * is available. Token values can only be retrieved when creating a new token.
+   *
+   * @param username - Name of the ArangoDB user to fetch tokens for.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const tokens = await db.getAccessTokens("appUser");
+   * for (const token of tokens) {
+   *   console.log(`${token.name}: expires ${new Date(token.valid_until * 1000)}`);
+   * }
+   * ```
+   */
+  getAccessTokens(
+    username: string
+  ): Promise<connection.ArangoApiResponse<users.AccessTokenMetadata[]>> {
+    if (!username || typeof username !== "string") {
+      throw new Error("Username must be a non-empty string");
+    }
+
+    return this.request(
+      {
+        pathname: `/_api/token/${encodeURIComponent(username)}`,
+      },
+      (res) => res.parsedBody.tokens
+    );
+  }
+
+  /**
+   * Deletes (revokes) an access token for the given ArangoDB user.
+   *
+   * Once deleted, the token cannot be used for authentication and cannot be recovered.
+   *
+   * @param username - Name of the ArangoDB user who owns the token.
+   * @param tokenId - Unique identifier of the token to delete.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const tokens = await db.getAccessTokens("appUser");
+   * for (const token of tokens) {
+   *   if (token.name === "Old CI token") {
+   *     await db.deleteAccessToken("appUser", token.id);
+   *   }
+   * }
+   * ```
+   */
+  deleteAccessToken(
+    username: string,
+    tokenId: number
+  ): Promise<connection.ArangoApiResponse<void>> {
+    if (!username || typeof username !== "string") {
+      throw new Error("Username must be a non-empty string");
+    }
+    if (typeof tokenId !== "number" || !Number.isInteger(tokenId) || tokenId < 0) {
+      throw new Error("Token ID must be a non-negative integer");
+    }
+
+    return this.request(
+      {
+        method: "DELETE",
+        pathname: `/_api/token/${encodeURIComponent(username)}/${tokenId}`,
+      },
+      (res) => res.parsedBody
     );
   }
   //#endregion
