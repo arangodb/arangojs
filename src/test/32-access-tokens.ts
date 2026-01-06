@@ -246,6 +246,7 @@ describe312("Access Tokens", function () {
         await system.login("wronguser", token);
         expect.fail("Should have failed authentication");
       } catch (err: any) {
+        console.log("err", err);
         expect(err).to.exist;
         expect(err.code).to.equal(401);
         expect(err.errorNum).to.equal(401);
@@ -270,6 +271,7 @@ describe312("Access Tokens", function () {
         await system.login("", tokenToRevoke);
         expect.fail("Should have failed authentication");
       } catch (err: any) {
+        console.log("err", err);
         expect(err).to.exist;
         expect(err.code).to.equal(401);
         expect(err.errorNum).to.equal(401);
