@@ -3,7 +3,7 @@ import { Database } from "../databases.js";
 import { config } from "./_config.js";
 
 // Access tokens require ArangoDB 3.12+
-const describe312 = config.arangoVersion! >= 31200 ? describe : describe.skip;
+const describe312 = config.arangoVersion! >= 31207 ? describe : describe.skip;
 
 describe312("Access Tokens", function () {
   let system: Database;
