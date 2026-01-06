@@ -247,7 +247,8 @@ describe312("Access Tokens", function () {
         expect.fail("Should have failed authentication");
       } catch (err: any) {
         expect(err).to.exist;
-        expect(err.response?.status).to.equal(401);
+        expect(err.code).to.equal(401);
+        expect(err.errorNum).to.equal(401);
       } finally {
         system.close();
       }
@@ -270,7 +271,8 @@ describe312("Access Tokens", function () {
         expect.fail("Should have failed authentication");
       } catch (err: any) {
         expect(err).to.exist;
-        expect(err.response?.status).to.equal(401);
+        expect(err.code).to.equal(401);
+        expect(err.errorNum).to.equal(401);
       } finally {
         system.close();
       }
