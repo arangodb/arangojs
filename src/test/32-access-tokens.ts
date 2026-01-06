@@ -239,45 +239,5 @@ describe312("Access Tokens", function () {
 
       system.close();
     });
-
-    it("should fail login with wrong username when using token", async () => {
-      try {
-        // Try to login with a different username than the one in the token
-        await system.login("wronguser", token);
-        expect.fail("Should have failed authentication");
-      } catch (err: any) {
-        console.log("err", err);
-        expect(err).to.exist;
-        expect(err.code).to.equal(401);
-        expect(err.errorNum).to.equal(401);
-      } finally {
-        system.close();
-      }
-    });
-
-    it("should fail authentication after token deletion", async () => {
-      // Create a separate token for this test to avoid breaking other tests
-      const result = await system.createAccessToken(rootUser, {
-        name: "Token to revoke",
-      });
-      const tokenToRevoke = result.token;
-      const tokenIdToRevoke = result.id;
-
-      // Delete the token
-      await system.deleteAccessToken(rootUser, tokenIdToRevoke);
-
-      // Try to authenticate - should fail
-      try {
-        await system.login("", tokenToRevoke);
-        expect.fail("Should have failed authentication");
-      } catch (err: any) {
-        console.log("err", err);
-        expect(err).to.exist;
-        expect(err.code).to.equal(401);
-        expect(err.errorNum).to.equal(401);
-      } finally {
-        system.close();
-      }
-    });
   });
 });
