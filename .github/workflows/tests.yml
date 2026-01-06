@@ -29,7 +29,6 @@ jobs:
         env:
           ARANGO_NO_AUTH: 1
           ARANGO_LICENSE_KEY: ${{ secrets.ARANGO_LICENSE_KEY }}
-        command: arangod ${{ (contains(matrix.arangodb-version, '3.12.7') || contains(matrix.arangodb-version, 'latest')) && '--experimental-vector-index' || '' }}
     steps:
       - uses: actions/checkout@v4
       - run: apk add jq
