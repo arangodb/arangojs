@@ -14,6 +14,21 @@ This driver uses semantic versioning:
 - A change in the major version (e.g. 1.Y.Z -> 2.0.0) indicates _breaking_
   changes that require changes in your code to upgrade.
 
+## [Unreleased]
+
+### Added
+
+- Added `storedValues` option for vector indexes (DE-1098)
+
+  Vector indexes now support storing additional attributes for efficient filtering.
+  This option is available in ArangoDB 3.12.7+.
+
+- Added `innerProduct` metric support for vector indexes
+
+  Vector indexes now support the `innerProduct` metric, which was introduced in
+  ArangoDB 3.12.6. This metric compares both angle and magnitude without normalization,
+  making it faster than cosine similarity.
+
 ## [10.1.2] - 2025-06-30
 
 ### Added

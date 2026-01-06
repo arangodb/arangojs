@@ -15,10 +15,9 @@ jobs:
         module-system: [cjs, esm]
         node-version: [20, 22, 23]
         arangodb-version:
-          - arangodb/arangodb:3.11
-          - arangodb/enterprise:3.11
           - arangodb/arangodb:3.12
           - arangodb/enterprise:3.12
+          - arangodb/enterprise:latest
           - arangodb/enterprise-test:devel-nightly
 
     container:
@@ -30,6 +29,8 @@ jobs:
         env:
           ARANGO_NO_AUTH: 1
           ARANGO_LICENSE_KEY: ${{ secrets.ARANGO_LICENSE_KEY }}
+        options: >-
+          ${{ (contains(matrix.arangodb-version, '3.12.7') || contains(matrix.arangodb-version, 'latest')) && '--external-vector-index' || '' }}
 
     steps:
       - uses: actions/checkout@v4
