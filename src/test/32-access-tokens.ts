@@ -3,7 +3,7 @@ import { Database } from "../databases.js";
 import { config } from "./_config.js";
 
 // Access tokens require ArangoDB 3.12+
-const describe312 = config.arangoVersion! >= 31207 ? describe : describe.skip;
+const describe312 = config.arangoVersion! > 31200 ? describe : describe.skip;
 
 describe312("Access Tokens", function () {
   let system: Database;
@@ -20,20 +20,17 @@ describe312("Access Tokens", function () {
   });
 
   after(async () => {
-    // Always recreate connection since tests may have closed it
-    const cleanupDb = new Database(config);
     try {
-      if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE") {
-        await cleanupDb.acquireHostList();
-      }
-      await cleanupDb.removeUser(testUsername);
+      await system.removeUser(testUsername);
     } catch (err) {
       // User might already be deleted, ignore
     } finally {
-      cleanupDb.close();
+      try {
+        system.close();
+      } catch (err) {
+        // Connection may already be closed, ignore
+      }
     }
-    // Always close the original system connection
-    system.close();
   });
 
   describe("database.createAccessToken", () => {
@@ -168,18 +165,10 @@ describe312("Access Tokens", function () {
     });
 
     after(async () => {
-      // Clean up the test token
-      // Create a fresh connection since tests may have closed system
-      const cleanupDb = new Database(config);
       try {
-        if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE") {
-          await cleanupDb.acquireHostList();
-        }
-        await cleanupDb.deleteAccessToken(rootUser, tokenId);
+        await system.deleteAccessToken(rootUser, tokenId);
       } catch (err) {
         // Token might already be deleted, ignore
-      } finally {
-        cleanupDb.close();
       }
     });
 
@@ -191,8 +180,6 @@ describe312("Access Tokens", function () {
       const collections = await system.collections();
 
       expect(collections).to.be.an("array");
-
-      system.close();
     });
 
     it("should authenticate using login with empty username", async () => {
@@ -202,8 +189,6 @@ describe312("Access Tokens", function () {
 
       expect(jwt).to.be.a("string");
       expect(jwt.length).to.be.greaterThan(0);
-
-      system.close();
     });
 
     it("should authenticate using login with explicit username", async () => {
@@ -213,8 +198,6 @@ describe312("Access Tokens", function () {
 
       expect(jwt).to.be.a("string");
       expect(jwt.length).to.be.greaterThan(0);
-
-      system.close();
     });
 
     it("should authenticate using useBasicAuth with empty username and token", async () => {
@@ -226,8 +209,6 @@ describe312("Access Tokens", function () {
       const collections = await system.collections();
 
       expect(collections).to.be.an("array");
-
-      system.close();
     });
 
     it("should authenticate using useBasicAuth with explicit username and token", async () => {
@@ -238,8 +219,6 @@ describe312("Access Tokens", function () {
       const collections = await system.collections();
 
       expect(collections).to.be.an("array");
-
-      system.close();
     });
   });
 });
