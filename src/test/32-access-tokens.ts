@@ -32,6 +32,8 @@ describe312("Access Tokens", function () {
     } finally {
       cleanupDb.close();
     }
+    // Always close the original system connection
+    system.close();
   });
 
   describe("database.createAccessToken", () => {

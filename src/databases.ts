@@ -2317,7 +2317,7 @@ export class Database {
    */
   getAccessTokens(
     username: string
-  ): Promise<connection.ArangoApiResponse<users.AccessTokenMetadata[]>> {
+  ): Promise<users.AccessTokenMetadata[]> {
     if (!username || typeof username !== "string") {
       throw new Error("Username must be a non-empty string");
     }
@@ -2352,7 +2352,7 @@ export class Database {
   deleteAccessToken(
     username: string,
     tokenId: number
-  ): Promise<connection.ArangoApiResponse<void>> {
+  ): Promise<void> {
     if (!username || typeof username !== "string") {
       throw new Error("Username must be a non-empty string");
     }
@@ -2365,7 +2365,7 @@ export class Database {
         method: "DELETE",
         pathname: `/_api/token/${encodeURIComponent(username)}/${tokenId}`,
       },
-      (res) => res.parsedBody
+      () => undefined
     );
   }
   //#endregion
