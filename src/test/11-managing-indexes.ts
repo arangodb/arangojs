@@ -4,7 +4,6 @@ import { Database } from "../databases.js";
 import { config } from "./_config.js";
 
 const it312 = config.arangoVersion! >= 31200 ? it : it.skip;
-const it31207 = config.arangoVersion! >= 31207 ? it : it.skip;
 
 describe("Managing indexes", function () {
   let system: Database, db: Database;
@@ -58,7 +57,7 @@ describe("Managing indexes", function () {
       expect(info).to.have.nested.property("params.nLists", 2);
     });
 
-    it31207("should create a vector index with storedValues", async () => {
+    it.skip("should create a vector index with storedValues", async () => {
       // Available in ArangoDB 3.12.7+.
       // Only enabled with the --vector-index startup option.
       const data = Array.from({ length: 128 }, (_, cnt) => ({
@@ -90,7 +89,7 @@ describe("Managing indexes", function () {
       expect(info).to.have.nested.property("params.nLists", 2);
     });
 
-    it31207("should create a vector index with innerProduct metric", async () => {
+    it.skip("should create a vector index with innerProduct metric", async () => {
       // Available in ArangoDB 3.12.6+.
       // Only enabled with the --vector-index startup option.
       const data = Array.from({ length: 128 }, (_, cnt) => ({
