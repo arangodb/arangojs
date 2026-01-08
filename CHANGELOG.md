@@ -14,6 +14,20 @@ This driver uses semantic versioning:
 - A change in the major version (e.g. 1.Y.Z -> 2.0.0) indicates _breaking_
   changes that require changes in your code to upgrade.
 
+## [Unreleased]
+
+### Added
+
+- Added `maxSkewThreshold` and `minDeletionRatio` options to `TierConsolidationPolicy` type (DE-1094)
+
+  These options are available from ArangoDB 3.12.7 onward and can be used for both arangosearch Views and inverted indexes.
+
+### Deprecated
+
+- Deprecated consolidation policy options in `TierConsolidationPolicy` that are ignored by ArangoDB 3.12.7+ (DE-1094)
+
+  The following options are ignored by the server from v3.12.7 onwards: `segmentsMin`, `segmentsMax`, `segmentsBytesFloor` and `minScore`. These fields remain in the type definition for backward compatibility but are marked as deprecated.
+
 ## [10.1.2] - 2025-06-30
 
 ### Added
