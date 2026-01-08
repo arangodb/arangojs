@@ -28,6 +28,8 @@ jobs:
         env:
           ARANGO_NO_AUTH: 1
           ARANGO_LICENSE_KEY: ${{ secrets.ARANGO_LICENSE_KEY }}
+        options: >-
+          --experimental-vector-index         
 
     steps:
       - uses: actions/checkout@v4
@@ -60,7 +62,6 @@ jobs:
           ARANGO_NO_AUTH: 1
           ARANGO_LICENSE_KEY: ${{ secrets.ARANGO_LICENSE_KEY }}
         options: >-
-          --command arangod
           --experimental-vector-index
 
     steps:
