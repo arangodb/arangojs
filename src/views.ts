@@ -52,6 +52,9 @@ export type TierConsolidationPolicy = {
    */
   type: "tier";
   /**
+   * @deprecated This option is only available up to v3.12.6.
+   * It is ignored by the server from v3.12.7 onwards.
+   *
    * Size below which all segments are treated as equivalent.
    *
    * Default: `2097152` (2 MiB)
@@ -64,6 +67,9 @@ export type TierConsolidationPolicy = {
    */
   segmentsBytesMax?: number;
   /**
+   * @deprecated This option is only available up to v3.12.6.
+   * It is ignored by the server from v3.12.7 onwards.
+   *
    * Maximum number of segments that are evaluated as candidates for
    * consolidation.
    *
@@ -71,6 +77,9 @@ export type TierConsolidationPolicy = {
    */
   segmentsMax?: number;
   /**
+   * @deprecated This option is only available up to v3.12.6.
+   * It is ignored by the server from v3.12.7 onwards.
+   *
    * Minimum number of segments that are evaluated as candidates for
    * consolidation.
    *
@@ -78,12 +87,72 @@ export type TierConsolidationPolicy = {
    */
   segmentsMin?: number;
   /**
+   * @deprecated This option is only available up to v3.12.6.
+   * It is ignored by the server from v3.12.7 onwards.
+   *
    * Consolidation candidates with a score less than this value will be
    * filtered out.
    *
    * Default: `0`
    */
   minScore?: number;
+  /**
+   * This option is available from v3.12.7 onward.
+   *
+   * The skew describes how much segment files vary in file size. It is a number
+   * between `0.0` and `1.0` and is calculated by dividing the largest file size
+   * of a set of segment files by the total size. For example, the skew of a
+   * 200 MiB, 300 MiB, and 500 MiB segment file is `0.5` (`500 / 1000`).
+   *
+   * A large `maxSkewThreshold` value allows merging large segment files with
+   * smaller ones, consolidation occurs more frequently, and there are fewer
+   * segment files on disk at all times. While this may potentially improve the
+   * read performance and use fewer file descriptors, frequent consolidations
+   * cause a higher write load and thus a higher write amplification.
+   *
+   * On the other hand, a small threshold value triggers the consolidation only
+   * when there are a large number of segment files that don't vary in size a lot.
+   * Consolidation occurs less frequently, reducing the write amplification, but
+   * it can result in a greater number of segment files on disk.
+   *
+   * Multiple combinations of candidate segments are checked and the one with
+   * the lowest skew value is selected for consolidation. The selection process
+   * picks the greatest number of segments that together have the lowest skew value
+   * while ensuring that the size of the new consolidated segment remains under
+   * the configured `segmentsBytesMax`.
+   *
+   * Default: `0.4`
+   */
+  maxSkewThreshold?: number;
+  /**
+   * This option is available from v3.12.7 onward.
+   *
+   * The `minDeletionRatio` represents the minimum required deletion ratio
+   * in one or more segments to perform a cleanup of those segments.
+   * It is a number between `0.0` and `1.0`.
+   *
+   * The deletion ratio is the percentage of deleted documents across one or
+   * more segment files and is calculated by dividing the number of deleted
+   * documents by the total number of documents in a segment or a group of
+   * segments. For example, if there is a segment with 1000 documents of which
+   * 300 are deleted and another segment with 1000 documents of which 700 are
+   * deleted, the deletion ratio is `0.5` (50%, calculated as `1000 / 2000`).
+   *
+   * The `minDeletionRatio` threshold must be carefully selected. A smaller
+   * value leads to earlier cleanup of deleted documents from segments and
+   * thus reclamation of disk space but it generates a higher write load.
+   * A very large value lowers the write amplification but at the same time
+   * the system can be left with a large number of segment files with a high
+   * percentage of deleted documents that occupy disk space unnecessarily.
+   *
+   * During cleanup, the segment files are first arranged in decreasing
+   * order of their individual deletion ratios. Then the largest subset of
+   * segments whose collective deletion ratio is greater than or equal to
+   * `minDeletionRatio` is picked.
+   *
+   * Default: `0.5`
+   */
+  minDeletionRatio?: number;
 };
 
 /**
