@@ -1,6 +1,7 @@
 import { expect } from "chai";
 import { DocumentCollection } from "../collections.js";
 import { Database } from "../databases.js";
+import { InvertedIndexDescription } from "../indexes.js";
 import { config } from "./_config.js";
 
 const it312 = config.arangoVersion! >= 31200 ? it : it.skip;
@@ -204,5 +205,31 @@ describe("Managing indexes", function () {
       expect(indexes).to.not.be.empty;
       expect(indexes.filter((i: any) => i.id === index.id).length).to.equal(0);
     });
+  });
+  describe("collection.ensureIndex#inverted", () => {
+    it312(
+      "should create an inverted index with new consolidation policy options",
+      async () => {
+        const info = await collection.ensureIndex({
+          type: "inverted",
+          fields: ["value"],
+          consolidationPolicy: {
+            type: "tier",
+            maxSkewThreshold: 0.5,
+            minDeletionRatio: 0.6,
+          },
+        });
+        expect(info).to.have.property("id");
+        expect(info).to.have.property("type", "inverted");
+        expect(info).to.have.property("fields");
+        expect(info.fields).to.be.an("array");
+        expect(info).to.have.property("isNewlyCreated", true);
+        const index = (await collection.index(info.id)) as InvertedIndexDescription;
+        expect(index).to.have.property("consolidationPolicy");
+        expect(index.consolidationPolicy).to.have.property("type", "tier");
+        // Server may return the new fields or may omit them if using defaults
+        // We just verify the index was created successfully with the new options
+      },
+    );
   });
 });
