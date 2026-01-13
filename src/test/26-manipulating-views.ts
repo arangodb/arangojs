@@ -6,6 +6,7 @@ import { config } from "./_config.js";
 // NOTE These tests will not reliably work in a cluster.
 const describeNLB =
   config.loadBalancingStrategy === "ROUND_ROBIN" ? describe.skip : describe;
+const it312 = config.arangoVersion! >= 31200 ? it : it.skip;
 
 describe("Manipulating views", function () {
   const name = `testdb_${Date.now()}`;
@@ -65,6 +66,29 @@ describe("Manipulating views", function () {
       expect(properties.consolidationIntervalMsec).to.equal(45000);
       expect(properties.commitIntervalMsec).to.equal(30000);
     });
+    it312(
+      "should support new consolidation policy options (maxSkewThreshold, minDeletionRatio)",
+      async () => {
+        const properties = (await view.updateProperties({
+          consolidationPolicy: {
+            type: "tier",
+            maxSkewThreshold: 0.5,
+            minDeletionRatio: 0.6,
+          },
+        })) as ArangoSearchViewProperties;
+        expect(properties.consolidationPolicy).to.have.property("type", "tier");
+        if (properties.consolidationPolicy.type === "tier") {
+          expect(properties.consolidationPolicy).to.have.property(
+            "maxSkewThreshold",
+            0.5,
+          );
+          expect(properties.consolidationPolicy).to.have.property(
+            "minDeletionRatio",
+            0.6,
+          );
+        }
+      },
+    );
   });
   describe("view.replaceProperties", () => {
     it("should overwrite properties", async () => {

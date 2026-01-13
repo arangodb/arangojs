@@ -104,3 +104,100 @@ export type ArangoUser = {
   extra: Record<string, any>;
 };
 //#endregion
+
+//#region Access Token Types
+/**
+ * Options for creating an access token.
+ */
+export type CreateAccessTokenOptions = {
+  /**
+   * Unique name for the access token.
+   * Must be unique per user.
+   */
+  name: string;
+  /**
+   * Unix timestamp (in seconds) indicating when the token expires.
+   * If not provided, token does not expire.
+   *
+   * Note: Only Unix timestamp (number) is accepted, not Date objects.
+   */
+  valid_until?: number;
+};
+
+/**
+ * Access token returned when creating a new token.
+ * This is the only time the token value is returned.
+ */
+export type AccessToken = {
+  /**
+   * Unique identifier for the token.
+   */
+  id: number;
+  /**
+   * Name of the token.
+   */
+  name: string;
+  /**
+   * Unix timestamp (in seconds) when the token expires.
+   */
+  valid_until: number;
+  /**
+   * Unix timestamp (in seconds) when the token was created.
+   */
+  created_at: number;
+  /**
+   * MD5 fingerprint of the token.
+   */
+  fingerprint: string;
+  /**
+   * Whether the token is currently active.
+   */
+  active: boolean;
+  /**
+   * The actual token value.
+   * This is only present in the creation response and cannot be retrieved again.
+   */
+  token: string;
+};
+
+/**
+ * Access token metadata (without the token value).
+ * Returned when listing tokens.
+ */
+export type AccessTokenMetadata = {
+  /**
+   * Unique identifier for the token.
+   */
+  id: number;
+  /**
+   * Name of the token.
+   */
+  name: string;
+  /**
+   * Unix timestamp (in seconds) when the token expires.
+   */
+  valid_until: number;
+  /**
+   * Unix timestamp (in seconds) when the token was created.
+   */
+  created_at: number;
+  /**
+   * MD5 fingerprint of the token.
+   */
+  fingerprint: string;
+  /**
+   * Whether the token is currently active.
+   */
+  active: boolean;
+};
+
+/**
+ * Response from listing access tokens.
+ */
+export type AccessTokenListResponse = {
+  /**
+   * Array of access token metadata.
+   */
+  tokens: AccessTokenMetadata[];
+};
+//#endregion

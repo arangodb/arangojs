@@ -1,6 +1,7 @@
 import { expect } from "chai";
 import { DocumentCollection } from "../collections.js";
 import { Database } from "../databases.js";
+import { InvertedIndexDescription } from "../indexes.js";
 import { config } from "./_config.js";
 
 const it312 = config.arangoVersion! >= 31200 ? it : it.skip;
@@ -32,7 +33,7 @@ describe("Managing indexes", function () {
   describe("collection.ensureIndex#vector", () => {
     it.skip("should create a vector index", async () => {
       // Available in ArangoDB 3.12.4+.
-      // Only enabled with the --experimental-vector-index startup option.
+      // Only enabled with the --vector-index startup option.
       const data = Array.from({ length: 128 }, (_, cnt) => ({
         _key: `vec${cnt}`,
         embedding: Array(128).fill(cnt),
@@ -53,6 +54,65 @@ describe("Managing indexes", function () {
       expect(info.fields).to.eql(["embedding"]);
       expect(info).to.have.property("isNewlyCreated", true);
       expect(info).to.have.nested.property("params.metric", "cosine");
+      expect(info).to.have.nested.property("params.dimension", 128);
+      expect(info).to.have.nested.property("params.nLists", 2);
+    });
+
+    it.skip("should create a vector index with storedValues", async () => {
+      // Available in ArangoDB 3.12.7+.
+      // Only enabled with the --vector-index startup option.
+      const data = Array.from({ length: 128 }, (_, cnt) => ({
+        _key: `vec${cnt}`,
+        embedding: Array(128).fill(cnt),
+        val: cnt,
+        category: `cat${cnt % 5}`,
+      }));
+      await collection.import(data);
+      const info = await collection.ensureIndex({
+        type: "vector",
+        fields: ["embedding"],
+        storedValues: ["val", "category"],
+        params: {
+          metric: "cosine",
+          dimension: 128,
+          nLists: 2,
+        },
+      });
+      expect(info).to.have.property("id");
+      expect(info).to.have.property("type", "vector");
+      expect(info).to.have.property("fields");
+      expect(info.fields).to.eql(["embedding"]);
+      expect(info).to.have.property("storedValues");
+      expect(info.storedValues).to.eql(["val", "category"]);
+      expect(info).to.have.property("isNewlyCreated", true);
+      expect(info).to.have.nested.property("params.metric", "cosine");
+      expect(info).to.have.nested.property("params.dimension", 128);
+      expect(info).to.have.nested.property("params.nLists", 2);
+    });
+
+    it.skip("should create a vector index with innerProduct metric", async () => {
+      // Available in ArangoDB 3.12.6+.
+      // Only enabled with the --vector-index startup option.
+      const data = Array.from({ length: 128 }, (_, cnt) => ({
+        _key: `vec${cnt}`,
+        embedding: Array(128).fill(cnt),
+      }));
+      await collection.import(data);
+      const info = await collection.ensureIndex({
+        type: "vector",
+        fields: ["embedding"],
+        params: {
+          metric: "innerProduct",
+          dimension: 128,
+          nLists: 2,
+        },
+      });
+      expect(info).to.have.property("id");
+      expect(info).to.have.property("type", "vector");
+      expect(info).to.have.property("fields");
+      expect(info.fields).to.eql(["embedding"]);
+      expect(info).to.have.property("isNewlyCreated", true);
+      expect(info).to.have.nested.property("params.metric", "innerProduct");
       expect(info).to.have.nested.property("params.dimension", 128);
       expect(info).to.have.nested.property("params.nLists", 2);
     });
@@ -100,6 +160,7 @@ describe("Managing indexes", function () {
         type: "mdi",
         fields: ["x", "y", "z"],
         fieldValueTypes: "double",
+        sparse: true
       });
       expect(info).to.have.property("id");
       expect(info).to.have.property("type", "mdi");
@@ -144,5 +205,31 @@ describe("Managing indexes", function () {
       expect(indexes).to.not.be.empty;
       expect(indexes.filter((i: any) => i.id === index.id).length).to.equal(0);
     });
+  });
+  describe("collection.ensureIndex#inverted", () => {
+    it312(
+      "should create an inverted index with new consolidation policy options",
+      async () => {
+        const info = await collection.ensureIndex({
+          type: "inverted",
+          fields: ["value"],
+          consolidationPolicy: {
+            type: "tier",
+            maxSkewThreshold: 0.5,
+            minDeletionRatio: 0.6,
+          },
+        });
+        expect(info).to.have.property("id");
+        expect(info).to.have.property("type", "inverted");
+        expect(info).to.have.property("fields");
+        expect(info.fields).to.be.an("array");
+        expect(info).to.have.property("isNewlyCreated", true);
+        const index = (await collection.index(info.id)) as InvertedIndexDescription;
+        expect(index).to.have.property("consolidationPolicy");
+        expect(index.consolidationPolicy).to.have.property("type", "tier");
+        // Server may return the new fields or may omit them if using defaults
+        // We just verify the index was created successfully with the new options
+      },
+    );
   });
 });
