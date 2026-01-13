@@ -14,6 +14,15 @@ This driver uses semantic versioning:
 - A change in the major version (e.g. 1.Y.Z -> 2.0.0) indicates _breaking_
   changes that require changes in your code to upgrade.
 
+## [Unreleased]
+
+### Fixed
+
+- Fixed `agentOptions` not being passed to `createHost` function, preventing
+  configuration of undici agent for self-signed certificates and other TLS options.
+  The `agentOptions` parameter is now properly extracted from configuration and
+  passed to all host creation calls. ([#824](https://github.com/arangodb/arangojs/issues/824))
+
 ## [10.1.2] - 2025-06-30
 
 ### Added

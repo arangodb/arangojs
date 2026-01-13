@@ -690,6 +690,7 @@ export class Connection {
   protected _precaptureStackTraces: boolean;
   protected _queueTimes = new LinkedList<[number, number]>();
   protected _responseQueueTimeSamples: number;
+  protected _agentOptions?: any;
 
   /**
    * @internal
@@ -711,6 +712,7 @@ export class Connection {
           ? url.length
           : 1),
       fetchOptions: { headers, ...commonFetchOptions } = {},
+      agentOptions,
       onError,
       precaptureStackTraces = false,
       responseQueueTimeSamples = 10,
@@ -724,6 +726,7 @@ export class Connection {
     this._arangoVersion = arangoVersion;
     this._taskPoolSize = poolSize;
     this._onError = onError;
+    this._agentOptions = agentOptions;
 
     this._commonRequestOptions = commonRequestOptions;
     this._commonFetchOptions = {
@@ -993,7 +996,7 @@ export class Connection {
       ...cleanUrls.map((url) => {
         const i = this._hostUrls.indexOf(url);
         if (i !== -1) return this._hosts[i];
-        return createHost(url);
+        return createHost(url, this._agentOptions);
       })
     );
     this._hostUrls.splice(0, this._hostUrls.length, ...cleanUrls);
@@ -1016,7 +1019,7 @@ export class Connection {
       (url) => this._hostUrls.indexOf(url) === -1
     );
     this._hostUrls.push(...newUrls);
-    this._hosts.push(...newUrls.map((url) => createHost(url)));
+    this._hosts.push(...newUrls.map((url) => createHost(url, this._agentOptions)));
     return cleanUrls;
   }
 
