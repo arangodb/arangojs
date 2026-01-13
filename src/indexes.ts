@@ -573,13 +573,28 @@ export type EnsureVectorIndexOptions = EnsureIndexOptionsType<
     parallelism?: number;
 
     /**
+     * An array of attribute paths that will be stored in the index for
+     * efficient filtering. Unlike with other index types, this is not for
+     * covering projections with the index but for adding attributes that
+     * you filter on. This lets you make the lookup in the vector index
+     * more efficient because it avoids materializing documents twice,
+     * once for the filtering and once for the matches.
+     *
+     * The maximum number of attributes that you can use in storedValues is 32.
+     *
+     * Introduced in: ArangoDB 3.12.7
+     */
+    storedValues?: string[];
+
+    /**
      * Vector index parameters, following Faiss configuration.
      */
     params: {
       /**
-       * Whether to use cosine or l2 (Euclidean) distance.
+       * Whether to use cosine, l2 (Euclidean), or innerProduct distance.
+       * innerProduct was introduced in ArangoDB 3.12.6.
        */
-      metric: "cosine" | "l2";
+      metric: "cosine" | "l2" | "innerProduct";
 
       /**
        * Vector dimension. Must match the length of vectors in documents.
@@ -924,8 +939,15 @@ export type VectorIndexDescription = IndexDescriptionType<
   {
     parallelism: number;
     inBackground: boolean;
+    /**
+     * An array of attribute paths that are stored in the index for
+     * efficient filtering.
+     *
+     * Introduced in: ArangoDB 3.12.7
+     */
+    storedValues?: string[];
     params: {
-      metric: "cosine" | "l2";
+      metric: "cosine" | "l2" | "innerProduct";
       dimension: number;
       nLists: number;
       defaultNProbe?: number;

@@ -27,6 +27,41 @@ This driver uses semantic versioning:
 - Deprecated consolidation policy options in `TierConsolidationPolicy` that are ignored by ArangoDB 3.12.7+ (DE-1094)
 
   The following options are ignored by the server from v3.12.7 onwards: `segmentsMin`, `segmentsMax`, `segmentsBytesFloor` and `minScore`. These fields remain in the type definition for backward compatibility but are marked as deprecated.
+- Added `storedValues` option for vector indexes (DE-1098)
+
+  Vector indexes now support storing additional attributes for efficient filtering.
+  This option is available in ArangoDB 3.12.7+.
+
+- Added `innerProduct` metric support for vector indexes
+
+  Vector indexes now support the `innerProduct` metric, which was introduced in
+  ArangoDB 3.12.6. This metric compares both angle and magnitude without normalization,
+  making it faster than cosine similarity.
+- Added access token support (DE-1106)
+
+  Access tokens can be used as password replacements for authentication. This
+  feature enables better automation, CI/CD integration, and fine-grained access
+  control.
+
+  - Added `db.createAccessToken(username, options)` method to create access
+    tokens for users
+  - Added `db.getAccessTokens(username)` method to list all access tokens for
+    a user (metadata only)
+  - Added `db.deleteAccessToken(username, tokenId)` method to revoke access
+    tokens
+  - Added `db.useAccessToken(token)` convenience method for Basic Auth
+    authentication with tokens
+  - Added TypeScript types: `CreateAccessTokenOptions`, `AccessToken`,
+    `AccessTokenMetadata`, and `AccessTokenListResponse`
+
+  Access tokens can be used with:
+  - Basic Authentication: `db.useAccessToken(token)` or
+    `db.useBasicAuth("", token)`
+  - JWT exchange: `db.login("", token)` or `db.login(username, token)`
+
+  **Note:** The `valid_until` option accepts only Unix timestamps (numbers in
+  seconds), not Date objects. Users must convert Date objects themselves:
+  `Math.floor(date.getTime() / 1000)`.
 
 ## [10.1.2] - 2025-06-30
 
