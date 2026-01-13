@@ -18,6 +18,16 @@ This driver uses semantic versioning:
 
 ### Added
 
+- Added `storedValues` option for vector indexes (DE-1098)
+
+  Vector indexes now support storing additional attributes for efficient filtering.
+  This option is available in ArangoDB 3.12.7+.
+
+- Added `innerProduct` metric support for vector indexes
+
+  Vector indexes now support the `innerProduct` metric, which was introduced in
+  ArangoDB 3.12.6. This metric compares both angle and magnitude without normalization,
+  making it faster than cosine similarity.
 - Added access token support (DE-1106)
 
   Access tokens can be used as password replacements for authentication. This

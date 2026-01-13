@@ -1697,8 +1697,9 @@ export interface DocumentCollection<
    * await collection.ensureIndex({
    *   type: "vector",
    *   fields: ["embedding"],
+   *   storedValues: ["val"], // Optional: for efficient filtering (ArangoDB 3.12.7+)
    *   params: {
-   *     metric: "cosine",
+   *     metric: "cosine", // or "l2" or "innerProduct" (ArangoDB 3.12.6+)
    *     dimension: 128,
    *     nLists: 100
    *   }
