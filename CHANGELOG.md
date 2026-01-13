@@ -14,6 +14,36 @@ This driver uses semantic versioning:
 - A change in the major version (e.g. 1.Y.Z -> 2.0.0) indicates _breaking_
   changes that require changes in your code to upgrade.
 
+## [Unreleased]
+
+### Added
+
+- Added access token support (DE-1106)
+
+  Access tokens can be used as password replacements for authentication. This
+  feature enables better automation, CI/CD integration, and fine-grained access
+  control.
+
+  - Added `db.createAccessToken(username, options)` method to create access
+    tokens for users
+  - Added `db.getAccessTokens(username)` method to list all access tokens for
+    a user (metadata only)
+  - Added `db.deleteAccessToken(username, tokenId)` method to revoke access
+    tokens
+  - Added `db.useAccessToken(token)` convenience method for Basic Auth
+    authentication with tokens
+  - Added TypeScript types: `CreateAccessTokenOptions`, `AccessToken`,
+    `AccessTokenMetadata`, and `AccessTokenListResponse`
+
+  Access tokens can be used with:
+  - Basic Authentication: `db.useAccessToken(token)` or
+    `db.useBasicAuth("", token)`
+  - JWT exchange: `db.login("", token)` or `db.login(username, token)`
+
+  **Note:** The `valid_until` option accepts only Unix timestamps (numbers in
+  seconds), not Date objects. Users must convert Date objects themselves:
+  `Math.floor(date.getTime() / 1000)`.
+
 ## [10.1.2] - 2025-06-30
 
 ### Added
