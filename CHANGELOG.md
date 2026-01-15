@@ -21,17 +21,19 @@ This driver uses semantic versioning:
 
 ## [Unreleased]
 
+### Fixed
+
+- Fixed `agentOptions` not being passed to `createHost` function, preventing
+  configuration of undici agent for self-signed certificates and other TLS options.
+  The `agentOptions` parameter is now properly extracted from configuration and
+  passed to all host creation calls. ([#824](https://github.com/arangodb/arangojs/issues/824))
+
 ### Added
 
 - Added `maxSkewThreshold` and `minDeletionRatio` options to `TierConsolidationPolicy` type (DE-1094)
 
   These options are available from ArangoDB 3.12.7 onward and can be used for both arangosearch Views and inverted indexes.
 
-### Deprecated
-
-- Deprecated consolidation policy options in `TierConsolidationPolicy` that are ignored by ArangoDB 3.12.7+ (DE-1094)
-
-  The following options are ignored by the server from v3.12.7 onwards: `segmentsMin`, `segmentsMax`, `segmentsBytesFloor` and `minScore`. These fields remain in the type definition for backward compatibility but are marked as deprecated.
 - Added `storedValues` option for vector indexes (DE-1098)
 
   Vector indexes now support storing additional attributes for efficient filtering.
@@ -42,6 +44,7 @@ This driver uses semantic versioning:
   Vector indexes now support the `innerProduct` metric, which was introduced in
   ArangoDB 3.12.6. This metric compares both angle and magnitude without normalization,
   making it faster than cosine similarity.
+
 - Added access token support (DE-1106)
 
   Access tokens can be used as password replacements for authentication. This
@@ -67,6 +70,12 @@ This driver uses semantic versioning:
   **Note:** The `valid_until` option accepts only Unix timestamps (numbers in
   seconds), not Date objects. Users must convert Date objects themselves:
   `Math.floor(date.getTime() / 1000)`.
+
+### Deprecated
+
+- Deprecated consolidation policy options in `TierConsolidationPolicy` that are ignored by ArangoDB 3.12.7+ (DE-1094)
+
+  The following options are ignored by the server from v3.12.7 onwards: `segmentsMin`, `segmentsMax`, `segmentsBytesFloor` and `minScore`. These fields remain in the type definition for backward compatibility but are marked as deprecated.
 
 ## [10.1.2] - 2025-06-30
 
