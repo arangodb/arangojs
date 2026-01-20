@@ -1166,20 +1166,74 @@ export class Connection {
       // Workaround for ArangoDB 3.12.0-rc1 and earlier:
       // Omitting the final CRLF results in "bad request body" fatal error
       body = new Blob([blob, "\r\n"], { type: blob.type });
-    } else if (body) {
-      let contentType;
-      if (isBinary) {
-        contentType = "application/octet-stream";
-      } else if (typeof body === "object") {
-        body = JSON.stringify(body);
-        contentType = "application/json";
+      // Set content-length for Blob (needed for Next.js dynamic routes)
+      if (!headers.has("content-length")) {
+        headers.set("content-length", String(body.size));
+      }
+    } else if (body !== null && body !== undefined) {
+      // Handle empty string explicitly
+      if (body === "") {
+        if (!headers.has("content-length")) {
+          headers.set("content-length", "0");
+        }
+        if (!headers.has("content-type")) {
+          headers.set("content-type", "text/plain");
+        }
       } else {
-        body = String(body);
-        contentType = "text/plain";
+        let contentType;
+        if (isBinary) {
+          contentType = "application/octet-stream";
+        } else if (typeof body === "object") {
+          body = JSON.stringify(body);
+          contentType = "application/json";
+        } else {
+          body = String(body);
+          contentType = "text/plain";
+        }
+        if (!headers.has("content-type")) {
+          headers.set("content-type", contentType);
+        }
+        // Explicitly set content-length for fixed-size bodies
+        // This is needed for Next.js dynamic routes (e.g., when using cookies())
+        // and ensures compatibility with environments that don't set it automatically
+        if (!headers.has("content-length")) {
+          if (typeof body === "string") {
+            // Calculate byte length for UTF-8 encoded strings
+            // Buffer is available in Node.js (required: >=20) and browser polyfills
+            if (
+              typeof globalThis.Buffer !== "undefined" &&
+              globalThis.Buffer.byteLength
+            ) {
+              const contentLength = globalThis.Buffer.byteLength(body, "utf8");
+              headers.set("content-length", String(contentLength));
+            } else {
+              // Fallback: use TextEncoder for browser environments
+              const encoder = new TextEncoder();
+              const contentLength = encoder.encode(body).length;
+              headers.set("content-length", String(contentLength));
+            }
+          } else if (body instanceof Blob) {
+            headers.set("content-length", String(body.size));
+          } else if (
+            typeof globalThis.Buffer !== "undefined" &&
+            globalThis.Buffer.isBuffer &&
+            globalThis.Buffer.isBuffer(body)
+          ) {
+            headers.set("content-length", String(body.length));
+          }
+          // Note: ArangoDB does not support Transfer-Encoding: chunked.
+          // All public APIs only accept fixed-size bodies (string, Buffer, Blob, FormData, or objects that get JSON.stringify'd),
+          // so streams should never reach this point. If an unknown body type is passed, it will be converted to string above.
+        }
       }
-      if (!headers.has("content-type")) {
-        headers.set("content-type", contentType);
-      }
+    }
+    // Handle null/undefined body for POST/PUT/PATCH methods that might need content-length: 0
+    // This ensures compatibility with NextJS 15 and other environments that expect explicit content-length
+    else if (
+      (method === "POST" || method === "PUT" || method === "PATCH") &&
+      !headers.has("content-length")
+    ) {
+      headers.set("content-length", "0");
     }
 
     if (this._transactionId) {
