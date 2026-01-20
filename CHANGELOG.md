@@ -19,6 +19,17 @@ This driver uses semantic versioning:
 - A change in the major version (e.g. 1.Y.Z -> 2.0.0) indicates _breaking_
   changes that require changes in your code to upgrade.
 
+## [Unreleased]
+
+### Fixed
+
+- Fixed `ECONNRESET` errors in NextJS 15 production builds when using `next/cookies`
+  by explicitly setting the `Content-Length` header for all fixed-size request bodies.
+  The driver now calculates and sets `Content-Length` for strings (JSON and plain text),
+  Blobs, Buffers, FormData, and empty bodies, ensuring compatibility with NextJS 15
+  dynamic routes and other environments that don't automatically set this header.
+  ([#831](https://github.com/arangodb/arangojs/issues/831))
+
 ## [10.2.0] - 2026-01-16
 
 ### Fixed
