@@ -20,12 +20,14 @@ describe312("Access Tokens", function () {
   });
 
   after(async () => {
+    const cleanupSystem  = new Database(config);
     try {
-      await system.removeUser(testUsername);
+      await cleanupSystem .removeUser(testUsername);
     } catch (err) {
       // User might already be deleted, ignore
     } finally {
       try {
+        cleanupSystem .close();
         system.close();
       } catch (err) {
         // Connection may already be closed, ignore
