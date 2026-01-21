@@ -18,6 +18,13 @@ This driver uses semantic versioning:
 
 ### Fixed
 
+- Fixed a JSON Parse error: Unexpected EOF occurring in the Bun runtime when using 
+  `documentExists`, `vertexExists`, or `edgeExists`. The driver now correctly skips
+  response body parsing for HEAD requests, which must not include a body per RFC 7231.
+  This fix also applies to all HEAD requests made via Route.head(), ensuring consistent
+  behavior and compatibility across all fetch implementations.
+  ([#821](https://github.com/arangodb/arangojs/issues/821))
+
 - Fixed `ECONNRESET` errors in NextJS 15 production builds when using `next/cookies`
   by explicitly setting the `Content-Length` header for all fixed-size request bodies.
   The driver now calculates and sets `Content-Length` for strings (JSON and plain text),

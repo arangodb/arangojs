@@ -846,7 +846,9 @@ export class Connection {
         }
         throw new errors.HttpError(res);
       }
-      if (res.body) {
+      // Per RFC 7231, HEAD responses must not include a body 
+      // Skip body parsing for non-error HEAD responses to ensure cross-runtime compatibility
+      if (res.body && task.options.method !== "HEAD") {
         if (task.options.expectBinary) {
           res.parsedBody = await res.blob();
         } else if (contentType?.match(MIME_JSON)) {
