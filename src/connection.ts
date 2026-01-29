@@ -77,6 +77,7 @@ function createHost(arangojsHostUrl: string, agentOptions?: any): Host {
       },
     };
   }
+  let Request = globalThis.Request;
   if (agentOptions) {
     createDispatcher = async () => {
       let undici: any;
@@ -95,6 +96,7 @@ function createHost(arangojsHostUrl: string, agentOptions?: any): Host {
         });
       }
       fetch = undici.fetch;
+      Request = undici.Request;
       return new undici.Agent(agentOptions);
     };
   }
