@@ -135,6 +135,66 @@ describe("Query Management API", function () {
       const result = await db.explain(aql`FOR x IN RANGE(1, ${10}) RETURN x`);
       expect(result.plan).to.have.property("nodes");
     });
+    it("supports fullCount option", async () => {
+      const result = await db.explain(
+        "FOR x IN RANGE(1, 10) LIMIT 5 RETURN x",
+        undefined,
+        { fullCount: true },
+      );
+      expect(result.plan).to.have.property("nodes");
+    });
+    it("supports profile option", async () => {
+      const result = await db.explain(
+        "FOR x IN RANGE(1, 10) RETURN x",
+        undefined,
+        { profile: 2 },
+      );
+      expect(result.stats).to.have.property("rules");
+    });
+    it("supports maxWarningCount option", async () => {
+      const result = await db.explain(
+        "FOR i IN 1..10 RETURN 1 / 0",
+        undefined,
+        { maxWarningCount: 5 },
+      );
+      expect(result.warnings).to.be.an("array");
+      expect(result.warnings.length).to.be.at.most(5);
+    });
+    it("supports failOnWarning option", async () => {
+      try {
+        await db.explain(
+          "FOR i IN 1..10 RETURN 1 / 0",
+          undefined,
+          { failOnWarning: true },
+        );
+        // Should not reach here if failOnWarning works
+        expect.fail("Should have thrown an error");
+      } catch (err: any) {
+        expect(err).to.be.an("error");
+      }
+    });
+    it("supports maxNodesPerCallstack option", async () => {
+      const result = await db.explain(
+        "FOR x IN RANGE(1, 10) RETURN x",
+        undefined,
+        { maxNodesPerCallstack: 100 },
+      );
+      expect(result.plan).to.have.property("nodes");
+    });
+    it("supports all new options together", async () => {
+      const result = await db.explain(
+        "FOR x IN RANGE(1, 10) LIMIT 5 RETURN x",
+        undefined,
+        {
+          fullCount: true,
+          profile: 2,
+          maxWarningCount: 3,
+          maxNodesPerCallstack: 200,
+          failOnWarning: false,
+        },
+      );
+      expect(result.plan).to.have.property("nodes");
+    });
   });
 
   describe("database.parse", () => {
