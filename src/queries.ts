@@ -121,7 +121,7 @@ export type QueryOptions = {
   /**
    * Limits the maximum number of warnings a query will return.
    */
-  maxWarningsCount?: number;
+  maxWarningCount?: number;
   /**
    * If set to `true` and the query has a `LIMIT` clause, the total number of
    * values matched before the last top-level `LIMIT` in the query was applied
