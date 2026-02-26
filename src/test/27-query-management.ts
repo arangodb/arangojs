@@ -167,11 +167,11 @@ describe("Query Management API", function () {
           undefined,
           { failOnWarning: true },
         );
-        // Should not reach here if failOnWarning works
-        expect.fail("Should have thrown an error");
       } catch (err: any) {
         expect(err).to.be.an("error");
+        return;
       }
+      expect.fail("Should have thrown an error");
     });
     it("supports maxNodesPerCallstack option", async () => {
       const result = await db.explain(
