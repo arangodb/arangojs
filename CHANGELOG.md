@@ -19,6 +19,22 @@ This driver uses semantic versioning:
 - A change in the major version (e.g. 1.Y.Z -> 2.0.0) indicates _breaking_
   changes that require changes in your code to upgrade.
 
+## [Unreleased]
+
+### Added
+
+- Added missing options to `ExplainOptions` type for `Database.explain()` method (DE-1009)
+
+  The `ExplainOptions` type now includes all options supported by the ArangoDB explain endpoint:
+  - `fullCount`: Calculate total documents as if LIMIT wasn't applied
+  - `profile`: Include query profiling information (0, 1, or 2)
+  - `maxNodesPerCallstack`: Control stack splitting threshold
+  - `maxWarningCount`: Limit the number of warnings returned
+  - `failOnWarning`: Throw exception on warnings instead of returning them
+
+  These options were already accepted by the server but were not typed in the driver,
+  preventing TypeScript users from getting type checking and IntelliSense support.
+
 ## [10.2.2] - 2026-01-30
 
 ### Fixed
