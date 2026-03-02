@@ -121,7 +121,7 @@ export type QueryOptions = {
   /**
    * Limits the maximum number of warnings a query will return.
    */
-  maxWarningsCount?: number;
+  maxWarningCount?: number;
   /**
    * If set to `true` and the query has a `LIMIT` clause, the total number of
    * values matched before the last top-level `LIMIT` in the query was applied
@@ -209,6 +209,48 @@ export type ExplainOptions = {
    * Default: `false`
    */
   allPlans?: boolean;
+  /**
+   * Whether to calculate the total number of documents matching the filter
+   * conditions as if the query's final top-level `LIMIT` operation were not
+   * applied. This option generally leads to different execution plans.
+   *
+   * Default: `false`
+   */
+  fullCount?: boolean;
+  /**
+   * Whether to include additional query profiling information.
+   * If set to `2`, the response includes the time it took to process each
+   * optimizer rule under `stats.rules`.
+   *
+   * Default: `0`
+   */
+  profile?: number;
+  /**
+   * The number of execution nodes in the query plan after that stack splitting
+   * is performed to avoid a potential stack overflow.
+   *
+   * This option is only useful for testing and debugging and normally does not
+   * need any adjustment.
+   *
+   * Default: Controlled by the `--query.max-nodes-per-callstack` startup option.
+   */
+  maxNodesPerCallstack?: number;
+  /**
+   * Limits the number of warnings a query can return.
+   * You can increase or decrease the number with this option.
+   *
+   * Default: `10`
+   */
+  maxWarningCount?: number;
+  /**
+   * If set to `true`, the query throws an exception and aborts instead of
+   * producing a warning. You should use this option during development to catch
+   * potential issues early. When the attribute is set to `false`, warnings are
+   * not propagated to exceptions and are returned with the query result.
+   *
+   * Default: Controlled by the `--query.fail-on-warning` startup option.
+   */
+  failOnWarning?: boolean;
 };
 
 /**
