@@ -646,6 +646,11 @@ export type QueryDescription = {
    * Whether the query writes data (`true`) or only reads (`false`).
    */
   modificationQuery: boolean;
+  /**
+   * An error code (`errorNum`) that indicates why the query failed, or `0` on success.
+   * Only present in slow queries (finished queries), not in running queries.
+   */
+  exitCode?: number;
 };
 //#endregion
 

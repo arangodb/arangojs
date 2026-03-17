@@ -25,6 +25,9 @@ This driver uses semantic versioning:
     - Threshold in seconds for treating a streaming query as slow (when `stream` option is `true`)
   - `modificationQuery`: Added to `QueryDescription` (required)
     - Boolean indicating whether the query writes data (`true`) or only reads (`false`)
+  - `exitCode`: Added to `QueryDescription` (optional)
+    - Error code (`errorNum`) indicating why the query failed, or `0` on success
+    - Only present in slow queries (finished queries), not in running queries
 
 - Added missing options to `ExplainOptions` type for `Database.explain()` method (DE-1009)
 

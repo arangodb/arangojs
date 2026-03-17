@@ -276,6 +276,8 @@ describe("Query Management API", function () {
       expect(queries[0]).to.have.property("query", query);
       expect(queries[0]).to.have.property("modificationQuery");
       expect(queries[0].modificationQuery).to.be.a("boolean");
+      // exitCode should not be present in running queries (only in slow/finished queries)
+      expect(queries[0]).to.not.have.property("exitCode");
       await p1;
     });
   });
@@ -308,6 +310,10 @@ describe("Query Management API", function () {
       expect(queries[0]).to.have.property("query", query);
       expect(queries[0]).to.have.property("modificationQuery");
       expect(queries[0].modificationQuery).to.be.a("boolean");
+      expect(queries[0]).to.have.property("exitCode");
+      expect(queries[0].exitCode).to.be.a("number");
+      // exitCode should be 0 for successful queries
+      expect(queries[0].exitCode).to.equal(0);
     });
   });
 
