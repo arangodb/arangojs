@@ -18,6 +18,14 @@ This driver uses semantic versioning:
 
 ### Added
 
+- Added missing AQL query tracking attributes to match HTTP API documentation (DE-1139)
+
+  The query tracking types now include all attributes supported by the ArangoDB query tracking endpoints:
+  - `slowStreamingQueryThreshold`: Added to `QueryTrackingOptions` (optional) and `QueryTrackingInfo` (required)
+    - Threshold in seconds for treating a streaming query as slow (when `stream` option is `true`)
+  - `modificationQuery`: Added to `QueryDescription` (required)
+    - Boolean indicating whether the query writes data (`true`) or only reads (`false`)
+
 - Added missing options to `ExplainOptions` type for `Database.explain()` method (DE-1009)
 
   The `ExplainOptions` type now includes all options supported by the ArangoDB explain endpoint:
@@ -26,9 +34,6 @@ This driver uses semantic versioning:
   - `maxNodesPerCallstack`: Control stack splitting threshold
   - `maxWarningCount`: Limit the number of warnings returned
   - `failOnWarning`: Throw exception on warnings instead of returning them
-
-  These options were already accepted by the server but were not typed in the driver,
-  preventing TypeScript users from getting type checking and IntelliSense support.
 
 ## [10.2.2] - 2026-01-30
 
