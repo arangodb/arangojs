@@ -277,6 +277,11 @@ export type QueryTrackingOptions = {
    */
   slowQueryThreshold?: number;
   /**
+   * Threshold in seconds for treating a streaming query as slow
+   * (the `stream` option is `true` for the query).
+   */
+  slowStreamingQueryThreshold?: number;
+  /**
    * If set to `true`, bind parameters will be tracked along with queries.
    */
   trackBindVars?: boolean;
@@ -504,6 +509,11 @@ export type QueryTrackingInfo = {
    */
   slowQueryThreshold: number;
   /**
+   * Threshold in seconds for treating a streaming query as slow
+   * (the `stream` option is `true` for the query).
+   */
+  slowStreamingQueryThreshold: number;
+  /**
    * Whether bind parameters are being tracked along with queries.
    */
   trackBindVars: boolean;
@@ -632,6 +642,15 @@ export type QueryDescription = {
    * Whether the query uses a streaming cursor.
    */
   stream: boolean;
+  /**
+   * Whether the query writes data (`true`) or only reads (`false`).
+   */
+  modificationQuery: boolean;
+  /**
+   * An error code (`errorNum`) that indicates why the query failed, or `0` on success.
+   * Only present in slow queries (finished queries), not in running queries.
+   */
+  exitCode?: number;
 };
 //#endregion
 

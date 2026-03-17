@@ -214,6 +214,7 @@ describe("Query Management API", function () {
       expect(result).to.have.property("maxQueryStringLength");
       expect(result).to.have.property("maxSlowQueries");
       expect(result).to.have.property("slowQueryThreshold");
+      expect(result).to.have.property("slowStreamingQueryThreshold");
       expect(result).to.have.property("trackBindVars");
       expect(result).to.have.property("trackSlowQueries");
     });
@@ -233,6 +234,7 @@ describe("Query Management API", function () {
         maxQueryStringLength: 64,
         maxSlowQueries: 2,
         slowQueryThreshold: 5,
+        slowStreamingQueryThreshold: 10,
         trackBindVars: true,
         trackSlowQueries: true,
       });
@@ -240,6 +242,7 @@ describe("Query Management API", function () {
       expect(result).to.have.property("maxQueryStringLength", 64);
       expect(result).to.have.property("maxSlowQueries", 2);
       expect(result).to.have.property("slowQueryThreshold", 5);
+      expect(result).to.have.property("slowStreamingQueryThreshold", 10);
       expect(result).to.have.property("trackBindVars", true);
       expect(result).to.have.property("trackSlowQueries", true);
     });
@@ -271,6 +274,10 @@ describe("Query Management API", function () {
       expect(queries).to.have.lengthOf(1);
       expect(queries[0]).to.have.property("bindVars");
       expect(queries[0]).to.have.property("query", query);
+      expect(queries[0]).to.have.property("modificationQuery");
+      expect(queries[0].modificationQuery).to.be.a("boolean");
+      // exitCode should not be present in running queries (only in slow/finished queries)
+      expect(queries[0]).to.not.have.property("exitCode");
       await p1;
     });
   });
@@ -301,6 +308,12 @@ describe("Query Management API", function () {
       );
       expect(queries).to.have.lengthOf(1);
       expect(queries[0]).to.have.property("query", query);
+      expect(queries[0]).to.have.property("modificationQuery");
+      expect(queries[0].modificationQuery).to.be.a("boolean");
+      expect(queries[0]).to.have.property("exitCode");
+      expect(queries[0].exitCode).to.be.a("number");
+      // exitCode should be 0 for successful queries
+      expect(queries[0].exitCode).to.equal(0);
     });
   });
 
