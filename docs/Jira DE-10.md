@@ -22,7 +22,7 @@ await trx.step(async () => {
 });
 
 await trx.abort();  // the save above is NOT rolled back
-
+```
 
 ## 2. Root cause analysis (technical)
 
