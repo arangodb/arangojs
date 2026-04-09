@@ -43,6 +43,15 @@ This driver uses semantic versioning:
   - `maxWarningCount`: Limit the number of warnings returned
   - `failOnWarning`: Throw exception on warnings instead of returning them
 
+### Fixed
+
+- Fixed incorrect handling of `maxPlans` in `QueryOptions`. The driver now
+  supports `maxNumberOfPlans` and maps legacy `maxPlans` to `maxNumberOfPlans` 
+  when the latter is not provided. The driver always sends `options.maxNumberOfPlans` 
+  to the server. If both are provided, `maxNumberOfPlans` takes precedence.
+  `maxPlans` is deprecated and will be removed in a future major release.
+  ([#845](https://github.com/arangodb/arangojs/issues/845))
+
 ## [10.2.2] - 2026-01-30
 
 ### Fixed
