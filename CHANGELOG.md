@@ -42,7 +42,8 @@ This driver uses semantic versioning:
 
   `VectorIndexDescription` now reflects ArangoDB 3.12.9+ index responses: optional
   `trainingState` (`unusable`, `training`, `ingesting`, or `ready`) and optional
-  `errorMessage` when training or usability fails (for example, insufficient training data). The `VectorIndexTrainingState` type alias documents the allowed
+  `errorMessage` when training or usability fails (for example, insufficient training data).
+   The `VectorIndexTrainingState` type alias documents the allowed
   `trainingState` values.
 
   `EnsureVectorIndexOptions` now includes optional `sparse`, aligned with the
