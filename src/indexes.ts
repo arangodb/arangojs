@@ -587,6 +587,14 @@ export type EnsureVectorIndexOptions = EnsureIndexOptionsType<
     storedValues?: string[];
 
     /**
+     * Whether to create a sparse index that excludes documents with the
+     * attribute for indexing missing or set to `null`.
+     *
+     * Default: `false`
+     */
+    sparse?: boolean;
+
+    /**
      * Vector index parameters, following Faiss configuration.
      */
     params: {
@@ -931,6 +939,17 @@ export type HiddenIndexDescription = (
 };
 
 /**
+ * Training lifecycle state reported for a vector index.
+ *
+ * Introduced in: ArangoDB 3.12.9
+ */
+export type VectorIndexTrainingState =
+  | "unusable"
+  | "training"
+  | "ingesting"
+  | "ready";
+
+/**
  * An object representing a vector index.
  */
 export type VectorIndexDescription = IndexDescriptionType<
@@ -946,6 +965,19 @@ export type VectorIndexDescription = IndexDescriptionType<
      * Introduced in: ArangoDB 3.12.7
      */
     storedValues?: string[];
+    /**
+     * Current training state of the vector index.
+     *
+     * Introduced in: ArangoDB 3.12.9. Omitted on older server versions.
+     */
+    trainingState?: VectorIndexTrainingState;
+    /**
+     * Optional detail when training fails or the index is unusable
+     * (for example, insufficient training data).
+     *
+     * Introduced in: ArangoDB 3.12.9. Only present when there is a problem with the index.
+     */
+    errorMessage?: string;
     params: {
       metric: "cosine" | "l2" | "innerProduct";
       dimension: number;
