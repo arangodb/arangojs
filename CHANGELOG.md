@@ -43,6 +43,18 @@ This driver uses semantic versioning:
   - `maxWarningCount`: Limit the number of warnings returned
   - `failOnWarning`: Throw exception on warnings instead of returning them
 
+- Added `trainingState`, `errorMessage`, and `sparse` for vector indexes (DE-1147)
+
+  `VectorIndexDescription` now reflects ArangoDB 3.12.9+ index responses: optional
+  `trainingState` (`unusable`, `training`, `ingesting`, or `ready`) and optional
+  `errorMessage` when training or usability fails (for example, insufficient training data).
+   The `VectorIndexTrainingState` type alias documents the allowed
+  `trainingState` values.
+
+  `EnsureVectorIndexOptions` now includes optional `sparse`, aligned with the
+  vector index HTTP API so documents without the indexed vector field can be
+  omitted when `sparse` is `true`.
+
 ### Fixed
 
 - Fixed incorrect handling of `maxPlans` in `QueryOptions`. The driver now
