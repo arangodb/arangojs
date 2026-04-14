@@ -70,18 +70,18 @@ describe("config.maxRetries", () => {
         return;
       }
       await Promise.all(
-        range(1_000).map(() =>
+        range(5_000).map(() =>
           db.query(
             aql`
               LET doc = DOCUMENT(${collection}, ${docKey})
               UPDATE doc WITH { data: doc.data + 1 } IN ${collection}
             `,
-            { retryOnConflict: 100 },
+            { retryOnConflict: 500 },
           ),
         ),
       );
       const { data } = await collection.document(docKey);
-      expect(data).to.equal(1_000);
+      expect(data).to.equal(5_000);
     });
   });
 });
