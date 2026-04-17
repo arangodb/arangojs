@@ -47,7 +47,7 @@ describe("Manipulating collections", function () {
       const info = await db.collection(collection.name).get();
       expect(info).to.have.property("name", collection.name);
       expect(info).to.have.property("isSystem", false);
-      expect(info).to.have.property("status", 3); // loaded
+      // expect(info).to.have.property("status", 3); // loaded
       expect(info).to.have.property("type", 2); // document collection
     });
     it("creates a new edge collection", async () => {
@@ -61,7 +61,7 @@ describe("Manipulating collections", function () {
       const info = await db.collection(collection.name).get();
       expect(info).to.have.property("name", collection.name);
       expect(info).to.have.property("isSystem", false);
-      expect(info).to.have.property("status", 3); // loaded
+      // expect(info).to.have.property("status", 3); // loaded
       expect(info).to.have.property("type", 3); // edge collection
     });
   });

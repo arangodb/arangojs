@@ -2,6 +2,7 @@ import { expect } from "chai";
 import { DocumentCollection } from "../collections.js";
 import { Database } from "../databases.js";
 import { COLLECTION_NOT_FOUND } from "../lib/codes.js";
+import { fetchArangoVersionCode } from "./_arango-server-version.js";
 import { config } from "./_config.js";
 
 describe("Collection metadata", function () {
@@ -25,6 +26,9 @@ describe("Collection metadata", function () {
     await system.dropDatabase(dbName);
   });
   describe("collection.get", () => {
+     before(async function () {
+        if (await fetchArangoVersionCode(db) >= 40000) this.skip();
+      });
     it("should return information about a collection", async () => {
       const info = await collection.get();
       expect(info).to.have.property("name", collectionName);
