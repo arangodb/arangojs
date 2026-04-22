@@ -2,6 +2,7 @@ import { expect } from "chai";
 import { DocumentCollection } from "../collections.js";
 import { Database } from "../databases.js";
 import { Transaction } from "../transactions.js";
+import { fetchArangoVersionCode } from "./_arango-server-version.js";
 import { config } from "./_config.js";
 
 describe("Transactions", () => {
@@ -17,8 +18,9 @@ describe("Transactions", () => {
   describe("database.executeTransaction", () => {
     const name = `testdb_${Date.now()}`;
     let db: Database;
-    before(async () => {
+    before(async function () {
       db = await system.createDatabase(name);
+      if ((await fetchArangoVersionCode(db)) >= 40000) this.skip();
     });
     after(async () => {
       await system.dropDatabase(name);

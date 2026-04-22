@@ -2,6 +2,7 @@ import { expect } from "chai";
 import { DocumentCollection } from "../collections.js";
 import { Database } from "../databases.js";
 import { config } from "./_config.js";
+import { fetchArangoVersionCode } from "./_arango-server-version.js";
 
 describe("Manipulating collections", function () {
   const name = `testdb_${Date.now()}`;
@@ -36,6 +37,10 @@ describe("Manipulating collections", function () {
     await collection.drop();
   });
   describe("collection.create", () => {
+    let skipAssert: boolean;
+    before(async function () {
+       if (await fetchArangoVersionCode(db) >= 40000) {skipAssert = true;}
+     });
     it("creates a new document collection", async () => {
       const collection = await db.createCollection(
         `document-collection-${Date.now()}`,
@@ -47,7 +52,7 @@ describe("Manipulating collections", function () {
       const info = await db.collection(collection.name).get();
       expect(info).to.have.property("name", collection.name);
       expect(info).to.have.property("isSystem", false);
-      expect(info).to.have.property("status", 3); // loaded
+      if (!skipAssert) expect(info).to.have.property("status", 3); // loaded
       expect(info).to.have.property("type", 2); // document collection
     });
     it("creates a new edge collection", async () => {
@@ -61,7 +66,7 @@ describe("Manipulating collections", function () {
       const info = await db.collection(collection.name).get();
       expect(info).to.have.property("name", collection.name);
       expect(info).to.have.property("isSystem", false);
-      expect(info).to.have.property("status", 3); // loaded
+      if (!skipAssert) expect(info).to.have.property("status", 3); // loaded
       expect(info).to.have.property("type", 3); // edge collection
     });
   });

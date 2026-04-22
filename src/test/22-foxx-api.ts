@@ -4,6 +4,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { Database } from "../databases.js";
 import { ArangoError } from "../errors.js";
+import { fetchArangoVersionCode } from "./_arango-server-version.js";
 import { config } from "./_config.js";
 
 const localAppsPath = path.resolve(".", "fixtures");
@@ -14,11 +15,12 @@ describe("Foxx service", () => {
   const name = `testdb_${Date.now()}`;
   let system: Database, db: Database;
   let arangoPaths: any;
-  before(async () => {
+  before(async function () {
     system = new Database(config);
     if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE")
       await system.acquireHostList();
     db = await system.createDatabase(name);
+    if (await fetchArangoVersionCode(db) >= 40000) this.skip();
     await db.installService(
       serviceServiceMount,
       new Blob([

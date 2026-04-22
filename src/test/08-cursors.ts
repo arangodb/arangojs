@@ -3,6 +3,7 @@ import { LinkedList } from "../lib/x3-linkedlist.js";
 import { aql } from "../aql.js";
 import { Cursor, BatchCursor } from "../cursors.js";
 import { Database } from "../databases.js";
+import { fetchArangoVersionCode } from "./_arango-server-version.js";
 import { config } from "./_config.js";
 
 const aqlQuery = aql`FOR i IN 0..10 RETURN i`;
@@ -19,12 +20,15 @@ describe("Item-wise Cursor API", () => {
   let system: Database, db: Database;
   let cursor: Cursor;
   let allCursors: (Cursor | BatchCursor)[];
+  let errNum: number;
   before(async () => {
     allCursors = [];
     system = new Database(config);
     if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE")
       await system.acquireHostList();
     db = await system.createDatabase(name);
+   const versionCode = await fetchArangoVersionCode(db);  
+   errNum = versionCode >= 40000 ?  405 : 1600;
   });
   after(async () => {
     await Promise.all(
@@ -230,7 +234,7 @@ describe("Item-wise Cursor API", () => {
           hostUrl: hostUrl,
         });
       } catch (e: any) {
-        expect(e).to.have.property("errorNum", 1600);
+        expect(e).to.have.property("errorNum", errNum);
         return;
       }
       expect.fail("should not be able to fetch additional result set");
@@ -243,12 +247,15 @@ describe("Batch-wise Cursor API", () => {
   let system: Database, db: Database;
   let cursor: BatchCursor;
   let allCursors: (Cursor | BatchCursor)[];
-  before(async () => {
+  let errNum: number;
+  before(async function () {
     allCursors = [];
     system = new Database(config);
     if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE")
       await system.acquireHostList();
     db = await system.createDatabase(name);
+    const versionCode = await fetchArangoVersionCode(db);  
+    errNum = versionCode >= 40000 ?  405 : 1600;
   });
   after(async () => {
     await Promise.all(
@@ -446,7 +453,7 @@ describe("Batch-wise Cursor API", () => {
           hostUrl: hostUrl,
         });
       } catch (e: any) {
-        expect(e).to.have.property("errorNum", 1600);
+        expect(e).to.have.property("errorNum", errNum);
         return;
       }
       expect.fail("should not be able to fetch additional result set");
