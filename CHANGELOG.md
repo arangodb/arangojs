@@ -19,6 +19,12 @@ This driver uses semantic versioning:
 - A change in the major version (e.g. 1.Y.Z -> 2.0.0) indicates _breaking_
   changes that require changes in your code to upgrade.
 
+## [Unreleased]
+
+### Fixed
+
+- Tests: Added version-gated skips for ArangoDB 4.0+ API and behavior changes; 3.12 coverage unchanged (DE-1151)
+
 ## [10.3.0] - 2026-04-14
 
 ### Added
