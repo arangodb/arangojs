@@ -20,7 +20,7 @@ export async function fetchArangoVersionCode(db: Database): Promise<number> {
   const versionCode = versionStringToArangoVersionCode(version);
   // eslint-disable-next-line no-console
   console.log(
-    "[arangojs tests] Server version string:",
+    "Server version string:",
     version,
     "| arangoVersion code:",
     versionCode);
