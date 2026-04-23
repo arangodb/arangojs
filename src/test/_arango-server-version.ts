@@ -18,12 +18,6 @@ export function versionStringToArangoVersionCode(version: string): number {
 export async function fetchArangoVersionCode(db: Database): Promise<number> {
   const { version } = await db.version();
   const versionCode = versionStringToArangoVersionCode(version);
-  // eslint-disable-next-line no-console
-  console.log(
-    "[arangojs tests] Server version string:",
-    version,
-    "| arangoVersion code:",
-    versionCode);
   return versionCode;
 }
 
