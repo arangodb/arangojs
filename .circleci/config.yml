@@ -1,0 +1,213 @@
+# CircleCI config for arangojs (https://github.com/arangodb/arangojs).
+# Modeled after arangodb-java-driver/.circleci/config.yml: remote Docker, ./docker/start_db.sh,
+# pipeline parameter docker-img, and version/topology workflows.
+#
+# Prerequisite: copy the java driver's docker/ directory into the arangojs repo root (start_db.sh,
+# jwtHeader, jwtSecret, server.pem, find_active_endpoint.sh).
+#
+# start_db.sh sets root password to "test"; arangojs picks up credentials from userinfo in
+# TEST_ARANGODB_URL (see src/connection.ts).
+
+version: 2.1
+
+parameters:
+  docker-img:
+    type: string
+    default: ''
+
+commands:
+  timeout:
+    parameters:
+      duration:
+        default: '15m'
+        type: string
+    steps:
+      - run:
+          name: Cancel job after <<parameters.duration>>
+          background: true
+          command: |
+            sleep <<parameters.duration>>
+            echo "Cancelling job as <<parameters.duration>> has elapsed"
+            curl --fail -X POST -H "Circle-Token: ${CIRCLE_TOKEN}" "https://circleci.com/api/v1.1/project/github/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/${CIRCLE_BUILD_NUM}/cancel"
+
+  start-db:
+    parameters:
+      docker-img:
+        type: string
+        default: 'docker.io/arangodb/enterprise:latest'
+      topology:
+        type: string
+        default: 'single'
+      ssl:
+        type: string
+        default: 'false'
+      compression:
+        type: string
+        default: 'false'
+    steps:
+      - run:
+          name: Start Database
+          command: ./docker/start_db.sh
+          environment:
+            DOCKER_IMAGE: <<parameters.docker-img>>
+            STARTER_MODE: <<parameters.topology>>
+            STARTER_DOCKER_IMAGE: 'docker.io/arangodb/arangodb-starter:0.18.5'
+            SSL: <<parameters.ssl>>
+            COMPRESSION: <<parameters.compression>>
+
+  load_npm_cache:
+    steps:
+      - restore_cache:
+          keys:
+            - npm-{{ .Environment.CIRCLE_JOB }}-{{ checksum "package-lock.json" }}
+            - npm-{{ .Environment.CIRCLE_JOB }}-
+
+  store_npm_cache:
+    steps:
+      - save_cache:
+          key: npm-{{ .Environment.CIRCLE_JOB }}-{{ checksum "package-lock.json" }}
+          paths:
+            - ~/.npm
+
+executors:
+  n20:
+    docker:
+      - image: cimg/node:20.18
+  n22:
+    docker:
+      - image: cimg/node:22.16
+  n23:
+    docker:
+      - image: cimg/node:23.5
+
+jobs:
+  node-test:
+    parameters:
+      docker-img:
+        type: string
+        default: 'docker.io/arangodb/enterprise:latest'
+      topology:
+        type: string
+        default: 'single'
+      ssl:
+        type: string
+        default: 'false'
+      node:
+        type: enum
+        enum: ['n20', 'n22', 'n23']
+      module-system:
+        type: enum
+        enum: ['cjs', 'esm']
+      resource_class:
+        type: string
+        default: medium
+    executor: <<parameters.node>>
+    resource_class: <<parameters.resource_class>>
+    steps:
+      - timeout
+      - checkout
+      - setup_remote_docker
+      - start-db:
+          docker-img: <<parameters.docker-img>>
+          topology: <<parameters.topology>>
+          ssl: <<parameters.ssl>>
+      - load_npm_cache
+      - run:
+          name: Install system packages
+          command: |
+            sudo apt-get update
+            sudo apt-get install -y --no-install-recommends jq curl
+      - run:
+          name: Upgrade npm
+          command: npm install -g npm@10
+      - run:
+          name: Install dependencies
+          command: npm ci
+      - run:
+          name: Run tests
+          command: |
+            set -euo pipefail
+            SCHEME=http
+            if [ "<<parameters.ssl>>" = "true" ]; then
+              SCHEME=https
+              export NODE_TLS_REJECT_UNAUTHORIZED=0
+            fi
+            if [ "<<parameters.topology>>" = "cluster" ]; then
+              export TEST_ARANGODB_URL="${SCHEME}://root:test@172.28.0.1:8529,${SCHEME}://root:test@172.28.0.1:8539,${SCHEME}://root:test@172.28.0.1:8549"
+              export TEST_ARANGO_LOAD_BALANCING_STRATEGY=ROUND_ROBIN
+            else
+              export TEST_ARANGODB_URL="${SCHEME}://root:test@172.28.0.1:8529"
+            fi
+            export ARANGO_RELEASE="<<parameters.docker-img>>"
+            export CI=true
+            npm run test:<<parameters.module-system>>
+      - store_npm_cache
+
+workflows:
+  test-adb-version:
+    when:
+      not: <<pipeline.parameters.docker-img>>
+    jobs:
+      - node-test:
+          name: adb-312-<<matrix.topology>>-<<matrix.module-system>>
+          filters:
+            branches:
+              ignore: stable
+          matrix:
+            parameters:
+              docker-img:
+                - 'docker.io/arangodb/enterprise:3.12'
+              topology:
+                - 'single'
+                - 'cluster'
+              module-system:
+                - 'cjs'
+                - 'esm'
+              node:
+                - 'n23'
+
+  test-adb-topology:
+    when: <<pipeline.parameters.docker-img>>
+    jobs:
+      - node-test:
+          name: adb-<<matrix.topology>>-ssl-<<matrix.ssl>>-<<matrix.module-system>>
+          filters:
+            branches:
+              ignore: stable
+          matrix:
+            parameters:
+              docker-img:
+                - <<pipeline.parameters.docker-img>>
+              topology:
+                - 'single'
+                - 'cluster'
+              ssl:
+                - 'true'
+                - 'false'
+              module-system:
+                - 'cjs'
+                - 'esm'
+              node:
+                - 'n23'
+
+  test-node:
+    when:
+      not: <<pipeline.parameters.docker-img>>
+    jobs:
+      - node-test:
+          name: node-<<matrix.node>>-<<matrix.module-system>>-ssl-<<matrix.ssl>>
+          filters:
+            branches:
+              ignore: stable
+          matrix:
+            parameters:
+              node:
+                - 'n20'
+                - 'n22'
+                - 'n23'
+              module-system:
+                - 'cjs'
+                - 'esm'
+              ssl:
+                - 'true'
+                - 'false'
