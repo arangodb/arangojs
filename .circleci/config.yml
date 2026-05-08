@@ -143,71 +143,90 @@ jobs:
             npm run test:<<parameters.module-system>>
       - store_npm_cache
 
+# ---------------------------------------------------------------------------
+# Legacy workflows (disabled). Uncomment the `workflows:` block below to restore.
+# ---------------------------------------------------------------------------
+# workflows:
+#   test-adb-version:
+#     when:
+#       not: <<pipeline.parameters.docker-img>>
+#     jobs:
+#       - node-test:
+#           name: adb-312-<<matrix.topology>>-<<matrix.module-system>>
+#           filters:
+#             branches:
+#               ignore: stable
+#           matrix:
+#             parameters:
+#               docker-img:
+#                 - 'docker.io/arangodb/enterprise:3.12'
+#               topology:
+#                 - 'single'
+#                 - 'cluster'
+#               module-system:
+#                 - 'cjs'
+#                 - 'esm'
+#               node:
+#                 - 'n23'
+#
+#   test-adb-topology:
+#     when: <<pipeline.parameters.docker-img>>
+#     jobs:
+#       - node-test:
+#           name: adb-<<matrix.topology>>-ssl-<<matrix.ssl>>-<<matrix.module-system>>
+#           filters:
+#             branches:
+#               ignore: stable
+#           matrix:
+#             parameters:
+#               docker-img:
+#                 - <<pipeline.parameters.docker-img>>
+#               topology:
+#                 - 'single'
+#                 - 'cluster'
+#               ssl:
+#                 - 'true'
+#                 - 'false'
+#               module-system:
+#                 - 'cjs'
+#                 - 'esm'
+#               node:
+#                 - 'n23'
+#
+#   test-node:
+#     when:
+#       not: <<pipeline.parameters.docker-img>>
+#     jobs:
+#       - node-test:
+#           name: node-<<matrix.node>>-<<matrix.module-system>>-ssl-<<matrix.ssl>>
+#           filters:
+#             branches:
+#               ignore: stable
+#           matrix:
+#             parameters:
+#               node:
+#                 - 'n20'
+#                 - 'n22'
+#                 - 'n23'
+#               module-system:
+#                 - 'cjs'
+#                 - 'esm'
+#               ssl:
+#                 - 'true'
+#                 - 'false'
+
+# One job only: enterprise:latest, Node 23, single topology, CJS, HTTP (ssl false).
+# Set ARANGO_LICENSE_KEY on the CircleCI project for Enterprise images.
 workflows:
-  test-adb-version:
-    when:
-      not: <<pipeline.parameters.docker-img>>
+  test-enterprise-single-cjs:
     jobs:
       - node-test:
-          name: adb-312-<<matrix.topology>>-<<matrix.module-system>>
+          name: enterprise-latest-n23-single-cjs
           filters:
             branches:
               ignore: stable
-          matrix:
-            parameters:
-              docker-img:
-                - 'docker.io/arangodb/enterprise:3.12'
-              topology:
-                - 'single'
-                - 'cluster'
-              module-system:
-                - 'cjs'
-                - 'esm'
-              node:
-                - 'n23'
-
-  test-adb-topology:
-    when: <<pipeline.parameters.docker-img>>
-    jobs:
-      - node-test:
-          name: adb-<<matrix.topology>>-ssl-<<matrix.ssl>>-<<matrix.module-system>>
-          filters:
-            branches:
-              ignore: stable
-          matrix:
-            parameters:
-              docker-img:
-                - <<pipeline.parameters.docker-img>>
-              topology:
-                - 'single'
-                - 'cluster'
-              ssl:
-                - 'true'
-                - 'false'
-              module-system:
-                - 'cjs'
-                - 'esm'
-              node:
-                - 'n23'
-
-  test-node:
-    when:
-      not: <<pipeline.parameters.docker-img>>
-    jobs:
-      - node-test:
-          name: node-<<matrix.node>>-<<matrix.module-system>>-ssl-<<matrix.ssl>>
-          filters:
-            branches:
-              ignore: stable
-          matrix:
-            parameters:
-              node:
-                - 'n20'
-                - 'n22'
-                - 'n23'
-              module-system:
-                - 'cjs'
-                - 'esm'
-              ssl:
-                - 'true'
-                - 'false'
+          docker-img: docker.io/arangodb/enterprise:latest
+          topology: single
+          ssl: 'false'
+          node: n23
+          module-system: cjs
