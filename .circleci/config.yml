@@ -56,20 +56,6 @@ commands:
             SSL: <<parameters.ssl>>
             COMPRESSION: <<parameters.compression>>
 
-  load_npm_cache:
-    steps:
-      - restore_cache:
-          keys:
-            - npm-{{ .Environment.CIRCLE_JOB }}-{{ checksum "package-lock.json" }}
-            - npm-{{ .Environment.CIRCLE_JOB }}-
-
-  store_npm_cache:
-    steps:
-      - save_cache:
-          key: npm-{{ .Environment.CIRCLE_JOB }}-{{ checksum "package-lock.json" }}
-          paths:
-            - ~/.npm
-
 executors:
   n20:
     docker:
@@ -112,18 +98,14 @@ jobs:
           docker-img: <<parameters.docker-img>>
           topology: <<parameters.topology>>
           ssl: <<parameters.ssl>>
-      - load_npm_cache
       - run:
           name: Install system packages
           command: |
             sudo apt-get update
             sudo apt-get install -y --no-install-recommends jq curl
       - run:
-          name: Upgrade npm
-          command: npm install -g npm@10
-      - run:
           name: Install dependencies
-          command: npm ci
+          command: npm install
       - run:
           name: Run tests
           command: |
@@ -142,7 +124,6 @@ jobs:
             export ARANGO_RELEASE="<<parameters.docker-img>>"
             export CI=true
             npm run test:<<parameters.module-system>>
-      - store_npm_cache
 
 # ---------------------------------------------------------------------------
 # Legacy workflows (disabled). Uncomment the `workflows:` block below to restore.
