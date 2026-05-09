@@ -5,8 +5,7 @@
 # Prerequisite: copy the java driver's docker/ directory into the arangojs repo root (start_db.sh,
 # jwtHeader, jwtSecret, server.pem, find_active_endpoint.sh).
 #
-# start_db.sh sets root password to "test"; arangojs picks up credentials from userinfo in
-# TEST_ARANGODB_URL (see src/connection.ts).
+# start_db.sh sets root password to empty;
 
 version: 2.1
 
@@ -116,10 +115,10 @@ jobs:
               export NODE_TLS_REJECT_UNAUTHORIZED=0
             fi
             if [ "<<parameters.topology>>" = "cluster" ]; then
-              export TEST_ARANGODB_URL="${SCHEME}://root:test@172.28.0.1:8529,${SCHEME}://root:test@172.28.0.1:8539,${SCHEME}://root:test@172.28.0.1:8549"
+              export TEST_ARANGODB_URL="${SCHEME}://172.28.0.1:8529,${SCHEME}://172.28.0.1:8539,${SCHEME}://172.28.0.1:8549"
               export TEST_ARANGO_LOAD_BALANCING_STRATEGY=ROUND_ROBIN
             else
-              export TEST_ARANGODB_URL="${SCHEME}://root:test@172.28.0.1:8529"
+              export TEST_ARANGODB_URL="${SCHEME}://172.28.0.1:8529"
             fi
             export ARANGO_RELEASE="<<parameters.docker-img>>"
             export CI=true

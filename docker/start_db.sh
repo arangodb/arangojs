@@ -6,6 +6,9 @@
 #   STARTER_DOCKER_IMAGE:     ArangoDB Starter docker image, default docker.io/arangodb/arangodb-starter:latest
 #   SSL:                      (true|false), default false
 #   ARANGO_LICENSE_KEY:       only required for ArangoDB Enterprise
+#
+# Sets root password to empty (""). Use TEST_ARANGODB_URL without user:pass in clients; send
+# Basic auth as root with empty password (see arangojs connection defaults).
 
 # EXAMPLE:
 # STARTER_MODE=cluster SSL=true ./start_db.sh
@@ -89,14 +92,14 @@ set +e
 for a in ${COORDINATORS[*]} ; do
     echo ""
     echo "Setting username and password..."
-    docker run --rm ${DOCKER_IMAGE} arangosh --server.endpoint="$ARANGOSH_SCHEME://$a" --server.authentication=false --javascript.execute-string='require("org/arangodb/users").update("root", "test")'
+    docker run --rm ${DOCKER_IMAGE} arangosh --server.endpoint="$ARANGOSH_SCHEME://$a" --server.authentication=false --javascript.execute-string='require("org/arangodb/users").update("root", "")'
 done
 set -e
 
 for a in ${COORDINATORS[*]} ; do
     echo ""
     echo "Requesting endpoint version..."
-    curl -u root:test --insecure --fail "$SCHEME://$a/_api/version"
+    curl -u root: --insecure --fail "$SCHEME://$a/_api/version"
 done
 
 echo ""
