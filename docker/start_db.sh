@@ -101,13 +101,6 @@ done
 
 echo ""
 echo ""
-echo "Copying test ML models into containers..."
-for c in $(docker ps -a -f name=adb-.* -q) ; do
-    docker cp "$LOCATION"/foo.bin "$c":/tmp
-done
-
-echo ""
-echo ""
 echo "Done, your deployment is reachable at: "
 for a in ${COORDINATORS[*]} ; do
     echo "$SCHEME://$a"
