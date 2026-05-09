@@ -1,7 +1,0 @@
-# Shell scripts must use LF so WSL/Git Bash/CircleCI can run them.
-*.sh text eol=lf
-
-# Secrets and PEM must be LF; CRLF breaks curl headers and TLS material.
-docker/jwtHeader text eol=lf
-docker/jwtSecret text eol=lf
-docker/*.pem text eol=lf

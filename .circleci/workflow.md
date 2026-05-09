@@ -1,159 +1,82 @@
 # CircleCI Workflow Guide (`.circleci/config.yml`)
 
-## 1) Purpose and Design
+## 1) Purpose
 
-This CircleCI setup validates `arangojs` by reusing one core job (`node-test`) across multiple workflow matrices.
-The executed workflow depends on the pipeline parameter `docker-img`.
+CircleCI validates **arangojs** using one parameterized job, **`node-test`**, combined into matrices inside **two workflows**. Exactly **one** workflow runs per pipeline:
 
-Key goals:
-- test ArangoDB behavior across topology modes
-- test SSL and module-system combinations
-- test Node.js version compatibility
-- support ad-hoc validation of custom ArangoDB images
+| Pipeline parameter `docker-img` | Workflow | DB image |
+|---------------------------------|----------|----------|
+| Empty (default) | `test-enterprise-latest` | `docker.io/arangodb/enterprise:latest` |
+| Non-empty | `test-docker-img-parameter` | Value of `docker-img` (full image reference) |
 
----
+Each workflow expands to **24** parallel **`node-test`** jobs (`3 × 2 × 2 × 2`).
 
-## 2) Trigger and Routing Logic
+**Secrets:** set **`ARANGO_LICENSE_KEY`** on the CircleCI project (or context) when using Enterprise images.
 
-Pipeline parameter:
-- `docker-img` (string, default: empty)
-
-Routing:
-- If `docker-img` is empty:
-  - run `test-adb-version`
-  - run `test-node`
-- If `docker-img` is provided:
-  - run `test-adb-topology` only
-
-Branch filtering:
-- All workflow jobs ignore branch `stable`.
+**Branches:** all matrix jobs ignore **`stable`**.
 
 ---
 
-## 3) Shared Job: `node-test`
+## 2) Matrix dimensions (both workflows)
 
-All workflows invoke `node-test` with different matrix values.
+| Axis | Values |
+|------|--------|
+| **Node** (executor) | `n20`, `n22`, `n23` → `cimg/node` 20.18 / 22.16 / 23.5 |
+| **Topology** (`STARTER_MODE`) | `single`, `cluster` |
+| **SSL** | `true`, `false` (HTTPS vs HTTP; `NODE_TLS_REJECT_UNAUTHORIZED=0` when SSL) |
+| **Module system** | `cjs`, `esm` → `npm run test:cjs` / `npm run test:esm` |
 
-### Job sequence (start to end)
+**Docker DB image**
 
-1. **Timeout guard**
-   - Starts a background timer (`15m`) and auto-cancels the job through CircleCI API if exceeded.
+- **`test-enterprise-latest`:** fixed `docker.io/arangodb/enterprise:latest`.
+- **`test-docker-img-parameter`:** single matrix entry `<<pipeline.parameters.docker-img>>`.
+
+**Job count:** `3 × 2 × 2 × 2 = **24**` jobs per workflow.
+
+**Naming**
+
+- Latest workflow: `latest-<node>-<topology>-ssl<true|false>-<cjs|esm>`
+- Parameter workflow: `param-<node>-<topology>-ssl<true|false>-<cjs|esm>`
+
+---
+
+## 3) Shared job: `node-test` (per matrix cell)
+
+1. **Timeout** — background cancel after 15 minutes (`CIRCLE_TOKEN` API cancel).
 2. **Checkout**
-   - Pulls repository contents.
-3. **Remote Docker setup**
-   - Enables Docker daemon required by `./docker/start_db.sh`.
-4. **Database startup**
-   - Calls `start-db` command (`./docker/start_db.sh`) with:
-     - `DOCKER_IMAGE`
-     - `STARTER_MODE` (`single` or `cluster`)
-     - `SSL` (`true`/`false`)
-     - `COMPRESSION` (defined, not currently varied by workflows)
-5. **Dependency cache restore**
-   - Restores npm cache from `~/.npm` keyed by `package-lock.json`.
-6. **System package install**
-   - Installs `jq` and `curl`.
-7. **npm upgrade**
-   - Upgrades to `npm@10`.
-8. **Node dependency install**
-   - Runs `npm ci`.
-9. **Test execution**
-   - Builds runtime env vars from matrix params:
-     - `SCHEME=http|https`
-     - `NODE_TLS_REJECT_UNAUTHORIZED=0` when SSL is enabled
-     - `TEST_ARANGODB_URL`:
-       - single: one endpoint (`8529`)
-       - cluster: three endpoints (`8529, 8539, 8549`)
-     - `TEST_ARANGO_LOAD_BALANCING_STRATEGY=ROUND_ROBIN` (cluster only)
-     - `ARANGO_RELEASE`
-     - `CI=true`
-   - Executes `npm run test:cjs` or `npm run test:esm`.
-10. **Dependency cache save**
-    - Saves updated `~/.npm` cache.
+3. **Remote Docker** — for `./docker/start_db.sh`.
+4. **Start DB** — `bash ./docker/start_db.sh` with `DOCKER_IMAGE`, `STARTER_MODE` (topology), `SSL`.
+5. **Apt** — `jq`, `curl`.
+6. **`npm install`**
+7. **Tests** — sets `TEST_ARANGODB_URL` (single vs cluster coordinators), `ARANGO_RELEASE`, `CI`; runs `npm run test:cjs` or `npm run test:esm`.
+
+`start_db.sh` leaves **root password empty**; **`TEST_ARANGODB_URL`** has **no** `user:pass@` (Node `fetch`); the driver sends **Basic `root:`** by default.
 
 ---
 
-## 4) Workflow Reference
+## 4) Operational usage
 
-### A) `test-adb-version`
+### Default (PR / push): Enterprise `:latest`, full matrix
 
-**When it runs**
-- `docker-img` is empty.
+- Trigger pipeline **without** setting `docker-img` (leave default empty).
+- Runs **`test-enterprise-latest`** → **24** jobs.
 
-**Matrix**
-- `docker-img`: `docker.io/arangodb/enterprise:3.12`
-- `topology`: `single`, `cluster`
-- `module-system`: `cjs`, `esm`
-- `node`: `n23`
+### Validate another image (preview / pinned tag)
 
-**Total jobs**
-- `2 * 2 * 1 * 1 = 4`
+1. In CircleCI: **Trigger Pipeline** → add pipeline parameter **`docker-img`** = full reference, e.g.  
+   `docker.io/arangodb/enterprise:3.12`  
+   or  
+   `docker.io/arangodb/enterprise-preview:devel-nightly`
+2. Runs **`test-docker-img-parameter`** only → **24** jobs against that image.
 
-**What it validates**
-- Baseline ArangoDB version (`3.12`) across both topology modes and module systems.
+**Note:** Only **one** of the two workflows runs per pipeline, so you see **24** jobs total per pipeline, not 48.
 
 ---
 
-### B) `test-adb-topology`
+## 5) Parallelism and cost (orientative)
 
-**When it runs**
-- `docker-img` is provided at pipeline trigger time.
+- **Parallelism:** CircleCI schedules matrix cells concurrently subject to your **plan concurrency** (how many jobs run at once). You still pay for **every** job’s runtime once it executes.
+- **Billing:** Usage is typically billed in **credits** ≈ **compute-minutes × resource multiplier**. Default **`medium`** `resource_class` has a fixed credits/min rate on your plan; **`large`** would cost more.
+- Each **`node-test`** job pays **startup overhead** (checkout, remote Docker, **pull DB images**, `npm install`, DB bootstrap). Twenty-four cells multiply that **wall-clock** parallelism benefit doesn’t divide total compute equally—you sum roughly **24 × (job duration minutes)** worth of credits (often dominated by Docker/I npm/db startup).
 
-**Matrix**
-- `docker-img`: value from pipeline parameter
-- `topology`: `single`, `cluster`
-- `ssl`: `true`, `false`
-- `module-system`: `cjs`, `esm`
-- `node`: `n23`
-
-**Total jobs**
-- `1 * 2 * 2 * 2 * 1 = 8`
-
-**What it validates**
-- A specific ArangoDB image (for example preview/nightly/custom) across topology, SSL, and module-system combinations.
-
----
-
-### C) `test-node`
-
-**When it runs**
-- `docker-img` is empty.
-
-**Matrix**
-- `node`: `n20`, `n22`, `n23`
-- `module-system`: `cjs`, `esm`
-- `ssl`: `true`, `false`
-- inherited job defaults:
-  - `docker-img`: `docker.io/arangodb/enterprise:latest`
-  - `topology`: `single`
-
-**Total jobs**
-- `3 * 2 * 2 = 12`
-
-**What it validates**
-- Node.js compatibility coverage across supported versions, both module systems, and SSL modes.
-
----
-
-## 5) Operational Usage
-
-### Default CI path (PR / normal push)
-- Do not pass `docker-img`.
-- Workflows executed:
-  - `test-adb-version`
-  - `test-node`
-
-### Validate a custom ArangoDB image
-- Trigger pipeline with `docker-img=<image>`.
-- Workflow executed:
-  - `test-adb-topology`
-
-Example:
-- `docker-img: docker.io/arangodb/enterprise-preview:devel-nightly`
-
----
-
-## 6) Quick Decision Table
-
-- **Need baseline DB coverage?** Use default trigger (`test-adb-version`).
-- **Need Node compatibility matrix?** Use default trigger (`test-node`).
-- **Need to test a custom or preview DB image?** Set `docker-img` (`test-adb-topology`).
+Whether it feels **expensive** depends on push frequency, job duration, and plan allowance; **24 × medium minutes per pipeline** is the right mental model for cost estimation—not “one pipeline = one minute.”

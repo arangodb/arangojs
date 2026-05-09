@@ -5,7 +5,12 @@
 # Prerequisite: copy the java driver's docker/ directory into the arangojs repo root (start_db.sh,
 # jwtHeader, jwtSecret, server.pem, find_active_endpoint.sh).
 #
-# start_db.sh sets root password to empty;
+# start_db.sh sets root password to empty. Enterprise images require ARANGO_LICENSE_KEY on the project.
+#
+# Workflows (mutually exclusive via pipeline parameter docker-img):
+# - docker-img empty → test-enterprise-latest (fixed docker.io/arangodb/enterprise:latest), 24 jobs.
+# - docker-img set   → test-docker-img-parameter (that image), 24 jobs.
+# Matrix per workflow: 3 nodes × 2 topologies × 2 SSL × 2 module-system = 24.
 
 version: 2.1
 
@@ -124,90 +129,56 @@ jobs:
             export CI=true
             npm run test:<<parameters.module-system>>
 
-# ---------------------------------------------------------------------------
-# Legacy workflows (disabled). Uncomment the `workflows:` block below to restore.
-# ---------------------------------------------------------------------------
-# workflows:
-#   test-adb-version:
-#     when:
-#       not: <<pipeline.parameters.docker-img>>
-#     jobs:
-#       - node-test:
-#           name: adb-312-<<matrix.topology>>-<<matrix.module-system>>
-#           filters:
-#             branches:
-#               ignore: stable
-#           matrix:
-#             parameters:
-#               docker-img:
-#                 - 'docker.io/arangodb/enterprise:3.12'
-#               topology:
-#                 - 'single'
-#                 - 'cluster'
-#               module-system:
-#                 - 'cjs'
-#                 - 'esm'
-#               node:
-#                 - 'n23'
-#
-#   test-adb-topology:
-#     when: <<pipeline.parameters.docker-img>>
-#     jobs:
-#       - node-test:
-#           name: adb-<<matrix.topology>>-ssl-<<matrix.ssl>>-<<matrix.module-system>>
-#           filters:
-#             branches:
-#               ignore: stable
-#           matrix:
-#             parameters:
-#               docker-img:
-#                 - <<pipeline.parameters.docker-img>>
-#               topology:
-#                 - 'single'
-#                 - 'cluster'
-#               ssl:
-#                 - 'true'
-#                 - 'false'
-#               module-system:
-#                 - 'cjs'
-#                 - 'esm'
-#               node:
-#                 - 'n23'
-#
-#   test-node:
-#     when:
-#       not: <<pipeline.parameters.docker-img>>
-#     jobs:
-#       - node-test:
-#           name: node-<<matrix.node>>-<<matrix.module-system>>-ssl-<<matrix.ssl>>
-#           filters:
-#             branches:
-#               ignore: stable
-#           matrix:
-#             parameters:
-#               node:
-#                 - 'n20'
-#                 - 'n22'
-#                 - 'n23'
-#               module-system:
-#                 - 'cjs'
-#                 - 'esm'
-#               ssl:
-#                 - 'true'
-#                 - 'false'
-
-# One job only: enterprise:latest, Node 23, single topology, CJS, HTTP (ssl false).
-# Set ARANGO_LICENSE_KEY on the CircleCI project for Enterprise images.
 workflows:
-  test-enterprise-single-cjs:
+  test-enterprise-latest:
+    when:
+      not: <<pipeline.parameters.docker-img>>
     jobs:
       - node-test:
-          name: enterprise-latest-n23-single-cjs
+          name: latest-<<matrix.node>>-<<matrix.topology>>-ssl<<matrix.ssl>>-<<matrix.module-system>>
           filters:
             branches:
               ignore: stable
-          docker-img: docker.io/arangodb/enterprise:latest
-          topology: single
-          ssl: 'false'
-          node: n23
-          module-system: cjs
+          matrix:
+            parameters:
+              docker-img:
+                - 'docker.io/arangodb/enterprise:latest'
+              node:
+                - 'n20'
+                - 'n22'
+                - 'n23'
+              topology:
+                - 'single'
+                - 'cluster'
+              ssl:
+                - 'true'
+                - 'false'
+              module-system:
+                - 'cjs'
+                - 'esm'
+
+  test-docker-img-parameter:
+    when: <<pipeline.parameters.docker-img>>
+    jobs:
+      - node-test:
+          name: param-<<matrix.node>>-<<matrix.topology>>-ssl<<matrix.ssl>>-<<matrix.module-system>>
+          filters:
+            branches:
+              ignore: stable
+          matrix:
+            parameters:
+              docker-img:
+                - <<pipeline.parameters.docker-img>>
+              node:
+                - 'n20'
+                - 'n22'
+                - 'n23'
+              topology:
+                - 'single'
+                - 'cluster'
+              ssl:
+                - 'true'
+                - 'false'
+              module-system:
+                - 'cjs'
+                - 'esm'
