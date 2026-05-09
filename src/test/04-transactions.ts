@@ -20,6 +20,7 @@ describe("Transactions", () => {
     let db: Database;
     before(async function () {
       db = await system.createDatabase(name);
+      await db.waitForPropagation({ pathname: "/_api/version" }, 30000);
       if ((await fetchArangoVersionCode(db)) >= 40000) this.skip();
     });
     after(async () => {
@@ -42,6 +43,7 @@ describe("Transactions", () => {
     before(async () => {
       allTransactions = [];
       db = await system.createDatabase(name);
+      await db.waitForPropagation({ pathname: "/_api/version" }, 30000);
     });
     after(async () => {
       await Promise.all(

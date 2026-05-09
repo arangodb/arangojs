@@ -11,6 +11,10 @@ const localAppsPath = path.resolve(".", "fixtures");
 const mount = "/foxx-crud-test";
 const serviceServiceMount = "/foxx-crud-test-download";
 
+/** Server-side paths from installService are only valid on one coordinator; ROUND_ROBIN can route elsewhere. */
+const skipFoxxLocalPathReplaceUpgrade =
+  Array.isArray(config.url) && config.loadBalancingStrategy === "ROUND_ROBIN";
+
 describe("Foxx service", () => {
   const name = `testdb_${Date.now()}`;
   let system: Database, db: Database;
@@ -89,7 +93,12 @@ describe("Foxx service", () => {
       expect(resp.parsedBody).to.eql({ hello: "world" });
     });
 
-    it(`replace via ${c.name} should be available`, async () => {
+    (skipFoxxLocalPathReplaceUpgrade &&
+    (c.name === "localJsFile" ||
+      c.name === "localZipFile" ||
+      c.name === "localDir")
+      ? it.skip
+      : it)(`replace via ${c.name} should be available`, async () => {
       await db.installService(
         mount,
         new Blob([
@@ -101,7 +110,12 @@ describe("Foxx service", () => {
       expect(resp.parsedBody).to.eql({ hello: "world" });
     });
 
-    it(`upgrade via ${c.name} should be available`, async () => {
+    (skipFoxxLocalPathReplaceUpgrade &&
+    (c.name === "localJsFile" ||
+      c.name === "localZipFile" ||
+      c.name === "localDir")
+      ? it.skip
+      : it)(`upgrade via ${c.name} should be available`, async () => {
       await db.installService(
         mount,
         new Blob([

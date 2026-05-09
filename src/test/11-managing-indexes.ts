@@ -113,6 +113,9 @@ describe("Managing indexes", function () {
     ) {
       it(title, async function (this: Mocha.Context) {
         if (!vectorIndexTestsEnabled) this.skip();
+        if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE") {
+          this.timeout(120000);
+        }
         await fn.call(this);
       });
     }

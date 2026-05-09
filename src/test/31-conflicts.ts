@@ -57,7 +57,9 @@ describe("config.maxRetries", () => {
     });
   });
   describe("when set to 100", () => {
-    it("should avoid conflicts", async () => {
+    it("should avoid conflicts", async function () {
+      // 1000 parallel updates + retries can exceed the default 10s on single-server CI too.
+      this.timeout(120000);
       // This test creates, by design, a lot of conflicts and retries until its successfull
       // On instrumented server builds this test has a very high chance on running for a long time
       // and hitting the test-timeouts. To still test this behaviour on normal builds we do a check here and
