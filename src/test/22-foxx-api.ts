@@ -11,17 +11,26 @@ const localAppsPath = path.resolve(".", "fixtures");
 const mount = "/foxx-crud-test";
 const serviceServiceMount = "/foxx-crud-test-download";
 
-/** Server-side paths from installService are only valid on one coordinator; ROUND_ROBIN can route elsewhere. */
-const skipFoxxLocalPathReplaceUpgrade =
-  Array.isArray(config.url) && config.loadBalancingStrategy === "ROUND_ROBIN";
+/** Foxx local paths are per-coordinator; use first URL + NONE so all calls hit the same node (single or cluster). */
+function foxxPinnedConfig(): typeof config {
+  if (Array.isArray(config.url)) {
+    return {
+      ...config,
+      url: config.url[0],
+      loadBalancingStrategy: "NONE",
+    };
+  }
+  return config;
+}
 
 describe("Foxx service", () => {
   const name = `testdb_${Date.now()}`;
   let system: Database, db: Database;
   let arangoPaths: any;
   before(async function () {
-    system = new Database(config);
-    if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE")
+    const cfg = foxxPinnedConfig();
+    system = new Database(cfg);
+    if (Array.isArray(cfg.url) && cfg.loadBalancingStrategy !== "NONE")
       await system.acquireHostList();
     db = await system.createDatabase(name);
     if (await fetchArangoVersionCode(db) >= 40000) this.skip();
@@ -93,12 +102,7 @@ describe("Foxx service", () => {
       expect(resp.parsedBody).to.eql({ hello: "world" });
     });
 
-    (skipFoxxLocalPathReplaceUpgrade &&
-    (c.name === "localJsFile" ||
-      c.name === "localZipFile" ||
-      c.name === "localDir")
-      ? it.skip
-      : it)(`replace via ${c.name} should be available`, async () => {
+    it(`replace via ${c.name} should be available`, async () => {
       await db.installService(
         mount,
         new Blob([
@@ -110,12 +114,7 @@ describe("Foxx service", () => {
       expect(resp.parsedBody).to.eql({ hello: "world" });
     });
 
-    (skipFoxxLocalPathReplaceUpgrade &&
-    (c.name === "localJsFile" ||
-      c.name === "localZipFile" ||
-      c.name === "localDir")
-      ? it.skip
-      : it)(`upgrade via ${c.name} should be available`, async () => {
+    it(`upgrade via ${c.name} should be available`, async () => {
       await db.installService(
         mount,
         new Blob([
