@@ -101,7 +101,7 @@ jobs:
         enum: ['cjs', 'esm']
       resource_class:
         type: string
-        default: arangodb/medium-amd64
+        default: medium
     executor: <<parameters.node>>
     resource_class: <<parameters.resource_class>>
     steps:
