@@ -3,7 +3,38 @@ import { aql } from "../aql.js";
 import { DocumentCollection } from "../collections.js";
 import { Database } from "../databases.js";
 import { config } from "./_config.js";
-const range = (n: number): number[] => Array.from(Array(n).keys());
+
+/** Many parallel writes + retries can exhaust coordinators behind an LB; cap in-flight queries. */
+const clusterLbParallelChunk =
+  Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE"
+    ? 100
+    : 1_000;
+
+async function parallelInChunks(
+  count: number,
+  chunk: number,
+  run: () => Promise<unknown>,
+): Promise<void> {
+  for (let i = 0; i < count; i += chunk) {
+    const n = Math.min(chunk, count - i);
+    await Promise.all(Array.from({ length: n }, run));
+  }
+}
+
+async function parallelInChunksSettled(
+  count: number,
+  chunk: number,
+  run: () => Promise<unknown>,
+): Promise<PromiseSettledResult<unknown>[]> {
+  const out: PromiseSettledResult<unknown>[] = [];
+  for (let i = 0; i < count; i += chunk) {
+    const n = Math.min(chunk, count - i);
+    out.push(
+      ...(await Promise.allSettled(Array.from({ length: n }, run))),
+    );
+  }
+  return out;
+}
 
 describe("config.maxRetries", () => {
   let system: Database;
@@ -37,9 +68,12 @@ describe("config.maxRetries", () => {
     await collection.remove(docKey);
   });
   describe("when set to 0", () => {
-    it("should result in some conflicts", async () => {
-      const result = await Promise.allSettled(
-        range(1_000).map(() =>
+    it("should result in some conflicts", async function () {
+      if (clusterLbParallelChunk < 1_000) this.timeout(120_000);
+      const result = await parallelInChunksSettled(
+        1_000,
+        clusterLbParallelChunk,
+        () =>
           db.query(
             aql`
               LET doc = DOCUMENT(${collection}, ${docKey})
@@ -47,7 +81,6 @@ describe("config.maxRetries", () => {
             `,
             { retryOnConflict: 0 },
           ),
-        ),
       );
       expect(
         result.filter(({ status }) => status === "rejected"),
@@ -57,7 +90,8 @@ describe("config.maxRetries", () => {
     });
   });
   describe("when set to 100", () => {
-    it("should avoid conflicts", async () => {
+    it("should avoid conflicts", async function () {
+      if (clusterLbParallelChunk < 1_000) this.timeout(300_000);
       // This test creates, by design, a lot of conflicts and retries until its successfull
       // On instrumented server builds this test has a very high chance on running for a long time
       // and hitting the test-timeouts. To still test this behaviour on normal builds we do a check here and
@@ -69,15 +103,13 @@ describe("config.maxRetries", () => {
         || version.details['coverage'] === 'true')) {
         return;
       }
-      await Promise.all(
-        range(1_000).map(() =>
-          db.query(
-            aql`
+      await parallelInChunks(1_000, clusterLbParallelChunk, () =>
+        db.query(
+          aql`
               LET doc = DOCUMENT(${collection}, ${docKey})
               UPDATE doc WITH { data: doc.data + 1 } IN ${collection}
             `,
-            { retryOnConflict: 100 },
-          ),
+          { retryOnConflict: 100 },
         ),
       );
       const { data } = await collection.document(docKey);
