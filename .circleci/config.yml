@@ -149,7 +149,6 @@ workflows:
                 - 'n23'
               topology:
                 - 'single'
-                - 'cluster'
               ssl:
                 - 'true'
                 - 'false'
@@ -175,7 +174,6 @@ workflows:
                 - 'n23'
               topology:
                 - 'single'
-                - 'cluster'
               ssl:
                 - 'true'
                 - 'false'
