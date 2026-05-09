@@ -47,7 +47,8 @@ commands:
     steps:
       - run:
           name: Start Database
-          command: ./docker/start_db.sh
+          # bash avoids exit 126 when scripts are not chmod +x in the Git index (common on Windows).
+          command: bash ./docker/start_db.sh
           environment:
             DOCKER_IMAGE: <<parameters.docker-img>>
             STARTER_MODE: <<parameters.topology>>
@@ -100,7 +101,7 @@ jobs:
         enum: ['cjs', 'esm']
       resource_class:
         type: string
-        default: medium
+        default: arangodb/medium-amd64
     executor: <<parameters.node>>
     resource_class: <<parameters.resource_class>>
     steps:
