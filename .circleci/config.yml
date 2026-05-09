@@ -130,32 +130,32 @@ jobs:
             npm run test:<<parameters.module-system>>
 
 workflows:
-  # test-enterprise-latest:
-  #   when:
-  #     not: <<pipeline.parameters.docker-img>>
-  #   jobs:
-  #     - node-test:
-  #         name: latest-<<matrix.node>>-<<matrix.topology>>-ssl<<matrix.ssl>>-<<matrix.module-system>>
-  #         filters:
-  #           branches:
-  #             ignore: stable
-  #         matrix:
-  #           parameters:
-  #             docker-img:
-  #               - 'docker.io/arangodb/enterprise:latest'
-  #             node:
-  #               - 'n20'
-  #               - 'n22'
-  #               - 'n23'
-  #             topology:
-  #               - 'single'
-  #               # - 'cluster'
-  #             ssl:
-  #               - 'true'
-  #               - 'false'
-  #             module-system:
-  #               - 'cjs'
-  #               - 'esm'
+  test-enterprise-latest:
+    when:
+      not: <<pipeline.parameters.docker-img>>
+    jobs:
+      - node-test:
+          name: latest-<<matrix.node>>-<<matrix.topology>>-ssl<<matrix.ssl>>-<<matrix.module-system>>
+          filters:
+            branches:
+              ignore: stable
+          matrix:
+            parameters:
+              docker-img:
+                - 'docker.io/arangodb/enterprise:latest'
+              node:
+                - 'n20'
+                - 'n22'
+                - 'n23'
+              topology:
+                - 'single'
+                - 'cluster'
+              ssl:
+                - 'true'
+                - 'false'
+              module-system:
+                - 'cjs'
+                - 'esm'
 
   test-docker-img-parameter:
     when: <<pipeline.parameters.docker-img>>
@@ -175,32 +175,32 @@ workflows:
                 - 'n23'
               topology:
                 - 'single'
-                # - 'cluster'
+                - 'cluster'
               ssl:
                 - 'true'
                 - 'false'
               module-system:
                 - 'cjs'
                 - 'esm'
-  test-enterprise-latest-n23-cluster-cjs:
-    when:
-      not: <<pipeline.parameters.docker-img>>
-    jobs:
-      - node-test:
-          name: latest-<<matrix.node>>-<<matrix.topology>>-ssl<<matrix.ssl>>-<<matrix.module-system>>
-          filters:
-            branches:
-              ignore: stable
-          matrix:
-            parameters:
-              docker-img:
-                - 'docker.io/arangodb/enterprise:latest'
-              node:
-                - 'n23'
-              topology:
-                - 'cluster'
-              ssl:
-                - 'false'
-              module-system:
-                - 'cjs'
+  # test-enterprise-latest-n23-cluster-cjs:
+  #   when:
+  #     not: <<pipeline.parameters.docker-img>>
+  #   jobs:
+  #     - node-test:
+  #         name: latest-<<matrix.node>>-<<matrix.topology>>-ssl<<matrix.ssl>>-<<matrix.module-system>>
+  #         filters:
+  #           branches:
+  #             ignore: stable
+  #         matrix:
+  #           parameters:
+  #             docker-img:
+  #               - 'docker.io/arangodb/enterprise:latest'
+  #             node:
+  #               - 'n23'
+  #             topology:
+  #               - 'cluster'
+  #             ssl:
+  #               - 'false'
+  #             module-system:
+  #               - 'cjs'
 
