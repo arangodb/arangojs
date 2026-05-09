@@ -76,16 +76,6 @@ Each workflow expands to **24** parallel **`node-test`** jobs (`3 × 2 × 2 × 2
 
 ---
 
-## 5) Parallelism and cost (orientative)
-
-- **Parallelism:** CircleCI schedules matrix cells concurrently subject to your **plan concurrency** (how many jobs run at once). You still pay for **every** job’s runtime once it executes.
-- **Billing:** Usage is typically billed in **credits** ≈ **compute-minutes × resource multiplier**. Default **`medium`** `resource_class` has a fixed credits/min rate on your plan; **`large`** would cost more.
-- Each **`node-test`** job pays **startup overhead** (checkout, remote Docker, **pull DB images**, `npm install`, DB bootstrap). Twenty-four cells multiply that **wall-clock** parallelism benefit doesn’t divide total compute equally—you sum roughly **24 × (job duration minutes)** worth of credits (often dominated by Docker/I npm/db startup).
-
-Whether it feels **expensive** depends on push frequency, job duration, and plan allowance; **24 × medium minutes per pipeline** is the right mental model for cost estimation—not “one pipeline = one minute.”
-
----
-
-## 6) See also
+## 5) See also
 
 - [GitHub Actions vs CircleCI](github-vs-circleci.md) — matrix sizes, topology/SSL, and jobs only on one side.
