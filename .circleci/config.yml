@@ -74,10 +74,6 @@ jobs:
       module-system:
         type: enum
         enum: ['cjs', 'esm']
-      # Short label paired with docker-img in integration-tests-multi-runtime-multi-db-image (matrix + exclude); unused elsewhere.
-      db_label:
-        type: string
-        default: ''
       resource_class:
         type: string
         default: medium
@@ -119,26 +115,60 @@ jobs:
             npm run test:<<parameters.module-system>>
 
 workflows:
-  # Multiple Node.js runtimes × multiple pinned DB images × cjs/esm (single / HTTP). Matches GitHub Actions `node` matrix shape.
-  # db_label is only for readable job names; matrix excludes keep db_label aligned with docker-img.
+  # Multiple Node.js runtimes × multiple pinned DB images × cjs/esm (single / HTTP).
+  # Three matrices (one image each) so job names stay unique.
   integration-tests-multi-runtime-multi-db-image:
     when:
       not: <<pipeline.parameters.docker-img>>
     jobs:
       - node-test:
-          name: int-multi-<<matrix.node>>-<<matrix.module-system>>-<<matrix.db_label>>
+          name: <<matrix.node>>-<<matrix.module-system>>-312
           filters:
             branches:
               ignore: stable
           matrix:
             parameters:
-              db_label:
-                - '312'
-                - '312deb'
-                - 'devel-nightly'
               docker-img:
                 - 'docker.io/arangodb/enterprise:3.12'
+              node:
+                - 'n20'
+                - 'n22'
+                - 'n23'
+              topology:
+                - 'single'
+              ssl:
+                - 'false'
+              module-system:
+                - 'cjs'
+                - 'esm'
+      - node-test:
+          name: <<matrix.node>>-<<matrix.module-system>>-312deb
+          filters:
+            branches:
+              ignore: stable
+          matrix:
+            parameters:
+              docker-img:
                 - 'docker.io/arangodb/enterprise:3.12-deb'
+              node:
+                - 'n20'
+                - 'n22'
+                - 'n23'
+              topology:
+                - 'single'
+              ssl:
+                - 'false'
+              module-system:
+                - 'cjs'
+                - 'esm'
+      - node-test:
+          name: <<matrix.node>>-<<matrix.module-system>>-devel-nightly
+          filters:
+            branches:
+              ignore: stable
+          matrix:
+            parameters:
+              docker-img:
                 - 'docker.io/arangodb/enterprise-preview:devel-nightly'
               node:
                 - 'n20'
@@ -151,25 +181,12 @@ workflows:
               module-system:
                 - 'cjs'
                 - 'esm'
-            exclude:
-              - db_label: '312'
-                docker-img: 'docker.io/arangodb/enterprise:3.12-deb'
-              - db_label: '312'
-                docker-img: 'docker.io/arangodb/enterprise-preview:devel-nightly'
-              - db_label: '312deb'
-                docker-img: 'docker.io/arangodb/enterprise:3.12'
-              - db_label: '312deb'
-                docker-img: 'docker.io/arangodb/enterprise-preview:devel-nightly'
-              - db_label: 'devel-nightly'
-                docker-img: 'docker.io/arangodb/enterprise:3.12'
-              - db_label: 'devel-nightly'
-                docker-img: 'docker.io/arangodb/enterprise:3.12-deb'
 
   integration-tests-given-db-image-full-matrix:
     when: <<pipeline.parameters.docker-img>>
     jobs:
       - node-test:
-          name: int-given-<<matrix.node>>-<<matrix.topology>>-ssl<<matrix.ssl>>-<<matrix.module-system>>
+          name: <<matrix.node>>-<<matrix.topology>>-ssl<<matrix.ssl>>-<<matrix.module-system>>
           filters:
             branches:
               ignore: stable

@@ -28,11 +28,10 @@ Runs when `docker-img` is **empty**. Same **shape** as GitHub Actions **`node`**
 | **Topology** | `single` only |
 | **SSL** | `false` only (HTTP) |
 | **Module system** | `cjs`, `esm` |
-| **`db_label`** | `312`, `312deb`, `devel-nightly` — paired with `docker-img` via **`matrix.exclude`** (labels exist only for readable job names; job logic uses `docker-img` only). |
 
-**Job count:** 3 × 3 × 2 = **18** jobs.
+**Job count:** 3 × 3 × 2 = **18** jobs (three **`node-test`** matrices under one workflow: **312**, **312deb**, **devel-nightly** — one pinned DB image each).
 
-**Naming:** `int-multi-<node>-<cjs|esm>-<db_label>`
+**Naming:** `<node>-<cjs|esm>-312` | `…-312deb` | `…-devel-nightly`
 
 ### `integration-tests-given-db-image-full-matrix` (24 jobs)
 
@@ -49,7 +48,7 @@ Runs when **`docker-img`** is set (**Trigger Pipeline**). Uses that image for ev
 
 **Job count:** 3 × 2 × 2 × 2 = **24** jobs.
 
-**Naming:** `int-given-<node>-<topology>-ssl<true|false>-<cjs|esm>`
+**Naming:** `<node>-<topology>-ssl<true|false>-<cjs|esm>`
 
 ---
 
