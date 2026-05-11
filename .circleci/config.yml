@@ -1,17 +1,3 @@
-# CircleCI config for arangojs (https://github.com/arangodb/arangojs).
-# Modeled after arangodb-java-driver/.circleci/config.yml: remote Docker, ./docker/start_db.sh,
-# pipeline parameter docker-img, and version/topology workflows.
-#
-# Prerequisite: copy the java driver's docker/ directory into the arangojs repo root (start_db.sh,
-# jwtHeader, jwtSecret, server.pem, find_active_endpoint.sh).
-#
-# start_db.sh sets root password to empty. Enterprise images require ARANGO_LICENSE_KEY on the project.
-#
-# Workflows (mutually exclusive via pipeline parameter docker-img):
-# - docker-img empty → test-enterprise-latest (fixed docker.io/arangodb/enterprise:latest), 24 jobs.
-# - docker-img set   → test-docker-img-parameter (that image), 24 jobs.
-# Matrix per workflow: 3 nodes × 2 topologies × 2 SSL × 2 module-system = 24.
-
 version: 2.1
 
 parameters:
@@ -51,7 +37,6 @@ commands:
     steps:
       - run:
           name: Start Database
-          # bash avoids exit 126 when scripts are not chmod +x in the Git index (common on Windows).
           command: bash ./docker/start_db.sh
           environment:
             DOCKER_IMAGE: <<parameters.docker-img>>
@@ -89,6 +74,10 @@ jobs:
       module-system:
         type: enum
         enum: ['cjs', 'esm']
+      # Short label paired with docker-img in integration-tests-multi-runtime-multi-db-image (matrix + exclude); unused elsewhere.
+      db_label:
+        type: string
+        default: ''
       resource_class:
         type: string
         default: medium
@@ -130,38 +119,57 @@ jobs:
             npm run test:<<parameters.module-system>>
 
 workflows:
-  test-enterprise-latest:
+  # Multiple Node.js runtimes × multiple pinned DB images × cjs/esm (single / HTTP). Matches GitHub Actions `node` matrix shape.
+  # db_label is only for readable job names; matrix excludes keep db_label aligned with docker-img.
+  integration-tests-multi-runtime-multi-db-image:
     when:
       not: <<pipeline.parameters.docker-img>>
     jobs:
       - node-test:
-          name: latest-<<matrix.node>>-<<matrix.topology>>-ssl<<matrix.ssl>>-<<matrix.module-system>>
+          name: int-multi-<<matrix.node>>-<<matrix.module-system>>-<<matrix.db_label>>
           filters:
             branches:
               ignore: stable
           matrix:
             parameters:
+              db_label:
+                - '312'
+                - '312deb'
+                - 'devel-nightly'
               docker-img:
-                - 'docker.io/arangodb/enterprise:latest'
+                - 'docker.io/arangodb/enterprise:3.12'
+                - 'docker.io/arangodb/enterprise:3.12-deb'
+                - 'docker.io/arangodb/enterprise-preview:devel-nightly'
               node:
                 - 'n20'
                 - 'n22'
                 - 'n23'
               topology:
                 - 'single'
-                - 'cluster'
               ssl:
-                - 'true'
                 - 'false'
               module-system:
                 - 'cjs'
                 - 'esm'
+            exclude:
+              - db_label: '312'
+                docker-img: 'docker.io/arangodb/enterprise:3.12-deb'
+              - db_label: '312'
+                docker-img: 'docker.io/arangodb/enterprise-preview:devel-nightly'
+              - db_label: '312deb'
+                docker-img: 'docker.io/arangodb/enterprise:3.12'
+              - db_label: '312deb'
+                docker-img: 'docker.io/arangodb/enterprise-preview:devel-nightly'
+              - db_label: 'devel-nightly'
+                docker-img: 'docker.io/arangodb/enterprise:3.12'
+              - db_label: 'devel-nightly'
+                docker-img: 'docker.io/arangodb/enterprise:3.12-deb'
 
-  test-docker-img-parameter:
+  integration-tests-given-db-image-full-matrix:
     when: <<pipeline.parameters.docker-img>>
     jobs:
       - node-test:
-          name: param-<<matrix.node>>-<<matrix.topology>>-ssl<<matrix.ssl>>-<<matrix.module-system>>
+          name: int-given-<<matrix.node>>-<<matrix.topology>>-ssl<<matrix.ssl>>-<<matrix.module-system>>
           filters:
             branches:
               ignore: stable
@@ -182,25 +190,3 @@ workflows:
               module-system:
                 - 'cjs'
                 - 'esm'
-  # test-enterprise-latest-n23-cluster-cjs:
-  #   when:
-  #     not: <<pipeline.parameters.docker-img>>
-  #   jobs:
-  #     - node-test:
-  #         name: latest-<<matrix.node>>-<<matrix.topology>>-ssl<<matrix.ssl>>-<<matrix.module-system>>
-  #         filters:
-  #           branches:
-  #             ignore: stable
-  #         matrix:
-  #           parameters:
-  #             docker-img:
-  #               - 'docker.io/arangodb/enterprise:latest'
-  #             node:
-  #               - 'n23'
-  #             topology:
-  #               - 'cluster'
-  #             ssl:
-  #               - 'false'
-  #             module-system:
-  #               - 'cjs'
-

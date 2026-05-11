@@ -2,14 +2,12 @@
 
 ## 1) Purpose
 
-CircleCI validates **arangojs** using one parameterized job, **`node-test`**, combined into matrices inside **two workflows**. Exactly **one** workflow runs per pipeline:
+CircleCI validates **arangojs** using one parameterized job, **`node-test`**, combined into matrices inside **two workflows** (depending on pipeline parameter `docker-img`):
 
-| Pipeline parameter `docker-img` | Workflow | DB image |
-|---------------------------------|----------|----------|
-| Empty (default) | `test-enterprise-latest` | `docker.io/arangodb/enterprise:latest` |
-| Non-empty | `test-docker-img-parameter` | Value of `docker-img` (full image reference) |
-
-Each workflow expands to **24** parallel **`node-test`** jobs (`3 × 2 × 2 × 2`).
+| Pipeline parameter `docker-img` | Workflow | DB coverage |
+|-----------------------------------|----------|-------------|
+| Empty (default) | **`integration-tests-multi-runtime-multi-db-image`** only | Three pinned Enterprise images × Node 20/22/23 × `cjs`/`esm`, **single** / **HTTP** (**18** jobs) |
+| Non-empty | **`integration-tests-given-db-image-full-matrix`** only | Your image × full matrix: topology **single + cluster**, SSL **on/off** (**24** jobs) |
 
 **Secrets:** set **`ARANGO_LICENSE_KEY`** on the CircleCI project (or context) when using Enterprise images.
 
@@ -17,26 +15,41 @@ Each workflow expands to **24** parallel **`node-test`** jobs (`3 × 2 × 2 × 2
 
 ---
 
-## 2) Matrix dimensions (both workflows)
+## 2) Matrix dimensions
+
+### `integration-tests-multi-runtime-multi-db-image` (18 jobs)
+
+Runs when `docker-img` is **empty**. Same **shape** as GitHub Actions **`node`** job: several **Node.js** executors × several **DB images** × `cjs`/`esm`, **single** topology, **HTTP** only.
+
+| Axis | Values |
+|------|--------|
+| **ArangoDB image** | `docker.io/arangodb/enterprise:3.12`, `docker.io/arangodb/enterprise:3.12-deb`, `docker.io/arangodb/enterprise-preview:devel-nightly` |
+| **Node** | `n20`, `n22`, `n23` |
+| **Topology** | `single` only |
+| **SSL** | `false` only (HTTP) |
+| **Module system** | `cjs`, `esm` |
+| **`db_label`** | `312`, `312deb`, `devel-nightly` — paired with `docker-img` via **`matrix.exclude`** (labels exist only for readable job names; job logic uses `docker-img` only). |
+
+**Job count:** 3 × 3 × 2 = **18** jobs.
+
+**Naming:** `int-multi-<node>-<cjs|esm>-<db_label>`
+
+### `integration-tests-given-db-image-full-matrix` (24 jobs)
+
+Runs when **`docker-img`** is set (**Trigger Pipeline**). Uses that image for every cell.
 
 | Axis | Values |
 |------|--------|
 | **Node** (executor) | `n20`, `n22`, `n23` → `cimg/node` 20.18 / 22.16 / 23.5 |
 | **Topology** (`STARTER_MODE`) | `single`, `cluster` |
 | **SSL** | `true`, `false` (HTTPS vs HTTP; `NODE_TLS_REJECT_UNAUTHORIZED=0` when SSL) |
-| **Module system** | `cjs`, `esm` → `npm run test:cjs` / `npm run test:esm` |
+| **Module system** | `cjs`, `esm` |
 
-**Docker DB image**
+**Docker DB image:** `<<pipeline.parameters.docker-img>>`.
 
-- **`test-enterprise-latest`:** fixed `docker.io/arangodb/enterprise:latest`.
-- **`test-docker-img-parameter`:** single matrix entry `<<pipeline.parameters.docker-img>>`.
+**Job count:** 3 × 2 × 2 × 2 = **24** jobs.
 
-**Job count:** 3 × 2 × 2 × 2 = **24** jobs per workflow.
-
-**Naming**
-
-- Latest workflow: `latest-<node>-<topology>-ssl<true|false>-<cjs|esm>`
-- Parameter workflow: `param-<node>-<topology>-ssl<true|false>-<cjs|esm>`
+**Naming:** `int-given-<node>-<topology>-ssl<true|false>-<cjs|esm>`
 
 ---
 
@@ -59,23 +72,29 @@ Each workflow expands to **24** parallel **`node-test`** jobs (`3 × 2 × 2 × 2
 
 ## 4) Operational usage
 
-### Default (PR / push): Enterprise `:latest`, full matrix
+### Default (PR / push)
 
 - Trigger pipeline **without** setting `docker-img` (leave default empty).
-- Runs **`test-enterprise-latest`** → **24** jobs.
+- Runs **`integration-tests-multi-runtime-multi-db-image`** → **18** jobs.
 
-### Validate another image (preview / pinned tag)
+### Cluster, SSL, or a specific image (`:latest`, preview, etc.)
 
-1. In CircleCI: **Trigger Pipeline** → add pipeline parameter **`docker-img`** = full reference, e.g.  
+1. In CircleCI: **Trigger Pipeline** → pipeline parameter **`docker-img`** = full reference, e.g.  
+   `docker.io/arangodb/enterprise:latest`  
    `docker.io/arangodb/enterprise:3.12`  
    or  
    `docker.io/arangodb/enterprise-preview:devel-nightly`
-2. Runs **`test-docker-img-parameter`** only → **24** jobs against that image.
-
-**Note:** Only **one** of the two workflows runs per pipeline, so you see **24** jobs total per pipeline, not 48.
+2. Runs **`integration-tests-given-db-image-full-matrix`** only → **24** jobs (single + cluster × SSL × modules).
 
 ---
 
-## 5) See also
+## 5) Parallelism and cost (orientative)
+
+- **Default pipeline:** roughly **18 × medium** executor-minutes per push (plus startup overhead per job).
+- **`docker-img` set:** **24** jobs.
+
+---
+
+## 6) See also
 
 - [GitHub Actions vs CircleCI](github-vs-circleci.md) — matrix sizes, topology/SSL, and jobs only on one side.

@@ -1,6 +1,6 @@
 # GitHub Actions vs CircleCI — test coverage comparison
 
-This document compares the **`Tests`** workflow in [`.github/workflows/tests.yml`](../.github/workflows/tests.yml) with the CircleCI setup in [`.circleci/config.yml`](config.yml). For Circle-only details (steps, naming, pipeline parameters), see [CircleCI workflow guide](workflow.md).
+This document compares the **`Tests`** workflow in [`.github/workflows/tests.yml`](../.github/workflows/tests.yml) with the CircleCI setup in [`.circleci/config.yml`](config.yml). For Circle-only details (steps, naming, pipeline parameters), see [CircleCI workflow guide](README.md).
 
 ## Triggers and `stable` branch
 
@@ -13,7 +13,9 @@ This document compares the **`Tests`** workflow in [`.github/workflows/tests.yml
 
 **No.** The `node` job uses a single `services` container (`arangodb`) and `TEST_ARANGODB_URL: http://arangodb:8529` — one coordinator, not a starter-deployed cluster with multiple endpoints.
 
-**Cluster is only exercised on CircleCI** (via `start_db.sh` with `STARTER_MODE=cluster`, comma-separated `172.28.0.1` coordinator ports **8529 / 8539 / 8549**, and `TEST_ARANGO_LOAD_BALANCING_STRATEGY=ROUND_ROBIN` as set in `node-test`).
+**On CircleCI, cluster runs only when you set pipeline parameter `docker-img`** (workflow **`integration-tests-given-db-image-full-matrix`**): `STARTER_MODE=cluster`, comma-separated `172.28.0.1` coordinator ports **8529 / 8539 / 8549**, and `TEST_ARANGO_LOAD_BALANCING_STRATEGY=ROUND_ROBIN` in `node-test`.
+
+The **default** CircleCI pipeline (`docker-img` empty) runs only **`integration-tests-multi-runtime-multi-db-image`** — **single** topology and **HTTP**, matching GitHub `node`.
 
 ---
 
@@ -22,11 +24,11 @@ This document compares the **`Tests`** workflow in [`.github/workflows/tests.yml
 | Dimension | **GitHub `tests.yml` — `node` job** | **CircleCI — `node-test` workflows** |
 |-----------|-------------------------------------|--------------------------------------|
 | **Runner / image** | `ubuntu-latest`; test job runs in `node:<version>-alpine` | `cimg/node` executors **20.18 / 22.16 / 23.5** (`n20` / `n22` / `n23`); **remote Docker** for DB |
-| **Topology** | Single instance only (`services.arangodb`, `TEST_ARANGODB_URL: http://arangodb:8529`) | **single + cluster** |
-| **SSL** | HTTP only | **HTTP + HTTPS** (`ssl` matrix `true` / `false`; `NODE_TLS_REJECT_UNAUTHORIZED=0` when HTTPS) |
+| **Topology** | Single instance only (`services.arangodb`, `TEST_ARANGODB_URL: http://arangodb:8529`) | **Default (`docker-img` empty):** single only (`integration-tests-multi-runtime-multi-db-image`). **`docker-img` set:** single + cluster (`integration-tests-given-db-image-full-matrix`). |
+| **SSL** | HTTP only | **Default:** HTTP only. **`docker-img` set:** HTTP + HTTPS (`ssl` matrix `true` / `false`; `NODE_TLS_REJECT_UNAUTHORIZED=0` when HTTPS). |
 | **Node versions** | 20, 22, 23 (matrix `node-version`) | 20, 22, 23 (executors above) |
 | **Module system** | `cjs` + `esm` | `cjs` + `esm` |
-| **ArangoDB images** | **Three** matrix images: `arangodb/enterprise:3.12`, `arangodb/enterprise:3.12-deb`, `arangodb/enterprise-preview:devel-nightly` | **One** image per pipeline: default `docker.io/arangodb/enterprise:latest`, *or* pipeline parameter `docker-img` (`test-docker-img-parameter`) |
+| **ArangoDB images** | **Three** matrix images: `arangodb/enterprise:3.12`, `arangodb/enterprise:3.12-deb`, `arangodb/enterprise-preview:devel-nightly` | **Default:** those three under `docker.io/...` (`integration-tests-multi-runtime-multi-db-image`). **`docker-img` set:** whichever image you pass (`integration-tests-given-db-image-full-matrix`), e.g. `:latest` or a preview tag. |
 | **`ARANGO_RELEASE` / image tag** | Set to the matrix image string for tests | Set to matrix `docker-img` (full reference) |
 | **DB auth** | `ARANGO_NO_AUTH: 1` on the service; `ARANGO_LICENSE_KEY` from secrets | `start_db.sh` sets root password **empty**; `TEST_ARANGODB_URL` without userinfo; driver uses Basic `root:` |
 | **Resource** | GitHub-hosted defaults | `node-test` defaults to `resource_class: medium` |
@@ -42,8 +44,8 @@ This document compares the **`Tests`** workflow in [`.github/workflows/tests.yml
 
 | Item | Notes |
 |------|--------|
-| **Cluster** | `STARTER_MODE=cluster`; three coordinator URLs on `172.28.0.1`; `TEST_ARANGO_LOAD_BALANCING_STRATEGY=ROUND_ROBIN`. |
-| **SSL matrix** | HTTPS path uses certs / env from `docker/` via `start_db.sh` (as wired in `config.yml`). |
+| **Cluster** | Only when **`docker-img`** is set (`integration-tests-given-db-image-full-matrix`). |
+| **SSL matrix** | Only when **`docker-img`** is set; HTTPS uses certs / env from `docker/` via `start_db.sh`. |
 | **Starter image** | `STARTER_DOCKER_IMAGE: docker.io/arangodb/arangodb-starter:0.18.5` in the `start-db` command env. |
 
 ---
@@ -54,18 +56,19 @@ This document compares the **`Tests`** workflow in [`.github/workflows/tests.yml
 |----|-------|-------------|
 | **GitHub `node`** | **18** | 3 `node-version` × 3 `arangodb-version` × 2 `module-system` |
 | **GitHub `web`** | **3** | 3 `arangodb-version` (Node 20 only; no module matrix) |
-| **CircleCI** (one workflow per pipeline) | **24** | 3 `node` × 2 `topology` × 2 `ssl` × 2 `module-system` |
+| **CircleCI `node-test`** (`docker-img` empty) | **18** | `integration-tests-multi-runtime-multi-db-image`: 3 × 3 × 2 (single / HTTP) |
+| **CircleCI `node-test`** (`docker-img` set) | **24** | `integration-tests-given-db-image-full-matrix`: 3 × 2 × 2 × 2 |
 
-Only **one** CircleCI workflow runs per pipeline (`test-enterprise-latest` **or** `test-docker-img-parameter`), not both at once.
+When **`docker-img`** is empty, only **`integration-tests-multi-runtime-multi-db-image`** runs. When **`docker-img`** is set, only **`integration-tests-given-db-image-full-matrix`** runs.
 
 ---
 
 ## Summary
 
 - **GitHub** prioritizes **several DB image variants** on a **single** server (`ARANGO_NO_AUTH: 1`, `push` only in `tests.yml`).
-- **CircleCI** prioritizes **topology (single + cluster)**, **SSL on/off**, and **one** Enterprise image per run (or a **parameterized** image), with auth aligned to `start_db.sh` (empty root password).
+- **CircleCI** default matches that **shape** (**integration-tests-multi-runtime-multi-db-image**). **Cluster + SSL** and testing **`enterprise:latest`** (or any chosen image) require triggering with **`docker-img`** (**integration-tests-given-db-image-full-matrix**). Auth follows `start_db.sh` (empty root password).
 
-Failures that appear only on **cluster** in CircleCI are **expected** to be invisible to the current GitHub `node` job, because GitHub never runs cluster.
+Failures that appear only on **cluster** in CircleCI do **not** run on the **default** Circle pipeline anymore; they appear when **`docker-img`** is set. They remain invisible to the GitHub `node` job, because GitHub never runs cluster.
 
 ---
 
