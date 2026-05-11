@@ -23,12 +23,12 @@ The **default** CircleCI pipeline (`docker-img` empty) runs only **`integration-
 
 | Dimension | **GitHub `tests.yml` — `node` job** | **CircleCI — `node-test` workflows** |
 |-----------|-------------------------------------|--------------------------------------|
-| **Runner / image** | `ubuntu-latest`; test job runs in `node:<version>-alpine` | `cimg/node` executors **20.18 / 22.16 / 23.5** (`n20` / `n22` / `n23`); **remote Docker** for DB |
+| **Runner / image** | `ubuntu-latest`; test job runs in `node:<version>-alpine` | `cimg/node` executors **22.17** and **24.4** (`n22` / `n24`); **remote Docker** for DB |
 | **Topology** | Single instance only (`services.arangodb`, `TEST_ARANGODB_URL: http://arangodb:8529`) | **Default (`docker-img` empty):** single only (`integration-tests-multi-runtime-multi-db-image`). **`docker-img` set:** single + cluster (`integration-tests-given-db-image-full-matrix`). |
 | **SSL** | HTTP only | **Default:** HTTP only. **`docker-img` set:** HTTP + HTTPS (`ssl` matrix `true` / `false`; `NODE_TLS_REJECT_UNAUTHORIZED=0` when HTTPS). |
-| **Node versions** | 20, 22, 23 (matrix `node-version`) | 20, 22, 23 (executors above) |
+| **Node versions** | 20, 22, 23 (matrix `node-version`) | **22, 24** (matches arangojs **supported LTS pair** on CircleCI; GitHub matrix may differ until updated). |
 | **Module system** | `cjs` + `esm` | `cjs` + `esm` |
-| **ArangoDB images** | **Three** matrix images: `arangodb/enterprise:3.12`, `arangodb/enterprise:3.12-deb`, `arangodb/enterprise-preview:devel-nightly` | **Default:** those three under `docker.io/...` (`integration-tests-multi-runtime-multi-db-image`). **`docker-img` set:** whichever image you pass (`integration-tests-given-db-image-full-matrix`), e.g. `:latest` or a preview tag. |
+| **ArangoDB images** | **Three** matrix images: `arangodb/enterprise:3.12`, `arangodb/enterprise:3.12-deb`, `arangodb/enterprise-preview:devel-nightly` | **Default:** `enterprise:3.12` and `enterprise-preview:4.0-nightly` (`integration-tests-multi-runtime-multi-db-image`). **`docker-img` set:** whichever image you pass (`integration-tests-given-db-image-full-matrix`). |
 | **`ARANGO_RELEASE` / image tag** | Set to the matrix image string for tests | Set to matrix `docker-img` (full reference) |
 | **DB auth** | `ARANGO_NO_AUTH: 1` on the service; `ARANGO_LICENSE_KEY` from secrets | `start_db.sh` sets root password **empty**; `TEST_ARANGODB_URL` without userinfo; driver uses Basic `root:` |
 | **Resource** | GitHub-hosted defaults | `node-test` defaults to `resource_class: medium` |
@@ -56,8 +56,8 @@ The **default** CircleCI pipeline (`docker-img` empty) runs only **`integration-
 |----|-------|-------------|
 | **GitHub `node`** | **18** | 3 `node-version` × 3 `arangodb-version` × 2 `module-system` |
 | **GitHub `web`** | **3** | 3 `arangodb-version` (Node 20 only; no module matrix) |
-| **CircleCI `node-test`** (`docker-img` empty) | **18** | `integration-tests-multi-runtime-multi-db-image`: 3 × 3 × 2 (single / HTTP) |
-| **CircleCI `node-test`** (`docker-img` set) | **24** | `integration-tests-given-db-image-full-matrix`: 3 × 2 × 2 × 2 |
+| **CircleCI `node-test`** (`docker-img` empty) | **8** | `integration-tests-multi-runtime-multi-db-image`: 2 DB matrices × 2 nodes × 2 modules (single / HTTP) |
+| **CircleCI `node-test`** (`docker-img` set) | **16** | `integration-tests-given-db-image-full-matrix`: 2 × 2 × 2 × 2 |
 
 When **`docker-img`** is empty, only **`integration-tests-multi-runtime-multi-db-image`** runs. When **`docker-img`** is set, only **`integration-tests-given-db-image-full-matrix`** runs.
 

@@ -46,15 +46,12 @@ commands:
             COMPRESSION: <<parameters.compression>>
 
 executors:
-  n20:
-    docker:
-      - image: cimg/node:20.18
   n22:
     docker:
-      - image: cimg/node:22.16
-  n23:
+      - image: cimg/node:22.17
+  n24:
     docker:
-      - image: cimg/node:23.5
+      - image: cimg/node:24.4
 
 jobs:
   node-test:
@@ -70,7 +67,7 @@ jobs:
         default: 'false'
       node:
         type: enum
-        enum: ['n20', 'n22', 'n23']
+        enum: ['n22', 'n24']
       module-system:
         type: enum
         enum: ['cjs', 'esm']
@@ -115,8 +112,8 @@ jobs:
             npm run test:<<parameters.module-system>>
 
 workflows:
-  # Multiple Node.js runtimes × multiple pinned DB images × cjs/esm (single / HTTP).
-  # Three matrices (one image each) so job names stay unique.
+  # Node.js 22.x + 24.x (current LTS pair per arangojs compatibility policy).
+  # Multiple pinned DB images × cjs/esm (single / HTTP). Two matrices so job names stay unique.
   integration-tests-multi-runtime-multi-db-image:
     when:
       not: <<pipeline.parameters.docker-img>>
@@ -131,9 +128,8 @@ workflows:
               docker-img:
                 - 'docker.io/arangodb/enterprise:3.12'
               node:
-                - 'n20'
                 - 'n22'
-                - 'n23'
+                - 'n24'
               topology:
                 - 'single'
               ssl:
@@ -142,38 +138,17 @@ workflows:
                 - 'cjs'
                 - 'esm'
       - node-test:
-          name: <<matrix.node>>-<<matrix.module-system>>-312deb
+          name: <<matrix.node>>-<<matrix.module-system>>-4.0-nightly
           filters:
             branches:
               ignore: stable
           matrix:
             parameters:
               docker-img:
-                - 'docker.io/arangodb/enterprise:3.12-deb'
+                - 'docker.io/arangodb/enterprise-preview:4.0-nightly'
               node:
-                - 'n20'
                 - 'n22'
-                - 'n23'
-              topology:
-                - 'single'
-              ssl:
-                - 'false'
-              module-system:
-                - 'cjs'
-                - 'esm'
-      - node-test:
-          name: <<matrix.node>>-<<matrix.module-system>>-devel-nightly
-          filters:
-            branches:
-              ignore: stable
-          matrix:
-            parameters:
-              docker-img:
-                - 'docker.io/arangodb/enterprise-preview:devel-nightly'
-              node:
-                - 'n20'
-                - 'n22'
-                - 'n23'
+                - 'n24'
               topology:
                 - 'single'
               ssl:
@@ -195,9 +170,8 @@ workflows:
               docker-img:
                 - <<pipeline.parameters.docker-img>>
               node:
-                - 'n20'
                 - 'n22'
-                - 'n23'
+                - 'n24'
               topology:
                 - 'single'
                 - 'cluster'
