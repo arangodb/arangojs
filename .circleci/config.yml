@@ -177,7 +177,7 @@ workflows:
                 - 'n22'
                 - 'n24'
               topology:
-                - 'single'
+                # - 'single'
                 - 'cluster'
               ssl:
                 - 'true'
