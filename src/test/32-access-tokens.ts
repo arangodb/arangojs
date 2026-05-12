@@ -6,9 +6,9 @@ import {
   accessTokenIdsEqual,
   clusterIntegrationTimeoutMs,
   createAccessTokenAndPropagate,
+  pollAccessTokensUntilStableMatch,
   propagationForResourceMs,
   waitForUserPropagated,
-  waitUntilAccessTokenListed,
   waitUntilAccessTokenNotListed,
 } from "./_integration-timeouts.js";
 
@@ -137,13 +137,12 @@ describe312("Access Tokens", function () {
     });
 
     it("should list all tokens", async () => {
-      await waitUntilAccessTokenListed(
+      const tokens = await pollAccessTokensUntilStableMatch(
         system,
         testUsername,
         { id: tokenId, name: "Token for listing test" },
         propagationForResourceMs,
       );
-      const tokens = await system.getAccessTokens(testUsername);
       expect(tokens).to.be.an("array");
       expect(tokens.length).to.be.greaterThan(0);
 
@@ -186,9 +185,6 @@ describe312("Access Tokens", function () {
         tokenId,
         propagationForResourceMs,
       );
-      const tokens = await system.getAccessTokens(testUsername);
-      const foundToken = tokens.find((t) => accessTokenIdsEqual(t.id, tokenId));
-      expect(foundToken).to.not.exist;
     });
 
     it("should throw error for invalid token ID", async () => {

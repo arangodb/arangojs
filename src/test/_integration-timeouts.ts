@@ -1,19 +1,26 @@
 import type { Database } from "../databases.js";
 import { isArangoError } from "../errors.js";
 import { ERROR_ARANGO_CONFLICT } from "../lib/codes.js";
-import type { AccessToken, CreateAccessTokenOptions } from "../users.js";
+import type {
+  AccessToken,
+  AccessTokenMetadata,
+  CreateAccessTokenOptions,
+} from "../users.js";
 import { isClusterRuntime } from "./_config.js";
 
+/** Coordinator skew under ROUND_ROBIN: require this many agreeing reads in a row. */
+const clusterStableReadStreak = isClusterRuntime ? 3 : 1;
+
 /** Suite/hook ceiling; cluster work often exceeds Mocha’s global 10s default. */
-export const clusterIntegrationTimeoutMs = isClusterRuntime ? 180000 : 60000;
+export const clusterIntegrationTimeoutMs = isClusterRuntime ? 420000 : 60000;
 
 export const propagationAfterCreateDatabaseMs = isClusterRuntime ? 60000 : 30000;
 
 /** `waitForPropagation` on collections, views, graphs, etc. */
-export const propagationForResourceMs = isClusterRuntime ? 60000 : 10000;
+export const propagationForResourceMs = isClusterRuntime ? 90000 : 10000;
 
 /** Analyzers and similar metadata (28-accessing-analyzers). */
-export const propagationAnalyzerPathMs = isClusterRuntime ? 120000 : 65000;
+export const propagationAnalyzerPathMs = isClusterRuntime ? 240000 : 65000;
 
 /** Single-analyzer tests (29-manipulating-analyzers). */
 export const propagationAnalyzerMs = isClusterRuntime ? 60000 : 30000;
@@ -54,6 +61,42 @@ export function accessTokenIdsEqual(a: unknown, b: unknown): boolean {
   return Number.isFinite(na) && Number.isFinite(nb) && na === nb;
 }
 
+function tokenRowMatches(
+  t: AccessTokenMetadata,
+  match: { id?: unknown; name?: string },
+): boolean {
+  if (match.name !== undefined && t.name !== match.name) return false;
+  if (match.id !== undefined && !accessTokenIdsEqual(t.id, match.id))
+    return false;
+  return true;
+}
+
+/**
+ * Poll `getAccessTokens` until `match` is satisfied on `clusterStableReadStreak`
+ * consecutive reads (avoids RR “saw token once, next read stale”).
+ * Returns the snapshot from the last successful read.
+ */
+export async function pollAccessTokensUntilStableMatch(
+  db: Database,
+  username: string,
+  match: { id?: unknown; name?: string },
+  timeoutMs: number,
+): Promise<AccessTokenMetadata[]> {
+  const deadline = Date.now() + timeoutMs;
+  let streak = 0;
+  let lastTokens: AccessTokenMetadata[] = [];
+  while (Date.now() < deadline) {
+    lastTokens = await db.getAccessTokens(username);
+    const hit = lastTokens.some((t) => tokenRowMatches(t, match));
+    streak = hit ? streak + 1 : 0;
+    if (streak >= clusterStableReadStreak) return lastTokens;
+    await new Promise((r) => setTimeout(r, 400));
+  }
+  throw new Error(
+    `Timeout waiting for stable access token ${JSON.stringify(match)} (user ${username})`,
+  );
+}
+
 /**
  * Poll `getAccessTokens` until a row matches `id` and/or `name` (cluster-safe;
  * `waitForPropagation` on the token route is not always aligned with list reads).
@@ -64,24 +107,10 @@ export async function waitUntilAccessTokenListed(
   match: { id?: unknown; name?: string },
   timeoutMs: number,
 ): Promise<void> {
-  const deadline = Date.now() + timeoutMs;
-  while (Date.now() < deadline) {
-    const tokens = await db.getAccessTokens(username);
-    const hit = tokens.find((t) => {
-      if (match.name !== undefined && t.name !== match.name) return false;
-      if (match.id !== undefined && !accessTokenIdsEqual(t.id, match.id))
-        return false;
-      return true;
-    });
-    if (hit) return;
-    await new Promise((r) => setTimeout(r, 350));
-  }
-  throw new Error(
-    `Timeout waiting for access token ${JSON.stringify(match)} (user ${username})`,
-  );
+  await pollAccessTokensUntilStableMatch(db, username, match, timeoutMs);
 }
 
-/** Poll until no token with the given id is returned (post-delete / revoke). */
+/** Poll until no token with the given id appears on `clusterStableReadStreak` consecutive reads. */
 export async function waitUntilAccessTokenNotListed(
   db: Database,
   username: string,
@@ -89,10 +118,13 @@ export async function waitUntilAccessTokenNotListed(
   timeoutMs: number,
 ): Promise<void> {
   const deadline = Date.now() + timeoutMs;
+  let streak = 0;
   while (Date.now() < deadline) {
     const tokens = await db.getAccessTokens(username);
-    if (!tokens.some((t) => accessTokenIdsEqual(t.id, id))) return;
-    await new Promise((r) => setTimeout(r, 350));
+    const absent = !tokens.some((t) => accessTokenIdsEqual(t.id, id));
+    streak = absent ? streak + 1 : 0;
+    if (streak >= clusterStableReadStreak) return;
+    await new Promise((r) => setTimeout(r, 400));
   }
   throw new Error(
     `Timeout waiting for access token id ${String(id)} to disappear (user ${username})`,
@@ -118,7 +150,7 @@ export async function createAccessTokenAndPropagate(
       )) as AccessToken;
       await waitForAccessTokensEndpoint(db, username);
       await waitForUserPropagated(db, username);
-      await waitUntilAccessTokenListed(
+      await pollAccessTokensUntilStableMatch(
         db,
         username,
         { id: result.id, name: options.name },
@@ -141,7 +173,7 @@ export async function createAccessTokenAndPropagate(
   throw new Error("createAccessTokenAndPropagate: unreachable");
 }
 
-/** Poll `listAnalyzers` until every name exists (cluster-safe vs per-host GET). */
+/** Poll `listAnalyzers` until every name exists on consecutive reads (cluster RR). */
 export async function waitUntilAnalyzerNamesInList(
   db: Database,
   requiredNames: Iterable<string>,
@@ -149,6 +181,7 @@ export async function waitUntilAnalyzerNamesInList(
 ): Promise<void> {
   const required = new Set(requiredNames);
   const deadline = Date.now() + timeoutMs;
+  let streak = 0;
   while (Date.now() < deadline) {
     const names = new Set((await db.listAnalyzers()).map((a) => a.name));
     let ok = true;
@@ -158,8 +191,9 @@ export async function waitUntilAnalyzerNamesInList(
         break;
       }
     }
-    if (ok) return;
-    await new Promise((r) => setTimeout(r, 400));
+    streak = ok ? streak + 1 : 0;
+    if (streak >= clusterStableReadStreak) return;
+    await new Promise((r) => setTimeout(r, 450));
   }
   throw new Error(
     `Timed out after ${timeoutMs}ms waiting for analyzer names in listAnalyzers`,

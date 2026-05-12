@@ -1,7 +1,9 @@
 import { expect } from "chai";
 import { Analyzer } from "../analyzers.js";
 import { Database } from "../databases.js";
-import { config } from "./_config.js";
+import { isArangoError } from "../errors.js";
+import { ERROR_ARANGO_CONFLICT } from "../lib/codes.js";
+import { config, isClusterRuntime } from "./_config.js";
 import {
   clusterIntegrationTimeoutMs,
   isIgnorableNotFoundError,
@@ -12,12 +14,38 @@ import {
 
 const range = (n: number): number[] => Array.from(Array(n).keys());
 
-async function dropAnalyzerIfPresent(analyzer: Analyzer): Promise<void> {
-  try {
-    await analyzer.drop();
-  } catch (e: unknown) {
-    if (isIgnorableNotFoundError(e)) return;
-    throw e;
+/** Fewer parallel analyzer DDL ops on cluster (agency + lock contention). */
+const nTestAnalyzers = isClusterRuntime ? 2 : 4;
+
+/** Serial drops with retries — parallel `drop()` often hits lock timeouts on cluster. */
+async function dropAnalyzersSerial(
+  database: Database,
+  analyzerShortNames: string[],
+): Promise<void> {
+  for (const short of analyzerShortNames) {
+    const analyzer = database.analyzer(short);
+    for (let attempt = 0; attempt < 8; attempt++) {
+      try {
+        await analyzer.drop();
+        break;
+      } catch (e: unknown) {
+        if (isIgnorableNotFoundError(e)) break;
+        if (!isArangoError(e)) throw e;
+        const msg = e.message ?? "";
+        const transient =
+          e.code === 500 ||
+          e.code === 503 ||
+          e.errorNum === ERROR_ARANGO_CONFLICT ||
+          /timeout waiting to lock|dangling analyzers|Operation timed out/i.test(
+            msg,
+          );
+        if (transient && attempt < 7) {
+          await new Promise((r) => setTimeout(r, 600 * (attempt + 1)));
+          continue;
+        }
+        throw e;
+      }
+    }
   }
 }
 
@@ -52,7 +80,9 @@ describe("Accessing analyzers", function () {
     });
   });
   describe("database.listAnalyzers", () => {
-    const analyzerNames = range(4).map((i) => `${name}::a_${Date.now()}_${i}`);
+    const analyzerNames = range(nTestAnalyzers).map(
+      (i) => `${name}::a_${Date.now()}_${i}`,
+    );
     let allNames: string[];
     before(async () => {
       allNames = [...builtins, ...analyzerNames].sort();
@@ -63,10 +93,9 @@ describe("Accessing analyzers", function () {
       await waitUntilAnalyzerNamesInList(db, allNames, propagationAnalyzerPathMs);
     });
     after(async () => {
-      await Promise.all(
-        analyzerNames.map((name) =>
-          dropAnalyzerIfPresent(db.analyzer(name.replace(/^[^:]+::/, ""))),
-        ),
+      await dropAnalyzersSerial(
+        db,
+        analyzerNames.map((n) => n.replace(/^[^:]+::/, "")),
       );
     });
     it("fetches information about all analyzers", async () => {
@@ -75,7 +104,9 @@ describe("Accessing analyzers", function () {
     });
   });
   describe("database.analyzers", () => {
-    const analyzerNames = range(4).map((i) => `${name}::a_${Date.now()}_${i}`);
+    const analyzerNames = range(nTestAnalyzers).map(
+      (i) => `${name}::a_${Date.now()}_${i}`,
+    );
     let allNames: string[];
     before(async () => {
       allNames = [...builtins, ...analyzerNames].sort();
@@ -86,10 +117,9 @@ describe("Accessing analyzers", function () {
       await waitUntilAnalyzerNamesInList(db, allNames, propagationAnalyzerPathMs);
     });
     after(async () => {
-      await Promise.all(
-        analyzerNames.map((name) =>
-          dropAnalyzerIfPresent(db.analyzer(name.replace(/^[^:]+::/, ""))),
-        ),
+      await dropAnalyzersSerial(
+        db,
+        analyzerNames.map((n) => n.replace(/^[^:]+::/, "")),
       );
     });
     it("creates Analyzer instances", async () => {
