@@ -10,7 +10,7 @@ import {
 
 function waitForAnalyzer(db: Database, name: string) {
   return db.waitForPropagation(
-    { pathname: `/_api/analyzer/${name}` },
+    { pathname: `/_api/analyzer/${encodeURIComponent(name)}` },
     propagationAnalyzerMs,
   );
 }

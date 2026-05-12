@@ -1,7 +1,11 @@
 import { expect } from "chai";
 import { Database } from "../databases.js";
 import { config } from "./_config.js";
-import { clusterIntegrationTimeoutMs } from "./_integration-timeouts.js";
+import {
+  clusterIntegrationTimeoutMs,
+  waitForAccessTokensEndpoint,
+  waitForUserPropagated,
+} from "./_integration-timeouts.js";
 
 // Access tokens require ArangoDB 3.12+
 const describe312 = config.arangoVersion! >= 31200 ? describe : describe.skip;
@@ -17,19 +21,19 @@ describe312("Access Tokens", function () {
     if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE") {
       await system.acquireHostList();
     }
-    // Create test user
     await system.createUser(testUsername, testPassword);
+    await waitForUserPropagated(system, testUsername);
   });
 
   after(async () => {
-    const cleanupSystem  = new Database(config);
+    const cleanupSystem = new Database(config);
     try {
-      await cleanupSystem .removeUser(testUsername);
+      await cleanupSystem.removeUser(testUsername);
     } catch (err) {
       // User might already be deleted, ignore
     } finally {
       try {
-        cleanupSystem .close();
+        cleanupSystem.close();
         system.close();
       } catch (err) {
         // Connection may already be closed, ignore
@@ -101,6 +105,7 @@ describe312("Access Tokens", function () {
         name: "Token for listing test",
       });
       tokenId = result.id;
+      await waitForAccessTokensEndpoint(system, testUsername);
     });
 
     it("should list all tokens", async () => {
@@ -117,6 +122,7 @@ describe312("Access Tokens", function () {
     it("should return empty array for user with no tokens", async () => {
       const newUser = `newuser_${Date.now()}`;
       await system.createUser(newUser, "pass");
+      await waitForUserPropagated(system, newUser);
       try {
         const tokens = await system.getAccessTokens(newUser);
         expect(tokens).to.be.an("array");
@@ -133,6 +139,7 @@ describe312("Access Tokens", function () {
         name: "Token to delete",
       });
       const tokenId = result.id;
+      await waitForAccessTokensEndpoint(system, testUsername);
 
       await system.deleteAccessToken(testUsername, tokenId);
 
@@ -166,10 +173,16 @@ describe312("Access Tokens", function () {
       });
       token = result.token;
       tokenId = result.id;
+      await waitForAccessTokensEndpoint(system, rootUser);
+    });
+
+    beforeEach(() => {
+      system.useBasicAuth("root", "");
     });
 
     after(async () => {
       try {
+        system.useBasicAuth("root", "");
         await system.deleteAccessToken(rootUser, tokenId);
       } catch (err) {
         // Token might already be deleted, ignore

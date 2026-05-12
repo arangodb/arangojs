@@ -23,6 +23,28 @@ export async function waitForNewDatabase(db: Database): Promise<void> {
   );
 }
 
+/** User metadata (e.g. after `createUser`) must be visible on every coordinator. */
+export async function waitForUserPropagated(
+  db: Database,
+  username: string,
+): Promise<void> {
+  await db.waitForPropagation(
+    { pathname: `/_api/user/${encodeURIComponent(username)}` },
+    propagationForResourceMs,
+  );
+}
+
+/** Access-token routes after `createAccessToken` / similar writes. */
+export async function waitForAccessTokensEndpoint(
+  db: Database,
+  username: string,
+): Promise<void> {
+  await db.waitForPropagation(
+    { pathname: `/_api/token/${encodeURIComponent(username)}` },
+    propagationForResourceMs,
+  );
+}
+
 /** Best-effort teardown after a hook timeout or partial setup (cluster races). */
 export function isIgnorableNotFoundError(e: unknown): boolean {
   if (!isArangoError(e)) return false;

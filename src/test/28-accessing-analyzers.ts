@@ -55,16 +55,16 @@ describe("Accessing analyzers", function () {
     let allNames: string[];
     before(async () => {
       allNames = [...builtins, ...analyzerNames].sort();
-      await Promise.all(
-        analyzerNames.map(async (name) => {
-          const analyzer = db.analyzer(name.replace(/^[^:]+::/, ""));
-          await analyzer.create({ type: "identity" });
-          await db.waitForPropagation(
-            { pathname: `/_api/analyzer/${analyzer.name}` },
-            propagationAnalyzerPathMs,
-          );
-        }),
-      );
+      for (const fullName of analyzerNames) {
+        const analyzer = db.analyzer(fullName.replace(/^[^:]+::/, ""));
+        await analyzer.create({ type: "identity" });
+        await db.waitForPropagation(
+          {
+            pathname: `/_api/analyzer/${encodeURIComponent(analyzer.name)}`,
+          },
+          propagationAnalyzerPathMs,
+        );
+      }
     });
     after(async () => {
       await Promise.all(
@@ -83,16 +83,16 @@ describe("Accessing analyzers", function () {
     let allNames: string[];
     before(async () => {
       allNames = [...builtins, ...analyzerNames].sort();
-      await Promise.all(
-        analyzerNames.map(async (name) => {
-          const analyzer = db.analyzer(name.replace(/^[^:]+::/, ""));
-          await analyzer.create({ type: "identity" });
-          await db.waitForPropagation(
-            { pathname: `/_api/analyzer/${analyzer.name}` },
-            propagationAnalyzerPathMs,
-          );
-        }),
-      );
+      for (const fullName of analyzerNames) {
+        const analyzer = db.analyzer(fullName.replace(/^[^:]+::/, ""));
+        await analyzer.create({ type: "identity" });
+        await db.waitForPropagation(
+          {
+            pathname: `/_api/analyzer/${encodeURIComponent(analyzer.name)}`,
+          },
+          propagationAnalyzerPathMs,
+        );
+      }
     });
     after(async () => {
       await Promise.all(
