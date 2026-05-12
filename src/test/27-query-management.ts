@@ -3,6 +3,7 @@ import { aql } from "../aql.js";
 import { Cursor } from "../cursors.js";
 import { Database } from "../databases.js";
 import { ArangoError, ResponseTimeoutError } from "../errors.js";
+import { fetchArangoVersionCode } from "./_arango-server-version.js";
 import { config } from "./_config.js";
 import {
   clusterIntegrationTimeoutMs,
@@ -24,6 +25,7 @@ describe("Query Management API", function () {
   const dbName = `testdb_${Date.now()}`;
   let system: Database, db: Database;
   let allCursors: Cursor[];
+  let arangoVersionCode: number;
   before(async () => {
     allCursors = [];
     system = new Database(config);
@@ -31,6 +33,7 @@ describe("Query Management API", function () {
     await system.createDatabase(dbName);
     db = system.database(dbName);
     await waitForNewDatabase(db);
+    arangoVersionCode = await fetchArangoVersionCode(db);
   });
   after(async () => {
     await Promise.all(
@@ -275,10 +278,12 @@ describe("Query Management API", function () {
       expect(queries).to.have.lengthOf(1);
       expect(queries[0]).to.have.property("bindVars");
       expect(queries[0]).to.have.property("query", query);
-      expect(queries[0]).to.have.property("modificationQuery");
-      expect(queries[0].modificationQuery).to.be.a("boolean");
-      // exitCode should not be present in running queries (only in slow/finished queries)
-      expect(queries[0]).to.not.have.property("exitCode");
+      if (arangoVersionCode >= 31200) {
+        expect(queries[0]).to.have.property("modificationQuery");
+        expect(queries[0].modificationQuery).to.be.a("boolean");
+        // exitCode should not be present in running queries (only in slow/finished queries)
+        expect(queries[0]).to.not.have.property("exitCode");
+      }
       await p1;
     });
   });
@@ -309,12 +314,14 @@ describe("Query Management API", function () {
       );
       expect(queries).to.have.lengthOf(1);
       expect(queries[0]).to.have.property("query", query);
-      expect(queries[0]).to.have.property("modificationQuery");
-      expect(queries[0].modificationQuery).to.be.a("boolean");
-      expect(queries[0]).to.have.property("exitCode");
-      expect(queries[0].exitCode).to.be.a("number");
-      // exitCode should be 0 for successful queries
-      expect(queries[0].exitCode).to.equal(0);
+      if (arangoVersionCode >= 31200) {
+        expect(queries[0]).to.have.property("modificationQuery");
+        expect(queries[0].modificationQuery).to.be.a("boolean");
+        expect(queries[0]).to.have.property("exitCode");
+        expect(queries[0].exitCode).to.be.a("number");
+        // exitCode should be 0 for successful queries
+        expect(queries[0].exitCode).to.equal(0);
+      }
     });
   });
 
