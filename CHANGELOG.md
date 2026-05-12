@@ -18,7 +18,7 @@ This driver uses semantic versioning:
 
 ### Added
 
-- CircleCI integration test pipeline (`.circleci/config.yml` and docs under `.circleci/`): Node 22/24, single and cluster topology, HTTP/HTTPS, **HTTP/1.1 vs HTTP/2** client stack (undici `agentOptions.allowH2` via `TEST_ARANGO_HTTP_VERSION` from matrix `h1` / `h2`), CJS/ESM, against pinned `enterprise:3.12` and `enterprise-preview:4.0-nightly` images; optional `docker-img` pipeline parameter for a custom DB image.
+- CircleCI integration test pipeline (`.circleci/config.yml` and docs under `.circleci/`): **`integration-single-topology`** and **`integration-cluster-topology`** (Node 22/24 × SSL × CJS/ESM × pinned **3.12** and **4.0-nightly**), plus **`integration-http-proto-smoke`** (HTTP/1.1 vs HTTP/2 on a fixed HTTPS cell via `TEST_ARANGO_HTTP_VERSION` / undici `allowH2`); optional **`docker-img`** for **`integration-tests-given-db-image-full-matrix`** (16 jobs).
 
 ### Fixed
 
@@ -26,6 +26,7 @@ This driver uses semantic versioning:
 - Tests: Cluster and `ROUND_ROBIN` integration runs are more reliable—`src/test/_integration-timeouts.ts` adds shared timeouts, propagation helpers, **consecutive agreeing reads** for token lists and analyzer lists, `createAccessTokenAndPropagate` (409 retries + stable listing), and related suite updates (`28-accessing-analyzers`, `32-access-tokens`, etc.).
 - Tests: `ARANGO_RELEASE` prerelease tags (e.g. `4.0-nightly`) parse to a numeric minor version again so skip gates are not driven by `NaN`.
 - Tests: `isClusterRuntime` exported from `src/test/_config.ts` for integration helpers.
+- Dev: `undici` added as a **devDependency** so integration tests that set `agentOptions` (e.g. `TEST_ARANGO_HTTP_VERSION` in CircleCI) resolve the dynamic `import("undici")` in `connection.ts` (optional peer alone is not installed by default).
 
 ## [10.3.0] - 2026-04-14
 
