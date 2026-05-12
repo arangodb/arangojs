@@ -7,6 +7,7 @@ import {
   isIgnorableNotFoundError,
   propagationAnalyzerPathMs,
   waitForNewDatabase,
+  waitUntilAnalyzerNamesInList,
 } from "./_integration-timeouts.js";
 
 const range = (n: number): number[] => Array.from(Array(n).keys());
@@ -58,13 +59,8 @@ describe("Accessing analyzers", function () {
       for (const fullName of analyzerNames) {
         const analyzer = db.analyzer(fullName.replace(/^[^:]+::/, ""));
         await analyzer.create({ type: "identity" });
-        await db.waitForPropagation(
-          {
-            pathname: `/_api/analyzer/${encodeURIComponent(analyzer.name)}`,
-          },
-          propagationAnalyzerPathMs,
-        );
       }
+      await waitUntilAnalyzerNamesInList(db, allNames, propagationAnalyzerPathMs);
     });
     after(async () => {
       await Promise.all(
@@ -86,13 +82,8 @@ describe("Accessing analyzers", function () {
       for (const fullName of analyzerNames) {
         const analyzer = db.analyzer(fullName.replace(/^[^:]+::/, ""));
         await analyzer.create({ type: "identity" });
-        await db.waitForPropagation(
-          {
-            pathname: `/_api/analyzer/${encodeURIComponent(analyzer.name)}`,
-          },
-          propagationAnalyzerPathMs,
-        );
       }
+      await waitUntilAnalyzerNamesInList(db, allNames, propagationAnalyzerPathMs);
     });
     after(async () => {
       await Promise.all(

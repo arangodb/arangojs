@@ -1,8 +1,9 @@
 import { expect } from "chai";
 import { Database } from "../databases.js";
-import { config } from "./_config.js";
+import { config, isClusterRuntime } from "./_config.js";
 import {
   clusterIntegrationTimeoutMs,
+  createAccessTokenAndPropagate,
   waitForAccessTokensEndpoint,
   waitForUserPropagated,
 } from "./_integration-timeouts.js";
@@ -43,7 +44,7 @@ describe312("Access Tokens", function () {
 
   describe("database.createAccessToken", () => {
     it("should create a token with name only", async () => {
-      const result = await system.createAccessToken(testUsername, {
+      const result = await createAccessTokenAndPropagate(system, testUsername, {
         name: "Test token 1",
       });
       expect(result).to.have.property("id");
@@ -57,7 +58,7 @@ describe312("Access Tokens", function () {
       const expiryTimestamp =
         Math.floor(Date.now() / 1000) + 1 * 24 * 60 * 60; // 1 days from now
 
-      const result = await system.createAccessToken(testUsername, {
+      const result = await createAccessTokenAndPropagate(system, testUsername, {
         name: "Test token 2",
         valid_until: expiryTimestamp,
       });
@@ -101,11 +102,10 @@ describe312("Access Tokens", function () {
     let tokenId: number;
 
     before(async () => {
-      const result = await system.createAccessToken(testUsername, {
+      const result = await createAccessTokenAndPropagate(system, testUsername, {
         name: "Token for listing test",
       });
       tokenId = result.id;
-      await waitForAccessTokensEndpoint(system, testUsername);
     });
 
     it("should list all tokens", async () => {
@@ -135,15 +135,15 @@ describe312("Access Tokens", function () {
 
   describe("database.deleteAccessToken", () => {
     it("should delete a token", async () => {
-      const result = await system.createAccessToken(testUsername, {
+      const result = await createAccessTokenAndPropagate(system, testUsername, {
         name: "Token to delete",
       });
       const tokenId = result.id;
-      await waitForAccessTokensEndpoint(system, testUsername);
 
       await system.deleteAccessToken(testUsername, tokenId);
 
       // Verify token is deleted
+      await waitForAccessTokensEndpoint(system, testUsername);
       const tokens = await system.getAccessTokens(testUsername);
       const foundToken = tokens.find((t) => t.id === tokenId);
       expect(foundToken).to.not.exist;
@@ -167,75 +167,84 @@ describe312("Access Tokens", function () {
     const rootUser = "root";
 
     before(async () => {
-      const result = await system.createAccessToken(rootUser, {
+      const result = await createAccessTokenAndPropagate(system, rootUser, {
         name: "Auth test token",
         valid_until: Math.floor(Date.now() / 1000) + 1 * 24 * 60 * 60, // 1 day from now
       });
       token = result.token;
       tokenId = result.id;
-      await waitForAccessTokensEndpoint(system, rootUser);
-    });
-
-    beforeEach(() => {
-      system.useBasicAuth("root", "");
     });
 
     after(async () => {
       try {
-        system.useBasicAuth("root", "");
-        await system.deleteAccessToken(rootUser, tokenId);
+        const admin = new Database(config);
+        if (isClusterRuntime) await admin.acquireHostList();
+        admin.useBasicAuth("root", "");
+        await admin.deleteAccessToken(rootUser, tokenId);
+        admin.close();
       } catch (err) {
         // Token might already be deleted, ignore
       }
     });
 
     it("should authenticate using useAccessToken", async () => {
-      // Use access token directly for Basic Auth
-      system.useAccessToken(token);
-
-      // Verify authentication works by making a request
-      const collections = await system.collections();
-
-      expect(collections).to.be.an("array");
+      const client = new Database(config);
+      if (isClusterRuntime) await client.acquireHostList();
+      try {
+        client.useAccessToken(token);
+        const collections = await client.collections();
+        expect(collections).to.be.an("array");
+      } finally {
+        client.close();
+      }
     });
 
     it("should authenticate using login with empty username", async () => {
-
-      // Login with empty username - token contains embedded username
-      const jwt = await system.login("", token);
-
-      expect(jwt).to.be.a("string");
-      expect(jwt.length).to.be.greaterThan(0);
+      const client = new Database(config);
+      if (isClusterRuntime) await client.acquireHostList();
+      try {
+        const jwt = await client.login("", token);
+        expect(jwt).to.be.a("string");
+        expect(jwt.length).to.be.greaterThan(0);
+      } finally {
+        client.close();
+      }
     });
 
     it("should authenticate using login with explicit username", async () => {
-
-      // Login with explicit username - must match token's embedded user
-      const jwt = await system.login(rootUser, token);
-
-      expect(jwt).to.be.a("string");
-      expect(jwt.length).to.be.greaterThan(0);
+      const client = new Database(config);
+      if (isClusterRuntime) await client.acquireHostList();
+      try {
+        const jwt = await client.login(rootUser, token);
+        expect(jwt).to.be.a("string");
+        expect(jwt.length).to.be.greaterThan(0);
+      } finally {
+        client.close();
+      }
     });
 
     it("should authenticate using useBasicAuth with empty username and token", async () => {
-
-      // Use Basic Auth with empty username and token as password
-      system.useBasicAuth("", token);
-
-      // Verify authentication works by making a request
-      const collections = await system.collections();
-
-      expect(collections).to.be.an("array");
+      const client = new Database(config);
+      if (isClusterRuntime) await client.acquireHostList();
+      try {
+        client.useBasicAuth("", token);
+        const collections = await client.collections();
+        expect(collections).to.be.an("array");
+      } finally {
+        client.close();
+      }
     });
 
     it("should authenticate using useBasicAuth with explicit username and token", async () => {
-      // Use Basic Auth with explicit username and token as password
-      system.useBasicAuth(rootUser, token);
-
-      // Verify authentication works by making a request
-      const collections = await system.collections();
-
-      expect(collections).to.be.an("array");
+      const client = new Database(config);
+      if (isClusterRuntime) await client.acquireHostList();
+      try {
+        client.useBasicAuth(rootUser, token);
+        const collections = await client.collections();
+        expect(collections).to.be.an("array");
+      } finally {
+        client.close();
+      }
     });
   });
 });
