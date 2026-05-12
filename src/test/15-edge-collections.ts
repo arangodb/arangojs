@@ -3,8 +3,14 @@ import { EdgeCollection } from "../collections.js";
 import { Database } from "../databases.js";
 import { DocumentMetadata } from "../documents.js";
 import { config } from "./_config.js";
+import {
+  clusterIntegrationTimeoutMs,
+  propagationForResourceMs,
+  waitForNewDatabase,
+} from "./_integration-timeouts.js";
 
 describe("EdgeCollection API", function () {
+  this.timeout(clusterIntegrationTimeoutMs);
   const name = `testdb_${Date.now()}`;
   let system: Database, db: Database;
   let collection: EdgeCollection<{
@@ -17,6 +23,7 @@ describe("EdgeCollection API", function () {
     if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE")
       await system.acquireHostList();
     db = await system.createDatabase(name);
+    await waitForNewDatabase(db);
   });
   after(async () => {
     try {
@@ -29,7 +36,7 @@ describe("EdgeCollection API", function () {
     collection = await db.createEdgeCollection(`c_${Date.now()}`);
     await db.waitForPropagation(
       { pathname: `/_api/collection/${collection.name}` },
-      10000,
+      propagationForResourceMs,
     );
   });
   afterEach(async () => {

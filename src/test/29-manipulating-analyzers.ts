@@ -2,12 +2,22 @@ import { expect } from "chai";
 import { Analyzer } from "../analyzers.js";
 import { Database } from "../databases.js";
 import { config } from "./_config.js";
+import {
+  clusterIntegrationTimeoutMs,
+  propagationAnalyzerMs,
+  waitForNewDatabase,
+} from "./_integration-timeouts.js";
 
 function waitForAnalyzer(db: Database, name: string) {
-  return db.waitForPropagation({ pathname: `/_api/analyzer/${name}` }, 30000);
+  return db.waitForPropagation(
+    { pathname: `/_api/analyzer/${name}` },
+    propagationAnalyzerMs,
+  );
 }
 
 describe("Manipulating analyzers", function () {
+  this.timeout(clusterIntegrationTimeoutMs);
+
   const name = `testdb_${Date.now()}`;
   let system: Database, db: Database;
   before(async () => {
@@ -15,6 +25,7 @@ describe("Manipulating analyzers", function () {
     if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE")
       await system.acquireHostList();
     db = await system.createDatabase(name);
+    await waitForNewDatabase(db);
   });
   after(async () => {
     try {

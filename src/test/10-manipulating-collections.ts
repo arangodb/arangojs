@@ -2,9 +2,15 @@ import { expect } from "chai";
 import { DocumentCollection } from "../collections.js";
 import { Database } from "../databases.js";
 import { config } from "./_config.js";
+import {
+  clusterIntegrationTimeoutMs,
+  propagationForResourceMs,
+  waitForNewDatabase,
+} from "./_integration-timeouts.js";
 import { fetchArangoVersionCode } from "./_arango-server-version.js";
 
 describe("Manipulating collections", function () {
+  this.timeout(clusterIntegrationTimeoutMs);
   const name = `testdb_${Date.now()}`;
   let system: Database, db: Database;
   let collection: DocumentCollection;
@@ -13,6 +19,7 @@ describe("Manipulating collections", function () {
     if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE")
       await system.acquireHostList();
     db = await system.createDatabase(name);
+    await waitForNewDatabase(db);
   });
   after(async () => {
     try {
@@ -25,7 +32,7 @@ describe("Manipulating collections", function () {
     collection = await db.createCollection(`collection-${Date.now()}`);
     await db.waitForPropagation(
       { pathname: `/_api/collection/${collection.name}` },
-      10000,
+      propagationForResourceMs,
     );
   });
   afterEach(async () => {
@@ -47,7 +54,7 @@ describe("Manipulating collections", function () {
       );
       await db.waitForPropagation(
         { pathname: `/_api/collection/${collection.name}` },
-        10000,
+        propagationForResourceMs,
       );
       const info = await db.collection(collection.name).get();
       expect(info).to.have.property("name", collection.name);
@@ -61,7 +68,7 @@ describe("Manipulating collections", function () {
       );
       await db.waitForPropagation(
         { pathname: `/_api/collection/${collection.name}` },
-        10000,
+        propagationForResourceMs,
       );
       const info = await db.collection(collection.name).get();
       expect(info).to.have.property("name", collection.name);

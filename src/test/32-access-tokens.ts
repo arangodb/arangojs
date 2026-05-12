@@ -1,11 +1,13 @@
 import { expect } from "chai";
 import { Database } from "../databases.js";
 import { config } from "./_config.js";
+import { clusterIntegrationTimeoutMs } from "./_integration-timeouts.js";
 
 // Access tokens require ArangoDB 3.12+
 const describe312 = config.arangoVersion! >= 31200 ? describe : describe.skip;
 
 describe312("Access Tokens", function () {
+  this.timeout(clusterIntegrationTimeoutMs);
   let system: Database;
   const testUsername = `testuser_${Date.now()}`;
   const testPassword = "testpass123";

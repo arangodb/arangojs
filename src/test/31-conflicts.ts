@@ -3,6 +3,10 @@ import { aql } from "../aql.js";
 import { DocumentCollection } from "../collections.js";
 import { Database } from "../databases.js";
 import { config } from "./_config.js";
+import {
+  clusterIntegrationTimeoutMs,
+  waitForNewDatabase,
+} from "./_integration-timeouts.js";
 
 /** Many parallel writes + retries can exhaust coordinators behind an LB; cap in-flight queries. */
 const clusterLbParallelChunk =
@@ -36,7 +40,8 @@ async function parallelInChunksSettled(
   return out;
 }
 
-describe("config.maxRetries", () => {
+describe("config.maxRetries", function () {
+  this.timeout(clusterIntegrationTimeoutMs);
   let system: Database;
   const docKey = "test";
   const dbName = `testdb_${Date.now()}`;
@@ -48,6 +53,7 @@ describe("config.maxRetries", () => {
       await system.acquireHostList();
     }
     db = await system.createDatabase(dbName);
+    await waitForNewDatabase(db);
     collection = await db.createCollection(collectionName);
     await db.waitForPropagation(
       { pathname: `/_api/collection/${collection.name}` },

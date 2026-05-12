@@ -8,10 +8,13 @@ const ARANGO_RELEASE = process.env.ARANGO_RELEASE || "";
 let arangoVersion: number = 39999;
 if (ARANGO_VERSION) arangoVersion = ARANGO_VERSION;
 else if (ARANGO_RELEASE.includes(".")) {
-  let release = ARANGO_RELEASE;
-  if (release.includes(":")) release = release.split(":")[1];
-  if (release.includes("-")) release = release.split(":")[0];
-  const [major, minor] = release.split(".").map((v) => Number(v));
+  let tag = ARANGO_RELEASE;
+  if (tag.includes(":")) tag = tag.split(":").pop() ?? tag;
+  // e.g. "4.0-nightly" -> "4.0" so minor is numeric (docker tags are not semver tuples)
+  const core = tag.split("-")[0] ?? tag;
+  const parts = core.split(".").map((v) => Number(v));
+  const major = parts[0] || 0;
+  const minor = parts[1] || 0;
   arangoVersion = (major * 100 + minor) * 100;
 }
 const ARANGO_LOAD_BALANCING_STRATEGY = process.env
@@ -31,3 +34,7 @@ export const config: ConfigOptions & {
       arangoVersion,
       precaptureStackTraces: true,
     };
+
+/** Multi-coordinator URL (cluster / active failover) in CI. */
+export const isClusterRuntime =
+  Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE";

@@ -2,6 +2,10 @@ import { expect } from "chai";
 import { aql } from "../aql.js";
 import { Database } from "../databases.js";
 import { config } from "./_config.js";
+import {
+  clusterIntegrationTimeoutMs,
+  waitForNewDatabase,
+} from "./_integration-timeouts.js";
 
 describe("Content-Length Header", () => {
   describe("with string bodies (JSON)", () => {
@@ -398,6 +402,7 @@ describe("Content-Length Header", () => {
   });
 
   describe("integration with real API calls", function () {
+    this.timeout(clusterIntegrationTimeoutMs);
     const dbName = `testdb_${Date.now()}`;
     let system: Database, db: Database;
     before(async () => {
@@ -405,9 +410,7 @@ describe("Content-Length Header", () => {
       if (Array.isArray(config.url)) await system.acquireHostList();
       await system.createDatabase(dbName);
       db = system.database(dbName);
-      if (Array.isArray(config.url)) {
-        await db.waitForPropagation({ pathname: `/_api/version` }, 10000);
-      }
+      await waitForNewDatabase(db);
     });
     after(async () => {
       try {

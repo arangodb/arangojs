@@ -2,10 +2,27 @@ import { expect } from "chai";
 import { Analyzer } from "../analyzers.js";
 import { Database } from "../databases.js";
 import { config } from "./_config.js";
+import {
+  clusterIntegrationTimeoutMs,
+  isIgnorableNotFoundError,
+  propagationAnalyzerPathMs,
+  waitForNewDatabase,
+} from "./_integration-timeouts.js";
 
 const range = (n: number): number[] => Array.from(Array(n).keys());
 
+async function dropAnalyzerIfPresent(analyzer: Analyzer): Promise<void> {
+  try {
+    await analyzer.drop();
+  } catch (e: unknown) {
+    if (isIgnorableNotFoundError(e)) return;
+    throw e;
+  }
+}
+
 describe("Accessing analyzers", function () {
+  this.timeout(clusterIntegrationTimeoutMs);
+
   const builtins: string[] = [];
   const name = `testdb_${Date.now()}`;
   let system: Database, db: Database;
@@ -14,6 +31,7 @@ describe("Accessing analyzers", function () {
     if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE")
       await system.acquireHostList();
     db = await system.createDatabase(name);
+    await waitForNewDatabase(db);
     builtins.push(...(await db.listAnalyzers()).map((a) => a.name));
     expect(builtins).not.to.have.length(0);
   });
@@ -43,7 +61,7 @@ describe("Accessing analyzers", function () {
           await analyzer.create({ type: "identity" });
           await db.waitForPropagation(
             { pathname: `/_api/analyzer/${analyzer.name}` },
-            65000,
+            propagationAnalyzerPathMs,
           );
         }),
       );
@@ -51,7 +69,7 @@ describe("Accessing analyzers", function () {
     after(async () => {
       await Promise.all(
         analyzerNames.map((name) =>
-          db.analyzer(name.replace(/^[^:]+::/, "")).drop(),
+          dropAnalyzerIfPresent(db.analyzer(name.replace(/^[^:]+::/, ""))),
         ),
       );
     });
@@ -71,7 +89,7 @@ describe("Accessing analyzers", function () {
           await analyzer.create({ type: "identity" });
           await db.waitForPropagation(
             { pathname: `/_api/analyzer/${analyzer.name}` },
-            65000,
+            propagationAnalyzerPathMs,
           );
         }),
       );
@@ -79,7 +97,7 @@ describe("Accessing analyzers", function () {
     after(async () => {
       await Promise.all(
         analyzerNames.map((name) =>
-          db.analyzer(name.replace(/^[^:]+::/, "")).drop(),
+          dropAnalyzerIfPresent(db.analyzer(name.replace(/^[^:]+::/, ""))),
         ),
       );
     });

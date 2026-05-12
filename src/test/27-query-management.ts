@@ -4,6 +4,10 @@ import { Cursor } from "../cursors.js";
 import { Database } from "../databases.js";
 import { ArangoError, ResponseTimeoutError } from "../errors.js";
 import { config } from "./_config.js";
+import {
+  clusterIntegrationTimeoutMs,
+  waitForNewDatabase,
+} from "./_integration-timeouts.js";
 
 // NOTE These tests will not reliably work with load balancing.
 const describeNLB =
@@ -16,6 +20,7 @@ async function sleep(ms: number) {
 }
 
 describe("Query Management API", function () {
+  this.timeout(clusterIntegrationTimeoutMs);
   const dbName = `testdb_${Date.now()}`;
   let system: Database, db: Database;
   let allCursors: Cursor[];
@@ -25,11 +30,7 @@ describe("Query Management API", function () {
     if (Array.isArray(config.url)) await system.acquireHostList();
     await system.createDatabase(dbName);
     db = system.database(dbName);
-    // the following makes calls to /_db/${name} on all coordinators, thus waiting
-    // long enough for the database to become available on all instances
-    if (Array.isArray(config.url)) {
-      await db.waitForPropagation({ pathname: `/_api/version` }, 10000);
-    }
+    await waitForNewDatabase(db);
   });
   after(async () => {
     await Promise.all(

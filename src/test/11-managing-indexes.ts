@@ -3,6 +3,11 @@ import { DocumentCollection } from "../collections.js";
 import { Database } from "../databases.js";
 import { InvertedIndexDescription } from "../indexes.js";
 import { config } from "./_config.js";
+import {
+  clusterIntegrationTimeoutMs,
+  propagationForResourceMs,
+  waitForNewDatabase,
+} from "./_integration-timeouts.js";
 
 const it312 = config.arangoVersion! >= 31200 ? it : it.skip;
 
@@ -44,6 +49,8 @@ function resolveVectorIndexTestMode():
 }
 
 describe("Managing indexes", function () {
+  this.timeout(clusterIntegrationTimeoutMs);
+
   let system: Database, db: Database;
   let collection: DocumentCollection;
   const dbName = `testdb_${Date.now()}`;
@@ -54,10 +61,11 @@ describe("Managing indexes", function () {
       await system.acquireHostList();
     await system.createDatabase(dbName);
     db = system.database(dbName);
+    await waitForNewDatabase(db);
     collection = await db.createCollection(collectionName);
     await db.waitForPropagation(
       { pathname: `/_api/collection/${collection.name}` },
-      10000,
+      propagationForResourceMs,
     );
   });
   after(async () => {
