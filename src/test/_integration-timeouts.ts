@@ -47,6 +47,58 @@ export async function waitForAccessTokensEndpoint(
   );
 }
 
+/** Compare token ids from create vs list (JSON may use number or numeric string). */
+export function accessTokenIdsEqual(a: unknown, b: unknown): boolean {
+  const na = typeof a === "number" ? a : Number(a);
+  const nb = typeof b === "number" ? b : Number(b);
+  return Number.isFinite(na) && Number.isFinite(nb) && na === nb;
+}
+
+/**
+ * Poll `getAccessTokens` until a row matches `id` and/or `name` (cluster-safe;
+ * `waitForPropagation` on the token route is not always aligned with list reads).
+ */
+export async function waitUntilAccessTokenListed(
+  db: Database,
+  username: string,
+  match: { id?: unknown; name?: string },
+  timeoutMs: number,
+): Promise<void> {
+  const deadline = Date.now() + timeoutMs;
+  while (Date.now() < deadline) {
+    const tokens = await db.getAccessTokens(username);
+    const hit = tokens.find((t) => {
+      if (match.name !== undefined && t.name !== match.name) return false;
+      if (match.id !== undefined && !accessTokenIdsEqual(t.id, match.id))
+        return false;
+      return true;
+    });
+    if (hit) return;
+    await new Promise((r) => setTimeout(r, 350));
+  }
+  throw new Error(
+    `Timeout waiting for access token ${JSON.stringify(match)} (user ${username})`,
+  );
+}
+
+/** Poll until no token with the given id is returned (post-delete / revoke). */
+export async function waitUntilAccessTokenNotListed(
+  db: Database,
+  username: string,
+  id: unknown,
+  timeoutMs: number,
+): Promise<void> {
+  const deadline = Date.now() + timeoutMs;
+  while (Date.now() < deadline) {
+    const tokens = await db.getAccessTokens(username);
+    if (!tokens.some((t) => accessTokenIdsEqual(t.id, id))) return;
+    await new Promise((r) => setTimeout(r, 350));
+  }
+  throw new Error(
+    `Timeout waiting for access token id ${String(id)} to disappear (user ${username})`,
+  );
+}
+
 /**
  * Creates an access token and waits until user/token state is coherent on all
  * coordinators. Retries on HTTP 409 / write-write conflicts when several token
@@ -66,6 +118,12 @@ export async function createAccessTokenAndPropagate(
       )) as AccessToken;
       await waitForAccessTokensEndpoint(db, username);
       await waitForUserPropagated(db, username);
+      await waitUntilAccessTokenListed(
+        db,
+        username,
+        { id: result.id, name: options.name },
+        propagationForResourceMs,
+      );
       return result;
     } catch (e: unknown) {
       const conflict =

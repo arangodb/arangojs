@@ -1,12 +1,40 @@
 import { expect } from "chai";
 import { Database } from "../databases.js";
+import { isArangoError } from "../errors.js";
 import { config, isClusterRuntime } from "./_config.js";
 import {
+  accessTokenIdsEqual,
   clusterIntegrationTimeoutMs,
   createAccessTokenAndPropagate,
-  waitForAccessTokensEndpoint,
+  propagationForResourceMs,
   waitForUserPropagated,
+  waitUntilAccessTokenListed,
+  waitUntilAccessTokenNotListed,
 } from "./_integration-timeouts.js";
+
+async function withUnauthorizedRetry<T>(fn: () => Promise<T>): Promise<T> {
+  const budget = isClusterRuntime ? 60_000 : 8_000;
+  const deadline = Date.now() + budget;
+  let last: unknown;
+  while (Date.now() < deadline) {
+    try {
+      return await fn();
+    } catch (e) {
+      last = e;
+      if (isClusterRuntime && isArangoError(e)) {
+        const retryable =
+          e.code === 401 ||
+          /not authorized|unauthorized|wrong credentials/i.test(e.message);
+        if (retryable) {
+          await new Promise((r) => setTimeout(r, 500));
+          continue;
+        }
+      }
+      throw e;
+    }
+  }
+  throw last instanceof Error ? last : new Error(String(last));
+}
 
 // Access tokens require ArangoDB 3.12+
 const describe312 = config.arangoVersion! >= 31200 ? describe : describe.skip;
@@ -105,15 +133,25 @@ describe312("Access Tokens", function () {
       const result = await createAccessTokenAndPropagate(system, testUsername, {
         name: "Token for listing test",
       });
-      tokenId = result.id;
+      tokenId = Number(result.id);
     });
 
     it("should list all tokens", async () => {
+      await waitUntilAccessTokenListed(
+        system,
+        testUsername,
+        { id: tokenId, name: "Token for listing test" },
+        propagationForResourceMs,
+      );
       const tokens = await system.getAccessTokens(testUsername);
       expect(tokens).to.be.an("array");
       expect(tokens.length).to.be.greaterThan(0);
 
-      const foundToken = tokens.find((t) => t.id === tokenId);
+      const foundToken = tokens.find(
+        (t) =>
+          accessTokenIdsEqual(t.id, tokenId) &&
+          t.name === "Token for listing test",
+      );
       expect(foundToken).to.exist;
       expect(foundToken!.name).to.equal("Token for listing test");
       expect(foundToken).to.not.have.property("token"); // Token value not returned
@@ -138,14 +176,18 @@ describe312("Access Tokens", function () {
       const result = await createAccessTokenAndPropagate(system, testUsername, {
         name: "Token to delete",
       });
-      const tokenId = result.id;
+      const tokenId = Number(result.id);
 
       await system.deleteAccessToken(testUsername, tokenId);
 
-      // Verify token is deleted
-      await waitForAccessTokensEndpoint(system, testUsername);
+      await waitUntilAccessTokenNotListed(
+        system,
+        testUsername,
+        tokenId,
+        propagationForResourceMs,
+      );
       const tokens = await system.getAccessTokens(testUsername);
-      const foundToken = tokens.find((t) => t.id === tokenId);
+      const foundToken = tokens.find((t) => accessTokenIdsEqual(t.id, tokenId));
       expect(foundToken).to.not.exist;
     });
 
@@ -172,7 +214,7 @@ describe312("Access Tokens", function () {
         valid_until: Math.floor(Date.now() / 1000) + 1 * 24 * 60 * 60, // 1 day from now
       });
       token = result.token;
-      tokenId = result.id;
+      tokenId = Number(result.id);
     });
 
     after(async () => {
@@ -192,7 +234,9 @@ describe312("Access Tokens", function () {
       if (isClusterRuntime) await client.acquireHostList();
       try {
         client.useAccessToken(token);
-        const collections = await client.collections();
+        const collections = await withUnauthorizedRetry(() =>
+          client.collections(),
+        );
         expect(collections).to.be.an("array");
       } finally {
         client.close();
@@ -203,7 +247,7 @@ describe312("Access Tokens", function () {
       const client = new Database(config);
       if (isClusterRuntime) await client.acquireHostList();
       try {
-        const jwt = await client.login("", token);
+        const jwt = await withUnauthorizedRetry(() => client.login("", token));
         expect(jwt).to.be.a("string");
         expect(jwt.length).to.be.greaterThan(0);
       } finally {
@@ -215,7 +259,9 @@ describe312("Access Tokens", function () {
       const client = new Database(config);
       if (isClusterRuntime) await client.acquireHostList();
       try {
-        const jwt = await client.login(rootUser, token);
+        const jwt = await withUnauthorizedRetry(() =>
+          client.login(rootUser, token),
+        );
         expect(jwt).to.be.a("string");
         expect(jwt.length).to.be.greaterThan(0);
       } finally {
@@ -228,7 +274,9 @@ describe312("Access Tokens", function () {
       if (isClusterRuntime) await client.acquireHostList();
       try {
         client.useBasicAuth("", token);
-        const collections = await client.collections();
+        const collections = await withUnauthorizedRetry(() =>
+          client.collections(),
+        );
         expect(collections).to.be.an("array");
       } finally {
         client.close();
@@ -240,7 +288,9 @@ describe312("Access Tokens", function () {
       if (isClusterRuntime) await client.acquireHostList();
       try {
         client.useBasicAuth(rootUser, token);
-        const collections = await client.collections();
+        const collections = await withUnauthorizedRetry(() =>
+          client.collections(),
+        );
         expect(collections).to.be.an("array");
       } finally {
         client.close();
