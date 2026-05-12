@@ -113,13 +113,13 @@ jobs:
 
 workflows:
   # Node.js 22.x + 24.x (current LTS pair per arangojs compatibility policy).
-  # Multiple pinned DB images × cjs/esm (single / HTTP). Two matrices so job names stay unique.
+  # Two pinned DB images; each matrix is topology × SSL × nodes × modules (16 jobs each, 32 total). Names must stay unique per cell.
   integration-tests-multi-runtime-multi-db-image:
     when:
       not: <<pipeline.parameters.docker-img>>
     jobs:
       - node-test:
-          name: <<matrix.node>>-<<matrix.module-system>>-312
+          name: <<matrix.node>>-<<matrix.topology>>-ssl<<matrix.ssl>>-<<matrix.module-system>>-312
           filters:
             branches:
               ignore: stable
@@ -132,13 +132,15 @@ workflows:
                 - 'n24'
               topology:
                 - 'single'
+                - 'cluster'
               ssl:
+                - 'true'
                 - 'false'
               module-system:
                 - 'cjs'
                 - 'esm'
       - node-test:
-          name: <<matrix.node>>-<<matrix.module-system>>-4.0-nightly
+          name: <<matrix.node>>-<<matrix.topology>>-ssl<<matrix.ssl>>-<<matrix.module-system>>-4.0-nightly
           filters:
             branches:
               ignore: stable
@@ -151,7 +153,9 @@ workflows:
                 - 'n24'
               topology:
                 - 'single'
+                - 'cluster'
               ssl:
+                - 'true'
                 - 'false'
               module-system:
                 - 'cjs'

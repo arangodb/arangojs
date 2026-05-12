@@ -16,19 +16,16 @@ This driver uses semantic versioning:
 
 ## [Unreleased]
 
+### Added
+
+- CircleCI integration test pipeline (`.circleci/config.yml` and docs under `.circleci/`): Node 22/24, single and cluster topology, HTTP/HTTPS, CJS/ESM, against pinned `enterprise:3.12` and `enterprise-preview:4.0-nightly` images; optional `docker-img` pipeline parameter for a custom DB image.
+
 ### Fixed
 
-- Tests: Added version-gated skips for ArangoDB 4.0+ API and behavior changes; 3.12 coverage unchanged (DE-1151)
-
-- Tests: Improved integration test stability on multi-coordinator clusters and load-balanced URLs (`TEST_ARANGODB_URL` with multiple endpoints, `TEST_ARANGO_LOAD_BALANCING_STRATEGY`).
-
-  - Introduced `src/test/_integration-timeouts.ts` for shared Mocha suite/hook timeouts (above the global 10s default), cluster-aware `waitForPropagation` limits, `waitForNewDatabase()` after `createDatabase`, and `isIgnorableNotFoundError()` for best-effort cleanup when a hook fails mid-setup.
-  - Applied those helpers across integration suites that create databases, collections, views, graphs, or analyzers so propagation and hook duration match real coordinator latency.
-  - `28-accessing-analyzers`: analyzer `drop()` in `after` hooks ignores not-found responses when setup did not complete, avoiding cascading failures after timeouts.
-
-- Tests: Fixed `config.arangoVersion` parsing from `ARANGO_RELEASE` for pre-release image tags such as `4.0-nightly` (strip the prerelease suffix before parsing major/minor). Previously the minor segment could become `NaN`, which mis-triggered `describe.skip` / `it.skip` gates and skipped 3.12+ suites on nightly images.
-
-- Tests: Exported `isClusterRuntime` from `src/test/_config.ts` for reuse by integration helpers (multi-URL client with non-`NONE` load balancing strategy).
+- Tests: Version-gated skips for ArangoDB 4.0+ API and behavior changes; 3.12 coverage unchanged (DE-1151).
+- Tests: Integration runs more reliably on clusters and load-balanced URLs—shared timeouts and waits in `src/test/_integration-timeouts.ts`, `waitForNewDatabase()` after `createDatabase`, longer propagation where needed, and safer analyzer teardown when setup fails mid-way.
+- Tests: `ARANGO_RELEASE` prerelease tags (e.g. `4.0-nightly`) parse to a numeric minor version again so skip gates are not driven by `NaN`.
+- Tests: `isClusterRuntime` exported from `src/test/_config.ts` for integration helpers.
 
 ## [10.3.0] - 2026-04-14
 
