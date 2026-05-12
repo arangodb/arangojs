@@ -30,6 +30,7 @@ The **default** CircleCI pipeline therefore exercises **cluster** and **HTTPS** 
 | **Runner / image** | `ubuntu-latest`; test job runs in `node:<version>-alpine` | `cimg/node` executors **22.17** and **24.4** (`n22` / `n24`); **remote Docker** for DB |
 | **Topology** | Single instance only (`services.arangodb`, `TEST_ARANGODB_URL: http://arangodb:8529`) | **Default (`docker-img` empty):** **single + cluster** for both pinned images. **`docker-img` set:** single + cluster for every cell. |
 | **SSL** | HTTP only | **Default:** **HTTP + HTTPS** (`ssl` matrix `true` / `false`; `NODE_TLS_REJECT_UNAUTHORIZED=0` when HTTPS) for both pinned images. **`docker-img` set:** HTTP + HTTPS for all cells. |
+| **HTTP client stack** | Default Node `fetch` (no undici `agentOptions` from tests) | **Default + manual:** matrix **`h1` / `h2`** → `TEST_ARANGO_HTTP_VERSION=1.1` or `2.0`; `src/test/_config.ts` sets undici **`agentOptions.allowH2`** (`false` / `true`). **HTTP/2** applies over **HTTPS** (ALPN); plain HTTP remains HTTP/1.1, but both cells pin the stack. |
 | **Node versions** | 20, 22, 23 (matrix `node-version`) | **22, 24** (matches arangojs **supported LTS pair** on CircleCI; GitHub matrix may differ until updated). |
 | **Module system** | `cjs` + `esm` | `cjs` + `esm` |
 | **ArangoDB images** | **Three** matrix images: `arangodb/enterprise:3.12`, `arangodb/enterprise:3.12-deb`, `arangodb/enterprise-preview:devel-nightly` | **Default:** `enterprise:3.12` and `enterprise-preview:4.0-nightly` (`integration-tests-multi-runtime-multi-db-image`). **`docker-img` set:** whichever image you pass (`integration-tests-given-db-image-full-matrix`). |
@@ -50,6 +51,7 @@ The **default** CircleCI pipeline therefore exercises **cluster** and **HTTPS** 
 |------|--------|
 | **Cluster** | On the **default** pipeline, for any cell with `topology: cluster` (**3.12** and **4.0-nightly**). When **`docker-img`** is set, for every cluster cell (`integration-tests-given-db-image-full-matrix`). |
 | **SSL matrix** | On the **default** pipeline, for **both** pinned images (`ssl: true` / `false`; HTTPS uses `docker/` via `start_db.sh`). When **`docker-img`** is set, for every cell. |
+| **HTTP/1.1 vs HTTP/2 (undici)** | Not matrixed | Matrix **`h1`** / **`h2`** on every `node-test` cell (`TEST_ARANGO_HTTP_VERSION` → `allowH2` in `src/test/_config.ts`). |
 | **Starter image** | `STARTER_DOCKER_IMAGE: docker.io/arangodb/arangodb-starter:0.18.5` in the `start-db` command env. |
 
 ---
@@ -60,8 +62,8 @@ The **default** CircleCI pipeline therefore exercises **cluster** and **HTTPS** 
 |----|-------|-------------|
 | **GitHub `node`** | **18** | 3 `node-version` × 3 `arangodb-version` × 2 `module-system` |
 | **GitHub `web`** | **3** | 3 `arangodb-version` (Node 20 only; no module matrix) |
-| **CircleCI `node-test`** (`docker-img` empty) | **32** | `integration-tests-multi-runtime-multi-db-image`: **3.12** — 2 × 2 × 2 × 2 = **16**; **4.0-nightly** — **16** |
-| **CircleCI `node-test`** (`docker-img` set) | **16** | `integration-tests-given-db-image-full-matrix`: 2 × 2 × 2 × 2 |
+| **CircleCI `node-test`** (`docker-img` empty) | **64** | `integration-tests-multi-runtime-multi-db-image`: **3.12** — 2 × 2 × 2 × 2 × 2 = **32**; **4.0-nightly** — **32** |
+| **CircleCI `node-test`** (`docker-img` set) | **32** | `integration-tests-given-db-image-full-matrix`: 2 × 2 × 2 × 2 × 2 |
 
 When **`docker-img`** is empty, only **`integration-tests-multi-runtime-multi-db-image`** runs. When **`docker-img`** is set, only **`integration-tests-given-db-image-full-matrix`** runs.
 
@@ -70,7 +72,7 @@ When **`docker-img`** is empty, only **`integration-tests-multi-runtime-multi-db
 ## Summary
 
 - **GitHub** prioritizes **several DB image variants** on a **single** server (`ARANGO_NO_AUTH: 1`, `push` only in `tests.yml`).
-- **CircleCI** default pipeline runs **cluster** and **HTTPS** for **both** pinned images (**3.12** and **4.0-nightly**), **32** jobs total. To run the same matrix against **another** image, trigger with **`docker-img`** (**integration-tests-given-db-image-full-matrix**, **16** jobs). Auth follows `start_db.sh` (empty root password).
+- **CircleCI** default pipeline runs **cluster**, **HTTPS**, and **HTTP/1.1 vs HTTP/2 (undici `allowH2`)** for **both** pinned images (**3.12** and **4.0-nightly**), **64** jobs total. To run the same matrix against **another** image, trigger with **`docker-img`** (**integration-tests-given-db-image-full-matrix**, **32** jobs). Auth follows `start_db.sh` (empty root password).
 
 Failures that appear only on **cluster** or **HTTPS** can surface on the **default** CircleCI pipeline for **either** pinned image; they still do not run on the GitHub `node` job, because GitHub never runs cluster or HTTPS in that workflow.
 

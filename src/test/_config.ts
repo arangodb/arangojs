@@ -20,19 +20,42 @@ else if (ARANGO_RELEASE.includes(".")) {
 const ARANGO_LOAD_BALANCING_STRATEGY = process.env
   .TEST_ARANGO_LOAD_BALANCING_STRATEGY as LoadBalancingStrategy | undefined;
 
+/** When set, integration tests use undici via `agentOptions` (see `connection.ts`). */
+function undiciAgentOptionsForHttpVersion():
+  | { allowH2: boolean }
+  | undefined {
+  const raw = process.env.TEST_ARANGO_HTTP_VERSION?.trim().toLowerCase();
+  if (!raw) return undefined;
+  if (["2", "2.0", "h2", "http2"].includes(raw)) return { allowH2: true };
+  if (["1", "1.1", "h1", "http1", "http1.1"].includes(raw))
+    return { allowH2: false };
+  if (process.env.CI) {
+    console.warn(
+      `[arangojs tests] Ignoring unknown TEST_ARANGO_HTTP_VERSION=${JSON.stringify(process.env.TEST_ARANGO_HTTP_VERSION)} (expected 1.1 or 2.0)`,
+    );
+  }
+  return undefined;
+}
+
+const undiciHttpStack = undiciAgentOptionsForHttpVersion();
+
+const sharedConfig = {
+  arangoVersion,
+  precaptureStackTraces: true,
+  ...(undiciHttpStack ? { agentOptions: undiciHttpStack } : {}),
+} as const;
+
 export const config: ConfigOptions & {
   arangoVersion: NonNullable<ConfigOptions["arangoVersion"]>;
 } = ARANGO_URL.includes(",")
   ? {
       url: ARANGO_URL.split(",").filter((s) => Boolean(s)),
-      arangoVersion,
-      precaptureStackTraces: true,
+      ...sharedConfig,
       loadBalancingStrategy: ARANGO_LOAD_BALANCING_STRATEGY || "ROUND_ROBIN",
     }
   : {
       url: ARANGO_URL,
-      arangoVersion,
-      precaptureStackTraces: true,
+      ...sharedConfig,
     };
 
 /** Multi-coordinator URL (cluster / active failover) in CI. */

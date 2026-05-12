@@ -8,8 +8,8 @@ CircleCI validates **arangojs** using one parameterized job, **`node-test`**, co
 
 | Pipeline parameter `docker-img` | Workflow | DB coverage |
 |-----------------------------------|----------|-------------|
-| Empty (default) | **`integration-tests-multi-runtime-multi-db-image`** only | Two pinned images; **each** runs **Node 22 / 24** × `cjs`/`esm` × **single + cluster** × **SSL on/off** (**16** jobs per image, **32** total). |
-| Non-empty | **`integration-tests-given-db-image-full-matrix`** only | Your image × full matrix: topology **single + cluster**, SSL **on/off** (**16** jobs) |
+| Empty (default) | **`integration-tests-multi-runtime-multi-db-image`** only | Two pinned images; **each** runs **Node 22 / 24** × `cjs`/`esm` × **single + cluster** × **SSL on/off** × **HTTP stack `h1` / `h2`** (**32** jobs per image, **64** total). |
+| Non-empty | **`integration-tests-given-db-image-full-matrix`** only | Your image × full matrix: topology **single + cluster**, SSL **on/off**, **HTTP stack `h1` / `h2`** (**32** jobs) |
 
 **Secrets:** set **`ARANGO_LICENSE_KEY`** on the CircleCI project (or context) when using Enterprise images.
 
@@ -19,7 +19,7 @@ CircleCI validates **arangojs** using one parameterized job, **`node-test`**, co
 
 ## 2) Matrix dimensions
 
-### `integration-tests-multi-runtime-multi-db-image` (32 jobs)
+### `integration-tests-multi-runtime-multi-db-image` (64 jobs)
 
 Runs when `docker-img` is **empty**. There are **two** `node-test` matrix blocks (one per pinned DB image). Both use the **same** axes below.
 
@@ -29,13 +29,14 @@ Runs when `docker-img` is **empty**. There are **two** `node-test` matrix blocks
 | **Node** | `n22`, `n24` → `cimg/node` **22.17**, **24.4** |
 | **Topology** | `single`, `cluster` (`STARTER_MODE`) |
 | **SSL** | `true`, `false` (HTTPS vs HTTP; `NODE_TLS_REJECT_UNAUTHORIZED=0` when SSL) |
+| **HTTP stack** | `h1`, `h2` → exports `TEST_ARANGO_HTTP_VERSION=1.1` or `2.0`; integration tests set undici **`agentOptions.allowH2`** (`false` / `true`). **HTTP/2 is negotiated with HTTPS** (ALPN); plain HTTP stays HTTP/1.1, but both cells still pin the client stack for coverage. |
 | **Module system** | `cjs`, `esm` |
 
-**Job count per block:** 2 × 2 × 2 × 2 = **16**. **Total:** 16 + 16 = **32** jobs.
+**Job count per block:** 2 × 2 × 2 × 2 × 2 = **32**. **Total:** 32 + 32 = **64** jobs.
 
-**Naming:** `<node>-<topology>-ssl<true|false>-<cjs|esm>-312` | `<node>-<topology>-ssl<true|false>-<cjs|esm>-4.0-nightly`
+**Naming:** `<node>-<topology>-ssl<true|false>-<h1|h2>-<cjs|esm>-312` | `<node>-<topology>-ssl<true|false>-<h1|h2>-<cjs|esm>-4.0-nightly`
 
-### `integration-tests-given-db-image-full-matrix` (16 jobs)
+### `integration-tests-given-db-image-full-matrix` (32 jobs)
 
 Runs when **`docker-img`** is set (**Trigger Pipeline**). Uses that image for every cell.
 
@@ -44,13 +45,14 @@ Runs when **`docker-img`** is set (**Trigger Pipeline**). Uses that image for ev
 | **Node** (executor) | `n22`, `n24` → `cimg/node` 22.17 / 24.4 |
 | **Topology** (`STARTER_MODE`) | `single`, `cluster` |
 | **SSL** | `true`, `false` (HTTPS vs HTTP; `NODE_TLS_REJECT_UNAUTHORIZED=0` when SSL) |
+| **HTTP stack** | `h1`, `h2` (same as default pipeline) |
 | **Module system** | `cjs`, `esm` |
 
 **Docker DB image:** `<<pipeline.parameters.docker-img>>`.
 
-**Job count:** 2 × 2 × 2 × 2 = **16** jobs.
+**Job count:** 2 × 2 × 2 × 2 × 2 = **32** jobs.
 
-**Naming:** `<node>-<topology>-ssl<true|false>-<cjs|esm>`
+**Naming:** `<node>-<topology>-ssl<true|false>-<h1|h2>-<cjs|esm>`
 
 ---
 
@@ -65,6 +67,7 @@ Runs when **`docker-img`** is set (**Trigger Pipeline**). Uses that image for ev
 7. **Tests** — builds `SCHEME` (`http` or `https` when `ssl` is `true`, with `NODE_TLS_REJECT_UNAUTHORIZED=0` for TLS); then:
    - **single:** `TEST_ARANGODB_URL="${SCHEME}://172.28.0.1:8529"`
    - **cluster:** `TEST_ARANGODB_URL="${SCHEME}://172.28.0.1:8529,${SCHEME}://172.28.0.1:8539,${SCHEME}://172.28.0.1:8549"` and `TEST_ARANGO_LOAD_BALANCING_STRATEGY=ROUND_ROBIN`
+   - **HTTP stack:** `TEST_ARANGO_HTTP_VERSION=1.1` (`h1`) or `2.0` (`h2`) for `src/test/_config.ts` (undici `allowH2`).
    - `ARANGO_RELEASE` = matrix `docker-img`, `CI=true`, then `npm run test:cjs` or `npm run test:esm`.
 
 `start_db.sh` leaves **root password empty**; **`TEST_ARANGODB_URL`** has **no** `user:pass@` (Node `fetch`); the driver sends **Basic `root:`** by default.
@@ -76,7 +79,7 @@ Runs when **`docker-img`** is set (**Trigger Pipeline**). Uses that image for ev
 ### Default (PR / push)
 
 - Trigger pipeline **without** setting `docker-img` (leave default empty).
-- Runs **`integration-tests-multi-runtime-multi-db-image`** → **32** jobs (16 on **3.12** + 16 on **4.0-nightly**; both include single/cluster and HTTP/HTTPS).
+- Runs **`integration-tests-multi-runtime-multi-db-image`** → **64** jobs (32 on **3.12** + 32 on **4.0-nightly**; both include single/cluster, HTTP/HTTPS, and **h1/h2**).
 
 ### Custom DB image
 
@@ -85,14 +88,14 @@ Runs when **`docker-img`** is set (**Trigger Pipeline**). Uses that image for ev
    `docker.io/arangodb/enterprise:3.12`  
    or  
    `docker.io/arangodb/enterprise-preview:devel-nightly`
-2. Runs **`integration-tests-given-db-image-full-matrix`** only → **16** jobs (single + cluster × SSL × modules × nodes).
+2. Runs **`integration-tests-given-db-image-full-matrix`** only → **32** jobs (single + cluster × SSL × **h1/h2** × modules × nodes).
 
 ---
 
 ## 5) Parallelism and cost (orientative)
 
-- **Default pipeline:** roughly **32 × medium** executor-minutes per push (plus startup overhead per job).
-- **`docker-img` set:** **16** jobs.
+- **Default pipeline:** roughly **64 × medium** executor-minutes per push (plus startup overhead per job).
+- **`docker-img` set:** **32** jobs.
 
 ---
 

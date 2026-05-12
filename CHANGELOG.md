@@ -18,12 +18,12 @@ This driver uses semantic versioning:
 
 ### Added
 
-- CircleCI integration test pipeline (`.circleci/config.yml` and docs under `.circleci/`): Node 22/24, single and cluster topology, HTTP/HTTPS, CJS/ESM, against pinned `enterprise:3.12` and `enterprise-preview:4.0-nightly` images; optional `docker-img` pipeline parameter for a custom DB image.
+- CircleCI integration test pipeline (`.circleci/config.yml` and docs under `.circleci/`): Node 22/24, single and cluster topology, HTTP/HTTPS, **HTTP/1.1 vs HTTP/2** client stack (undici `agentOptions.allowH2` via `TEST_ARANGO_HTTP_VERSION` from matrix `h1` / `h2`), CJS/ESM, against pinned `enterprise:3.12` and `enterprise-preview:4.0-nightly` images; optional `docker-img` pipeline parameter for a custom DB image.
 
 ### Fixed
 
 - Tests: Version-gated skips for ArangoDB 4.0+ API and behavior changes; 3.12 coverage unchanged (DE-1151).
-- Tests: Integration runs more reliably on clusters and load-balanced URLs—shared timeouts and waits in `src/test/_integration-timeouts.ts`, `waitForNewDatabase()` after `createDatabase`, longer propagation where needed, and safer analyzer teardown when setup fails mid-way.
+- Tests: Cluster and `ROUND_ROBIN` integration runs are more reliable—`src/test/_integration-timeouts.ts` adds shared timeouts, propagation helpers, **consecutive agreeing reads** for token lists and analyzer lists, `createAccessTokenAndPropagate` (409 retries + stable listing), and related suite updates (`28-accessing-analyzers`, `32-access-tokens`, etc.).
 - Tests: `ARANGO_RELEASE` prerelease tags (e.g. `4.0-nightly`) parse to a numeric minor version again so skip gates are not driven by `NaN`.
 - Tests: `isClusterRuntime` exported from `src/test/_config.ts` for integration helpers.
 

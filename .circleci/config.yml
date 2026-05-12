@@ -65,6 +65,10 @@ jobs:
       ssl:
         type: string
         default: 'false'
+      http_proto:
+        type: enum
+        enum: ['h1', 'h2']
+        default: 'h1'
       node:
         type: enum
         enum: ['n22', 'n24']
@@ -107,19 +111,24 @@ jobs:
             else
               export TEST_ARANGODB_URL="${SCHEME}://172.28.0.1:8529"
             fi
+            if [ "<<parameters.http_proto>>" = "h2" ]; then
+              export TEST_ARANGO_HTTP_VERSION=2.0
+            else
+              export TEST_ARANGO_HTTP_VERSION=1.1
+            fi
             export ARANGO_RELEASE="<<parameters.docker-img>>"
             export CI=true
             npm run test:<<parameters.module-system>>
 
 workflows:
   # Node.js 22.x + 24.x (current LTS pair per arangojs compatibility policy).
-  # Two pinned DB images; each matrix is topology × SSL × nodes × modules (16 jobs each, 32 total). Names must stay unique per cell.
+  # Two pinned DB images; each matrix is topology × SSL × HTTP stack × nodes × modules (32 jobs each, 64 total). Names must stay unique per cell.
   integration-tests-multi-runtime-multi-db-image:
     when:
       not: <<pipeline.parameters.docker-img>>
     jobs:
       - node-test:
-          name: <<matrix.node>>-<<matrix.topology>>-ssl<<matrix.ssl>>-<<matrix.module-system>>-312
+          name: <<matrix.node>>-<<matrix.topology>>-ssl<<matrix.ssl>>-<<matrix.http_proto>>-<<matrix.module-system>>-312
           filters:
             branches:
               ignore: stable
@@ -136,11 +145,14 @@ workflows:
               ssl:
                 - 'true'
                 - 'false'
+              http_proto:
+                - 'h1'
+                - 'h2'
               module-system:
                 - 'cjs'
                 - 'esm'
       - node-test:
-          name: <<matrix.node>>-<<matrix.topology>>-ssl<<matrix.ssl>>-<<matrix.module-system>>-4.0-nightly
+          name: <<matrix.node>>-<<matrix.topology>>-ssl<<matrix.ssl>>-<<matrix.http_proto>>-<<matrix.module-system>>-4.0-nightly
           filters:
             branches:
               ignore: stable
@@ -157,6 +169,9 @@ workflows:
               ssl:
                 - 'true'
                 - 'false'
+              http_proto:
+                - 'h1'
+                - 'h2'
               module-system:
                 - 'cjs'
                 - 'esm'
@@ -165,7 +180,7 @@ workflows:
     when: <<pipeline.parameters.docker-img>>
     jobs:
       - node-test:
-          name: <<matrix.node>>-<<matrix.topology>>-ssl<<matrix.ssl>>-<<matrix.module-system>>
+          name: <<matrix.node>>-<<matrix.topology>>-ssl<<matrix.ssl>>-<<matrix.http_proto>>-<<matrix.module-system>>
           filters:
             branches:
               ignore: stable
@@ -177,11 +192,14 @@ workflows:
                 - 'n22'
                 - 'n24'
               topology:
-                # - 'single'
+                - 'single'
                 - 'cluster'
               ssl:
                 - 'true'
                 - 'false'
+              http_proto:
+                - 'h1'
+                - 'h2'
               module-system:
                 - 'cjs'
                 - 'esm'
