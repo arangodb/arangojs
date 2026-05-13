@@ -1,6 +1,7 @@
 import { expect } from "chai";
 import arangojs, { Database } from "../index.js";
 import { config } from "./_config.js";
+import { waitForNewDatabase } from "./_integration-timeouts.js";
 
 describe("Creating a Database", () => {
   describe("using the factory", () => {
@@ -81,6 +82,7 @@ describe("JSON serialization", () => {
         await system.acquireHostList();
       await system.createDatabase(name);
       db = system.database(name);
+      await waitForNewDatabase(db);
     });
     after(async () => {
       try {

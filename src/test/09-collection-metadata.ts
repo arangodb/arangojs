@@ -4,8 +4,14 @@ import { Database } from "../databases.js";
 import { COLLECTION_NOT_FOUND } from "../lib/codes.js";
 import { fetchArangoVersionCode } from "./_arango-server-version.js";
 import { config } from "./_config.js";
+import {
+  clusterIntegrationTimeoutMs,
+  propagationForResourceMs,
+  waitForNewDatabase,
+} from "./_integration-timeouts.js";
 
 describe("Collection metadata", function () {
+  this.timeout(clusterIntegrationTimeoutMs);
   let system: Database, db: Database;
   let collection: DocumentCollection;
   const dbName = `testdb_${Date.now()}`;
@@ -16,10 +22,11 @@ describe("Collection metadata", function () {
       await system.acquireHostList();
     await system.createDatabase(dbName);
     db = system.database(dbName);
+    await waitForNewDatabase(db);
     collection = await db.createCollection(collectionName);
     await db.waitForPropagation(
       { pathname: `/_api/collection/${collection.name}` },
-      10000,
+      propagationForResourceMs,
     );
   });
   after(async () => {

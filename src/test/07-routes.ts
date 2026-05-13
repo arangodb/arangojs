@@ -3,6 +3,11 @@ import { DocumentCollection } from "../collections.js";
 import { Database } from "../databases.js";
 import { Route } from "../routes.js";
 import { config } from "./_config.js";
+import {
+  clusterIntegrationTimeoutMs,
+  propagationForResourceMs,
+  waitForNewDatabase,
+} from "./_integration-timeouts.js";
 
 describe("Arbitrary HTTP routes", () => {
   let db: Database;
@@ -28,6 +33,7 @@ describe("Arbitrary HTTP routes", () => {
 });
 
 describe("Route API", function () {
+  this.timeout(clusterIntegrationTimeoutMs);
   const name = `testdb_${Date.now()}`;
   let system: Database, db: Database;
   let collection: DocumentCollection;
@@ -36,10 +42,11 @@ describe("Route API", function () {
     if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE")
       await system.acquireHostList();
     db = await system.createDatabase(name);
+    await waitForNewDatabase(db);
     collection = await db.createCollection(`c_${Date.now()}`);
     await db.waitForPropagation(
       { pathname: `/_api/collection/${collection.name}` },
-      10000,
+      propagationForResourceMs,
     );
   });
   after(async () => {

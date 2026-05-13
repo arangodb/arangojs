@@ -2,8 +2,14 @@ import { expect } from "chai";
 import { Database } from "../databases.js";
 import { ArangoSearchViewProperties, View } from "../views.js";
 import { config } from "./_config.js";
+import {
+  clusterIntegrationTimeoutMs,
+  propagationForResourceMs,
+  waitForNewDatabase,
+} from "./_integration-timeouts.js";
 
 describe("View metadata", function () {
+  this.timeout(clusterIntegrationTimeoutMs);
   const dbName = `testdb_${Date.now()}`;
   const viewName = `view-${Date.now()}`;
   let system: Database, db: Database;
@@ -14,9 +20,10 @@ describe("View metadata", function () {
       await system.acquireHostList();
     await system.createDatabase(dbName);
     db = system.database(dbName);
+    await waitForNewDatabase(db);
     view = db.view(viewName);
     await view.create({ type: "arangosearch" });
-    await db.waitForPropagation({ pathname: `/_api/view/${view.name}` }, 10000);
+    await db.waitForPropagation({ pathname: `/_api/view/${view.name}` }, propagationForResourceMs);
   });
   after(async () => {
     await system.dropDatabase(dbName);

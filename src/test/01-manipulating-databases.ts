@@ -2,8 +2,13 @@ import { expect } from "chai";
 import { Database } from "../databases.js";
 import { ArangoError } from "../errors.js";
 import { config } from "./_config.js";
+import {
+  clusterIntegrationTimeoutMs,
+  waitForNewDatabase,
+} from "./_integration-timeouts.js";
 
 describe("Manipulating databases", function () {
+  this.timeout(clusterIntegrationTimeoutMs);
   let system: Database;
   beforeEach(async () => {
     system = new Database(config);
@@ -21,6 +26,7 @@ describe("Manipulating databases", function () {
     });
     it("creates a database with the given name", async () => {
       db = await system.createDatabase(name);
+      await waitForNewDatabase(db);
       const info = await db.get();
       expect(info.name).to.equal(name);
     });
@@ -31,6 +37,7 @@ describe("Manipulating databases", function () {
     let db: Database;
     before(async () => {
       db = await system.createDatabase(name);
+      await waitForNewDatabase(db);
     });
     after(async () => {
       await system.dropDatabase(name);
@@ -54,7 +61,8 @@ describe("Manipulating databases", function () {
   describe("database.listDatabases", () => {
     const name = `testdb_${Date.now()}`;
     before(async () => {
-      await system.createDatabase(name);
+      const created = await system.createDatabase(name);
+      await waitForNewDatabase(created);
     });
     after(async () => {
       await system.dropDatabase(name);
@@ -73,6 +81,7 @@ describe("Manipulating databases", function () {
     let db: Database;
     before(async () => {
       db = await system.createDatabase(name);
+      await waitForNewDatabase(db);
     });
     after(async () => {
       try {

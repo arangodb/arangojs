@@ -6,20 +6,36 @@ import { Database } from "../databases.js";
 import { ArangoError } from "../errors.js";
 import { fetchArangoVersionCode } from "./_arango-server-version.js";
 import { config } from "./_config.js";
+import { clusterIntegrationTimeoutMs, waitForNewDatabase } from "./_integration-timeouts.js";
 
 const localAppsPath = path.resolve(".", "fixtures");
 const mount = "/foxx-crud-test";
 const serviceServiceMount = "/foxx-crud-test-download";
 
-describe("Foxx service", () => {
+/** Foxx local paths are per-coordinator; use first URL + NONE so all calls hit the same node (single or cluster). */
+function foxxPinnedConfig(): typeof config {
+  if (Array.isArray(config.url)) {
+    return {
+      ...config,
+      url: config.url[0],
+      loadBalancingStrategy: "NONE",
+    };
+  }
+  return config;
+}
+
+describe("Foxx service", function () {
   const name = `testdb_${Date.now()}`;
   let system: Database, db: Database;
   let arangoPaths: any;
   before(async function () {
-    system = new Database(config);
-    if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE")
+    this.timeout(clusterIntegrationTimeoutMs);
+    const cfg = foxxPinnedConfig();
+    system = new Database(cfg);
+    if (Array.isArray(cfg.url) && cfg.loadBalancingStrategy !== "NONE")
       await system.acquireHostList();
     db = await system.createDatabase(name);
+    await waitForNewDatabase(db);
     if (await fetchArangoVersionCode(db) >= 40000) this.skip();
     await db.installService(
       serviceServiceMount,

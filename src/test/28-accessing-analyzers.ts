@@ -1,11 +1,57 @@
 import { expect } from "chai";
 import { Analyzer } from "../analyzers.js";
 import { Database } from "../databases.js";
-import { config } from "./_config.js";
+import { isArangoError } from "../errors.js";
+import { ERROR_ARANGO_CONFLICT } from "../lib/codes.js";
+import { config, isClusterRuntime } from "./_config.js";
+import {
+  clusterIntegrationTimeoutMs,
+  isIgnorableNotFoundError,
+  propagationAnalyzerPathMs,
+  waitForNewDatabase,
+  waitUntilAnalyzerNamesInList,
+} from "./_integration-timeouts.js";
 
 const range = (n: number): number[] => Array.from(Array(n).keys());
 
+/** Fewer parallel analyzer DDL ops on cluster (agency + lock contention). */
+const nTestAnalyzers = isClusterRuntime ? 2 : 4;
+
+/** Serial drops with retries — parallel `drop()` often hits lock timeouts on cluster. */
+async function dropAnalyzersSerial(
+  database: Database,
+  analyzerShortNames: string[],
+): Promise<void> {
+  for (const short of analyzerShortNames) {
+    const analyzer = database.analyzer(short);
+    for (let attempt = 0; attempt < 8; attempt++) {
+      try {
+        await analyzer.drop();
+        break;
+      } catch (e: unknown) {
+        if (isIgnorableNotFoundError(e)) break;
+        if (!isArangoError(e)) throw e;
+        const msg = e.message ?? "";
+        const transient =
+          e.code === 500 ||
+          e.code === 503 ||
+          e.errorNum === ERROR_ARANGO_CONFLICT ||
+          /timeout waiting to lock|dangling analyzers|Operation timed out/i.test(
+            msg,
+          );
+        if (transient && attempt < 7) {
+          await new Promise((r) => setTimeout(r, 600 * (attempt + 1)));
+          continue;
+        }
+        throw e;
+      }
+    }
+  }
+}
+
 describe("Accessing analyzers", function () {
+  this.timeout(clusterIntegrationTimeoutMs);
+
   const builtins: string[] = [];
   const name = `testdb_${Date.now()}`;
   let system: Database, db: Database;
@@ -14,6 +60,7 @@ describe("Accessing analyzers", function () {
     if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE")
       await system.acquireHostList();
     db = await system.createDatabase(name);
+    await waitForNewDatabase(db);
     builtins.push(...(await db.listAnalyzers()).map((a) => a.name));
     expect(builtins).not.to.have.length(0);
   });
@@ -33,26 +80,22 @@ describe("Accessing analyzers", function () {
     });
   });
   describe("database.listAnalyzers", () => {
-    const analyzerNames = range(4).map((i) => `${name}::a_${Date.now()}_${i}`);
+    const analyzerNames = range(nTestAnalyzers).map(
+      (i) => `${name}::a_${Date.now()}_${i}`,
+    );
     let allNames: string[];
     before(async () => {
       allNames = [...builtins, ...analyzerNames].sort();
-      await Promise.all(
-        analyzerNames.map(async (name) => {
-          const analyzer = db.analyzer(name.replace(/^[^:]+::/, ""));
-          await analyzer.create({ type: "identity" });
-          await db.waitForPropagation(
-            { pathname: `/_api/analyzer/${analyzer.name}` },
-            65000,
-          );
-        }),
-      );
+      for (const fullName of analyzerNames) {
+        const analyzer = db.analyzer(fullName.replace(/^[^:]+::/, ""));
+        await analyzer.create({ type: "identity" });
+      }
+      await waitUntilAnalyzerNamesInList(db, allNames, propagationAnalyzerPathMs);
     });
     after(async () => {
-      await Promise.all(
-        analyzerNames.map((name) =>
-          db.analyzer(name.replace(/^[^:]+::/, "")).drop(),
-        ),
+      await dropAnalyzersSerial(
+        db,
+        analyzerNames.map((n) => n.replace(/^[^:]+::/, "")),
       );
     });
     it("fetches information about all analyzers", async () => {
@@ -61,26 +104,22 @@ describe("Accessing analyzers", function () {
     });
   });
   describe("database.analyzers", () => {
-    const analyzerNames = range(4).map((i) => `${name}::a_${Date.now()}_${i}`);
+    const analyzerNames = range(nTestAnalyzers).map(
+      (i) => `${name}::a_${Date.now()}_${i}`,
+    );
     let allNames: string[];
     before(async () => {
       allNames = [...builtins, ...analyzerNames].sort();
-      await Promise.all(
-        analyzerNames.map(async (name) => {
-          const analyzer = db.analyzer(name.replace(/^[^:]+::/, ""));
-          await analyzer.create({ type: "identity" });
-          await db.waitForPropagation(
-            { pathname: `/_api/analyzer/${analyzer.name}` },
-            65000,
-          );
-        }),
-      );
+      for (const fullName of analyzerNames) {
+        const analyzer = db.analyzer(fullName.replace(/^[^:]+::/, ""));
+        await analyzer.create({ type: "identity" });
+      }
+      await waitUntilAnalyzerNamesInList(db, allNames, propagationAnalyzerPathMs);
     });
     after(async () => {
-      await Promise.all(
-        analyzerNames.map((name) =>
-          db.analyzer(name.replace(/^[^:]+::/, "")).drop(),
-        ),
+      await dropAnalyzersSerial(
+        db,
+        analyzerNames.map((n) => n.replace(/^[^:]+::/, "")),
       );
     });
     it("creates Analyzer instances", async () => {

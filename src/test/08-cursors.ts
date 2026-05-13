@@ -5,6 +5,10 @@ import { Cursor, BatchCursor } from "../cursors.js";
 import { Database } from "../databases.js";
 import { fetchArangoVersionCode } from "./_arango-server-version.js";
 import { config } from "./_config.js";
+import {
+  clusterIntegrationTimeoutMs,
+  waitForNewDatabase,
+} from "./_integration-timeouts.js";
 
 const aqlQuery = aql`FOR i IN 0..10 RETURN i`;
 const aqlResult = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
@@ -15,7 +19,8 @@ async function sleep(ms: number) {
   });
 }
 
-describe("Item-wise Cursor API", () => {
+describe("Item-wise Cursor API", function () {
+  this.timeout(clusterIntegrationTimeoutMs);
   const name = `testdb_${Date.now()}`;
   let system: Database, db: Database;
   let cursor: Cursor;
@@ -27,6 +32,7 @@ describe("Item-wise Cursor API", () => {
     if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE")
       await system.acquireHostList();
     db = await system.createDatabase(name);
+    await waitForNewDatabase(db);
    const versionCode = await fetchArangoVersionCode(db);  
    errNum = versionCode >= 40000 ?  405 : 1600;
   });
@@ -242,7 +248,8 @@ describe("Item-wise Cursor API", () => {
   });
 });
 
-describe("Batch-wise Cursor API", () => {
+describe("Batch-wise Cursor API", function () {
+  this.timeout(clusterIntegrationTimeoutMs);
   const name = `testdb_${Date.now()}`;
   let system: Database, db: Database;
   let cursor: BatchCursor;
@@ -254,6 +261,7 @@ describe("Batch-wise Cursor API", () => {
     if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE")
       await system.acquireHostList();
     db = await system.createDatabase(name);
+    await waitForNewDatabase(db);
     const versionCode = await fetchArangoVersionCode(db);  
     errNum = versionCode >= 40000 ?  405 : 1600;
   });

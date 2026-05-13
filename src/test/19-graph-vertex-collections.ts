@@ -3,8 +3,14 @@ import { Database } from "../databases.js";
 import { DocumentMetadata } from "../documents.js";
 import { GraphVertexCollection } from "../graphs.js";
 import { config } from "./_config.js";
+import {
+  clusterIntegrationTimeoutMs,
+  propagationForResourceMs,
+  waitForNewDatabase,
+} from "./_integration-timeouts.js";
 
 describe("GraphVertexCollection API", function () {
+  this.timeout(clusterIntegrationTimeoutMs);
   const dbName = `testdb_${Date.now()}`;
   let system: Database, db: Database;
   let collection: GraphVertexCollection;
@@ -14,6 +20,7 @@ describe("GraphVertexCollection API", function () {
       await system.acquireHostList();
     await system.createDatabase(dbName);
     db = system.database(dbName);
+    await waitForNewDatabase(db);
     const graph = db.graph(`testgraph_${Date.now()}`);
     await graph.create([
       {
@@ -24,7 +31,7 @@ describe("GraphVertexCollection API", function () {
     ]);
     await db.waitForPropagation(
       { pathname: `/_api/gharial/${graph.name}` },
-      10000,
+      propagationForResourceMs,
     );
     collection = graph.vertexCollection("person");
   });

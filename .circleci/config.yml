@@ -46,15 +46,12 @@ commands:
             COMPRESSION: <<parameters.compression>>
 
 executors:
-  n20:
-    docker:
-      - image: cimg/node:20.18
   n22:
     docker:
-      - image: cimg/node:22.16
-  n23:
+      - image: cimg/node:22.17
+  n24:
     docker:
-      - image: cimg/node:23.5
+      - image: cimg/node:24.4
 
 jobs:
   node-test:
@@ -68,9 +65,13 @@ jobs:
       ssl:
         type: string
         default: 'false'
+      http_proto:
+        type: enum
+        enum: ['h1', 'h2']
+        default: 'h1'
       node:
         type: enum
-        enum: ['n20', 'n22', 'n23']
+        enum: ['n22', 'n24']
       module-system:
         type: enum
         enum: ['cjs', 'esm']
@@ -110,19 +111,24 @@ jobs:
             else
               export TEST_ARANGODB_URL="${SCHEME}://172.28.0.1:8529"
             fi
+            if [ "<<parameters.http_proto>>" = "h2" ]; then
+              export TEST_ARANGO_HTTP_VERSION=2.0
+            else
+              export TEST_ARANGO_HTTP_VERSION=1.1
+            fi
             export ARANGO_RELEASE="<<parameters.docker-img>>"
             export CI=true
             npm run test:<<parameters.module-system>>
 
 workflows:
-  # Multiple Node.js runtimes × multiple pinned DB images × cjs/esm (single / HTTP).
-  # Three matrices (one image each) so job names stay unique.
-  integration-tests-multi-runtime-multi-db-image:
+  # 16 jobs: single-server only. HTTP/1.1 (default http_proto). 2 DB × 2 Node × 2 SSL × 2 module systems.
+  integration-single-topology:
     when:
       not: <<pipeline.parameters.docker-img>>
     jobs:
       - node-test:
-          name: <<matrix.node>>-<<matrix.module-system>>-312
+          name: single-<<matrix.node>>-ssl<<matrix.ssl>>-<<matrix.module-system>>-312
+          topology: single
           filters:
             branches:
               ignore: stable
@@ -131,57 +137,107 @@ workflows:
               docker-img:
                 - 'docker.io/arangodb/enterprise:3.12'
               node:
-                - 'n20'
                 - 'n22'
-                - 'n23'
-              topology:
-                - 'single'
+                - 'n24'
               ssl:
+                - 'true'
                 - 'false'
               module-system:
                 - 'cjs'
                 - 'esm'
       - node-test:
-          name: <<matrix.node>>-<<matrix.module-system>>-312deb
+          name: single-<<matrix.node>>-ssl<<matrix.ssl>>-<<matrix.module-system>>-4.0-nightly
+          topology: single
           filters:
             branches:
               ignore: stable
           matrix:
             parameters:
               docker-img:
-                - 'docker.io/arangodb/enterprise:3.12-deb'
+                - 'docker.io/arangodb/enterprise-preview:4.0-nightly'
               node:
-                - 'n20'
                 - 'n22'
-                - 'n23'
-              topology:
-                - 'single'
+                - 'n24'
               ssl:
-                - 'false'
-              module-system:
-                - 'cjs'
-                - 'esm'
-      - node-test:
-          name: <<matrix.node>>-<<matrix.module-system>>-devel-nightly
-          filters:
-            branches:
-              ignore: stable
-          matrix:
-            parameters:
-              docker-img:
-                - 'docker.io/arangodb/enterprise-preview:devel-nightly'
-              node:
-                - 'n20'
-                - 'n22'
-                - 'n23'
-              topology:
-                - 'single'
-              ssl:
+                - 'true'
                 - 'false'
               module-system:
                 - 'cjs'
                 - 'esm'
 
+  # 16 jobs: cluster only. HTTP/1.1 (default http_proto). Same matrix as single.
+  integration-cluster-topology:
+    when:
+      not: <<pipeline.parameters.docker-img>>
+    jobs:
+      - node-test:
+          name: cluster-<<matrix.node>>-ssl<<matrix.ssl>>-<<matrix.module-system>>-312
+          topology: cluster
+          filters:
+            branches:
+              ignore: stable
+          matrix:
+            parameters:
+              docker-img:
+                - 'docker.io/arangodb/enterprise:3.12'
+              node:
+                - 'n22'
+                - 'n24'
+              ssl:
+                - 'true'
+                - 'false'
+              module-system:
+                - 'cjs'
+                - 'esm'
+      - node-test:
+          name: cluster-<<matrix.node>>-ssl<<matrix.ssl>>-<<matrix.module-system>>-4.0-nightly
+          topology: cluster
+          filters:
+            branches:
+              ignore: stable
+          matrix:
+            parameters:
+              docker-img:
+                - 'docker.io/arangodb/enterprise-preview:4.0-nightly'
+              node:
+                - 'n22'
+                - 'n24'
+              ssl:
+                - 'true'
+                - 'false'
+              module-system:
+                - 'cjs'
+                - 'esm'
+
+  # 2 jobs: HTTP/1.1 vs HTTP/2 on a fixed "best" stack (Enterprise 3.12, Node 24, ESM, TLS, single).
+  integration-http-proto-smoke:
+    when:
+      not: <<pipeline.parameters.docker-img>>
+    jobs:
+      - node-test:
+          name: http-proto-h1-smoke
+          filters:
+            branches:
+              ignore: stable
+          docker-img: 'docker.io/arangodb/enterprise:3.12'
+          topology: single
+          ssl: 'true'
+          http_proto: h1
+          node: n24
+          module-system: esm
+      - node-test:
+          name: http-proto-h2-smoke
+          filters:
+            branches:
+              ignore: stable
+          docker-img: 'docker.io/arangodb/enterprise:3.12'
+          topology: single
+          ssl: 'true'
+          http_proto: h2
+          node: n24
+          module-system: esm
+
+  # Manual / pipeline-parameter image: full matrix without http_proto dimension (16 jobs).
   integration-tests-given-db-image-full-matrix:
     when: <<pipeline.parameters.docker-img>>
     jobs:
@@ -195,9 +251,8 @@ workflows:
               docker-img:
                 - <<pipeline.parameters.docker-img>>
               node:
-                - 'n20'
                 - 'n22'
-                - 'n23'
+                - 'n24'
               topology:
                 - 'single'
                 - 'cluster'
