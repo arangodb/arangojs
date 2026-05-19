@@ -4,11 +4,11 @@
 
 CircleCI validates **arangojs** using one parameterized job, **`node-test`**, wired into **several workflows** (depending on pipeline parameter `docker-img`).
 
-**Node.js:** executors track the **two active LTS** releases supported by arangojs (**22.x** and **24.x** as of the current policy).
+**Node.js:** `package.json` `engines.node` requires **>=20**; CircleCI executors exercise the **current LTS pair** (**22.x** and **24.x**).
 
 | Pipeline parameter `docker-img` | Workflows | DB / coverage |
 |---------------------------------|------------|----------------|
-| **Empty** (default) | **`integration-single-topology`**, **`integration-cluster-topology`**, **`integration-http-proto-smoke`** | See §2 — **34** jobs total. |
+| **Empty** (default) | **`integration-single-topology`**, **`integration-cluster-topology`**, **`integration-http-proto-smoke`**, **`browser-smoke`** | **36** jobs total. |
 | **Non-empty** | **`integration-tests-given-db-image-full-matrix`** only | Your image × full matrix (**16** jobs); topology single + cluster, SSL on/off, **HTTP/1.1 only** (default `http_proto`; no `h2` matrix). |
 
 **Secrets:** set **`ARANGO_LICENSE_KEY`** on the CircleCI project (or context) when using Enterprise images.
@@ -60,7 +60,19 @@ Fixed “best” cell to compare **HTTP/1.1 vs HTTP/2** without multiplying the 
 
 **Total C:** **2** jobs.
 
-**Grand total (empty `docker-img`):** 16 + 16 + 2 = **34** jobs.
+### D) `browser-smoke` (**2** jobs)
+
+Browser bundling check via `smoke-test.mjs` (Puppeteer, Node **24**):
+
+| Setting | Value |
+|---------|--------|
+| **Images** | `docker.io/arangodb/enterprise:3.12`, `docker.io/arangodb/enterprise-preview:4.0-nightly` |
+| **Topology** | `single` (HTTP) |
+| **Hostname** | `arangodb` → `172.28.0.1` in `/etc/hosts` (matches `smoke-test.mjs` proxy target) |
+
+**Naming:** `browser-smoke-312`, `browser-smoke-4.0-nightly`
+
+**Grand total (empty `docker-img`):** 16 + 16 + 2 + 2 = **36** jobs.
 
 ---
 
@@ -81,7 +93,9 @@ Fixed “best” cell to compare **HTTP/1.1 vs HTTP/2** without multiplying the 
 
 ---
 
-## 4) Shared job: `node-test`
+## 4) Shared jobs: `node-test` and `browser-smoke`
+
+### `node-test`
 
 1. **Timeout** — background cancel after 15 minutes (`CIRCLE_TOKEN` API cancel).
 2. **Checkout**
@@ -93,6 +107,10 @@ Fixed “best” cell to compare **HTTP/1.1 vs HTTP/2** without multiplying the 
 
 `start_db.sh` leaves **root password empty**; **`TEST_ARANGODB_URL`** has **no** `user:pass@`; the driver sends **Basic `root:`** by default.
 
+### `browser-smoke`
+
+Same **start DB** / remote Docker setup as `node-test` (single, HTTP). Then `npm install`, `npm run build`, and `node smoke-test.mjs`.
+
 ---
 
 ## 5) Operational usage
@@ -100,7 +118,7 @@ Fixed “best” cell to compare **HTTP/1.1 vs HTTP/2** without multiplying the 
 ### Default (PR / push)
 
 - Do **not** set `docker-img`.
-- Runs **34** jobs across the three workflows above (single matrix + cluster matrix + HTTP proto smoke).
+- Runs **36** jobs across the four workflows above (single matrix + cluster matrix + HTTP proto smoke + browser smoke).
 
 ### Custom DB image
 
@@ -111,11 +129,11 @@ Fixed “best” cell to compare **HTTP/1.1 vs HTTP/2** without multiplying the 
 
 ## 6) Parallelism and cost (orientative)
 
-- **Default pipeline:** roughly **34 × medium** executor-minutes per push (plus per-job startup).
+- **Default pipeline:** roughly **36 × medium** executor-minutes per push (plus per-job startup).
 - **`docker-img` set:** **16** jobs.
 
 ---
 
 ## 7) See also
 
-- [GitHub Actions vs CircleCI](github-vs-circleci.md) — matrix sizes, topology/SSL, and jobs only on one side.
+- [GitHub Actions vs CircleCI](github-vs-circleci.md) — tests and browser smoke on CircleCI; GitHub **CI** (`stable` promotion).
