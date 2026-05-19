@@ -109,7 +109,7 @@ Browser bundling check via `smoke-test.mjs` (Puppeteer, Node **24**):
 
 ### `browser-smoke`
 
-Same **start DB** / remote Docker setup as `node-test` (single, HTTP). Then `npm install`, `npm run build`, and `node smoke-test.mjs`.
+Same **start DB** / remote Docker setup as `node-test` (single, HTTP). Installs **Chromium system libraries** for Puppeteer, then `npm install`, `npm run build`, and `node smoke-test.mjs`.
 
 ---
 
