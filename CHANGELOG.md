@@ -30,6 +30,11 @@ This driver uses semantic versioning:
 ### Added
 
 - CircleCI integration test pipeline (`.circleci/config.yml` and docs under `.circleci/`): **`integration-single-topology`** and **`integration-cluster-topology`** (Node 22/24 × SSL × CJS/ESM × pinned **3.12** and **4.0-nightly**), plus **`integration-http-proto-smoke`** (HTTP/1.1 vs HTTP/2 on a fixed HTTPS cell via `TEST_ARANGO_HTTP_VERSION` / undici `allowH2`); optional **`docker-img`** for **`integration-tests-given-db-image-full-matrix`** (16 jobs).
+- CircleCI **`browser-smoke`** workflow: Puppeteer / `smoke-test.mjs` on **3.12** and **4.0-nightly** (Node 24, single-server HTTP).
+
+### Changed
+
+- CI: Driver integration tests and browser smoke no longer run in GitHub Actions; CircleCI runs both. GitHub **CI** (`.github/workflows/ci.yml`) keeps **`stable` promotion** on `main` only; **Update docs** and **CodeQL** chain off **CI**. README status badge points to CircleCI.
 
 ### Fixed
 
