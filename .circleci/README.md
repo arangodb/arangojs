@@ -124,16 +124,3 @@ Same **start DB** / remote Docker setup as `node-test` (single, HTTP). Installs 
 
 1. **Trigger Pipeline** → **`docker-img`** = full image reference.
 2. Runs **`integration-tests-given-db-image-full-matrix`** only → **16** jobs (no full-matrix `h1`/`h2` dimension).
-
----
-
-## 6) Parallelism and cost (orientative)
-
-- **Default pipeline:** roughly **36 × medium** executor-minutes per push (plus per-job startup).
-- **`docker-img` set:** **16** jobs.
-
----
-
-## 7) See also
-
-- [GitHub Actions vs CircleCI](github-vs-circleci.md) — tests and browser smoke on CircleCI; GitHub **CI** (`stable` promotion).
