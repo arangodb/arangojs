@@ -6,7 +6,7 @@ on:
       - "v*.*.*" # all semver release tags
   workflow_run:
     workflows:
-      - Tests
+      - CI
     branches:
       - main
     types:

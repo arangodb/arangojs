@@ -13,7 +13,7 @@ name: "CodeQL"
 
 on:
   workflow_run:
-    workflows: [Tests]
+    workflows: [CI]
     types: [completed]
   schedule:
     - cron: "27 10 * * 6"

@@ -3,7 +3,7 @@
 The official ArangoDB JavaScript client for Node.js and the browser.
 
 [![license - APACHE-2.0](https://img.shields.io/npm/l/arangojs.svg)](http://opensource.org/licenses/APACHE-2.0)
-[![Tests](https://github.com/arangodb/arangojs/workflows/Tests/badge.svg)](https://github.com/arangodb/arangojs/actions?query=workflow:Tests)
+[![CircleCI](https://dl.circleci.com/status-badge/img/gh/arangodb/arangojs/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/arangodb/arangojs/tree/main)
 
 [![npm package status](https://nodei.co/npm/arangojs.png?downloads=true&stars=true)](https://npmjs.org/package/arangojs)
 

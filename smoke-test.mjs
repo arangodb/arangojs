@@ -11,7 +11,12 @@ const result = await esbuild.build({
   entryPoints: ["build/esm/index.js"],
   bundle: true,
   format: "esm",
+  platform: "browser",
   write: false,
+  define: {
+    module: "undefined",
+    exports: "undefined",
+  },
 });
 
 const app = express();
@@ -57,8 +62,9 @@ app.listen(8529, () => {
       await browser.close();
     } catch (e) {
       console.error(e);
+      process.exit(1);
     }
-    if (info.server !== "arango") {
+    if (!info || info.server !== "arango") {
       console.error("Smoke test failed:", info);
       process.exit(1);
     } else {
