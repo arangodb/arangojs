@@ -16,6 +16,12 @@ This driver uses semantic versioning:
 
 ## [Unreleased]
 
+### Fixed
+
+- Fixed connection failures with undici 8.x (`InvalidArgumentError: invalid content-length header`)
+  by not setting a manual `Content-Length` header when using `config.agentOptions` (undici fetch).
+  ([#855](https://github.com/arangodb/arangojs/issues/855))
+
 ### Added
 
 - CircleCI integration test pipeline (`.circleci/config.yml` and docs under `.circleci/`): **`integration-single-topology`** and **`integration-cluster-topology`** (Node 22/24 × SSL × CJS/ESM × pinned **3.12** and **4.0-nightly**), plus **`integration-http-proto-smoke`** (HTTP/1.1 vs HTTP/2 on a fixed HTTPS cell via `TEST_ARANGO_HTTP_VERSION` / undici `allowH2`); optional **`docker-img`** for **`integration-tests-given-db-image-full-matrix`** (16 jobs).
