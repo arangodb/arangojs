@@ -142,53 +142,43 @@ Continuing official browser support can be read as **endorsing** this pattern. R
 
 ---
 
-## Client impact summary
+## Final Recommendation
 
-| Stakeholder | If we **continue** | If we **remove** |
-|-------------|-------------------|------------------|
-| **Enterprise customers** | Status quo | Clearer, preferred architecture |
-| **Backend / Node teams** | No change | No change |
-| **Front-end direct DB users** | Supported (with limitations) | Must migrate to API + server-side driver |
-| **Sales / solutions** | Dual message (Node + browser) | Single message: server-side official driver |
+**Recommendation: NO for browser compatibility**
 
----
+Official browser support should **not** be continued. The driver should be positioned as a **server-side (Node.js) client** only. Web applications should access ArangoDB through a **backend API**, not by running the driver in the browser.
 
-## Operational impact summary
+**Business impact**
 
-**Continue:** Keep browser smoke CI, browser sections in README, and dual-runtime support expectations.
+- Browser compatibility does not drive enterprise adoption or revenue; production customers already use server-side integrations.
+- Continuing dual-runtime messaging weakens the product story; a Node-only stance is easier to sell, explain, and align with solution architecture.
 
-**Remove:** Narrow CI to Node-focused integration tests; update README and support policy; plan major-version communication and migration guide for direct browser users.
+**Client impact**
 
----
+- **Enterprise and backend teams:** No meaningful loss—their deployments are unaffected.
+- **Small group using direct browser access:** Will need to move database calls behind an API; acceptable trade-off for clearer support boundaries and a major-version migration path.
 
-## Long-term considerations
+**Security considerations**
 
-- Removing support now is clearer than **deprecating later** after more customers adopt browser-direct patterns.
-- Node as the sole **supported** runtime matches `engines.node` and how most customers deploy.
-- Web applications remain fully supported via **HTTP APIs**—only direct browser use of the driver changes.
+- Direct browser-to-database access exposes credentials and expands attack surface.
+- Official browser support can be interpreted as endorsing a pattern that fails most security and compliance reviews.
+- Removing browser support reinforces the correct model: data access from trusted server environments only.
 
----
+**Maintenance and operational cost**
 
-## Final recommendation
+- Continuing requires ongoing browser CI, dual documentation, and support for CORS, TLS, and runtime-specific limitations.
+- Ending official browser support reduces recurring overhead and focuses testing and releases on how customers actually run in production.
 
-### **Remove** official browser compatibility (do not continue as a supported runtime).
+**Long-term sustainability**
 
-### In short
+- Industry practice favors API-first web access and server-side database drivers.
+- Unsupported browser feature gaps will not be closed; maintaining official browser support perpetuates a promise the product cannot fulfill.
+- Deprecating later becomes harder as more teams adopt browser-direct patterns; deciding now avoids growing migration debt.
 
-| Question | Answer |
-|----------|--------|
-| Continue or remove? | **Remove** (as an officially supported environment) |
-| Equivalent “YES/NO to browser compatibility”? | **NO** — stop supporting browser as an official target |
+**Architectural trade-offs**
 
-### Justification
+- **Cost of NO:** Less convenience for demos and internal tools that call ArangoDB directly from the front end.
+- **Benefit of NO:** Clear separation—**arangojs** for external server apps, **Foxx / `@arangodb`** for in-database logic, **HTTP APIs** for web clients.
+- On balance, architectural clarity, security, and operational focus outweigh convenience for a non-core user segment.
 
-1. Browser support **already exists**; the question is whether to **keep investing in it**—the analysis favors stopping.
-2. Core customers do not need it; a small segment uses it for prototypes and internal tools.
-3. Known feature gaps in the browser will not be fixed; continuing promises a parity that does not exist.
-4. Security and compliance favor server-side database access only.
-5. Continuing adds recurring CI, documentation, and support cost without strong business return.
-6. Removing improves architectural clarity: **arangojs on the server**, **API for the web**, **Foxx/`@arangodb` inside the database**.
-
----
-
-*This document evaluates whether to **continue or remove** existing browser compatibility as official product scope. It does not prescribe specific release or engineering tasks.*
+**Decision:** Discontinue official browser compatibility. Communicate the change in a major release with migration guidance for affected users.
