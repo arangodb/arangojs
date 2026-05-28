@@ -95,15 +95,15 @@ commands:
 executors:
   n22:
     docker:
-      - image: cimg/node:22.17
+      - image: cimg/node:22.22.3
     resource_class: arangodb/medium-arm64-privileged
   n24:
     docker:
-      - image: cimg/node:24.4
+      - image: cimg/node:24.16.0
     resource_class: arangodb/medium-arm64-privileged
   n24-browser:
     docker:
-      - image: cimg/node:24.4
+      - image: cimg/node:24.16.0
     resource_class: arangodb/medium-amd64-privileged
 
 jobs:
