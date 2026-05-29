@@ -20,11 +20,58 @@ commands:
             echo "Cancelling job as <<parameters.duration>> has elapsed"
             curl --fail -X POST -H "Circle-Token: ${CIRCLE_TOKEN}" "https://circleci.com/api/v1.1/project/github/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/${CIRCLE_BUILD_NUM}/cancel"
 
+  setup-docker:
+    description: >
+      Install Docker and start dockerd in the job container. Requires a *-privileged resource class.
+    steps:
+      - run:
+          name: Set up Docker
+          command: |
+            set -euo pipefail
+            if ! command -v docker >/dev/null 2>&1; then
+              export DEBIAN_FRONTEND=noninteractive
+              sudo apt-get update
+              sudo apt-get install -y --no-install-recommends docker.io
+            fi
+            if ! docker info >/dev/null 2>&1; then
+              sudo dockerd >/tmp/dockerd.log 2>&1 &
+              for _ in $(seq 1 30); do
+                sudo docker info >/dev/null 2>&1 && break
+                sleep 1
+              done
+              sudo chmod 666 /var/run/docker.sock
+            fi
+            if ! docker info >/dev/null 2>&1; then
+              echo "Docker not reachable by $(whoami); last lines of /tmp/dockerd.log:"
+              tail -50 /tmp/dockerd.log || true
+              exit 1
+            fi
+            docker info
+
+  login-docker-hub:
+    description: >
+      Docker Hub login before start_db.sh pulls. Uses DOCKER_HUB_USER and
+      DOCKER_HUB_PASSWORD from project or CircleCI context.
+    steps:
+      - run:
+          name: Login to Docker Hub
+          command: |
+            set -euo pipefail
+            USER="${DOCKER_HUB_USER:-}"
+            PASS="${DOCKER_HUB_PASSWORD:-}"
+            if [ -z "$USER" ] || [ -z "$PASS" ]; then
+              echo "Docker Hub credentials required."
+              echo "Set DOCKER_HUB_USER and DOCKER_HUB_PASSWORD in project or context."
+              echo "Workflow jobs must attach context: docker-hub"
+              exit 1
+            fi
+            echo "$PASS" | docker login -u "$USER" --password-stdin
+
   start-db:
     parameters:
       docker-img:
         type: string
-        default: 'docker.io/arangodb/enterprise:latest'
+        default: 'gcr.io/gcr-for-testing/arangodb/enterprise:latest'
       topology:
         type: string
         default: 'single'
@@ -48,17 +95,23 @@ commands:
 executors:
   n22:
     docker:
-      - image: cimg/node:22.17
+      - image: cimg/node:22.22.3
+    resource_class: arangodb/medium-arm64-privileged
   n24:
     docker:
-      - image: cimg/node:24.4
+      - image: cimg/node:24.16.0
+    resource_class: arangodb/medium-arm64-privileged
+  n24-browser:
+    docker:
+      - image: cimg/node:24.16.0
+    resource_class: arangodb/medium-amd64-privileged
 
 jobs:
   node-test:
     parameters:
       docker-img:
         type: string
-        default: 'docker.io/arangodb/enterprise:latest'
+        default: 'gcr.io/gcr-for-testing/arangodb/enterprise:latest'
       topology:
         type: string
         default: 'single'
@@ -75,15 +128,12 @@ jobs:
       module-system:
         type: enum
         enum: ['cjs', 'esm']
-      resource_class:
-        type: string
-        default: medium
     executor: <<parameters.node>>
-    resource_class: <<parameters.resource_class>>
     steps:
       - timeout
       - checkout
-      - setup_remote_docker
+      - setup-docker
+      - login-docker-hub
       - start-db:
           docker-img: <<parameters.docker-img>>
           topology: <<parameters.topology>>
@@ -124,39 +174,47 @@ jobs:
     parameters:
       docker-img:
         type: string
-    executor: n24
-    resource_class: medium
+    executor: n24-browser
     steps:
       - timeout
       - checkout
-      - setup_remote_docker
+      - setup-docker
+      - login-docker-hub
       - start-db:
           docker-img: <<parameters.docker-img>>
           topology: single
           ssl: 'false'
       - run:
-          name: Map arangodb hostname for smoke proxy
-          command: echo "172.28.0.1 arangodb" | sudo tee -a /etc/hosts
-      - run:
-          name: Install Chromium dependencies for Puppeteer
+          name: Install Google Chrome (AMD64)
           command: |
+            set -euo pipefail
             sudo apt-get update
-            sudo apt-get install -y --no-install-recommends \
-              ca-certificates fonts-liberation \
+            sudo apt-get install -y --no-install-recommends curl ca-certificates \
+              fonts-liberation \
               libasound2t64 libatk-bridge2.0-0t64 libatk1.0-0t64 libcairo2 libcups2t64 \
               libdbus-1-3 libdrm2 libexpat1 libfontconfig1 libgbm1 libglib2.0-0t64 \
               libgtk-3-0t64 libnspr4 libnss3 libpango-1.0-0 libpangocairo-1.0-0 \
               libx11-6 libx11-xcb1 libxcb1 libxcomposite1 libxdamage1 libxext6 \
               libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6
+            curl -fsSL -o /tmp/google-chrome.deb \
+              https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+            sudo apt-get install -y /tmp/google-chrome.deb
+            rm /tmp/google-chrome.deb
+            google-chrome-stable --version
       - run:
           name: Install dependencies and build
           command: |
-            sudo apt-get install -y --no-install-recommends jq curl
+            sudo apt-get install -y --no-install-recommends jq
             npm install
             npm run build
+          environment:
+            PUPPETEER_SKIP_DOWNLOAD: 'true'
       - run:
           name: Run browser smoke test
           command: node smoke-test.mjs
+          environment:
+            PUPPETEER_EXECUTABLE_PATH: /usr/bin/google-chrome-stable
+            ARANGO_PROXY_TARGET: 172.28.0.1:8529
 
 workflows:
   # 16 jobs: single-server only. HTTP/1.1 (default http_proto). 2 DB × 2 Node × 2 SSL × 2 module systems.
@@ -166,6 +224,7 @@ workflows:
     jobs:
       - node-test:
           name: single-<<matrix.node>>-ssl<<matrix.ssl>>-<<matrix.module-system>>-312
+          context: docker-hub
           topology: single
           filters:
             branches:
@@ -173,7 +232,7 @@ workflows:
           matrix:
             parameters:
               docker-img:
-                - 'docker.io/arangodb/enterprise:3.12'
+                - 'gcr.io/gcr-for-testing/arangodb/enterprise:3.12'
               node:
                 - 'n22'
                 - 'n24'
@@ -185,6 +244,7 @@ workflows:
                 - 'esm'
       - node-test:
           name: single-<<matrix.node>>-ssl<<matrix.ssl>>-<<matrix.module-system>>-4.0-nightly
+          context: docker-hub
           topology: single
           filters:
             branches:
@@ -192,7 +252,7 @@ workflows:
           matrix:
             parameters:
               docker-img:
-                - 'docker.io/arangodb/enterprise-preview:4.0-nightly'
+                - 'gcr.io/gcr-for-testing/arangodb/enterprise-preview:4.0-nightly'
               node:
                 - 'n22'
                 - 'n24'
@@ -210,6 +270,7 @@ workflows:
     jobs:
       - node-test:
           name: cluster-<<matrix.node>>-ssl<<matrix.ssl>>-<<matrix.module-system>>-312
+          context: docker-hub
           topology: cluster
           filters:
             branches:
@@ -217,7 +278,7 @@ workflows:
           matrix:
             parameters:
               docker-img:
-                - 'docker.io/arangodb/enterprise:3.12'
+                - 'gcr.io/gcr-for-testing/arangodb/enterprise:3.12'
               node:
                 - 'n22'
                 - 'n24'
@@ -229,6 +290,7 @@ workflows:
                 - 'esm'
       - node-test:
           name: cluster-<<matrix.node>>-ssl<<matrix.ssl>>-<<matrix.module-system>>-4.0-nightly
+          context: docker-hub
           topology: cluster
           filters:
             branches:
@@ -236,7 +298,7 @@ workflows:
           matrix:
             parameters:
               docker-img:
-                - 'docker.io/arangodb/enterprise-preview:4.0-nightly'
+                - 'gcr.io/gcr-for-testing/arangodb/enterprise-preview:4.0-nightly'
               node:
                 - 'n22'
                 - 'n24'
@@ -254,10 +316,11 @@ workflows:
     jobs:
       - node-test:
           name: http-proto-h1-smoke
+          context: docker-hub
           filters:
             branches:
               ignore: stable
-          docker-img: 'docker.io/arangodb/enterprise:3.12'
+          docker-img: 'gcr.io/gcr-for-testing/arangodb/enterprise:3.12'
           topology: single
           ssl: 'true'
           http_proto: h1
@@ -265,10 +328,11 @@ workflows:
           module-system: esm
       - node-test:
           name: http-proto-h2-smoke
+          context: docker-hub
           filters:
             branches:
               ignore: stable
-          docker-img: 'docker.io/arangodb/enterprise:3.12'
+          docker-img: 'gcr.io/gcr-for-testing/arangodb/enterprise:3.12'
           topology: single
           ssl: 'true'
           http_proto: h2
@@ -282,23 +346,26 @@ workflows:
     jobs:
       - browser-smoke:
           name: browser-smoke-312
+          context: docker-hub
           filters:
             branches:
               ignore: stable
-          docker-img: 'docker.io/arangodb/enterprise:3.12'
+          docker-img: 'gcr.io/gcr-for-testing/arangodb/enterprise:3.12'
       - browser-smoke:
           name: browser-smoke-4.0-nightly
+          context: docker-hub
           filters:
             branches:
               ignore: stable
-          docker-img: 'docker.io/arangodb/enterprise-preview:4.0-nightly'
+          docker-img: 'gcr.io/gcr-for-testing/arangodb/enterprise-preview:4.0-nightly'
 
-  # Manual / pipeline-parameter image: full matrix without http_proto dimension (16 jobs).
-  integration-tests-given-db-image-full-matrix:
+  # Manual pipeline (docker-img set): driver matrix on your image (16 jobs).
+  integration-tests-given-db-image:
     when: <<pipeline.parameters.docker-img>>
     jobs:
       - node-test:
           name: <<matrix.node>>-<<matrix.topology>>-ssl<<matrix.ssl>>-<<matrix.module-system>>
+          context: docker-hub
           filters:
             branches:
               ignore: stable
@@ -318,3 +385,44 @@ workflows:
               module-system:
                 - 'cjs'
                 - 'esm'
+
+  # Manual pipeline (docker-img set): HTTP/1.1 vs HTTP/2 smoke (2 jobs). 
+  integration-http-proto-smoke-given-db-image:
+    when: <<pipeline.parameters.docker-img>>
+    jobs:
+      - node-test:
+          name: http-proto-h1-smoke
+          context: docker-hub
+          filters:
+            branches:
+              ignore: stable
+          docker-img: <<pipeline.parameters.docker-img>>
+          topology: single
+          ssl: 'true'
+          http_proto: h1
+          node: n24
+          module-system: esm
+      - node-test:
+          name: http-proto-h2-smoke
+          context: docker-hub
+          filters:
+            branches:
+              ignore: stable
+          docker-img: <<pipeline.parameters.docker-img>>
+          topology: single
+          ssl: 'true'
+          http_proto: h2
+          node: n24
+          module-system: esm
+
+  # Manual pipeline (docker-img set): browser bundling smoke (1 job).
+  browser-smoke-given-db-image:
+    when: <<pipeline.parameters.docker-img>>
+    jobs:
+      - browser-smoke:
+          name: browser-smoke
+          context: docker-hub
+          filters:
+            branches:
+              ignore: stable
+          docker-img: <<pipeline.parameters.docker-img>>
