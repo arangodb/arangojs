@@ -24,25 +24,37 @@ This driver uses semantic versioning:
 ### Fixed
 
 - Fixed connection failures with undici 8.x (`InvalidArgumentError: invalid content-length header`)
-  by not setting a manual `Content-Length` header when using `config.agentOptions` (undici fetch).
+  when using `config.agentOptions` by not setting a manual `Content-Length` header on undici fetch requests.
   ([#855](https://github.com/arangodb/arangojs/issues/855))
+
+- Tests: Version-gated skips for ArangoDB 4.0+ API and behavior changes (DE-1151); prerelease tags
+  (e.g. `4.0-nightly`) parse to a numeric minor version again so skip gates are not driven by `NaN`.
+- Tests: More reliable cluster and `ROUND_ROBIN` integration runs (shared timeouts, propagation helpers,
+  stable access-token and analyzer listing).
+- Dev: `undici` added as a devDependency so integration tests using `agentOptions` resolve the dynamic
+  `import("undici")` in `connection.ts` (optional peer alone is not installed by default).
 
 ### Added
 
-- CircleCI integration test pipeline (`.circleci/config.yml` and docs under `.circleci/`): **`integration-single-topology`** and **`integration-cluster-topology`** (Node 22/24 × SSL × CJS/ESM × pinned **3.12** and **4.0-nightly**), plus **`integration-http-proto-smoke`** (HTTP/1.1 vs HTTP/2 on a fixed HTTPS cell via `TEST_ARANGO_HTTP_VERSION` / undici `allowH2`); optional **`docker-img`** for **`integration-tests-given-db-image-full-matrix`** (16 jobs).
-- CircleCI **`browser-smoke`** workflow: Puppeteer / `smoke-test.mjs` on **3.12** and **4.0-nightly** (Node 24, single-server HTTP).
+- Added CircleCI pipelines for integration tests and browser smoke (`.circleci/`): single and cluster-server matrices (Node 22/24, SSL, CJS/ESM), HTTP/1.1 vs HTTP/2 smoke, optional full-matrix via `docker-img`, and Puppeteer browser smoke on Enterprise **3.12** and **4.0-nightly** (GCR images).
 
 ### Changed
 
-- CI: Driver integration tests and browser smoke no longer run in GitHub Actions; CircleCI runs both. GitHub **CI** (`.github/workflows/ci.yml`) keeps **`stable` promotion** on `main` only; **Update docs** and **CodeQL** chain off **CI**. README status badge points to CircleCI.
-
-### Fixed
-
-- Tests: Version-gated skips for ArangoDB 4.0+ API and behavior changes; 3.12 coverage unchanged (DE-1151).
-- Tests: Cluster and `ROUND_ROBIN` integration runs are more reliable—`src/test/_integration-timeouts.ts` adds shared timeouts, propagation helpers, **consecutive agreeing reads** for token lists and analyzer lists, `createAccessTokenAndPropagate` (409 retries + stable listing), and related suite updates (`28-accessing-analyzers`, `32-access-tokens`, etc.).
-- Tests: `ARANGO_RELEASE` prerelease tags (e.g. `4.0-nightly`) parse to a numeric minor version again so skip gates are not driven by `NaN`.
-- Tests: `isClusterRuntime` exported from `src/test/_config.ts` for integration helpers.
-- Dev: `undici` added as a **devDependency** so integration tests that set `agentOptions` (e.g. `TEST_ARANGO_HTTP_VERSION` in CircleCI) resolve the dynamic `import("undici")` in `connection.ts` (optional peer alone is not installed by default).
+- CI: Integration tests and browser smoke run on CircleCI instead of GitHub Actions. GitHub Actions CI
+  (`.github/workflows/ci.yml`) on `main` only promotes `stable`; Update docs and CodeQL chain off CI.
+  README status badge points to CircleCI.
+- CI (DE-1167): Run CircleCI jobs on org **self-hosted** runners — `node-test` executors use
+  `arangodb/medium-arm64-privileged`; `browser-smoke` uses `arangodb/medium-amd64-privileged`; new
+  **`setup-docker`** command installs Docker and starts **`dockerd`** in the job (DinD; no
+  `setup_remote_docker`).
+- CI: Default ArangoDB images are **`gcr.io/gcr-for-testing/arangodb/enterprise:3.12`** and
+  **`gcr.io/gcr-for-testing/arangodb/enterprise-preview:4.0-nightly`**; starter remains
+  **`docker.io/arangodb/arangodb-starter:0.18.5`**.
+- CI: **`login-docker-hub`** before `start-db` via context **`docker-hub`**
+  (`DOCKER_HUB_USER` / `DOCKER_HUB_PASSWORD`).
+- CI: Browser smoke — Google Chrome (AMD64) in the job; `smoke-test.mjs` serves on port **8559** and
+  proxies to **`ARANGO_PROXY_TARGET`** (default `127.0.0.1:8529` locally, `172.28.0.1:8529` in CI);
+  `Database` uses the smoke origin (`PUPPETEER_SKIP_DOWNLOAD` in CI).
 
 ## [10.3.0] - 2026-04-14
 
