@@ -227,6 +227,9 @@ export class Database {
   }
 
   /**
+   * @deprecated Removed from ArangoDB 4.0 onwards.
+   * Calling this method against ArangoDB v4 will result in a runtime exception.
+   *
    * Returns a new {@link routes.Route} instance for the given path (relative to the
    * database) that can be used to perform arbitrary HTTP requests.
    *
@@ -2372,6 +2375,9 @@ export class Database {
 
   //#region transactions
   /**
+   * @deprecated Removed from ArangoDB 4.0 onwards.
+   * Calling this method against ArangoDB v4 will result in a runtime exception.
+   *
    * Performs a server-side JavaScript transaction and returns its return
    * value.
    *
@@ -2428,6 +2434,9 @@ export class Database {
     options?: transactions.TransactionOptions & { params?: any }
   ): Promise<any>;
   /**
+   * @deprecated Removed from ArangoDB 4.0 onwards.
+   * Calling this method against ArangoDB v4 will result in a runtime exception.
+   *
    * Performs a server-side transaction and returns its return value.
    *
    * Collections can be specified as collection names (strings) or objects
@@ -2477,6 +2486,9 @@ export class Database {
     options?: transactions.TransactionOptions & { params?: any }
   ): Promise<any>;
   /**
+   * @deprecated Removed from ArangoDB 4.0 onwards.
+   * Calling this method against ArangoDB v4 will result in a runtime exception.
+   *
    * Performs a server-side transaction and returns its return value.
    *
    * The Collection can be specified as a collection name (string) or an object
@@ -3449,6 +3461,9 @@ export class Database {
 
   //#region user functions
   /**
+   * @deprecated Removed from ArangoDB 4.0 onwards.
+   * Calling this method against ArangoDB v4 will result in a runtime exception.
+   *
    * Fetches a list of all AQL user functions registered with the database.
    *
    * @example
@@ -3466,6 +3481,9 @@ export class Database {
   }
 
   /**
+   * @deprecated Removed from ArangoDB 4.0 onwards.
+   * Calling this method against ArangoDB v4 will result in a runtime exception.
+   *
    * Creates an AQL user function with the given _name_ and _code_ if it does
    * not already exist or replaces it if a function with the same name already
    * existed.
@@ -3509,6 +3527,9 @@ export class Database {
   }
 
   /**
+   * @deprecated Removed from ArangoDB 4.0 onwards.
+   * Calling this method against ArangoDB v4 will result in a runtime exception.
+   *
    * Deletes the AQL user function with the given name from the database.
    *
    * @param name - The name of the user function to drop.
@@ -3537,6 +3558,9 @@ export class Database {
 
   //#region services
   /**
+   * @deprecated Removed from ArangoDB 4.0 onwards.
+   * Calling this method against ArangoDB v4 will result in a runtime exception.
+   *
    * Fetches a list of all installed service.
    *
    * @param excludeSystem - Whether system services should be excluded.
@@ -3563,6 +3587,9 @@ export class Database {
   }
 
   /**
+   * @deprecated Removed from ArangoDB 4.0 onwards.
+   * Calling this method against ArangoDB v4 will result in a runtime exception.
+   *
    * Installs a new service.
    *
    * @param mount - The service's mount point, relative to the database.
@@ -3620,6 +3647,9 @@ export class Database {
   }
 
   /**
+   * @deprecated Removed from ArangoDB 4.0 onwards.
+   * Calling this method against ArangoDB v4 will result in a runtime exception.
+   *
    * Replaces an existing service with a new service by completely removing the
    * old service and installing a new service at the same mount point.
    *
@@ -3678,6 +3708,9 @@ export class Database {
   }
 
   /**
+   * @deprecated Removed from ArangoDB 4.0 onwards.
+   * Calling this method against ArangoDB v4 will result in a runtime exception.
+   *
    * Replaces an existing service with a new service while retaining the old
    * service's configuration and dependencies.
    *
@@ -3736,6 +3769,9 @@ export class Database {
   }
 
   /**
+   * @deprecated Removed from ArangoDB 4.0 onwards.
+   * Calling this method against ArangoDB v4 will result in a runtime exception.
+   *
    * Completely removes a service from the database.
    *
    * @param mount - The service's mount point, relative to the database.
@@ -3762,6 +3798,9 @@ export class Database {
   }
 
   /**
+   * @deprecated Removed from ArangoDB 4.0 onwards.
+   * Calling this method against ArangoDB v4 will result in a runtime exception.
+   *
    * Retrieves information about a mounted service.
    *
    * @param mount - The service's mount point, relative to the database.
@@ -3781,6 +3820,9 @@ export class Database {
   }
 
   /**
+   * @deprecated Removed from ArangoDB 4.0 onwards.
+   * Calling this method against ArangoDB v4 will result in a runtime exception.
+   *
    * Retrieves information about the service's configuration options and their
    * current values.
    *
@@ -3806,6 +3848,9 @@ export class Database {
     minimal?: false
   ): Promise<Record<string, services.ServiceConfiguration>>;
   /**
+   * @deprecated Removed from ArangoDB 4.0 onwards.
+   * Calling this method against ArangoDB v4 will result in a runtime exception.
+   *
    * Retrieves information about the service's configuration options and their
    * current values.
    *
@@ -3838,6 +3883,9 @@ export class Database {
   }
 
   /**
+   * @deprecated Removed from ArangoDB 4.0 onwards.
+   * Calling this method against ArangoDB v4 will result in a runtime exception.
+   *
    * Replaces the configuration of the given service, discarding any existing
    * values for options not specified.
    *
@@ -3869,6 +3917,9 @@ export class Database {
     Record<string, services.ServiceConfiguration & { warning?: string }>
   >;
   /**
+   * @deprecated Removed from ArangoDB 4.0 onwards.
+   * Calling this method against ArangoDB v4 will result in a runtime exception.
+   *
    * Replaces the configuration of the given service, discarding any existing
    * values for options not specified.
    *
@@ -3914,6 +3965,9 @@ export class Database {
   }
 
   /**
+   * @deprecated Removed from ArangoDB 4.0 onwards.
+   * Calling this method against ArangoDB v4 will result in a runtime exception.
+   *
    * Updates the configuration of the given service while maintaining any
    * existing values for options not specified.
    *
@@ -3945,6 +3999,9 @@ export class Database {
     Record<string, services.ServiceConfiguration & { warning?: string }>
   >;
   /**
+   * @deprecated Removed from ArangoDB 4.0 onwards.
+   * Calling this method against ArangoDB v4 will result in a runtime exception.
+   *
    * Updates the configuration of the given service while maintaining any
    * existing values for options not specified.
    *
@@ -3990,6 +4047,9 @@ export class Database {
   }
 
   /**
+   * @deprecated Removed from ArangoDB 4.0 onwards.
+   * Calling this method against ArangoDB v4 will result in a runtime exception.
+   *
    * Retrieves information about the service's dependencies and their current
    * mount points.
    *
@@ -4020,6 +4080,9 @@ export class Database {
     >
   >;
   /**
+   * @deprecated Removed from ArangoDB 4.0 onwards.
+   * Calling this method against ArangoDB v4 will result in a runtime exception.
+   *
    * Retrieves information about the service's dependencies and their current
    * mount points.
    *
@@ -4052,6 +4115,9 @@ export class Database {
   }
 
   /**
+   * @deprecated Removed from ArangoDB 4.0 onwards.
+   * Calling this method against ArangoDB v4 will result in a runtime exception.
+   *
    * Replaces the dependencies of the given service, discarding any existing
    * mount points for dependencies not specified.
    *
@@ -4088,6 +4154,9 @@ export class Database {
     >
   >;
   /**
+   * @deprecated Removed from ArangoDB 4.0 onwards.
+   * Calling this method against ArangoDB v4 will result in a runtime exception.
+   *
    * Replaces the dependencies of the given service, discarding any existing
    * mount points for dependencies not specified.
    *
@@ -4137,6 +4206,9 @@ export class Database {
   }
 
   /**
+   * @deprecated Removed from ArangoDB 4.0 onwards.
+   * Calling this method against ArangoDB v4 will result in a runtime exception.
+   *
    * Updates the dependencies of the given service while maintaining any
    * existing mount points for dependencies not specified.
    *
@@ -4173,6 +4245,9 @@ export class Database {
     >
   >;
   /**
+   * @deprecated Removed from ArangoDB 4.0 onwards.
+   * Calling this method against ArangoDB v4 will result in a runtime exception.
+   *
    * Updates the dependencies of the given service while maintaining any
    * existing mount points for dependencies not specified.
    *
@@ -4222,6 +4297,9 @@ export class Database {
   }
 
   /**
+   * @deprecated Removed from ArangoDB 4.0 onwards.
+   * Calling this method against ArangoDB v4 will result in a runtime exception.
+   *
    * Enables or disables development mode for the given service.
    *
    * @param mount - The service's mount point, relative to the database.
@@ -4248,6 +4326,9 @@ export class Database {
   }
 
   /**
+   * @deprecated Removed from ArangoDB 4.0 onwards.
+   * Calling this method against ArangoDB v4 will result in a runtime exception.
+   *
    * Retrieves an object mapping script names to their human readable
    * representations, as defined in the service manifest's "scripts" section.
    *
@@ -4270,6 +4351,9 @@ export class Database {
   }
 
   /**
+   * @deprecated Removed from ArangoDB 4.0 onwards.
+   * Calling this method against ArangoDB v4 will result in a runtime exception.
+   *
    * Executes a service script and retrieves its result exposed as
    * `module.exports` (if any).
    *
@@ -4303,6 +4387,9 @@ export class Database {
   }
 
   /**
+   * @deprecated Removed from ArangoDB 4.0 onwards.
+   * Calling this method against ArangoDB v4 will result in a runtime exception.
+   *
    * Runs the tests of a given service and returns the results using the
    * "default" reporter.
    *
@@ -4332,6 +4419,9 @@ export class Database {
     }
   ): Promise<services.ServiceTestDefaultReport>;
   /**
+   * @deprecated Removed from ArangoDB 4.0 onwards.
+   * Calling this method against ArangoDB v4 will result in a runtime exception.
+   *
    * Runs the tests of a given service and returns the results using the
    * "suite" reporter, which groups the test result by test suite.
    *
@@ -4364,6 +4454,9 @@ export class Database {
     }
   ): Promise<services.ServiceTestSuiteReport>;
   /**
+   * @deprecated Removed from ArangoDB 4.0 onwards.
+   * Calling this method against ArangoDB v4 will result in a runtime exception.
+   *
    * Runs the tests of a given service and returns the results using the
    * "stream" reporter, which represents the results as a sequence of tuples
    * representing events.
@@ -4397,6 +4490,9 @@ export class Database {
     }
   ): Promise<services.ServiceTestStreamReport>;
   /**
+   * @deprecated Removed from ArangoDB 4.0 onwards.
+   * Calling this method against ArangoDB v4 will result in a runtime exception.
+   *
    * Runs the tests of a given service and returns the results using the
    * "tap" reporter, which represents the results as an array of strings using
    * the "tap" format.
@@ -4430,6 +4526,9 @@ export class Database {
     }
   ): Promise<services.ServiceTestTapReport>;
   /**
+   * @deprecated Removed from ArangoDB 4.0 onwards.
+   * Calling this method against ArangoDB v4 will result in a runtime exception.
+   *
    * Runs the tests of a given service and returns the results using the
    * "xunit" reporter, which represents the results as an XML document using
    * the JSONML exchange format.
@@ -4463,6 +4562,9 @@ export class Database {
     }
   ): Promise<services.ServiceTestXunitReport>;
   /**
+   * @deprecated Removed from ArangoDB 4.0 onwards.
+   * Calling this method against ArangoDB v4 will result in a runtime exception.
+   *
    * Runs the tests of a given service and returns the results as a string
    * using the "stream" reporter in "idiomatic" mode, which represents the
    * results as a line-delimited JSON stream of tuples representing events.
@@ -4497,6 +4599,9 @@ export class Database {
     }
   ): Promise<string>;
   /**
+   * @deprecated Removed from ArangoDB 4.0 onwards.
+   * Calling this method against ArangoDB v4 will result in a runtime exception.
+   *
    * Runs the tests of a given service and returns the results as a string
    * using the "tap" reporter in "idiomatic" mode, which represents the
    * results using the "tap" format.
@@ -4531,6 +4636,9 @@ export class Database {
     }
   ): Promise<string>;
   /**
+   * @deprecated Removed from ArangoDB 4.0 onwards.
+   * Calling this method against ArangoDB v4 will result in a runtime exception.
+   *
    * Runs the tests of a given service and returns the results as a string
    * using the "xunit" reporter in "idiomatic" mode, which represents the
    * results as an XML document.
@@ -4583,6 +4691,9 @@ export class Database {
   }
 
   /**
+   * @deprecated Removed from ArangoDB 4.0 onwards.
+   * Calling this method against ArangoDB v4 will result in a runtime exception.
+   *
    * Retrieves the text content of the service's `README` or `README.md` file.
    *
    * Returns `undefined` if no such file could be found.
@@ -4605,6 +4716,9 @@ export class Database {
   }
 
   /**
+   * @deprecated Removed from ArangoDB 4.0 onwards.
+   * Calling this method against ArangoDB v4 will result in a runtime exception.
+   *
    * Retrieves an Open API compatible Swagger API description object for the
    * service installed at the given mount point.
    *
@@ -4625,6 +4739,9 @@ export class Database {
   }
 
   /**
+   * @deprecated Removed from ArangoDB 4.0 onwards.
+   * Calling this method against ArangoDB v4 will result in a runtime exception.
+   *
    * Retrieves a zip bundle containing the service files.
    *
    * Returns a `Buffer` in node.js or `Blob` in the browser.
@@ -4647,6 +4764,9 @@ export class Database {
   }
 
   /**
+   * @deprecated Removed from ArangoDB 4.0 onwards.
+   * Calling this method against ArangoDB v4 will result in a runtime exception.
+   *
    * Writes all locally available services to the database and updates any
    * service bundles missing in the database.
    *

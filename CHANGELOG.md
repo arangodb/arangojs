@@ -16,6 +16,10 @@ This driver uses semantic versioning:
 
 ## [10.3.1] - 2026-06-02
 
+### Deprecated
+
+- Marked `Database` methods removed in ArangoDB 4.0 as deprecated (DE-1170); see [docs/arangodb-v4-removed-methods.md](docs/arangodb-v4-removed-methods.md).
+
 ### Fixed
 
 - Fixed connection failures with undici 8.x (`InvalidArgumentError: invalid content-length header`)
