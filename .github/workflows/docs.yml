@@ -1,5 +1,9 @@
 name: Update docs
 
+concurrency:
+  group: gh-pages
+  cancel-in-progress: false
+
 on:
   push:
     tags:
@@ -82,7 +86,7 @@ jobs:
         uses: EndBug/add-and-commit@v9
         with:
           cwd: ./gh-pages
-          push: origin gh-pages --force
+          push: origin gh-pages
           message: Update ${{ env.VERSION }} docs via ${{ github.sha }}
         env:
           GITHUB_TOKEN: ${{ github.token }}
