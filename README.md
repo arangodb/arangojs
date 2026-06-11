@@ -127,12 +127,6 @@ two most recent Node.js LTS versions in accordance with the official
 of ArangoDB that have reached their [end of life](https://arangodb.com/subscriptions/end-of-life-notice/)
 by the time of a driver release are explicitly not supported.
 
-### ArangoDB 4.0
-
-Several `Database` methods map to HTTP APIs removed in ArangoDB 4.0. They are
-marked `@deprecated` in source; calling them against ArangoDB v4+ results in
-runtime exceptions. See [docs/arangodb-v4-removed-methods.md](docs/arangodb-v4-removed-methods.md).
-
 For a list of changes between recent versions of the driver, see the
 [CHANGELOG](https://arangodb.github.io/arangojs/CHANGELOG).
 
