@@ -9,9 +9,9 @@
  * @packageDocumentation
  */
 import * as collections from "./collections.js";
-import * as connection from "./connection.js";
 import * as databases from "./databases.js";
 import * as errors from "./errors.js";
+import { runTransactionStep } from "./lib/transaction-context.js";
 import { TRANSACTION_NOT_FOUND } from "./lib/codes.js";
 
 //#region Transaction operation options
@@ -350,22 +350,21 @@ export class Transaction {
   }
 
   /**
-   * Executes the given function locally as a single step of the transaction.
+   * Executes the given function as a single step of the transaction.
    *
    * @param T - Type of the callback's returned promise.
    * @param callback - Callback function returning a promise.
    *
-   * **Warning**: The callback function should wrap a single call of an async
-   * arangojs method (e.g. a method on a `Collection` object of a collection
-   * that is involved in the transaction or the `db.query` method).
-   * If the callback function is async, only the first promise-returning (or
-   * async) method call will be executed as part of the transaction. See the
-   * examples below for how to avoid common mistakes when using this method.
+   * The callback must return a `Promise`. The callback may be `async` and may
+   * perform multiple arangojs calls (with `await` between them). All requests
+   * made while the callback's returned Promise is pending are sent with this
+   * transaction's ID.
    *
-   * **Note**: Avoid defining the callback as an async function if possible
-   * as arangojs will throw an error if the callback did not return a promise.
-   * Async functions will return an empty promise by default, making it harder
-   * to notice if you forgot to return something from the callback.
+   * On Node.js, concurrent steps of **different** transactions on the same
+   * {@link databases.Database} are supported because the driver tracks the
+   * transaction ID per async context ({@link https://nodejs.org/api/async_context.html | AsyncLocalStorage}).
+   *
+   * In browsers, use separate `Database` instances for concurrent transactions.
    *
    * **Note**: Although almost anything can be wrapped in a callback and passed
    * to this method, that does not guarantee ArangoDB can actually do it in a
@@ -392,133 +391,103 @@ export class Transaction {
    *   data: "potato"
    * }));
    *
-   * // Transaction must be committed for changes to take effected
+   * // Transaction must be committed for changes to take effect
    * // Always call either trx.commit or trx.abort to end a transaction
    * await trx.commit();
    * ```
    *
    * @example
    * ```js
-   * // BAD! If the callback is an async function it must only use await once!
+   * // Async work before a DB call stays inside the transaction:
    * await trx.step(async () => {
-   *   await collection.save(data);
-   *   await collection.save(moreData); // WRONG
+   *   await loadDataFromExternalApi();
+   *   return collection.save({ _key: "x" });
    * });
-   *
-   * // BAD! Callback function must use only one arangojs call!
-   * await trx.step(() => {
-   *  return collection.save(data)
-   *    .then(() => collection.save(moreData)); // WRONG
-   * });
-   *
-   * // BETTER: Wrap every arangojs method call that should be part of the
-   * // transaction in a separate `trx.step` call
-   * await trx.step(() => collection.save(data));
-   * await trx.step(() => collection.save(moreData));
+   * await trx.abort(); // the save above is rolled back
    * ```
    *
    * @example
    * ```js
-   * // BAD! If the callback is an async function it must not await before
-   * // calling an arangojs method!
+   * // Multiple DB calls in one step:
    * await trx.step(async () => {
-   *   await doSomethingElse();
-   *   return collection.save(data); // WRONG
-   * });
-   *
-   * // BAD! Any arangojs inside the callback must not happen inside a promise
-   * // method!
-   * await trx.step(() => {
-   *   return doSomethingElse()
-   *     .then(() => collection.save(data)); // WRONG
-   * });
-   *
-   * // BETTER: Perform any async logic needed outside the `trx.step` call
-   * await doSomethingElse();
-   * await trx.step(() => collection.save(data));
-   *
-   * // OKAY: You can perform async logic in the callback after the arangojs
-   * // method call as long as it does not involve additional arangojs method
-   * // calls, but this makes it easy to make mistakes later
-   * await trx.step(async () => {
-   *   await collection.save(data);
-   *   await doSomethingDifferent(); // no arangojs method calls allowed
+   *   const a = await collection.save({ _key: "a" });
+   *   const b = await collection.save({ _key: "b" });
+   *   return b;
    * });
    * ```
    *
    * @example
    * ```js
-   * // BAD! The callback should not use any functions that themselves use any
-   * // arangojs methods!
+   * // Concurrent transactions on one Database (Node.js):
+   * const [r1, r2] = await Promise.all([
+   *   trx1.step(() => collection.save({ _key: "a" })),
+   *   trx2.step(() => collection.save({ _key: "b" })),
+   * ]);
+   * ```
+   *
+   * @example
+   * ```js
+   * // Prefer db.withTransaction for automatic commit/abort:
+   * await db.withTransaction(collection, async (step) => {
+   *   await step(() => collection.save({ _key: "a" }));
+   *   await step(() => collection.save({ _key: "b" }));
+   * });
+   * ```
+   *
+   * @example
+   * ```js
+   * // BAD! The callback should not use helper functions that call arangojs
+   * // methods without going through `trx.step` themselves!
    * async function saveSomeData() {
    *   await collection.save(data);
    *   await collection.save(moreData);
    * }
    * await trx.step(() => saveSomeData()); // WRONG
    *
-   * // BETTER: Pass the transaction to functions that need to call arangojs
-   * // methods inside a transaction
-   * async function saveSomeData(trx) {
-   *   await trx.step(() => collection.save(data));
-   *   await trx.step(() => collection.save(moreData));
+   * // BETTER: Pass the transaction (or its step function) to helpers
+   * async function saveSomeData(step) {
+   *   await step(() => collection.save(data));
+   *   await step(() => collection.save(moreData));
    * }
-   * await saveSomeData(); // no `trx.step` call needed
+   * await saveSomeData(trx.step.bind(trx));
    * ```
    *
    * @example
    * ```js
-   * // BAD! You must wait for the promise to resolve (or await on the
-   * // `trx.step` call) before calling `trx.step` again!
-   * trx.step(() => collection.save(data)); // WRONG
+   * // BAD! You must await each `trx.step` before starting the next step on
+   * // the same transaction!
+   * trx.step(() => collection.save(data)); // WRONG — not awaited
    * await trx.step(() => collection.save(moreData));
    *
-   * // BAD! The trx.step callback can not make multiple calls to async arangojs
-   * // methods, not even using Promise.all!
-   * await trx.step(() => Promise.all([ // WRONG
-   *   collection.save(data),
-   *   collection.save(moreData),
-   * ]));
-   *
-   * // BAD! Multiple `trx.step` calls can not run in parallel!
-   * await Promise.all([ // WRONG
-   *   trx.step(() => collection.save(data)),
-   *   trx.step(() => collection.save(moreData)),
-   * ]));
-   *
-   * // BETTER: Always call `trx.step` sequentially, one after the other
+   * // BETTER: Always await sequential steps on one transaction
    * await trx.step(() => collection.save(data));
    * await trx.step(() => collection.save(moreData));
    *
-   * // OKAY: The then callback can be used if async/await is not available
+   * // OKAY: Chain with `.then` if async/await is not available
    * trx.step(() => collection.save(data))
    *   .then(() => trx.step(() => collection.save(moreData)));
    * ```
    *
    * @example
    * ```js
-   * // BAD! The callback will return an empty promise that resolves before
-   * // the inner arangojs method call has even talked to ArangoDB!
+   * // BAD! The callback must return a promise — async functions must return
+   * // or await the arangojs call!
    * await trx.step(async () => {
-   *   collection.save(data); // WRONG
+   *   collection.save(data); // WRONG — missing return/await
    * });
    *
    * // BETTER: Use an arrow function so you don't forget to return
    * await trx.step(() => collection.save(data));
    *
-   * // OKAY: Remember to always return when using a function body
+   * // OKAY: Remember to return when using a function body
    * await trx.step(() => {
-   *   return collection.save(data); // easy to forget!
-   * });
-   *
-   * // OKAY: You do not have to use arrow functions but it helps
-   * await trx.step(function () {
    *   return collection.save(data);
    * });
    * ```
    *
    * @example
    * ```js
-   * // BAD! You can not pass promises instead of a callback!
+   * // BAD! You cannot pass a promise instead of a callback!
    * await trx.step(collection.save(data)); // WRONG
    *
    * // BETTER: Wrap the code in a function and pass the function instead
@@ -527,29 +496,28 @@ export class Transaction {
    *
    * @example
    * ```js
-   * // WORSE: Calls to non-async arangojs methods don't need to be performed
-   * // as part of a transaction
-   * const collection = await trx.step(() => db.collection("my-documents"));
+   * // BAD! Non-async arangojs methods do not perform HTTP requests and must
+   * // not be wrapped in `trx.step` — the callback must return a promise!
+   * await trx.step(() => db.collection("my-documents")); // WRONG — throws
    *
-   * // BETTER: If an arangojs method is not async and doesn't return promises,
-   * // call it without `trx.step`
+   * // BETTER: Resolve collection handles outside the transaction step
    * const collection = db.collection("my-documents");
+   * const trx = await db.beginTransaction(collection);
+   * await trx.step(() => collection.save(data));
+   * ```
+   *
+   * @example
+   * ```js
+   * // OKAY: Async logic after the arangojs call is fine as long as it does
+   * // not invoke additional arangojs methods (easy to break later)
+   * await trx.step(async () => {
+   *   await collection.save(data);
+   *   await doSomethingDifferent(); // no arangojs method calls
+   * });
    * ```
    */
   step<T>(callback: () => Promise<T>): Promise<T> {
-    const conn = (this._db as any)._connection as connection.Connection;
-    conn.setTransactionId(this.id);
-    try {
-      const promise = callback();
-      if (!promise) {
-        throw new Error(
-          "Transaction callback was not an async function or did not return a promise!"
-        );
-      }
-      return Promise.resolve(promise);
-    } finally {
-      conn.clearTransactionId();
-    }
+    return runTransactionStep(this.id, callback);
   }
 }
 //#endregion

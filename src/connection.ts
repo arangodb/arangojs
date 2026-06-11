@@ -12,6 +12,7 @@ import * as configuration from "./configuration.js";
 import * as databases from "./databases.js";
 import * as errors from "./errors.js";
 import { ERROR_ARANGO_CONFLICT } from "./lib/codes.js";
+import { getActiveTransactionId } from "./lib/transaction-context.js";
 import * as util from "./lib/util.js";
 import { LinkedList } from "./lib/x3-linkedlist.js";
 
@@ -687,7 +688,6 @@ export class Connection {
   protected _hostUrls: string[] = [];
   protected _activeHostUrl: string;
   protected _activeDirtyHostUrl: string;
-  protected _transactionId: string | null = null;
   protected _onError?: (err: Error) => void | Promise<void>;
   protected _precaptureStackTraces: boolean;
   protected _queueTimes = new LinkedList<[number, number]>();
@@ -1030,32 +1030,6 @@ export class Connection {
   /**
    * @internal
    *
-   * Sets the connection's active `transactionId`.
-   *
-   * While set, all requests will use this ID, ensuring the requests are executed
-   * within the transaction if possible. Setting the ID manually may cause
-   * unexpected behavior.
-   *
-   * See also {@link Connection#clearTransactionId}.
-   *
-   * @param transactionId - ID of the active transaction.
-   */
-  setTransactionId(transactionId: string) {
-    this._transactionId = transactionId;
-  }
-
-  /**
-   * @internal
-   *
-   * Clears the connection's active `transactionId`.
-   */
-  clearTransactionId() {
-    this._transactionId = null;
-  }
-
-  /**
-   * @internal
-   *
    * Sets the header `headerName` with the given `value` or clears the header if
    * `value` is `null`.
    *
@@ -1245,8 +1219,9 @@ export class Connection {
       headers.set("content-length", "0");
     }
 
-    if (this._transactionId) {
-      headers.set("x-arango-trx-id", this._transactionId);
+    const transactionId = getActiveTransactionId();
+    if (transactionId) {
+      headers.set("x-arango-trx-id", transactionId);
     }
 
     if (allowDirtyRead) {

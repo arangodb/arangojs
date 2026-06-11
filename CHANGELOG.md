@@ -14,6 +14,37 @@ This driver uses semantic versioning:
 - A change in the major version (e.g. 1.Y.Z -> 2.0.0) indicates _breaking_
   changes that require changes in your code to upgrade.
 
+## [Unreleased]
+
+### Fixed
+
+- **Stream transactions (DE-10):** `Transaction#step` now keeps the transaction
+  context active until the callback's returned Promise settles. Async/await and
+  delayed Promise chains inside a step are correctly included in the transaction
+  (abort rolls them back). On Node.js, transaction IDs are tracked per async
+  context via `AsyncLocalStorage`, so concurrent stream transactions on the
+  same `Database` instance are supported. See [docs/stream-transactions.md](docs/stream-transactions.md).
+
+- **`Database#listTransactions`:** Requests now use `Database#request` (path
+  `/_db/:database-name/_api/transaction`) instead of calling the connection
+  without a database prefix. The method now lists stream transactions for the
+  `Database` instance's database, consistent with `beginTransaction`, `commit`,
+  and `abort`. **`Database#transactions`** is unaffected in API but benefits
+  transitively because it delegates to `listTransactions`.
+
+### Changed
+
+- **Internal (not a semver-major change):** Removed the connection-level
+  `_transactionId` field and `Connection#setTransactionId` /
+  `Connection#clearTransactionId` (`@internal` APIs). Transaction scope is
+  managed through async context (`src/lib/transaction-context.ts`). Public
+  transaction APIs are unchanged.
+
+### Added
+
+- [docs/stream-transactions.md](docs/stream-transactions.md) — user guide for
+  stream transactions (DE-10): behaviour, examples, migration, troubleshooting.
+
 ## [10.3.1] - 2026-06-02
 
 ### Fixed

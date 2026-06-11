@@ -2838,7 +2838,7 @@ export class Database {
    * ```
    */
   listTransactions(): Promise<transactions.TransactionDescription[]> {
-    return this._connection.request(
+    return this.request(
       { pathname: "/_api/transaction" },
       (res) => res.parsedBody.transactions
     );
