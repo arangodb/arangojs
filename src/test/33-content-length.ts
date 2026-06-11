@@ -2,6 +2,10 @@ import { expect } from "chai";
 import { aql } from "../aql.js";
 import { Database } from "../databases.js";
 import { config } from "./_config.js";
+import {
+  clusterIntegrationTimeoutMs,
+  waitForNewDatabase,
+} from "./_integration-timeouts.js";
 
 describe("Content-Length Header", () => {
   describe("with string bodies (JSON)", () => {
@@ -397,7 +401,58 @@ describe("Content-Length Header", () => {
     });
   });
 
+  describe("with agentOptions (undici fetch)", () => {
+    it("should not set content-length when using undici via agentOptions", (done) => {
+      const db = new Database({ agentOptions: { keepAliveTimeout: 30000 } });
+      (db as any)._connection._hosts = [
+        {
+          fetch: async ({ headers }: any) => {
+            expect(headers.has("content-length")).to.be.false;
+            done();
+            return new Response(JSON.stringify({ result: [] }), {
+              status: 200,
+              headers: { "content-type": "application/json" },
+            });
+          },
+          close: () => {},
+        },
+      ];
+      db.request({
+        method: "POST",
+        pathname: "/_api/cursor",
+        body: { query: "RETURN 1" },
+      }).catch(() => {
+        // Ignore errors, we're just testing headers
+      });
+    });
+
+    it("should not set content-length for bodyless POST with agentOptions", (done) => {
+      const db = new Database({ agentOptions: { keepAliveTimeout: 30000 } });
+      (db as any)._connection._hosts = [
+        {
+          fetch: async ({ headers }: any) => {
+            expect(headers.has("content-length")).to.be.false;
+            done();
+            return new Response(JSON.stringify({ result: [] }), {
+              status: 200,
+              headers: { "content-type": "application/json" },
+            });
+          },
+          close: () => {},
+        },
+      ];
+      db.request({
+        method: "POST",
+        pathname: "/_api/test",
+        body: null,
+      }).catch(() => {
+        // Ignore errors, we're just testing headers
+      });
+    });
+  });
+
   describe("integration with real API calls", function () {
+    this.timeout(clusterIntegrationTimeoutMs);
     const dbName = `testdb_${Date.now()}`;
     let system: Database, db: Database;
     before(async () => {
@@ -405,9 +460,7 @@ describe("Content-Length Header", () => {
       if (Array.isArray(config.url)) await system.acquireHostList();
       await system.createDatabase(dbName);
       db = system.database(dbName);
-      if (Array.isArray(config.url)) {
-        await db.waitForPropagation({ pathname: `/_api/version` }, 10000);
-      }
+      await waitForNewDatabase(db);
     });
     after(async () => {
       try {

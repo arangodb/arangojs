@@ -144,8 +144,17 @@ export type QueryOptions = {
   /**
    * Limits the maximum number of plans that will be created by the AQL query
    * optimizer.
+   *
+   * @deprecated Use `maxNumberOfPlans` instead. `maxPlans` will be removed in a
+   * future major version. Both are currently supported; when both are provided,
+   * `maxNumberOfPlans` takes precedence.
    */
   maxPlans?: number;
+  /**
+   * Limits the maximum number of plans that will be created by the AQL query
+   * optimizer.
+   */
+  maxNumberOfPlans?: number;
   /**
    * Controls after how many execution nodes in a query a stack split should be
    * performed.

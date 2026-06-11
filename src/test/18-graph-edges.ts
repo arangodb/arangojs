@@ -2,8 +2,14 @@ import { expect } from "chai";
 import { Database } from "../databases.js";
 import { Graph } from "../graphs.js";
 import { config } from "./_config.js";
+import {
+  clusterIntegrationTimeoutMs,
+  propagationForResourceMs,
+  waitForNewDatabase,
+} from "./_integration-timeouts.js";
 
 describe("Manipulating graph edges", function () {
+  this.timeout(clusterIntegrationTimeoutMs);
   const dbName = `testdb_${Date.now()}`;
   const graphName = `testgraph_${Date.now()}`;
   let system: Database, db: Database;
@@ -14,6 +20,7 @@ describe("Manipulating graph edges", function () {
       await system.acquireHostList();
     await system.createDatabase(dbName);
     db = system.database(dbName);
+    await waitForNewDatabase(db);
   });
   after(async () => {
     try {
@@ -33,7 +40,7 @@ describe("Manipulating graph edges", function () {
     ]);
     await db.waitForPropagation(
       { pathname: `/_api/gharial/${graph.name}` },
-      10000,
+      propagationForResourceMs,
     );
   });
   afterEach(async () => {

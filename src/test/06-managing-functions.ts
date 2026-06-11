@@ -1,15 +1,23 @@
 import { expect } from "chai";
 import { Database } from "../databases.js";
+import { fetchArangoVersionCode } from "./_arango-server-version.js";
 import { config } from "./_config.js";
+import {
+  clusterIntegrationTimeoutMs,
+  waitForNewDatabase,
+} from "./_integration-timeouts.js";
 
 describe("Managing functions", function () {
+  this.timeout(clusterIntegrationTimeoutMs);
   const name = `testdb_${Date.now()}`;
   let system: Database, db: Database;
-  before(async () => {
+  before(async function () {
     system = new Database(config);
     if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE")
       await system.acquireHostList();
     db = await system.createDatabase(name);
+    await waitForNewDatabase(db);
+    if ((await fetchArangoVersionCode(db)) >= 40000) this.skip();
   });
   after(async () => {
     try {

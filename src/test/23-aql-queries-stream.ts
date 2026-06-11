@@ -4,8 +4,14 @@ import { Cursor } from "../cursors.js";
 import { Database } from "../databases.js";
 import { config } from "./_config.js";
 import { QueryOptions } from "../queries.js";
+import {
+  clusterIntegrationTimeoutMs,
+  propagationForResourceMs,
+  waitForNewDatabase,
+} from "./_integration-timeouts.js";
 
 describe("AQL Stream queries", function () {
+  this.timeout(clusterIntegrationTimeoutMs);
   const name = `testdb_${Date.now()}`;
   let system: Database, db: Database;
   let allCursors: Cursor[];
@@ -15,6 +21,7 @@ describe("AQL Stream queries", function () {
     if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE")
       await system.acquireHostList();
     db = await system.createDatabase(name);
+    await waitForNewDatabase(db);
   });
   after(async () => {
     await Promise.all(
@@ -69,7 +76,7 @@ describe("AQL Stream queries", function () {
       const collection = await db.createCollection(cname);
       await db.waitForPropagation(
         { pathname: `/_api/collection/${collection.name}` },
-        10000,
+        propagationForResourceMs,
       );
       await Promise.all(
         Array.from(Array(1000).keys()).map((i: number) =>

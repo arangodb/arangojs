@@ -2,6 +2,11 @@ import { expect } from "chai";
 import { Database } from "../databases.js";
 import { Graph } from "../graphs.js";
 import { config } from "./_config.js";
+import {
+  clusterIntegrationTimeoutMs,
+  propagationForResourceMs,
+  waitForNewDatabase,
+} from "./_integration-timeouts.js";
 
 const range = (n: number): number[] => Array.from(Array(n).keys());
 
@@ -13,14 +18,14 @@ async function createCollections(db: Database) {
       const collection = await db.createCollection(name);
       await db.waitForPropagation(
         { pathname: `/_api/collection/${collection.name}` },
-        10000,
+        propagationForResourceMs,
       );
     }),
     ...edgeCollectionNames.map(async (name) => {
       const collection = await db.createEdgeCollection(name);
       await db.waitForPropagation(
         { pathname: `/_api/collection/${collection.name}` },
-        10000,
+        propagationForResourceMs,
       );
     }),
   ] as Promise<void>[]);
@@ -42,6 +47,7 @@ async function createGraph(
 }
 
 describe("Graph API", function () {
+  this.timeout(clusterIntegrationTimeoutMs);
   let system: Database, db: Database;
   const name = `testdb_${Date.now()}`;
   before(async () => {
@@ -49,6 +55,7 @@ describe("Graph API", function () {
     if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE")
       await system.acquireHostList();
     db = await system.createDatabase(name);
+    await waitForNewDatabase(db);
   });
   after(async () => {
     try {
@@ -110,7 +117,7 @@ describe("Graph API", function () {
       );
       await db.waitForPropagation(
         { pathname: `/_api/gharial/${graph.name}` },
-        10000,
+        propagationForResourceMs,
       );
       const data = await graph.get();
       expect(data).to.have.property("name", graph.name);

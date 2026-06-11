@@ -2995,6 +2995,25 @@ export class Database {
       timeout,
       ...opts
     } = options;
+    // Accept legacy maxPlans and new maxNumberOfPlans; always send maxNumberOfPlans
+    const {
+      maxPlans,
+      maxNumberOfPlans,
+      ...remainingOpts
+    } = opts as queries.QueryOptions & {
+      maxPlans?: number;
+      maxNumberOfPlans?: number;
+    };
+    
+    const normalizedOptions = {
+      ...remainingOpts,
+      ...(maxNumberOfPlans !== undefined
+        ? { maxNumberOfPlans }
+        : maxPlans !== undefined
+        ? { maxNumberOfPlans: maxPlans }
+        : {}),
+    };
+
     return this.request(
       {
         method: "POST",
@@ -3007,7 +3026,7 @@ export class Database {
           cache,
           memoryLimit,
           ttl,
-          options: opts,
+          options: normalizedOptions,
         },
         allowDirtyRead,
         retryOnConflict,

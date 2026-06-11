@@ -2,10 +2,16 @@ import { expect } from "chai";
 import { DocumentCollection } from "../collections.js";
 import { Database } from "../databases.js";
 import { config } from "./_config.js";
+import {
+  clusterIntegrationTimeoutMs,
+  propagationForResourceMs,
+  waitForNewDatabase,
+} from "./_integration-timeouts.js";
 
 const range = (n: number): number[] => Array.from(Array(n).keys());
 
 describe("Queue time metrics", function () {
+  this.timeout(clusterIntegrationTimeoutMs);
   const dbName = `testdb_${Date.now()}`;
   let system: Database, db: Database;
   let collection: DocumentCollection;
@@ -16,10 +22,11 @@ describe("Queue time metrics", function () {
       await system.acquireHostList();
     await system.createDatabase(dbName);
     db = system.database(dbName);
+    await waitForNewDatabase(db);
     collection = await db.createCollection(`c_${Date.now()}`);
     await db.waitForPropagation(
       { pathname: `/_api/collection/${collection.name}` },
-      10000,
+      propagationForResourceMs,
     );
   });
   after(async () => {

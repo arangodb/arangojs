@@ -5,11 +5,17 @@ import { Connection } from "../connection.js";
 import { Database } from "../databases.js";
 import { Transaction } from "../transactions.js";
 import { config } from "./_config.js";
+import {
+  clusterIntegrationTimeoutMs,
+  propagationForResourceMs,
+  waitForNewDatabase,
+} from "./_integration-timeouts.js";
 
 const delay = (ms: number) =>
   new Promise<void>((resolve) => setTimeout(() => resolve(), ms));
 
 describe("Transactions", function () {
+  this.timeout(clusterIntegrationTimeoutMs);
   describe.skip("stream transactions", function () {
     this.timeout(0);
     let system: Database, db: Database;
@@ -28,6 +34,7 @@ describe("Transactions", function () {
       allTransactions = [];
       await system.createDatabase(name);
       db = system.database(name);
+      await waitForNewDatabase(db);
     });
     after(async () => {
       await Promise.all(
@@ -43,7 +50,7 @@ describe("Transactions", function () {
       collection = await db.createCollection(`collection-${Date.now()}`);
       await db.waitForPropagation(
         { pathname: `/_api/collection/${collection.name}` },
-        10000,
+        propagationForResourceMs,
       );
     });
     afterEach(async () => {

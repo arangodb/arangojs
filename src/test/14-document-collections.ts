@@ -3,8 +3,14 @@ import { DocumentCollection } from "../collections.js";
 import { Database } from "../databases.js";
 import { DocumentMetadata } from "../documents.js";
 import { config } from "./_config.js";
+import {
+  clusterIntegrationTimeoutMs,
+  propagationForResourceMs,
+  waitForNewDatabase,
+} from "./_integration-timeouts.js";
 
 describe("DocumentCollection API", function () {
+  this.timeout(clusterIntegrationTimeoutMs);
   const name = `testdb_${Date.now()}`;
   let system: Database, db: Database;
   let collection: DocumentCollection;
@@ -13,6 +19,7 @@ describe("DocumentCollection API", function () {
     if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE")
       await system.acquireHostList();
     db = await system.createDatabase(name);
+    await waitForNewDatabase(db);
   });
   after(async () => {
     try {
@@ -25,7 +32,7 @@ describe("DocumentCollection API", function () {
     collection = await db.createCollection(`c_${Date.now()}`);
     await db.waitForPropagation(
       { pathname: `/_api/collection/${collection.name}` },
-      10000,
+      propagationForResourceMs,
     );
   });
   afterEach(async () => {

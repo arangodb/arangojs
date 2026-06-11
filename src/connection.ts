@@ -1163,6 +1163,10 @@ export class Connection {
       requestHeaders
     );
 
+    // undici fetch (via agentOptions) sets Content-Length from the body per the Fetch spec.
+    // Setting it manually conflicts with undici 8+ header validation (#855).
+    const shouldSetContentLength = this._agentOptions == null;
+
     let body = requestBody;
     if (body instanceof FormData) {
       const res = new Response(body);
@@ -1171,13 +1175,13 @@ export class Connection {
       // Omitting the final CRLF results in "bad request body" fatal error
       body = new Blob([blob, "\r\n"], { type: blob.type });
       // Set content-length for Blob (needed for Next.js dynamic routes)
-      if (!headers.has("content-length")) {
+      if (shouldSetContentLength && !headers.has("content-length")) {
         headers.set("content-length", String(body.size));
       }
     } else if (body !== null && body !== undefined) {
       // Handle empty string explicitly
       if (body === "") {
-        if (!headers.has("content-length")) {
+        if (shouldSetContentLength && !headers.has("content-length")) {
           headers.set("content-length", "0");
         }
         if (!headers.has("content-type")) {
@@ -1200,7 +1204,7 @@ export class Connection {
         // Explicitly set content-length for fixed-size bodies
         // This is needed for Next.js dynamic routes (e.g., when using cookies())
         // and ensures compatibility with environments that don't set it automatically
-        if (!headers.has("content-length")) {
+        if (shouldSetContentLength && !headers.has("content-length")) {
           if (typeof body === "string") {
             // Calculate byte length for UTF-8 encoded strings
             // Buffer is available in Node.js (required: >=20) and browser polyfills
@@ -1234,6 +1238,7 @@ export class Connection {
     // Handle null/undefined body for POST/PUT/PATCH methods that might need content-length: 0
     // This ensures compatibility with NextJS 15 and other environments that expect explicit content-length
     else if (
+      shouldSetContentLength &&
       (method === "POST" || method === "PUT" || method === "PATCH") &&
       !headers.has("content-length")
     ) {

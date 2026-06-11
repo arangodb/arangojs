@@ -2,6 +2,11 @@ import { expect } from "chai";
 import { Database } from "../databases.js";
 import { ArangoSearchViewProperties, View } from "../views.js";
 import { config } from "./_config.js";
+import {
+  clusterIntegrationTimeoutMs,
+  propagationForResourceMs,
+  waitForNewDatabase,
+} from "./_integration-timeouts.js";
 
 // NOTE These tests will not reliably work in a cluster.
 const describeNLB =
@@ -9,6 +14,7 @@ const describeNLB =
 const it312 = config.arangoVersion! >= 31200 ? it : it.skip;
 
 describe("Manipulating views", function () {
+  this.timeout(clusterIntegrationTimeoutMs);
   const name = `testdb_${Date.now()}`;
   let system: Database, db: Database;
   let view: View;
@@ -17,6 +23,7 @@ describe("Manipulating views", function () {
     if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE")
       await system.acquireHostList();
     db = await system.createDatabase(name);
+    await waitForNewDatabase(db);
   });
   after(async () => {
     try {
@@ -28,7 +35,7 @@ describe("Manipulating views", function () {
   beforeEach(async () => {
     view = db.view(`v-${Date.now()}`);
     await view.create({ type: "arangosearch" });
-    await db.waitForPropagation({ pathname: `/_api/view/${view.name}` }, 10000);
+    await db.waitForPropagation({ pathname: `/_api/view/${view.name}` }, propagationForResourceMs);
   });
   afterEach(async () => {
     try {
@@ -44,7 +51,7 @@ describe("Manipulating views", function () {
       await view.create({ type: "arangosearch" });
       await db.waitForPropagation(
         { pathname: `/_api/view/${view.name}` },
-        10000,
+        propagationForResourceMs,
       );
       const info = await view.get();
       expect(info).to.have.property("name", view.name);

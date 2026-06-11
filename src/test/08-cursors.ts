@@ -3,7 +3,12 @@ import { LinkedList } from "../lib/x3-linkedlist.js";
 import { aql } from "../aql.js";
 import { Cursor, BatchCursor } from "../cursors.js";
 import { Database } from "../databases.js";
+import { fetchArangoVersionCode } from "./_arango-server-version.js";
 import { config } from "./_config.js";
+import {
+  clusterIntegrationTimeoutMs,
+  waitForNewDatabase,
+} from "./_integration-timeouts.js";
 
 const aqlQuery = aql`FOR i IN 0..10 RETURN i`;
 const aqlResult = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
@@ -14,17 +19,22 @@ async function sleep(ms: number) {
   });
 }
 
-describe("Item-wise Cursor API", () => {
+describe("Item-wise Cursor API", function () {
+  this.timeout(clusterIntegrationTimeoutMs);
   const name = `testdb_${Date.now()}`;
   let system: Database, db: Database;
   let cursor: Cursor;
   let allCursors: (Cursor | BatchCursor)[];
+  let errNum: number;
   before(async () => {
     allCursors = [];
     system = new Database(config);
     if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE")
       await system.acquireHostList();
     db = await system.createDatabase(name);
+    await waitForNewDatabase(db);
+   const versionCode = await fetchArangoVersionCode(db);  
+   errNum = versionCode >= 40000 ?  405 : 1600;
   });
   after(async () => {
     await Promise.all(
@@ -230,7 +240,7 @@ describe("Item-wise Cursor API", () => {
           hostUrl: hostUrl,
         });
       } catch (e: any) {
-        expect(e).to.have.property("errorNum", 1600);
+        expect(e).to.have.property("errorNum", errNum);
         return;
       }
       expect.fail("should not be able to fetch additional result set");
@@ -238,17 +248,22 @@ describe("Item-wise Cursor API", () => {
   });
 });
 
-describe("Batch-wise Cursor API", () => {
+describe("Batch-wise Cursor API", function () {
+  this.timeout(clusterIntegrationTimeoutMs);
   const name = `testdb_${Date.now()}`;
   let system: Database, db: Database;
   let cursor: BatchCursor;
   let allCursors: (Cursor | BatchCursor)[];
-  before(async () => {
+  let errNum: number;
+  before(async function () {
     allCursors = [];
     system = new Database(config);
     if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE")
       await system.acquireHostList();
     db = await system.createDatabase(name);
+    await waitForNewDatabase(db);
+    const versionCode = await fetchArangoVersionCode(db);  
+    errNum = versionCode >= 40000 ?  405 : 1600;
   });
   after(async () => {
     await Promise.all(
@@ -446,7 +461,7 @@ describe("Batch-wise Cursor API", () => {
           hostUrl: hostUrl,
         });
       } catch (e: any) {
-        expect(e).to.have.property("errorNum", 1600);
+        expect(e).to.have.property("errorNum", errNum);
         return;
       }
       expect.fail("should not be able to fetch additional result set");

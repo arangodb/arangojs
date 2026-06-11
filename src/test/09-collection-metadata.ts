@@ -2,9 +2,16 @@ import { expect } from "chai";
 import { DocumentCollection } from "../collections.js";
 import { Database } from "../databases.js";
 import { COLLECTION_NOT_FOUND } from "../lib/codes.js";
+import { fetchArangoVersionCode } from "./_arango-server-version.js";
 import { config } from "./_config.js";
+import {
+  clusterIntegrationTimeoutMs,
+  propagationForResourceMs,
+  waitForNewDatabase,
+} from "./_integration-timeouts.js";
 
 describe("Collection metadata", function () {
+  this.timeout(clusterIntegrationTimeoutMs);
   let system: Database, db: Database;
   let collection: DocumentCollection;
   const dbName = `testdb_${Date.now()}`;
@@ -15,21 +22,26 @@ describe("Collection metadata", function () {
       await system.acquireHostList();
     await system.createDatabase(dbName);
     db = system.database(dbName);
+    await waitForNewDatabase(db);
     collection = await db.createCollection(collectionName);
     await db.waitForPropagation(
       { pathname: `/_api/collection/${collection.name}` },
-      10000,
+      propagationForResourceMs,
     );
   });
   after(async () => {
     await system.dropDatabase(dbName);
   });
   describe("collection.get", () => {
+    let skipAssert: boolean;
+     before(async function () {
+        if (await fetchArangoVersionCode(db) >= 40000) {skipAssert = true;}
+      });
     it("should return information about a collection", async () => {
       const info = await collection.get();
       expect(info).to.have.property("name", collectionName);
       expect(info).to.have.property("isSystem", false);
-      expect(info).to.have.property("status", 3); // loaded
+      if (!skipAssert) expect(info).to.have.property("status", 3); // loaded
       expect(info).to.have.property("type", 2); // document collection
     });
     it("should throw if collection does not exist", async () => {

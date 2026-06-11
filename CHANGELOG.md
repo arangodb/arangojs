@@ -14,7 +14,44 @@ This driver uses semantic versioning:
 - A change in the major version (e.g. 1.Y.Z -> 2.0.0) indicates _breaking_
   changes that require changes in your code to upgrade.
 
-## [Unreleased]
+## [10.3.1] - 2026-06-02
+
+### Fixed
+
+- Fixed connection failures with undici 8.x (`InvalidArgumentError: invalid content-length header`)
+  when using `config.agentOptions` by not setting a manual `Content-Length` header on undici fetch requests.
+  ([#855](https://github.com/arangodb/arangojs/issues/855))
+
+- Tests: Version-gated skips for ArangoDB 4.0+ API and behavior changes (DE-1151); prerelease tags
+  (e.g. `4.0-nightly`) parse to a numeric minor version again so skip gates are not driven by `NaN`.
+- Tests: More reliable cluster and `ROUND_ROBIN` integration runs (shared timeouts, propagation helpers,
+  stable access-token and analyzer listing).
+- Dev: `undici` added as a devDependency so integration tests using `agentOptions` resolve the dynamic
+  `import("undici")` in `connection.ts` (optional peer alone is not installed by default).
+
+### Added
+
+- Added CircleCI pipelines for integration tests and browser smoke (`.circleci/`): single and cluster-server matrices (Node 22/24, SSL, CJS/ESM), HTTP/1.1 vs HTTP/2 smoke, optional full-matrix via `docker-img`, and Puppeteer browser smoke on Enterprise **3.12** and **4.0-nightly** (GCR images).
+
+### Changed
+
+- CI: Integration tests and browser smoke run on CircleCI instead of GitHub Actions. GitHub Actions CI
+  (`.github/workflows/ci.yml`) on `main` only promotes `stable`; Update docs and CodeQL chain off CI.
+  README status badge points to CircleCI.
+- CI (DE-1167): Run CircleCI jobs on org **self-hosted** runners — `node-test` executors use
+  `arangodb/medium-arm64-privileged`; `browser-smoke` uses `arangodb/medium-amd64-privileged`; new
+  **`setup-docker`** command installs Docker and starts **`dockerd`** in the job (DinD; no
+  `setup_remote_docker`).
+- CI: Default ArangoDB images are **`gcr.io/gcr-for-testing/arangodb/enterprise:3.12`** and
+  **`gcr.io/gcr-for-testing/arangodb/enterprise-preview:4.0-nightly`**; starter remains
+  **`docker.io/arangodb/arangodb-starter:0.18.5`**.
+- CI: **`login-docker-hub`** before `start-db` via context **`docker-hub`**
+  (`DOCKER_HUB_USER` / `DOCKER_HUB_PASSWORD`).
+- CI: Browser smoke — Google Chrome (AMD64) in the job; `smoke-test.mjs` serves on port **8559** and
+  proxies to **`ARANGO_PROXY_TARGET`** (default `127.0.0.1:8529` locally, `172.28.0.1:8529` in CI);
+  `Database` uses the smoke origin (`PUPPETEER_SKIP_DOWNLOAD` in CI).
+
+## [10.3.0] - 2026-04-14
 
 ### Added
 
@@ -37,6 +74,27 @@ This driver uses semantic versioning:
   - `maxNodesPerCallstack`: Control stack splitting threshold
   - `maxWarningCount`: Limit the number of warnings returned
   - `failOnWarning`: Throw exception on warnings instead of returning them
+
+- Added `trainingState`, `errorMessage`, and `sparse` for vector indexes (DE-1147)
+
+  `VectorIndexDescription` now reflects ArangoDB 3.12.9+ index responses: optional
+  `trainingState` (`unusable`, `training`, `ingesting`, or `ready`) and optional
+  `errorMessage` when training or usability fails (for example, insufficient training data).
+   The `VectorIndexTrainingState` type alias documents the allowed
+  `trainingState` values.
+
+  `EnsureVectorIndexOptions` now includes optional `sparse`, aligned with the
+  vector index HTTP API so documents without the indexed vector field can be
+  omitted when `sparse` is `true`.
+
+### Fixed
+
+- Fixed incorrect handling of `maxPlans` in `QueryOptions`. The driver now
+  supports `maxNumberOfPlans` and maps legacy `maxPlans` to `maxNumberOfPlans` 
+  when the latter is not provided. The driver always sends `options.maxNumberOfPlans` 
+  to the server. If both are provided, `maxNumberOfPlans` takes precedence.
+  `maxPlans` is deprecated and will be removed in a future major release.
+  ([#845](https://github.com/arangodb/arangojs/issues/845))
 
 ## [10.2.2] - 2026-01-30
 
@@ -2583,6 +2641,8 @@ For a detailed list of changes between pre-release versions of v7 see the
 
   Graph methods now only return the relevant part of the response body.
 
+[10.3.1]: https://github.com/arangodb/arangojs/compare/v10.3.0...v10.3.1
+[10.3.0]: https://github.com/arangodb/arangojs/compare/v10.2.2...v10.3.0
 [10.2.2]: https://github.com/arangodb/arangojs/compare/v10.2.1...v10.2.2
 [10.2.1]: https://github.com/arangodb/arangojs/compare/v10.2.0...v10.2.1
 [10.2.0]: https://github.com/arangodb/arangojs/compare/v10.1.2...v10.2.0

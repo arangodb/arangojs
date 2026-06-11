@@ -2,10 +2,16 @@ import { expect } from "chai";
 import { Database } from "../databases.js";
 import { View } from "../views.js";
 import { config } from "./_config.js";
+import {
+  clusterIntegrationTimeoutMs,
+  propagationForResourceMs,
+  waitForNewDatabase,
+} from "./_integration-timeouts.js";
 
 const range = (n: number): number[] => Array.from(Array(n).keys());
 
 describe("Accessing views", function () {
+  this.timeout(clusterIntegrationTimeoutMs);
   const name = `testdb_${Date.now()}`;
   let system: Database, db: Database;
   before(async () => {
@@ -13,6 +19,7 @@ describe("Accessing views", function () {
     if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE")
       await system.acquireHostList();
     db = await system.createDatabase(name);
+    await waitForNewDatabase(db);
   });
   after(async () => {
     try {
@@ -38,7 +45,7 @@ describe("Accessing views", function () {
           await view.create({ type: "arangosearch" });
           await db.waitForPropagation(
             { pathname: `/_api/view/${view.name}` },
-            10000,
+            propagationForResourceMs,
           );
         }),
       );
@@ -61,7 +68,7 @@ describe("Accessing views", function () {
           await view.create({ type: "arangosearch" });
           await db.waitForPropagation(
             { pathname: `/_api/view/${view.name}` },
-            10000,
+            propagationForResourceMs,
           );
         }),
       );

@@ -2,9 +2,16 @@ import { expect } from "chai";
 import { DocumentCollection } from "../collections.js";
 import { Database } from "../databases.js";
 import { Transaction } from "../transactions.js";
+import { fetchArangoVersionCode } from "./_arango-server-version.js";
 import { config } from "./_config.js";
+import {
+  clusterIntegrationTimeoutMs,
+  propagationForResourceMs,
+  waitForNewDatabase,
+} from "./_integration-timeouts.js";
 
-describe("Transactions", () => {
+describe("Transactions", function () {
+  this.timeout(clusterIntegrationTimeoutMs);
   let system: Database;
   before(async () => {
     system = new Database(config);
@@ -17,8 +24,10 @@ describe("Transactions", () => {
   describe("database.executeTransaction", () => {
     const name = `testdb_${Date.now()}`;
     let db: Database;
-    before(async () => {
+    before(async function () {
       db = await system.createDatabase(name);
+      await waitForNewDatabase(db);
+      if ((await fetchArangoVersionCode(db)) >= 40000) this.skip();
     });
     after(async () => {
       await system.dropDatabase(name);
@@ -40,6 +49,7 @@ describe("Transactions", () => {
     before(async () => {
       allTransactions = [];
       db = await system.createDatabase(name);
+      await waitForNewDatabase(db);
     });
     after(async () => {
       await Promise.all(
@@ -53,7 +63,7 @@ describe("Transactions", () => {
       collection = await db.createCollection(`collection-${Date.now()}`);
       await db.waitForPropagation(
         { pathname: `/_api/collection/${collection.name}` },
-        10000,
+        propagationForResourceMs,
       );
     });
     afterEach(async () => {

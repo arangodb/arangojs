@@ -4,6 +4,11 @@ import { Database } from "../databases.js";
 import { ArangoError } from "../errors.js";
 import { Graph, GraphVertexCollection } from "../graphs.js";
 import { config } from "./_config.js";
+import {
+  clusterIntegrationTimeoutMs,
+  propagationForResourceMs,
+  waitForNewDatabase,
+} from "./_integration-timeouts.js";
 
 const range = (n: number): number[] => Array.from(Array(n).keys());
 
@@ -15,14 +20,14 @@ async function createCollections(db: Database) {
       const collection = await db.createCollection(name);
       await db.waitForPropagation(
         { pathname: `/_api/collection/${collection.name}` },
-        10000,
+        propagationForResourceMs,
       );
     }),
     ...edgeCollectionNames.map(async (name) => {
       const collection = await db.createEdgeCollection(name);
       await db.waitForPropagation(
         { pathname: `/_api/collection/${collection.name}` },
-        10000,
+        propagationForResourceMs,
       );
     }),
   ] as Promise<void>[]);
@@ -43,12 +48,13 @@ async function createGraph(
   );
   await graph.database.waitForPropagation(
     { pathname: `/_api/gharial/${graph.name}` },
-    10000,
+    propagationForResourceMs,
   );
   return result;
 }
 
 describe("Manipulating graph vertices", function () {
+  this.timeout(clusterIntegrationTimeoutMs);
   const name = `testdb_${Date.now()}`;
   let system: Database, db: Database;
   let graph: Graph;
@@ -58,6 +64,7 @@ describe("Manipulating graph vertices", function () {
     if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE")
       await system.acquireHostList();
     db = await system.createDatabase(name);
+    await waitForNewDatabase(db);
   });
   after(async () => {
     try {
@@ -92,7 +99,7 @@ describe("Manipulating graph vertices", function () {
       vertexCollection = await db.createCollection(`xc_${Date.now()}`);
       await db.waitForPropagation(
         { pathname: `/_api/collection/${vertexCollection.name}` },
-        10000,
+        propagationForResourceMs,
       );
     });
     afterEach(async () => {
@@ -109,7 +116,7 @@ describe("Manipulating graph vertices", function () {
       vertexCollection = await db.createCollection(`xc_${Date.now()}`);
       await db.waitForPropagation(
         { pathname: `/_api/collection/${vertexCollection.name}` },
-        10000,
+        propagationForResourceMs,
       );
       await graph.addVertexCollection(vertexCollection.name);
     });
