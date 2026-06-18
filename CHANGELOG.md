@@ -20,6 +20,7 @@ This driver uses semantic versioning:
 
 - Dev: Upgraded TypeScript from 5.4 to **6.0** (`typescript@^6.0.3`). Set explicit `compilerOptions.types` (`node`, `mocha`) for TS 6’s stricter `@types` handling. CJS build uses `moduleResolution: "Bundler"` with `module: "CommonJS"` (replaces deprecated `node10` / `"Node"` resolution).
 - Dev: Upgraded TypeDoc to **0.28.19** for TypeScript 6 peer compatibility (docs generation).
+- Dev: Upgraded esbuild from **0.21** to **0.28.1** (`esbuild@^0.28.1`); used only by the browser smoke test (`smoke-test.mjs`).
 
 ## [10.3.1] - 2026-06-02
 
