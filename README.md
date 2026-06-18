@@ -347,27 +347,45 @@ of Node.js at the time of this writing.
 When using arangojs in the browser, self-signed HTTPS certificates need to
 be trusted by the browser or use a trusted root certificate.
 
-### Streaming transactions leak
+### Stream transactions
 
-When using the `transaction.step` method it is important to be aware of the
-limitations of what a callback passed to this method is allowed to do.
+Stream transactions associate database operations with a transaction using the
+`x-arango-trx-id` HTTP header. When you call `trx.step(callback)`, the driver
+keeps that transaction ID active for the entire lifetime of the callback's
+returned Promise — including across `await` and `.then()` chains.
+
+On **Node.js** (including LTS versions 22 and 24), the driver uses
+[`AsyncLocalStorage`](https://nodejs.org/api/async_context.html#class-asynclocalstorage)
+to track the transaction ID per async context. That means:
+
+- Async work inside a step stays in the transaction (abort rolls it back).
+- Multiple stream transactions can run concurrently on the same `Database`
+  instance (e.g. parallel HTTP handlers sharing one connection pool).
+
+In **browsers**, use one transaction at a time per `Database`, or use separate
+`Database` instances for concurrent transactions.
 
 ```js
 const collection = db.collection(collectionName);
-const trx = db.transaction(transactionId);
+const trx = await db.beginTransaction(collection);
 
-// WARNING: This code will not work as intended!
+// Async work and multiple DB calls in one step are supported:
 await trx.step(async () => {
+  await loadFromExternalApi();
   await collection.save(doc1);
-  await collection.save(doc2); // Not part of the transaction!
+  await collection.save(doc2);
 });
 
-// INSTEAD: Always perform a single operation per step:
-await trx.step(() => collection.save(doc1));
-await trx.step(() => collection.save(doc2));
+// Or use the helper for automatic commit/abort:
+await db.withTransaction(collection, async (step) => {
+  await step(() => collection.save(doc1));
+  await step(() => collection.save(doc2));
+});
 ```
 
-Please refer to the [documentation of the `transaction.step` method](https://arangodb.github.io/arangojs/latest/classes/transaction.Transaction.html#step)
+Please refer to the
+[stream transactions guide](docs/stream-transactions.md) and the
+[documentation of the `transaction.step` method](https://arangodb.github.io/arangojs/latest/classes/transaction.Transaction.html#step)
 for additional examples.
 
 ### Streaming transactions timeout in cluster
