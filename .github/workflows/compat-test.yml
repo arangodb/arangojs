@@ -1,0 +1,115 @@
+# Manual consumer compat test: pack with TS 6, then typecheck the tarball with TS 5 and TS 6.
+# Run from Actions → Compat test → pick your branch in "Run workflow" (not main-only).
+# Safe to remove if compat testing is dropped.
+name: Compat test
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: compat-test-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  pack:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+
+      - name: Install dependencies
+        run: npm install --ignore-scripts
+
+      - name: Build
+        run: npm run build
+
+      - name: Pack publishable tarball
+        run: |
+          cd build
+          npm pack
+          mv arangojs-*.tgz ../arangojs-pack.tgz
+
+      - name: Upload pack artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: arangojs-pack
+          path: arangojs-pack.tgz
+          retention-days: 1
+
+  consumer-ts5:
+    needs: pack
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download pack artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: arangojs-pack
+          path: pack
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Typecheck as TypeScript 5 consumer
+        working-directory: compat-test
+        run: |
+          npm install --save-dev typescript@5.4.5
+          npm install --save arangojs@file:../pack/arangojs-pack.tgz
+          npx tsc --noEmit
+
+  consumer-ts6:
+    needs: pack
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download pack artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: arangojs-pack
+          path: pack
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Typecheck as TypeScript 6 consumer
+        working-directory: compat-test
+        run: |
+          npm install --save-dev typescript@6.0.3
+          npm install --save arangojs@file:../pack/arangojs-pack.tgz
+          npx tsc --noEmit
+
+  cleanup:
+    needs: [pack, consumer-ts5, consumer-ts6]
+    if: always() && needs.pack.result == 'success'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Delete pack artifact
+        uses: geekyeggo/delete-artifact@v5
+        with:
+          name: arangojs-pack
+          run-id: ${{ github.run_id }}
+        continue-on-error: true
