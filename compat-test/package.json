@@ -1,0 +1,6 @@
+{
+  "name": "arangojs-compat-test",
+  "private": true,
+  "type": "module",
+  "description": "Consumer compatibility smoke test for published arangojs types (see .github/workflows/compat-*.yml)"
+}
