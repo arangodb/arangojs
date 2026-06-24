@@ -71,7 +71,7 @@ jobs:
       - name: Typecheck as TypeScript 5 consumer
         working-directory: compat-test
         run: |
-          npm install --save-dev typescript@5.4.5
+          npm install --save-dev typescript@5.4.5 @types/node@20
           npm install --save arangojs@file:../pack/arangojs-pack.tgz
           npx tsc --noEmit
 
@@ -97,7 +97,7 @@ jobs:
       - name: Typecheck as TypeScript 6 consumer
         working-directory: compat-test
         run: |
-          npm install --save-dev typescript@6.0.3
+          npm install --save-dev typescript@6.0.3 @types/node@20
           npm install --save arangojs@file:../pack/arangojs-pack.tgz
           npx tsc --noEmit
 
