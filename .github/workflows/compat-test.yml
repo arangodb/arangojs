@@ -1,11 +1,11 @@
-# Manual consumer compat test: pack with TS 6, then typecheck the tarball with TS 5 and TS 6.
-# Run from Actions → Compat test → pick your branch in "Run workflow" (not main-only).
-# Safe to remove if compat testing is dropped.
+# Consumer compat test: pack with TS 6, then typecheck the tarball with TS 5 and TS 6.
+# Triggers on push to the feature branch only (experimental; safe to remove later).
 name: Compat test
 
 on:
-  workflow_dispatch:
-
+  push:
+    branches:
+      - DE-1175-update-driver-to-latest-type-script-6
 concurrency:
   group: compat-test-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
