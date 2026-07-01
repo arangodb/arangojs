@@ -14,6 +14,22 @@ This driver uses semantic versioning:
 - A change in the major version (e.g. 1.Y.Z -> 2.0.0) indicates _breaking_
   changes that require changes in your code to upgrade.
 
+## [Unreleased]
+
+### Fixed
+
+- Fixed connection failures with undici 8.x (`InvalidArgumentError: invalid content-length header`)
+  on the default `globalThis.fetch` path (not only when using `config.agentOptions`) by removing
+  manual `Content-Length` header handling by default and letting `fetch` set it from the request body.
+  ([#855](https://github.com/arangodb/arangojs/issues/855))
+
+### Added
+
+- Added `config.forceContentLength` (default `false`). Set to `true` if you see `ECONNRESET` in
+  Next.js 15 production builds when using `next/headers` `cookies()` ([#831](https://github.com/arangodb/arangojs/issues/831)).
+  Do not enable this when using undici 8.x unless required — it restores explicit `Content-Length`
+  handling that can conflict with strict undici header validation.
+
 ## [10.3.1] - 2026-06-02
 
 ### Fixed

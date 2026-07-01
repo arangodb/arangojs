@@ -168,6 +168,17 @@ export type ConfigOptions = connection.CommonRequestOptions & {
    */
   agentOptions?: any;
   /**
+   * When `true`, arangojs sets the `Content-Length` header explicitly for
+   * fixed-size request bodies instead of relying on `fetch` to add it.
+   *
+   * Enable this if you see `ECONNRESET` in Next.js 15 production builds when
+   * using `next/headers` `cookies()` ([#831](https://github.com/arangodb/arangojs/issues/831)).
+   *
+   * Default is `false` — `fetch` sets `Content-Length` automatically, which is
+   * required for compatibility with undici 8.x ([#855](https://github.com/arangodb/arangojs/issues/855)).
+   */
+  forceContentLength?: boolean;
+  /**
    * Callback that will be invoked when a request
    *
    * @param err - Error encountered when handling this request.

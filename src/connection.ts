@@ -693,6 +693,7 @@ export class Connection {
   protected _queueTimes = new LinkedList<[number, number]>();
   protected _responseQueueTimeSamples: number;
   protected _agentOptions?: any;
+  protected _forceContentLength: boolean;
 
   /**
    * @internal
@@ -715,6 +716,7 @@ export class Connection {
           : 1),
       fetchOptions: { headers, ...commonFetchOptions } = {},
       agentOptions,
+      forceContentLength = false,
       onError,
       precaptureStackTraces = false,
       responseQueueTimeSamples = 10,
@@ -729,6 +731,7 @@ export class Connection {
     this._taskPoolSize = poolSize;
     this._onError = onError;
     this._agentOptions = agentOptions;
+    this._forceContentLength = forceContentLength;
 
     this._commonRequestOptions = commonRequestOptions;
     this._commonFetchOptions = {
@@ -1163,9 +1166,9 @@ export class Connection {
       requestHeaders
     );
 
-    // undici fetch (via agentOptions) sets Content-Length from the body per the Fetch spec.
-    // Setting it manually conflicts with undici 8+ header validation (#855).
-    const shouldSetContentLength = this._agentOptions == null;
+    // fetch sets Content-Length from the body per the Fetch spec (#855).
+    // Opt in via forceContentLength for runtimes that omit it (e.g. Next.js 15 prod + cookies, #831).
+    const shouldSetContentLength = this._forceContentLength;
 
     let body = requestBody;
     if (body instanceof FormData) {
