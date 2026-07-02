@@ -2,5 +2,5 @@
   "name": "arangojs-compat-test",
   "private": true,
   "type": "module",
-  "description": "Consumer compatibility smoke test for published arangojs types (see .github/workflows/compat-test.yml)"
+  "description": "Consumer compatibility smoke test for published arangojs types (see the compat-typescript workflow in .circleci/config.yml)"
 }
