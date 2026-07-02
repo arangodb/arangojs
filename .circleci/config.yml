@@ -216,6 +216,51 @@ jobs:
             PUPPETEER_EXECUTABLE_PATH: /usr/bin/google-chrome-stable
             ARANGO_PROXY_TARGET: 172.28.0.1:8529
 
+  # Build the driver with the repo toolchain (TypeScript 6) and pack the publishable
+  # tarball. No ArangoDB / Docker needed.
+  compat-pack:
+    executor: n22
+    steps:
+      - checkout
+      - run:
+          name: Install jq
+          command: sudo apt-get update && sudo apt-get install -y --no-install-recommends jq
+      - run:
+          name: Install dependencies
+          command: npm install --ignore-scripts
+      - run:
+          name: Build and pack publishable tarball
+          command: |
+            set -euo pipefail
+            npm run build
+            cd build
+            npm pack
+            mv arangojs-*.tgz ../arangojs-pack.tgz
+      - persist_to_workspace:
+          root: .
+          paths:
+            - arangojs-pack.tgz
+
+  # Install the packed tarball in a sample consumer project and typecheck it with a
+  # specific TypeScript version, simulating a customer on that version.
+  compat-consumer:
+    parameters:
+      ts:
+        type: string
+    executor: n22
+    steps:
+      - checkout
+      - attach_workspace:
+          at: /tmp/workspace
+      - run:
+          name: Typecheck as TypeScript << parameters.ts >> consumer
+          working_directory: compat-test
+          command: |
+            set -euo pipefail
+            npm install --save-dev typescript@<< parameters.ts >> @types/node@20
+            npm install --save arangojs@file:/tmp/workspace/arangojs-pack.tgz
+            npx tsc --noEmit
+
 workflows:
   # 16 jobs: single-server only. HTTP/1.1 (default http_proto). 2 DB × 2 Node × 2 SSL × 2 module systems.
   integration-single-topology:
@@ -426,3 +471,20 @@ workflows:
             branches:
               ignore: stable
           docker-img: <<pipeline.parameters.docker-img>>
+  # Consumer TypeScript compat: build+pack once (TS 6), then typecheck the tarball with
+  # TS 5 and TS 6 in parallel.
+  compat-typescript:
+    when:
+      not: <<pipeline.parameters.docker-img>>
+    jobs:
+      - compat-pack
+      - compat-consumer:
+          name: compat-consumer-ts5
+          ts: '5.4.5'
+          requires:
+            - compat-pack
+      - compat-consumer:
+          name: compat-consumer-ts6
+          ts: '6.0.3'
+          requires:
+            - compat-pack
