@@ -30,6 +30,10 @@ This driver uses semantic versioning:
   Do not enable this when using undici 8.x unless required — it restores explicit `Content-Length`
   handling that can conflict with strict undici header validation.
 
+### Deprecated
+
+- Marked `Database` methods removed in ArangoDB 4.0 as deprecated (DE-1170); see [docs/arangodb-v4-removed-methods.md](docs/arangodb-v4-removed-methods.md).
+
 ## [10.3.1] - 2026-06-02
 
 ### Fixed
