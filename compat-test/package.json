@@ -2,12 +2,5 @@
   "name": "arangojs-compat-test",
   "private": true,
   "type": "module",
-  "description": "Consumer compatibility smoke test for published arangojs types (see the compat-typescript workflow in .circleci/config.yml)",
-  "devDependencies": {
-    "@types/node": "^20.19.43",
-    "typescript": "^7.0.2"
-  },
-  "dependencies": {
-    "arangojs": "file:../arangojs-pack.tgz"
-  }
+  "description": "Consumer compatibility smoke test for published arangojs types (see the compat-typescript workflow in .circleci/config.yml)"
 }
