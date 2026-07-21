@@ -29,6 +29,18 @@ This driver uses semantic versioning:
   Next.js 15 production builds when using `next/headers` `cookies()` ([#831](https://github.com/arangodb/arangojs/issues/831)).
   Do not enable this when using undici 8.x unless required — it restores explicit `Content-Length`
   handling that can conflict with strict undici header validation.
+- CI: CircleCI `compat-typescript` workflow builds/packs the driver once and typechecks the
+  publishable tarball as a TypeScript **5.4**, **6.0**, and **7.0** consumer (`compat-test/`).
+
+### Changed
+
+- Dev: Builds use **TypeScript 7** (`@typescript/native` → `typescript@^7.0.2`) for `tsc`. The
+  `typescript` package is aliased to `@typescript/typescript6` so tools that still need the
+  TypeScript 6 programmatic API (TypeDoc, typescript-eslint) keep working until a TS 7 API ships.
+- Dev: Set explicit `compilerOptions.types` (`node`, `mocha`) for TS 6/7’s stricter `@types`
+  handling. CJS build uses `moduleResolution: "Bundler"` with `module: "CommonJS"` (replaces
+  deprecated `node10` / `"Node"` resolution).
+- Dev: Upgraded TypeDoc to **0.28.20** for TypeScript 6 peer compatibility (docs generation).
 
 ### Deprecated
 
