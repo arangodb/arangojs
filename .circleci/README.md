@@ -25,7 +25,8 @@ All integration and browser jobs attach **`context: docker-hub`**.
 
 | Job | Executor | Resource class |
 | --- | -------- | -------------- |
-| **`node-test`** | `n22` / `n24` | `arangodb/medium-arm64-privileged` |
+| **`node-test`** (single / HTTP smoke) | `n22` / `n24` | `arangodb/small-arm64-privileged` |
+| **`node-test`** (cluster) | `n22` / `n24` | `arangodb/medium-arm64-privileged` |
 | **`browser-smoke`** | `n24-browser` (`cimg/node:24.4`) | `arangodb/medium-amd64-privileged` |
 
 - **`setup-docker`** — install Docker CLI, start in-container `dockerd` (DinD).
@@ -122,15 +123,15 @@ All run when **`docker-img`** is set (Trigger Pipeline). They use the same **`<<
 | ------------------- | ----------------------------------------------- |
 | **Docker DB image** | `<<pipeline.parameters.docker-img>>`            |
 | **Node**            | `n22`, `n24`                                    |
-| **Topology**        | `single`, `cluster`                             |
+| **Topology**        | `single` (small runners), `cluster` (medium)    |
 | **SSL**             | `true`, `false`                                 |
 | **Module system**   | `cjs`, `esm`                                    |
 | **HTTP**            | Default `**h1`** only (no `http_proto` matrix). |
 
 
-**Job count:** 2 × 2 × 2 × 2 = **16**.
+**Job count:** 2 × 2 × 2 × 2 = **16** (8 single + 8 cluster).
 
-**Naming:** `<node>-<topology>-ssl<true|false>-<cjs|esm>`
+**Naming:** `<node>-single-ssl<true|false>-<cjs|esm>` | `<node>-cluster-ssl<true|false>-<cjs|esm>`
 
 ### B) `integration-http-proto-smoke-given-db-image` (**2** jobs)
 

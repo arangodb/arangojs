@@ -22,6 +22,8 @@ This driver uses semantic versioning:
   on the default `globalThis.fetch` path (not only when using `config.agentOptions`) by removing
   manual `Content-Length` header handling by default and letting `fetch` set it from the request body.
   ([#855](https://github.com/arangodb/arangojs/issues/855))
+- Tests: Stream query setup inserts and parallel stream opens are chunked; multi-batch cursor
+  tests use a longer `ttl` to avoid intermittent CI timeouts / `cursor not found` under load.
 
 ### Added
 
@@ -34,6 +36,8 @@ This driver uses semantic versioning:
 
 ### Changed
 
+- CI: Single-topology and HTTP proto smoke `node-test` jobs use
+  `arangodb/small-arm64-privileged`; cluster jobs keep `arangodb/medium-arm64-privileged`.
 - Dev: Builds use **TypeScript 7** (`@typescript/native` → `typescript@^7.0.2`) for `tsc`. The
   `typescript` package is aliased to `@typescript/typescript6` so tools that still need the
   TypeScript 6 programmatic API (TypeDoc, typescript-eslint) keep working until a TS 7 API ships.

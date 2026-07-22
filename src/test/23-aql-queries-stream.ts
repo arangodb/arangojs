@@ -10,6 +10,23 @@ import {
   waitForNewDatabase,
 } from "./_integration-timeouts.js";
 
+/** Cap in-flight writes/streams so small CI runners and cluster LBs stay responsive. */
+const insertChunk = 100;
+const streamOpenChunk = 5;
+const docCount = 1000;
+const parallelStreamCount = 25;
+
+async function parallelInChunks(
+  count: number,
+  chunk: number,
+  run: (index: number) => Promise<unknown>,
+): Promise<void> {
+  for (let i = 0; i < count; i += chunk) {
+    const n = Math.min(chunk, count - i);
+    await Promise.all(Array.from({ length: n }, (_, j) => run(i + j)));
+  }
+}
+
 describe("AQL Stream queries", function () {
   this.timeout(clusterIntegrationTimeoutMs);
   const name = `testdb_${Date.now()}`;
@@ -70,7 +87,9 @@ describe("AQL Stream queries", function () {
       expect(cursor.batches.hasMore).to.equal(true);
     });
   });
-  describe("with some data", () => {
+  describe("with some data", function () {
+    // Setup inserts many docs; keep headroom above the single-topology 60s suite ceiling.
+    this.timeout(Math.max(clusterIntegrationTimeoutMs, 120_000));
     const cname = "MyTestCollection";
     before(async () => {
       const collection = await db.createCollection(cname);
@@ -78,10 +97,8 @@ describe("AQL Stream queries", function () {
         { pathname: `/_api/collection/${collection.name}` },
         propagationForResourceMs,
       );
-      await Promise.all(
-        Array.from(Array(1000).keys()).map((i: number) =>
-          collection.save({ hallo: i }),
-        ),
+      await parallelInChunks(docCount, insertChunk, (i) =>
+        collection.save({ hallo: i }),
       );
     });
     /*after(async () => {
@@ -90,21 +107,22 @@ describe("AQL Stream queries", function () {
     it("can access large collection in parallel", async () => {
       const collection = db.collection(cname);
       const query = aql`FOR doc in ${collection} RETURN doc`;
-      const options = { batchSize: 250, stream: true };
+      const options = { batchSize: 250, stream: true, ttl: 120 };
 
       let count = 0;
-      const cursors = await Promise.all(
-        Array.from(Array(25)).map(() => db.query(query, options)),
-      );
+      const cursors: Cursor[] = [];
+      await parallelInChunks(parallelStreamCount, streamOpenChunk, async () => {
+        cursors.push(await db.query(query, options));
+      });
       allCursors.push(...cursors);
       await Promise.all(
         cursors.map((c) =>
-          (c as Cursor).forEach(() => {
+          c.forEach(() => {
             count++;
           }),
         ),
       );
-      expect(count).to.equal(25 * 1000);
+      expect(count).to.equal(parallelStreamCount * docCount);
     });
     it("can do writes and reads", async () => {
       const collection = db.collection(cname);
