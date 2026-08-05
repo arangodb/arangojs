@@ -23,6 +23,19 @@ This driver uses semantic versioning:
   manual `Content-Length` header handling by default and letting `fetch` set it from the request body.
   ([#855](https://github.com/arangodb/arangojs/issues/855))
 
+- Fixed connection failures never being retried. `isSystemError` rejected the error objects thrown by
+  undici because their immediate prototype is not `Error.prototype`, so a refused connection produced
+  `isSafeToRetry: null` and the retry gate — which also governs host failover — was never entered
+  ([#867](https://github.com/arangodb/arangojs/issues/867)).
+
+- Fixed `config.maxRetries` having no effect. It was destructured out of the config without being
+  re-added to the connection's common request options, so the retry budget always fell back to
+  `hosts.length - 1`, and setting it to `false` did not disable retries
+  ([#867](https://github.com/arangodb/arangojs/issues/867)).
+
+- Fixed a possible stack overflow while constructing a `FetchFailedError` when the error's `cause`
+  chain is cyclic ([#867](https://github.com/arangodb/arangojs/issues/867)).
+
 ### Added
 
 - Added `config.forceContentLength` (default `false`). Set to `true` if you see `ECONNRESET` in
