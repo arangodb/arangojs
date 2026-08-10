@@ -733,7 +733,11 @@ export class Connection {
     this._agentOptions = agentOptions;
     this._forceContentLength = forceContentLength;
 
-    this._commonRequestOptions = commonRequestOptions;
+    // `maxRetries` is destructured above, so it is absent from `commonRequestOptions` (the rest of the
+    // config) and has to be put back explicitly. Without this it never reaches the request defaults the
+    // retry budget is read from, leaving `config.maxRetries` with no effect in either direction: it can
+    // neither raise the budget nor, when `false`, disable retries.
+    this._commonRequestOptions = { ...commonRequestOptions, maxRetries };
     this._commonFetchOptions = {
       headers: new Headers(headers),
       ...commonFetchOptions,
