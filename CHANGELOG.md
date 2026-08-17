@@ -23,6 +23,8 @@ This driver uses semantic versioning:
 
 ### Fixed
 
+- Fixed TypeScript builds by explicitly including Node.js and Mocha type definitions
+
 - Fixed connection failures with undici 8.x (`InvalidArgumentError: invalid content-length header`)
   on the default `globalThis.fetch` path (not only when using `config.agentOptions`) by removing
   manual `Content-Length` header handling by default and letting `fetch` set it from the request body.
