@@ -21,6 +21,7 @@
     "strict": true,
     "strictFunctionTypes": true,
     "strictNullChecks": true,
-    "rootDir": "./src/"
+    "rootDir": "./src/",
+    "types": ["node", "mocha"]
   }
 }
