@@ -66,7 +66,7 @@
     "test:cjs": "mocha --reporter spec --require source-map-support/register --timeout 10000 build/cjs/test",
     "test:esm": "mocha --reporter spec --require source-map-support/register --timeout 10000 build/esm/test",
     "pretest": "npm run build",
-    "build": "rm -rf build && mkdir build && npm-run-all --parallel build:*",
+    "build": "rm -rf build && mkdir build && npm-run-all build:package --parallel build:cjs build:esm build:dts build:text",
     "build:package": "cat package.json | jq 'delpaths([[\"private\"],[\"type\"],[\"scripts\"],[\"devDependencies\"],[\"babel\"],[\"browserslist\"]])' | sed 's/build\\///g' | sed -r 's/src\\/([^\"]+)\\.ts/\\1.js/g' > build/package.json",
     "build:cjs": "tsc -p ./tsconfig.cjs.json && echo '{\"type\": \"commonjs\"}' > build/cjs/package.json",
     "build:esm": "tsc -p ./tsconfig.esm.json && echo '{\"type\": \"module\"}' > build/esm/package.json",
