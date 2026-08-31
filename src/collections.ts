@@ -1697,11 +1697,17 @@ export interface DocumentCollection<
    * await collection.ensureIndex({
    *   type: "vector",
    *   fields: ["embedding"],
-   *   storedValues: ["val"], // Optional: for efficient filtering (ArangoDB 3.12.7+)
+   *   storedValues: ["category"], // Filtering and, in 3.12.10+, covering projections
    *   params: {
    *     metric: "cosine", // or "l2" or "innerProduct" (ArangoDB 3.12.6+)
    *     dimension: 128,
-   *     nLists: 100
+   *     nLists: { // A number is also supported; object form requires ArangoDB 3.12.10+
+   *       strategy: "autoSqrt",
+   *       multiplier: 4,
+   *       minNLists: 2
+   *     },
+   *     numberOfDocsPerCentroid: 100,
+   *     factory: "IVF{},Flat"
    *   }
    * });
    * ```

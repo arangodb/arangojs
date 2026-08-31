@@ -1,12 +1,16 @@
 /**
  * ```ts
  * import type {
+ *   EnsureVectorIndexOptions,
  *   FulltextIndex,
  *   GeoIndex,
  *   MdiIndex,
  *   PersistentIndex,
  *   PrimaryIndex,
  *   TtlIndex,
+ *   VectorIndexDescription,
+ *   VectorIndexNLists,
+ *   VectorIndexTrainingState,
  * } from "arangojs/indexes";
  * ```
  *
@@ -561,6 +565,57 @@ export type InvertedIndexStoredValueOptions = {
 };
 
 /**
+ * Fixed number of centroids to use above a document count threshold.
+ *
+ * Introduced in: ArangoDB 3.12.10
+ */
+export type VectorIndexNListsTier = {
+  /**
+   * Minimum number of documents for this tier to apply.
+   */
+  threshold: number;
+  /**
+   * Number of centroids to use when this tier applies.
+   */
+  fixedValue: number;
+};
+
+/**
+ * Options for computing the number of vector index centroids from the document
+ * count at training time.
+ *
+ * Introduced in: ArangoDB 3.12.10
+ */
+export type VectorIndexNListsScaling = {
+  /**
+   * Strategy used to compute the number of centroids.
+   */
+  strategy: "autoSqrt";
+  /**
+   * Factor applied to the square root of the document count.
+   *
+   * Must be at least `1`.
+   */
+  multiplier: number;
+  /**
+   * Minimum number of centroids and documents required to start training.
+   *
+   * Must be at least `1`.
+   */
+  minNLists: number;
+  /**
+   * Fixed centroid counts to use for larger document counts.
+   */
+  tiers?: VectorIndexNListsTier[];
+};
+
+/**
+ * A fixed number of vector index centroids or options for computing the number
+ * from the document count at training time.
+ */
+export type VectorIndexNLists = number | VectorIndexNListsScaling;
+
+/**
  * Options for creating a vector index.
  */
 export type EnsureVectorIndexOptions = EnsureIndexOptionsType<
@@ -573,12 +628,9 @@ export type EnsureVectorIndexOptions = EnsureIndexOptionsType<
     parallelism?: number;
 
     /**
-     * An array of attribute paths that will be stored in the index for
-     * efficient filtering. Unlike with other index types, this is not for
-     * covering projections with the index but for adding attributes that
-     * you filter on. This lets you make the lookup in the vector index
-     * more efficient because it avoids materializing documents twice,
-     * once for the filtering and once for the matches.
+     * An array of attribute paths that will be stored in the index for efficient
+     * filtering. From ArangoDB 3.12.10 onward, these can also cover projections
+     * so the attributes can be returned without materializing the documents.
      *
      * The maximum number of attributes that you can use in storedValues is 32.
      *
@@ -610,9 +662,14 @@ export type EnsureVectorIndexOptions = EnsureIndexOptionsType<
       dimension: number;
 
       /**
-       * Number of Voronoi cells (centroids) for IVF. Affects accuracy and index build time.
+       * Number of Voronoi cells (centroids) for IVF, or options for computing
+       * the number from the document count at training time.
+       *
+       * Up to ArangoDB 3.12.9, this is required and must be a number. From
+       * ArangoDB 3.12.10 onward, it can be an object and can be omitted to use
+       * the server's default scaling options.
        */
-      nLists: number;
+      nLists?: VectorIndexNLists;
 
       /**
        * How many neighboring centroids to probe by default. Higher = slower, better recall.
@@ -625,8 +682,22 @@ export type EnsureVectorIndexOptions = EnsureIndexOptionsType<
       trainingIterations?: number;
 
       /**
+       * Maximum number of vectors per centroid to include in the training
+       * sample.
+       *
+       * Default: `100`
+       *
+       * Introduced in: ArangoDB 3.12.10
+       */
+      numberOfDocsPerCentroid?: number;
+
+      /**
        * Advanced Faiss index factory string.
-       * If not specified, defaults to IVF<nLists>,Flat.
+       * If not specified, defaults to `IVF<nLists>,Flat`.
+       *
+       * From ArangoDB 3.12.10 onward, the centroid count can be represented by
+       * a `{}` placeholder, which the server replaces with the resolved
+       * `nLists` value for each shard.
        */
       factory?: string;
     };
@@ -950,6 +1021,26 @@ export type VectorIndexTrainingState =
   | "ready";
 
 /**
+ * Training details reported for a vector index shard.
+ *
+ * Introduced in: ArangoDB 3.12.10
+ */
+export type VectorIndexShardDescription = {
+  /**
+   * Current training state of this shard's index.
+   */
+  trainingState: VectorIndexTrainingState;
+  /**
+   * Training error for this shard's index, or an empty string if there is none.
+   */
+  error: string;
+  /**
+   * Number of centroids this shard's index was trained with.
+   */
+  resolvedNLists: number;
+};
+
+/**
  * An object representing a vector index.
  */
 export type VectorIndexDescription = IndexDescriptionType<
@@ -960,7 +1051,8 @@ export type VectorIndexDescription = IndexDescriptionType<
     inBackground: boolean;
     /**
      * An array of attribute paths that are stored in the index for
-     * efficient filtering.
+     * efficient filtering and, from ArangoDB 3.12.10 onward, covering
+     * projections.
      *
      * Introduced in: ArangoDB 3.12.7
      */
@@ -978,12 +1070,26 @@ export type VectorIndexDescription = IndexDescriptionType<
      * Introduced in: ArangoDB 3.12.9. Only present when there is a problem with the index.
      */
     errorMessage?: string;
+    /**
+     * Per-shard training details. On a single server, the collection name is
+     * used as the key.
+     *
+     * Introduced in: ArangoDB 3.12.10. Only present when listing indexes with
+     * the `withHidden` option.
+     */
+    shards?: Record<string, VectorIndexShardDescription>;
     params: {
       metric: "cosine" | "l2" | "innerProduct";
       dimension: number;
-      nLists: number;
+      nLists: VectorIndexNLists;
       defaultNProbe?: number;
       trainingIterations?: number;
+      /**
+       * Maximum number of vectors per centroid included in the training sample.
+       *
+       * Introduced in: ArangoDB 3.12.10. Omitted on older server versions.
+       */
+      numberOfDocsPerCentroid?: number;
       factory?: string;
     };
   }
