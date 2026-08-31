@@ -315,7 +315,7 @@ workflows:
       not: <<pipeline.parameters.docker-img>>
     jobs:
       - node-test:
-          name: <<matrix.topology>>-n22-ssltrue-<<matrix.module-system>>-312.9
+          name: <<matrix.topology>>-n22-ssltrue-<<matrix.module-system>>-3.12.9
           context: docker-hub
           docker-img: 'gcr.io/gcr-for-testing/arangodb/enterprise:3.12.9'
           node: n22
