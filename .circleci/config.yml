@@ -309,6 +309,29 @@ workflows:
                 - 'cjs'
                 - 'esm'
 
+  # 4 jobs: Enterprise 3.12.9, Node 22, SSL, single and cluster, CJS and ESM.
+  integration-3129:
+    when:
+      not: <<pipeline.parameters.docker-img>>
+    jobs:
+      - node-test:
+          name: <<matrix.topology>>-n22-ssltrue-<<matrix.module-system>>-3.12.9
+          context: docker-hub
+          docker-img: 'gcr.io/gcr-for-testing/arangodb/enterprise:3.12.9'
+          node: n22
+          ssl: 'true'
+          filters:
+            branches:
+              ignore: stable
+          matrix:
+            parameters:
+              topology:
+                - 'single'
+                - 'cluster'
+              module-system:
+                - 'cjs'
+                - 'esm'
+
   # 2 jobs: HTTP/1.1 vs HTTP/2 on a fixed "best" stack (Enterprise 3.12, Node 24, ESM, TLS, single).
   integration-http-proto-smoke:
     when:
