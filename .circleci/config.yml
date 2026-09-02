@@ -72,9 +72,6 @@ commands:
       docker-img:
         type: string
         default: 'gcr.io/gcr-for-testing/arangodb/enterprise:latest'
-      starter-docker-img:
-        type: string
-        default: 'docker.io/arangodb/arangodb-starter:latest'
       topology:
         type: string
         default: 'single'
@@ -91,7 +88,6 @@ commands:
           environment:
             DOCKER_IMAGE: <<parameters.docker-img>>
             STARTER_MODE: <<parameters.topology>>
-            STARTER_DOCKER_IMAGE: <<parameters.starter-docker-img>>
             SSL: <<parameters.ssl>>
             COMPRESSION: <<parameters.compression>>
 
@@ -115,9 +111,6 @@ jobs:
       docker-img:
         type: string
         default: 'gcr.io/gcr-for-testing/arangodb/enterprise:latest'
-      starter-docker-img:
-        type: string
-        default: 'docker.io/arangodb/arangodb-starter:latest'
       topology:
         type: string
         default: 'single'
@@ -142,7 +135,6 @@ jobs:
       - login-docker-hub
       - start-db:
           docker-img: <<parameters.docker-img>>
-          starter-docker-img: <<parameters.starter-docker-img>>
           topology: <<parameters.topology>>
           ssl: <<parameters.ssl>>
       - run:
@@ -181,9 +173,6 @@ jobs:
     parameters:
       docker-img:
         type: string
-      starter-docker-img:
-        type: string
-        default: 'docker.io/arangodb/arangodb-starter:latest'
     executor: n24-browser
     steps:
       - timeout
@@ -192,7 +181,6 @@ jobs:
       - login-docker-hub
       - start-db:
           docker-img: <<parameters.docker-img>>
-          starter-docker-img: <<parameters.starter-docker-img>>
           topology: single
           ssl: 'false'
       - run:
@@ -257,7 +245,6 @@ workflows:
           name: single-<<matrix.node>>-ssl<<matrix.ssl>>-<<matrix.module-system>>-4.0-nightly
           context: docker-hub
           topology: single
-          starter-docker-img: 'docker.io/arangodb/arangodb-starter:0.20.0-preview-16'
           filters:
             branches:
               ignore: stable
@@ -304,7 +291,6 @@ workflows:
           name: cluster-<<matrix.node>>-ssl<<matrix.ssl>>-<<matrix.module-system>>-4.0-nightly
           context: docker-hub
           topology: cluster
-          starter-docker-img: 'docker.io/arangodb/arangodb-starter:0.20.0-preview-16'
           filters:
             branches:
               ignore: stable
@@ -394,7 +380,6 @@ workflows:
             branches:
               ignore: stable
           docker-img: 'gcr.io/gcr-for-testing/arangodb/core-preview:4.0-nightly'
-          starter-docker-img: 'docker.io/arangodb/arangodb-starter:0.20.0-preview-16'
 
   # Manual pipeline (docker-img set): driver matrix on your image (16 jobs).
   integration-tests-given-db-image:

@@ -19,7 +19,8 @@ set -e
 
 STARTER_MODE=${STARTER_MODE:=single}
 DOCKER_IMAGE=${DOCKER_IMAGE:=gcr.io/gcr-for-testing/arangodb/enterprise:latest}
-STARTER_DOCKER_IMAGE=${STARTER_DOCKER_IMAGE:=docker.io/arangodb/arangodb-starter:latest}
+STARTER_VERSION=$(docker run --rm -e ARANGO_NO_AUTH=1 --entrypoint arangodb ${DOCKER_IMAGE} --version | { read -r first rest; echo "${rest%%,*}"; })
+STARTER_DOCKER_IMAGE=${STARTER_DOCKER_IMAGE:=docker.io/arangodb/arangodb-starter:$STARTER_VERSION}
 TOOLS_DOCKER_IMAGE=${TOOLS_DOCKER_IMAGE:=gcr.io/gcr-for-testing/arangodb/client-tools-preview:4-nightly}
 SSL=${SSL:=false}
 COMPRESSION=${COMPRESSION:=false}
