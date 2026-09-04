@@ -39,8 +39,9 @@ All integration and browser jobs attach **`context: docker-hub`**.
 | Role | Image |
 | ---- | ----- |
 | Enterprise **3.12** | `gcr.io/gcr-for-testing/arangodb/enterprise:3.12` |
-| Enterprise **4.0-nightly** | `gcr.io/gcr-for-testing/arangodb/enterprise-preview:4.0-nightly` |
-| Starter | `docker.io/arangodb/arangodb-starter:0.18.5` |
+| **4.0-nightly** | `gcr.io/gcr-for-testing/arangodb/core-preview:4.0-nightly` (mirror of `docker.io/arangodb/core-preview`) |
+| Starter (default) | `docker.io/arangodb/arangodb-starter:latest` |
+| Starter (4.0-nightly) | `docker.io/arangodb/arangodb-starter:0.20.0-preview-16` |
 
 ---
 
@@ -55,7 +56,7 @@ Four workflows run in parallel (`when: not <<pipeline.parameters.docker-img>>`).
 
 | Axis               | Values                                                                                                               |
 | ------------------ | -------------------------------------------------------------------------------------------------------------------- |
-| **ArangoDB image** | Block 1: `enterprise:3.12` — Block 2: `enterprise-preview:4.0-nightly`                                               |
+| **ArangoDB image** | Block 1: `enterprise:3.12` — Block 2: `core-preview:4.0-nightly`                                                      |
 | **Node**           | `n22`, `n24`                                                                                                         |
 | **SSL**            | `true`, `false`                                                                                                      |
 | **Module system**  | `cjs`, `esm`                                                                                                         |

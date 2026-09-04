@@ -88,7 +88,6 @@ commands:
           environment:
             DOCKER_IMAGE: <<parameters.docker-img>>
             STARTER_MODE: <<parameters.topology>>
-            STARTER_DOCKER_IMAGE: 'docker.io/arangodb/arangodb-starter:0.18.5'
             SSL: <<parameters.ssl>>
             COMPRESSION: <<parameters.compression>>
 
@@ -252,7 +251,7 @@ workflows:
           matrix:
             parameters:
               docker-img:
-                - 'gcr.io/gcr-for-testing/arangodb/enterprise-preview:4.0-nightly'
+                - 'gcr.io/gcr-for-testing/arangodb/core-preview:4.0-nightly'
               node:
                 - 'n22'
                 - 'n24'
@@ -298,7 +297,7 @@ workflows:
           matrix:
             parameters:
               docker-img:
-                - 'gcr.io/gcr-for-testing/arangodb/enterprise-preview:4.0-nightly'
+                - 'gcr.io/gcr-for-testing/arangodb/core-preview:4.0-nightly'
               node:
                 - 'n22'
                 - 'n24'
@@ -380,7 +379,7 @@ workflows:
           filters:
             branches:
               ignore: stable
-          docker-img: 'gcr.io/gcr-for-testing/arangodb/enterprise-preview:4.0-nightly'
+          docker-img: 'gcr.io/gcr-for-testing/arangodb/core-preview:4.0-nightly'
 
   # Manual pipeline (docker-img set): driver matrix on your image (16 jobs).
   integration-tests-given-db-image:
