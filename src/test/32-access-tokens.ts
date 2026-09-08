@@ -1,6 +1,7 @@
 import { expect } from "chai";
 import { Database } from "../databases.js";
 import { isArangoError } from "../errors.js";
+import { fetchArangoVersionCode } from "./_arango-server-version.js";
 import { config, isClusterRuntime } from "./_config.js";
 import {
   accessTokenIdsEqual,
@@ -36,20 +37,19 @@ async function withUnauthorizedRetry<T>(fn: () => Promise<T>): Promise<T> {
   throw last instanceof Error ? last : new Error(String(last));
 }
 
-// Access tokens require ArangoDB 3.12+
-const describe312 = config.arangoVersion! >= 31200 ? describe : describe.skip;
-
-describe312("Access Tokens", function () {
+describe("Access Tokens", function () {
   this.timeout(clusterIntegrationTimeoutMs);
   let system: Database;
   const testUsername = `testuser_${Date.now()}`;
   const testPassword = "testpass123";
 
-  before(async () => {
+  before(async function () {
     system = new Database(config);
     if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE") {
       await system.acquireHostList();
     }
+    // Access tokens require ArangoDB 3.12+
+    if ((await fetchArangoVersionCode(system)) < 31200) this.skip();
     await system.createUser(testUsername, testPassword);
     await waitForUserPropagated(system, testUsername);
   });
