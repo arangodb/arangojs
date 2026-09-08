@@ -10,8 +10,6 @@ import {
   waitForNewDatabase,
 } from "./_integration-timeouts.js";
 
-const it312 = config.arangoVersion! >= 31200 ? it : it.skip;
-
 /** ArangoDB 3.12.9+ vector index responses may include this (DE-1147). */
 const VECTOR_TRAINING_STATES = [
   "unusable",
@@ -78,12 +76,14 @@ describe("Managing indexes", function () {
       system.close();
     }
   });
+
   describe("collection.ensureIndex#vector", function () {
     let vectorIndexTestsEnabled = false;
 
     before(async function () {
+      if (arangoVersionCode < 31200) this.skip();
       const mode = resolveVectorIndexTestMode();
-      if (config.arangoVersion! < 31200 || mode === "skip") {
+      if (mode === "skip") {
         vectorIndexTestsEnabled = false;
         return;
       }
@@ -374,8 +374,11 @@ describe("Managing indexes", function () {
       expect(info).to.have.property("isNewlyCreated", true);
     });
   });
-  describe("collection.ensureIndex#mdi", () => {
-    it312("should create an MDI index", async () => {
+  describe("collection.ensureIndex#mdi", function () {
+    before(function () {
+      if (arangoVersionCode < 31200) this.skip();
+    });
+    it("should create an MDI index", async () => {
       const info = await collection.ensureIndex({
         type: "mdi",
         fields: ["x", "y", "z"],
@@ -426,8 +429,11 @@ describe("Managing indexes", function () {
       expect(indexes.filter((i: any) => i.id === index.id).length).to.equal(0);
     });
   });
-  describe("collection.ensureIndex#inverted", () => {
-    it312(
+  describe("collection.ensureIndex#inverted", function () {
+    before(function () {
+      if (arangoVersionCode < 31200) this.skip();
+    });
+    it(
       "should create an inverted index with new consolidation policy options",
       async () => {
         const info = await collection.ensureIndex({
