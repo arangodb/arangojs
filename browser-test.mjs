@@ -13,7 +13,16 @@ const root = path.dirname(fileURLToPath(import.meta.url));
 const testDirectory = path.join(root, "src", "test");
 const port = Number(process.env.BROWSER_TEST_PORT) || 8559;
 const origin = `http://127.0.0.1:${port}`;
-const arangoProxy = process.env.ARANGO_PROXY_TARGET || "127.0.0.1:8529";
+const proxyTargets = (process.env.ARANGO_PROXY_TARGET || "127.0.0.1:8529")
+  .split(",")
+  .map((target) => target.trim())
+  .filter(Boolean);
+if (!proxyTargets.length) {
+  throw new Error("ARANGO_PROXY_TARGET must list at least one host:port");
+}
+const testOrigins = proxyTargets.map(
+  (_target, index) => `http://127.0.0.1:${port + index}`,
+);
 const totalTimeoutMs =
   Number(process.env.BROWSER_TEST_TIMEOUT_MS) || 20 * 60 * 1000;
 
@@ -66,7 +75,9 @@ const browserEnvironment = {
   ARANGO_VERSION: process.env.ARANGO_VERSION || "",
   ARANGOJS_VERSION: require("./package.json").version,
   CI: process.env.CI || "",
-  TEST_ARANGODB_URL: origin,
+  TEST_ARANGODB_URL: testOrigins.join(","),
+  TEST_ARANGO_LOAD_BALANCING_STRATEGY:
+    process.env.TEST_ARANGO_LOAD_BALANCING_STRATEGY || "",
   TEST_ARANGO_VECTOR_INDEX: process.env.TEST_ARANGO_VECTOR_INDEX || "",
 };
 const entryPoint = testFiles
@@ -74,7 +85,7 @@ const entryPoint = testFiles
   .join("\n");
 
 console.log(
-  `Running ${testFiles.length} browser-compatible test files against ${arangoProxy}`,
+  `Running ${testFiles.length} browser-compatible test files against ${proxyTargets.join(", ")}`,
 );
 for (const [name, reason] of excludedTests) {
   if (allTestFiles.includes(name)) console.log(`Skipping ${name}: ${reason}`);
@@ -170,12 +181,44 @@ app.get("/browser-tests/index.js", (_request, response) => {
   response.type("js").send(bundle.outputFiles[0].text);
 });
 app.get("/favicon.ico", (_request, response) => response.sendStatus(204));
-app.use("/", proxy(arangoProxy, { parseReqBody: false }));
+app.use("/", proxy(proxyTargets[0], { parseReqBody: false }));
 
-const server = await new Promise((resolve, reject) => {
-  const listener = app.listen(port, "127.0.0.1", () => resolve(listener));
-  listener.on("error", reject);
-});
+function listen(application, listenPort) {
+  return new Promise((resolve, reject) => {
+    const listener = application.listen(listenPort, "127.0.0.1", () =>
+      resolve(listener),
+    );
+    listener.on("error", reject);
+  });
+}
+
+function attachCors(application) {
+  application.use((request, response, next) => {
+    response.setHeader("Access-Control-Allow-Origin", origin);
+    response.setHeader(
+      "Access-Control-Allow-Headers",
+      request.headers["access-control-request-headers"] || "*",
+    );
+    response.setHeader(
+      "Access-Control-Allow-Methods",
+      "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
+    );
+    response.setHeader("Access-Control-Expose-Headers", "*");
+    if (request.method === "OPTIONS") {
+      response.status(204).end();
+      return;
+    }
+    next();
+  });
+}
+
+const servers = [await listen(app, port)];
+for (let index = 1; index < proxyTargets.length; index++) {
+  const extra = express();
+  attachCors(extra);
+  extra.use("/", proxy(proxyTargets[index], { parseReqBody: false }));
+  servers.push(await listen(extra, port + index));
+}
 
 let browser;
 try {
@@ -219,7 +262,12 @@ try {
   process.exitCode = 1;
 } finally {
   if (browser) await browser.close();
-  await new Promise((resolve, reject) =>
-    server.close((error) => (error ? reject(error) : resolve())),
+  await Promise.all(
+    servers.map(
+      (listener) =>
+        new Promise((resolve, reject) =>
+          listener.close((error) => (error ? reject(error) : resolve())),
+        ),
+    ),
   );
 }

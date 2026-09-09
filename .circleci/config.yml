@@ -225,16 +225,20 @@ jobs:
     parameters:
       docker-img:
         type: string
+      topology:
+        type: enum
+        enum: ['single', 'cluster']
+        default: 'single'
     executor: n24-browser
     steps:
       - timeout:
-          duration: '45m'
+          duration: '60m'
       - checkout
       - setup-docker
       - login-docker-hub
       - start-db:
           docker-img: <<parameters.docker-img>>
-          topology: single
+          topology: <<parameters.topology>>
           ssl: 'false'
       - run:
           name: Install Google Chrome (AMD64)
@@ -262,13 +266,20 @@ jobs:
             PUPPETEER_SKIP_DOWNLOAD: 'true'
       - run:
           name: Run browser integration tests
-          command: npm run test:browser
-          no_output_timeout: 25m
-          environment:
-            PUPPETEER_EXECUTABLE_PATH: /usr/bin/google-chrome-stable
-            ARANGO_PROXY_TARGET: 172.28.0.1:8529
-            ARANGO_RELEASE: <<parameters.docker-img>>
-            CI: 'true'
+          command: |
+            set -euo pipefail
+            if [ "<<parameters.topology>>" = "cluster" ]; then
+              export ARANGO_PROXY_TARGET="172.28.0.1:8529,172.28.0.1:8539,172.28.0.1:8549"
+              export TEST_ARANGO_LOAD_BALANCING_STRATEGY=ROUND_ROBIN
+              export BROWSER_TEST_TIMEOUT_MS=2400000
+            else
+              export ARANGO_PROXY_TARGET=172.28.0.1:8529
+            fi
+            export PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable
+            export ARANGO_RELEASE="<<parameters.docker-img>>"
+            export CI=true
+            npm run test:browser
+          no_output_timeout: 40m
 
 workflows:
   # 16 jobs: single-server only. HTTP/1.1 (default http_proto). 2 DB × 2 Node × 2 SSL × 2 module systems.
@@ -523,7 +534,7 @@ workflows:
               ignore: stable
           docker-img: <<pipeline.parameters.docker-img>>
 
-  # Manual pipeline: browser integration suite only (1 job).
+  # Manual pipeline: browser integration suite only (2 jobs: single + cluster).
   # Trigger Pipeline → browser-tests=true and docker-img=<image>.
   browser-tests:
     when:
@@ -532,9 +543,14 @@ workflows:
         - <<pipeline.parameters.docker-img>>
     jobs:
       - browser-test:
-          name: browser-tests
+          name: browser-tests-<<matrix.topology>>
           context: docker-hub
           filters:
             branches:
               ignore: stable
           docker-img: <<pipeline.parameters.docker-img>>
+          matrix:
+            parameters:
+              topology:
+                - 'single'
+                - 'cluster'

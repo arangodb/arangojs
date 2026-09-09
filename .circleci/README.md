@@ -11,7 +11,7 @@ CircleCI validates **arangojs** using one parameterized job, `**node-test`**, wi
 | --- | --- | --- |
 | **`docker-img` empty**, **`browser-tests` false** (default) | `integration-single-topology`, `integration-cluster-topology`, `integration-http-proto-smoke`, `browser-smoke` | **36** jobs |
 | **`docker-img` set**, **`browser-tests` false** | `integration-tests-given-db-image`, `integration-http-proto-smoke-given-db-image`, `browser-smoke-given-db-image` | **19** jobs (16 + 2 + 1) |
-| **`browser-tests` true** and **`docker-img` set** | `browser-tests` only | **1** job |
+| **`browser-tests` true** and **`docker-img` set** | `browser-tests` only | **2** jobs (single + cluster) |
 
 Set **`browser-tests`** to skip every other workflow, including smoke.
 
@@ -181,11 +181,16 @@ Same Docker setup and **`login-docker-hub`** → **`start-db`** (single, HTTP) a
 
 ### `browser-test`
 
-Manual-only. Same Docker setup and Chrome install as smoke, then `npm run test:browser` with
-`PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable`,
-`ARANGO_PROXY_TARGET=172.28.0.1:8529`, `ARANGO_RELEASE` from `docker-img`, and `CI=true`.
+Manual-only. Same Docker setup and Chrome install as smoke, then `npm run test:browser`.
 
-The job has a 45-minute ceiling. Node-only tests are excluded in `browser-test.mjs`.
+| Topology | `start-db` | Proxy targets | Load balancing |
+| --- | --- | --- | --- |
+| **single** | `STARTER_MODE=single` | `172.28.0.1:8529` | driver default |
+| **cluster** | `STARTER_MODE=cluster` | `8529,8539,8549` | `TEST_ARANGO_LOAD_BALANCING_STRATEGY=ROUND_ROBIN` |
+
+The runner serves the Mocha page on `127.0.0.1:8559` and extra coordinator proxies on `8560` / `8561` (CORS allowed from the page origin). `ARANGO_RELEASE` comes from `docker-img`. `CI=true`.
+
+The job has a 60-minute ceiling (cluster suite is slower). Node-only tests are excluded in `browser-test.mjs`.
 
 ---
 
@@ -206,5 +211,5 @@ The job has a 45-minute ceiling. Node-only tests are excluded in `browser-test.m
 1. **Trigger Pipeline**.
 2. Set **`browser-tests`** to **true**.
 3. Set **`docker-img`** to the ArangoDB image (same parameter as the rest of CI).
-4. Only the **`browser-tests`** workflow runs (**1** job). Smoke and Node jobs do not run.
+4. Only the **`browser-tests`** workflow runs (**2** jobs: `browser-tests-single` and `browser-tests-cluster`). Smoke and Node jobs do not run.
 
