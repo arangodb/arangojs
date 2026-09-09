@@ -181,7 +181,25 @@ app.get("/browser-tests/index.js", (_request, response) => {
   response.type("js").send(bundle.outputFiles[0].text);
 });
 app.get("/favicon.ico", (_request, response) => response.sendStatus(204));
+attachClusterEndpoints(app);
 app.use("/", proxy(proxyTargets[0], proxyOptions()));
+
+function attachClusterEndpoints(application) {
+  application.use((request, response, next) => {
+    if (!request.path.endsWith("/_api/cluster/endpoints")) {
+      next();
+      return;
+    }
+    // acquireHostList() must keep using the browser-visible proxy URLs. The
+    // real endpoint response contains Docker-internal coordinator URLs, whose
+    // response headers are subject to ArangoDB's more restrictive CORS policy.
+    response.json({
+      error: false,
+      code: 200,
+      endpoints: testOrigins.map((endpoint) => ({ endpoint })),
+    });
+  });
+}
 
 function proxyOptions() {
   return {
@@ -235,6 +253,7 @@ const servers = [await listen(app, port)];
 for (let index = 1; index < proxyTargets.length; index++) {
   const extra = express();
   attachCors(extra);
+  attachClusterEndpoints(extra);
   extra.use("/", proxy(proxyTargets[index], proxyOptions()));
   servers.push(await listen(extra, port + index));
 }
