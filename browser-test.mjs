@@ -181,7 +181,26 @@ app.get("/browser-tests/index.js", (_request, response) => {
   response.type("js").send(bundle.outputFiles[0].text);
 });
 app.get("/favicon.ico", (_request, response) => response.sendStatus(204));
-app.use("/", proxy(proxyTargets[0], { parseReqBody: false }));
+app.use("/", proxy(proxyTargets[0], proxyOptions()));
+
+function proxyOptions() {
+  return {
+    parseReqBody: false,
+    // ArangoDB emits its own CORS headers whenever the request carries an
+    // Origin, and its Access-Control-Expose-Headers list omits headers the
+    // driver reads (e.g. x-arango-queue-time-seconds). Rewrite the list so
+    // every response header stays readable from the test page.
+    userResHeaderDecorator(headers) {
+      return {
+        ...headers,
+        "access-control-allow-origin": origin,
+        "access-control-expose-headers": Object.keys(headers)
+          .filter((name) => !name.startsWith("access-control-"))
+          .join(", "),
+      };
+    },
+  };
+}
 
 function listen(application, listenPort) {
   return new Promise((resolve, reject) => {
@@ -203,7 +222,7 @@ function attachCors(application) {
       "Access-Control-Allow-Methods",
       "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
     );
-    response.setHeader("Access-Control-Expose-Headers", "*");
+    response.setHeader("Access-Control-Max-Age", "86400");
     if (request.method === "OPTIONS") {
       response.status(204).end();
       return;
@@ -216,7 +235,7 @@ const servers = [await listen(app, port)];
 for (let index = 1; index < proxyTargets.length; index++) {
   const extra = express();
   attachCors(extra);
-  extra.use("/", proxy(proxyTargets[index], { parseReqBody: false }));
+  extra.use("/", proxy(proxyTargets[index], proxyOptions()));
   servers.push(await listen(extra, port + index));
 }
 
