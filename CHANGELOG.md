@@ -21,6 +21,7 @@ This driver uses semantic versioning:
 - Tests: Integration coverage for AQL query results cache APIs
   (`listQueryCacheEntries`, `clearQueryCache`, `getQueryCacheProperties`,
   `setQueryCacheProperties`), including global property updates via `_system`.
+  Entry list/clear cases skip on cluster (results cache is single-server only).
 
 - Added ArangoDB 3.12.10 vector index support (DE-1213), including optional
   and automatically scaled `nLists`, configurable `numberOfDocsPerCentroid`,
