@@ -29,6 +29,7 @@ describe("Query Management API", function () {
   let system: Database, db: Database;
   let allCursors: Cursor[];
   let arangoVersionCode: number;
+  let serverRole: string;
   before(async () => {
     allCursors = [];
     system = new Database(config);
@@ -37,6 +38,8 @@ describe("Query Management API", function () {
     db = system.database(dbName);
     await waitForNewDatabase(db);
     arangoVersionCode = await fetchArangoVersionCode(db);
+    const roleRes = await db.route("/_admin/server/role").get();
+    serverRole = roleRes.parsedBody.role;
   });
   after(async () => {
     await Promise.all(
@@ -433,7 +436,10 @@ describe("Query Management API", function () {
     let originalProperties: QueryCacheProperties;
     let collection: DocumentCollection;
     let query: string;
-    before(async () => {
+    before(async function () {
+      // Query results cache is single-server only; the HTTP list API still
+      // returns [] on coordinators.
+      if (serverRole !== "SINGLE") this.skip();
       originalProperties = await db.getQueryCacheProperties();
       collection = await db.createCollection(`query-cache-${Date.now()}`);
       await db.waitForPropagation(
@@ -447,6 +453,7 @@ describe("Query Management API", function () {
       await db.clearQueryCache();
     });
     after(async () => {
+      if (!originalProperties) return;
       try {
         await db.clearQueryCache();
       } finally {
@@ -495,7 +502,10 @@ describe("Query Management API", function () {
     let originalProperties: QueryCacheProperties;
     let collection: DocumentCollection;
     let query: string;
-    before(async () => {
+    before(async function () {
+      // Query results cache is single-server only; there are no entries to
+      // clear on coordinators.
+      if (serverRole !== "SINGLE") this.skip();
       originalProperties = await db.getQueryCacheProperties();
       collection = await db.createCollection(`query-cache-clear-${Date.now()}`);
       await db.waitForPropagation(
@@ -508,6 +518,7 @@ describe("Query Management API", function () {
       await db.clearQueryCache();
     });
     after(async () => {
+      if (!originalProperties) return;
       try {
         await db.clearQueryCache();
       } finally {
