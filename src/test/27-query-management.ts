@@ -1,12 +1,15 @@
 import { expect } from "chai";
 import { aql } from "../aql.js";
+import { DocumentCollection } from "../collections.js";
 import { Cursor } from "../cursors.js";
 import { Database } from "../databases.js";
 import { ArangoError, ResponseTimeoutError } from "../errors.js";
+import type { QueryCacheProperties } from "../queries.js";
 import { fetchArangoVersionCode } from "./_arango-server-version.js";
 import { config } from "./_config.js";
 import {
   clusterIntegrationTimeoutMs,
+  propagationForResourceMs,
   waitForNewDatabase,
 } from "./_integration-timeouts.js";
 
@@ -355,6 +358,175 @@ describe("Query Management API", function () {
         (i: any) => i.query === query,
       );
       expect(queries2).to.have.lengthOf(0);
+    });
+  });
+
+  describe("database.getQueryCacheProperties", () => {
+    it("returns the AQL query cache properties", async () => {
+      const result = await db.getQueryCacheProperties();
+      expect(result).to.have.property("includeSystem");
+      expect(result.includeSystem).to.be.a("boolean");
+      expect(result).to.have.property("maxEntrySize");
+      expect(result.maxEntrySize).to.be.a("number");
+      expect(result).to.have.property("maxResults");
+      expect(result.maxResults).to.be.a("number");
+      expect(result).to.have.property("maxResultsSize");
+      expect(result.maxResultsSize).to.be.a("number");
+      expect(result).to.have.property("mode");
+      expect(result.mode).to.be.oneOf(["off", "on", "demand"]);
+      const fromSystem = await system.getQueryCacheProperties();
+      expect(fromSystem).to.have.property("mode", result.mode);
+      expect(fromSystem).to.have.property("maxResults", result.maxResults);
+      expect(fromSystem).to.have.property(
+        "maxResultsSize",
+        result.maxResultsSize,
+      );
+      expect(fromSystem).to.have.property("maxEntrySize", result.maxEntrySize);
+      expect(fromSystem).to.have.property(
+        "includeSystem",
+        result.includeSystem,
+      );
+    });
+  });
+
+  describeNLB("database.setQueryCacheProperties", () => {
+    let originalProperties: QueryCacheProperties;
+    before(async () => {
+      originalProperties = await db.getQueryCacheProperties();
+    });
+    after(async () => {
+      if (originalProperties) {
+        await system.setQueryCacheProperties(originalProperties);
+      }
+    });
+    it("adjusts the AQL query cache properties", async () => {
+      const maxResults = originalProperties.maxResults === 128 ? 64 : 128;
+      const maxEntrySize =
+        originalProperties.maxEntrySize === 16777216 ? 8388608 : 16777216;
+      const maxResultsSize =
+        originalProperties.maxResultsSize === 268435456
+          ? 134217728
+          : 268435456;
+      const includeSystem = !originalProperties.includeSystem;
+      const result = await system.setQueryCacheProperties({
+        mode: "demand",
+        maxResults,
+        maxEntrySize,
+        maxResultsSize,
+        includeSystem,
+      });
+      expect(result).to.have.property("mode", "demand");
+      expect(result).to.have.property("maxResults", maxResults);
+      expect(result).to.have.property("maxEntrySize", maxEntrySize);
+      expect(result).to.have.property("maxResultsSize", maxResultsSize);
+      expect(result).to.have.property("includeSystem", includeSystem);
+      const fetched = await db.getQueryCacheProperties();
+      expect(fetched).to.have.property("mode", "demand");
+      expect(fetched).to.have.property("maxResults", maxResults);
+      expect(fetched).to.have.property("maxEntrySize", maxEntrySize);
+      expect(fetched).to.have.property("maxResultsSize", maxResultsSize);
+      expect(fetched).to.have.property("includeSystem", includeSystem);
+    });
+  });
+
+  describeNLB("database.listQueryCacheEntries", () => {
+    let originalProperties: QueryCacheProperties;
+    let collection: DocumentCollection;
+    let query: string;
+    before(async () => {
+      originalProperties = await db.getQueryCacheProperties();
+      collection = await db.createCollection(`query-cache-${Date.now()}`);
+      await db.waitForPropagation(
+        { pathname: `/_api/collection/${collection.name}` },
+        propagationForResourceMs,
+      );
+      await collection.save({ value: 1 });
+      await collection.save({ value: 2 });
+      query = `FOR doc IN \`${collection.name}\` RETURN doc.value`;
+      await system.setQueryCacheProperties({ mode: "demand" });
+      await db.clearQueryCache();
+    });
+    after(async () => {
+      try {
+        await db.clearQueryCache();
+      } finally {
+        await system.setQueryCacheProperties(originalProperties);
+      }
+    });
+    it("returns a list of query cache entries", async () => {
+      const empty = await db.listQueryCacheEntries();
+      expect(empty).to.be.an("array");
+      expect(
+        empty.filter((entry) => entry.query === query),
+      ).to.have.lengthOf(0);
+
+      const cursor1 = await db.query(query, undefined, { cache: true });
+      allCursors.push(cursor1);
+      expect(await cursor1.all()).to.have.lengthOf(2);
+      const cursor2 = await db.query(query, undefined, { cache: true });
+      allCursors.push(cursor2);
+      expect(await cursor2.all()).to.have.lengthOf(2);
+
+      const entries = (await db.listQueryCacheEntries()).filter(
+        (entry) => entry.query === query,
+      );
+      expect(entries).to.have.lengthOf(1);
+      expect(entries[0]).to.have.property("hash");
+      expect(entries[0].hash).to.be.a("string");
+      expect(entries[0]).to.have.property("query", query);
+      expect(entries[0]).to.have.property("size");
+      expect(entries[0].size).to.be.a("number");
+      expect(entries[0]).to.have.property("results", 2);
+      expect(entries[0]).to.have.property("started");
+      expect(entries[0].started).to.be.a("string");
+      expect(entries[0]).to.have.property("hits");
+      expect(entries[0].hits).to.be.a("number");
+      expect(entries[0].hits).to.be.at.least(1);
+      expect(entries[0]).to.have.property("runTime");
+      expect(entries[0].runTime).to.be.a("number");
+      expect(entries[0]).to.have.property("dataSources");
+      expect(entries[0].dataSources).to.be.an("array").that.includes(
+        collection.name,
+      );
+    });
+  });
+
+  describeNLB("database.clearQueryCache", () => {
+    let originalProperties: QueryCacheProperties;
+    let collection: DocumentCollection;
+    let query: string;
+    before(async () => {
+      originalProperties = await db.getQueryCacheProperties();
+      collection = await db.createCollection(`query-cache-clear-${Date.now()}`);
+      await db.waitForPropagation(
+        { pathname: `/_api/collection/${collection.name}` },
+        propagationForResourceMs,
+      );
+      await collection.save({ value: 1 });
+      query = `FOR doc IN \`${collection.name}\` SORT doc.value RETURN doc.value`;
+      await system.setQueryCacheProperties({ mode: "demand" });
+      await db.clearQueryCache();
+    });
+    after(async () => {
+      try {
+        await db.clearQueryCache();
+      } finally {
+        await system.setQueryCacheProperties(originalProperties);
+      }
+    });
+    it("clears the list of query cache entries", async () => {
+      const cursor = await db.query(query, undefined, { cache: true });
+      allCursors.push(cursor);
+      await cursor.all();
+      const entries1 = (await db.listQueryCacheEntries()).filter(
+        (entry) => entry.query === query,
+      );
+      expect(entries1).to.have.lengthOf(1);
+      await db.clearQueryCache();
+      const entries2 = (await db.listQueryCacheEntries()).filter(
+        (entry) => entry.query === query,
+      );
+      expect(entries2).to.have.lengthOf(0);
     });
   });
 
