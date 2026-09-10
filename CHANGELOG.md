@@ -23,6 +23,10 @@ This driver uses semantic versioning:
 
 ### Added
 
+- Tests: Integration coverage for AQL query results cache APIs
+  (`listQueryCacheEntries`, `clearQueryCache`, `getQueryCacheProperties`,
+  `setQueryCacheProperties`), including global property updates via `_system`.
+
 - Added ArangoDB 3.12.10 vector index support (DE-1213), including optional
   and automatically scaled `nLists`, configurable `numberOfDocsPerCentroid`,
   per-shard training details, and documentation for factory placeholders and
