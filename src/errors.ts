@@ -37,7 +37,6 @@ export function isNetworkError(error: any): error is NetworkError {
  */
 export function isSystemError(err: any): err is SystemError {
   if (!err || !(err instanceof Error)) return false;
-  if (Object.getPrototypeOf(err) !== Error.prototype) return false;
   const error = err as SystemError;
   if (typeof error.code !== "string") return false;
   if (typeof error.syscall !== "string") return false;
@@ -59,10 +58,19 @@ export function isUndiciError(err: any): err is UndiciError {
 /**
  * @internal
  *
+ * Maximum number of `cause` links {@link isSafeToRetryFailedFetch} will follow.
+ */
+const MAX_CAUSE_CHAIN_DEPTH = 16;
+
+/**
+ * @internal
+ *
  * Determines whether the given failed fetch error cause is safe to retry.
  */
-function isSafeToRetryFailedFetch(error?: Error): boolean | null {
-  if (!error || !error.cause) return null;
+function isSafeToRetryFailedFetch(error?: Error, depth = 0): boolean | null {
+  // Cause chains are short in practice; the limit only prevents unbounded recursion if a chain is
+  // cyclic, which would otherwise overflow the stack inside the FetchFailedError constructor.
+  if (!error || !error.cause || depth >= MAX_CAUSE_CHAIN_DEPTH) return null;
   let cause = error.cause as Error;
   if (isArangoError(cause) || isNetworkError(cause)) {
     return cause.isSafeToRetry;
@@ -77,7 +85,7 @@ function isSafeToRetryFailedFetch(error?: Error): boolean | null {
   if (isUndiciError(cause) && cause.code === "UND_ERR_CONNECT_TIMEOUT") {
     return true;
   }
-  return isSafeToRetryFailedFetch(cause);
+  return isSafeToRetryFailedFetch(cause, depth + 1);
 }
 
 /**

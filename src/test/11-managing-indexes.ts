@@ -2,14 +2,13 @@ import { expect } from "chai";
 import { DocumentCollection } from "../collections.js";
 import { Database } from "../databases.js";
 import { InvertedIndexDescription } from "../indexes.js";
+import { fetchArangoVersionCode } from "./_arango-server-version.js";
 import { config } from "./_config.js";
 import {
   clusterIntegrationTimeoutMs,
   propagationForResourceMs,
   waitForNewDatabase,
 } from "./_integration-timeouts.js";
-
-const it312 = config.arangoVersion! >= 31200 ? it : it.skip;
 
 /** ArangoDB 3.12.9+ vector index responses may include this (DE-1147). */
 const VECTOR_TRAINING_STATES = [
@@ -53,6 +52,7 @@ describe("Managing indexes", function () {
 
   let system: Database, db: Database;
   let collection: DocumentCollection;
+  let arangoVersionCode: number;
   const dbName = `testdb_${Date.now()}`;
   const collectionName = `collection-${Date.now()}`;
   before(async () => {
@@ -62,6 +62,7 @@ describe("Managing indexes", function () {
     await system.createDatabase(dbName);
     db = system.database(dbName);
     await waitForNewDatabase(db);
+    arangoVersionCode = await fetchArangoVersionCode(db);
     collection = await db.createCollection(collectionName);
     await db.waitForPropagation(
       { pathname: `/_api/collection/${collection.name}` },
@@ -75,12 +76,14 @@ describe("Managing indexes", function () {
       system.close();
     }
   });
+
   describe("collection.ensureIndex#vector", function () {
     let vectorIndexTestsEnabled = false;
 
     before(async function () {
+      if (arangoVersionCode < 31200) this.skip();
       const mode = resolveVectorIndexTestMode();
-      if (config.arangoVersion! < 31200 || mode === "skip") {
+      if (mode === "skip") {
         vectorIndexTestsEnabled = false;
         return;
       }
@@ -124,6 +127,16 @@ describe("Managing indexes", function () {
         if (Array.isArray(config.url) && config.loadBalancingStrategy !== "NONE") {
           this.timeout(120000);
         }
+        await fn.call(this);
+      });
+    }
+
+    function itVector31210(
+      title: string,
+      fn: (this: Mocha.Context) => Promise<void>,
+    ) {
+      itVector(title, async function (this: Mocha.Context) {
+        if (arangoVersionCode < 31210) this.skip();
         await fn.call(this);
       });
     }
@@ -238,6 +251,91 @@ describe("Managing indexes", function () {
       expect(info).to.have.nested.property("params.nLists", 2);
       expectTrainingStateIfPresent(info);
     });
+
+    itVector31210(
+      "should create a vector index with the default nLists scaling options",
+      async () => {
+        const data = Array.from({ length: 128 }, (_, cnt) => ({
+          _key: `vd${cnt}`,
+          vec_default_scaling: Array(16).fill(cnt),
+        }));
+        await collection.import(data);
+        const info = await collection.ensureIndex({
+          type: "vector",
+          fields: ["vec_default_scaling"],
+          sparse: true,
+          params: {
+            metric: "l2",
+            dimension: 16,
+            numberOfDocsPerCentroid: 10,
+          },
+        });
+        expect(info).to.have.property("type", "vector");
+        expect(info.params.nLists).to.be.an("object");
+        if (typeof info.params.nLists !== "object") {
+          throw new Error("Expected the default nLists scaling options");
+        }
+        expect(info.params.nLists).to.include({
+          strategy: "autoSqrt",
+          multiplier: 4,
+          minNLists: 2,
+        });
+        expect(info.params.nLists.tiers).to.be.an("array");
+        expect(info.params.numberOfDocsPerCentroid).to.equal(10);
+        expectTrainingStateIfPresent(info);
+      },
+    );
+
+    itVector31210(
+      "should create a vector index with explicit scaling and expose shard details",
+      async () => {
+        const data = Array.from({ length: 128 }, (_, cnt) => ({
+          _key: `vx${cnt}`,
+          vec_explicit_scaling: Array(16).fill(cnt),
+        }));
+        await collection.import(data);
+        const nLists = {
+          strategy: "autoSqrt" as const,
+          multiplier: 1,
+          minNLists: 2,
+          tiers: [{ threshold: 64, fixedValue: 8 }],
+        };
+        const info = await collection.ensureIndex({
+          type: "vector",
+          fields: ["vec_explicit_scaling"],
+          sparse: true,
+          params: {
+            metric: "l2",
+            dimension: 16,
+            nLists,
+            numberOfDocsPerCentroid: 10,
+            factory: "IVF{},Flat",
+          },
+        });
+        expect(info).to.have.property("type", "vector");
+        expect(info.params.nLists).to.deep.equal(nLists);
+        expect(info.params.numberOfDocsPerCentroid).to.equal(10);
+        expect(info.params.factory).to.equal("IVF{},Flat");
+        expectTrainingStateIfPresent(info);
+
+        const allIndexes = await collection.indexes({ withHidden: true });
+        const index = allIndexes.find((candidate) => candidate.id === info.id);
+        if (!index || index.type !== "vector") {
+          throw new Error(`Vector index ${info.id} was not found`);
+        }
+        expect(index.shards).to.be.an("object");
+        if (!index.shards) {
+          throw new Error("Expected per-shard vector index details");
+        }
+        const shardDetails = Object.values(index.shards);
+        expect(shardDetails).to.not.be.empty;
+        for (const details of shardDetails) {
+          expect(VECTOR_TRAINING_STATES).to.include(details.trainingState);
+          expect(details.error).to.be.a("string");
+          expect(details.resolvedNLists).to.be.a("number").and.be.greaterThan(0);
+        }
+      },
+    );
   });
   describe("collection.ensureIndex#persistent", () => {
     it("should create a persistent index", async () => {
@@ -276,8 +374,11 @@ describe("Managing indexes", function () {
       expect(info).to.have.property("isNewlyCreated", true);
     });
   });
-  describe("collection.ensureIndex#mdi", () => {
-    it312("should create an MDI index", async () => {
+  describe("collection.ensureIndex#mdi", function () {
+    before(function () {
+      if (arangoVersionCode < 31200) this.skip();
+    });
+    it("should create an MDI index", async () => {
       const info = await collection.ensureIndex({
         type: "mdi",
         fields: ["x", "y", "z"],
@@ -328,8 +429,11 @@ describe("Managing indexes", function () {
       expect(indexes.filter((i: any) => i.id === index.id).length).to.equal(0);
     });
   });
-  describe("collection.ensureIndex#inverted", () => {
-    it312(
+  describe("collection.ensureIndex#inverted", function () {
+    before(function () {
+      if (arangoVersionCode < 31200) this.skip();
+    });
+    it(
       "should create an inverted index with new consolidation policy options",
       async () => {
         const info = await collection.ensureIndex({

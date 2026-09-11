@@ -16,7 +16,25 @@ This driver uses semantic versioning:
 
 ## [Unreleased]
 
+## [10.5.0] - 2026-09-11
+
+### Added
+
+- Tests: Integration coverage for AQL query results cache APIs
+  (`listQueryCacheEntries`, `clearQueryCache`, `getQueryCacheProperties`,
+  `setQueryCacheProperties`), including global property updates via `_system`.
+  Entry list/clear cases skip on cluster (results cache is single-server only).
+
+- Added ArangoDB 3.12.10 vector index support (DE-1213), including optional
+  and automatically scaled `nLists`, configurable `numberOfDocsPerCentroid`,
+  per-shard training details, and documentation for factory placeholders and
+  covering projections.
+
+## [10.4.0] - 2026-08-18
+
 ### Fixed
+
+- Fixed TypeScript builds by explicitly including Node.js and Mocha type definitions
 
 - Fixed connection failures with undici 8.x (`InvalidArgumentError: invalid content-length header`)
   on the default `globalThis.fetch` path (not only when using `config.agentOptions`) by removing
@@ -24,6 +42,19 @@ This driver uses semantic versioning:
   ([#855](https://github.com/arangodb/arangojs/issues/855))
 - Tests: Stream query setup inserts and parallel stream opens are chunked; multi-batch cursor
   tests use a longer `ttl` to avoid intermittent CI timeouts / `cursor not found` under load.
+
+- Fixed connection failures never being retried. `isSystemError` rejected the error objects thrown by
+  undici because their immediate prototype is not `Error.prototype`, so a refused connection produced
+  `isSafeToRetry: null` and the retry gate — which also governs host failover — was never entered
+  ([#867](https://github.com/arangodb/arangojs/issues/867)).
+
+- Fixed `config.maxRetries` having no effect. It was destructured out of the config without being
+  re-added to the connection's common request options, so the retry budget always fell back to
+  `hosts.length - 1`, and setting it to `false` did not disable retries
+  ([#867](https://github.com/arangodb/arangojs/issues/867)).
+
+- Fixed a possible stack overflow while constructing a `FetchFailedError` when the error's `cause`
+  chain is cyclic ([#867](https://github.com/arangodb/arangojs/issues/867)).
 
 ### Added
 
@@ -2677,6 +2708,9 @@ For a detailed list of changes between pre-release versions of v7 see the
 
   Graph methods now only return the relevant part of the response body.
 
+[Unreleased]: https://github.com/arangodb/arangojs/compare/v10.5.0...HEAD
+[10.5.0]: https://github.com/arangodb/arangojs/compare/v10.4.0...v10.5.0
+[10.4.0]: https://github.com/arangodb/arangojs/compare/v10.3.1...v10.4.0
 [10.3.1]: https://github.com/arangodb/arangojs/compare/v10.3.0...v10.3.1
 [10.3.0]: https://github.com/arangodb/arangojs/compare/v10.2.2...v10.3.0
 [10.2.2]: https://github.com/arangodb/arangojs/compare/v10.2.1...v10.2.2
