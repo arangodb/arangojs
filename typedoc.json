@@ -2,6 +2,7 @@
   "basePath": "./src",
   "cacheBust": true,
   "disableGit": true,
+  "sourceLinkTemplate": "https://github.com/arangodb/arangojs/blob/main/src/{path}#L{line}",
   "disableSources": false,
   "entryPoints": ["src"],
   "entryPointStrategy": "expand",

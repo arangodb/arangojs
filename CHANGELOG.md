@@ -16,6 +16,23 @@ This driver uses semantic versioning:
 
 ## [Unreleased]
 
+### Added
+
+- CI: CircleCI `compat-typescript` workflow builds/packs the driver once and typechecks the
+  publishable tarball as a TypeScript **5.4**, **6.0**, and **7.0** consumer (`compat-test/`).
+
+### Changed
+
+- CI: Single-topology and HTTP proto smoke `node-test` jobs use
+  `arangodb/small-arm64-privileged`; cluster jobs keep `arangodb/medium-arm64-privileged`.
+- Dev: Builds use **TypeScript 7** (`@typescript/native` → `typescript@^7.0.2`) for `tsc`. The
+  `typescript` package is aliased to `@typescript/typescript6` so tools that still need the
+  TypeScript 6 programmatic API (TypeDoc, typescript-eslint) keep working until a TS 7 API ships.
+- Dev: Set explicit `compilerOptions.types` (`node`, `mocha`) for TS 6/7’s stricter `@types`
+  handling. CJS build uses `moduleResolution: "Bundler"` with `module: "CommonJS"` (replaces
+  deprecated `node10` / `"Node"` resolution).
+- Dev: Upgraded TypeDoc to **0.28.20** for TypeScript 6 peer compatibility (docs generation).
+
 ## [10.5.0] - 2026-09-11
 
 ### Added
