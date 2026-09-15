@@ -16,6 +16,22 @@ This driver uses semantic versioning:
 
 ## [Unreleased]
 
+### Added
+
+- CI: CircleCI `compat-typescript` workflow builds the driver with TypeScript 7, packs the
+  publishable tarball, and typechecks it as a TypeScript **5.4**, **6.0**, and **7.0**
+  consumer (`compat-test/`). No driver API changes.
+
+### Changed
+
+- Dev: Builds use **TypeScript 7** (`@typescript/native` → `typescript@^7.0.2`) for `tsc`.
+  The `typescript` package is aliased to `@typescript/typescript6` so TypeDoc and
+  typescript-eslint can keep using the TypeScript 6 compiler API until TypeScript 7.1
+  ships a new API.
+- Dev: CJS build uses `moduleResolution: "Bundler"` with `module: "CommonJS"` because
+  TypeScript 7 removed `moduleResolution: "Node"` / `"node10"`.
+- Dev: Upgraded TypeDoc to **0.28.20** so API docs still generate against TypeScript 6.
+
 ## [10.5.0] - 2026-09-11
 
 ### Added

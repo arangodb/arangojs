@@ -9,6 +9,27 @@ npm install
 npm run build
 ```
 
+## TypeScript versions
+
+arangojs is built with **TypeScript 7** (`npx tsc`). Customers do **not** need
+TypeScript 7 to use the published package.
+
+TypeDoc and typescript-eslint still need the TypeScript **6** compiler API, so
+`package.json` keeps both:
+
+- `@typescript/native` → TypeScript 7 (used for `tsc` / `npm run build`)
+- `typescript` → `@typescript/typescript6` (used by TypeDoc and eslint)
+
+After `npm install`, check:
+
+```sh
+npx tsc --version    # TypeScript 7.x
+npx tsc6 --version   # TypeScript 6.x
+```
+
+CircleCI also typechecks a small sample app (`compat-test/`) with TypeScript
+5.4, 6.0, and 7.0 against the packed npm tarball.
+
 ## Testing
 
 Run the tests using the `npm test` or `yarn test` commands:
