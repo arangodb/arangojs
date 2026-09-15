@@ -95,9 +95,11 @@ executors:
   n22:
     docker:
       - image: cimg/node:22.22.3
+    resource_class: arangodb/medium-arm64-privileged
   n24:
     docker:
       - image: cimg/node:24.16.0
+    resource_class: arangodb/medium-arm64-privileged
   n24-browser:
     docker:
       - image: cimg/node:24.16.0
@@ -125,12 +127,7 @@ jobs:
       module-system:
         type: enum
         enum: ['cjs', 'esm']
-      # Single-server DinD fits small; cluster stays on medium.
-      resource_class:
-        type: string
-        default: 'arangodb/medium-arm64-privileged'
     executor: <<parameters.node>>
-    resource_class: <<parameters.resource_class>>
     steps:
       - timeout
       - checkout
@@ -231,6 +228,19 @@ jobs:
           name: Install dependencies
           command: npm install --ignore-scripts
       - run:
+          name: Confirm TypeScript 7 is used for tsc
+          command: |
+            set -euo pipefail
+            TSC_VER="$(npx tsc --version)"
+            echo "$TSC_VER"
+            case "$TSC_VER" in
+              Version\ 7.*) ;;
+              *)
+                echo "Expected TypeScript 7.x for the driver build, got: $TSC_VER"
+                exit 1
+                ;;
+            esac
+      - run:
           name: Build and pack publishable tarball
           command: |
             set -euo pipefail
@@ -273,7 +283,6 @@ workflows:
           name: single-<<matrix.node>>-ssl<<matrix.ssl>>-<<matrix.module-system>>-312
           context: docker-hub
           topology: single
-          resource_class: arangodb/small-arm64-privileged
           filters:
             branches:
               ignore: stable
@@ -294,7 +303,6 @@ workflows:
           name: single-<<matrix.node>>-ssl<<matrix.ssl>>-<<matrix.module-system>>-4.0-nightly
           context: docker-hub
           topology: single
-          resource_class: arangodb/small-arm64-privileged
           filters:
             branches:
               ignore: stable
@@ -394,7 +402,6 @@ workflows:
               ignore: stable
           docker-img: 'gcr.io/gcr-for-testing/arangodb/enterprise:3.12'
           topology: single
-          resource_class: arangodb/small-arm64-privileged
           ssl: 'true'
           http_proto: h1
           node: n24
@@ -407,7 +414,6 @@ workflows:
               ignore: stable
           docker-img: 'gcr.io/gcr-for-testing/arangodb/enterprise:3.12'
           topology: single
-          resource_class: arangodb/small-arm64-privileged
           ssl: 'true'
           http_proto: h2
           node: n24
@@ -438,10 +444,8 @@ workflows:
     when: <<pipeline.parameters.docker-img>>
     jobs:
       - node-test:
-          name: <<matrix.node>>-single-ssl<<matrix.ssl>>-<<matrix.module-system>>
+          name: <<matrix.node>>-<<matrix.topology>>-ssl<<matrix.ssl>>-<<matrix.module-system>>
           context: docker-hub
-          topology: single
-          resource_class: arangodb/small-arm64-privileged
           filters:
             branches:
               ignore: stable
@@ -452,26 +456,9 @@ workflows:
               node:
                 - 'n22'
                 - 'n24'
-              ssl:
-                - 'true'
-                - 'false'
-              module-system:
-                - 'cjs'
-                - 'esm'
-      - node-test:
-          name: <<matrix.node>>-cluster-ssl<<matrix.ssl>>-<<matrix.module-system>>
-          context: docker-hub
-          topology: cluster
-          filters:
-            branches:
-              ignore: stable
-          matrix:
-            parameters:
-              docker-img:
-                - <<pipeline.parameters.docker-img>>
-              node:
-                - 'n22'
-                - 'n24'
+              topology:
+                - 'single'
+                - 'cluster'
               ssl:
                 - 'true'
                 - 'false'
@@ -491,7 +478,6 @@ workflows:
               ignore: stable
           docker-img: <<pipeline.parameters.docker-img>>
           topology: single
-          resource_class: arangodb/small-arm64-privileged
           ssl: 'true'
           http_proto: h1
           node: n24
@@ -504,7 +490,6 @@ workflows:
               ignore: stable
           docker-img: <<pipeline.parameters.docker-img>>
           topology: single
-          resource_class: arangodb/small-arm64-privileged
           ssl: 'true'
           http_proto: h2
           node: n24

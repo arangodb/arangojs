@@ -25,9 +25,9 @@ All integration and browser jobs attach **`context: docker-hub`**.
 
 | Job | Executor | Resource class |
 | --- | -------- | -------------- |
-| **`node-test`** (single / HTTP smoke) | `n22` / `n24` | `arangodb/small-arm64-privileged` |
-| **`node-test`** (cluster) | `n22` / `n24` | `arangodb/medium-arm64-privileged` |
+| **`node-test`** | `n22` / `n24` | `arangodb/medium-arm64-privileged` |
 | **`browser-smoke`** | `n24-browser` (`cimg/node:24.4`) | `arangodb/medium-amd64-privileged` |
+| **`compat-pack` / `compat-consumer`** | `n22` | `arangodb/medium-arm64-privileged` (no Docker / no ArangoDB) |
 
 - **`setup-docker`** — install Docker CLI, start in-container `dockerd` (DinD).
 - **`login-docker-hub`** — before **`start-db`** (avoids anonymous pull rate limits).
@@ -100,11 +100,11 @@ Puppeteer + `smoke-test.mjs` (esbuild browser bundle, `db.version()` in headless
 
 ### E) `compat-typescript` — **4 jobs** (no ArangoDB / Docker)
 
-Builds and packs the publishable driver tarball once, then typechecks it as a consumer on TypeScript **5.4**, **6.0**, and **7.0** (see `compat-test/`).
+Builds and packs the publishable driver tarball once (must use TypeScript **7** `tsc`), then typechecks it as a consumer on TypeScript **5.4**, **6.0**, and **7.0** (see `compat-test/`).
 
 | Job | Role |
 | --- | ---- |
-| **`compat-pack`** | `npm install --ignore-scripts`, `npm run build`, `npm pack` → workspace `arangojs-pack.tgz` |
+| **`compat-pack`** | Confirm `tsc` is 7.x, then `npm run build`, `npm pack` → workspace `arangojs-pack.tgz` |
 | **`compat-consumer-ts5`** | Install pack + `typescript@5.4.5`, `npx tsc --noEmit` |
 | **`compat-consumer-ts6`** | Install pack + `typescript@6.0.3`, `npx tsc --noEmit` |
 | **`compat-consumer-ts7`** | Install pack + `typescript@7.0.2`, `npx tsc --noEmit` |
@@ -124,15 +124,15 @@ All run when **`docker-img`** is set (Trigger Pipeline). They use the same **`<<
 | ------------------- | ----------------------------------------------- |
 | **Docker DB image** | `<<pipeline.parameters.docker-img>>`            |
 | **Node**            | `n22`, `n24`                                    |
-| **Topology**        | `single` (small runners), `cluster` (medium)    |
+| **Topology**        | `single`, `cluster`                             |
 | **SSL**             | `true`, `false`                                 |
 | **Module system**   | `cjs`, `esm`                                    |
 | **HTTP**            | Default `**h1`** only (no `http_proto` matrix). |
 
 
-**Job count:** 2 × 2 × 2 × 2 = **16** (8 single + 8 cluster).
+**Job count:** 2 × 2 × 2 × 2 = **16**.
 
-**Naming:** `<node>-single-ssl<true|false>-<cjs|esm>` | `<node>-cluster-ssl<true|false>-<cjs|esm>`
+**Naming:** `<node>-<topology>-ssl<true|false>-<cjs|esm>`
 
 ### B) `integration-http-proto-smoke-given-db-image` (**2** jobs)
 

@@ -276,8 +276,7 @@ describe("Batch-wise Cursor API", function () {
     }
   });
   beforeEach(async () => {
-    // batchSize:1 needs many round-trips; keep cursor alive under slow CI/cluster.
-    cursor = (await db.query(aqlQuery, { batchSize: 1, ttl: 120 })).batches;
+    cursor = (await db.query(aqlQuery, { batchSize: 1 })).batches;
     allCursors.push(cursor);
   });
   describe("for await of cursor", () => {
