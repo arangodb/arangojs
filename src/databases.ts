@@ -2837,6 +2837,78 @@ export class Database {
   }
 
   /**
+   * Begins and commits a transaction using the given callback. The callback is
+   * passed an asynchronous step function that keeps the transaction context
+   * active until each step's returned Promise settles. If the callback's
+   * Promise is rejected, the transaction will be aborted.
+   *
+   * Unlike {@link Database#withTransaction}, the supplied step function can
+   * perform asynchronous work before an arangojs request and can make multiple
+   * sequential arangojs requests across `await` boundaries.
+   *
+   * @param collections - Collections involved in the transaction.
+   * @param callback - Callback function executing the asynchronous transaction
+   * steps.
+   * @param options - Options for the transaction.
+   *
+   * @example
+   * ```js
+   * const orders = db.collection("orders");
+   * const inventory = db.collection("inventory");
+   * const order = await db.withTransactionAsync(
+   *   [orders, inventory],
+   *   async (stepAsync) => {
+   *     return stepAsync(async () => {
+   *       await validateWithExternalService();
+   *       const order = await orders.save({ _key: "order-1" });
+   *       await inventory.update("item-1", { reserved: true });
+   *       return order;
+   *     });
+   *   }
+   * );
+   * ```
+   */
+  withTransactionAsync<T>(
+    collections: transactions.TransactionCollectionOptions,
+    callback: (stepAsync: transactions.Transaction["stepAsync"]) => Promise<T>,
+    options?: transactions.TransactionOptions
+  ): Promise<T>;
+  withTransactionAsync<T>(
+    collections: (string | collections.ArangoCollection)[],
+    callback: (stepAsync: transactions.Transaction["stepAsync"]) => Promise<T>,
+    options?: transactions.TransactionOptions
+  ): Promise<T>;
+  withTransactionAsync<T>(
+    collection: string | collections.ArangoCollection,
+    callback: (stepAsync: transactions.Transaction["stepAsync"]) => Promise<T>,
+    options?: transactions.TransactionOptions
+  ): Promise<T>;
+  async withTransactionAsync<T>(
+    collections:
+      | transactions.TransactionCollectionOptions
+      | (string | collections.ArangoCollection)[]
+      | string
+      | collections.ArangoCollection,
+    callback: (stepAsync: transactions.Transaction["stepAsync"]) => Promise<T>,
+    options: transactions.TransactionOptions = {}
+  ): Promise<T> {
+    const trx = await this.beginTransaction(
+      collections as transactions.TransactionCollectionOptions,
+      options
+    );
+    try {
+      const result = await callback((fn) => trx.stepAsync(fn));
+      await trx.commit();
+      return result;
+    } catch (e) {
+      try {
+        await trx.abort();
+      } catch {}
+      throw e;
+    }
+  }
+
+  /**
    * Fetches all active transactions from the database and returns an array of
    * transaction descriptions.
    *

@@ -12,6 +12,7 @@ import * as configuration from "./configuration.js";
 import * as databases from "./databases.js";
 import * as errors from "./errors.js";
 import { ERROR_ARANGO_CONFLICT } from "./lib/codes.js";
+import { getActiveTransactionId } from "./lib/transaction-context.js";
 import * as util from "./lib/util.js";
 import { LinkedList } from "./lib/x3-linkedlist.js";
 
@@ -1252,8 +1253,9 @@ export class Connection {
       headers.set("content-length", "0");
     }
 
-    if (this._transactionId) {
-      headers.set("x-arango-trx-id", this._transactionId);
+    const transactionId = getActiveTransactionId(this) ?? this._transactionId;
+    if (transactionId) {
+      headers.set("x-arango-trx-id", transactionId);
     }
 
     if (allowDirtyRead) {
