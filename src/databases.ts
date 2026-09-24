@@ -2691,6 +2691,7 @@ export class Database {
         method: "POST",
         pathname: "/_api/transaction/begin",
         allowDirtyRead,
+        skipActiveTransactionContext: true,
         body: {
           collections: transactions.coerceTransactionCollections(collections),
           ...opts,

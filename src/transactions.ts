@@ -291,6 +291,7 @@ export class Transaction {
     return this._db.request(
       {
         pathname: `/_api/transaction/${encodeURIComponent(this.id)}`,
+        skipActiveTransactionContext: true,
       },
       (res) => res.parsedBody.result
     );
@@ -318,6 +319,7 @@ export class Transaction {
         method: "PUT",
         pathname: `/_api/transaction/${encodeURIComponent(this.id)}`,
         allowDirtyRead,
+        skipActiveTransactionContext: true,
       },
       (res) => res.parsedBody.result
     );
@@ -345,6 +347,7 @@ export class Transaction {
         method: "DELETE",
         pathname: `/_api/transaction/${encodeURIComponent(this.id)}`,
         allowDirtyRead,
+        skipActiveTransactionContext: true,
       },
       (res) => res.parsedBody.result
     );

@@ -595,6 +595,13 @@ export type CommonRequestOptions = {
  */
 export type RequestOptions = CommonRequestOptions & {
   /**
+   * Prevents the request from inheriting an active asynchronous transaction
+   * context. The legacy connection-level transaction ID is unaffected.
+   *
+   * @internal
+   */
+  skipActiveTransactionContext?: boolean;
+  /**
    * @internal
    *
    * Identifier of a specific ArangoDB host to use when more than one is known.
@@ -1159,6 +1166,7 @@ export class Connection {
       maxRetries = 0,
       method = "GET",
       retryOnConflict = 0,
+      skipActiveTransactionContext = false,
       timeout = 0,
       headers: requestHeaders,
       body: requestBody,
@@ -1253,7 +1261,10 @@ export class Connection {
       headers.set("content-length", "0");
     }
 
-    const transactionId = getActiveTransactionId(this) ?? this._transactionId;
+    const transactionId =
+      (skipActiveTransactionContext
+        ? undefined
+        : getActiveTransactionId(this)) ?? this._transactionId;
     if (transactionId) {
       headers.set("x-arango-trx-id", transactionId);
     }

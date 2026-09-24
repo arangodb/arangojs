@@ -255,6 +255,51 @@ Do not use `Promise.all` for multiple steps belonging to one transaction. A
 stream transaction may not support simultaneous operations and can return a
 "transaction is already in use" error.
 
+### Nested transactions
+
+On Node.js, a new stream transaction can be started inside the `stepAsync`
+callback of another transaction. The inner transaction is independent: it has
+its own ID, and committing or aborting it does not commit or abort the outer
+transaction. After the inner operation settles, subsequent requests in the
+callback resume using the outer transaction context.
+
+This context restoration applies at every level, so an outer transaction can
+run multiple inner transactions sequentially, and an inner transaction can
+itself contain another transaction. Each transaction has an independent ID and
+lifecycle. Use separate collections where possible to avoid server-side lock
+contention between the active transactions.
+
+```js
+const outer = await db.beginTransaction(outerCollection);
+
+await outer.stepAsync(async () => {
+  await outerCollection.save({ _key: "outer-before" });
+
+  const inner = await db.beginTransaction(innerCollection);
+  try {
+    await inner.stepAsync(() =>
+      innerCollection.save({ _key: "inner-document" }),
+    );
+    await inner.commit();
+  } catch (error) {
+    await inner.abort().catch(() => undefined);
+    throw error;
+  }
+
+  // Uses the outer transaction again.
+  await outerCollection.save({ _key: "outer-after" });
+});
+
+await outer.abort();
+// The inner document remains committed. Both outer documents are rolled back.
+```
+
+These are two separate server transactions, not database-style savepoints. Use
+`stepAsync` for the inner transaction and consider server locking when both
+transactions access the same collections. Browsers support only one active
+new-style step per connection, so nested transactions on the same connection
+are rejected there.
+
 ### Do not mix step modes concurrently
 
 Do not overlap legacy `step`/`withTransaction` work with
