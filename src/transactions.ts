@@ -13,6 +13,7 @@ import * as connection from "./connection.js";
 import * as databases from "./databases.js";
 import * as errors from "./errors.js";
 import { TRANSACTION_NOT_FOUND } from "./lib/codes.js";
+import { runTransactionStep } from "./lib/transaction-context.js";
 
 //#region Transaction operation options
 /**
@@ -290,6 +291,7 @@ export class Transaction {
     return this._db.request(
       {
         pathname: `/_api/transaction/${encodeURIComponent(this.id)}`,
+        skipActiveTransactionContext: true,
       },
       (res) => res.parsedBody.result
     );
@@ -317,6 +319,7 @@ export class Transaction {
         method: "PUT",
         pathname: `/_api/transaction/${encodeURIComponent(this.id)}`,
         allowDirtyRead,
+        skipActiveTransactionContext: true,
       },
       (res) => res.parsedBody.result
     );
@@ -344,6 +347,7 @@ export class Transaction {
         method: "DELETE",
         pathname: `/_api/transaction/${encodeURIComponent(this.id)}`,
         allowDirtyRead,
+        skipActiveTransactionContext: true,
       },
       (res) => res.parsedBody.result
     );
@@ -550,6 +554,41 @@ export class Transaction {
     } finally {
       conn.clearTransactionId();
     }
+  }
+
+  /**
+   * Executes the given function as an asynchronous step of the transaction.
+   *
+   * Unlike {@link Transaction#step}, the transaction context remains active
+   * until the Promise returned by `callback` settles. This allows the callback
+   * to perform asynchronous work before an arangojs request and to make
+   * multiple sequential arangojs requests across `await` boundaries.
+   *
+   * On Node.js, different transactions can use this method concurrently on the
+   * same {@link databases.Database}. In browsers, only one asynchronous step
+   * may be active per connection at a time. Steps belonging to the same server
+   * transaction should always be awaited sequentially.
+   *
+   * The callback must return all work that should remain in the transaction.
+   * Unreturned or fire-and-forget Promises may outlive the transaction context.
+   *
+   * @param T - Type of the callback's returned promise.
+   * @param callback - Callback function returning a promise.
+   *
+   * @example
+   * ```js
+   * const trx = await db.beginTransaction(collection);
+   * await trx.stepAsync(async () => {
+   *   await loadDataFromExternalApi();
+   *   await collection.save({ _key: "first" });
+   *   return collection.save({ _key: "second" });
+   * });
+   * await trx.commit();
+   * ```
+   */
+  stepAsync<T>(callback: () => Promise<T>): Promise<T> {
+    const conn = (this._db as any)._connection as connection.Connection;
+    return runTransactionStep(conn, this.id, callback);
   }
 }
 //#endregion

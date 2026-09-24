@@ -16,6 +16,16 @@ This driver uses semantic versioning:
 
 ## [Unreleased]
 
+### Added
+
+- Added opt-in async-context stream transaction APIs (DE-10):
+  `Transaction#stepAsync` keeps the transaction active until the callback's
+  returned Promise settles, and `Database#withTransactionAsync` provides the
+  matching automatic commit/abort helper. On Node.js, different transactions
+  can run concurrently on one `Database` without sharing transaction IDs.
+  Existing `step` and `withTransaction` behavior remains unchanged. See the
+  [stream transactions guide](docs/stream-transactions.md).
+
 ## [10.5.0] - 2026-09-11
 
 ### Added
