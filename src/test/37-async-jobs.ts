@@ -1,3 +1,11 @@
+/**
+ * Integration tests for the async jobs API and the `Job` lifecycle.
+ *
+ * Covers creating and reconstructing jobs, polling pending and completed jobs,
+ * loading successful and failed results, cancellation, cached results, and
+ * deleting individual, expired, or all completed job results. Async job state
+ * is coordinator-local, so the suite is skipped with round-robin balancing.
+ */
 import { expect } from "chai";
 import { aql } from "../aql.js";
 import { Cursor } from "../cursors.js";
@@ -113,6 +121,8 @@ describeNLB("Async Jobs API", function () {
       expect(cursor).to.be.an.instanceof(Cursor);
       expect(job.result).to.equal(cursor);
       expect(await cursor.next()).to.equal(23);
+      expect(await job.load()).to.equal(cursor);
+      expect(job.result).to.equal(cursor);
     });
 
     it("propagates a failed async request through job.load", async () => {
@@ -171,6 +181,9 @@ describeNLB("Async Jobs API", function () {
       );
       expect(pending).to.be.an("array").that.includes(job.id);
       await job.cancel();
+      await waitUntilJobFinished(job);
+      await job.deleteResult();
+      pendingJobs.pop();
     });
   });
 
@@ -199,10 +212,11 @@ describeNLB("Async Jobs API", function () {
         await job.load();
       } catch (err: any) {
         expect(err).to.be.instanceOf(ArangoError);
+        expect(err).to.have.property("code", 410);
+        expect(err).to.have.property("errorNum", 21);
         return;
       }
-      // Cancel can lose the race if the query already finished.
-      expect(job.isLoaded).to.equal(true);
+      expect.fail("Expected the canceled job to reject");
     });
   });
 
