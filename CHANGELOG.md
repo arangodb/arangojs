@@ -16,6 +16,14 @@ This driver uses semantic versioning:
 
 ## [Unreleased]
 
+### Added
+
+- Tests: Integration coverage for async job APIs (`createJob`, `job`,
+  `listPendingJobs`, `listCompletedJobs`, `deleteExpiredJobResults`,
+  `deleteAllJobResults`) and the `Job` class (`load`, `cancel`, `deleteResult`,
+  `getCompleted`). Suites skip under `ROUND_ROBIN` load balancing because job
+  state is coordinator-local.
+
 ## [10.5.0] - 2026-09-11
 
 ### Added
