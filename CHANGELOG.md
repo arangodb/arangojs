@@ -25,6 +25,12 @@ This driver uses semantic versioning:
   can run concurrently on one `Database` without sharing transaction IDs.
   Existing `step` and `withTransaction` behavior remains unchanged. See the
   [stream transactions guide](docs/stream-transactions.md).
+  
+- Tests: Integration coverage for async job APIs (`createJob`, `job`,
+  `listPendingJobs`, `listCompletedJobs`, `deleteExpiredJobResults`,
+  `deleteAllJobResults`) and the `Job` class (`load`, `cancel`, `deleteResult`,
+  `getCompleted`). Suites skip under `ROUND_ROBIN` load balancing because job
+  state is coordinator-local.
 
 ## [10.5.0] - 2026-09-11
 
