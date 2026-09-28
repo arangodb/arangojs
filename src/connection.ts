@@ -12,6 +12,7 @@ import * as configuration from "./configuration.js";
 import * as databases from "./databases.js";
 import * as errors from "./errors.js";
 import { ERROR_ARANGO_CONFLICT } from "./lib/codes.js";
+import { getActiveTransactionId } from "./lib/transaction-context.js";
 import * as util from "./lib/util.js";
 import { LinkedList } from "./lib/x3-linkedlist.js";
 
@@ -594,6 +595,13 @@ export type CommonRequestOptions = {
  */
 export type RequestOptions = CommonRequestOptions & {
   /**
+   * Prevents the request from inheriting an active asynchronous transaction
+   * context. The legacy connection-level transaction ID is unaffected.
+   *
+   * @internal
+   */
+  skipActiveTransactionContext?: boolean;
+  /**
    * @internal
    *
    * Identifier of a specific ArangoDB host to use when more than one is known.
@@ -1158,6 +1166,7 @@ export class Connection {
       maxRetries = 0,
       method = "GET",
       retryOnConflict = 0,
+      skipActiveTransactionContext = false,
       timeout = 0,
       headers: requestHeaders,
       body: requestBody,
@@ -1252,8 +1261,12 @@ export class Connection {
       headers.set("content-length", "0");
     }
 
-    if (this._transactionId) {
-      headers.set("x-arango-trx-id", this._transactionId);
+    const transactionId =
+      (skipActiveTransactionContext
+        ? undefined
+        : getActiveTransactionId(this)) ?? this._transactionId;
+    if (transactionId) {
+      headers.set("x-arango-trx-id", transactionId);
     }
 
     if (allowDirtyRead) {

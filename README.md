@@ -367,8 +367,41 @@ await trx.step(() => collection.save(doc1));
 await trx.step(() => collection.save(doc2));
 ```
 
-Please refer to the [documentation of the `transaction.step` method](https://arangodb.github.io/arangojs/latest/classes/transaction.Transaction.html#step)
-for additional examples.
+The existing `step` behavior is preserved for backwards compatibility. If a
+step needs to perform asynchronous work before an arangojs call, or needs to
+make multiple sequential arangojs calls, use the opt-in `stepAsync` method:
+
+```js
+const trx = await db.beginTransaction(collection);
+
+await trx.stepAsync(async () => {
+  await loadDataFromExternalApi();
+  await collection.save(doc1);
+  await collection.save(doc2);
+});
+
+await trx.commit();
+```
+
+The matching `withTransactionAsync` helper automatically commits on success and
+aborts if the callback rejects:
+
+```js
+await db.withTransactionAsync(collection, async (stepAsync) => {
+  await stepAsync(async () => {
+    await validateWithExternalService();
+    return collection.save(doc1);
+  });
+});
+```
+
+On Node.js, `stepAsync` uses asynchronous execution context to isolate
+concurrent transactions on one `Database`. In browsers, only one asynchronous
+transaction step may be active per connection at a time.
+
+See the [stream transactions guide](docs/stream-transactions.md) and the
+[documentation of the `transaction.step` method](https://arangodb.github.io/arangojs/latest/classes/transaction.Transaction.html#step)
+for behavior details, examples, and migration guidance.
 
 ### Streaming transactions timeout in cluster
 
