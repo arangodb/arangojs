@@ -18,6 +18,21 @@ This driver uses semantic versioning:
 
 ### Added
 
+- Tests: Integration coverage for async job APIs (`createJob`, `job`,
+  `listPendingJobs`, `listCompletedJobs`, `deleteExpiredJobResults`,
+  `deleteAllJobResults`) and the `Job` class (`load`, `cancel`, `deleteResult`,
+  `getCompleted`). Suites skip under `ROUND_ROBIN` load balancing because job
+  state is coordinator-local.
+
+## [10.5.0] - 2026-09-11
+
+### Added
+
+- Tests: Integration coverage for AQL query results cache APIs
+  (`listQueryCacheEntries`, `clearQueryCache`, `getQueryCacheProperties`,
+  `setQueryCacheProperties`), including global property updates via `_system`.
+  Entry list/clear cases skip on cluster (results cache is single-server only).
+
 - Added ArangoDB 3.12.10 vector index support (DE-1213), including optional
   and automatically scaled `nLists`, configurable `numberOfDocsPerCentroid`,
   per-shard training details, and documentation for factory placeholders and
@@ -2685,7 +2700,8 @@ For a detailed list of changes between pre-release versions of v7 see the
 
   Graph methods now only return the relevant part of the response body.
 
-[Unreleased]: https://github.com/arangodb/arangojs/compare/v10.4.0...HEAD
+[Unreleased]: https://github.com/arangodb/arangojs/compare/v10.5.0...HEAD
+[10.5.0]: https://github.com/arangodb/arangojs/compare/v10.4.0...v10.5.0
 [10.4.0]: https://github.com/arangodb/arangojs/compare/v10.3.1...v10.4.0
 [10.3.1]: https://github.com/arangodb/arangojs/compare/v10.3.0...v10.3.1
 [10.3.0]: https://github.com/arangodb/arangojs/compare/v10.2.2...v10.3.0
