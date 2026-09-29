@@ -25,12 +25,18 @@ const testOrigins = proxyTargets.map(
 );
 const totalTimeoutMs =
   Number(process.env.BROWSER_TEST_TIMEOUT_MS) || 20 * 60 * 1000;
+const browserName = (process.env.BROWSER_TEST_BROWSER || "chrome")
+  .trim()
+  .toLowerCase();
+if (browserName !== "chrome" && browserName !== "firefox") {
+  throw new Error(
+    `BROWSER_TEST_BROWSER must be either "chrome" or "firefox", got ${JSON.stringify(
+      process.env.BROWSER_TEST_BROWSER,
+    )}`,
+  );
+}
 
 const excludedTests = new Map([
-  [
-    "13-bulk-imports.ts",
-    "uses Node.js Buffer inputs; browser Blob coverage belongs in a dedicated test",
-  ],
   ["22-foxx-api.ts", "loads Foxx zip fixtures with Node.js fs and path"],
   ["33-content-length.ts", "contains Node.js Buffer/content-length assertions"],
   [
@@ -43,11 +49,15 @@ const excludedTests = new Map([
   ],
 ]);
 
-const requestedTests = (process.env.BROWSER_TEST_FILES || "")
-  .split(",")
-  .map((name) => name.trim())
-  .filter(Boolean)
-  .map((name) => (name.endsWith(".ts") ? name : `${name}.ts`));
+const requestedTests = [
+  ...new Set(
+    (process.env.BROWSER_TEST_FILES || "")
+      .split(",")
+      .map((name) => name.trim())
+      .filter(Boolean)
+      .map((name) => (name.endsWith(".ts") ? name : `${name}.ts`)),
+  ),
+];
 
 const allTestFiles = (await readdir(testDirectory))
   .filter((name) => /^\d.*\.ts$/.test(name))
@@ -55,11 +65,17 @@ const allTestFiles = (await readdir(testDirectory))
 const compatibleTestFiles = allTestFiles.filter(
   (name) => !excludedTests.has(name),
 );
-const testFiles = requestedTests.length
-  ? compatibleTestFiles.filter((name) =>
-      requestedTests.some((requested) => name.startsWith(requested)),
-    )
-  : compatibleTestFiles;
+const unavailableRequestedTests = requestedTests.filter(
+  (name) => !compatibleTestFiles.includes(name),
+);
+if (unavailableRequestedTests.length) {
+  throw new Error(
+    `The following BROWSER_TEST_FILES are missing or not browser-compatible: ${unavailableRequestedTests.join(
+      ", ",
+    )}`,
+  );
+}
+const testFiles = requestedTests.length ? requestedTests : compatibleTestFiles;
 
 if (!testFiles.length) {
   throw new Error(
@@ -85,7 +101,7 @@ const entryPoint = testFiles
   .join("\n");
 
 console.log(
-  `Running ${testFiles.length} browser-compatible test files against ${proxyTargets.join(", ")}`,
+  `Running ${testFiles.length} browser-compatible test files in ${browserName} against ${proxyTargets.join(", ")}`,
 );
 for (const [name, reason] of excludedTests) {
   if (allTestFiles.includes(name)) console.log(`Skipping ${name}: ${reason}`);
@@ -134,18 +150,32 @@ app.get("/browser-tests", (_request, response) => {
     </script>
     <script type="module">
       const failures = [];
+      const report = (line = "") => console.log("__MOCHA_SPEC__" + line);
       try {
         await import("/browser-tests/index.js");
         const runner = mocha.run();
-        runner.on("pass", (test) => console.log("PASS " + test.fullTitle()));
-        runner.on("pending", (test) => console.log("SKIP " + test.fullTitle()));
+        let suiteDepth = 0;
+        runner.on("suite", (suite) => {
+          if (suite.root) return;
+          report("\\n" + "  ".repeat(suiteDepth) + suite.title);
+          suiteDepth += 1;
+        });
+        runner.on("suite end", (suite) => {
+          if (!suite.root) suiteDepth -= 1;
+        });
+        runner.on("pass", (test) => {
+          report("  ".repeat(suiteDepth) + "✓ " + test.title);
+        });
+        runner.on("pending", (test) => {
+          report("  ".repeat(suiteDepth) + "- " + test.title);
+        });
         runner.on("fail", (test, error) => {
           failures.push({
             title: test.fullTitle(),
             message: error && error.message,
             stack: error && error.stack
           });
-          console.error("FAIL " + test.fullTitle() + ": " + error);
+          report("  ".repeat(suiteDepth) + failures.length + ") " + test.title);
         });
         runner.on("end", () => {
           const stats = runner.stats || {};
@@ -261,27 +291,67 @@ for (let index = 1; index < proxyTargets.length; index++) {
 let browser;
 try {
   const launchOptions = {
-    args: ["--no-sandbox", "--disable-dev-shm-usage"],
+    browser: browserName,
     protocolTimeout: totalTimeoutMs + 60_000,
   };
+  if (browserName === "chrome") {
+    launchOptions.args = ["--no-sandbox", "--disable-dev-shm-usage"];
+  }
   if (process.env.PUPPETEER_EXECUTABLE_PATH) {
     launchOptions.executablePath = process.env.PUPPETEER_EXECUTABLE_PATH;
   }
   browser = await puppeteer.launch(launchOptions);
   const page = await browser.newPage();
+  const browserErrors = [];
+  const isExpectedNetworkDiagnostic = (text) =>
+    browserName === "firefox" &&
+    text.includes("Cross-Origin Request Blocked:") &&
+    text.includes("http://does.not.exist.example:9999/");
   page.setDefaultTimeout(totalTimeoutMs);
   page.on("console", (message) => {
+    const text = message.text();
+    const mochaSpecPrefix = "__MOCHA_SPEC__";
+    if (text.startsWith(mochaSpecPrefix)) {
+      console.log(text.slice(mochaSpecPrefix.length));
+      return;
+    }
+    // 00-basics deliberately requests an unreachable cross-origin host to
+    // exercise error serialization. Firefox reports the handled rejection as
+    // both a console error and a page error, unlike Chrome and Node.js.
+    if (isExpectedNetworkDiagnostic(text)) return;
+    // Chrome logs an error for every expected HTTP 4xx response. Mocha owns
+    // test reporting, so these transport messages only obscure the results.
+    if (
+      message.type() === "error" &&
+      text.startsWith("Failed to load resource:")
+    ) {
+      return;
+    }
     const output = message.type() === "error" ? console.error : console.log;
-    output(`[browser] ${message.text()}`);
+    output(`[browser] ${text}`);
   });
-  page.on("pageerror", (error) => console.error("[browser]", error));
+  page.on("pageerror", (error) => {
+    if (isExpectedNetworkDiagnostic(error.message)) return;
+    browserErrors.push({
+      title: "Uncaught browser error",
+      message: error.message,
+      stack: error.stack,
+    });
+    console.error("[browser]", error);
+  });
 
   await page.goto(`${origin}/browser-tests`, { waitUntil: "domcontentloaded" });
   await page.waitForFunction(() => window.__browserTestResult !== null, {
     timeout: totalTimeoutMs,
   });
+  // Give the browser a turn to report unhandled rejections queued by the last test.
+  await new Promise((resolve) => setTimeout(resolve, 100));
   const result = await page.evaluate(() => window.__browserTestResult);
   const { stats } = result;
+  if (browserErrors.length) {
+    result.failures.push(...browserErrors);
+    stats.failures += browserErrors.length;
+  }
   console.log(
     `Browser tests: ${stats.passes} passed, ${stats.failures} failed, ` +
       `${stats.pending} pending (${stats.tests} total, ${stats.duration}ms)`,

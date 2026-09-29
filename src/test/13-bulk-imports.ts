@@ -8,6 +8,8 @@ import {
   waitForNewDatabase,
 } from "./_integration-timeouts.js";
 
+const itBuffer = typeof globalThis.Buffer === "undefined" ? it.skip : it;
+
 describe("Bulk imports", function () {
   this.timeout(clusterIntegrationTimeoutMs);
   let system: Database, db: Database;
@@ -82,7 +84,7 @@ describe("Bulk imports", function () {
           ignored: 0,
         });
       });
-      it("should accept buffer of LDJSON arrays", async () => {
+      itBuffer("should accept buffer of LDJSON arrays", async () => {
         const data = Buffer.from(
           '["_key", "data"]\r\n["tb1", "banana"]\r\n["tb2", "peach"]\r\n["tb3", "apricot"]\r\n',
         );
@@ -111,7 +113,7 @@ describe("Bulk imports", function () {
             ignored: 0,
           });
         });
-        it("should accept buffer of LDJSON documents", async () => {
+        itBuffer("should accept buffer of LDJSON documents", async () => {
           const data = Buffer.from(
             `{"_key": "db1-${type}", "data": "banana"}\r\n{"_key": "db2-${type}", "data": "peach"}\r\n{"_key": "db3-${type}", "data": "apricot"}\r\n`,
           );
@@ -145,7 +147,7 @@ describe("Bulk imports", function () {
             ignored: 0,
           });
         });
-        it("should accept buffer of JSON documents array", async () => {
+        itBuffer("should accept buffer of JSON documents array", async () => {
           const data = Buffer.from(
             JSON.stringify([
               { _key: `jb1-${String(type)}`, data: "banana" },

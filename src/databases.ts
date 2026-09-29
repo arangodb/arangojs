@@ -319,7 +319,6 @@ export class Database {
           },
           onReject: (err) => {
             rejectRequest(err);
-            throw err;
           },
         });
       });
