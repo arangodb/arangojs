@@ -9,7 +9,7 @@ CircleCI validates **arangojs** using one parameterized job, `**node-test`**, wi
 
 | Pipeline parameter `docker-img` | Workflows                                                                                                                      | DB / coverage                                                                                           |
 | ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------- |
-| **Empty** (default)             | `**integration-single-topology`**, `**integration-cluster-topology**`, `**integration-http-proto-smoke**`, `**browser-smoke**`, `**compat-typescript**` | **40** jobs total (36 DB/browser + 4 TypeScript consumer compat).                                                                                      |
+| **Empty** (default)             | `**integration-single-topology`**, `**integration-cluster-topology**`, `**integration-http-proto-smoke**`, `**browser-smoke**`, `**compat-typescript**` | **41** jobs total (36 DB/browser + 5 TypeScript consumer compat).                                                                                      |
 | **Non-empty**                   | **`integration-tests-given-db-image`**, **`integration-http-proto-smoke-given-db-image`**, **`browser-smoke-given-db-image`** | **19** jobs total (16 + 2 + 1); same split as the default pipeline |
 
 ### Secrets and context
@@ -27,7 +27,7 @@ All integration and browser jobs attach **`context: docker-hub`**.
 | --- | -------- | -------------- |
 | **`node-test`** | `n22` / `n24` | `arangodb/medium-arm64-privileged` |
 | **`browser-smoke`** | `n24-browser` (`cimg/node:24.4`) | `arangodb/medium-amd64-privileged` |
-| **`compat-pack` / `compat-consumer`** | `n22` | `arangodb/medium-arm64-privileged` (no Docker / no ArangoDB) |
+| **`compat-pack` / `compat-consumer` / `compat-legacy-consumer`** | `n22` | `arangodb/medium-arm64-privileged` (no Docker / no ArangoDB) |
 
 - **`setup-docker`** — install Docker CLI, start in-container `dockerd` (DinD).
 - **`login-docker-hub`** — before **`start-db`** (avoids anonymous pull rate limits).
@@ -46,7 +46,7 @@ All integration and browser jobs attach **`context: docker-hub`**.
 
 ---
 
-## 2) Default pipeline (`docker-img` empty) — **40 jobs**
+## 2) Default pipeline (`docker-img` empty) — **41 jobs**
 
 Five workflows run in parallel (`when: not <<pipeline.parameters.docker-img>>`).
 
@@ -98,9 +98,9 @@ Puppeteer + `smoke-test.mjs` (esbuild browser bundle, `db.version()` in headless
 
 **Naming:** `browser-smoke-312`, `browser-smoke-4.0-nightly`
 
-### E) `compat-typescript` — **4 jobs** (no ArangoDB / Docker)
+### E) `compat-typescript` — **5 jobs** (no ArangoDB / Docker)
 
-Builds and packs the publishable driver tarball once (must use TypeScript **7** `tsc`), then typechecks it as a consumer on TypeScript **5.4**, **6.0**, and **7.0** (see `compat-test/`).
+Builds and packs the publishable driver tarball once (must use TypeScript **7** `tsc`), then typechecks it as a consumer on TypeScript **5.4**, **6.0**, and **7.0**. It also checks the published pre-upgrade release, arangojs **10.5.0**, with the latest TypeScript **7.x** compiler (see `compat-test/`).
 
 | Job | Role |
 | --- | ---- |
@@ -108,8 +108,9 @@ Builds and packs the publishable driver tarball once (must use TypeScript **7** 
 | **`compat-consumer-ts5`** | Install pack + `typescript@5.4.5`, `npx tsc --noEmit` |
 | **`compat-consumer-ts6`** | Install pack + `typescript@6.0.3`, `npx tsc --noEmit` |
 | **`compat-consumer-ts7`** | Install pack + `typescript@7.0.2`, `npx tsc --noEmit` |
+| **`compat-legacy-consumer`** | Install published `arangojs@10.5.0` + latest `typescript@7`, then typecheck the frozen legacy fixture |
 
-**Grand total (empty `docker-img`):** 16 + 16 + 2 + 2 + 4 = **40** jobs.
+**Grand total (empty `docker-img`):** 16 + 16 + 2 + 2 + 5 = **41** jobs.
 
 ---
 
@@ -195,7 +196,7 @@ Same Docker setup and **`login-docker-hub`** → **`start-db`** (single, HTTP) a
 ### Default (PR / push)
 
 - Do **not** set `docker-img`.
-- Runs **40** jobs across the five workflows above (single matrix + cluster matrix + HTTP proto smoke + browser smoke + TypeScript consumer compat).
+- Runs **41** jobs across the five workflows above (single matrix + cluster matrix + HTTP proto smoke + browser smoke + TypeScript consumer compat).
 
 ### Custom DB image
 

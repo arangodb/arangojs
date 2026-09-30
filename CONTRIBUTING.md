@@ -28,7 +28,8 @@ npx tsc6 --version   # TypeScript 6.x
 ```
 
 CircleCI also typechecks a small sample app (`compat-test/`) with TypeScript
-5.4, 6.0, and 7.0 against the packed npm tarball.
+5.4, 6.0, and 7.0 against the packed npm tarball. A separate frozen fixture
+checks published `arangojs@10.5.0` with the latest TypeScript 7.x release.
 
 ## Testing
 

@@ -20,7 +20,9 @@ This driver uses semantic versioning:
 
 - CI: CircleCI `compat-typescript` workflow builds the driver with TypeScript 7, packs the
   publishable tarball, and typechecks it as a TypeScript **5.4**, **6.0**, and **7.0**
-  consumer (`compat-test/`). No driver API changes.
+  consumer. It also typechecks the published pre-upgrade `arangojs@10.5.0` package with
+  the latest TypeScript **7.x** compiler using a frozen fixture (`compat-test/`). No
+  driver API changes.
 
 ### Changed
 
@@ -31,6 +33,8 @@ This driver uses semantic versioning:
 - Dev: CJS build uses `moduleResolution: "Bundler"` with `module: "CommonJS"` because
   TypeScript 7 removed `moduleResolution: "Node"` / `"node10"`.
 - Dev: Upgraded TypeDoc to **0.28.20** so API docs still generate against TypeScript 6.
+- Dev: Upgraded typescript-eslint to **8.71** so linting officially supports the
+  TypeScript 6 compiler API used by the transitional dual-TypeScript setup.
 
 ## [10.5.0] - 2026-09-11
 

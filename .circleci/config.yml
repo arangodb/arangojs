@@ -273,6 +273,24 @@ jobs:
             npm install --save arangojs@file:/tmp/workspace/arangojs-pack.tgz
             npx tsc --noEmit
 
+  # Keep checking the last release built with the previous compiler generation.
+  # This detects TypeScript 7 regressions in its already-published declarations
+  # before customers report them. The arangojs version and fixture stay pinned;
+  # TypeScript tracks the latest 7.x release intentionally.
+  compat-legacy-consumer:
+    executor: n22
+    steps:
+      - checkout
+      - run:
+          name: Typecheck arangojs 10.5.0 with latest TypeScript 7
+          working_directory: compat-test
+          command: |
+            set -euo pipefail
+            npm install --save-dev typescript@7 @types/node@20
+            npm install --save arangojs@10.5.0
+            npx tsc --version
+            npx tsc --noEmit -p tsconfig.legacy.json
+
 workflows:
   # 16 jobs: single-server only. HTTP/1.1 (default http_proto). 2 DB × 2 Node × 2 SSL × 2 module systems.
   integration-single-topology:
@@ -508,7 +526,8 @@ workflows:
           docker-img: <<pipeline.parameters.docker-img>>
 
   # Consumer TypeScript compat: build+pack once (TS 7), then typecheck the tarball with
-  # TS 5, TS 6, and TS 7 in parallel.
+  # TS 5, TS 6, and TS 7 in parallel. Also check the last pre-TS-7 arangojs release
+  # against the latest TypeScript 7.x compiler.
   compat-typescript:
     when:
       not: <<pipeline.parameters.docker-img>>
@@ -529,3 +548,4 @@ workflows:
           ts: '7.0.2'
           requires:
             - compat-pack
+      - compat-legacy-consumer
