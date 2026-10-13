@@ -42,6 +42,20 @@ This driver uses semantic versioning:
   `getCompleted`). Suites skip under `ROUND_ROBIN` load balancing because job
   state is coordinator-local.
 
+### Fixed
+
+- CI: Resolve and install Chrome for Testing Stable from Google's automation
+  distribution for browser integration and smoke jobs, avoiding the direct
+  Chrome `.deb` download endpoint that stalls or resets on CI runners. Use a
+  shared Chrome installer and update Puppeteer's executable path. Retain bounded
+  retries and timeouts for Chrome and Firefox downloads (DE-1216).
+
+- Tests: Align async stream transaction coverage with the browser integration
+  suite (DE-1216), skipping Node.js-only async context cases individually and
+  verifying browser rejection and independent-connection concurrency behavior.
+  Abort outstanding test transactions before dropping collections to avoid
+  cleanup timeouts after failures.
+
 ## [10.5.0] - 2026-09-11
 
 ### Added
