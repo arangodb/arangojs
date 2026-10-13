@@ -74,8 +74,11 @@ The `browser-test` job accepts two matrix parameters:
 For every job CircleCI:
 
 1. Starts the requested live ArangoDB topology.
-2. Downloads the current Google Chrome stable `.deb` or Mozilla Firefox stable
-   archive for Linux AMD64.
+2. Downloads the current Chrome for Testing Stable or Mozilla Firefox stable
+   archive for Linux AMD64. Chrome's version and download URL are resolved from
+   Google's Chrome for Testing channel metadata on each run. Its archive comes
+   from `storage.googleapis.com`, avoiding the failing `dl.google.com` direct
+   `.deb` endpoint.
 3. Prints the installed browser version in the job log.
 4. Installs project dependencies without downloading Puppeteer's bundled
    browser.
@@ -90,6 +93,13 @@ timeout. No new retry starts after the 300-second retry window; an attempt
 already in progress can finish within its transfer timeout. Downloads write
 directly to files so curl discards partial data before retrying. Installation
 only proceeds after a successful download. Browser versions remain unpinned.
+
+Both Chrome job types call `.circleci/install-chrome.sh`, which validates the
+downloaded ZIP and extracts the full distribution under
+`/opt/chrome-for-testing`.
+Puppeteer uses `/opt/chrome-for-testing/chrome-linux64/chrome`. This is Google's
+Chrome build for browser automation, released with Chrome; its Stable channel
+is selected on each run rather than using Puppeteer's pinned bundled version.
 
 The browser runner uses Puppeteer to launch the selected browser and serves the
 Mocha bundle through a local Express proxy. The page is served at
@@ -144,9 +154,9 @@ robin load balancing.
 
 ### `browser-smoke`
 
-The smoke job installs the latest Chrome stable release, builds the browser
-bundle, and runs `smoke-test.mjs` against a live single-server database. This
-fast check remains separate from the full Chrome/Firefox integration matrix.
+The smoke job installs the latest Chrome for Testing Stable release, builds the
+browser bundle, and runs `smoke-test.mjs` against a live single-server database.
+This fast check remains separate from the full Chrome/Firefox integration matrix.
 
 ## Running the workflows
 
