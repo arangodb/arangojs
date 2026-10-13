@@ -21,6 +21,11 @@ import {
   propagationForResourceMs,
   waitForNewDatabase,
 } from "./_integration-timeouts.js";
+import { isNodeRuntime } from "./_runtime.js";
+
+// AsyncLocalStorage isolation and nesting on a shared connection are Node-only.
+const itNode = isNodeRuntime ? it : it.skip;
+const itBrowser = isNodeRuntime ? it.skip : it;
 
 describe("Async stream transactions", function () {
   this.timeout(clusterIntegrationTimeoutMs);
@@ -54,6 +59,7 @@ describe("Async stream transactions", function () {
   });
 
   beforeEach(async () => {
+    allTransactions = [];
     collection = await db.createCollection(`collection-${Date.now()}`);
     await db.waitForPropagation(
       { pathname: `/_api/collection/${collection.name}` },
@@ -62,6 +68,12 @@ describe("Async stream transactions", function () {
   });
 
   afterEach(async () => {
+    // Release transaction locks before dropping the collection, even on failure.
+    await Promise.all(
+      allTransactions.map((transaction) =>
+        transaction.abort().catch(() => undefined),
+      ),
+    );
     try {
       await collection.get();
     } catch {
@@ -122,10 +134,11 @@ describe("Async stream transactions", function () {
     expect(await collection.documentExists("async-multi-b")).to.equal(false);
   });
 
-  it("supports concurrent stepAsync transactions on one database", async () => {
+  itNode("supports concurrent stepAsync transactions on one database", async () => {
     const trx1 = await db.beginTransaction(collection);
+    allTransactions.push(trx1);
     const trx2 = await db.beginTransaction(collection);
-    allTransactions.push(trx1, trx2);
+    allTransactions.push(trx2);
 
     const [meta1, meta2] = await Promise.all([
       trx1.stepAsync(async () => {
@@ -158,7 +171,7 @@ describe("Async stream transactions", function () {
     await trx2.abort();
   });
 
-  it("does not leak stepAsync context to concurrent non-transactional work", async () => {
+  itNode("does not leak stepAsync context to concurrent non-transactional work", async () => {
     const trx = await db.beginTransaction(collection);
     allTransactions.push(trx);
 
@@ -184,6 +197,134 @@ describe("Async stream transactions", function () {
     expect(await collection.documentExists("outside-async-context")).to.equal(
       true,
     );
+  });
+
+  itBrowser(
+    "rejects overlapping stepAsync transactions on one database",
+    async () => {
+      const trx1 = await db.beginTransaction(collection);
+      allTransactions.push(trx1);
+      const trx2 = await db.beginTransaction(collection);
+      allTransactions.push(trx2);
+      let started!: () => void;
+      let release!: () => void;
+      const active = new Promise<void>((resolve) => (started = resolve));
+      const pending = new Promise<void>((resolve) => (release = resolve));
+      const first = trx1.stepAsync(async () => {
+        started();
+        await pending;
+        return collection.save({ _key: "browser-first" });
+      });
+
+      try {
+        await active;
+        let error: unknown;
+        try {
+          await trx2.stepAsync(() =>
+            collection.save({ _key: "browser-rejected" }),
+          );
+        } catch (e) {
+          error = e;
+        }
+        expect(String(error)).to.include("not supported in browsers");
+      } finally {
+        release();
+        await first;
+      }
+
+      // The rejected overlap must not disturb the active step or prevent reuse.
+      await trx2.stepAsync(() => collection.save({ _key: "browser-second" }));
+      await trx1.abort();
+      await trx2.commit();
+      expect(await collection.documentExists("browser-first")).to.equal(false);
+      expect(await collection.documentExists("browser-rejected")).to.equal(
+        false,
+      );
+      expect(await collection.documentExists("browser-second")).to.equal(true);
+    },
+  );
+
+  itBrowser(
+    "rejects a nested stepAsync and keeps the outer transaction active",
+    async () => {
+      const outer = await db.beginTransaction(collection);
+      allTransactions.push(outer);
+
+      await outer.stepAsync(async () => {
+        const inner = await db.beginTransaction(collection);
+        allTransactions.push(inner);
+        let error: unknown;
+        try {
+          await inner.stepAsync(() =>
+            collection.save({ _key: "browser-nested-rejected" }),
+          );
+        } catch (e) {
+          error = e;
+        }
+        expect(String(error)).to.include("not supported in browsers");
+        await inner.abort();
+        await collection.save({ _key: "browser-outer-after" });
+      });
+
+      expect(
+        await outer.stepAsync(() =>
+          collection.documentExists("browser-outer-after"),
+        ),
+      ).to.equal(true);
+      await outer.abort();
+      expect(await collection.documentExists("browser-outer-after")).to.equal(
+        false,
+      );
+      expect(
+        await collection.documentExists("browser-nested-rejected"),
+      ).to.equal(false);
+    },
+  );
+
+  it("supports concurrent stepAsync transactions on independent connections", async () => {
+    const independentDb = new Database({ ...config, databaseName });
+    const independentCollection = independentDb.collection(collection.name);
+    const trx1 = await db.beginTransaction(collection);
+    allTransactions.push(trx1);
+    let trx2: Transaction | undefined;
+
+    try {
+      trx2 = await independentDb.beginTransaction(independentCollection);
+      const second = trx2;
+      await Promise.all([
+        trx1.stepAsync(async () => {
+          await sleep(25);
+          return collection.save({ _key: "independent-first" });
+        }),
+        second.stepAsync(async () => {
+          await Promise.resolve();
+          return independentCollection.save({ _key: "independent-second" });
+        }),
+      ]);
+      expect(
+        await trx1.stepAsync(() =>
+          collection.documentExists("independent-first"),
+        ),
+      ).to.equal(true);
+      expect(
+        await second.stepAsync(() =>
+          independentCollection.documentExists("independent-second"),
+        ),
+      ).to.equal(true);
+
+      await trx1.abort();
+      await second.commit();
+      expect(await collection.documentExists("independent-first")).to.equal(
+        false,
+      );
+      expect(await collection.documentExists("independent-second")).to.equal(
+        true,
+      );
+    } finally {
+      await trx1.abort().catch(() => undefined);
+      await trx2?.abort().catch(() => undefined);
+      independentDb.close();
+    }
   });
 
   it("scopes stepAsync context to its connection", async () => {
@@ -216,7 +357,7 @@ describe("Async stream transactions", function () {
     }
   });
 
-  it("keeps a nested committed transaction separate from an aborted outer transaction", async () => {
+  itNode("keeps a nested committed transaction separate from an aborted outer transaction", async () => {
     const innerCollection = await db.createCollection(`inner-${Date.now()}`);
     await db.waitForPropagation(
       { pathname: `/_api/collection/${innerCollection.name}` },
@@ -261,7 +402,7 @@ describe("Async stream transactions", function () {
     }
   });
 
-  it("keeps a nested aborted transaction separate from a committed outer transaction", async () => {
+  itNode("keeps a nested aborted transaction separate from a committed outer transaction", async () => {
     const innerCollection = await db.createCollection(`inner-${Date.now()}`);
     await db.waitForPropagation(
       { pathname: `/_api/collection/${innerCollection.name}` },
@@ -301,7 +442,7 @@ describe("Async stream transactions", function () {
     }
   });
 
-  it("supports multiple sibling transactions inside one outer transaction", async () => {
+  itNode("supports multiple sibling transactions inside one outer transaction", async () => {
     const firstInnerCollection = await db.createCollection(
       `inner-first-${Date.now()}`,
     );
@@ -373,7 +514,7 @@ describe("Async stream transactions", function () {
     }
   });
 
-  it("restores every parent in a three-level nested transaction", async () => {
+  itNode("restores every parent in a three-level nested transaction", async () => {
     const middleCollection = await db.createCollection(`middle-${Date.now()}`);
     const deepestCollection = await db.createCollection(
       `deepest-${Date.now()}`,
