@@ -83,6 +83,14 @@ For every job CircleCI:
    browser.
 6. Runs `npm run test:browser`.
 
+Browser downloads in both the integration and smoke jobs allow up to five
+retries, including connection resets (curl exit 56), with exponential backoff.
+Each attempt has a 30-second connection timeout and a 180-second transfer
+timeout. No new retry starts after the 300-second retry window; an attempt
+already in progress can finish within its transfer timeout. Downloads write
+directly to files so curl discards partial data before retrying. Installation
+only proceeds after a successful download. Browser versions remain unpinned.
+
 The browser runner uses Puppeteer to launch the selected browser and serves the
 Mocha bundle through a local Express proxy. The page is served at
 `127.0.0.1:8559`; cluster coordinator proxies use ports 8560 and 8561.

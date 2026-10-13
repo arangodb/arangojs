@@ -39,6 +39,10 @@ This driver uses semantic versioning:
 
 ### Fixed
 
+- CI: Retry browser downloads on connection resets and other download errors,
+  with bounded connection, transfer, and retry times, in both browser
+  integration and smoke jobs (DE-1216).
+
 - Tests: Align async stream transaction coverage with the browser integration
   suite (DE-1216), skipping Node.js-only async context cases individually and
   verifying browser rejection and independent-connection concurrency behavior.

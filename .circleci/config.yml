@@ -195,7 +195,9 @@ jobs:
               libgtk-3-0t64 libnspr4 libnss3 libpango-1.0-0 libpangocairo-1.0-0 \
               libx11-6 libx11-xcb1 libxcb1 libxcomposite1 libxdamage1 libxext6 \
               libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6
-            curl -fsSL -o /tmp/google-chrome.deb \
+            # Receive errors such as curl exit 56 need --retry-all-errors.
+            curl -fsSL --retry 5 --retry-all-errors --retry-max-time 300 \
+              --connect-timeout 30 --max-time 180 -o /tmp/google-chrome.deb \
               https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
             sudo apt-get install -y /tmp/google-chrome.deb
             rm /tmp/google-chrome.deb
@@ -251,13 +253,16 @@ jobs:
               libx11-6 libx11-xcb1 libxcb1 libxcomposite1 libxdamage1 libxext6 \
               libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxt6 libxtst6
             if [ "<<parameters.browser>>" = "chrome" ]; then
-              curl -fsSL -o /tmp/google-chrome.deb \
+              # Receive errors such as curl exit 56 need --retry-all-errors.
+              curl -fsSL --retry 5 --retry-all-errors --retry-max-time 300 \
+                --connect-timeout 30 --max-time 180 -o /tmp/google-chrome.deb \
                 https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
               sudo apt-get install -y /tmp/google-chrome.deb
               rm /tmp/google-chrome.deb
               google-chrome-stable --version
             else
-              curl -fsSL -o /tmp/firefox.tar.xz \
+              curl -fsSL --retry 5 --retry-all-errors --retry-max-time 300 \
+                --connect-timeout 30 --max-time 180 -o /tmp/firefox.tar.xz \
                 'https://download.mozilla.org/?product=firefox-latest&os=linux64&lang=en-US'
               sudo tar -xJf /tmp/firefox.tar.xz -C /opt
               rm /tmp/firefox.tar.xz
