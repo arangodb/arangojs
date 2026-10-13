@@ -102,6 +102,13 @@ Files that depend entirely on Node.js-only APIs are excluded with a reason in
 the log. Browser-compatible cases in mixed files still run; for example,
 `13-bulk-imports.ts` runs in browsers while only its `Buffer` cases are skipped.
 
+The async transaction suites also run in browsers. Cases that require Node.js
+`AsyncLocalStorage` (overlapping or nested steps and isolation from concurrent
+non-transactional work on a shared connection) are skipped individually.
+Browser cases verify that overlapping and nested steps are rejected without
+disturbing the active transaction. Concurrent steps on independent connections,
+sequential async work, and managed commit/abort behavior run in both runtimes.
+
 For a targeted local run, set a comma-separated file list:
 
 ```sh

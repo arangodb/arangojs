@@ -14,6 +14,11 @@ import {
   runTransactionStep,
 } from "../lib/transaction-context.js";
 import { Transaction } from "../transactions.js";
+import { isNodeRuntime } from "./_runtime.js";
+
+// Browsers keep one active context per connection rather than async-local state.
+const itNode = isNodeRuntime ? it : it.skip;
+const itBrowser = isNodeRuntime ? it.skip : it;
 
 describe("async transaction context", () => {
   const sleep = (millis: number) =>
@@ -38,7 +43,7 @@ describe("async transaction context", () => {
     expect(getActiveTransactionId(connection)).to.equal(undefined);
   });
 
-  it("isolates concurrent contexts on the same connection", async () => {
+  itNode("isolates concurrent contexts on the same connection", async () => {
     const connection = {};
     const observed: string[] = [];
 
@@ -57,7 +62,7 @@ describe("async transaction context", () => {
     expect(getActiveTransactionId(connection)).to.equal(undefined);
   });
 
-  it("restores the outer context after a nested context settles", async () => {
+  itNode("restores the outer context after a nested context settles", async () => {
     const connection = {};
 
     await runTransactionStep(connection, "outer-transaction", async () => {
@@ -88,6 +93,101 @@ describe("async transaction context", () => {
       expect(getActiveTransactionId(connectionB)).to.equal(undefined);
     });
   });
+
+  it("isolates concurrent contexts on independent connections", async () => {
+    const connectionA = {};
+    const connectionB = {};
+    const observed: string[] = [];
+
+    await Promise.all([
+      runTransactionStep(connectionA, "transaction-a", async () => {
+        await sleep(10);
+        observed.push(getActiveTransactionId(connectionA)!);
+      }),
+      runTransactionStep(connectionB, "transaction-b", async () => {
+        await sleep(1);
+        observed.push(getActiveTransactionId(connectionB)!);
+      }),
+    ]);
+
+    expect(observed).to.have.members(["transaction-a", "transaction-b"]);
+    expect(getActiveTransactionId(connectionA)).to.equal(undefined);
+    expect(getActiveTransactionId(connectionB)).to.equal(undefined);
+  });
+
+  itBrowser(
+    "rejects overlapping contexts without clearing the active context",
+    async () => {
+      const connection = {};
+      let release!: () => void;
+      let started!: () => void;
+      const active = new Promise<void>((resolve) => (started = resolve));
+      const pending = new Promise<void>((resolve) => (release = resolve));
+      const outer = runTransactionStep(
+        connection,
+        "transaction-a",
+        async () => {
+          started();
+          await pending;
+          expect(getActiveTransactionId(connection)).to.equal("transaction-a");
+        },
+      );
+
+      try {
+        await active;
+        let error: unknown;
+        let invoked = false;
+        try {
+          await runTransactionStep(connection, "transaction-b", async () => {
+            invoked = true;
+          });
+        } catch (e) {
+          error = e;
+        }
+        expect(String(error)).to.include("not supported in browsers");
+        expect(invoked).to.equal(false);
+        expect(getActiveTransactionId(connection)).to.equal("transaction-a");
+      } finally {
+        release();
+        await outer;
+      }
+
+      expect(getActiveTransactionId(connection)).to.equal(undefined);
+      await runTransactionStep(connection, "transaction-c", async () => {
+        expect(getActiveTransactionId(connection)).to.equal("transaction-c");
+      });
+      expect(getActiveTransactionId(connection)).to.equal(undefined);
+    },
+  );
+
+  itBrowser(
+    "rejects nested contexts and preserves the outer context",
+    async () => {
+      const connection = {};
+      await runTransactionStep(connection, "outer-transaction", async () => {
+        let error: unknown;
+        let invoked = false;
+        try {
+          await runTransactionStep(
+            connection,
+            "inner-transaction",
+            async () => {
+              invoked = true;
+            },
+          );
+        } catch (e) {
+          error = e;
+        }
+        expect(String(error)).to.include("not supported in browsers");
+        expect(invoked).to.equal(false);
+        await Promise.resolve();
+        expect(getActiveTransactionId(connection)).to.equal(
+          "outer-transaction",
+        );
+      });
+      expect(getActiveTransactionId(connection)).to.equal(undefined);
+    },
+  );
 
   it("clears the context when the callback rejects", async () => {
     const connection = {};
