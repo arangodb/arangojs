@@ -26,6 +26,11 @@ This driver uses semantic versioning:
   Existing `step` and `withTransaction` behavior remains unchanged. See the
   [stream transactions guide](docs/stream-transactions.md).
   
+- Tests: Browser integration coverage (DE-1216) using the existing compatible
+  test suite against live single-server and cluster deployments in the latest
+  stable Chrome and Firefox releases. Node.js-only files and `Buffer`-specific
+  cases skip in browsers.
+
 - Tests: Integration coverage for async job APIs (`createJob`, `job`,
   `listPendingJobs`, `listCompletedJobs`, `deleteExpiredJobResults`,
   `deleteAllJobResults`) and the `Job` class (`load`, `cancel`, `deleteResult`,
