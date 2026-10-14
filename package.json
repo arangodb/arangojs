@@ -2,7 +2,7 @@
   "private": true,
   "type": "module",
   "name": "arangojs",
-  "version": "10.5.0",
+  "version": "10.6.0",
   "engines": {
     "node": ">=20"
   },
@@ -72,7 +72,7 @@
     "build:cjs": "tsc -p ./tsconfig.cjs.json && echo '{\"type\": \"commonjs\"}' > build/cjs/package.json",
     "build:esm": "tsc -p ./tsconfig.esm.json && echo '{\"type\": \"module\"}' > build/esm/package.json",
     "build:dts": "tsc -p ./tsconfig.dts.json",
-    "build:text": "cp LICENSE *.md build/",
+    "build:text": "cp LICENSE *.md build/ && mkdir -p build/docs && cp docs/stream-transactions.md docs/arangodb-v4-removed-methods.md build/docs/",
     "postbuild:cjs": "cat build/cjs/connection.js | sed 's/${process.env.ARANGOJS_VERSION}/'$(cat build/package.json | jq -r .version)'/g' > build/cjs/connection.js.tmp && mv build/cjs/connection.js.tmp build/cjs/connection.js",
     "postbuild:esm": "cat build/esm/connection.js | sed 's/${process.env.ARANGOJS_VERSION}/'$(cat build/package.json | jq -r .version)'/g' > build/esm/connection.js.tmp && mv build/esm/connection.js.tmp build/esm/connection.js",
     "prepare": "npm run build && node -e 'require(\".\");' && node -e 'import(\"./build/esm/index.js\")'"
