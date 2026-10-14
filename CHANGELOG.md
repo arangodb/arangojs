@@ -21,6 +21,8 @@ This driver uses semantic versioning:
 
 ## [Unreleased]
 
+## [10.6.0] - 2026-10-14
+
 ### Added
 
 - Added opt-in async-context stream transaction APIs (DE-10):
@@ -43,6 +45,9 @@ This driver uses semantic versioning:
   state is coordinator-local.
 
 ### Fixed
+
+- Packaging: Include the stream transaction and ArangoDB 4.0 migration guides
+  in the npm package so relative documentation links resolve.
 
 - CI: Resolve and install Chrome for Testing Stable from Google's automation
   distribution for browser integration and smoke jobs, avoiding the direct
@@ -2732,7 +2737,8 @@ For a detailed list of changes between pre-release versions of v7 see the
 
   Graph methods now only return the relevant part of the response body.
 
-[Unreleased]: https://github.com/arangodb/arangojs/compare/v10.5.0...HEAD
+[Unreleased]: https://github.com/arangodb/arangojs/compare/v10.6.0...HEAD
+[10.6.0]: https://github.com/arangodb/arangojs/compare/v10.5.0...v10.6.0
 [10.5.0]: https://github.com/arangodb/arangojs/compare/v10.4.0...v10.5.0
 [10.4.0]: https://github.com/arangodb/arangojs/compare/v10.3.1...v10.4.0
 [10.3.1]: https://github.com/arangodb/arangojs/compare/v10.3.0...v10.3.1
