@@ -399,7 +399,7 @@ On Node.js, `stepAsync` uses asynchronous execution context to isolate
 concurrent transactions on one `Database`. In browsers, only one asynchronous
 transaction step may be active per connection at a time.
 
-See the [stream transactions guide](docs/stream-transactions.md) and the
+See the [stream transactions guide](https://github.com/arangodb/arangojs/blob/main/docs/stream-transactions.md) and the
 [documentation of the `transaction.step` method](https://arangodb.github.io/arangojs/latest/classes/transaction.Transaction.html#step)
 for behavior details, examples, and migration guidance.
 

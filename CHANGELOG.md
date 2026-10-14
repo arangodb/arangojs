@@ -26,7 +26,7 @@ This driver uses semantic versioning:
   matching automatic commit/abort helper. On Node.js, different transactions
   can run concurrently on one `Database` without sharing transaction IDs.
   Existing `step` and `withTransaction` behavior remains unchanged. See the
-  [stream transactions guide](docs/stream-transactions.md).
+  [stream transactions guide](https://github.com/arangodb/arangojs/blob/main/docs/stream-transactions.md).
   
 - Tests: Browser integration coverage (DE-1216) using the existing compatible
   test suite against live single-server and cluster deployments in the latest
@@ -42,7 +42,10 @@ This driver uses semantic versioning:
 ### Fixed
 
 - Packaging: Include the stream transaction and ArangoDB 4.0 migration guides
-  in the npm package so relative documentation links resolve.
+  in the npm package so they are available with the installed driver.
+
+- Documentation: Use full GitHub URLs for the user guides so links work in
+  the hosted changelog and npm README.
 
 - CI: Resolve and install Chrome for Testing Stable from Google's automation
   distribution for browser integration and smoke jobs, avoiding the direct
@@ -103,7 +106,7 @@ This driver uses semantic versioning:
 
 ### Deprecated
 
-- Marked `Database` methods removed in ArangoDB 4.0 as deprecated (DE-1170); see [docs/arangodb-v4-removed-methods.md](docs/arangodb-v4-removed-methods.md).
+- Marked `Database` methods removed in ArangoDB 4.0 as deprecated (DE-1170); see [docs/arangodb-v4-removed-methods.md](https://github.com/arangodb/arangojs/blob/main/docs/arangodb-v4-removed-methods.md).
 
 ## [10.3.1] - 2026-06-02
 
