@@ -1,6 +1,9 @@
 import { expect } from "chai";
 import { Database } from "../databases.js";
-import { Graph } from "../graphs.js";
+import { isArangoError } from "../errors.js";
+import { Graph, type CreateGraphOptions } from "../graphs.js";
+import { GRAPH_NOT_FOUND } from "../lib/codes.js";
+import { versionStringToArangoVersionCode } from "./_arango-server-version.js";
 import { config } from "./_config.js";
 import {
   clusterIntegrationTimeoutMs,
@@ -122,6 +125,153 @@ describe("Graph API", function () {
       const data = await graph.get();
       expect(data).to.have.property("name", graph.name);
     });
+  });
+  describe("graph.create advanced graph options", function () {
+    let graph: Graph;
+    let collectionNames: string[];
+    let sequence = 0;
+
+    before(async function () {
+      const version = await system.version();
+      const { role } = await system.request<{ role: string }>({
+        pathname: "/_admin/server/role",
+      });
+      // Community Edition includes these features from 3.12.5 onward.
+      // https://docs.arango.ai/arangodb/3.12/release-notes/version-3.12/whats-new-in-3-12/
+      if (
+        role !== "COORDINATOR" ||
+        (version.license !== "enterprise" &&
+          versionStringToArangoVersionCode(version.version) < 31205)
+      ) {
+        // eslint-disable-next-line no-console
+        console.warn(
+          `Skipping advanced graph creation: ArangoDB ${version.version}, ${version.license}, role ${role} requires a cluster with smart graph support.`,
+        );
+        this.skip();
+      }
+    });
+
+    beforeEach(() => {
+      const prefix = `graph_options_${Date.now()}_${sequence++}`;
+      graph = db.graph(prefix);
+      collectionNames = ["edges", "start", "end", "orphan"].map(
+        (suffix) => `${prefix}_${suffix}`,
+      );
+    });
+
+    afterEach(async () => {
+      try {
+        await graph.drop(true);
+      } catch (error) {
+        if (!isArangoError(error) || error.errorNum !== GRAPH_NOT_FOUND) {
+          throw error;
+        }
+      } finally {
+        // A failed create can leave collections without a graph definition.
+        for (const name of collectionNames) {
+          const collection = db.collection(name);
+          if (await collection.exists()) await collection.drop();
+        }
+      }
+    });
+
+    const cases: {
+      title: string;
+      options: CreateGraphOptions;
+      expected: Record<string, unknown>;
+      satellite?: boolean;
+    }[] = [
+      {
+        title: "creates an EnterpriseGraph without a smart attribute",
+        options: { isSmart: true },
+        expected: { isSmart: true, isSatellite: false, isDisjoint: false },
+      },
+      {
+        title: "creates a SmartGraph with explicit isSmart",
+        options: { isSmart: true, smartGraphAttribute: "region" },
+        expected: {
+          isSmart: true,
+          isSatellite: false,
+          smartGraphAttribute: "region",
+          isDisjoint: false,
+        },
+      },
+      {
+        title: "creates a SmartGraph from the smart attribute alone",
+        options: { smartGraphAttribute: "region" },
+        expected: {
+          isSmart: true,
+          isSatellite: false,
+          smartGraphAttribute: "region",
+          isDisjoint: false,
+        },
+      },
+      {
+        title: "creates a Disjoint SmartGraph",
+        options: {
+          isSmart: true,
+          smartGraphAttribute: "region",
+          isDisjoint: true,
+        },
+        expected: {
+          isSmart: true,
+          isSatellite: false,
+          smartGraphAttribute: "region",
+          isDisjoint: true,
+        },
+      },
+      {
+        title: "creates a SmartGraph with a satellite vertex collection",
+        options: { isSmart: true, smartGraphAttribute: "region" },
+        expected: {
+          isSmart: true,
+          isSatellite: false,
+          smartGraphAttribute: "region",
+        },
+        satellite: true,
+      },
+      {
+        title: "creates a SatelliteGraph when isSmart is also true",
+        options: { isSmart: true, replicationFactor: "satellite" },
+        expected: { isSmart: false, isSatellite: true },
+      },
+    ];
+
+    for (const { title, options, expected, satellite } of cases) {
+      it(title, async () => {
+        const [edges, start, end, orphan] = collectionNames;
+        const created = await graph.create(
+          [{ collection: edges, from: [start], to: [end] }],
+          {
+            ...(options.replicationFactor === "satellite"
+              ? {}
+              : { numberOfShards: 2, replicationFactor: 1 }),
+            ...options,
+            orphanCollections: [orphan],
+            ...(satellite ? { satellites: [db.collection(end)] } : {}),
+          },
+        );
+        await db.waitForPropagation(
+          { pathname: `/_api/gharial/${graph.name}` },
+          propagationForResourceMs,
+        );
+        for (const data of [created, await graph.get()]) {
+          expect(data).to.include({ name: graph.name, ...expected });
+          expect(data.orphanCollections).to.include(orphan);
+          if (!options.smartGraphAttribute) {
+            expect(data.smartGraphAttribute).to.be.undefined;
+          }
+        }
+        if (satellite) {
+          await db.waitForPropagation(
+            { pathname: `/_api/collection/${end}` },
+            propagationForResourceMs,
+          );
+          const properties = await db.collection(end).properties();
+          expect(properties.replicationFactor).to.equal("satellite");
+        }
+      });
+    }
   });
   describe("graph.drop", () => {
     let graph: Graph;
