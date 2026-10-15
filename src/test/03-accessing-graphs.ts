@@ -36,6 +36,32 @@ describe("Accessing graphs", function () {
       expect(graph).to.have.property("name").that.equals(name);
     });
   });
+  describe("database.createGraph", () => {
+    it("creates a graph and returns its handle", async () => {
+      const name = `created_graph_${Date.now()}`;
+      const orphan = db.collection(`${name}_orphan`);
+      const graph = db.graph(name);
+      try {
+        expect(
+          await db.createGraph(name, [], {
+            orphanCollections: orphan,
+            isSmart: false,
+            isDisjoint: false,
+          }),
+        ).to.equal(graph);
+        await db.waitForPropagation(
+          { pathname: `/_api/gharial/${name}` },
+          propagationForResourceMs,
+        );
+        const data = await graph.get();
+        expect(data.name).to.equal(name);
+        expect(data.orphanCollections).to.deep.equal([orphan.name]);
+      } finally {
+        if (await graph.exists()) await graph.drop(true);
+        if (await orphan.exists()) await orphan.drop();
+      }
+    });
+  });
   describe("database.listGraphs", () => {
     const vertexCollectionNames = range(2).map((i) => `vc_${Date.now()}_${i}`);
     const edgeCollectionNames = range(2).map((i) => `ec_${Date.now()}_${i}`);
