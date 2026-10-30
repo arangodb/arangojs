@@ -21,6 +21,12 @@ This driver uses semantic versioning:
 
 ## [Unreleased]
 
+### Fixed
+
+- Graph creation: Send `isSmart` inside the HTTP request body's `options` object
+  in `graph.create` and `db.createGraph`, alongside `isDisjoint` (DE-1246).
+  The driver's options argument and returned graph metadata remain unchanged.
+
 ## [10.6.0] - 2026-10-14
 
 ### Added
