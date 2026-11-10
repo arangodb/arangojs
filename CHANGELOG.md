@@ -21,6 +21,13 @@ This driver uses semantic versioning:
 
 ## [Unreleased]
 
+### Added
+
+- Tests: Integration coverage for bulk document and edge operations (`saveAll`,
+  `replaceAll`, `updateAll`, `removeAll`), including empty inputs, duplicate keys,
+  missing documents, revision conflicts, mixed success/error results, result
+  ordering, supported return/silent options, and persisted state (DE-1259).
+
 ### Fixed
 
 - Graph creation: Send `isSmart` inside the HTTP request body's `options` object
