@@ -28,7 +28,14 @@ This driver uses semantic versioning:
   missing documents, revision conflicts, mixed success/error results, result
   ordering, supported return/silent options, and persisted state (DE-1259).
 
+- Tests: Integration coverage for `Database.queryRules()`, validating optimizer
+  rule names and boolean flags without assuming a fixed rule catalog (DE-1260).
+
 ### Fixed
+
+- Tests: Restore deterministic `Database.killQuery()` integration coverage with
+  bounded running-query polling, cancellation and unknown-ID assertions,
+  query/cursor cleanup after failures, and coordinator affinity (DE-1260).
 
 - Graph creation: Send `isSmart` inside the HTTP request body's `options` object
   in `graph.create` and `db.createGraph`, alongside `isDisjoint` (DE-1246).
