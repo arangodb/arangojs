@@ -4,7 +4,11 @@ import { DocumentCollection } from "../collections.js";
 import { Cursor } from "../cursors.js";
 import { Database } from "../databases.js";
 import { ArangoError, ResponseTimeoutError } from "../errors.js";
-import type { QueryCacheProperties } from "../queries.js";
+import type {
+  QueryCacheProperties,
+  QueryDescription,
+  QueryTrackingInfo,
+} from "../queries.js";
 import { fetchArangoVersionCode } from "./_arango-server-version.js";
 import { config } from "./_config.js";
 import {
@@ -21,6 +25,27 @@ async function sleep(ms: number) {
   return new Promise<void>((resolve) => {
     setTimeout(() => resolve(), ms);
   });
+}
+
+async function waitForQuery(
+  db: Database,
+  query: string,
+  present: boolean,
+  checkPending?: () => void,
+): Promise<QueryDescription[]> {
+  const timeoutMs = 10_000;
+  const deadline = Date.now() + timeoutMs;
+  let matches: QueryDescription[] = [];
+  do {
+    checkPending?.();
+    matches = (await db.listRunningQueries()).filter((q) => q.query === query);
+    checkPending?.();
+    if (present ? matches.length > 0 : matches.length === 0) return matches;
+    await sleep(100);
+  } while (Date.now() < deadline);
+  throw new Error(
+    `Query ${query} did not become ${present ? "visible" : "absent"} within ${timeoutMs}ms; last matches: ${JSON.stringify(matches)}`,
+  );
 }
 
 describe("Query Management API", function () {
@@ -214,6 +239,29 @@ describe("Query Management API", function () {
       expect(result).to.have.property("collections");
       expect(result).to.have.property("bindVars");
       expect(result).to.have.property("ast");
+    });
+  });
+
+  describe("database.queryRules", () => {
+    it("returns optimizer rule names and flags", async () => {
+      // Rule catalogs vary by version and edition; validate the public shape.
+      const rules = await db.queryRules();
+      expect(rules).to.be.an("array").that.is.not.empty;
+      for (const rule of rules) {
+        expect(rule).to.be.an("object");
+        expect(rule.name).to.be.a("string").that.is.not.empty;
+        expect(rule.flags).to.be.an("object");
+        for (const flag of [
+          "hidden",
+          "clusterOnly",
+          "canBeDisabled",
+          "canCreateAdditionalPlans",
+          "disabledByDefault",
+          "enterpriseOnly",
+        ] as const) {
+          expect(rule.flags[flag], `${rule.name}.${flag}`).to.be.a("boolean");
+        }
+      }
     });
   });
 
@@ -541,29 +589,170 @@ describe("Query Management API", function () {
     });
   });
 
-  // FIXME rewrite this test to use async mode to eliminate the timing
-  // dependence. This test is flakey on Jenkins otherwise.
-  describe.skip("database.killQuery", () => {
-    it("kills the given query", async () => {
-      const query = "RETURN SLEEP(5)";
-      const p1 = db.query(query);
-      p1.then((cursor) => allCursors.push(cursor));
-      const queries = (await db.listSlowQueries()).filter(
-        (i: any) => i.query === query,
-      );
-      expect(queries).to.have.lengthOf(1);
-      expect(queries[0]).to.have.property("bindVars");
-      expect(queries[0]).to.have.property("query", query);
-      await db.killQuery(queries[0].id);
+  describeNLB("database.killQuery", function () {
+    this.timeout(90_000);
+    let queryDb: Database;
+    let tracking: QueryTrackingInfo | undefined;
+    let queryNumber = 0;
+
+    before(async () => {
+      // A separate connection bounds control requests and pins cursor cleanup
+      // as well as query execution/listing/cancellation to one coordinator.
+      queryDb = new Database({
+        ...config,
+        url: Array.isArray(config.url) ? config.url[0] : config.url,
+        databaseName: dbName,
+        loadBalancingStrategy: "NONE",
+        maxRetries: false,
+        timeout: 5_000,
+      });
+      await waitForNewDatabase(queryDb);
+    });
+    beforeEach(async () => {
+      tracking = await queryDb.queryTracking();
+      await queryDb.queryTracking({
+        enabled: true,
+        maxQueryStringLength: Math.max(tracking.maxQueryStringLength, 256),
+      });
+    });
+    afterEach(async () => {
+      if (tracking) {
+        await queryDb.queryTracking(tracking);
+        tracking = undefined;
+      }
+    });
+    after(() => queryDb?.close());
+
+    async function killIfRunning(id: string) {
       try {
-        await p1;
-      } catch (e: any) {
-        expect(e).to.be.instanceOf(ArangoError);
-        expect(e).to.have.property("errorNum", 1500);
-        expect(e).to.have.property("code", 410);
+        await queryDb.killQuery(id);
+      } catch (err) {
+        // Cancellation and natural completion may race during teardown.
+        if (!(
+          err instanceof ArangoError &&
+          err.code === 404 &&
+          err.errorNum === 1591
+        )) {
+          throw err;
+        }
+      }
+    }
+
+    it("kills the given query", async () => {
+      // Poll for this invocation, rather than assuming dispatch has completed.
+      const query = `/* DE1260_${Date.now()}_${++queryNumber} */ RETURN SLEEP(30)`;
+      type Outcome =
+        | { status: "fulfilled"; cursor: Cursor }
+        | { status: "rejected"; error: unknown };
+      let outcome: Outcome | undefined;
+      const settled = queryDb
+        .query(query, undefined, {
+          cache: false,
+          timeout: 45_000,
+        })
+        .then(
+          (cursor): Outcome => {
+            allCursors.push(cursor);
+            return (outcome = { status: "fulfilled", cursor });
+          },
+          (error: unknown): Outcome =>
+            (outcome = { status: "rejected", error }),
+        );
+      let queryId: string | undefined;
+      const errors: unknown[] = [];
+      try {
+        const queries = await waitForQuery(queryDb, query, true, () => {
+          if (outcome) {
+            throw new Error(
+              `Query ${query} settled before cancellation: ${outcome.status === "rejected" ? String(outcome.error) : "returned a cursor"}`,
+            );
+          }
+        });
+        expect(queries).to.have.lengthOf(1);
+        queryId = queries[0].id;
+        expect(queryId).to.be.a("string").that.is.not.empty;
+        expect(await queryDb.killQuery(queryId)).to.equal(undefined);
+
+        // Disappearance alone cannot distinguish a kill from normal completion.
+        await waitForQuery(queryDb, query, false);
+        const result = await settled;
+        if (result.status === "fulfilled") {
+          expect.fail(`Query ${query} completed instead of being canceled`);
+        }
+        expect(result.error).to.be.instanceOf(ArangoError);
+        expect(result.error).to.have.property("errorNum", 1500);
+        expect(result.error).to.have.property("code", 410);
+      } catch (err) {
+        errors.push(err);
+      } finally {
+        try {
+          // If discovery failed, keep looking for a late start until the finite
+          // query settles. The query timeout also bounds the original promise.
+          const deadline = Date.now() + 45_000;
+          const discoveryDeadline = Date.now() + 10_000;
+          do {
+            if (queryId) {
+              await killIfRunning(queryId);
+            } else {
+              const running = await queryDb.listRunningQueries();
+              for (const q of running.filter((q) => q.query === query)) {
+                queryId = q.id;
+                await killIfRunning(q.id);
+              }
+            }
+            // A rejected request can leave server work running, including a
+            // query that becomes visible after the client has already failed.
+            if (
+              outcome &&
+              (queryId ||
+                outcome.status === "fulfilled" ||
+                Date.now() >= discoveryDeadline)
+            ) {
+              break;
+            }
+            await sleep(100);
+          } while (Date.now() < deadline);
+          if (queryId) await waitForQuery(queryDb, query, false);
+          expect(outcome, `Query ${query} did not settle during cleanup`).to
+            .exist;
+        } catch (err) {
+          errors.push(err);
+        } finally {
+          // Also handle unexpected success and a cursor arriving during cleanup.
+          // Observe settlement even if a cleanup control request failed.
+          const result = await settled;
+          if (result.status === "fulfilled") {
+            try {
+              await result.cursor.kill();
+            } catch (err) {
+              errors.push(err);
+            }
+          }
+        }
+      }
+      if (errors.length === 1) throw errors[0];
+      if (errors.length > 1) {
+        throw new AggregateError(
+          errors,
+          `Query ${query} failed with cleanup errors`,
+        );
+      }
+    });
+
+    it("rejects an unknown query ID", async () => {
+      // Use a valid decimal ID, not a malformed URL parameter.
+      const id = "999999999999999999";
+      const running = await queryDb.listRunningQueries();
+      expect(running.some((query) => query.id === id)).to.equal(false);
+      try {
+        await queryDb.killQuery(id);
+      } catch (err) {
+        expect(err).to.be.instanceOf(ArangoError);
+        expect(err).to.have.property("code", 404);
+        expect(err).to.have.property("errorNum", 1591);
         return;
       }
-      expect.fail();
+      expect.fail("Expected an unknown query ID to reject");
     });
   });
 });
