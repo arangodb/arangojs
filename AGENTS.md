@@ -5,7 +5,7 @@ arangojs is the official TypeScript/JavaScript ArangoDB driver. Source under
 declaration outputs plus browser support.
 
 For features, bug fixes, API or type changes, connection behavior, dependencies,
-tests, or refactoring, use the
+tests, refactoring, or audits of agent guidance, use the
 [arangojs development skill](.agents/skills/arangojs-development/SKILL.md).
 Open its references only as needed. Agents without skill discovery can read the
 same files directly.
@@ -74,6 +74,11 @@ same files directly.
 - Treat source, `package.json`, TypeScript configs, tests, Docker helpers, and CI
   definitions as evidence of current behavior. If this guidance has drifted,
   follow the executable configuration and report the drift.
+- During final review, check whether the completed changes affect documented
+  architecture, compatibility, build commands, test setup, or CI coverage.
+  Update affected agent guidance in the same change when needed; leave accurate
+  guidance unchanged. Make one maintenance pass for the task. Its own guidance
+  edits do not trigger another pass; report unresolved discrepancies and stop.
 - Before handing off, review the diff for generated output and contract drift.
   Report the change, compatibility implications, checks actually run and their
   results, and relevant variants not tested. Distinguish environment limits from

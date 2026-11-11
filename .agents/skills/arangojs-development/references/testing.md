@@ -8,6 +8,7 @@ copying a command from this guide if the repository has changed.
 - [Environment](#environment)
 - [Database-free checks](#database-free-checks)
 - [Focused integration checks](#focused-integration-checks)
+- [Browser checks](#browser-checks)
 - [Test placement](#test-placement)
 - [CI dimensions](#ci-dimensions)
 - [Reproducing a CircleCI job](#reproducing-a-circleci-job)
@@ -98,6 +99,42 @@ npm test
 Set a suitable timeout or use the CI `jenkins` script only when the environment
 and intended scope require it; an unlimited timeout can conceal a hung test.
 
+## Browser checks
+
+The smoke test checks the built ESM entry, bundling, and a live request in Chrome:
+
+```sh
+npm run build
+node smoke-test.mjs
+```
+
+The browser integration runner bundles compatible numbered tests directly from
+`src/test/` and runs Mocha in Chrome (the default) or Firefox:
+
+```sh
+npm run test:browser
+BROWSER_TEST_FILES=00-basics,05-aql-helpers npm run test:browser
+BROWSER_TEST_BROWSER=firefox \
+  PUPPETEER_EXECUTABLE_PATH=/path/to/firefox npm run test:browser
+```
+
+Unlike `npm test`, `test:browser` has no build hook and esbuild does not type-check
+the source. Run the separate TypeScript check or build as appropriate. Use
+`BROWSER_TEST_FILES` for a comma-separated list of numbered test filenames (with
+or without `.ts`) and `BROWSER_TEST_GREP` to narrow the Mocha cases. Confirm that
+the intended cases ran and inspect runtime-specific skips; the runner excludes
+Node-only files and rejects selections of excluded or missing files.
+
+Both runners require a disposable server, Puppeteer, and a browser executable.
+They use `ARANGO_PROXY_TARGET` for `host:port` targets and optionally
+`PUPPETEER_EXECUTABLE_PATH` for the browser path. The integration runner accepts
+comma-separated coordinator targets and derives `TEST_ARANGODB_URL` from its
+local proxies; setting `TEST_ARANGODB_URL` alone does not change its upstream
+database. Inspect `browser-test.mjs` and `.circleci/config.yml` for the matching
+browser, topology, executable, and timeout setup. Do not run the runners
+concurrently against the same deployment or present an esbuild-only bundle as
+proof of a successful browser request.
+
 ## Test placement
 
 Tests are grouped as numbered files under `src/test/`. Add a regression near the
@@ -110,8 +147,9 @@ existing behavior instead of creating a disconnected suite.
 | Cursor creation, batching, iteration, and cleanup                                    | `08-cursors.ts` and query-stream tests where applicable.                                              |
 | Connection retries, host behavior, conflicts, timeouts                               | `31-conflicts.ts`, `36-retrying-connection-errors.ts`, and the closest connection-focused regression. |
 | Async job trapping, polling, cancellation, and deletion                              | `37-async-jobs.ts`.                                                                                   |
+| Transaction context, async steps, and managed transactions                           | `37-transaction-context.ts`, `38-async-transactions.ts`, and `30-concurrent-transactions.ts`.         |
 | Authentication, access tokens, agent options, content length, HTTP stack             | The corresponding high-numbered regression file.                                                      |
-| Browser compatibility or package entry behavior                                      | `smoke-test.mjs` after a successful build.                                                            |
+| Browser compatibility or package entry behavior                                      | `smoke-test.mjs` after a successful build and affected cases through `npm run test:browser`.          |
 
 Follow nearby Mocha and Chai style. Reuse shared `config`, database setup, and
 cleanup patterns. Avoid sleeps when a deterministic poll or signal is available.
@@ -135,22 +173,14 @@ matrix includes:
 - TLS enabled and disabled;
 - ESM and CommonJS output;
 - HTTP/1.1 and HTTP/2 smoke coverage through `TEST_ARANGO_HTTP_VERSION`;
-- browser bundling and a live request in headless Chrome.
+- browser bundling and a live request in headless Chrome;
+- browser Mocha integration tests in Chrome and Firefox, with single-server and
+  cluster topology against 3.12 by default or the supplied custom database image.
 
 Relevant environment variables include `TEST_ARANGODB_URL`,
 `TEST_ARANGO_LOAD_BALANCING_STRATEGY`, `TEST_ARANGO_HTTP_VERSION`,
 `ARANGO_VERSION`, `ARANGO_RELEASE`, and `CI`. Use CI's exact setup when
 reproducing an environment-specific failure.
-
-The browser check requires a built ESM entry, a disposable server, a proxy, and
-Chrome/Puppeteer:
-
-```sh
-node smoke-test.mjs
-```
-
-It uses `ARANGO_PROXY_TARGET` and optionally `PUPPETEER_EXECUTABLE_PATH`. Do not
-present an esbuild-only bundle as proof of a successful browser request.
 
 ## Reproducing a CircleCI job
 
@@ -189,8 +219,10 @@ disprove a cluster, HTTP/2, CommonJS, architecture, or server-version failure.
   assess CommonJS and supported server variants.
 - Connection, retry, HTTP, TLS, or cluster changes: run focused regressions and
   the applicable topology/protocol variants.
+- Transaction context changes: run the context and async-transaction regressions
+  in Node.js and browsers; their scoping and concurrency contracts differ.
 - Packaging, dependency, or entry-point changes: build all outputs, check both
-  import styles, and assess browser smoke coverage.
+  import styles, and assess browser smoke and integration coverage.
 
 If infrastructure is unavailable, run safe database-free checks and state
 precisely which server behavior and variants remain unverified. Never describe a

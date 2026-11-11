@@ -117,9 +117,17 @@ cancellation, and deletion. Test the original operation's result shape as well
 as job management endpoints.
 
 For transactions, preserve transaction headers and the ownership/lifetime of
-the shared `Database` and `Connection`. For cached collection, graph, analyzer,
-view, and database handles, do not accidentally change identity or invalidate
-the wrong cache entry.
+the shared `Database` and `Connection`. Trace `Transaction.step`,
+`Transaction.stepAsync`, `src/lib/transaction-context.ts`, and header selection
+in `Connection.request` together. Keep the synchronous invocation scope of
+`step` distinct from the promise lifetime of `stepAsync`. Preserve Node.js
+async-local isolation, the browser restriction to one active asynchronous step
+per connection, explicit transaction IDs, and context suppression for management
+requests. Cover context cleanup on callback rejection as well as success, and
+keep the Node-only import lazy so browser bundling remains possible.
+
+For cached collection, graph, analyzer, view, and database handles, do not
+accidentally change identity or invalidate the wrong cache entry.
 
 ## Packaging, dependencies, and runtimes
 

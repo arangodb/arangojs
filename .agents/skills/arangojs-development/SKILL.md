@@ -1,6 +1,6 @@
 ---
 name: arangojs-development
-description: Maintain and extend the arangojs repository. Use for driver features and bug fixes, public API or TypeScript type changes, request and response mapping, connection or retry behavior, cursors and jobs, dependencies, documentation, and test selection. Not a guide to using arangojs in an application.
+description: Maintain and extend the arangojs repository, or audit and refresh its agent guidance. Use for driver features and bug fixes, public API or TypeScript type changes, request and response mapping, connection or retry behavior, cursors and jobs, dependencies, documentation, and test selection. Not a guide to using arangojs in an application.
 ---
 
 # arangojs development
@@ -8,6 +8,10 @@ description: Maintain and extend the arangojs repository. Use for driver feature
 Apply the repository's [AGENTS.md](../../../AGENTS.md). Work from current source,
 tests, package configuration, and CI rather than assuming another driver has the
 same API or transport behavior.
+
+For a guidance-only audit or refresh, go directly to
+[Guidance maintenance](references/guidance-maintenance.md). No driver code
+change or endpoint trace is required. For driver work, follow the workflow below.
 
 ## Locate the contract
 
@@ -35,6 +39,7 @@ it from its public types and method through the owning handle or `Database`,
 | Change cursors, jobs, transactions, or other stateful behavior          | [Change guide: stateful operations](references/changes.md#stateful-operations)                    |
 | Change dependencies, packaging, module output, or browser behavior      | [Change guide: packaging and runtimes](references/changes.md#packaging-dependencies-and-runtimes) |
 | Add tests or select validation commands                                 | [Testing](references/testing.md)                                                                  |
+| Driver changes affect agent guidance, or an audit is requested          | [Guidance maintenance](references/guidance-maintenance.md)                                        |
 
 ## Implement and validate
 
@@ -49,4 +54,11 @@ selection, or skipped cases are not behavioral validation.
 
 Review the final diff for accidental public API changes, unsafe retry changes,
 environment-specific assumptions, stale generated output, and unrelated edits.
-Report checks and untested relevant variants as required by `AGENTS.md`.
+Check whether the completed driver changes affect agent guidance. If so, use
+[Guidance maintenance](references/guidance-maintenance.md) to update the affected
+files. Make one maintenance pass; its own guidance edits and validation fixes
+do not start another audit. Report unresolved discrepancies rather than
+repeating the pass.
+
+Report checks and untested relevant variants as required by `AGENTS.md`, along
+with guidance updates or why none were needed.

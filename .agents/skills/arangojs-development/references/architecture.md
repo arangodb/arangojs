@@ -57,10 +57,10 @@ rather than assembling subtly different paths or headers.
 
 ## Connection and transport
 
-`Connection` owns a bounded task queue. `_runQueue` chooses an explicit host,
-dirty-read host, round-robin host, or active host according to request options
-and configuration. It also records server queue-time headers, converts response
-errors, and schedules the next queued task.
+`Connection` queues tasks and limits active request concurrency. `_runQueue`
+chooses an explicit host, dirty-read host, round-robin host, or active host
+according to request options and configuration. It also records server queue-time
+headers, converts response errors, and schedules the next queued task.
 
 The normal transport uses the runtime's global `fetch`, `Request`, `Response`,
 and `Headers`. When `agentOptions` are supplied, `createHost` lazily imports the
@@ -93,6 +93,14 @@ load state. `Database.createJob` traps one request and turns the stored async ID
 into a `Job`; result polling, cancellation, and deletion are separate endpoints.
 Transactions likewise carry server-side state and headers across operations.
 
+`Transaction.step` sets a connection-wide transaction ID only while invoking
+its callback. `Transaction.stepAsync` uses `src/lib/transaction-context.ts` to
+retain context until the callback's promise settles. Node.js uses lazily loaded
+`AsyncLocalStorage`; browsers track one active asynchronous step per connection
+and reject overlapping or nested steps on that connection. `Connection.request`
+selects the transaction header, including explicit IDs and context suppression
+for transaction management requests. Preserve these distinct scoping rules.
+
 ## Build and documentation boundaries
 
 TypeScript source deliberately imports sibling modules with `.js` extensions so
@@ -109,5 +117,9 @@ license/Markdown files. Treat all of `build/` as generated. `tsdoc/` is generate
 by TypeDoc using `typedoc.json`; public TSDoc in `src/` is the editing point.
 
 The browser smoke test bundles `build/esm/index.js` with esbuild and calls a live
-server through a same-origin proxy in headless Chrome. A Node-only build does not
-prove browser compatibility.
+server through a same-origin proxy in headless Chrome. Separately,
+`browser-test.mjs` bundles compatible numbered tests directly from `src/test/`
+with esbuild and runs Mocha in Chrome or Firefox against disposable database
+proxy targets. It does not use the emitted Node test files or run a TypeScript
+type check. A Node-only build or browser smoke test does not establish browser
+integration-suite coverage.
