@@ -1,0 +1,4 @@
+interface:
+  display_name: "arangojs Development"
+  short_description: "Maintain and extend the arangojs driver"
+  default_prompt: "Use $arangojs-development to implement and validate a change in this repository."
