@@ -284,7 +284,10 @@ export type EdgeDefinition = {
 
 //#region Graph operation options
 /**
- * Option for creating a graph.
+ * Options for creating a graph.
+ *
+ * SmartGraphs, EnterpriseGraphs, and SatelliteGraphs require a cluster and,
+ * before ArangoDB 3.12.5, Enterprise Edition.
  */
 export type CreateGraphOptions = {
   /**
@@ -326,27 +329,32 @@ export type CreateGraphOptions = {
 
   // Extra options
   /**
-   * (Enterprise Edition cluster only.) If set to `true`, the graph will be
-   * created as a SmartGraph.
+   * (Cluster only.) If set to `true` without a `smartGraphAttribute`, the graph
+   * will be created as an EnterpriseGraph. Setting `smartGraphAttribute` creates
+   * a SmartGraph and automatically enables `isSmart`.
+   *
+   * Has no effect when `replicationFactor` is set to `"satellite"`, which creates
+   * a SatelliteGraph.
    *
    * Default: `false`
    */
   isSmart?: boolean;
   /**
-   * (Enterprise Edition cluster only.) Attribute containing the shard key
-   * value to use for smart sharding.
+   * (Cluster only.) Attribute containing the shard key value to use for smart
+   * sharding. Setting this option creates a SmartGraph, even if `isSmart` is
+   * omitted. Every vertex must have this attribute. Cannot be modified later.
    */
   smartGraphAttribute?: string;
   /**
-   * (Enterprise Edition cluster only.) If set to `true`, the graph will be
-   * created as a Disjoint SmartGraph.
+   * (Cluster only.) If set to `true`, the graph will be created as a Disjoint
+   * SmartGraph. Only has an effect in combination with `smartGraphAttribute`
+   * or `isSmart`.
    *
    * Default: `false`
    */
   isDisjoint?: boolean;
   /**
-   * (Enterprise Edition cluster only.) Collections to be included in a Hybrid
-   * SmartGraph.
+   * (Cluster only.) Collections to be included in a Hybrid SmartGraph.
    */
   satellites?: (string | collections.ArangoCollection)[];
 };
@@ -1359,6 +1367,9 @@ export class Graph {
    * Creates a graph with the given `edgeDefinitions` and `options` for this
    * graph's name.
    *
+   * `isSmart` and `isDisjoint` are passed directly in `options` and sent inside
+   * the HTTP request body's `options` object.
+   *
    * @param edgeDefinitions - Definitions for the relations of the graph.
    * @param options - Options for creating the graph.
    *
@@ -1375,13 +1386,23 @@ export class Graph {
    * ]);
    * // graph now exists
    * ```
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const graph = db.graph("enterprise-graph");
+   * await graph.create(
+   *   [{ collection: "edges", from: ["vertices"], to: ["vertices"] }],
+   *   { isSmart: true, numberOfShards: 3 }
+   * );
+   * // Creates an EnterpriseGraph in a cluster without a smartGraphAttribute.
+   * ```
    */
   create(
     edgeDefinitions: EdgeDefinitionOptions[],
     options: CreateGraphOptions = {}
   ): Promise<GraphDescription> {
-    const { orphanCollections, satellites, waitForSync, isSmart, ...opts } =
-      options;
+    const { orphanCollections, satellites, waitForSync, ...opts } = options;
     return this._db.request(
       {
         method: "POST",
@@ -1393,7 +1414,6 @@ export class Graph {
               ? orphanCollections.map(collections.collectionToString)
               : [collections.collectionToString(orphanCollections)]),
           edgeDefinitions: edgeDefinitions.map(coerceEdgeDefinition),
-          isSmart,
           name: this._name,
           options: {
             ...opts,

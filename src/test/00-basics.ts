@@ -33,7 +33,7 @@ describe("Configuring the driver", () => {
     });
   });
   describe("with headers", () => {
-    it("applies the headers", (done) => {
+    it("applies the headers", async () => {
       const db = new Database({
         fetchOptions: {
           headers: {
@@ -47,27 +47,29 @@ describe("Configuring the driver", () => {
           fetch: ({ headers }: any) => {
             expect(headers.get("x-one")).to.equal("1");
             expect(headers.get("x-two")).to.equal("2");
-            done();
+            return new Response(null, { status: 204 });
           },
           close: () => {},
         },
       ];
-      db.request({ headers: {} }, () => {});
+      await db.request({ headers: {} }, () => undefined);
+      db.close();
     });
   });
   describe("with an arangoVersion", () => {
-    it("sets the x-arango-version header", (done) => {
+    it("sets the x-arango-version header", async () => {
       const db = new Database({ arangoVersion: 99999 });
       (db as any)._connection._hosts = [
         {
           fetch: ({ headers }: any) => {
             expect(headers.get("x-arango-version")).to.equal("99999");
-            done();
+            return new Response(null, { status: 204 });
           },
           close: () => {},
         },
       ];
-      db.request({ headers: {} }, () => {});
+      await db.request({ headers: {} }, () => undefined);
+      db.close();
     });
   });
 });

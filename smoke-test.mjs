@@ -60,11 +60,32 @@ app.listen(smokePort, () => {
         const arangojs = await import("arangojs");
         const Database = arangojs.Database;
         const db = new Database(origin);
+        let collection;
+        let trx;
         try {
           const info = await db.version();
+          collection = await db.createCollection(
+            `browser-transaction-smoke-${Date.now()}`,
+          );
+          trx = await db.beginTransaction(collection);
+          await trx.stepAsync(async () => {
+            await new Promise((resolve) => setTimeout(resolve, 10));
+            return collection.save({ _key: "rollback-me" });
+          });
+          await trx.abort();
+          trx = undefined;
+          if (await collection.documentExists("rollback-me")) {
+            throw new Error(
+              "Browser stepAsync write survived transaction abort",
+            );
+          }
           return JSON.stringify(info);
         } catch (e) {
           return JSON.stringify(e);
+        } finally {
+          if (trx) await trx.abort().catch(() => undefined);
+          if (collection) await collection.drop().catch(() => undefined);
+          db.close();
         }
       }, smokeOrigin);
       info = JSON.parse(response);

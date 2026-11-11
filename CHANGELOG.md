@@ -18,11 +18,66 @@ This driver uses semantic versioning:
 
 ### Added
 
+- Tests: Integration coverage for bulk document and edge operations (`saveAll`,
+  `replaceAll`, `updateAll`, `removeAll`), including empty inputs, duplicate keys,
+  missing documents, revision conflicts, mixed success/error results, result
+  ordering, supported return/silent options, and persisted state (DE-1259).
+
+- Tests: Integration coverage for `Database.queryRules()`, validating optimizer
+  rule names and boolean flags without assuming a fixed rule catalog (DE-1260).
+
+### Fixed
+
+- Tests: Restore deterministic `Database.killQuery()` integration coverage with
+  bounded running-query polling, cancellation and unknown-ID assertions,
+  query/cursor cleanup after failures, and coordinator affinity (DE-1260).
+
+- Graph creation: Send `isSmart` inside the HTTP request body's `options` object
+  in `graph.create` and `db.createGraph`, alongside `isDisjoint` (DE-1246).
+  The driver's options argument and returned graph metadata remain unchanged.
+
+## [10.6.0] - 2026-10-14
+
+### Added
+
+- Added opt-in async-context stream transaction APIs (DE-10):
+  `Transaction#stepAsync` keeps the transaction active until the callback's
+  returned Promise settles, and `Database#withTransactionAsync` provides the
+  matching automatic commit/abort helper. On Node.js, different transactions
+  can run concurrently on one `Database` without sharing transaction IDs.
+  Existing `step` and `withTransaction` behavior remains unchanged. See the
+  [stream transactions guide](https://github.com/arangodb/arangojs/blob/main/docs/stream-transactions.md).
+  
+- Tests: Browser integration coverage (DE-1216) using the existing compatible
+  test suite against live single-server and cluster deployments in the latest
+  stable Chrome and Firefox releases. Node.js-only files and `Buffer`-specific
+  cases skip in browsers.
+
 - Tests: Integration coverage for async job APIs (`createJob`, `job`,
   `listPendingJobs`, `listCompletedJobs`, `deleteExpiredJobResults`,
   `deleteAllJobResults`) and the `Job` class (`load`, `cancel`, `deleteResult`,
   `getCompleted`). Suites skip under `ROUND_ROBIN` load balancing because job
   state is coordinator-local.
+
+### Fixed
+
+- Packaging: Include the stream transaction and ArangoDB 4.0 migration guides
+  in the npm package so they are available with the installed driver.
+
+- Documentation: Use full GitHub URLs for the user guides so links work in
+  the hosted changelog and npm README.
+
+- CI: Resolve and install Chrome for Testing Stable from Google's automation
+  distribution for browser integration and smoke jobs, avoiding the direct
+  Chrome `.deb` download endpoint that stalls or resets on CI runners. Use a
+  shared Chrome installer and update Puppeteer's executable path. Retain bounded
+  retries and timeouts for Chrome and Firefox downloads (DE-1216).
+
+- Tests: Align async stream transaction coverage with the browser integration
+  suite (DE-1216), skipping Node.js-only async context cases individually and
+  verifying browser rejection and independent-connection concurrency behavior.
+  Abort outstanding test transactions before dropping collections to avoid
+  cleanup timeouts after failures.
 
 ## [10.5.0] - 2026-09-11
 
@@ -71,7 +126,7 @@ This driver uses semantic versioning:
 
 ### Deprecated
 
-- Marked `Database` methods removed in ArangoDB 4.0 as deprecated (DE-1170); see [docs/arangodb-v4-removed-methods.md](docs/arangodb-v4-removed-methods.md).
+- Marked `Database` methods removed in ArangoDB 4.0 as deprecated (DE-1170); see [docs/arangodb-v4-removed-methods.md](https://github.com/arangodb/arangojs/blob/main/docs/arangodb-v4-removed-methods.md).
 
 ## [10.3.1] - 2026-06-02
 
@@ -2700,7 +2755,8 @@ For a detailed list of changes between pre-release versions of v7 see the
 
   Graph methods now only return the relevant part of the response body.
 
-[Unreleased]: https://github.com/arangodb/arangojs/compare/v10.5.0...HEAD
+[Unreleased]: https://github.com/arangodb/arangojs/compare/v10.6.0...HEAD
+[10.6.0]: https://github.com/arangodb/arangojs/compare/v10.5.0...v10.6.0
 [10.5.0]: https://github.com/arangodb/arangojs/compare/v10.4.0...v10.5.0
 [10.4.0]: https://github.com/arangodb/arangojs/compare/v10.3.1...v10.4.0
 [10.3.1]: https://github.com/arangodb/arangojs/compare/v10.3.0...v10.3.1
