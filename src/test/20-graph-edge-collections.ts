@@ -4,6 +4,11 @@ import { DocumentMetadata } from "../documents.js";
 import { GraphEdgeCollection } from "../graphs.js";
 import { config } from "./_config.js";
 import {
+  extendedCollectionNames,
+  supportsExtendedNames,
+  waitForExtendedCollection,
+} from "./_extended-names.js";
+import {
   clusterIntegrationTimeoutMs,
   propagationForResourceMs,
   waitForNewDatabase,
@@ -53,6 +58,50 @@ describe("GraphEdgeCollection API", function () {
   });
   beforeEach(async () => {
     await collection.collection.truncate();
+  });
+  /*
+   * Graph edge reads and writes must preserve special characters in collection
+   * names without changing the document IDs used by the edge's endpoints.
+   * Extended names are opt-in since ArangoDB 3.11.0 (--database.extended-names)
+   * and enabled by default since 3.12.0. (DE-1273)
+   */
+  describe("extended collection names", () => {
+    before(async function () {
+      if (!(await supportsExtendedNames(db))) this.skip();
+    });
+    for (const name of extendedCollectionNames) {
+      it(`performs graph edge operations in ${name}`, async () => {
+        const vertexName = `v_${name}`;
+        const graph = db.graph(`extended_${Date.now()}`);
+        await graph.create([
+          { collection: name, from: [vertexName], to: [vertexName] },
+        ]);
+        try {
+          await waitForExtendedCollection(db, name);
+          await waitForExtendedCollection(db, vertexName);
+          await db.waitForPropagation(
+            { pathname: `/_api/gharial/${graph.name}` },
+            propagationForResourceMs,
+          );
+          const vertices = graph.vertexCollection(vertexName);
+          const a = await vertices.save({ _key: "a" });
+          const b = await vertices.save({ _key: "b" });
+          const edges = graph.edgeCollection(name);
+          const endpoints = { _from: a._id, _to: b._id };
+          const meta = await edges.save({ _key: "key", ...endpoints, value: 1 });
+          expect(meta._id).to.equal(`${name}/key`);
+          expect(await edges.edge(meta._id)).to.include(endpoints);
+          await edges.update({ _key: "key" }, { value: 2 });
+          expect(await edges.edge(meta)).to.have.property("value", 2);
+          await edges.replace(meta._id, { ...endpoints, value: 3 });
+          expect(await edges.edge("key")).to.include({ ...endpoints, value: 3 });
+          await edges.remove(meta);
+          expect(await edges.edge("key", true)).to.equal(null);
+        } finally {
+          await graph.drop(true);
+        }
+      });
+    }
   });
   describe("edgeCollection.edge", () => {
     const data = { _from: "person/Bob", _to: "person/Alice" };

@@ -10,6 +10,11 @@ import {
 import { DOCUMENT_NOT_FOUND, ERROR_ARANGO_CONFLICT } from "../lib/codes.js";
 import { config } from "./_config.js";
 import {
+  extendedCollectionNames,
+  supportsExtendedNames,
+  waitForExtendedCollection,
+} from "./_extended-names.js";
+import {
   clusterIntegrationTimeoutMs,
   propagationForResourceMs,
   waitForNewDatabase,
@@ -49,6 +54,45 @@ describe("EdgeCollection API", function () {
     await collection.drop();
   });
 
+  /*
+   * Edge document requests must preserve special characters in the collection
+   * path while keeping _from and _to values as raw document IDs.
+   * Extended names are opt-in since ArangoDB 3.11.0 (--database.extended-names)
+   * and enabled by default since 3.12.0. (DE-1273)
+   */
+  describe("extended collection names", () => {
+    before(async function () {
+      if (!(await supportsExtendedNames(db))) this.skip();
+    });
+    for (const name of extendedCollectionNames) {
+      it(`performs single-edge operations in ${name}`, async () => {
+        const extended = await db.createEdgeCollection(name);
+        try {
+          await waitForExtendedCollection(db, name);
+          const endpoints = { _from: `${name}/a`, _to: `${name}/b` };
+          const meta = await extended.save({
+            _key: "key",
+            ...endpoints,
+            value: 1,
+          });
+          expect(meta._id).to.equal(`${name}/key`);
+          expect(await extended.document(meta._id)).to.include(endpoints);
+          expect(await extended.documentExists({ _key: "key" })).to.equal(true);
+          await extended.update(meta, { value: 2 });
+          expect(await extended.document("key")).to.have.property("value", 2);
+          await extended.replace("key", { ...endpoints, value: 3 });
+          expect(await extended.document(meta)).to.include({
+            ...endpoints,
+            value: 3,
+          });
+          await extended.remove(meta._id);
+          expect(await extended.documentExists("key")).to.equal(false);
+        } finally {
+          await extended.drop();
+        }
+      });
+    }
+  });
   describe("edgeCollection.document", () => {
     const data = { _from: "d/1", _to: "d/2" };
     let meta: DocumentMetadata;

@@ -10,6 +10,15 @@ const THIRTY_MINUTES = 30 * 60_000;
 /**
  * @internal
  *
+ * Encodes raw handle components while preserving their slash separators.
+ */
+export function encodeHandlePath(handle: string): string {
+  return handle.split("/").map(encodeURIComponent).join("/");
+}
+
+/**
+ * @internal
+ *
  * Helper to merge path segments.
  */
 export function joinPath(...pathList: (string | undefined)[]): string {

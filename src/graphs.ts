@@ -17,6 +17,7 @@ import * as databases from "./databases.js";
 import * as documents from "./documents.js";
 import * as errors from "./errors.js";
 import { DOCUMENT_NOT_FOUND, GRAPH_NOT_FOUND } from "./lib/codes.js";
+import { encodeHandlePath } from "./lib/util.js";
 
 /**
  * @internal
@@ -489,7 +490,7 @@ export class GraphVertexCollection<
           method: "HEAD",
           pathname: `/_api/gharial/${encodeURIComponent(
             this.graph.name
-          )}/vertex/${encodeURI(documents._documentHandle(selector, this._name))}`,
+          )}/vertex/${encodeHandlePath(documents._documentHandle(selector, this._name))}`,
         },
         () => true
       );
@@ -597,7 +598,7 @@ export class GraphVertexCollection<
       {
         pathname: `/_api/gharial/${encodeURIComponent(
           this.graph.name
-        )}/vertex/${encodeURI(documents._documentHandle(selector, this._name))}`,
+        )}/vertex/${encodeHandlePath(documents._documentHandle(selector, this._name))}`,
         headers,
         search,
         allowDirtyRead,
@@ -705,7 +706,7 @@ export class GraphVertexCollection<
         method: "PUT",
         pathname: `/_api/gharial/${encodeURIComponent(
           this.graph.name
-        )}/vertex/${encodeURI(documents._documentHandle(selector, this._name))}`,
+        )}/vertex/${encodeHandlePath(documents._documentHandle(selector, this._name))}`,
         body: newData,
         search,
         headers,
@@ -764,7 +765,7 @@ export class GraphVertexCollection<
         method: "PATCH",
         pathname: `/_api/gharial/${encodeURIComponent(
           this.graph.name
-        )}/vertex/${encodeURI(documents._documentHandle(selector, this._name))}`,
+        )}/vertex/${encodeHandlePath(documents._documentHandle(selector, this._name))}`,
         body: newData,
         search,
         headers,
@@ -821,7 +822,7 @@ export class GraphVertexCollection<
         method: "DELETE",
         pathname: `/_api/gharial/${encodeURIComponent(
           this.graph.name
-        )}/vertex/${encodeURI(documents._documentHandle(selector, this._name))}`,
+        )}/vertex/${encodeHandlePath(documents._documentHandle(selector, this._name))}`,
         search,
         headers,
       },
@@ -927,7 +928,7 @@ export class GraphEdgeCollection<
           method: "HEAD",
           pathname: `/_api/gharial/${encodeURIComponent(
             this.graph.name
-          )}/edge/${encodeURI(documents._documentHandle(selector, this._name))}`,
+          )}/edge/${encodeHandlePath(documents._documentHandle(selector, this._name))}`,
         },
         () => true
       );
@@ -1035,7 +1036,7 @@ export class GraphEdgeCollection<
       {
         pathname: `/_api/gharial/${encodeURIComponent(
           this.graph.name
-        )}/edge/${encodeURI(documents._documentHandle(selector, this._name))}`,
+        )}/edge/${encodeHandlePath(documents._documentHandle(selector, this._name))}`,
         search,
         allowDirtyRead,
       },
@@ -1149,7 +1150,7 @@ export class GraphEdgeCollection<
         method: "PUT",
         pathname: `/_api/gharial/${encodeURIComponent(
           this.graph.name
-        )}/edge/${encodeURI(documents._documentHandle(selector, this._name))}`,
+        )}/edge/${encodeHandlePath(documents._documentHandle(selector, this._name))}`,
         body: newData,
         search,
         headers,
@@ -1216,7 +1217,7 @@ export class GraphEdgeCollection<
         method: "PATCH",
         pathname: `/_api/gharial/${encodeURIComponent(
           this.graph.name
-        )}/edge/${encodeURI(documents._documentHandle(selector, this._name))}`,
+        )}/edge/${encodeHandlePath(documents._documentHandle(selector, this._name))}`,
         body: newData,
         search,
         headers,
@@ -1265,7 +1266,7 @@ export class GraphEdgeCollection<
         method: "DELETE",
         pathname: `/_api/gharial/${encodeURIComponent(
           this.graph.name
-        )}/edge/${encodeURI(documents._documentHandle(selector, this._name))}`,
+        )}/edge/${encodeHandlePath(documents._documentHandle(selector, this._name))}`,
         search,
         headers,
       },
