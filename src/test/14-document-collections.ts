@@ -10,6 +10,11 @@ import {
 import { DOCUMENT_NOT_FOUND, ERROR_ARANGO_CONFLICT } from "../lib/codes.js";
 import { config } from "./_config.js";
 import {
+  extendedCollectionNames,
+  supportsExtendedNames,
+  waitForExtendedCollection,
+} from "./_extended-names.js";
+import {
   clusterIntegrationTimeoutMs,
   propagationForResourceMs,
   waitForNewDatabase,
@@ -43,6 +48,52 @@ describe("DocumentCollection API", function () {
   });
   afterEach(async () => {
     await collection.drop();
+  });
+  /*
+   * Creating a collection can succeed while document requests fail if special
+   * characters in its name are not encoded as part of the resource path.
+   * Extended names are opt-in since ArangoDB 3.11.0 (--database.extended-names)
+   * and enabled by default since 3.12.0. (DE-1273)
+   */
+  describe("extended collection names", () => {
+    before(async function () {
+      if (!(await supportsExtendedNames(db))) this.skip();
+    });
+    for (const name of extendedCollectionNames) {
+      it(`performs single-document operations in ${name}`, async () => {
+        const extended = await db.createCollection(name);
+        try {
+          await waitForExtendedCollection(db, name);
+          expect(await extended.get()).to.have.property("name", name);
+          const key = "a+b;c=d@e:$,f%2F";
+          const meta = await extended.save({ _key: key, value: 1 });
+          expect(meta._id).to.equal(`${name}/${key}`);
+          expect(await extended.document(key)).to.have.property("value", 1);
+          expect(await extended.documentExists(meta)).to.equal(true);
+          const updated = await extended.update(
+            meta._id,
+            { value: 2 },
+            { returnNew: true, waitForSync: false },
+          );
+          expect(updated.new).to.have.property("value", 2);
+          expect(
+            await extended
+              .update(key, { value: 3 }, { ifMatch: meta._rev })
+              .catch((err) => err.errorNum),
+          ).to.equal(1200);
+          await extended.replace({ _id: meta._id }, { value: 4 });
+          expect(await extended.document({ _key: key })).to.have.property(
+            "value",
+            4,
+          );
+          await extended.remove({ _key: key });
+          expect(await extended.documentExists(key)).to.equal(false);
+          expect(await extended.document(key, true)).to.equal(null);
+        } finally {
+          await extended.drop();
+        }
+      });
+    }
   });
   describe("documentCollection.document", () => {
     const data = { foo: "bar" };

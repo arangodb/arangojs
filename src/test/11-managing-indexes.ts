@@ -5,6 +5,11 @@ import { InvertedIndexDescription } from "../indexes.js";
 import { fetchArangoVersionCode } from "./_arango-server-version.js";
 import { config } from "./_config.js";
 import {
+  extendedCollectionNames,
+  supportsExtendedNames,
+  waitForExtendedCollection,
+} from "./_extended-names.js";
+import {
   clusterIntegrationTimeoutMs,
   propagationForResourceMs,
   waitForNewDatabase,
@@ -77,6 +82,46 @@ describe("Managing indexes", function () {
     }
   });
 
+  /*
+   * Index lookup and deletion must address the intended collection even when
+   * its name contains URL delimiters such as '?' and '#'.
+   * Extended names are opt-in since ArangoDB 3.11.0 (--database.extended-names)
+   * and enabled by default since 3.12.0. (DE-1273)
+   */
+  describe("extended collection names", () => {
+    before(async function () {
+      if (!(await supportsExtendedNames(db))) this.skip();
+    });
+    for (const name of extendedCollectionNames) {
+      it(`looks up and drops indexes in ${name}`, async () => {
+        const extended = await db.createCollection(name);
+        try {
+          await waitForExtendedCollection(db, name);
+          const index = await extended.ensureIndex({
+            type: "persistent",
+            fields: ["value"],
+            name: "lookup?tag#part",
+          });
+          expect(await extended.index(index.id)).to.have.property("id", index.id);
+          expect(await extended.index({ id: index.id })).to.have.property(
+            "id",
+            index.id,
+          );
+          expect(await extended.index(index.name)).to.have.property(
+            "id",
+            index.id,
+          );
+          // DELETE can echo the name-based handle rather than the numeric ID.
+          expect(await extended.dropIndex(index.name)).to.have.property("id");
+          expect(
+            (await extended.indexes()).some((item) => item.id === index.id),
+          ).to.equal(false);
+        } finally {
+          await extended.drop();
+        }
+      });
+    }
+  });
   describe("collection.ensureIndex#vector", function () {
     let vectorIndexTestsEnabled = false;
 

@@ -18,6 +18,7 @@ import * as documents from "./documents.js";
 import * as errors from "./errors.js";
 import * as indexes from "./indexes.js";
 import { COLLECTION_NOT_FOUND, DOCUMENT_NOT_FOUND } from "./lib/codes.js";
+import { encodeHandlePath } from "./lib/util.js";
 
 //#region ArangoCollection interface
 /**
@@ -2658,7 +2659,7 @@ export class Collection<
       return await this._db.request(
         {
           method: "HEAD",
-          pathname: `/_api/document/${encodeURI(
+          pathname: `/_api/document/${encodeHandlePath(
             documents._documentHandle(selector, this._name)
           )}`,
           headers,
@@ -2710,7 +2711,7 @@ export class Collection<
     if (ifNoneMatch) headers["if-none-match"] = ifNoneMatch;
     const result = this._db.request(
       {
-        pathname: `/_api/document/${encodeURI(
+        pathname: `/_api/document/${encodeHandlePath(
           documents._documentHandle(selector, this._name)
         )}`,
         headers,
@@ -2775,7 +2776,7 @@ export class Collection<
     return this._db.request(
       {
         method: "PUT",
-        pathname: `/_api/document/${encodeURI(
+        pathname: `/_api/document/${encodeHandlePath(
           documents._documentHandle(selector, this._name)
         )}`,
         headers,
@@ -2815,7 +2816,7 @@ export class Collection<
     return this._db.request(
       {
         method: "PATCH",
-        pathname: `/_api/document/${encodeURI(
+        pathname: `/_api/document/${encodeHandlePath(
           documents._documentHandle(selector, this._name)
         )}`,
         headers,
@@ -2854,7 +2855,7 @@ export class Collection<
     return this._db.request(
       {
         method: "DELETE",
-        pathname: `/_api/document/${encodeURI(
+        pathname: `/_api/document/${encodeHandlePath(
           documents._documentHandle(selector, this._name)
         )}`,
         headers,
@@ -2965,7 +2966,7 @@ export class Collection<
 
   index(selector: indexes.IndexSelector) {
     return this._db.request({
-      pathname: `/_api/index/${encodeURI(indexes._indexHandle(selector, this._name))}`,
+      pathname: `/_api/index/${encodeHandlePath(indexes._indexHandle(selector, this._name))}`,
     });
   }
 
@@ -2981,7 +2982,7 @@ export class Collection<
   dropIndex(selector: indexes.IndexSelector) {
     return this._db.request({
       method: "DELETE",
-      pathname: `/_api/index/${encodeURI(indexes._indexHandle(selector, this._name))}`,
+      pathname: `/_api/index/${encodeHandlePath(indexes._indexHandle(selector, this._name))}`,
     });
   }
   //#endregion

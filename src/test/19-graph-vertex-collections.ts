@@ -4,6 +4,11 @@ import { DocumentMetadata } from "../documents.js";
 import { GraphVertexCollection } from "../graphs.js";
 import { config } from "./_config.js";
 import {
+  extendedCollectionNames,
+  supportsExtendedNames,
+  waitForExtendedCollection,
+} from "./_extended-names.js";
+import {
   clusterIntegrationTimeoutMs,
   propagationForResourceMs,
   waitForNewDatabase,
@@ -44,6 +49,46 @@ describe("GraphVertexCollection API", function () {
   });
   beforeEach(async () => {
     await collection.collection.truncate();
+  });
+  /*
+   * Graph vertex reads and writes must keep special characters in the
+   * collection path component so they reach the intended vertex.
+   * Extended names are opt-in since ArangoDB 3.11.0 (--database.extended-names)
+   * and enabled by default since 3.12.0. (DE-1273)
+   */
+  describe("extended collection names", () => {
+    before(async function () {
+      if (!(await supportsExtendedNames(db))) this.skip();
+    });
+    for (const name of extendedCollectionNames) {
+      it(`performs vertex operations in ${name}`, async () => {
+        const graph = db.graph(`extended_${Date.now()}`);
+        await graph.create([], { orphanCollections: [name] });
+        try {
+          await waitForExtendedCollection(db, name);
+          await db.waitForPropagation(
+            { pathname: `/_api/gharial/${graph.name}` },
+            propagationForResourceMs,
+          );
+          const vertices = graph.vertexCollection(name);
+          const meta = await vertices.save({ _key: "key", value: 1 });
+          expect(meta._id).to.equal(`${name}/key`);
+          expect(await vertices.vertex({ _key: "key" })).to.have.property(
+            "value",
+            1,
+          );
+          await vertices.update(meta, { value: 2 });
+          expect(await vertices.vertex(meta._id)).to.have.property("value", 2);
+          await vertices.replace(meta._id, { value: 3 });
+          expect(await vertices.vertex("key")).to.have.property("value", 3);
+          await vertices.remove({ _id: meta._id });
+          expect(await vertices.vertex("key", true)).to.equal(null);
+          // Gharial HEAD is not supported by the tested servers; URL coverage is in 40.
+        } finally {
+          await graph.drop(true);
+        }
+      });
+    }
   });
   describe("graphVertexCollection.vertex", () => {
     const data = { foo: "bar" };
