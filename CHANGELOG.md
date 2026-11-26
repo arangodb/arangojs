@@ -18,10 +18,8 @@ This driver uses semantic versioning:
 
 ### Added
 
-- AQL execution plan cache APIs for ArangoDB 3.12.4 and later (DE-1274):
-  `usePlanCache` in query and explain option types, optional `planCacheKey` in
-  explain result types, and `Database.listQueryPlanCacheEntries()` /
-  `Database.clearQueryPlanCache()` with the `QueryPlanCacheEntry` type.
+- Added repository instructions and a development skill for coding agents
+  maintaining arangojs (DE-1225).
 
 - Tests: Integration coverage for bulk document and edge operations (`saveAll`,
   `replaceAll`, `updateAll`, `removeAll`), including empty inputs, duplicate keys,
@@ -31,19 +29,28 @@ This driver uses semantic versioning:
 - Tests: Integration coverage for `Database.queryRules()`, validating optimizer
   rule names and boolean flags without assuming a fixed rule catalog (DE-1260).
 
+- AQL execution plan cache APIs for ArangoDB 3.12.4 and later (DE-1274):
+  `usePlanCache` in query and explain option types, optional `planCacheKey` in
+  explain result types, and `Database.listQueryPlanCacheEntries()` /
+  `Database.clearQueryPlanCache()` with the `QueryPlanCacheEntry` type.
+
 ### Fixed
 
-- Preserve the server-reported execution plan cache key as `Cursor.planCacheKey`
-  and `BatchCursor.planCacheKey`, including after exhaustion and disposal
-  (DE-1274).
+- Graph creation: Send `isSmart` inside the HTTP request body's `options` object
+  in `graph.create` and `db.createGraph`, alongside `isDisjoint` (DE-1246).
+  The driver's options argument and returned graph metadata remain unchanged.
 
 - Tests: Restore deterministic `Database.killQuery()` integration coverage with
   bounded running-query polling, cancellation and unknown-ID assertions,
   query/cursor cleanup after failures, and coordinator affinity (DE-1260).
 
-- Graph creation: Send `isSmart` inside the HTTP request body's `options` object
-  in `graph.create` and `db.createGraph`, alongside `isDisjoint` (DE-1246).
-  The driver's options argument and returned graph metadata remain unchanged.
+- Fixed resource-path encoding for document, graph vertex/edge, and index
+  operations with extended collection names containing reserved URL characters
+  such as `?` and `#` (DE-1273).
+
+- Preserve the server-reported execution plan cache key as `Cursor.planCacheKey`
+  and `BatchCursor.planCacheKey`, including after exhaustion and disposal
+  (DE-1274).
 
 ## [10.6.0] - 2026-10-14
 
