@@ -76,6 +76,17 @@ export type QueryOptions = {
    */
   cache?: boolean;
   /**
+   * (ArangoDB 3.12.4 and later.) If set to `true`, caches the execution plan
+   * and reuses cached plans for eligible queries. This is separate from the
+   * query results cache controlled by `cache`.
+   *
+   * ArangoDB raises error `1584` if the query is not eligible for plan caching.
+   * A cache hit exposes a `planCacheKey` on the returned cursor.
+   *
+   * Default: `false`
+   */
+  usePlanCache?: boolean;
+  /**
    * Maximum memory size in bytes that the query is allowed to use.
    * Exceeding this value will result in the query failing with an error.
    *
@@ -198,6 +209,17 @@ export type QueryOptions = {
  * See {@link databases.Database#explain}.
  */
 export type ExplainOptions = {
+  /**
+   * (ArangoDB 3.12.4 and later.) If set to `true`, caches the execution plan
+   * and reuses cached plans for eligible queries. A cache hit exposes a
+   * `planCacheKey` in the result.
+   *
+   * ArangoDB raises error `1584` for ineligible queries, including requests
+   * with `allPlans: true` or custom optimizer rules.
+   *
+   * Default: `false`
+   */
+  usePlanCache?: boolean;
   /**
    * An object with a `rules` property specifying a list of optimizer rules to
    * be included or excluded by the optimizer for this query. Prefix a rule
@@ -338,6 +360,11 @@ export type QueryCachePropertiesOptions = {
  */
 export type SingleExplainResult = {
   /**
+   * (ArangoDB 3.12.4 and later.) Key of the cached execution plan, only present
+   * if the server reused a plan from the plan cache.
+   */
+  planCacheKey?: string;
+  /**
    * Query plan.
    */
   plan: ExplainPlan;
@@ -359,6 +386,11 @@ export type SingleExplainResult = {
  * Result of explaining a query with multiple plans.
  */
 export type MultiExplainResult = {
+  /**
+   * (ArangoDB 3.12.4 and later.) Key of the cached execution plan, if supplied
+   * by the server. Plan caching is not compatible with `allPlans: true`.
+   */
+  planCacheKey?: string;
   /**
    * Query plans.
    */
@@ -530,6 +562,52 @@ export type QueryTrackingInfo = {
    * Whether slow queries are being tracked.
    */
   trackSlowQueries: boolean;
+};
+
+/**
+ * Metadata for an entry in the AQL execution plan cache (ArangoDB 3.12.4 and
+ * later). The execution plan itself is not included.
+ *
+ * See {@link databases.Database#listQueryPlanCacheEntries}.
+ */
+export type QueryPlanCacheEntry = {
+  /**
+   * Opaque plan-cache key, matching the `planCacheKey` returned on a cache hit.
+   */
+  hash: string;
+  /**
+   * Query string.
+   */
+  query: string;
+  /**
+   * Numeric hash of the query string. Use `hash` for exact cache-entry identity.
+   */
+  queryHash: number;
+  /**
+   * Collection bind parameters used in the query. Value bind parameters are
+   * excluded because they can vary when reusing a cached plan.
+   */
+  bindVars: Record<string, string>;
+  /**
+   * Value of the query's `fullCount` option.
+   */
+  fullCount: boolean;
+  /**
+   * Collections and Views involved in the query.
+   */
+  dataSources: string[];
+  /**
+   * Date and time the entry was created as an ISO 8601 timestamp.
+   */
+  created: string;
+  /**
+   * Number of times the cached plan has been reused.
+   */
+  hits: number;
+  /**
+   * Memory used by the cache entry in bytes.
+   */
+  memoryUsage: number;
 };
 
 /**

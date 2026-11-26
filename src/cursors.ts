@@ -162,6 +162,7 @@ export class BatchCursor<ItemType = any> {
   protected _db: databases.Database;
   protected _batches: LinkedList<LinkedList<ItemType>>;
   protected _count?: number;
+  protected _planCacheKey?: string;
   protected _extra: CursorExtras;
   protected _hasMore: boolean;
   protected _nextBatchId?: string;
@@ -182,6 +183,7 @@ export class BatchCursor<ItemType = any> {
       nextBatchId?: string;
       id: string;
       count: number;
+      planCacheKey?: string;
     },
     hostUrl?: string,
     allowDirtyRead?: boolean,
@@ -196,6 +198,7 @@ export class BatchCursor<ItemType = any> {
     this._nextBatchId = body.nextBatchId;
     this._hostUrl = hostUrl;
     this._count = body.count;
+    this._planCacheKey = body.planCacheKey;
     this._extra = body.extra;
     this._allowDirtyRead = allowDirtyRead;
     this._itemsCursor = new Cursor(this, this.itemsView);
@@ -276,6 +279,15 @@ export class BatchCursor<ItemType = any> {
    */
   get count(): number | undefined {
     return this._count;
+  }
+
+  /**
+   * (ArangoDB 3.12.4 and later.) Key of the cached execution plan, only present
+   * if the server reused a plan from the plan cache. Populating the cache alone
+   * does not produce a key. This value remains available after cursor disposal.
+   */
+  get planCacheKey(): string | undefined {
+    return this._planCacheKey;
   }
 
   /**
@@ -845,6 +857,15 @@ export class Cursor<ItemType = any> {
    */
   get count(): number | undefined {
     return this.batches.count;
+  }
+
+  /**
+   * (ArangoDB 3.12.4 and later.) Key of the cached execution plan, only present
+   * if the server reused a plan from the plan cache. Populating the cache alone
+   * does not produce a key. This value remains available after cursor disposal.
+   */
+  get planCacheKey(): string | undefined {
+    return this.batches.planCacheKey;
   }
 
   /**

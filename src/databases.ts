@@ -3457,6 +3457,53 @@ export class Database {
   }
 
   /**
+   * (ArangoDB 3.12.4 and later.) Fetches metadata for the cached AQL execution
+   * plans of the current database. The execution plans themselves are not
+   * included. This is separate from the AQL query results cache.
+   *
+   * Requires read access to the database. Only entries whose collections and
+   * Views are readable by the current user are returned. In a cluster, each
+   * Coordinator has its own cache; this reads the contacted Coordinator's cache.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * const entries = await db.listQueryPlanCacheEntries();
+   * for (const entry of entries) {
+   *   console.log(entry.hash, entry.query, entry.hits);
+   * }
+   * ```
+   */
+  listQueryPlanCacheEntries(): Promise<queries.QueryPlanCacheEntry[]> {
+    return this.request({
+      pathname: "/_api/query-plan-cache",
+    });
+  }
+
+  /**
+   * (ArangoDB 3.12.4 and later.) Clears the AQL execution plan cache of the
+   * current database. Requires write access to the database. In a cluster, this
+   * clears only the contacted Coordinator's cache.
+   *
+   * See also {@link Database#clearQueryCache} for clearing cached query results.
+   *
+   * @example
+   * ```js
+   * const db = new Database();
+   * await db.clearQueryPlanCache();
+   * ```
+   */
+  clearQueryPlanCache(): Promise<void> {
+    return this.request(
+      {
+        method: "DELETE",
+        pathname: "/_api/query-plan-cache",
+      },
+      () => undefined
+    );
+  }
+
+  /**
    * Fetches a list of all entries in the AQL query results cache of the
    * current database.
    *
