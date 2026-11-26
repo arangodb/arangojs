@@ -23,6 +23,11 @@ This driver uses semantic versioning:
 
 ### Added
 
+- AQL execution plan cache APIs for ArangoDB 3.12.4 and later (DE-1274):
+  `usePlanCache` in query and explain option types, optional `planCacheKey` in
+  explain result types, and `Database.listQueryPlanCacheEntries()` /
+  `Database.clearQueryPlanCache()` with the `QueryPlanCacheEntry` type.
+
 - Tests: Integration coverage for bulk document and edge operations (`saveAll`,
   `replaceAll`, `updateAll`, `removeAll`), including empty inputs, duplicate keys,
   missing documents, revision conflicts, mixed success/error results, result
@@ -32,6 +37,10 @@ This driver uses semantic versioning:
   rule names and boolean flags without assuming a fixed rule catalog (DE-1260).
 
 ### Fixed
+
+- Preserve the server-reported execution plan cache key as `Cursor.planCacheKey`
+  and `BatchCursor.planCacheKey`, including after exhaustion and disposal
+  (DE-1274).
 
 - Tests: Restore deterministic `Database.killQuery()` integration coverage with
   bounded running-query polling, cancellation and unknown-ID assertions,
